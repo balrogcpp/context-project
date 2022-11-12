@@ -58,7 +58,7 @@ float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gr
 #endif // PENUMBRA
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const float offset, const float filter_size, const int iterations)
+float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 filter_size, const int iterations)
 {
   lightSpace /= lightSpace.w;
 
@@ -73,7 +73,7 @@ float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const float of
   {
     lightSpace.xy += VogelDiskSample(i, iterations, gradientNoise) * filter_size;
     //lightSpace.xy += VogelDiskSample(i, iterations, gradientNoise) * penumbra * filter_size;
-    float depth = texture2D(shadowMap, lightSpace.xy).x - offset;
+    float depth = texture2D(shadowMap, lightSpace.xy).x;
     shadow -= ((depth < current_depth) ? 1.0 / float(iterations) : 0.0);
   }
 

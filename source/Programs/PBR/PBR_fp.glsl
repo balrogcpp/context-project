@@ -13,154 +13,16 @@
 #include "header.frag"
 
 
-// uniform block
-
-// samplers
-#ifdef HAS_BASECOLORMAP
-uniform sampler2D uAlbedoSampler;
-#endif
-#ifdef HAS_NORMALMAP
-uniform sampler2D uNormalSampler;
-#endif
-#ifdef HAS_ORM
-uniform sampler2D uORMSampler;
-#else
-#ifdef HAS_OCCLUSIONMAP
-uniform sampler2D uOcclusionSampler;
-#endif
-#ifdef HAS_ROUGHNESSMAP
-uniform sampler2D uRoughnessSampler;
-#endif
-#ifdef HAS_METALLICMAP
-uniform sampler2D uMetallicSampler;
-#endif
-#endif
-#ifdef HAS_EMISSIVEMAP
-uniform sampler2D uEmissiveSampler;
-#endif
-#ifdef USE_IBL
-uniform samplerCube uDiffuseEnvSampler;
-uniform samplerCube uSpecularEnvSampler;
-uniform sampler2D uBrdfLUT;
-#endif
-#ifdef TERRAIN
-uniform sampler2D uGlobalNormalSampler;
-#endif
-#ifdef HAS_REFLECTION
-uniform sampler2D uReflectionMap;
-#endif
-#ifdef SHADOWRECEIVER
-#ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 0
-#endif
-#if MAX_SHADOW_TEXTURES > 0
-uniform sampler2D uShadowMap0;
-#endif
-#if MAX_SHADOW_TEXTURES > 1
-uniform sampler2D uShadowMap1;
-#endif
-#if MAX_SHADOW_TEXTURES > 2
-uniform sampler2D uShadowMap2;
-#endif
-#if MAX_SHADOW_TEXTURES > 3
-uniform sampler2D uShadowMap3;
-#endif
-#if MAX_SHADOW_TEXTURES > 4
-uniform sampler2D uShadowMap4;
-#endif
-#if MAX_SHADOW_TEXTURES > 5
-uniform sampler2D uShadowMap5;
-#endif
-#if MAX_SHADOW_TEXTURES > 6
-uniform sampler2D uShadowMap6;
-#endif
-#if MAX_SHADOW_TEXTURES > 7
-uniform sampler2D uShadowMap7;
-#endif
-#endif // SHADOWRECEIVER
-
-// light and shadow
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 0
 #endif
-#if MAX_LIGHTS > 0
-uniform vec4 LightPositionArray[MAX_LIGHTS];
-uniform vec4 LightDirectionArray[MAX_LIGHTS];
-uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
-uniform vec4 LightAttenuationArray[MAX_LIGHTS];
-uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
-#ifdef SHADOWRECEIVER
-uniform float LightCastsShadowsArray[MAX_LIGHTS];
-#endif
-#endif
-uniform float LightCount;
-#ifndef USE_IBL
-uniform vec3 AmbientLightColour;
-#endif
-uniform vec3 SurfaceAmbientColour;
-uniform vec3 SurfaceDiffuseColour;
-uniform float SurfaceSpecularColour;
-uniform float SurfaceShininessColour;
-uniform vec3 SurfaceEmissiveColour;
-#ifdef HAS_ALPHA
-uniform float SurfaceAlphaRejection;
-#endif
-#ifdef NO_MRT
-uniform vec3 FogColour;
-uniform vec4 FogParams;
-#endif
-#ifndef NO_MRT
-uniform float FarClipDistance;
-uniform float FrameTime;
-#endif
-uniform float uLOD;
-uniform vec3 CameraPosition;
-#ifdef TERRAIN
-uniform float uTerrainTexScale;
-#endif
-#ifdef HAS_NORMALMAP
-uniform float uNormalScale;
-#endif
-#ifdef HAS_PARALLAXMAP
-uniform float uOffsetScale;
-#endif
-#ifdef SHADOWRECEIVER
-#if MAX_SHADOW_TEXTURES > 0
-uniform float ShadowTexel0;
-#endif
-#if MAX_SHADOW_TEXTURES > 1
-uniform float ShadowTexel1;
-#endif
-#if MAX_SHADOW_TEXTURES > 2
-uniform float ShadowTexel2;
-#endif
-#if MAX_SHADOW_TEXTURES > 3
-uniform float ShadowTexel3;
-#endif
-#if MAX_SHADOW_TEXTURES > 4
-uniform float ShadowTexel4;
-#endif
-#if MAX_SHADOW_TEXTURES > 5
-uniform float ShadowTexel5;
-#endif
-#if MAX_SHADOW_TEXTURES > 6
-uniform float ShadowTexel6;
-#endif
-#if MAX_SHADOW_TEXTURES > 7
-uniform float ShadowTexel7;
-#endif
-uniform vec4 uPssmSplitPoints;
-uniform vec3 ShadowColour;
-uniform float ShadowDepthOffset;
-uniform float ShadowFilterSize;
-uniform int ShadowFilterIterations;
-#endif // SHADOWRECEIVER
 
-#ifdef SHADOWRECEIVER
-#if MAX_SHADOW_TEXTURES > 0
-in vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
+#ifndef MAX_SHADOW_TEXTURES
+#define MAX_SHADOW_TEXTURES 0
 #endif
-#endif
+
+
+// in block
 in vec2 vUV0;
 in float vDepth;
 #ifdef FADE
@@ -185,7 +47,129 @@ in vec3 vNormal;
 in vec4 projectionCoord;
 #endif
 
-//SRGB corretion
+
+// uniform block
+
+// samplers
+#ifdef HAS_BASECOLORMAP
+uniform sampler2D uAlbedoSampler;
+#endif
+#ifdef HAS_NORMALMAP
+uniform sampler2D uNormalSampler;
+#endif
+#ifdef HAS_ORM
+uniform sampler2D uORMSampler;
+#else // ! HAS_ORM
+#ifdef HAS_OCCLUSIONMAP
+uniform sampler2D uOcclusionSampler;
+#endif
+#ifdef HAS_ROUGHNESSMAP
+uniform sampler2D uRoughnessSampler;
+#endif
+#ifdef HAS_METALLICMAP
+uniform sampler2D uMetallicSampler;
+#endif
+#endif // HAS_ORM
+#ifdef HAS_EMISSIVEMAP
+uniform sampler2D uEmissiveSampler;
+#endif
+#ifdef USE_IBL
+uniform samplerCube uDiffuseEnvSampler;
+uniform samplerCube uSpecularEnvSampler;
+uniform sampler2D uBrdfLUT;
+#endif
+#ifdef TERRAIN
+uniform sampler2D uGlobalNormalSampler;
+#endif
+#ifdef HAS_REFLECTION
+uniform sampler2D uReflectionMap;
+#endif
+
+// lights
+uniform float LightCount;
+#if MAX_LIGHTS > 0
+uniform vec4 LightPositionArray[MAX_LIGHTS];
+uniform vec4 LightDirectionArray[MAX_LIGHTS];
+uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
+uniform vec4 LightAttenuationArray[MAX_LIGHTS];
+uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
+#endif
+#ifndef USE_IBL
+uniform vec4 AmbientLightColour;
+#endif
+uniform vec4 SurfaceAmbientColour;
+uniform vec4 SurfaceDiffuseColour;
+uniform vec4 SurfaceSpecularColour;
+uniform vec4 SurfaceShininessColour;
+uniform vec4 SurfaceEmissiveColour;
+#ifdef HAS_ALPHA
+uniform float SurfaceAlphaRejection;
+#endif
+#ifdef NO_MRT
+uniform vec4 FogColour;
+uniform vec4 FogParams;
+#endif
+#ifndef NO_MRT
+uniform float FarClipDistance;
+uniform float FrameTime;
+#endif
+uniform float uLOD;
+uniform vec3 CameraPosition;
+#ifdef TERRAIN
+uniform float uTerrainTexScale;
+#endif
+#ifdef HAS_NORMALMAP
+uniform float uNormalScale;
+#endif
+#ifdef HAS_PARALLAXMAP
+uniform float uOffsetScale;
+#endif
+
+
+// shadow receiver
+#ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
+in vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
+uniform float LightCastsShadowsArray[MAX_LIGHTS];
+uniform sampler2D uShadowMap0;
+uniform vec2 ShadowTexel0;
+#if MAX_SHADOW_TEXTURES > 1
+uniform sampler2D uShadowMap1;
+uniform vec2 ShadowTexel1;
+#endif
+#if MAX_SHADOW_TEXTURES > 2
+uniform sampler2D uShadowMap2;
+uniform vec2 ShadowTexel2;
+#endif
+#if MAX_SHADOW_TEXTURES > 3
+uniform sampler2D uShadowMap3;
+uniform vec2 ShadowTexel3;
+#endif
+#if MAX_SHADOW_TEXTURES > 4
+uniform sampler2D uShadowMap4;
+uniform vec2 ShadowTexel4;
+#endif
+#if MAX_SHADOW_TEXTURES > 5
+uniform sampler2D uShadowMap5;
+uniform vec2 ShadowTexel5;
+#endif
+#if MAX_SHADOW_TEXTURES > 6
+uniform sampler2D uShadowMap6;
+uniform vec2 ShadowTexel6;
+#endif
+#if MAX_SHADOW_TEXTURES > 7
+uniform sampler2D uShadowMap7;
+uniform vec2 ShadowTexel7;
+#endif
+uniform vec4 uPssmSplitPoints;
+uniform vec4 ShadowColour;
+uniform float ShadowFilterSize;
+uniform int ShadowFilterIterations;
+#endif // MAX_SHADOW_TEXTURES > 0
+#endif // SHADOWRECEIVER
+
+
+// includes
 #include "srgb.glsl"
 #ifdef NO_MRT
 #include "fog.glsl"
@@ -201,6 +185,8 @@ in vec4 projectionCoord;
 #include "noise.glsl"
 #endif
 
+
+// helper functions
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------
@@ -209,35 +195,35 @@ float GetShadow(const int counter) {
         return 1.0;
 #if MAX_SHADOW_TEXTURES > 0
     else if (counter == 0)
-        return CalcDepthShadow(uShadowMap0, LightSpacePosArray[0], ShadowDepthOffset, ShadowTexel0*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap0, LightSpacePosArray[0], ShadowTexel0*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 1
     else if (counter == 1)
-        return CalcDepthShadow(uShadowMap1, LightSpacePosArray[1], ShadowDepthOffset, ShadowTexel1*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap1, LightSpacePosArray[1], ShadowTexel1*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 2
     else if (counter == 2)
-        return CalcDepthShadow(uShadowMap2, LightSpacePosArray[2], ShadowDepthOffset, ShadowTexel2*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap2, LightSpacePosArray[2], ShadowTexel2*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 3
     else if (counter == 3)
-        return CalcDepthShadow(uShadowMap3, LightSpacePosArray[3], ShadowDepthOffset, ShadowTexel3*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap3, LightSpacePosArray[3], ShadowTexel3*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 4
     else if (counter == 4)
-        return CalcDepthShadow(uShadowMap4, LightSpacePosArray[4], ShadowDepthOffset, ShadowTexel4*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap4, LightSpacePosArray[4], ShadowTexel4*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 5
     else if (counter == 5)
-        return CalcDepthShadow(uShadowMap5, LightSpacePosArray[5], ShadowDepthOffset, ShadowTexel5*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap5, LightSpacePosArray[5], ShadowTexel5*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 6
     else if (counter == 6)
-        return CalcDepthShadow(uShadowMap6, LightSpacePosArray[6], ShadowDepthOffset, ShadowTexel6*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap6, LightSpacePosArray[6], ShadowTexel6*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 7
     else if (counter == 7)
-        return CalcDepthShadow(uShadowMap7, LightSpacePosArray[7], ShadowDepthOffset, ShadowTexel7*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap7, LightSpacePosArray[7], ShadowTexel7*ShadowFilterSize, ShadowFilterIterations);
 #endif
 
     return 1.0;
@@ -248,11 +234,11 @@ float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0
 {
     // calculate shadow
     if (vDepth <= uPssmSplitPoints.x)
-        return CalcDepthShadow(uShadowMap0, lightSpacePos0, ShadowDepthOffset, ShadowTexel0*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap0, lightSpacePos0, ShadowTexel0*ShadowFilterSize, ShadowFilterIterations);
     else if (vDepth <= uPssmSplitPoints.y)
-        return CalcDepthShadow(uShadowMap1, lightSpacePos1, ShadowDepthOffset, ShadowTexel1*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap1, lightSpacePos1, ShadowTexel1*ShadowFilterSize, ShadowFilterIterations);
     else if (vDepth <= uPssmSplitPoints.z)
-        return CalcDepthShadow(uShadowMap2, lightSpacePos2, ShadowDepthOffset, ShadowTexel2*ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(uShadowMap2, lightSpacePos2, ShadowTexel2*ShadowFilterSize, ShadowFilterIterations);
     else
         return 1.0;
 }
@@ -326,9 +312,9 @@ vec3 GetNormal(const vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(const vec2 uv) {
 #ifdef HAS_COLOURS
-    vec4 albedo = vec4(SurfaceDiffuseColour * vColor, 1.0);
+    vec4 albedo = vec4(SurfaceDiffuseColour.rgb * vColor, 1.0);
 #else
-    vec4 albedo = vec4(SurfaceDiffuseColour, 1.0);
+    vec4 albedo = vec4(SurfaceDiffuseColour.rgb, 1.0);
 #endif
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(uAlbedoSampler, uv, uLOD);
@@ -336,10 +322,9 @@ vec4 GetAlbedo(const vec2 uv) {
     return SRGBtoLINEAR(albedo);
 }
 
-#if 0
 //----------------------------------------------------------------------------------------------------------------------
 float GetMetallic(const vec2 uv) {
-    float metallic = SurfaceShininessColour;
+    float metallic = SurfaceShininessColour.r;
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
@@ -348,7 +333,7 @@ float GetMetallic(const vec2 uv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetRoughness(const vec2 uv) {
-    float roughness = SurfaceSpecularColour;
+    float roughness = SurfaceSpecularColour.r;
 #ifdef HAS_ROUGHNESSMAP
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
@@ -363,16 +348,16 @@ float GetOcclusion(const vec2 uv) {
     return 1.0;
 #endif
 }
-#endif // 0
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetORM(const vec2 uv) {
-    vec3 ORM = vec3(1.0, SurfaceSpecularColour, SurfaceShininessColour);
+    vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
 #ifdef HAS_ORM
     ORM *= texture2D(uORMSampler, uv, uLOD).rgb;
 #endif
     return ORM;
 }
+
 
 #ifdef HAS_REFLECTION
 //----------------------------------------------------------------------------------------------------------------------
@@ -532,7 +517,7 @@ void main()
             #endif
         }
 
-        total_colour += ShadowColour * color + (shadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
+        total_colour += ShadowColour.rgb * color + (shadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
 #endif
 #else
     total_colour += (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
@@ -543,9 +528,9 @@ void main()
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     vec3 reflection = -normalize(reflect(v, n));
-    total_colour += SurfaceAmbientColour * GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection);
+    total_colour += SurfaceAmbientColour.rgb * GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += (SurfaceAmbientColour * (AmbientLightColour * color));
+    total_colour += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * color));
 #endif
 
 #ifdef HAS_REFLECTION
@@ -558,9 +543,9 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour + texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
+    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
 #else
-    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour);
+    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 
 #ifndef NO_MRT
