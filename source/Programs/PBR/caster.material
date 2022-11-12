@@ -2,7 +2,7 @@
 
 vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
 {
-	source PBR.vert
+	source caster.vert
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 
 	default_params
@@ -13,7 +13,7 @@ vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
 
 fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
 {
-	source PBR.frag
+	source caster.frag
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 
 	default_params
@@ -47,7 +47,7 @@ material PSSM/shadow_caster_alpha
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program PSSM/shadow_caster_vs glsl glsles
 {
-	source PBR.vert
+	source cater.vert
 	preprocessor_defines SHADOWCASTER
 
 	default_params
@@ -58,7 +58,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles
 
 fragment_program PSSM/shadow_caster_fs glsl glsles
 {
-	source PBR.frag
+	source caster.frag
 	preprocessor_defines SHADOWCASTER
 }
 

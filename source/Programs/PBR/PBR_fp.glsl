@@ -1,21 +1,5 @@
 // created by Andrey Vasiliev
 
-// The MIT License
-// Copyright (c) 2016-2017 Mohamad Moneimne and Contributors
-//
-// This fragment shader defines a reference implementation for Physically Based Shading of
-// a microfacet surface material defined by a glTF model.
-//
-// References:
-// [1] Real Shading in Unreal Engine 4
-//     http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
-// [2] Physically Based Shading at Disney
-//     http://blog.selfshadow.com/publications/s2012-shading-course/burley/s2012_pbs_disney_brdf_notes_v3.pdf
-// [3] README.md - Environment Maps
-//     https://github.com/KhronosGroup/glTF-WebGL-PBR/#environment-maps
-// [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
-//     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
-
 #ifndef VERSION
 #ifndef GL_ES
 #version 330 core
@@ -26,21 +10,12 @@
 #endif
 #endif
 
-#ifdef SHADOWCASTER
-#define NO_MRT
-#endif
-
 #include "header.frag"
 
-#ifdef SHADOWCASTER
-#ifdef SHADOWCASTER_ALPHA
-uniform sampler2D uAlbedoSampler;
-uniform float SurfaceAlphaRejection;
-in vec2 vUV0;
-#endif
-#endif
 
-#ifndef SHADOWCASTER
+// uniform block
+
+// samplers
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D uAlbedoSampler;
 #endif
@@ -104,6 +79,7 @@ uniform sampler2D uShadowMap7;
 #endif
 #endif // SHADOWRECEIVER
 
+// light and shadow
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 0
 #endif
@@ -428,12 +404,10 @@ vec2 ParallaxMapping(const vec2 uv, const vec3 viewDir)
 }
 #endif
 
-#endif // !SHADOWCASTER
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-#ifndef SHADOWCASTER
     vec3 v = normalize(CameraPosition - vPosition);
     vec2 tex_coord = vUV0.xy;
 
@@ -602,14 +576,4 @@ void main()
     total_colour = ApplyFog(total_colour, FogParams, FogColour, vDepth);
     FragColor = LINEARtoSRGB(vec4(total_colour, alpha), 1.0);
 #endif
-
-#else //SHADOWCASTER
-
-#ifdef SHADOWCASTER_ALPHA
-    if (texture2D(uAlbedoSampler, vUV0.xy).a < SurfaceAlphaRejection) discard;
-#endif //SHADOWCASTER_ALPHA
-
-    FragColor.r = gl_FragCoord.z;
-
-#endif //SHADOWCASTER
 }
