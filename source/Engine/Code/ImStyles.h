@@ -43,6 +43,29 @@ inline ImVec2 GetTextLength(std::string text) { return ImGui::CalcTextSize(text.
 
 void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<std::string> tabNames, int &selectedSubTab);
 
+namespace Colors {
+inline ImVec4 LeftBar;
+inline ImVec4 Background;
+inline ImVec4 Borders;
+inline ImVec4 BordersActive;
+inline ImVec4 Child;
+inline ImVec4 ChildText;
+inline ImVec4 TabFrame;
+inline ImVec4 TabText;
+inline ImVec4 Frame;
+inline ImVec4 FrameDisabled;
+inline ImVec4 FrameHovered;
+inline ImVec4 FrameActive;
+inline ImVec4 FrameOpened;
+inline ImVec4 Logo;
+inline ImVec4 AccentDisabled;
+inline ImVec4 Accent;
+
+inline ImVec4 Text;
+inline ImVec4 TextDisabled;
+inline ImVec4 TextActive;
+}  // namespace Colors
+
 namespace ImStyle {
 void SetupImGuiStyle_Unreal();
 void SetupImGuiStyle_DeepDark();
@@ -57,7 +80,13 @@ void SetupImGuiStyle_RedCustom();
 void SetupImGuiStyle_Enemymouse();
 void SetupImGuiStyle_SpectrumLight();
 void SetupImGuiStyle_SpectrumDark();
+}  // namespace ImStyle
+
+namespace ImGuiB {
 void SetupImGuiStyle_NeverBlue();
 void SetupImGuiStyle_NeverDark();
 void SetupImGuiStyle_NeverLight();
-}  // namespace ImStyle
+bool Checkbox(const char *label, bool *v);
+bool SliderInt(const char *label, int *v, int v_min, int v_max, const char *format = "%d", ImGuiSliderFlags flags = 0);
+bool Combo(const char *label, int *current_item, const char *items_separated_by_zeros, int popup_max_height_in_items = -1);
+}  // namespace ImGui
