@@ -13,7 +13,7 @@
 #include "header.frag"
 
 in vec3 vPosition;
-in vec3 TexCoords;
+in vec3 vTexCoords;
 
 uniform vec3 uSunDirection;
 #ifndef GPU_HOSEK

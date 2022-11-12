@@ -15,14 +15,14 @@
 uniform mat4 worldViewProj;
 
 in vec4 position;
-in vec3 uv0;
+in vec4 uv0;
 
 out vec3 vPosition;
-out vec3 TexCoords; // direction vector representing a 3D texture coordinate
+out vec3 vTexCoords; // direction vector representing a 3D texture coordinate
 
 //----------------------------------------------------------------------------------------------------------------------
 void main() {
-    TexCoords = uv0;
+    vTexCoords = uv0.xyz;
     vPosition = position.xyz;
     gl_Position = worldViewProj * position;
 }
