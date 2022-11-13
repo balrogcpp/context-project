@@ -1,5 +1,4 @@
-#ifndef SKYMODEL_H
-#define SKYMODEL_H
+#pragma once
 
 #include "ArHosekSkyModel.h"
 #include "Astronomy.h"
@@ -75,5 +74,3 @@ class SkyModel {
   bool Initialized() const { return StateX != nullptr; }
   Ogre::Vector3 Sample(Ogre::Vector3 _sampleDir, bool _bEnableSun, Ogre::Vector3 _skyTint, Ogre::Vector3 _sunTint) const;
 };
-
-#endif

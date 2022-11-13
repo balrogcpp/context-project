@@ -1235,8 +1235,59 @@ void SetupImGuiStyle_SpectrumDark() {
 }  // namespace ImStyle
 
 namespace ImGuiB {
+namespace Colors {
+inline ImVec4 LeftBar;
+inline ImVec4 Background;
+inline ImVec4 Borders;
+inline ImVec4 BordersActive;
+inline ImVec4 Child;
+inline ImVec4 ChildText;
+inline ImVec4 TabFrame;
+inline ImVec4 TabText;
+inline ImVec4 Frame;
+inline ImVec4 FrameDisabled;
+inline ImVec4 FrameHovered;
+inline ImVec4 FrameActive;
+inline ImVec4 FrameOpened;
+inline ImVec4 Logo;
+inline ImVec4 AccentDisabled;
+inline ImVec4 Accent;
+
+inline ImVec4 Text;
+inline ImVec4 TextDisabled;
+inline ImVec4 TextActive;
+}  // namespace Colors
+
 using namespace ImGui;
 static float AnimationSpeed = 1.0;
+static float GUIScale = 1.0;
+
+// Those MIN/MAX values are not define because we need to point to them
+static const signed char IM_S8_MIN = -128;
+static const signed char IM_S8_MAX = 127;
+static const unsigned char IM_U8_MIN = 0;
+static const unsigned char IM_U8_MAX = 0xFF;
+static const signed short IM_S16_MIN = -32768;
+static const signed short IM_S16_MAX = 32767;
+static const unsigned short IM_U16_MIN = 0;
+static const unsigned short IM_U16_MAX = 0xFFFF;
+static const ImS32 IM_S32_MIN = INT_MIN;  // (-2147483647 - 1), (0x80000000);
+static const ImS32 IM_S32_MAX = INT_MAX;  // (2147483647), (0x7FFFFFFF)
+static const ImU32 IM_U32_MIN = 0;
+static const ImU32 IM_U32_MAX = UINT_MAX;  // (0xFFFFFFFF)
+#ifdef LLONG_MIN
+static const ImS64 IM_S64_MIN = LLONG_MIN;  // (-9223372036854775807ll - 1ll);
+static const ImS64 IM_S64_MAX = LLONG_MAX;  // (9223372036854775807ll);
+#else
+static const ImS64 IM_S64_MIN = -9223372036854775807LL - 1;
+static const ImS64 IM_S64_MAX = 9223372036854775807LL;
+#endif
+static const ImU64 IM_U64_MIN = 0;
+#ifdef ULLONG_MAX
+static const ImU64 IM_U64_MAX = ULLONG_MAX;  // (0xFFFFFFFFFFFFFFFFull);
+#else
+static const ImU64 IM_U64_MAX = (2ULL * 9223372036854775807LL + 1);
+#endif
 
 void SetupImGuiStyle_NeverBlue() {
   static ImGuiIO &io = ImGui::GetIO();
@@ -1316,6 +1367,55 @@ void SetupImGuiStyle_NeverLight() {
   Colors::FrameOpened = ImLerp(Colors::FrameOpened, ImColor(238, 238, 238, alpha).Value, time);
 }
 
+bool TabButton(const char *label, bool active) {
+  ImGuiWindow *window = GetCurrentWindow();
+  if (window->SkipItems) return false;
+
+  ImGuiContext &g = *GImGui;
+  const ImGuiStyle &style = g.Style;
+  const ImGuiID id = window->GetID(label);
+  const ImVec2 label_size = CalcTextSize(label, NULL, true);
+
+  ImVec2 pos = window->DC.CursorPos;
+
+  ImVec2 size = ImVec2(180 * GUIScale, 30 * GUIScale);
+
+  const ImRect bb(pos, pos + size);
+  ItemSize(size, style.FramePadding.y);
+  if (!ItemAdd(bb, id)) return false;
+
+  bool hovered, held;
+  bool pressed = ButtonBehavior(bb, id, &hovered, &held, 0);
+
+  struct TabAnimation {
+    ImColor TabFrame;
+  };
+
+  static std::map<ImGuiID, TabAnimation> TabMap;
+  auto TabItemMap = TabMap.find(id);
+  if (TabItemMap == TabMap.end()) {
+    TabMap.insert({id, TabAnimation()});
+    TabItemMap = TabMap.find(id);
+  }
+  auto TabItem = TabItemMap->second.TabFrame =
+      ImLerp(TabItemMap->second.TabFrame.Value, active ? Colors::TabFrame : ImColor(Colors::TabFrame.x, Colors::TabFrame.y, Colors::TabFrame.z, 0.f),
+             g.IO.DeltaTime * 8.f * AnimationSpeed);
+
+  // Render
+  RenderNavHighlight(bb, id);
+  RenderFrame(bb.Min + ImVec2(15, 0), bb.Max - ImVec2(15, 0), TabItemMap->second.TabFrame, true, 4.f);
+
+  if (g.LogEnabled) LogSetNextTextDecoration("[", "]");
+  // PushFont(g.IO.Fonts->Fonts[4]);
+  // window->DrawList->AddText(bb.Min + ImVec2(30 - CalcTextSize(icon).x / 2.f, bb.GetSize().y / 2.f - CalcTextSize(icon).y / 2.f),
+  //                           ImColor(Colors::Accent), icon);
+  // PopFont();
+  window->DrawList->AddText(bb.Min + ImVec2(50, bb.GetSize().y / 2.f - CalcTextSize(label).y / 2.f), ImColor(Colors::TabText), label);
+
+  IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags);
+  return pressed;
+}
+
 bool Checkbox(const char *label, bool *v) {
   ImGuiWindow *window = GetCurrentWindow();
   if (window->SkipItems) return false;
@@ -1340,8 +1440,8 @@ bool Checkbox(const char *label, bool *v) {
   float AnimationSpeed = 1.0;
 
   bool hovered_mark, held_mark;
-  bool pressed_mark = ButtonBehavior(checkmark_bb, id_mark, &hovered_mark, &held_mark);
-  if (pressed || pressed_mark) {
+  pressed = pressed || ButtonBehavior(checkmark_bb, id_mark, &hovered_mark, &held_mark);
+  if (pressed) {
     *v = !(*v);
     MarkItemEdited(id);
   }
@@ -1540,33 +1640,6 @@ bool SliderBehaviorT(const ImRect &bb, ImGuiID id, ImGuiDataType data_type, TYPE
   *percent = floorf((float)(*v - v_min) / (float)(v_max - v_min) * 100.f);
   return value_changed;
 }
-
-// Those MIN/MAX values are not define because we need to point to them
-static const signed char IM_S8_MIN = -128;
-static const signed char IM_S8_MAX = 127;
-static const unsigned char IM_U8_MIN = 0;
-static const unsigned char IM_U8_MAX = 0xFF;
-static const signed short IM_S16_MIN = -32768;
-static const signed short IM_S16_MAX = 32767;
-static const unsigned short IM_U16_MIN = 0;
-static const unsigned short IM_U16_MAX = 0xFFFF;
-static const ImS32 IM_S32_MIN = INT_MIN;  // (-2147483647 - 1), (0x80000000);
-static const ImS32 IM_S32_MAX = INT_MAX;  // (2147483647), (0x7FFFFFFF)
-static const ImU32 IM_U32_MIN = 0;
-static const ImU32 IM_U32_MAX = UINT_MAX;  // (0xFFFFFFFF)
-#ifdef LLONG_MIN
-static const ImS64 IM_S64_MIN = LLONG_MIN;  // (-9223372036854775807ll - 1ll);
-static const ImS64 IM_S64_MAX = LLONG_MAX;  // (9223372036854775807ll);
-#else
-static const ImS64 IM_S64_MIN = -9223372036854775807LL - 1;
-static const ImS64 IM_S64_MAX = 9223372036854775807LL;
-#endif
-static const ImU64 IM_U64_MIN = 0;
-#ifdef ULLONG_MAX
-static const ImU64 IM_U64_MAX = ULLONG_MAX;  // (0xFFFFFFFFFFFFFFFFull);
-#else
-static const ImU64 IM_U64_MAX = (2ULL * 9223372036854775807LL + 1);
-#endif
 
 // For 32-bit and larger types, slider bounds are limited to half the natural type range.
 // So e.g. an integer Slider between INT_MAX-10 and INT_MAX will fail, but an integer Slider between INT_MAX/2-10 and INT_MAX/2 will be ok.
@@ -2009,5 +2082,157 @@ bool Combo(const char *label, int *current_item, const char *items_separated_by_
   }
   bool value_changed = ComboB(label, current_item, Items_SingleStringGetter, (void *)items_separated_by_zeros, items_count, height_in_items);
   return value_changed;
+}
+
+bool ToggleA(const char *label, bool *v) {
+  ImGuiWindow *window = GetCurrentWindow();
+  if (window->SkipItems) return false;
+
+  ImGuiContext &g = *GImGui;
+  const ImGuiStyle &style = g.Style;
+  const ImGuiID id = window->GetID(label);
+  const ImVec2 label_size = CalcTextSize(label, NULL, true);
+
+  float height = ImGui::GetFrameHeight();
+  const ImVec2 pos = window->DC.CursorPos;
+
+  float width = height * 2.f;
+  float radius = height * 0.50f;
+
+  const ImRect total_bb(
+      pos, pos + ImVec2(width + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
+
+  ItemSize(total_bb, style.FramePadding.y);
+  if (!ItemAdd(total_bb, id)) return false;
+
+  float last_active_id_timer = g.LastActiveIdTimer;
+
+  bool hovered, held;
+  bool pressed = ButtonBehavior(total_bb, id, &hovered, &held);
+  if (pressed) {
+    *v = !(*v);
+    MarkItemEdited(id);
+    g.LastActiveIdTimer = 0.f;
+  }
+
+  if (g.LastActiveIdTimer == 0.f && g.LastActiveId == id && !pressed) g.LastActiveIdTimer = last_active_id_timer;
+
+  float t = *v ? 1.0f : 0.0f;
+
+  if (g.LastActiveId == id) {
+    float t_anim = ImSaturate(g.LastActiveIdTimer / 0.16f);
+    t = *v ? (t_anim) : (1.0f - t_anim);
+  }
+
+  ImU32 col_bg = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+
+  const ImRect frame_bb(pos, pos + ImVec2(width, height));
+
+  RenderFrame(frame_bb.Min, frame_bb.Max, col_bg, true, height * 0.5f);
+  RenderNavHighlight(total_bb, id);
+
+  ImVec2 label_pos = ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
+  RenderText(label_pos, label);
+  window->DrawList->AddCircleFilled(ImVec2(pos.x + radius + t * (width - radius * 2.0f), pos.y + radius), radius - 1.5f,
+                                    ImGui::GetColorU32(ImGuiCol_CheckMark), 36);
+
+  return pressed;
+}
+
+bool ButtonScrollableEx(const char *label, const ImVec2 &size_arg, ImGuiButtonFlags flags) {
+  ImGuiWindow *window = GetCurrentWindow();
+  if (window->SkipItems) return false;
+
+  ImGuiContext &g = *GImGui;
+  const ImGuiStyle &style = g.Style;
+  const ImGuiID id = window->GetID(label);
+  const ImVec2 label_size = CalcTextSize(label, NULL, true);
+
+  ImVec2 pos = window->DC.CursorPos;
+  if ((flags & ImGuiButtonFlags_AlignTextBaseLine) &&
+      style.FramePadding.y < window->DC.CurrLineTextBaseOffset)  // Try to vertically align buttons that are smaller/have no padding so that text
+                                                                 // baseline matches (bit hacky, since it shouldn't be a flag)
+    pos.y += window->DC.CurrLineTextBaseOffset - style.FramePadding.y;
+  ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+
+  const ImRect bb(pos, pos + size);
+  ItemSize(size, style.FramePadding.y);
+  if (!ItemAdd(bb, id)) return false;
+
+  if (g.LastItemData.InFlags & ImGuiItemFlags_ButtonRepeat) flags |= ImGuiButtonFlags_Repeat;
+
+  bool hovered, held;
+  bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
+
+  const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+  RenderNavHighlight(bb, id);
+  RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
+
+  const float offset = size.x >= label_size.x + style.FramePadding.x * 2.0f
+                           ? size.x + style.FramePadding.x
+                           : static_cast<int>(g.Time * 60.f) % static_cast<int>(label_size.x + size.x + style.FramePadding.x * 2.f + 4);
+  const ImRect text =
+      ImRect(ImVec2(bb.Min.x + size.x - offset + style.FramePadding.x * 2.f, bb.Min.y + style.FramePadding.y), bb.Max - style.FramePadding);
+
+  RenderTextClipped(text.Min, text.Max, label, NULL, &label_size,
+                    size.x >= label_size.x + style.FramePadding.x * 2.0f ? g.Style.ButtonTextAlign : ImVec2(0, 0), &bb);
+  return pressed;
+}
+
+bool ButtonScrollable(const char *label, const ImVec2 &size_arg) { return ButtonScrollableEx(label, size_arg, ImGuiButtonFlags_None); }
+
+bool Toggle(const char *label, bool *v) {
+  ImGuiWindow *window = GetCurrentWindow();
+  if (window->SkipItems) return false;
+
+  ImGuiContext &g = *GImGui;
+  const ImGuiStyle &style = g.Style;
+  const ImGuiID id = window->GetID(label);
+  const ImVec2 label_size = CalcTextSize(label, NULL, true);
+
+  float height = ImGui::GetFrameHeight();
+  const ImVec2 pos = window->DC.CursorPos;
+
+  float width = height * 2.f;
+  float radius = height * 0.50f;
+
+  const ImRect total_bb(
+      pos, pos + ImVec2(width + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
+
+  ItemSize(total_bb, style.FramePadding.y);
+  if (!ItemAdd(total_bb, id)) return false;
+
+  float last_active_id_timer = g.LastActiveIdTimer;
+
+  bool hovered, held;
+  bool pressed = ButtonBehavior(total_bb, id, &hovered, &held);
+  if (pressed) {
+    *v = !(*v);
+    MarkItemEdited(id);
+    g.LastActiveIdTimer = 0.f;
+  }
+
+  if (g.LastActiveIdTimer == 0.f && g.LastActiveId == id && !pressed) g.LastActiveIdTimer = last_active_id_timer;
+
+  float t = *v ? 1.0f : 0.0f;
+
+  if (g.LastActiveId == id) {
+    float t_anim = ImSaturate(g.LastActiveIdTimer / 0.16f);
+    t = *v ? (t_anim) : (1.0f - t_anim);
+  }
+
+  ImU32 col_bg = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+
+  const ImRect frame_bb(pos, pos + ImVec2(width, height));
+
+  RenderFrame(frame_bb.Min, frame_bb.Max, col_bg, true, height * 0.5f);
+  RenderNavHighlight(total_bb, id);
+
+  ImVec2 label_pos = ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
+  RenderText(label_pos, label);
+  window->DrawList->AddCircleFilled(ImVec2(pos.x + radius + t * (width - radius * 2.0f), pos.y + radius), radius - 1.5f,
+                                    ImGui::GetColorU32(ImGuiCol_CheckMark), 36);
+
+  return pressed;
 }
 }  // namespace ImGuiB
