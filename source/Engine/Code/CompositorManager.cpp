@@ -60,7 +60,6 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
   fixedViewportSize = (x > 0) && (y > 0);
 
   if (!fixedViewportSize) {
-    viewportDimensionsChanged(ogreViewport);
     return;
   }
 
@@ -88,8 +87,8 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
-        if (jt->width == 0) jt->width = x * jt->widthFactor;
-        if (jt->height == 0) jt->height = y * jt->heightFactor;
+        jt->width = x * jt->widthFactor;
+        jt->height = y * jt->heightFactor;
       }
     }
 
