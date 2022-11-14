@@ -40,16 +40,18 @@ void Menu::OnUpdate(float time) {
   ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoDecoration);
 
   static int ActiveTab = 0;
-  std::vector<std::string> types{" Window", " Errors", " Info", "AnotherTab"};
+  std::vector<std::string> types{"Window", "Errors", "Info", "AnotherTab"};
 
   const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 
   ImGui::SetNextWindowBgAlpha(0.0);
+  //ImGui::BeginChild("ScrollingRegion", ImVec2(0, -0), true);
   ImGui::BeginChild("ScrollingRegion", ImVec2(0, -0), false);
 
   static bool Checkboxes[8] = {0, 0, 0, 1, 1, 0, 0, 0};
   static int Combos[2];
   static int Slider = 0;
+
   ImGuiB::SetupImGuiStyle_NeverBlue();
 
   if (ImGuiB::Checkbox("Fullscreen", &Checkboxes[0])) {
@@ -86,14 +88,15 @@ void Menu::OnUpdate(float time) {
   };
 
   // used to generate string
-  // std::string str;
-  // for (const auto &it : resList) {
-  //   str += it.item;
-  //   str += '\0';
-  // }
+  //std::string str = " ";
+  //for (const auto &it : resList) {
+  //  str += it.item;
+  //  str += "\\0 ";
+  //}
+  //printf("%s\n", str.c_str());
 
-  constexpr const char resStr[] =
-      "360x800\0 800x600\0 810x1080\0 768x1024\0 834x1112\0 1024x768\0 1024x1366\0 1280x720\0 1280x800\0 1280x1024\0 1360x768\0 1366x768\0 "
+  constexpr const char *resStr =
+      " 360x800\0 800x600\0 810x1080\0 768x1024\0 834x1112\0 1024x768\0 1024x1366\0 1280x720\0 1280x800\0 1280x1024\0 1360x768\0 1366x768\0 " \
       "1440x900\0 1536x864\0 1600x900\0 1680x1050\0 1920x1080\0 1920x1200\0 2048x1152\0 2560x1440\0";
 
   static int i = 0;
@@ -104,8 +107,6 @@ void Menu::OnUpdate(float time) {
       GetComponent<VideoManager>().GetWindow().SetSize(resList[i].x, resList[i].y);
     }
   }
-
-  // ImGuiB::SliderInt("Fake Ping", &Slider, 0, 200);
 
   ImGui::EndChild();
 

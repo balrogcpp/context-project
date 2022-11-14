@@ -25,10 +25,14 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
 
 material PSSM/shadow_caster_alpha
 {
+	receive_shadows off
+
 	technique
 	{
 		pass
 		{
+			lighting off
+			polygon_mode_overrideable off 
 		    alpha_rejection greater_equal 127
 
 			vertex_program_ref PSSM/shadow_caster_alpha_vs {}
@@ -39,6 +43,7 @@ material PSSM/shadow_caster_alpha
             {
                 texture white.dds
                 tex_address_mode clamp
+				filtering linear linear none
             }
 		}
 	}
@@ -47,7 +52,7 @@ material PSSM/shadow_caster_alpha
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program PSSM/shadow_caster_vs glsl glsles
 {
-	source cater.vert
+	source caster.vert
 	preprocessor_defines SHADOWCASTER
 
 	default_params
@@ -64,10 +69,15 @@ fragment_program PSSM/shadow_caster_fs glsl glsles
 
 material PSSM/shadow_caster
 {
+	receive_shadows off
+
 	technique
 	{
 		pass
 		{
+			lighting off
+			polygon_mode_overrideable off 
+
 			vertex_program_ref PSSM/shadow_caster_vs {}
 
 			fragment_program_ref PSSM/shadow_caster_fs {}

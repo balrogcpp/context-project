@@ -37,11 +37,10 @@ inline ImVec4 operator/(const ImVec4 &a, T b) {
 
 inline float ImGetWidth() { return ImGui::GetContentRegionAvail().x; }
 inline float ImGetHeight() { return ImGui::GetContentRegionAvail().y; }
-inline ImVec4 rgbaToVec4(float r, float g, float b, float a) { return ImVec4(r / 255.f, g / 255.f, b / 255.f, a / 255.f); }
-inline ImVec4 rgbaToVec4(ImColor &col) { return col.Value; }
+inline ImVec4 RBGA2Vec4(float r, float g, float b, float a) { return ImVec4(r / 255.f, g / 255.f, b / 255.f, a / 255.f); }
+inline ImVec4 RGBA2Vec4(ImColor &col) { return col.Value; }
 inline ImVec2 GetTextLength(std::string text) { return ImGui::CalcTextSize(text.c_str()); }
 
-void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<std::string> tabNames, int &selectedSubTab);
 
 namespace ImStyle {
 void SetupImGuiStyle_Unreal();
@@ -60,6 +59,8 @@ void SetupImGuiStyle_SpectrumDark();
 }  // namespace ImStyle
 
 namespace ImGuiB {
+void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<std::string> tabNames, int &selectedSubTab);
+
 void SetupImGuiStyle_NeverBlue();
 void SetupImGuiStyle_NeverDark();
 void SetupImGuiStyle_NeverLight();

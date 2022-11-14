@@ -29,14 +29,32 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-namespace ImSpinner {
 #define DECLPROP(name, type, def)     \
   struct name {                       \
     type value = def;                 \
     operator type() { return value; } \
   };
 
+#define IMPLRPOP(basetype, type)                      \
+  basetype m_##type;                                  \
+  void set##type(const basetype &v) { m_##type = v; } \
+  void set(type h) { m_##type = h.value; }            \
+  template <typename First, typename... Args>         \
+  void set(const type &h, const Args &...args) {      \
+    set##type(h.value);                               \
+    this->template set<Args...>(args...);             \
+  }
 
+#define SPINNER_HEADER(pos, size, centre, num_segments)                        \
+  ImVec2 pos, size, centre;                                                    \
+  int num_segments;                                                            \
+  if (!detail::SpinnerBegin(label, radius, pos, size, centre, num_segments)) { \
+    return;                                                                    \
+  };                                                                           \
+  ImGuiWindow *window = ImGui::GetCurrentWindow();
+
+
+namespace ImSpinner {
 using float_ptr = float *;
 
 DECLPROP(SpinnerType, SpinnerTypeT, e_st_rainbow)
@@ -50,7 +68,6 @@ DECLPROP(FloatPtr, float_ptr, nullptr)
 DECLPROP(Dots, int, 0)
 DECLPROP(MiddleDots, int, 0)
 DECLPROP(MinThickness, float, 0.f)
-#undef DECLPROP
 
 namespace detail {
 bool SpinnerBegin(const char *label, float radius, ImVec2 &pos, ImVec2 &size, ImVec2 &centre, int &num_segments) {
@@ -75,15 +92,6 @@ bool SpinnerBegin(const char *label, float radius, ImVec2 &pos, ImVec2 &size, Im
   return true;
 }
 
-#define IMPLRPOP(basetype, type)                      \
-  basetype m_##type;                                  \
-  void set##type(const basetype &v) { m_##type = v; } \
-  void set(type h) { m_##type = h.value; }            \
-  template <typename First, typename... Args>         \
-  void set(const type &h, const Args &...args) {      \
-    set##type(h.value);                               \
-    this->template set<Args...>(args...);             \
-  }
 struct SpinnerConfig {
   SpinnerConfig() {}
 
@@ -107,17 +115,10 @@ struct SpinnerConfig {
   IMPLRPOP(int, MiddleDots)
   IMPLRPOP(float, MinThickness)
 };
-#undef IMPLRPOP
+
 void SpinnerBarChartRainbow(const char *label, float radius, float thickness, const ImColor &color, float speed, int bars) {}
 }  // namespace detail
 
-#define SPINNER_HEADER(pos, size, centre, num_segments)                        \
-  ImVec2 pos, size, centre;                                                    \
-  int num_segments;                                                            \
-  if (!detail::SpinnerBegin(label, radius, pos, size, centre, num_segments)) { \
-    return;                                                                    \
-  };                                                                           \
-  ImGuiWindow *window = ImGui::GetCurrentWindow();
 
 void SpinnerRainbow(const char *label, float radius, float thickness, const ImColor &color, float speed) {
   SPINNER_HEADER(pos, size, centre, num_segments);
@@ -158,11 +159,6 @@ void SpinnerAng(const char *label, float radius, float thickness, const ImColor 
   }
   window->DrawList->PathStroke(color, false, thickness);
 }
-/*auto is_between = [] (float start, float end, float mid){
-end = (end - start) < 0.0f ? (end - start + IM_PI) : end - start;
-mid = (mid - start) < 0.0f ? (mid - start + IM_PI) : mid - start;
-return (mid < end);
-};*/
 
 void SpinnerClock(const char *label, float radius, float thickness, const ImColor &color, const ImColor &bg, float speed) {
   SPINNER_HEADER(pos, size, centre, num_segments);
@@ -1355,10 +1351,6 @@ void SpinnerLemniscate(const char *label, float radius, float thickness, const I
   const float step = angle / num_segments;
   const float th = thickness / num_segments;
 
-  /*
-      x = a cos(t) / 1 + sin²(t)
-      y = a sin(t) . cos(t) / 1 + sin²(t)
-  */
   const auto get_coord = [&](float const &a, float const &t) -> auto{
     return std::make_pair((a * ImCos(t)) / (1 + (powf(ImSin(t), 2.0f))), (a * ImSin(t) * ImCos(t)) / (1 + (powf(ImSin(t), 2.0f))));
   };
@@ -1545,7 +1537,6 @@ void SpinnerBlocks(const char *label, float radius, float thickness, const ImCol
   const float heightSpeed = 0.8f;
 
   // Render
-  // float start = (float)ImGui::GetTime() * speed;
   ImVec2 lt{centre.x - radius, centre.y - radius};
   const float offset_block = radius * 2.f / 3.f;
 
