@@ -77,21 +77,25 @@ void Menu::OnUpdate(float time) {
   if (ImGuiB::Checkbox("Resizable", &windowFlags[1])) {
     GetComponent<VideoManager>().GetWindow().SetResizable(windowFlags[1]);
   }
-
-  if (ImGuiB::Checkbox("Always on top", &windowFlags[2])) {
-    GetComponent<VideoManager>().GetWindow().SetAlwaysOnTop(windowFlags[2]);
+  
+  if (ImGuiB::Checkbox("Maximize", &windowFlags[2])) {
+    windowFlags[2] ? GetComponent<VideoManager>().GetWindow().SetMaximized() : GetComponent<VideoManager>().GetWindow().SetRestored();
   }
 
-  if (ImGuiB::Checkbox("Show border", &windowFlags[3])) {
-    GetComponent<VideoManager>().GetWindow().SetBordered(windowFlags[3]);
+  if (ImGuiB::Checkbox("Always on top", &windowFlags[3])) {
+    GetComponent<VideoManager>().GetWindow().SetAlwaysOnTop(windowFlags[3]);
   }
 
-  if (ImGuiB::Checkbox("Grab mouse", &windowFlags[4])) {
-    GetComponent<VideoManager>().GetWindow().SetGrabMouse(windowFlags[4]);
+  if (ImGuiB::Checkbox("Show border", &windowFlags[4])) {
+    GetComponent<VideoManager>().GetWindow().SetBordered(windowFlags[4]);
   }
 
-  if (ImGuiB::Checkbox("Hide mouse", &windowFlags[5])) {
-    GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(windowFlags[5]);
+  if (ImGuiB::Checkbox("Grab mouse", &windowFlags[5])) {
+    GetComponent<VideoManager>().GetWindow().SetGrabMouse(windowFlags[5]);
+  }
+
+  if (ImGuiB::Checkbox("Hide mouse", &windowFlags[6])) {
+    GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(windowFlags[6]);
   }
 
   struct ResolutionItem {
@@ -131,6 +135,7 @@ void Menu::OnUpdate(float time) {
   }
 
   if (ImGuiB::Combo("DisplayList", &index, displays.c_str())) {
+    GetComponent<VideoManager>().GetWindow().SetDisplay(index);
   }
 
   constexpr const char *resStr =

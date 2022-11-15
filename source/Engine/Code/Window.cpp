@@ -9,7 +9,8 @@
 using namespace std;
 
 namespace Glue {
-Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
+Window::Window()
+    : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0), screenWidth(0), screenHeight(0) {
 #ifdef EMSCRIPTEN
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
@@ -26,7 +27,6 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   this->ogreCamera = camera;
   sdlFlags = flags;
   SDL_DisplayMode displayMode;
-  int screenWidth = 0, screenHeight = 0;
 
   // select biggest display
   char buff[200];
@@ -57,10 +57,6 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 
   if (sdlFlags & SDL_WINDOW_FULLSCREEN) {
     fullscreen = true;
-  }
-
-  if (sizeX == screenWidth && sizeY == screenHeight) {
-    sdlFlags |= SDL_WINDOW_BORDERLESS;
   }
 
   if (fullscreen) {
@@ -135,7 +131,6 @@ void Window::SetSize(int x, int y) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowSize(sdlWindow, x, y);
   ogreWindow->resize(x, y);
-  SetPositionCentered();
 }
 
 void Window::SetFullscreen(bool fullscreen) {
@@ -149,6 +144,21 @@ void Window::SetFullscreen(bool fullscreen) {
   }
 }
 
+void Window::SetMaximized() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_MaximizeWindow(sdlWindow);
+}
+
+void Window::SetMinimized() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_MinimizeWindow(sdlWindow);
+}
+
+void Window::SetRestored() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_RestoreWindow(sdlWindow);
+}
+
 void Window::SetPosition(int x, int y, int display) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   if (display < 0) {
@@ -158,6 +168,11 @@ void Window::SetPosition(int x, int y, int display) {
     SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
     SDL_SetWindowPosition(sdlWindow, x, y);
   }
+}
+
+void Window::SetDisplay(int display) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  if (display > 0 && display != this->display) SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
 }
 
 void Window::SetPositionCentered(int display) {

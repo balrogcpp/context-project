@@ -19,7 +19,11 @@ class Window : public WindowListener {
   void SetIcon(const char* icon);
   void SetSize(int x, int y);
   void SetFullscreen(bool fullscreen);
+  void SetMaximized();
+  void SetMinimized();
+  void SetRestored();
   void SetPosition(int x, int y, int display = -1);
+  void SetDisplay(int display);
   void SetPositionCentered(int display = -1);
   void SetGrabMouse(bool grab);
   void SetMouseRelativeMode(bool relative);
@@ -50,6 +54,8 @@ class Window : public WindowListener {
   std::string title;
   bool fullscreen;
   unsigned int display;
+  int screenWidth;
+  int screenHeight;
   int sizeX;
   int sizeY;
   uint32_t sdlFlags;
