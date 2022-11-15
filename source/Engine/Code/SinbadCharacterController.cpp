@@ -23,71 +23,72 @@ void SinbadCharacterController::Update(float time) {
   UpdateCamera(time);
 }
 
-void SinbadCharacterController::OnKeyDown(SDL_Keycode key) {
-  if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_Q && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
-    // take swords out (or put them back, since it's the same animation but
-    // reversed)
-    SetTopAnimation(ANIM_DRAW_SWORDS, true);
-    timer = 0;
-  } else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_E && !swordsDrawn) {
-    if (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP) {
-      // start dancing
-      SetBaseAnimation(ANIM_DANCE, true);
+void SinbadCharacterController::OnKeyEvent(SDL_Scancode key, bool pressed) {
+  if (pressed) {
+    if (key == SDL_SCANCODE_Q && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
+      // take swords out (or put them back, since it's the same animation but
+      // reversed)
+      SetTopAnimation(ANIM_DRAW_SWORDS, true);
+      timer = 0;
+    } else if (key == SDL_SCANCODE_E && !swordsDrawn) {
+      if (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP) {
+        // start dancing
+        SetBaseAnimation(ANIM_DANCE, true);
+        SetTopAnimation(ANIM_NONE);
+        // disable hand animation because the dance controls hands
+        animList[ANIM_HANDS_RELAXED]->setEnabled(false);
+      } else if (baseAnimID == ANIM_DANCE) {
+        // stop dancing
+        SetBaseAnimation(ANIM_IDLE_BASE);
+        SetTopAnimation(ANIM_IDLE_TOP);
+        // re-enable hand animation
+        animList[ANIM_HANDS_RELAXED]->setEnabled(true);
+      }
+    }
+
+    // keep track of the player's intended direction
+    else if (key == SDL_SCANCODE_W)
+      keyDirection.z = -1;
+    else if (key == SDL_SCANCODE_A)
+      keyDirection.x = -1;
+    else if (key == SDL_SCANCODE_S)
+      keyDirection.z = 1;
+    else if (key == SDL_SCANCODE_D)
+      keyDirection.x = 1;
+
+    else if (key == SDLK_SPACE && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
+      // jump if on ground
+      SetBaseAnimation(ANIM_JUMP_START, true);
       SetTopAnimation(ANIM_NONE);
-      // disable hand animation because the dance controls hands
-      animList[ANIM_HANDS_RELAXED]->setEnabled(false);
-    } else if (baseAnimID == ANIM_DANCE) {
-      // stop dancing
+      timer = 0;
+    }
+
+    if (!keyDirection.isZeroLength() && baseAnimID == ANIM_IDLE_BASE) {
+      // start running if not already moving and the player wants to move
+      SetBaseAnimation(ANIM_RUN_BASE, true);
+      if (topAnimID == ANIM_IDLE_TOP) SetTopAnimation(ANIM_RUN_TOP, true);
+    }
+
+  } else {
+    // keep track of the player's intended direction
+    if (key == SDL_SCANCODE_W && keyDirection.z == -1)
+      keyDirection.z = 0;
+    else if (key == SDL_SCANCODE_A && keyDirection.x == -1)
+      keyDirection.x = 0;
+    else if (key == SDL_SCANCODE_S && keyDirection.z == 1)
+      keyDirection.z = 0;
+    else if (key == SDL_SCANCODE_D && keyDirection.x == 1)
+      keyDirection.x = 0;
+
+    if (keyDirection.isZeroLength() && baseAnimID == ANIM_RUN_BASE) {
+      // stop running if already moving and the player doesn't want to move
       SetBaseAnimation(ANIM_IDLE_BASE);
-      SetTopAnimation(ANIM_IDLE_TOP);
-      // re-enable hand animation
-      animList[ANIM_HANDS_RELAXED]->setEnabled(true);
+      if (topAnimID == ANIM_RUN_TOP) SetTopAnimation(ANIM_IDLE_TOP);
     }
   }
-
-  // keep track of the player's intended direction
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_W)
-    keyDirection.z = -1;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_A)
-    keyDirection.x = -1;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_S)
-    keyDirection.z = 1;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_D)
-    keyDirection.x = 1;
-
-  else if (key == SDLK_SPACE && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
-    // jump if on ground
-    SetBaseAnimation(ANIM_JUMP_START, true);
-    SetTopAnimation(ANIM_NONE);
-    timer = 0;
-  }
-
-  if (!keyDirection.isZeroLength() && baseAnimID == ANIM_IDLE_BASE) {
-    // start running if not already moving and the player wants to move
-    SetBaseAnimation(ANIM_RUN_BASE, true);
-    if (topAnimID == ANIM_IDLE_TOP) SetTopAnimation(ANIM_RUN_TOP, true);
-  }
 }
 
-void SinbadCharacterController::OnKeyUp(SDL_Keycode key) {
-  // keep track of the player's intended direction
-  if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_W && keyDirection.z == -1)
-    keyDirection.z = 0;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_A && keyDirection.x == -1)
-    keyDirection.x = 0;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_S && keyDirection.z == 1)
-    keyDirection.z = 0;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_D && keyDirection.x == 1)
-    keyDirection.x = 0;
-
-  if (keyDirection.isZeroLength() && baseAnimID == ANIM_RUN_BASE) {
-    // stop running if already moving and the player doesn't want to move
-    SetBaseAnimation(ANIM_IDLE_BASE);
-    if (topAnimID == ANIM_RUN_TOP) SetTopAnimation(ANIM_IDLE_TOP);
-  }
-}
-
-void SinbadCharacterController::OnMouseMove(int dx, int dy) {
+void SinbadCharacterController::OnMouseMotion(int dx, int dy) {
   // update camera goal based on mouse movement
   UpdateCameraGoal(-0.05f * dx, -0.05f * dy, 0);
 }
@@ -97,19 +98,21 @@ void SinbadCharacterController::OnMouseWheel(int x, int y) {
   UpdateCameraGoal(0, 0, -0.05f * y);
 }
 
-void SinbadCharacterController::OnMouseLbDown(int x, int y) {
-  if (swordsDrawn && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
-    // if swords are out, and character's not doing something weird, then SLICE!
-    SetTopAnimation(ANIM_SLICE_VERTICAL, true);
-    timer = 0;
-  }
-}
-
-void SinbadCharacterController::OnMouseRbDown(int x, int y) {
-  if (swordsDrawn && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
-    // if swords are out, and character's not doing something weird, then SLICE!
-    SetTopAnimation(ANIM_SLICE_HORIZONTAL, true);
-    timer = 0;
+void SinbadCharacterController::OnMouseButton(int button, bool pressed) {
+  if (pressed) {
+    if (button == 0) {
+      if (swordsDrawn && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
+        // if swords are out, and character's not doing something weird, then SLICE!
+        SetTopAnimation(ANIM_SLICE_VERTICAL, true);
+        timer = 0;
+      }
+    } else if (button == 1) {
+      if (swordsDrawn && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
+        // if swords are out, and character's not doing something weird, then SLICE!
+        SetTopAnimation(ANIM_SLICE_HORIZONTAL, true);
+        timer = 0;
+      }
+    }
   }
 }
 

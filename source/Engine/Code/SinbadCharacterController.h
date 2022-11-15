@@ -14,7 +14,7 @@
 #define GRAVITY SCALE * 90.0f     // gravity in downward units per squared second
 
 namespace Glue {
-class SinbadCharacterController : public KeyboardListener, public MouseListener {
+class SinbadCharacterController : public DeviceListener {
  public:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together
@@ -39,12 +39,10 @@ class SinbadCharacterController : public KeyboardListener, public MouseListener 
   explicit SinbadCharacterController(Ogre::Camera *camera);
   virtual ~SinbadCharacterController();
   void Update(float time);
-  void OnKeyDown(SDL_Keycode key) override;
-  void OnKeyUp(SDL_Keycode key) override;
-  void OnMouseMove(int dx, int dy) override;
+  void OnKeyEvent(SDL_Scancode key, bool pressed) override;
+  void OnMouseMotion(int dx, int dy) override;
   void OnMouseWheel(int x, int y) override;
-  void OnMouseLbDown(int x, int y) override;
-  void OnMouseRbDown(int x, int y) override;
+  void OnMouseButton(int button, bool pressed) override;
 
  protected:
   void SetupBody();

@@ -216,12 +216,7 @@ VideoManager::VideoManager()
       shadowFarDistance(400.0),
       shadowTexSize(512) {}
 
-VideoManager::~VideoManager() {
-  InputSequencer::GetInstance().UnregMouseListener(imguiListener.get());
-  InputSequencer::GetInstance().UnregKeyboardListener(imguiListener.get());
-  InputSequencer::GetInstance().UnregContListener(imguiListener.get());
-  SDL_Quit();
-}
+VideoManager::~VideoManager() { SDL_Quit(); }
 
 void VideoManager::OnUpdate(float time) {}
 
@@ -279,9 +274,6 @@ void VideoManager::InitSDL() {
   int sdlInitResult = -1;
 #ifndef EMSCRIPTEN
   sdlInitResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-  for (int i = 0; i < SDL_NumJoysticks(); i++) {
-    if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
-  }
 #else
   sdlInitResult = SDL_Init(SDL_INIT_VIDEO);
 #endif
@@ -412,10 +404,7 @@ void VideoManager::MakeWindow() {
 void VideoManager::InitOgreOverlay() {
   auto *ogreOverlay = new Ogre::OverlaySystem();
   imguiOverlay = new Ogre::ImGuiOverlay();
-  imguiListener = make_unique<ImGuiListener>();
-  InputSequencer::GetInstance().RegKeyboardListener(imguiListener.get());
-  InputSequencer::GetInstance().RegMouseListener(imguiListener.get());
-  InputSequencer::GetInstance().RegContListener(imguiListener.get());
+  ImGui_ImplSDL2_InitForOpenGL(windowList[0].sdlWindow, windowList[0].sdlGlContext);
 
   float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
   ImGui::GetIO().FontGlobalScale = round(vpScale);
@@ -430,8 +419,6 @@ void VideoManager::InitOgreOverlay() {
   io.WantSaveIniSettings = false;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-  io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 #ifdef MOBILE
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 #endif

@@ -109,8 +109,7 @@ void SceneManager::OnClean() {
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   ogreSceneManager->clearScene();
   ogreSceneManager->removeRenderObjectListener(this);
-  InputSequencer::GetInstance().UnregMouseListener(sinbad.get());
-  InputSequencer::GetInstance().UnregKeyboardListener(sinbad.get());
+  InputSequencer::GetInstance().UnregDeviceListener(sinbad.get());
   sinbad.reset();
   fpParams.clear();
   vpParams.clear();
@@ -152,8 +151,7 @@ void SceneManager::LoadFromFile(const std::string &filename) {
 
   if (!sinbad && ogreSceneManager->hasCamera("Default")) {
     sinbad = make_unique<SinbadCharacterController>(ogreSceneManager->getCamera("Default"));
-    InputSequencer::GetInstance().RegMouseListener(sinbad.get());
-    InputSequencer::GetInstance().RegKeyboardListener(sinbad.get());
+    InputSequencer::GetInstance().RegDeviceListener(sinbad.get());
   }
 
   // search for TerrainGroup

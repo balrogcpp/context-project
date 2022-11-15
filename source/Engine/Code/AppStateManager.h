@@ -9,7 +9,7 @@
 #include <memory>
 
 namespace Glue {
-class AppState : public WindowListener {
+class AppState : public DeviceListener, public WindowListener {
  public:
   virtual std::string GetName() = 0;
   virtual void OnSetUp() = 0;

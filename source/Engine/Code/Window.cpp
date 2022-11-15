@@ -9,59 +9,50 @@
 using namespace std;
 
 namespace Glue {
-Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), sizeY(720), fullscreen(false), id(0) {}
+Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
+#ifdef EMSCRIPTEN
+  sdlFlags |= SDL_WINDOW_RESIZABLE;
+#endif
+#ifdef MOBILE
+  fullscreen = true;
+#endif
+}
 Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
-void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int width, int height, uint32_t flags) {
+void Window::Create(const string &title, Ogre::Camera *camera, int display, int width, int height, uint32_t flags) {
   this->title = title;
   this->sizeX = width;
   this->sizeY = height;
   this->ogreCamera = camera;
-  if (flags > 0) sdlFlags = flags;
+  sdlFlags = flags;
   SDL_DisplayMode displayMode;
-  int screenWidth = 0, screenHeight = 0, currentDisplay = 0;
-
-#ifdef EMSCRIPTEN
-  sdlFlags |= SDL_WINDOW_RESIZABLE;
-#endif
-
-#ifdef MOBILE
-  fullscreen = true;
-#endif
+  int screenWidth = 0, screenHeight = 0;
 
   // select biggest display
-  if (monitor < 0) {
-    for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
-      if (SDL_GetCurrentDisplayMode(i, &displayMode) == 0) {
-        char buff[500];
-        sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", i, displayMode.w, displayMode.h, displayMode.refresh_rate);
+  char buff[200];
+  char name[50];
+  if (display < 0) {
+    for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+      if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
+        strcpy(name, SDL_GetDisplayName(i));
+        sprintf(buff, "Display #%d: %s %dx%dpx @ %dhz", i, name, displayMode.w, displayMode.h, displayMode.refresh_rate);
         Ogre::LogManager::getSingleton().logMessage(buff);
         int screenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
         int screenDiagI = sqrt(displayMode.w * displayMode.w + displayMode.h * displayMode.h);
         if (screenDiagI > screenDiag) {
           screenWidth = displayMode.w;
           screenHeight = displayMode.h;
-          currentDisplay = i;
+          this->display = i;
         }
-      } else {
-        char buff[500];
-        sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", i, displayMode.w, displayMode.h, displayMode.refresh_rate);
-        Ogre::LogManager::getSingleton().logError(buff);
       }
     }
-  } else {
-    if (SDL_GetCurrentDisplayMode(monitor, &displayMode) == 0) {
-      screenWidth = displayMode.w;
-      screenHeight = displayMode.h;
-      currentDisplay = monitor;
-      char buff[500];
-      sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", monitor, displayMode.w, displayMode.h, displayMode.refresh_rate);
-      Ogre::LogManager::getSingleton().logMessage(buff);
-    } else {
-      char buff[500];
-      sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", monitor, displayMode.w, displayMode.h, displayMode.refresh_rate);
-      Ogre::LogManager::getSingleton().logError(buff);
-    }
+  } else if (SDL_GetCurrentDisplayMode(display, &displayMode) == 0) {
+    screenWidth = displayMode.w;
+    screenHeight = displayMode.h;
+    this->display = display;
+    strcpy(name, SDL_GetDisplayName(display));
+    sprintf(buff, "Display #%d: %s is %dx%dpx @ %dhz", display, name, displayMode.w, displayMode.h, displayMode.refresh_rate);
+    Ogre::LogManager::getSingleton().logMessage(buff);
   }
 
   if (sdlFlags & SDL_WINDOW_FULLSCREEN) {
@@ -80,7 +71,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int 
   }
 
 #if defined(DESKTOP)
-  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
+  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
 #else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -97,8 +88,8 @@ void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int 
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
   SDL_GL_CreateContext(sdlWindow);
 #endif
-  ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
+  ASSERTION(sdlWindow, "SDL_CreateWindow failed");
   Ogre::NameValuePairList renderParams;
   const char *TRUE_STR = "true";
   const char *FALSE_STR = "false";
@@ -144,21 +135,24 @@ void Window::SetSize(int x, int y) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowSize(sdlWindow, x, y);
   ogreWindow->resize(x, y);
+  SetPositionCentered();
 }
 
 void Window::SetFullscreen(bool fullscreen) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   this->fullscreen = fullscreen;
 
-  if (fullscreen)
+  if (fullscreen) {
     SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-  else
+  } else {
     SDL_SetWindowFullscreen(sdlWindow, 0);
+  }
 }
 
 void Window::SetPosition(int x, int y, int display) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   if (display < 0) {
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(this->display), SDL_WINDOWPOS_CENTERED_DISPLAY(this->display));
     SDL_SetWindowPosition(sdlWindow, x, y);
   } else {
     SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
@@ -169,7 +163,7 @@ void Window::SetPosition(int x, int y, int display) {
 void Window::SetPositionCentered(int display) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   if (display < 0) {
-    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(this->display), SDL_WINDOWPOS_CENTERED_DISPLAY(this->display));
   } else {
     SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
   }
@@ -289,5 +283,4 @@ void Window::OnSizeChanged(int x, int y, uint32_t id) {
     ogreWindow->resize(x, y);
   }
 }
-void Window::OnExposed() {}
 }  // namespace Glue

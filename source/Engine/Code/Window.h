@@ -11,7 +11,7 @@ class Window : public WindowListener {
  public:
   Window();
   virtual ~Window();
-  void Create(const std::string& title, Ogre::Camera* camera, int monitor, int width, int height, uint32_t sdlFlags = 0);
+  void Create(const std::string& title, Ogre::Camera* camera, int display, int width, int height, uint32_t sdlFlags = 0);
   void Show(bool show);
   void Delete();
   void RenderFrame() const;
@@ -46,18 +46,19 @@ class Window : public WindowListener {
   void OnFocusLost() override;
   void OnFocusGained() override;
   void OnSizeChanged(int x, int y, uint32_t id) override;
-  void OnExposed() override;
 
   std::string title;
   bool fullscreen;
+  unsigned int display;
   int sizeX;
   int sizeY;
   uint32_t sdlFlags;
   bool vsync;
   uint32_t id;
 
-  Ogre::Root* ogreRoot = nullptr;
   SDL_Window* sdlWindow = nullptr;
+  SDL_GLContext* sdlGlContext = nullptr;
+  Ogre::Root* ogreRoot = nullptr;
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::RenderTarget* renderTarget = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;

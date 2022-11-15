@@ -1406,10 +1406,6 @@ bool TabButton(const char *label, bool active) {
   RenderFrame(bb.Min + ImVec2(15, 0), bb.Max - ImVec2(15, 0), TabItemMap->second.TabFrame, true, 4.f);
 
   if (g.LogEnabled) LogSetNextTextDecoration("[", "]");
-  // PushFont(g.IO.Fonts->Fonts[4]);
-  // window->DrawList->AddText(bb.Min + ImVec2(30 - CalcTextSize(icon).x / 2.f, bb.GetSize().y / 2.f - CalcTextSize(icon).y / 2.f),
-  //                           ImColor(Colors::Accent), icon);
-  // PopFont();
   window->DrawList->AddText(bb.Min + ImVec2(50, bb.GetSize().y / 2.f - CalcTextSize(label).y / 2.f), ImColor(Colors::TabText), label);
 
   IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags);

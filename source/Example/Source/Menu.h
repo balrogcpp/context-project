@@ -4,6 +4,7 @@
 
 #include "AppStateManager.h"
 
+
 namespace Glue {
 class Menu final : public AppState {
  public:
@@ -11,5 +12,6 @@ class Menu final : public AppState {
   void OnSetUp() override;
   void OnUpdate(float time) override;
   void OnClean() override ;
+  void OnKeyEvent(SDL_Scancode key, bool pressed) override;
 };
 }  // namespace Glue
