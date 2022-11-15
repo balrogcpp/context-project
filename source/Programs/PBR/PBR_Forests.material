@@ -10,7 +10,6 @@ vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
     default_params
     {
         param_named_auto Time time
-        param_named_auto CameraPosition camera_position
     }
 }
 
@@ -21,11 +20,11 @@ fragment_program PBR_Paged_fs glsl glsles : PBR_I_fs
 
 vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines PAGED_GEOMETRY,GRASS,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines PAGED_GEOMETRY,GRASS,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params
     {
         param_named_auto Time time
-        param_named uFadeRange float 50.0
+        //param_named uFadeRange float 50.0
         param_named uWindRange float 50.0
         param_named_auto CameraPosition camera_position
     }
@@ -33,7 +32,7 @@ vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 
 fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
 {
-    preprocessor_defines PAGED_GEOMETRY,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 abstract material PBR_Grass : PBR_Basic

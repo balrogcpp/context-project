@@ -73,9 +73,6 @@ out vec3 vNormal;
 #ifdef SHADOWRECEIVER
 out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
-#ifdef FADE
-out float vAlpha;
-#endif
 #ifdef HAS_REFLECTION
 out vec4 projectionCoord;
 #endif
@@ -145,13 +142,8 @@ void main()
   vPosition = model_position.xyz / model_position.w;
 
 #ifdef PAGED_GEOMETRY
-  float dist = distance(CameraPosition.xyz, vPosition.xyz);
-
-#ifdef FADE
-  vAlpha = (dist < uFadeRange) ? 1.0 : 0.0;
-#endif
 #ifdef GRASS
-  if (uv0.y < 0.9 && dist < uWindRange)
+  if (uv0.y < 0.9 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange)
     new_position = ApplyWaveAnimation(new_position, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
 #endif
 #ifdef TREES

@@ -10,7 +10,6 @@ vertex_program PBRS_Paged_vs glsl glsles : PBRS_I_vs
     default_params
     {
         param_named_auto Time time
-        param_named_auto CameraPosition camera_position
     }
 }
 
@@ -21,19 +20,19 @@ fragment_program PBRS_Paged_fs glsl glsles : PBRS_I_fs
 
 vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
 {
-    preprocessor_defines PAGED_GEOMETRY,GRASS,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
+    preprocessor_defines PAGED_GEOMETRY,GRASS,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
     default_params
     {
-        param_named uFadeRange float 50.0
+        param_named_auto Time time
+        //param_named uFadeRange float 50.0
         param_named uWindRange float 50.0
         param_named_auto CameraPosition camera_position
-        param_named_auto Time time
     }
 }
 
 fragment_program PBRS_Grass_fs glsl glsles : PBRS_I_fs
 {
-    preprocessor_defines PAGED_GEOMETRY,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA
 }
 
 abstract material PBRS_Grass : PBRS_Basic

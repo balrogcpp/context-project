@@ -25,9 +25,6 @@
 // in block
 in vec2 vUV0;
 in float vDepth;
-#ifdef FADE
-in float vAlpha;
-#endif
 in vec3 vPosition;
 #ifndef NO_MRT
 in vec4 vScreenPosition;
@@ -94,17 +91,13 @@ uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
 uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #endif
-#ifndef USE_IBL
 uniform vec4 AmbientLightColour;
-#endif
 uniform vec4 SurfaceAmbientColour;
 uniform vec4 SurfaceDiffuseColour;
 uniform vec4 SurfaceSpecularColour;
 uniform vec4 SurfaceShininessColour;
 uniform vec4 SurfaceEmissiveColour;
-#ifdef HAS_ALPHA
 uniform float SurfaceAlphaRejection;
-#endif
 #ifdef NO_MRT
 uniform vec4 FogColour;
 uniform vec4 FogParams;
@@ -408,12 +401,9 @@ void main()
     vec3 color = albedo.rgb;
     float alpha = albedo.a;
 
-#ifdef HAS_ALPHA
-#ifdef FADE
-    alpha *= vAlpha;
-#endif
-    if (alpha < SurfaceAlphaRejection) discard;
-#endif // HAS_ALPHA
+    if (alpha < SurfaceAlphaRejection) {
+        discard;
+    }
 
     vec3 ORM = GetORM(tex_coord);
     float occlusion = ORM.r;
@@ -528,7 +518,7 @@ void main()
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     vec3 reflection = -normalize(reflect(v, n));
-    total_colour += SurfaceAmbientColour.rgb * GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection);
+    total_colour += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection) * color));
 #else
     total_colour += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * color));
 #endif

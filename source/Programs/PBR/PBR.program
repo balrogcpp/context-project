@@ -7,7 +7,6 @@ shared_params PBR_Shared_frag
     shared_param_named uLOD float 0.0
     shared_param_named ShadowFilterSize float 4.0
     shared_param_named ShadowFilterIterations int 8
-    //shared_param_named ShadowDepthOffset float 0.001
     shared_param_named uPssmSplitPoints float4 6.7367 18.4907 400.0 400.0
 }
 
@@ -58,8 +57,6 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
         param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
         param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
-        param_named_auto FogColour fog_colour
-        param_named_auto FogParams fog_params
         param_named_auto CameraPosition camera_position
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto FrameTime frame_time

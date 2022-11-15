@@ -46,8 +46,6 @@ abstract fragment_program PBRS_BaseI_fs glsl glsles
         param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
         param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
-        param_named_auto FogColour fog_colour
-        param_named_auto FogParams fog_params
         param_named_auto CameraPosition camera_position
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto FrameTime frame_time
