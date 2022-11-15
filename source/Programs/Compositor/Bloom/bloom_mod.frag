@@ -46,16 +46,16 @@ void main()
 {
   vec3 scene = texture2D(uSampler, vUV0).rgb;
 
-  vec3 A = Linear(uRT1, vUV0, TexelSize1);
-  vec3 B = Linear(uRT2, vUV0, TexelSize2);
-  vec3 C = Upscale3x3(uRT3, vUV0, TexelSize3);
-  vec3 D = Upscale3x3(uRT4, vUV0, TexelSize4);
-  vec3 E = Upscale3x3(uRT5, vUV0, TexelSize5);
-  vec3 F = Upscale3x3(uRT6, vUV0, TexelSize6);
-  vec3 G = Upscale3x3(uRT7, vUV0, TexelSize7);
-  vec3 H = Upscale3x3(uRT8, vUV0, TexelSize8);
-  vec3 I = Upscale3x3(uRT9, vUV0, TexelSize9);
-  vec3 K = Upscale3x3(uRT10, vUV0, TexelSize10);
+  vec3 A = Upscale3x3(uRT1, vUV0, TexelSize0);
+  vec3 B = Upscale3x3(uRT2, vUV0, TexelSize1);
+  vec3 C = Upscale3x3(uRT3, vUV0, TexelSize2);
+  vec3 D = Upscale3x3(uRT4, vUV0, TexelSize3);
+  vec3 E = Upscale3x3(uRT5, vUV0, TexelSize4);
+  vec3 F = Upscale3x3(uRT6, vUV0, TexelSize5);
+  vec3 G = Upscale3x3(uRT7, vUV0, TexelSize6);
+  vec3 H = Upscale3x3(uRT8, vUV0, TexelSize7);
+  vec3 I = Upscale3x3(uRT9, vUV0, TexelSize8);
+  vec3 K = Upscale3x3(uRT10, vUV0, TexelSize9);
 
   scene += (A + B + C + D) * 0.65;
   scene += (E + F + G + H) * 0.25;

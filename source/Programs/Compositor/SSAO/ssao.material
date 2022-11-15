@@ -14,7 +14,6 @@ fragment_program SSAOCrytek_fp glsl glsles
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto FOV fov
-        param_named_auto TexelSize inverse_texture_size 0
 	}
 }
 

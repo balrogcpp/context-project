@@ -12,7 +12,6 @@
 
 in vec2 vUV0;
 uniform sampler2D uSceneDepthSampler;
-uniform vec2 TexelSize;
 uniform sampler2D sRotSampler4x4;
 uniform vec4 ViewportSize; // auto param width/height/inv. width/inv. height
 uniform float FOV; // vertical field of view in radians

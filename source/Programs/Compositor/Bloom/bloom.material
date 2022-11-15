@@ -29,7 +29,6 @@ material Bloom_threshold
 			fragment_program_ref bloom_threshold_fs
 			{
                 param_named uSampler int 0
-                param_named_auto TexelSize inverse_texture_size 0
 			}
 
 			texture_unit scene
@@ -93,7 +92,6 @@ material Bloom_mod
                 param_named_auto TexelSize7 inverse_texture_size 7
                 param_named_auto TexelSize8 inverse_texture_size 8
                 param_named_auto TexelSize9 inverse_texture_size 9
-                param_named_auto TexelSize10 inverse_texture_size 10
 			}
 
 			texture_unit scene

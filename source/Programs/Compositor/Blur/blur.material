@@ -9,8 +9,7 @@ fragment_program Blur_fs glsl glsles
     preprocessor_defines MAX_SAMPLES=4
 	default_params
 	{
-		param_named uExposure float 1.0
-        param_named uScale float 0.5
+        param_named uScale float 1.0
 	}
 }
 
