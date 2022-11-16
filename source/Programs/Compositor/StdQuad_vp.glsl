@@ -2,10 +2,10 @@
 
 #ifndef GL_ES
 #version 150
-#define VERSION 150
+#define __VERSION__ 150
 #else
 #version 100
-#define VERSION 100
+#define __VERSION__ 100
 #endif
 
 #include "header.vert"

@@ -1,5 +1,5 @@
 #version 300 es
-#define VERSION 300
+#define __VERSION__ 300
 
 // created by Andrey Vasiliev
 

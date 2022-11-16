@@ -1,5 +1,5 @@
 #version 330 core
-#define VERSION 330
+#define __VERSION__ 330
 
 // created by Andrey Vasiliev
 

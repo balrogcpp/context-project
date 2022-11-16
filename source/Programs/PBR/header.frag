@@ -16,7 +16,7 @@
 
 #ifndef GL_ES
 
-#if VERSION == 330 || VERSION == 400 || VERSION == 410 || VERSION == 420 || VERSION == 430 || VERSION == 440 || VERSION == 450 || VERSION == 460
+#if __VERSION__ >= 150
 #define varying in
 #define texture1D texture
 #define texture2D texture
@@ -26,17 +26,19 @@
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-#ifndef NO_MRT
-out vec4 FragData[3];
-#else // NO_MRT
-out vec4 FragColor;
-#endif // ! NO_MRT
-#else  // VERSION < 300
+#else  // __VERSION__ < 150
 #define in varying
 #define out varying
 #define FragData gl_FragData
 #define FragColor gl_FragColor
-#endif // VERSION >= 300
+#endif // __VERSION__ >= 150
+
+#ifdef USE_MRT
+out vec4 FragData[3];
+#else // NO_MRT
+#define NO_MRT
+out vec4 FragColor;
+#endif // ! NO_MRT
 
 #else // GLSLES
 
@@ -50,7 +52,7 @@ precision lowp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
 
-#if VERSION == 300 || VERSION == 310 || VERSION == 320
+#if __VERSION__ >= 300
 #define varying in
 #define texture1D texture
 #define texture2D texture
@@ -60,17 +62,19 @@ precision lowp samplerCube;
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-#ifndef NO_MRT
-out vec4 FragData[3];
-#else // NO_MRT
-out vec4 FragColor;
-#endif // !NO_MRT
-#else // VERSION < 300
+#else // __VERSION__ < 300
 #define in varying
 #define out varying
 #define FragData gl_FragData
 #define FragColor gl_FragColor
-#endif // VERSION >= 300
+#endif // __VERSION__ >= 300
+
+#ifdef USE_MRT
+out vec4 FragData[3];
+#else // NO_MRT
+#define NO_MRT
+out vec4 FragColor;
+#endif // !NO_MRT
 
 #endif // GLSL_ES
 

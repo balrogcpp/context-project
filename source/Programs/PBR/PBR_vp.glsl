@@ -1,12 +1,12 @@
 // created by Andrey Vasiliev
 
-#ifndef VERSION
+#ifndef __VERSION__
 #ifndef GL_ES
 #version 330 core
-#define VERSION 330
+#define __VERSION__ 330
 #else
 #version 300 es
-#define VERSION 300
+#define __VERSION__ 300
 #endif
 #endif
 
