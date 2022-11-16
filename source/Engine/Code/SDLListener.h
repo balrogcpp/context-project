@@ -2,7 +2,6 @@
 
 #pragma once
 #include "Singleton.h"
-#include "imgui_impl_sdl.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
 #include <algorithm>
@@ -126,7 +125,6 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   inline void Capture() noexcept {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-      ImGui_ImplSDL2_ProcessEvent(&event);
       for (auto &it : winListeners) it->OnEvent(event);
 
       switch (event.type) {
@@ -216,7 +214,6 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 #endif
 
         default: {
-          // for (auto &it : winListeners) it->OnEvent(event);
         }
       }
     }

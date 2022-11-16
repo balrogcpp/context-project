@@ -8,7 +8,7 @@
 #include <OgreImGuiOverlay.h>
 
 namespace Glue {
-class VideoManager final : public System<VideoManager> {
+class VideoManager final : public WindowListener, public System<VideoManager> {
  protected:
   class ShaderResolver;
 
@@ -42,6 +42,9 @@ class VideoManager final : public System<VideoManager> {
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
+
+  /// WindowListener impl
+  void OnEvent(const SDL_Event &event) override;
 
   Window* mainWindow = nullptr;
   std::vector<Window> windowList;

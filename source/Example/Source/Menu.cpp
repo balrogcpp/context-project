@@ -24,12 +24,14 @@ void Menu::OnSetUp() {
 #endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
-  // auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
+  //auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
   GetComponent<VideoManager>().ShowOverlay(true);
-  ImStyle::SetupImGuiStyle_DiscordDark();
+  ImGuiB::SetupImGuiStyle_DiscordDark();
 }
 
-void Menu::OnUpdate(float time) {
+void Menu::OnUpdate(float time) {}
+
+void Menu::BeforeRender(float time) {
   const static ImGuiIO &io = ImGui::GetIO();
   const static auto *viewport = ImGui::GetMainViewport();
 
@@ -37,11 +39,17 @@ void Menu::OnUpdate(float time) {
 
   // fps counter
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
-  ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs);
+  ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration  | ImGuiWindowFlags_NoInputs);
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
 
-  ImGuiB::SetupImGuiStyle_NeverBlue();
+  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
+  ImGui::Begin("OpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+  if (ImGuiB::TabButton("OpenMenu", !showMenu)) {
+    showMenu = true;
+  }
+  ImGui::End();
+
 
   if (!showMenu) {
     GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(true);
@@ -49,6 +57,8 @@ void Menu::OnUpdate(float time) {
   } else {
     GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(false);
   }
+
+  ImGuiB::SetupImGuiStyle_NeverBlue();
 
   float vx = viewport->Size.x, vy = viewport->Size.y;
   float scale = 0.95;
@@ -77,7 +87,7 @@ void Menu::OnUpdate(float time) {
   if (ImGuiB::Checkbox("Resizable", &windowFlags[1])) {
     GetComponent<VideoManager>().GetWindow().SetResizable(windowFlags[1]);
   }
-  
+
   if (ImGuiB::Checkbox("Maximize", &windowFlags[2])) {
     windowFlags[2] ? GetComponent<VideoManager>().GetWindow().SetMaximized() : GetComponent<VideoManager>().GetWindow().SetRestored();
   }

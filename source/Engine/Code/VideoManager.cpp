@@ -5,6 +5,7 @@
 #include "Android.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "Platform.h"
+#include "imgui_impl_sdl.h"
 #ifdef OGRE_OPENGL
 #include <OgreGLRenderSystemCommon.h>
 #endif
@@ -216,11 +217,17 @@ VideoManager::VideoManager()
       shadowFarDistance(400.0),
       shadowTexSize(512) {}
 
-VideoManager::~VideoManager() { SDL_Quit(); }
+VideoManager::~VideoManager() {
+  ImGui_ImplSDL2_Shutdown();
+  SDL_Quit();
+}
 
-void VideoManager::OnUpdate(float time) {}
+void VideoManager::OnUpdate(float time) { ImGui_ImplSDL2_NewFrame(); }
+
+void VideoManager::OnEvent(const SDL_Event &event) { /*ImGui_ImplSDL2_ProcessEvent(&event);*/ }
 
 void VideoManager::OnClean() {
+  InputSequencer::GetInstance().UnregWindowListener(this);
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   ogreSceneManager->clearScene();
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
@@ -638,6 +645,9 @@ void VideoManager::InitOgreRTSS() {
 }
 
 void VideoManager::OnSetUp() {
+  // reg as input listener
+  InputSequencer::GetInstance().RegWindowListener(this);
+
   // init
   InitOgreRoot();
   InitSDL();

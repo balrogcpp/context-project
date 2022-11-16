@@ -14,6 +14,8 @@ class AppState : public DeviceListener, public WindowListener {
   virtual std::string GetName() = 0;
   virtual void OnSetUp() = 0;
   virtual void OnUpdate(float time) = 0;
+  virtual void BeforeRender(float time) = 0;
+  virtual void AfterRender(float time) {};
   virtual void OnClean() = 0;
 };
 
@@ -22,6 +24,8 @@ class AppStateImpl : public AppState {
   std::string GetName() override { return "NULL"; }
   void OnSetUp() override {}
   void OnUpdate(float time) override {}
+  void BeforeRender(float time) override {}
+  void AfterRender(float time) override {};
   void OnClean() override {}
 };
 

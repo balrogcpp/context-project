@@ -42,7 +42,7 @@ inline ImVec4 RGBA2Vec4(ImColor &col) { return col.Value; }
 inline ImVec2 GetTextLength(std::string text) { return ImGui::CalcTextSize(text.c_str()); }
 
 
-namespace ImStyle {
+namespace ImGuiB {
 void SetupImGuiStyle_Unreal();
 void SetupImGuiStyle_DeepDark();
 void SetupImGuiStyle_DiscordDark();
@@ -56,14 +56,10 @@ void SetupImGuiStyle_RedCustom();
 void SetupImGuiStyle_Enemymouse();
 void SetupImGuiStyle_SpectrumLight();
 void SetupImGuiStyle_SpectrumDark();
-}  // namespace ImStyle
-
-namespace ImGuiB {
-void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<std::string> tabNames, int &selectedSubTab);
-
 void SetupImGuiStyle_NeverBlue();
 void SetupImGuiStyle_NeverDark();
 void SetupImGuiStyle_NeverLight();
+
 bool TabButton(const char *label, bool active);
 bool Checkbox(const char *label, bool *v);
 bool SliderInt(const char *label, int *v, int v_min, int v_max, const char *format = "%d", ImGuiSliderFlags flags = 0);
@@ -71,6 +67,7 @@ bool Combo(const char *label, int *current_item, const char *items_separated_by_
 bool Toggle(const char *label, bool *v);
 bool ButtonScrollableEx(const char *label, const ImVec2 &size_arg = ImVec2(0, 0), ImGuiButtonFlags flags = 0);
 bool ButtonScrollable(const char *label, const ImVec2 &size_arg = ImVec2(0, 0));
+void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<std::string> tabNames, int &selectedSubTab);
 
 enum ImGuiToggleFlags_ {
   ImGuiToggleFlags_None = 0,

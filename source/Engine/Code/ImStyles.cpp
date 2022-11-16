@@ -189,7 +189,7 @@ const unsigned int PURPLE700 = Color(0xB483F0);
 }  // namespace Dark
 }  // namespace Spectrum
 
-namespace ImStyle {
+namespace ImGuiB {
 void SetupImGuiStyle_Unreal() {
   // Unreal style by dev0-1 from ImThemes
   ImGuiStyle &style = ImGui::GetStyle();
@@ -1192,9 +1192,7 @@ void SetupImGuiStyle_SpectrumDark() {
   colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
   colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 }
-}  // namespace ImStyle
 
-namespace ImGuiB {
 void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<std::string> tabNames, int &selectedSubTab) {
   int length = tabNames.front().length();  // get shortest string length
   int strIndex = 1;
@@ -1252,7 +1250,6 @@ inline ImVec4 FrameOpened;
 inline ImVec4 Logo;
 inline ImVec4 AccentDisabled;
 inline ImVec4 Accent;
-
 inline ImVec4 Text;
 inline ImVec4 TextDisabled;
 inline ImVec4 TextActive;
@@ -1397,9 +1394,10 @@ bool TabButton(const char *label, bool active) {
     TabMap.insert({id, TabAnimation()});
     TabItemMap = TabMap.find(id);
   }
-  auto TabItem = TabItemMap->second.TabFrame =
-      ImLerp(TabItemMap->second.TabFrame.Value, active ? Colors::TabFrame : ImColor(Colors::TabFrame.x, Colors::TabFrame.y, Colors::TabFrame.z, 0.f),
-             g.IO.DeltaTime * 8.f * AnimationSpeed);
+  auto TabItem = TabItemMap->second.TabFrame = ImLerp(TabItemMap->second.TabFrame.Value,
+                                                      active ? ImColor(Colors::TabFrame.x, Colors::TabFrame.y, Colors::TabFrame.z, Colors::TabFrame.w)
+                                                             : ImColor(Colors::TabFrame.x, Colors::TabFrame.y, Colors::TabFrame.z, 0.f),
+                                                      g.IO.DeltaTime * 8.f * AnimationSpeed);
 
   // Render
   RenderNavHighlight(bb, id);

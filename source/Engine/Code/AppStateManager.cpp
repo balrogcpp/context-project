@@ -62,10 +62,18 @@ void AppStateManager::SetActiveAppState(const std::string &name) {
   InputSequencer::GetInstance().RegDeviceListener(activeAppState.get());
 }
 
-bool AppStateManager::frameRenderingQueued(const Ogre::FrameEvent &evt) { return true; };
-bool AppStateManager::frameEnded(const Ogre::FrameEvent &evt) { return true; };
-bool AppStateManager::frameStarted(const Ogre::FrameEvent &evt) {
+bool AppStateManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   activeAppState->OnUpdate(evt.timeSinceLastFrame);
+  return true;
+};
+
+bool AppStateManager::frameStarted(const Ogre::FrameEvent &evt) {
+  activeAppState->BeforeRender(evt.timeSinceLastFrame);
+  return true;
+};
+
+bool AppStateManager::frameEnded(const Ogre::FrameEvent &evt) {
+  activeAppState->AfterRender(evt.timeSinceLastFrame);
   return true;
 };
 }  // namespace Glue
