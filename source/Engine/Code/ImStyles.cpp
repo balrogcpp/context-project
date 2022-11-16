@@ -1224,7 +1224,8 @@ void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<st
                           selectedSubTab == i ? ImGui::GetStyle().Colors[ImGuiCol_ButtonActive] : ImGui::GetStyle().Colors[ImGuiCol_Button]);
     ImGui::PushStyleColor(ImGuiCol_Text, selectedSubTab == i ? ImGui::GetStyle().Colors[ImGuiCol_Text] : RBGA2Vec4(140, 140, 140, 255));
 
-    if (ImGui::Button(it.c_str(), ImVec2(btnWidth, btnHeight))) selectedSubTab = i;
+    //if (ImGui::Button(it.c_str(), ImVec2(btnWidth, btnHeight))) selectedSubTab = i;
+    if (ImGuiB::TabButton(it.c_str(), ImVec2(btnWidth, btnHeight) , selectedSubTab == i)) selectedSubTab = i;
     ImGui::SameLine();
     ImGui::PopStyleColor(2);
   }
@@ -1364,7 +1365,7 @@ void SetupImGuiStyle_NeverLight() {
   Colors::FrameOpened = ImLerp(Colors::FrameOpened, ImColor(238, 238, 238, alpha).Value, time);
 }
 
-bool TabButton(const char *label, bool active) {
+bool TabButton(const char *label, ImVec2 size, bool active) {
   ImGuiWindow *window = GetCurrentWindow();
   if (window->SkipItems) return false;
 
@@ -1375,7 +1376,7 @@ bool TabButton(const char *label, bool active) {
 
   ImVec2 pos = window->DC.CursorPos;
 
-  ImVec2 size = ImVec2(180 * GUIScale, 30 * GUIScale);
+  //ImVec2 size = ImVec2(180 * GUIScale, 30 * GUIScale);
 
   const ImRect bb(pos, pos + size);
   ItemSize(size, style.FramePadding.y);

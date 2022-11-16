@@ -75,16 +75,19 @@ diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
 index 44a17787..d9add2ba 100644
 --- a/OgreMain/CMakeLists.txt
 +++ b/OgreMain/CMakeLists.txt
-@@ -243,7 +243,9 @@ endif ()
+@@ -241,10 +241,10 @@ if (APPLE)
+   endif()
+ endif ()
  target_link_libraries(OgreMain PUBLIC ${PLATFORM_LIBS} PRIVATE ${LIBRARIES} ${CMAKE_DL_LIBS})
- 
- # specify a precompiled header to use
+-
 +if (!APPLE)
+ # specify a precompiled header to use
  add_native_precompiled_header(OgreMain "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/src/OgreStableHeaders.h>")
+-
 +endif ()
- 
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
+ install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
 index 5e06c194..17e8e022 100644
 --- a/OgreMain/include/OgreException.h

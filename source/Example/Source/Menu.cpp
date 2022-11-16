@@ -43,12 +43,12 @@ void Menu::BeforeRender(float time) {
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
 
-  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
-  ImGui::Begin("OpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  if (ImGuiB::TabButton("OpenMenu", !showMenu)) {
-    showMenu = true;
-  }
-  ImGui::End();
+  //ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
+  //ImGui::Begin("OpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+  //if (ImGuiB::TabButton("OpenMenu", !showMenu)) {
+  //  showMenu = true;
+  //}
+  //ImGui::End();
 
   if (!showMenu) {
     GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(true);
@@ -79,6 +79,7 @@ void Menu::BeforeRender(float time) {
   static int Combos[2];
   static int Slider = 0;
 
+#ifndef ANDROID
   if (ImGuiB::Checkbox("Fullscreen", &windowFlags[0])) {
     GetComponent<VideoManager>().GetWindow().SetFullscreen(windowFlags[0]);
   }
@@ -106,6 +107,7 @@ void Menu::BeforeRender(float time) {
   if (ImGuiB::Checkbox("Hide mouse", &windowFlags[6])) {
     GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(windowFlags[6]);
   }
+#endif
 
   struct ResolutionItem {
     const char *item;
