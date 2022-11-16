@@ -24,7 +24,7 @@ void Menu::OnSetUp() {
 #endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
-  //auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
+  // auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
   GetComponent<VideoManager>().ShowOverlay(true);
   ImGuiB::SetupImGuiStyle_DiscordDark();
 }
@@ -39,7 +39,7 @@ void Menu::BeforeRender(float time) {
 
   // fps counter
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
-  ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration  | ImGuiWindowFlags_NoInputs);
+  ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
 
@@ -49,7 +49,6 @@ void Menu::BeforeRender(float time) {
     showMenu = true;
   }
   ImGui::End();
-
 
   if (!showMenu) {
     GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(true);
@@ -130,15 +129,14 @@ void Menu::BeforeRender(float time) {
   // printf("%s\n", str.c_str());
 
   // used to generate display list
-  char buff[200];
-  char name[50];
   SDL_DisplayMode displayMode;
   std::string displays;
   static int index = 0;
   for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
     if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
-      strcpy(name, SDL_GetDisplayName(i));
-      sprintf(buff, " #%d:%s %dx%dpx @ %dhz", i, name, displayMode.w, displayMode.h, displayMode.refresh_rate);
+      std::string buff = "Display #" + std::to_string(i) + ": " + SDL_GetDisplayName(i) + " " + std::to_string(displayMode.w) + "x" +
+                         std::to_string(displayMode.h) + " @" + std::to_string(displayMode.refresh_rate);
+
       displays += buff;
       displays += '\0';
     }

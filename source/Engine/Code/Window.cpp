@@ -29,13 +29,11 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_DisplayMode displayMode;
 
   // select biggest display
-  char buff[200];
-  char name[50];
   if (display < 0) {
     for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
       if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
-        strcpy(name, SDL_GetDisplayName(i));
-        sprintf(buff, "Display #%d: %s %dx%dpx @ %dhz", i, name, displayMode.w, displayMode.h, displayMode.refresh_rate);
+        string buff = "Display #" + to_string(i) + ": " + SDL_GetDisplayName(i) + " " + to_string(displayMode.w) + "x" + to_string(displayMode.h) +
+                      " @" + to_string(displayMode.refresh_rate);
         Ogre::LogManager::getSingleton().logMessage(buff);
         int screenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
         int screenDiagI = sqrt(displayMode.w * displayMode.w + displayMode.h * displayMode.h);
@@ -50,8 +48,8 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     screenWidth = displayMode.w;
     screenHeight = displayMode.h;
     this->display = display;
-    strcpy(name, SDL_GetDisplayName(display));
-    sprintf(buff, "Display #%d: %s is %dx%dpx @ %dhz", display, name, displayMode.w, displayMode.h, displayMode.refresh_rate);
+    string buff = "Display #" + to_string(display) + ": " + SDL_GetDisplayName(display) + " " + to_string(displayMode.w) + "x" +
+                  to_string(displayMode.h) + " @" + to_string(displayMode.refresh_rate);
     Ogre::LogManager::getSingleton().logMessage(buff);
   }
 
@@ -172,7 +170,8 @@ void Window::SetPosition(int x, int y, int display) {
 
 void Window::SetDisplay(int display) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
-  if (display > 0 && display != this->display) SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
+  if (display > 0 && display != this->display)
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
 }
 
 void Window::SetPositionCentered(int display) {
