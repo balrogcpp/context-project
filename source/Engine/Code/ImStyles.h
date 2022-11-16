@@ -60,7 +60,7 @@ void SetupImGuiStyle_NeverBlue();
 void SetupImGuiStyle_NeverDark();
 void SetupImGuiStyle_NeverLight();
 
-bool TabButton(const char *label, bool active);
+bool TabButton(const char *label, ImVec2 size, bool active);
 bool Checkbox(const char *label, bool *v);
 bool SliderInt(const char *label, int *v, int v_min, int v_max, const char *format = "%d", ImGuiSliderFlags flags = 0);
 bool Combo(const char *label, int *current_item, const char *items_separated_by_zeros, int popup_max_height_in_items = -1);
