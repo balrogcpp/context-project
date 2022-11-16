@@ -402,8 +402,12 @@ void main()
     vec3 color = albedo.rgb;
     float alpha = albedo.a;
 
-    if (alpha < SurfaceAlphaRejection) {
-        discard;
+    if (SurfaceAlphaRejection > 0.000001)
+    {
+        if (alpha < SurfaceAlphaRejection)
+        {
+            discard;
+        }
     }
 
     vec3 ORM = GetORM(tex_coord);

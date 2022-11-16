@@ -222,9 +222,11 @@ VideoManager::~VideoManager() {
   SDL_Quit();
 }
 
-void VideoManager::OnUpdate(float time) { ImGui_ImplSDL2_NewFrame(); }
+void VideoManager::OnUpdate(float time) {
+  // ImGui_ImplSDL2_NewFrame();
+}
 
-void VideoManager::OnEvent(const SDL_Event &event) { /*ImGui_ImplSDL2_ProcessEvent(&event);*/ }
+void VideoManager::OnEvent(const SDL_Event &event) { ImGui_ImplSDL2_ProcessEvent(&event); }
 
 void VideoManager::OnClean() {
   InputSequencer::GetInstance().UnregWindowListener(this);
