@@ -16,7 +16,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace Glue {
-SystemLocator::SystemLocator() { componentList.reserve(50); }
+SystemLocator::SystemLocator() : sleep(false), lockFps(true), targetFps(60) { componentList.reserve(50); }
 SystemLocator::~SystemLocator() {
   OnClean();
   Ogre::Root::getSingleton().removeFrameListener(this);
@@ -100,9 +100,10 @@ void SystemLocator::OnClean() {
   }
 }
 
-void SystemLocator::OnUpdate(float time) {
-  if (!sleep) {
-    RenderFrame();
+void SystemLocator::FrameControl(chrono::microseconds frameDuration) {
+  if (lockFps) {
+    auto delay = chrono::microseconds(static_cast<long int>(1e+6 / targetFps)) - frameDuration;
+    this_thread::sleep_for(delay);
   }
 }
 }  // namespace Glue

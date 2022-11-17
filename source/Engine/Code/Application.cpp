@@ -7,7 +7,7 @@
 using namespace std;
 
 namespace Glue {
-Application::Application() : targetFps(60), lockFps(true), exiting(false), sleep(false) {
+Application::Application() : exiting(false), sleep(false) {
   std::ios_base::sync_with_stdio(false);
   engine = make_unique<SystemLocator>();
   appStateManager = make_unique<AppStateManager>();
@@ -24,18 +24,12 @@ void Application::LoopBody() {
   auto tpBeforeFrame = chrono::steady_clock::now();
 
   engine->Capture();
-
-  if (!sleep) {
-    engine->OnUpdate(0);
-  }
+  engine->RenderFrame();
 
   auto tpAfterFrame = chrono::steady_clock::now();
   auto frameDuration = tpAfterFrame - tpBeforeFrame;
 
-  if (lockFps) {
-    auto delay = chrono::microseconds(static_cast<int>(1e+6 / targetFps)) - frameDuration;
-    this_thread::sleep_for(delay);
-  }
+  engine->FrameControl(chrono::duration_cast<chrono::microseconds>(frameDuration));
 
 #ifdef EMSCRIPTEN
   if (exiting) {
@@ -57,13 +51,9 @@ void Application::EmscriptenLoop(void *arg) {
 
 void Application::Go() {
   InputSequencer::GetInstance().RegWindowListener(this);
-#ifdef MOBILE
-  targetFps = 30;
-#endif
 #ifndef EMSCRIPTEN
   Loop();
 #else
-  lockFps = false;
   emscripten_set_main_loop_arg(EmscriptenLoop, GetInstancePtr(), 0, 1);
 #endif
   engine->OnClean();

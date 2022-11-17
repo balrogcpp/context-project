@@ -10,7 +10,7 @@ using namespace std;
 
 namespace Glue {
 Window::Window()
-    : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0), screenWidth(0), screenHeight(0) {
+    : sdlFlags(SDL_WINDOW_HIDDEN), vsync(false), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0), screenWidth(0), screenHeight(0) {
 #ifdef EMSCRIPTEN
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
@@ -109,7 +109,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   ogreWindow = ogreRoot->createRenderWindow(title, sizeX, sizeY, fullscreen, &renderParams);
   renderTarget = ogreRoot->getRenderTarget(ogreWindow->getName());
   ogreViewport = renderTarget->addViewport(ogreCamera);
-
+  
   // android is not completely ok without it
   SetSize(sizeX, sizeY);
 

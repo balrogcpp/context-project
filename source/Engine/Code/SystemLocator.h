@@ -3,15 +3,16 @@
 #pragma once
 #include "AudioManager.h"
 #include "CompositorManager.h"
+#include "ForestsManager.h"
 #include "PhysicsManager.h"
 #include "SDLListener.h"
 #include "SceneManager.h"
 #include "Singleton.h"
 #include "SkyManager.h"
 #include "TerrainManager.h"
-#include "ForestsManager.h"
 #include "VideoManager.h"
 #include <OgreFrameListener.h>
+#include <chrono>
 
 namespace Glue {
 class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, WindowListener {
@@ -22,13 +23,14 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void Init();
   void Capture();
   void RenderFrame();
+  void FrameControl(std::chrono::microseconds time);
 
   void RegComponent(SystemI* component);
   void UnregComponent(SystemI* component);
 
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(float time) override;
+  void OnUpdate(float time) override {}
   void OnClean() override;
 
  protected:
@@ -42,7 +44,9 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void OnFocusLost() override;
   void OnFocusGained() override;
 
-  bool sleep = false;
+  bool sleep;
+  bool lockFps;
+  int targetFps;
   std::vector<SystemI*> componentList;
   std::unique_ptr<VideoManager> video;
   std::unique_ptr<SceneManager> scene;

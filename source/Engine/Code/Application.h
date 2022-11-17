@@ -31,7 +31,5 @@ class Application final : public WindowListener, public DynamicSingleton<Applica
   std::unique_ptr<SystemLocator> engine;
   bool exiting;
   bool sleep;
-  int64_t targetFps;
-  bool lockFps;
 };
 }  // namespace Glue
