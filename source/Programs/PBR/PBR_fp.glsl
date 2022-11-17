@@ -50,6 +50,7 @@ in vec4 projectionCoord;
 
 // samplers
 #ifdef HAS_BASECOLORMAP
+#define HAS_ALPHA
 uniform sampler2D uAlbedoSampler;
 #endif
 #ifdef HAS_NORMALMAP
@@ -400,6 +401,9 @@ void main()
 
     vec4 albedo = GetAlbedo(tex_coord);
     vec3 color = albedo.rgb;
+
+#ifdef HAS_ALPHA
+
     float alpha = albedo.a;
 
     if (SurfaceAlphaRejection > 0.000001)
@@ -409,6 +413,9 @@ void main()
             discard;
         }
     }
+#else
+    float alpha = 1.0;
+#endif
 
     vec3 ORM = GetORM(tex_coord);
     float occlusion = ORM.r;
