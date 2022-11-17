@@ -11,8 +11,6 @@
 #define MAX_SHADOW_TEXTURES 4
 #endif
 
-#define MRT
-#define USE_TEX_LOD
 
 #ifndef GL_ES
 
@@ -26,6 +24,12 @@
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+#ifdef USE_MRT
+out vec4 FragData[3];
+#else // NO_MRT
+#define NO_MRT
+out vec4 FragColor;
+#endif // ! NO_MRT
 #else  // __VERSION__ < 150
 #define in varying
 #define out varying
@@ -33,25 +37,14 @@
 #define FragColor gl_FragColor
 #endif // __VERSION__ >= 150
 
-#ifdef USE_MRT
-out vec4 FragData[3];
-#else // NO_MRT
-#define NO_MRT
-out vec4 FragColor;
-#endif // ! NO_MRT
-
 #else // GLSLES
 
-#extension GL_OES_standard_derivatives : enable
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : enable
-#endif
-
+//#extension GL_OES_standard_derivatives : enable
+//#extension GL_ARB_shader_texture_lod : enable
 precision highp float;
 precision lowp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
-
 #if __VERSION__ >= 300
 #define varying in
 #define texture1D texture
@@ -62,20 +55,18 @@ precision lowp samplerCube;
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-#else // __VERSION__ < 300
-#define in varying
-#define out varying
-#define FragData gl_FragData
-#define FragColor gl_FragColor
-#endif // __VERSION__ >= 300
-
 #ifdef USE_MRT
 out vec4 FragData[3];
 #else // NO_MRT
 #define NO_MRT
 out vec4 FragColor;
 #endif // !NO_MRT
-
+#else // __VERSION__ < 300
+#define in varying
+#define out varying
+#define FragData gl_FragData
+#define FragColor gl_FragColor
+#endif // __VERSION__ >= 300
 #endif // GLSL_ES
 
 #endif //HEADER_FRAG

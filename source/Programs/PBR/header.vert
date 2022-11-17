@@ -15,13 +15,11 @@
 
 #else // GL_ES
 
-#extension GL_OES_standard_derivatives : enable
-
+//#extension GL_OES_standard_derivatives : enable
 precision highp float;
 precision lowp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
-
 #if __VERSION__ >= 300
 #define attribute in
 #define varying out
@@ -29,7 +27,6 @@ precision lowp samplerCube;
 #define in attribute
 #define out varying
 #endif // __VERSION__ >= 300
-
 #endif // GLSL_ES
 
 #endif //HEADER_VERT
