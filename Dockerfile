@@ -86,7 +86,7 @@ RUN apt-get update \
     && sh gradlew assembleRelease \
     && rm -rf build .gradle android/.cxx android/build android/assets \
     && sh gradlew assembleRelease \
-    && mkdir ${CONTEXT_HOME}/artifacts \
+    && mkdir -p ${CONTEXT_HOME}/artifacts \
     && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts \
     && rm -rf build .gradle android/.cxx android/build android/assets ../../artifacts/_CPack_Packages ../../contrib/build ../../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-8-jdk \
