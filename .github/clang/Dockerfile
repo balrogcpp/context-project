@@ -145,7 +145,6 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 # apple
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG MACOS_SDK_CODE=21.4
 ARG OSXCROSS_GIT_HASH=50e86ebca7d14372febd0af8cd098705049161b9
 RUN apt-get update \
     && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
@@ -158,6 +157,7 @@ RUN apt-get update \
     && rm -rf ../osxcross-${OSXCROSS_GIT_HASH} \
     && apt-get -y purge cmake python lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove
+ARG MACOS_SDK_CODE=22
 ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
 ENV OSXCROSS_HOST_X86_64=x86_64-apple-darwin${MACOS_SDK_CODE}
 ENV OSXCROSS_HOST_ARM64=aarch64-apple-darwin${MACOS_SDK_CODE}
@@ -168,10 +168,10 @@ ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.24.3
+ARG CMAKE_VERSION=3.25.0
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
-ARG UPX_VERSION=4.0.0
+ARG UPX_VERSION=4.0.1
 RUN cd /tmp \
     && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \

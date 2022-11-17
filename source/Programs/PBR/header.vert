@@ -15,7 +15,6 @@
 
 #else // GL_ES
 
-//#extension GL_OES_standard_derivatives : enable
 precision highp float;
 precision lowp int;
 precision lowp sampler2D;

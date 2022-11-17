@@ -39,8 +39,6 @@ out vec4 FragColor;
 
 #else // GLSLES
 
-//#extension GL_OES_standard_derivatives : enable
-//#extension GL_ARB_shader_texture_lod : enable
 precision highp float;
 precision lowp int;
 precision lowp sampler2D;
