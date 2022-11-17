@@ -10,7 +10,7 @@ using namespace std;
 
 namespace Glue {
 Window::Window()
-    : sdlFlags(SDL_WINDOW_HIDDEN), vsync(false), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0), screenWidth(0), screenHeight(0) {
+    : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0), screenWidth(0), screenHeight(0) {
 #ifdef EMSCRIPTEN
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
