@@ -39,6 +39,7 @@ class Window : public WindowListener {
   bool IsFullscreen();
   bool IsBordered();
   uint32_t GetID();
+  int GetDisplay();
   std::string GetCaption();
 
  protected:
@@ -54,8 +55,6 @@ class Window : public WindowListener {
   std::string title;
   bool fullscreen;
   unsigned int display;
-  int screenWidth;
-  int screenHeight;
   int sizeX;
   int sizeY;
   uint32_t sdlFlags;

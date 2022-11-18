@@ -133,7 +133,7 @@ void Menu::BeforeRender(float time) {
   // used to generate display list
   SDL_DisplayMode displayMode;
   std::string displays;
-  static int index = 0;
+  static int index = GetComponent<VideoManager>().GetWindow().GetDisplay();
   for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
     if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
       std::string buff = "Display #" + std::to_string(i) + ": " + SDL_GetDisplayName(i) + " " + std::to_string(displayMode.w) + "x" +
