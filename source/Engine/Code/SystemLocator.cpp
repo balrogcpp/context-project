@@ -100,6 +100,11 @@ void SystemLocator::OnClean() {
   }
 }
 
+void SystemLocator::EnableFpsLock(bool enable) { lockFps = enable; }
+void SystemLocator::SetFpsFreq(int fps) { targetFps = fps; }
+bool SystemLocator::IsFpsLockEnabled() { return lockFps; }
+int SystemLocator::GetFpsFreq() { return targetFps; }
+
 void SystemLocator::FrameControl(chrono::microseconds frameDuration) {
   if (lockFps) {
     auto delay = chrono::microseconds(static_cast<long int>(1e+6 / targetFps)) - frameDuration;

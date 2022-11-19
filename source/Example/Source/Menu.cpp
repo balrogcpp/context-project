@@ -45,14 +45,15 @@ void Menu::BeforeRender(float time) {
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
 
-//  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
-//  ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-//  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) {
-//    showMenu = true;
-//  }
-//  ImGui::End();
+  //  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
+  //  ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+  //  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) {
+  //    showMenu = true;
+  //  }
+  //  ImGui::End();
 
   static VideoManager &manager = GetComponent<VideoManager>();
+  static SystemLocator &system = GetComponent<SystemLocator>();
   static Window &window = manager.GetWindow();
 
   if (!showMenu) {
@@ -80,9 +81,8 @@ void Menu::BeforeRender(float time) {
   ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGetHeight() * 0.065), tabs, activeTab);
   ImGui::BeginChild("ScrollingRegion", ImVec2(ImGetWidth() * 0.5, ImGetHeight()), false);
 
-  static bool windowFlags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-  static int Combos[2];
-  static int Slider = 0;
+  static bool windowFlags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  static int Combos[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #ifndef ANDROID
   if (ImGuiB::Checkbox("Fullscreen", &windowFlags[0])) {
@@ -125,6 +125,46 @@ void Menu::BeforeRender(float time) {
   if (ImGuiB::Checkbox("Hide mouse", &windowFlags[6])) {
     window.SetMouseRelativeMode(windowFlags[6]);
   }
+
+  const char *intervalList = " -\0 1\0 2\0 3\0 4\0";
+  if (ImGuiB::Combo("Vsync interval", &Combos[0], intervalList)) {
+    if (Combos[0] == 0) {
+      window.EnableVsync(false);
+    } else {
+      window.SetVsyncInterval(Combos[0] - 1);
+    }
+  }
+
+  const char *fpsList = " -\0 60\0 30\0 20\0 15\0";
+  if (ImGuiB::Combo("Lock FPS", &Combos[1], fpsList)) {
+    switch (Combos[1]) {
+      case (0): {
+        system.EnableFpsLock(false);
+        break;
+      }
+      case (1): {
+        system.EnableFpsLock(true);
+        system.SetFpsFreq(60);
+        break;
+      }
+      case (2): {
+        system.EnableFpsLock(true);
+        system.SetFpsFreq(30);
+        break;
+      }
+      case (3): {
+        system.EnableFpsLock(true);
+        system.SetFpsFreq(20);
+        break;
+      }
+      case (4): {
+        system.EnableFpsLock(true);
+        system.SetFpsFreq(15);
+        break;
+      }
+    }
+  }
+
 #endif
 
   // used to generate display list
@@ -163,8 +203,7 @@ void Menu::BeforeRender(float time) {
   // used to generate resolution string
   int sizeX = window.GetDisplaySizeX();
   int sizeY = window.GetDisplaySizeY();
-  std::string resStr = "(native)";
-  resStr += '\0';
+  std::string resStr = std::string("  ") + '\0';
   resStr += std::to_string(sizeX) + "x" + std::to_string(sizeY) + " (native)" + '\0';
   for (const auto &it : resList) {
     if (sizeX >= it.x && sizeY >= it.y) {

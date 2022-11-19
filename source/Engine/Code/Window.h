@@ -47,6 +47,11 @@ class Window : public WindowListener {
   int GetDisplaySizeY();
   std::string GetCaption();
 
+  void EnableVsync(bool enable);
+  void SetVsyncInterval(int interval);
+  bool IsVsyncEnabled();
+
+
  protected:
   friend class VideoManager;
 

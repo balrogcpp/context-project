@@ -269,28 +269,12 @@ int Window::GetDisplay() { return display; }
 
 int Window::GetDisplaySizeX() {
   SDL_DisplayMode displayMode;
-  int screenWidth = 0, screenHeight = 0;
-
-  if (!SDL_GetCurrentDisplayMode(display, &displayMode)) {
-    screenWidth = displayMode.w;
-    screenHeight = displayMode.h;
-    return screenWidth;
-  }
-
-  return -1;
+  return !SDL_GetCurrentDisplayMode(display, &displayMode) ? displayMode.w : -1;
 }
 
 int Window::GetDisplaySizeY() {
   SDL_DisplayMode displayMode;
-  int screenWidth = 0, screenHeight = 0;
-
-  if (!SDL_GetCurrentDisplayMode(display, &displayMode)) {
-    screenWidth = displayMode.w;
-    screenHeight = displayMode.h;
-    return screenHeight;
-  }
-
-  return -1;
+  return !SDL_GetCurrentDisplayMode(display, &displayMode) ? displayMode.h : -1;
 }
 
 bool Window::IsFullscreen() {
@@ -306,6 +290,22 @@ bool Window::IsBordered() {
 std::string Window::GetCaption() {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   return std::string(SDL_GetWindowTitle(sdlWindow));
+}
+
+void Window::EnableVsync(bool enable) {
+  ASSERTION(ogreWindow, "ogreWindow not initialised");
+  vsync = enable;
+  ogreWindow->setVSyncEnabled(enable);
+}
+
+void Window::SetVsyncInterval(int interval) {
+  ASSERTION(ogreWindow, "ogreWindow not initialised");
+  if (interval > 0) ogreWindow->setVSyncInterval(interval);
+}
+
+bool Window::IsVsyncEnabled() {
+  ASSERTION(ogreWindow, "ogreWindow not initialised");
+  return ogreWindow->isVSyncEnabled();
 }
 
 void Window::Delete() {}

@@ -12,7 +12,6 @@
 #include "TerrainManager.h"
 #include "VideoManager.h"
 #include <OgreFrameListener.h>
-#include <chrono>
 
 namespace Glue {
 class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, WindowListener {
@@ -32,6 +31,12 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void OnSetUp() override;
   void OnUpdate(float time) override {}
   void OnClean() override;
+
+  /// Frame control
+  void EnableFpsLock(bool enable);
+  void SetFpsFreq(int fps);
+  bool IsFpsLockEnabled();
+  int GetFpsFreq();
 
  protected:
   /// Ogre::FrameListener impl

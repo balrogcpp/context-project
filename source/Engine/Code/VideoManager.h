@@ -24,6 +24,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void UnloadResources();
   void ClearScene();
 
+  void GamepadEnable(bool enable);
   void ShowOverlay(bool show);
   ImFont* AddFont(const std::string& name, const std::string& group = Ogre::RGN_AUTODETECT, const ImFontConfig* cfg = nullptr,
                   const ImWchar* ranges = nullptr);
@@ -44,7 +45,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void OnUpdate(float time) override;
 
   /// WindowListener impl
-  void OnEvent(const SDL_Event &event) override;
+  void OnEvent(const SDL_Event& event) override;
 
   Window* mainWindow = nullptr;
   std::vector<Window> windowList;
@@ -59,6 +60,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<Ogre::Real> pssmSplitPointList;
   int pssmSplitCount;
+  bool gamepadSupport;
 
   Ogre::Root* ogreRoot = nullptr;
   Ogre::SceneManager* ogreSceneManager = nullptr;

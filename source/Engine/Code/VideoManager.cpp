@@ -215,7 +215,8 @@ VideoManager::VideoManager()
       shadowTechnique(Ogre::SHADOWTYPE_NONE),
       pssmSplitCount(3),
       shadowFarDistance(400.0),
-      shadowTexSize(512) {}
+      shadowTexSize(512),
+      gamepadSupport(false) {}
 
 VideoManager::~VideoManager() {
   ImGui_ImplSDL2_Shutdown();
@@ -223,7 +224,9 @@ VideoManager::~VideoManager() {
 }
 
 void VideoManager::OnUpdate(float time) {
-  // ImGui_ImplSDL2_NewFrame();
+  if (gamepadSupport) {
+    ImGui_ImplSDL2_NewFrame();
+  }
 }
 
 void VideoManager::OnEvent(const SDL_Event &event) { ImGui_ImplSDL2_ProcessEvent(&event); }
@@ -613,6 +616,8 @@ ImFont *VideoManager::AddFont(const std::string &name, const std::string &group,
 
   return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, cfg, ranges);
 }
+
+void VideoManager::GamepadEnable(bool enable) { gamepadSupport = enable; }
 
 void VideoManager::ShowOverlay(bool show) {
   if (show) {
