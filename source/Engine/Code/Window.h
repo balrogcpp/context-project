@@ -22,6 +22,9 @@ class Window : public WindowListener {
   void SetMaximized();
   void SetMinimized();
   void SetRestored();
+  void SetPrevSize();
+  void SetRaised();
+  void SetRefresh();
   void SetPosition(int x, int y, int display = -1);
   void SetDisplay(int display);
   void SetPositionCentered(int display = -1);
@@ -40,6 +43,8 @@ class Window : public WindowListener {
   bool IsBordered();
   uint32_t GetID();
   int GetDisplay();
+  int GetDisplaySizeX();
+  int GetDisplaySizeY();
   std::string GetCaption();
 
  protected:

@@ -141,6 +141,21 @@ void Window::SetRestored() {
   SDL_RestoreWindow(sdlWindow);
 }
 
+void Window::SetPrevSize() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SetSize(sizeX, sizeY);
+}
+
+void Window::SetRaised() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_RaiseWindow(sdlWindow);
+}
+
+void Window::SetRefresh() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowTitle(sdlWindow, title.c_str());
+}
+
 void Window::SetPosition(int x, int y, int display) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   if (display < 0) {
@@ -252,6 +267,32 @@ uint32_t Window::GetID() {
 
 int Window::GetDisplay() { return display; }
 
+int Window::GetDisplaySizeX() {
+  SDL_DisplayMode displayMode;
+  int screenWidth = 0, screenHeight = 0;
+
+  if (!SDL_GetCurrentDisplayMode(display, &displayMode)) {
+    screenWidth = displayMode.w;
+    screenHeight = displayMode.h;
+    return screenWidth;
+  }
+
+  return -1;
+}
+
+int Window::GetDisplaySizeY() {
+  SDL_DisplayMode displayMode;
+  int screenWidth = 0, screenHeight = 0;
+
+  if (!SDL_GetCurrentDisplayMode(display, &displayMode)) {
+    screenWidth = displayMode.w;
+    screenHeight = displayMode.h;
+    return screenHeight;
+  }
+
+  return -1;
+}
+
 bool Window::IsFullscreen() {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   return static_cast<bool>(SDL_GetWindowFlags(sdlWindow) & SDL_WINDOW_FULLSCREEN);
@@ -281,8 +322,6 @@ void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
   if (this->id == id) {
-    sizeX = x;
-    sizeY = y;
     ogreWindow->resize(x, y);
   }
 }

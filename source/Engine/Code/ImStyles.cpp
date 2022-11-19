@@ -1376,8 +1376,6 @@ bool TabButton(const char *label, ImVec2 size, bool active) {
 
   ImVec2 pos = window->DC.CursorPos;
 
-  //ImVec2 size = ImVec2(180 * GUIScale, 30 * GUIScale);
-
   const ImRect bb(pos, pos + size);
   ItemSize(size, style.FramePadding.y);
   if (!ItemAdd(bb, id)) return false;
