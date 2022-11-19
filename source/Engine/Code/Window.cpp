@@ -28,7 +28,23 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_DisplayMode displayMode;
   int screenWidth = 0, screenHeight = 0;
 
-  if (SDL_GetCurrentDisplayMode(display, &displayMode) == 0) {
+  // select biggest display
+  if (display < 0) {
+    for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+      if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
+        string buff = "Display #" + to_string(i) + ": " + SDL_GetDisplayName(i) + " " + to_string(displayMode.w) + "x" + to_string(displayMode.h) +
+                      " @" + to_string(displayMode.refresh_rate);
+        Ogre::LogManager::getSingleton().logMessage(buff);
+        int screenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
+        int screenDiagI = sqrt(displayMode.w * displayMode.w + displayMode.h * displayMode.h);
+        if (screenDiagI > screenDiag) {
+          screenWidth = displayMode.w;
+          screenHeight = displayMode.h;
+          this->display = i;
+        }
+      }
+    }
+  } else if (!SDL_GetCurrentDisplayMode(display, &displayMode)) {
     screenWidth = displayMode.w;
     screenHeight = displayMode.h;
     this->display = display;
@@ -60,8 +76,8 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   sdlFlags |= SDL_WINDOW_OPENGL;
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
   SDL_GL_CreateContext(sdlWindow);
@@ -265,7 +281,10 @@ uint32_t Window::GetID() {
   return SDL_GetWindowID(sdlWindow);
 }
 
-int Window::GetDisplay() { return display; }
+int Window::GetDisplay() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  return SDL_GetWindowDisplayIndex(sdlWindow);
+}
 
 int Window::GetDisplaySizeX() {
   SDL_DisplayMode displayMode;
@@ -321,8 +340,10 @@ void Window::OnQuit() {}
 void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
+#ifndef MOBILE
   if (this->id == id) {
     ogreWindow->resize(x, y);
   }
+#endif
 }
 }  // namespace Glue

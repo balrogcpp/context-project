@@ -45,13 +45,6 @@ void Menu::BeforeRender(float time) {
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
 
-  //  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
-  //  ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  //  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) {
-  //    showMenu = true;
-  //  }
-  //  ImGui::End();
-
   static VideoManager &manager = GetComponent<VideoManager>();
   static SystemLocator &system = GetComponent<SystemLocator>();
   static Window &window = manager.GetWindow();
@@ -62,6 +55,13 @@ void Menu::BeforeRender(float time) {
   } else {
     window.SetMouseRelativeMode(false);
   }
+
+  //  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
+  //  ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+  //  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) {
+  //    showMenu = true;
+  //  }
+  //  ImGui::End();
 
   ImGuiB::SetupImGuiStyle_NeverBlue();
 
