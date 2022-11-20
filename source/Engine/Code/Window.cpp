@@ -115,7 +115,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  //renderParams["currentGLContext"] = TRUE_STR;
+  if (!getenv("WAYLAND_DISPLAY")) renderParams["currentGLContext"] = TRUE_STR;
   renderParams["preserveContext"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
