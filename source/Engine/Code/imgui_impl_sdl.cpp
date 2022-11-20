@@ -400,7 +400,11 @@ bool ImGui_ImplSDL2_InitForSDLRenderer(SDL_Window* window, SDL_Renderer* rendere
 void ImGui_ImplSDL2_Shutdown()
 {
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
-    IM_ASSERT(bd != NULL && "No platform backend to shutdown, or already shutdown?");
+
+    if (!bd) {
+      return;
+    }
+
     ImGuiIO& io = ImGui::GetIO();
 
     if (bd->ClipboardTextData)

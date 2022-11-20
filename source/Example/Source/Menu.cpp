@@ -131,7 +131,8 @@ void Menu::BeforeRender(float time) {
     if (Combos[0] == 0) {
       window.EnableVsync(false);
     } else {
-      window.SetVsyncInterval(Combos[0] - 1);
+      window.EnableVsync(true);
+      window.SetVsyncInterval(Combos[0]);
     }
   }
 
@@ -173,7 +174,7 @@ void Menu::BeforeRender(float time) {
   static int index = window.GetDisplay();
   for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
     if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
-      std::string buff = "Display #" + std::to_string(i) + ": " + SDL_GetDisplayName(i) + " " + std::to_string(displayMode.w) + "x" +
+      std::string buff = " #" + std::to_string(i) + ": " + SDL_GetDisplayName(i) + " " + std::to_string(displayMode.w) + "x" +
                          std::to_string(displayMode.h) + " @" + std::to_string(displayMode.refresh_rate);
 
       displays += buff;
@@ -181,7 +182,7 @@ void Menu::BeforeRender(float time) {
     }
   }
 
-  if (ImGuiB::Combo("DisplayList", &index, displays.c_str())) {
+  if (ImGui::Combo("DisplayList", &index, displays.c_str())) {
     window.SetDisplay(index);
   }
 

@@ -65,8 +65,16 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   }
 
 #if defined(DESKTOP)
+//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+//  sdlFlags |= SDL_WINDOW_OPENGL;
+
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
+
+//  SDL_GL_CreateContext(sdlWindow);
 #else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -95,6 +103,10 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+//  renderParams["currentGLContext"] = TRUE_STR;
+//  renderParams["externalGLControl"] = TRUE_STR;
+//  renderParams["preserveContext"] = TRUE_STR;
+
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
@@ -106,8 +118,8 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 #endif
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
-  ogreWindow = ogreRoot->createRenderWindow(title, sizeX, sizeY, fullscreen, &renderParams);
-  renderTarget = ogreRoot->getRenderTarget(ogreWindow->getName());
+  ogreWindow = ogreRoot->createRenderWindow("Default", 1, 1, false, &renderParams);
+  renderTarget = ogreRoot->getRenderTarget("Default");
   ogreViewport = renderTarget->addViewport(ogreCamera);
 
   // android is not completely ok without it
