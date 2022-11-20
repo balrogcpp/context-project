@@ -64,7 +64,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     sizeY = screenHeight;
   }
 
-#if defined(DESKTOP)
+#if defined(LINUX)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -75,12 +75,13 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
-#ifdef LINUX
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
   const string buff = string("[SDL Window] SDL_GLContext is null: ") + SDL_GetError();
   ASSERTION(context, buff.c_str());
-#endif
-
+#elif defined(DESKTOP)
+  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
+  sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
+  ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 #elif defined(GLSLES)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -204,7 +205,7 @@ void Window::SetPosition(int x, int y, int display) {
 
 void Window::SetDisplay(int display) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
-  if (display >= 0) {
+  if (display >= 0 && display != this->display) {
     if (fullscreen) SDL_SetWindowFullscreen(sdlWindow, 0);
     SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
     if (fullscreen) SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
