@@ -64,7 +64,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     sizeY = screenHeight;
   }
 
-#if defined(LINUX)
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -78,11 +78,11 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
   const string buff = string("[SDL Window] SDL_GLContext is null: ") + SDL_GetError();
   ASSERTION(context, buff.c_str());
-#elif defined(DESKTOP)
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
-#elif defined(GLSLES)
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -110,6 +110,9 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GetWindowWMInfo(sdlWindow, &info);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  renderParams["currentGLContext"] = TRUE_STR;
+  renderParams["preserveContext"] = TRUE_STR;
+  renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   renderParams["currentGLContext"] = TRUE_STR;
@@ -335,11 +338,15 @@ void Window::EnableVsync(bool enable) {
   ASSERTION(ogreWindow, "ogreWindow not initialised");
   vsync = enable;
   ogreWindow->setVSyncEnabled(enable);
+  SDL_GL_SetSwapInterval(enable);
 }
 
 void Window::SetVsyncInterval(int interval) {
   ASSERTION(ogreWindow, "ogreWindow not initialised");
-  if (interval > 0) ogreWindow->setVSyncInterval(interval);
+  if (interval > 0) {
+    ogreWindow->setVSyncInterval(interval);
+    SDL_GL_SetSwapInterval(interval);
+  }
 }
 
 bool Window::IsVsyncEnabled() {
