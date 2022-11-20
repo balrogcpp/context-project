@@ -56,7 +56,9 @@ inline void LogTrivial(const std::string &title, const std::string &text) noexce
 
 
 #ifndef NDEBUG
-#define ASSERTION(a, b) OgreAssert(a, b)
+#define ASSERTION(a, b)   \
+  if (!(a)) LOG_ERROR(b); \
+  OgreAssert(a, b)
 #else
 #define ASSERTION(a, b)   \
   if (!(a)) LOG_ERROR(b); \
