@@ -65,17 +65,23 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   }
 
 #if defined(DESKTOP)
-//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-//  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-//  sdlFlags |= SDL_WINDOW_OPENGL;
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  sdlFlags |= SDL_WINDOW_OPENGL;
 
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
+  ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
-//  SDL_GL_CreateContext(sdlWindow);
-#else
+#ifdef LINUX
+  SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
+  const string buff = string("[SDL Window] SDL_GLContext is null: ") + SDL_GetError();
+  ASSERTION(context, buff.c_str());
+#endif
+
+#elif defined(GLSLES)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -88,10 +94,13 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   sdlFlags |= SDL_WINDOW_OPENGL;
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
-  SDL_GL_CreateContext(sdlWindow);
+  ASSERTION(sdlWindow, "SDL_CreateWindow failed");
+
+  SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
+  const string buff = string("[SDL Window] SDL_GLContext is null: ") + SDL_GetError();
+  ASSERTION(context, buff.c_str());
 #endif
 
-  ASSERTION(sdlWindow, "SDL_CreateWindow failed");
   Ogre::NameValuePairList renderParams;
   const char *TRUE_STR = "true";
   const char *FALSE_STR = "false";
@@ -99,23 +108,21 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
 
-  renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-//  renderParams["currentGLContext"] = TRUE_STR;
-//  renderParams["externalGLControl"] = TRUE_STR;
-//  renderParams["preserveContext"] = TRUE_STR;
-
+  renderParams["currentGLContext"] = TRUE_STR;
+  renderParams["preserveContext"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   renderParams["currentGLContext"] = TRUE_STR;
-  renderParams["externalGLControl"] = TRUE_STR;
   renderParams["preserveContext"] = TRUE_STR;
+  renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
+  renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
   ogreWindow = ogreRoot->createRenderWindow("Default", 1, 1, false, &renderParams);
