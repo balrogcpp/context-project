@@ -201,6 +201,9 @@ if (OGRE_GLS_LIBRARY)
     if (OpenGL_EGL_FOUND)
         list(APPEND OGRE_LIBRARIES ${OPENGL_egl_LIBRARY})
     endif ()
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        list(APPEND OGRE_LIBRARIES dl)
+    endif ()
 endif ()
 
 
