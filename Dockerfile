@@ -66,8 +66,6 @@ RUN mkdir build && cd build \
 # android
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=9123335
-ARG ANDROID_SDK_VERSION=33.0.0
-ARG ANDROID_CMAKE_VERSION=3.18.1
 RUN apt-get update \
     && apt-get -y install --no-install-recommends openjdk-8-jdk \
     && apt-get clean \
@@ -79,10 +77,7 @@ RUN apt-get update \
     && export PATH="/opt/cmdline-tools/bin:${PATH}" \
     && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
     && cd ${CONTEXT_HOME}/source/Engine \
-    && sdkmanager  --install "cmake;${ANDROID_CMAKE_VERSION}" --sdk_root=${ANDROID_HOME}  \
-    && sdkmanager  --install "build-tools;${ANDROID_SDK_VERSION}" --sdk_root=${ANDROID_HOME} \
-    && mv $ANDROID_HOME/build-tools/${ANDROID_SDK_VERSION}/d8 $ANDROID_HOME/build-tools/${ANDROID_SDK_VERSION}/dx \
-    && mv $ANDROID_HOME/build-tools/${ANDROID_SDK_VERSION}/lib/d8.jar $ANDROID_HOME/build-tools/${ANDROID_SDK_VERSION}/lib/dx.jar \
+    && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME}  \
     && sh gradlew assembleRelease \
     && rm -rf build .gradle android/.cxx android/build android/assets \
     && sh gradlew assembleRelease \
