@@ -64,7 +64,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     sizeY = screenHeight;
   }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -78,7 +78,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
   const string buff = string("[SDL Window] SDL_GLContext is null: ") + SDL_GetError();
   ASSERTION(context, buff.c_str());
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#elif OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
@@ -115,10 +115,12 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  renderParams["currentGLContext"] = TRUE_STR;
+  //renderParams["currentGLContext"] = TRUE_STR;
   renderParams["preserveContext"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+  renderParams["currentGLContext"] = TRUE_STR;
+  renderParams["preserveContext"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   renderParams["currentGLContext"] = TRUE_STR;
