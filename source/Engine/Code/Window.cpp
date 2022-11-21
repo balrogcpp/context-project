@@ -64,10 +64,6 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     sizeY = screenHeight;
   }
 
-#ifdef __EMSCRIPTEN__
-  sdlFlags |= SDL_WINDOW_RESIZABLE;
-#endif
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -77,12 +73,13 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
+  if (!sdlWindow) LogError("SDL_CreateWindow failed", SDL_GetError());
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
-  const string buff = string("[SDL Window] SDL_GLContext is null: ") + SDL_GetError();
-  ASSERTION(context, buff.c_str());
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  if (!context) LogError("SDL_GLContext is null", SDL_GetError());
+  ASSERTION(context, "SDL_GLContext is null");
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -95,11 +92,12 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   sdlFlags |= SDL_WINDOW_OPENGL;
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
+  if (!sdlWindow) LogError("SDL_CreateWindow failed", SDL_GetError());
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
-  const string buff = string("[SDL Window] SDL_GLContext is null: ") + SDL_GetError();
-  ASSERTION(context, buff.c_str());
+  if (!context) LogError("SDL_GLContext is null", SDL_GetError());
+  ASSERTION(context, "SDL_GLContext is null");
 #else
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, sdlFlags);
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
