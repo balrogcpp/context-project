@@ -274,7 +274,7 @@ set(LUA_PATH "LUA_PATH" CACHE STRING "Environment variable to use as package.pat
 set(LUA_CPATH "LUA_CPATH" CACHE STRING "Environment variable to use as package.cpath.")
 set(LUA_INIT "LUA_INIT" CACHE STRING "Environment variable for initial script.")
 set(LUA_EXE "LUA_EXE" CACHE STRING "Build lua executables.")
-set(LUA_VERSION "v5.4.4" CACHE STRING "Lua version to fetch")
+set(LUA_VERSION "5.4.4" CACHE STRING "Lua version to fetch")
 
 option(LUA_USE_C89 "Use only C89 features." OFF)
 option(LUA_USE_RELATIVE_LOADLIB "Use modified loadlib.c with support for relative paths on posix systems." ON)
@@ -350,9 +350,11 @@ endif ()
 
 
 # fetch lua sources from official git mirror
-find_package(Git REQUIRED)
 if (NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/lua)
-    execute_process(COMMAND ${GIT_EXECUTABLE} clone -b ${LUA_VERSION} --depth 1 --recursive https://github.com/lua/lua.git lua WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    file(DOWNLOAD https://github.com/lua/lua/archive/refs/tags/v${LUA_VERSION}.zip ${CMAKE_SOURCE_DIR}/lua.zip)
+    file(ARCHIVE_EXTRACT INPUT lua.zip DESTINATION ${CMAKE_SOURCE_DIR})
+    file(RENAME lua-${LUA_VERSION} lua)
+    file(REMOVE lua.zip)
 endif ()
 
 ## SOURCES

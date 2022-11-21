@@ -1053,7 +1053,7 @@ externalproject_add(Target_Lua
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DLUA_VERSION=v5.4.4
+        -DLUA_VERSION=5.4.4
         -DLUA_EXE=OFF
         -DLUA_DOC=OFF
         -DLUA_BUILD_WLUA=OFF
