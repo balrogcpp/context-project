@@ -90,7 +90,7 @@ RUN apt-get update \
 
 # wasm
 #ARG EMSDK_ROOT=/opt/emsdk
-#ARG EMSDK_VERSION=3.1.24
+#ARG EMSDK_VERSION=3.1.26
 #RUN apt-get update \
 #    && apt-get -y install --no-install-recommends python \
 #    && apt-get clean \
@@ -101,7 +101,7 @@ RUN apt-get update \
 #    && ./emsdk install latest \
 #    && ./emsdk activate latest
 #ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-#
+
 #RUN cd ${EMSDK_ROOT} && EMSDK_QUIET=1 . ./emsdk_env.sh \
 #    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \

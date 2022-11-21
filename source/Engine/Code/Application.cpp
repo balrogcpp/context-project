@@ -54,7 +54,7 @@ void Application::Go() {
 #ifndef EMSCRIPTEN
   Loop();
 #else
-  emscripten_set_main_loop_arg(EmscriptenLoop, GetInstancePtr(), 0, 1);
+  emscripten_set_main_loop_arg(EmscriptenLoop, this, 0, 1);
 #endif
   engine->OnClean();
 }

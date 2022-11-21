@@ -32,8 +32,10 @@ void SystemLocator::Init() {
   physics = make_unique<PhysicsManager>();
   RegComponent(physics.get());
 
+#ifndef __EMSCRIPTEN__
   audio = make_unique<AudioManager>();
   RegComponent(audio.get());
+#endif
 
   scene = make_unique<SceneManager>();
   RegComponent(scene.get());

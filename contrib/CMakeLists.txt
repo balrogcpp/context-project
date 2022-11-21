@@ -71,7 +71,7 @@ macro(check_stamp_patch TARGET PATCH)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
         set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} reset --hard)
-        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/${PATCH})
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
     endif ()
 endmacro()
 
@@ -1067,7 +1067,7 @@ externalproject_add(Target_Lua
         )
 
 
-check_stamp(Target_sol2)
+check_stamp_patch(Target_sol2 sol2-3.3.0.patch)
 externalproject_add(Target_sol2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1101,9 +1101,12 @@ externalproject_add(Target_sol2
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DSOL2_LUA_VERSION=5.4.4
         -DLUA_INCLUDE_DIR=${DEPS_INCLUDE_DIR}
-        -DLUA_LIBRARIES="lua"
+        -DLUA_LIBRARIES=lua
         -DSOL2_BUILD_LUA=OFF
         -DBUILD_LUA_AS_DLL=OFF
+        -DLUA_FOUND=ON
+        -DCREATE_LUALIB_TARGET=OFF
+        -DCMAKE_DISABLE_FIND_PACKAGE_Lua=ON
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )

@@ -22,4 +22,4 @@ set ( READLINE_INCLUDE_DIRS ${READLINE_INCLUDE_DIR} )
 include ( FindPackageHandleStandardArgs )
 # handle the QUIETLY and REQUIRED arguments and set READLINE_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args ( readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
+find_package_handle_standard_args ( Readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )

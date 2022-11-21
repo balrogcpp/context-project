@@ -19,10 +19,11 @@ add_custom_target(assets ALL ${CMAKE_COMMAND} -DGLSLES=${GLSLES} -DROOT_DIR=${CM
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy contrib)
+    message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib). Exiting...")
+    return()
 endif ()
 if (ANY_NOT_FOUND)
-    message(WARNING "Build cmake target contrib to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
-    return()
+    message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib)")
 endif ()
 
 
