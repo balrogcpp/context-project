@@ -15,7 +15,7 @@ inline void ParseSDLError(bool result, const char *message = "") {
 }  // namespace
 
 namespace Glue {
-Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
+Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
 #ifdef EMSCRIPTEN
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif

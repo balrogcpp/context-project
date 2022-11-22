@@ -16,7 +16,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace Glue {
-SystemLocator::SystemLocator() : sleep(false), lockFps(true), targetFps(60) { componentList.reserve(50); }
+SystemLocator::SystemLocator() : sleep(false), lockFps(false), targetFps(60) { componentList.reserve(50); }
 SystemLocator::~SystemLocator() {
   OnClean();
   Ogre::Root::getSingleton().removeFrameListener(this);
