@@ -86,18 +86,16 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   ParseSDLError(context, "SDL_GLContext is null");
   ASSERTION(context, "SDL_GLContext is null");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   sdlFlags |= SDL_WINDOW_OPENGL;
-  sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
+
+  sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, sdlFlags);
   ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
@@ -136,6 +134,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
+
   renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");

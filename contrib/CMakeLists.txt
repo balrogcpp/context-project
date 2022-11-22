@@ -78,7 +78,7 @@ endmacro()
 
 # list of third-party targets
 if (NOT EMSCRIPTEN)
-    check_stamp_patch(Target_SDL2 sdl2-2.24.0.patch)
+    check_stamp_patch(Target_SDL2 sdl2-2.26.0.patch)
     externalproject_add(Target_SDL2
             EXCLUDE_FROM_ALL true
             BUILD_ALWAYS false
@@ -110,6 +110,7 @@ if (NOT EMSCRIPTEN)
             -DANDROID_ABI=${ANDROID_ABI}
             -DANDROID_PLATFORM=${ANDROID_PLATFORM}
             -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
+            -DSDL_WERROR=OFF
             -DLIBC=ON
             -DSDL_LIBC=ON
             -DRENDER_METAL=OFF

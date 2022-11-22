@@ -22,6 +22,7 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
   void OnUpdate(float time) override;
 
   void InitMRT();
+  void InitNoMRT();
   void InitMipChain();
 
   /// Ogre::Viewport::Listener impl

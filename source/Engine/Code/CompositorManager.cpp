@@ -111,6 +111,18 @@ void CompositorManager::InitMRT() {
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, true);
 }
 
+void CompositorManager::InitNoMRT() {
+  auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, "NoMRT", 0);
+  ASSERTION(mrtCompositor, "[CompositorManager] Failed to add MRT compositor");
+
+  // check textures
+  auto *tech = mrtCompositor->getTechnique();
+
+  ASSERTION(tech->getTextureDefinition("rt"), "[CompositorManager] rt texture failed to create");
+
+  compositorManager->setCompositorEnabled(ogreViewport, "NoMRT", true);
+}
+
 void CompositorManager::InitMipChain() {
   auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR, 1);
   ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");

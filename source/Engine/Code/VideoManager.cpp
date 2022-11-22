@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "VideoManager.h"
-#include "Android.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "Platform.h"
 #include "imgui_impl_sdl.h"
@@ -60,6 +59,7 @@ namespace fs = std::filesystem;
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 #endif  // <filesystem>
+#endif  // DESKTOP
 #ifdef APPLE
 #include <mach-o/dyld.h>
 #endif
@@ -69,7 +69,20 @@ namespace fs = ghc::filesystem;
 #ifdef WINDOWS
 #include <windows.h>
 #endif
-#endif  // DESKTOP
+#ifdef __ANDROID__
+#include <OgreArchiveFactory.h>
+#include <OgreFileSystem.h>
+#include <OgreZip.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#include <android/configuration.h>
+#include <android/input.h>
+#include <android/log.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include <android/sensor.h>
+#include <jni.h>
+#endif
 
 using namespace std;
 
