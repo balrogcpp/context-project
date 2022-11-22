@@ -139,7 +139,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
-  ogreWindow = ogreRoot->createRenderWindow("Default", 1, 1, false, &renderParams);
+  ogreWindow = ogreRoot->createRenderWindow("Default", sizeX, sizeY, fullscreen, &renderParams);
   renderTarget = ogreRoot->getRenderTarget("Default");
   ogreViewport = renderTarget->addViewport(ogreCamera);
 
