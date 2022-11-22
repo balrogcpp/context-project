@@ -77,6 +77,9 @@ namespace {
 inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
 inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
 inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
+inline void ParseSDLError(bool result, const char *message = "") {
+  if (!result) LogError(message, SDL_GetError());
+}
 
 #ifdef DESKTOP
 // based on tensorflow GetBinaryDir
@@ -283,13 +286,9 @@ void VideoManager::InitSDL() {
   SDL_SetMainReady();
 #endif
 
-  int sdlInitResult = -1;
-#ifndef EMSCRIPTEN
-  sdlInitResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-#else
-  sdlInitResult = SDL_Init(SDL_INIT_VIDEO);
-#endif
-  ASSERTION(!sdlInitResult, "Failed to init SDL");
+  int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+  ParseSDLError(result, "SDL_Init failed");
+  ASSERTION(!result, "Failed to init SDL");
 }
 
 class MutedLogListener final : public Ogre::LogListener {

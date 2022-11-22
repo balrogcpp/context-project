@@ -8,6 +8,12 @@
 
 using namespace std;
 
+namespace {
+inline void ParseSDLError(bool result, const char *message = "") {
+  if (!result) LogError(message, SDL_GetError());
+}
+}  // namespace
+
 namespace Glue {
 Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
 #ifdef EMSCRIPTEN
@@ -73,11 +79,11 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
-  if (!sdlWindow) LogError("SDL_CreateWindow failed", SDL_GetError());
+  ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
-  if (!context) LogError("SDL_GLContext is null", SDL_GetError());
+  ParseSDLError(context, "SDL_GLContext is null");
   ASSERTION(context, "SDL_GLContext is null");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -92,14 +98,15 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   sdlFlags |= SDL_WINDOW_OPENGL;
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
-  if (!sdlWindow) LogError("SDL_CreateWindow failed", SDL_GetError());
+  ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
-  if (!context) LogError("SDL_GLContext is null", SDL_GetError());
+  ParseSDLError(context, "SDL_GLContext is null");
   ASSERTION(context, "SDL_GLContext is null");
 #else
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, sdlFlags);
+  ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 #endif
 
@@ -116,7 +123,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  //if (!getenv("WAYLAND_DISPLAY")) renderParams["currentGLContext"] = TRUE_STR;
+  // if (!getenv("WAYLAND_DISPLAY")) renderParams["currentGLContext"] = TRUE_STR;
   renderParams["preserveContext"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
@@ -158,14 +165,13 @@ void Window::SetSize(int x, int y) {
 }
 
 void Window::SetFullscreen(bool fullscreen) {
-  ASSERTION(sdlWindow, "sdlWindow not initialised");
   this->fullscreen = fullscreen;
-
-  if (fullscreen) {
-    SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-  } else {
-    SDL_SetWindowFullscreen(sdlWindow, 0);
-  }
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  fullscreen ? SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP) : SDL_SetWindowFullscreen(sdlWindow, 0);
+  SDL_DisplayMode dm;
+  int result = SDL_GetCurrentDisplayMode(display, &dm);
+  ASSERTION(!result, "displayMode not available");
+  ogreWindow->setFullscreen(fullscreen, dm.w, dm.h);
 }
 
 void Window::SetMaximized() {

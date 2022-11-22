@@ -214,6 +214,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 #endif
 
         default: {
+          break;
         }
       }
     }
