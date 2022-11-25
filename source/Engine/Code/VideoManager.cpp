@@ -174,6 +174,23 @@ void InitOgreRenderSystemGL();
 void InitEmbeddedResources();
 
 void VideoManager::LoadResources() {
+#ifdef ANDROID
+  JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
+  jclass classActivity = env->FindClass("android/app/Activity");
+  jclass classResources = env->FindClass("android/content/res/Resources");
+  jmethodID methodGetResources = env->GetMethodID(classActivity, "getResources", "()Landroid/content/res/Resources;");
+  jmethodID methodGetAssets = env->GetMethodID(classResources, "getAssets", "()Landroid/content/res/AssetManager;");
+  jobject rawActivity = static_cast<jobject>(SDL_AndroidGetActivity());
+  jobject rawResources = env->CallObjectMethod(rawActivity, methodGetResources);
+  jobject rawAssetManager = env->CallObjectMethod(rawResources, methodGetAssets);
+  AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
+  AConfiguration *aConfig = AConfiguration_new();
+  AConfiguration_fromAssetManager(aConfig, assetManager);
+  auto &archiveManager = Ogre::ArchiveManager::getSingleton();
+  archiveManager.addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetManager));
+  archiveManager.addArchiveFactory(new Ogre::APKZipArchiveFactory(assetManager));
+#endif
+
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
@@ -301,7 +318,7 @@ void VideoManager::InitSDL() {
 #endif
 
   int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-  ParseSDLError(result, "SDL_Init failed");
+  ParseSDLError(!result, "SDL_Init failed");
   ASSERTION(!result, "Failed to init SDL");
 }
 
@@ -355,23 +372,6 @@ void VideoManager::InitOgreRoot() {
   ogreRoot = new Ogre::Root("", "", "");
 
   Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
-
-#ifdef ANDROID
-  JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
-  jclass classActivity = env->FindClass("android/app/Activity");
-  jclass classResources = env->FindClass("android/content/res/Resources");
-  jmethodID methodGetResources = env->GetMethodID(classActivity, "getResources", "()Landroid/content/res/Resources;");
-  jmethodID methodGetAssets = env->GetMethodID(classResources, "getAssets", "()Landroid/content/res/AssetManager;");
-  jobject rawActivity = static_cast<jobject>(SDL_AndroidGetActivity());
-  jobject rawResources = env->CallObjectMethod(rawActivity, methodGetResources);
-  jobject rawAssetManager = env->CallObjectMethod(rawResources, methodGetAssets);
-  AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
-  AConfiguration *aConfig = AConfiguration_new();
-  AConfiguration_fromAssetManager(aConfig, assetManager);
-  auto &archiveManager = Ogre::ArchiveManager::getSingleton();
-  archiveManager.addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetManager));
-  archiveManager.addArchiveFactory(new Ogre::APKZipArchiveFactory(assetManager));
-#endif
 
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
