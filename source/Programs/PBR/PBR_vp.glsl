@@ -14,21 +14,21 @@
 
 // in block
 in vec4 position;
+#ifdef HAS_NORMALS
+in vec4 normal;
+#endif
+#ifdef HAS_TANGENTS
+in vec4 tangent;
+#endif
+#ifdef HAS_COLORS
+in vec4 color;
+#endif
 #ifdef HAS_UV
 in vec4 uv0;
 #ifdef TREES
 in vec4 uv1;
 in vec4 uv2;
 #endif
-#endif
-#ifdef HAS_COLORS
-in vec4 color;
-#endif 
-#ifdef HAS_NORMALS
-in vec4 normal;
-#endif 
-#ifdef HAS_TANGENTS
-in vec4 tangent;
 #endif
 
 
@@ -160,7 +160,9 @@ void main()
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
-#endif // !HAS_NORMALS
+#else // !HAS_NORMALS
+
+#endif // HAS_NORMALS
 
   gl_Position = MVPMatrix * new_position;
 

@@ -31,7 +31,7 @@ in vec3 vPosition;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
 #endif
-#ifdef HAS_COLOURS
+#ifdef HAS_COLORS
 in vec3 vColor;
 #endif
 #ifdef HAS_NORMALS
@@ -306,7 +306,7 @@ vec3 GetNormal(const vec2 uv)
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(const vec2 uv) {
-#ifdef HAS_COLOURS
+#ifdef HAS_COLORS
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * vColor, 1.0);
 #else
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb, 1.0);
@@ -401,20 +401,14 @@ void main()
 
     vec4 albedo = GetAlbedo(tex_coord);
     vec3 color = albedo.rgb;
-
-#ifdef HAS_ALPHA
-
     float alpha = albedo.a;
 
-    if (SurfaceAlphaRejection > 0.000001)
-    {
-        if (alpha < SurfaceAlphaRejection)
-        {
+#ifdef HAS_ALPHA
+    if (SurfaceAlphaRejection > 0.000001) {
+        if (alpha < SurfaceAlphaRejection) {
             discard;
         }
     }
-#else
-    float alpha = 1.0;
 #endif
 
     vec3 ORM = GetORM(tex_coord);
