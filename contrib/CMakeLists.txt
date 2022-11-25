@@ -110,11 +110,14 @@ if (NOT EMSCRIPTEN)
             -DANDROID_ABI=${ANDROID_ABI}
             -DANDROID_PLATFORM=${ANDROID_PLATFORM}
             -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
+            -DSDL_TEST=OFF
             -DSDL_WERROR=OFF
             -DLIBC=ON
             -DSDL_LIBC=ON
             -DRENDER_METAL=OFF
             -DSDL_RENDER_METAL=OFF
+            -DSDL_METAL=OFF
+            -DSDL_VULKAN=OFF
             -DHIDAPI=OFF
             -DSDL_HIDAPI=OFF
             -DSDL_HIDAPI_JOYSTICK=OFF
