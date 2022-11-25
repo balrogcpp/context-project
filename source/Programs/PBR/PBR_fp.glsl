@@ -560,7 +560,7 @@ void main()
     vec2 velocity = (0.0166667 / FrameTime) * 0.5 * vec2(a - b);
     FragData[2].rg = velocity;
 #else
-    total_colour = ApplyFog(total_colour, FogParams, FogColour, vDepth);
+    total_colour = ApplyFog(total_colour, FogParams, FogColour.rgb, vDepth);
     FragColor = LINEARtoSRGB(vec4(total_colour, alpha), 1.0);
 #endif
 }

@@ -3,6 +3,13 @@
 #ifndef HEADER_VERT
 #define HEADER_VERT
 
+#ifdef GL_ES
+#if __VERSION__ < 300
+#extension GL_OES_standard_derivatives : enable
+#endif
+#endif
+
+
 #ifndef GL_ES
 
 #if __VERSION__ >= 150

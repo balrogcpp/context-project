@@ -372,6 +372,7 @@ void VideoManager::InitOgreRoot() {
   archiveManager.addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetManager));
   archiveManager.addArchiveFactory(new Ogre::APKZipArchiveFactory(assetManager));
 #endif
+
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
@@ -383,6 +384,7 @@ void VideoManager::InitOgreRoot() {
 #else   // !DESKTOP
   InitOgreRenderSystemGLES2();
 #endif  // DESKTOP
+
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
   ogreSceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");

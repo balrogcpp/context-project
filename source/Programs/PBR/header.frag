@@ -11,6 +11,12 @@
 #define MAX_SHADOW_TEXTURES 4
 #endif
 
+#ifdef GL_ES
+#if __VERSION__ < 300
+#extension GL_OES_standard_derivatives : enable
+#endif
+#endif
+
 
 #ifndef GL_ES
 
