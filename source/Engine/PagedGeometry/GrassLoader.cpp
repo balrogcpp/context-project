@@ -370,10 +370,10 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page, GrassLayer *layer, const f
 	Vector3 temp = bounds.getMaximum() - bounds.getMinimum();
 	mesh->_setBoundingSphereRadius(temp.length() * 0.5f);
 
-	LogManager::getSingleton().setLogDetail(static_cast<LoggingLevel>(0));
+	//LogManager::getSingleton().setLogDetail(static_cast<LoggingLevel>(0));
 	mesh->setAutoBuildEdgeLists(autoEdgeBuildEnabled);
 	mesh->load();
-	LogManager::getSingleton().setLogDetail(LL_NORMAL);
+	//LogManager::getSingleton().setLogDetail(LL_NORMAL);
 
 	//Apply grass material to mesh
 	subMesh->setMaterialName(layer->material->getName());
@@ -444,7 +444,7 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, c
 		if (layer->colorMap)
 			color = layer->colorMap->getColorAt(x, z, layer->mapBounds);
 		else
-			color = 0xFF0000FF;
+			color = 0xFFFFFFFF;
 
 		//Calculate size
 		Ogre::Real rnd = *posPtr++;	//The same rnd value is used for width and height to maintain aspect ratio
@@ -630,10 +630,10 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, c
 	Vector3 temp = bounds.getMaximum() - bounds.getMinimum();
 	mesh->_setBoundingSphereRadius(temp.length() * 0.5f);
 
-	LogManager::getSingleton().setLogDetail(static_cast<LoggingLevel>(0));
+	//LogManager::getSingleton().setLogDetail(static_cast<LoggingLevel>(0));
 	mesh->setAutoBuildEdgeLists(autoEdgeBuildEnabled);
 	mesh->load();
-	LogManager::getSingleton().setLogDetail(LL_NORMAL);
+	//LogManager::getSingleton().setLogDetail(LL_NORMAL);
 
 	//Apply grass material to mesh
 	subMesh->setMaterialName(layer->material->getName());
@@ -778,10 +778,10 @@ Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page, GrassLayer *layer, const
 	Vector3 temp = bounds.getMaximum() - bounds.getMinimum();
 	mesh->_setBoundingSphereRadius(temp.length() * 0.5f);
 
-	LogManager::getSingleton().setLogDetail(static_cast<LoggingLevel>(0));
+	//LogManager::getSingleton().setLogDetail(static_cast<LoggingLevel>(0));
 	mesh->setAutoBuildEdgeLists(autoEdgeBuildEnabled);
 	mesh->load();
-	LogManager::getSingleton().setLogDetail(LL_NORMAL);
+	//LogManager::getSingleton().setLogDetail(LL_NORMAL);
 
 	//Apply grass material to mesh
 	subMesh->setMaterialName(layer->material->getName());
