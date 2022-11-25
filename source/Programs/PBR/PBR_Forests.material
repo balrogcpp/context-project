@@ -6,7 +6,7 @@ import PBR_I_fs from PBR.program
 
 vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines PAGED_GEOMETRY,TREES,HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,PAGED_GEOMETRY,TREES,HAS_COLORS,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params
     {
         param_named_auto Time time
@@ -15,12 +15,12 @@ vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
 
 fragment_program PBR_Paged_fs glsl glsles : PBR_I_fs
 {
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLORS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines PAGED_GEOMETRY,GRASS,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLORS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_COLORS,MAX_LIGHTS=8,PAGED_GEOMETRY,GRASS,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params
     {
         param_named_auto Time time
@@ -32,7 +32,7 @@ vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 
 fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
 {
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLORS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_definesHAS_NORMALS,HAS_BASECOLORMAP,HAS_COLORS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 abstract material PBR_Grass : PBR_Basic

@@ -12,25 +12,6 @@
 
 #include "header.vert"
 
-// in block
-in vec4 position;
-#ifdef HAS_NORMALS
-in vec4 normal;
-#endif
-#ifdef HAS_TANGENTS
-in vec4 tangent;
-#endif
-#ifdef HAS_COLORS
-in vec4 color;
-#endif
-#ifdef HAS_UV
-in vec4 uv0;
-#ifdef TREES
-in vec4 uv1;
-in vec4 uv2;
-#endif
-#endif
-
 
 // uniform block
 uniform mat4 MVPMatrix;
@@ -50,6 +31,26 @@ uniform float uWindRange;
 uniform int ShadowTextureCount;
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif // SHADOWRECEIVER
+
+
+// in block
+in vec4 position;
+#ifdef HAS_NORMALS
+in vec4 normal;
+#endif
+#ifdef HAS_TANGENTS
+in vec4 tangent;
+#endif
+#ifdef HAS_UV
+in vec4 uv0;
+#ifdef TREES
+in vec4 uv1;
+in vec4 uv2;
+#endif
+#endif
+#ifdef HAS_COLORS
+in vec4 color;
+#endif
 
 
 // out block
@@ -135,7 +136,7 @@ void main()
 #endif
 
 #ifdef HAS_COLORS
-  vColor = color.rgb;
+  vColor = vec3(1.0);
 #endif
 
   vec4 model_position = ModelMatrix * new_position;

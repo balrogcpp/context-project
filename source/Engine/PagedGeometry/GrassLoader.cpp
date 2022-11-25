@@ -62,7 +62,7 @@ GrassLoader::GrassLoader(PagedGeometry *geom)
 
 	windTimer.reset();
 	lastTime = 0;
-	autoEdgeBuildEnabled=true;
+	autoEdgeBuildEnabled=false;
 }
 
 GrassLoader::~GrassLoader()
@@ -444,7 +444,7 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, c
 		if (layer->colorMap)
 			color = layer->colorMap->getColorAt(x, z, layer->mapBounds);
 		else
-			color = 0xFFFFFFFF;
+			color = 0xFF0000FF;
 
 		//Calculate size
 		Ogre::Real rnd = *posPtr++;	//The same rnd value is used for width and height to maintain aspect ratio
