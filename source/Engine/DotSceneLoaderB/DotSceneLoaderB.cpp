@@ -1308,7 +1308,7 @@ void DotSceneLoaderB::writeNode(pugi::xml_node& parentXML, const SceneNode* n)
 }
 
 const Ogre::String& DotScenePluginB::getName() const {
-    static Ogre::String name = "DotScene Loader";
+    static Ogre::String name = "DotScene Loader B";
     return name;
 }
 
