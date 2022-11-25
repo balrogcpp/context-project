@@ -216,3 +216,29 @@ index 6d11662e..fb16ef0c 100644
  #endif
          mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
  
+diff --git a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm b/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
+index 6cab8836..f176b465 100644
+--- a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
++++ b/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
+@@ -408,8 +408,8 @@ namespace Ogre {
+     unsigned int CocoaWindow::getWidth() const
+     {
+         // keep mWidth in sync with reality
+-        OgreAssertDbg(mView == nil || int(mWidth) == _getPixelFromPoint([mView frame].size.width),
+-                      "Window dimension mismatch. Did you call windowMovedOrResized?");
++        //OgreAssertDbg(mView == nil || int(mWidth) == _getPixelFromPoint([mView frame].size.width),
++                      //"Window dimension mismatch. Did you call windowMovedOrResized?");
+ 
+         return mWidth;
+     }
+@@ -417,8 +417,8 @@ namespace Ogre {
+     unsigned int CocoaWindow::getHeight() const
+     {
+         // keep mHeight in sync with reality
+-        OgreAssertDbg(mView == nil || int(mHeight) == _getPixelFromPoint([mView frame].size.height),
+-                      "Window dimension mismatch. Did you call windowMovedOrResized?");
++        //OgreAssertDbg(mView == nil || int(mHeight) == _getPixelFromPoint([mView frame].size.height),
++                      //"Window dimension mismatch. Did you call windowMovedOrResized?");
+ 
+         return mHeight;
+     }

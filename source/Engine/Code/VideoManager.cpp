@@ -216,10 +216,11 @@ void VideoManager::LoadResources() {
 #elif defined(ANDROID)
   ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
-#elif defined(EMSCRIPTEN)
+#elif defined(IOS) || defined(EMSCRIPTEN)
   ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
 #endif
+
   ogreResourceManager.initialiseResourceGroup(Ogre::RGN_INTERNAL);
   ogreResourceManager.initialiseAllResourceGroups();
 }
@@ -275,7 +276,7 @@ void VideoManager::CheckGPU() {
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
-  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_BUFFER_INSTANCE_DATA), "Texture compression support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_BUFFER_INSTANCE_DATA), "Instancing support required");
 #if defined(DESKTOP)
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
 #elif defined(ANDROID)

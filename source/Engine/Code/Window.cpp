@@ -71,7 +71,6 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   }
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -136,6 +135,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 #endif
 
   renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
+  SDL_GL_SetSwapInterval(vsync ? 1 : 0);
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
   ogreWindow = ogreRoot->createRenderWindow("Default", sizeX, sizeY, fullscreen, &renderParams);
@@ -240,7 +240,7 @@ void Window::SetCaption(const char *caption) {
 
 void Window::SetIcon(const char *icon) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
-  // SDL_SetWindowIcon(sdlWindow, icon);
+  //SDL_SetWindowIcon(sdlWindow, icon);
 }
 
 void Window::SetGrabMouse(bool grab) {
