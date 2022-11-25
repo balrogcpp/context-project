@@ -133,7 +133,8 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
-
+  renderParams["gamma"] = FALSE_STR;
+  renderParams["FSAA"] = to_string(0);
   renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
   SDL_GL_SetSwapInterval(vsync ? 1 : 0);
   ogreRoot = Ogre::Root::getSingletonPtr();

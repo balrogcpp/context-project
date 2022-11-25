@@ -41,15 +41,15 @@ in vec4 normal;
 #ifdef HAS_TANGENTS
 in vec4 tangent;
 #endif
+#ifdef HAS_COLORS
+in vec4 color;
+#endif
 #ifdef HAS_UV
 in vec4 uv0;
 #ifdef TREES
 in vec4 uv1;
 in vec4 uv2;
 #endif
-#endif
-#ifdef HAS_COLORS
-in vec4 color;
 #endif
 
 
@@ -136,7 +136,7 @@ void main()
 #endif
 
 #ifdef HAS_COLORS
-  vColor = vec3(1.0);
+  vColor = color.rgb;
 #endif
 
   vec4 model_position = ModelMatrix * new_position;
@@ -144,8 +144,9 @@ void main()
 
 #ifdef PAGED_GEOMETRY
 #ifdef GRASS
-  if (uv0.y < 0.9 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange)
+  if (uv0.y < 0.9 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
     new_position = ApplyWaveAnimation(new_position, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
+  }
 #endif
 #ifdef TREES
     new_position = WaveTree(new_position);
