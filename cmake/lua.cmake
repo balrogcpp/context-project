@@ -350,11 +350,9 @@ endif ()
 
 
 # fetch lua sources from official git mirror
+find_package(Git REQUIRED)
 if (NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/lua)
-    file(DOWNLOAD https://github.com/lua/lua/archive/refs/tags/v${LUA_VERSION}.zip ${CMAKE_SOURCE_DIR}/lua.zip)
-    file(ARCHIVE_EXTRACT INPUT lua.zip DESTINATION ${CMAKE_SOURCE_DIR})
-    file(RENAME lua-${LUA_VERSION} lua)
-    file(REMOVE lua.zip)
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone -b v${LUA_VERSION} --depth 1 --recursive https://github.com/lua/lua.git lua WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif ()
 
 ## SOURCES
