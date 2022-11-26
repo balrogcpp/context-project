@@ -253,17 +253,24 @@ VideoManager::VideoManager()
       gamepadSupport(false) {}
 
 VideoManager::~VideoManager() {
-  ImGui_ImplSDL2_Shutdown();
+  if (imguiOverlay) {
+    ImGui_ImplSDL2_Shutdown();
+  }
+
   SDL_Quit();
 }
 
 void VideoManager::OnUpdate(float time) {
-  if (gamepadSupport) {
+  if (imguiOverlay && gamepadSupport) {
     ImGui_ImplSDL2_NewFrame();
   }
 }
 
-void VideoManager::OnEvent(const SDL_Event &event) { ImGui_ImplSDL2_ProcessEvent(&event); }
+void VideoManager::OnEvent(const SDL_Event &event) {
+  if (imguiOverlay) {
+    ImGui_ImplSDL2_ProcessEvent(&event);
+  }
+}
 
 void VideoManager::OnClean() {
   InputSequencer::GetInstance().UnregWindowListener(this);
