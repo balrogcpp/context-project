@@ -30,7 +30,7 @@ abstract material PBR_FX : PBRS_Basic
         pass
         {
             lighting off
-            alpha_rejection greater_equal 128
+            alpha_rejection greater_equal 127
             cull_hardware none
             scene_blend add
 

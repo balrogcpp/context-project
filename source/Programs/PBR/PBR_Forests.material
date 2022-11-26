@@ -46,7 +46,7 @@ abstract material PBR_Grass : PBR_Basic
     {
         pass
         {
-            alpha_rejection greater_equal 128
+            alpha_rejection greater_equal 127
             cull_hardware none
             //scene_blend alpha_blend
 
@@ -76,6 +76,8 @@ abstract material PBR_Paged : PBR_Basic
     {
         pass
         {
+            alpha_rejection greater_equal 127
+
             texture_unit Albedo
             {
                 texture $Albedo
@@ -101,6 +103,8 @@ abstract material PBR_Plant : PBR_Basic
     {
         pass
         {
+            alpha_rejection greater_equal 127
+
             texture_unit Albedo
             {
                 texture $Albedo

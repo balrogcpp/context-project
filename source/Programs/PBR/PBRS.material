@@ -15,7 +15,6 @@ abstract material PBRS_Basic
             diffuse 1 1 1
             ambient 1 1 1
             emissive 0 0 0
-            alpha_rejection greater_equal 127
 
             texture_unit Albedo
             {
@@ -50,8 +49,7 @@ abstract material PBRS
             specular 1 1 1 1
             ambient 1 1 1
             emissive 0 0 0
-            alpha_rejection greater_equal 127
-            
+
             texture_unit Albedo
             {
                 texture $Albedo
