@@ -350,8 +350,8 @@ endif ()
 
 
 # fetch lua sources from official git mirror
-find_package(Git REQUIRED)
 if (NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/lua)
+    find_package(Git REQUIRED)
     execute_process(COMMAND ${GIT_EXECUTABLE} clone -b v${LUA_VERSION} --depth 1 --recursive https://github.com/lua/lua.git lua WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif ()
 
