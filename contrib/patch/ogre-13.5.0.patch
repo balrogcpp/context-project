@@ -243,15 +243,23 @@ index 6cab8836..f176b465 100644
          return mHeight;
      }
 diff --git a/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp b/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
-index d2fd9284..e6c29851 100644
+index d2fd9284..dcbd4ccf 100644
 --- a/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
 +++ b/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
-@@ -40,7 +40,7 @@ namespace Ogre {
+@@ -28,6 +28,7 @@
+ 
+ #include "OgreGLUniformCache.h"
+ #include "OgreCommon.h"
++#include "OgreComponents.h"
+ 
+ namespace Ogre {
+ 
+@@ -40,7 +41,7 @@ namespace Ogre {
  
      bool GLUniformCache::updateUniform(int location, const void *value, int length)
      {
 -#ifdef OGRE_ENABLE_STATE_CACHE
-+#ifdef _OGRE_ENABLE_STATE_CACHE
++#if defined(OGRE_ENABLE_STATE_CACHE) && defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
          uint32 current = mUniformValueMap[location];
          uint32 hash = Ogre::FastHash((const char *)value, length);
          // First check if the uniform name is in the map. If not, this is new so insert it into the map.
