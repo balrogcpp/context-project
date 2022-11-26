@@ -259,7 +259,7 @@ index d2fd9284..dcbd4ccf 100644
      bool GLUniformCache::updateUniform(int location, const void *value, int length)
      {
 -#ifdef OGRE_ENABLE_STATE_CACHE
-+#if defined(OGRE_ENABLE_STATE_CACHE) && defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
++#if defined(OGRE_ENABLE_STATE_CACHE) && defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) && !defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
          uint32 current = mUniformValueMap[location];
          uint32 hash = Ogre::FastHash((const char *)value, length);
          // First check if the uniform name is in the map. If not, this is new so insert it into the map.
