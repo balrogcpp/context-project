@@ -4,6 +4,7 @@
 /Release/
 /RelWithDebInfo/
 /Debug/
+/build/
 /artifacts/
 /tmp/
 /.idea/
