@@ -136,7 +136,7 @@ void main()
 #endif
 
 #ifdef HAS_COLORS
-  vColor = color.rgb;
+  vColor = vec3(1.0);
 #endif
 
   vec4 model_position = ModelMatrix * new_position;
