@@ -16,12 +16,12 @@
 #endif
 
 
-in vec2 vUV0;
 uniform sampler2D uSceneSampler;
 uniform sampler2D uSpeedSampler;
-uniform vec2 TexelSize0;
 uniform vec2 PixelSize1;
 uniform float uScale;
+
+in vec2 vUV0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -32,9 +32,9 @@ void main()
   float speed = length(velocity * PixelSize1);
   float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
   float invSamples = 1.0 / nSamples;
-  for (float i = 1; i < float(MAX_SAMPLES); i += 1.0) {
+  for (float i = 1.0; i < float(MAX_SAMPLES); i += 1.0) {
     if (nSamples <= i) break;
-    vec2 offset = velocity * vec2(i * invSamples - 0.5);
+    vec2 offset = ((i * invSamples - 0.5) * velocity);
     scene += texture2D(uSceneSampler, vUV0 + offset).rgb;
   }
   scene *= invSamples;
