@@ -115,7 +115,7 @@ vec4 GetProjectionCoord(const vec4 position) {
 vec4 ApplyWaveAnimation(const vec4 position, const float time, const float frequency, const vec4 direction)
 {
   float n = fbm(position.xy * time) * 2.0 - 2.0;
-  return position + n * direction;
+  return n * direction;
 }
 #endif
 
@@ -169,11 +169,10 @@ void main()
 #ifdef GRASS
   vTBN = mat3(vec3(1.0, 0.0, 0.0),
               cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)),
-              vec3(0.0, 1.0, 0.0)
-             );
+              vec3(0.0, 1.0, 0.0));
 
   if (uv0.y < 0.9 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
-    new_position = ApplyWaveAnimation(new_position, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
+    new_position += ApplyWaveAnimation(new_position, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
   }
 #endif
 #ifdef TREES
