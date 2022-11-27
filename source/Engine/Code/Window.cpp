@@ -84,7 +84,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
   ParseSDLError(context, "SDL_GLContext is null");
   ASSERTION(context, "SDL_GLContext is null");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -363,7 +363,7 @@ bool Window::IsVsyncEnabled() {
 void Window::Delete() {}
 
 void Window::RenderFrame() const {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WINDOWS || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   SDL_GL_SwapWindow(sdlWindow);
 #endif
 }
