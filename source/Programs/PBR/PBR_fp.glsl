@@ -112,10 +112,9 @@ uniform vec3 CameraPosition;
 uniform float uTerrainTexScale;
 #endif
 #ifdef HAS_NORMALMAP
-uniform float uNormalScale;
-#endif
 #ifdef HAS_PARALLAXMAP
 uniform float uOffsetScale;
+#endif
 #endif
 
 
@@ -288,7 +287,7 @@ vec3 GetNormal(const vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = uNormalScale * texture2D(uNormalSampler, uv, uLOD).xyz;
+    vec3 n = texture2D(uNormalSampler, uv).xyz;
     n = normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
     vec3 n = tbn[2].xyz;
@@ -302,7 +301,7 @@ vec4 GetAlbedo(const vec2 uv) {
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * vColor, 1.0);
 
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(uAlbedoSampler, uv, uLOD);
+    albedo *= texture2D(uAlbedoSampler, uv);
 #endif
     return SRGBtoLINEAR(albedo);
 }
@@ -311,7 +310,7 @@ vec4 GetAlbedo(const vec2 uv) {
 float GetMetallic(const vec2 uv) {
     float metallic = SurfaceShininessColour.r;
 #ifdef HAS_METALLICMAP
-    metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
+    metallic *= texture2D(uMetallicSampler, uv).r;
 #endif
     return metallic;
 }
@@ -320,7 +319,7 @@ float GetMetallic(const vec2 uv) {
 float GetRoughness(const vec2 uv) {
     float roughness = SurfaceSpecularColour.r;
 #ifdef HAS_ROUGHNESSMAP
-    roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
+    roughness *= texture2D(uRoughnessSampler, uv).r;
 #endif
     return roughness;
 }
@@ -328,7 +327,7 @@ float GetRoughness(const vec2 uv) {
 //----------------------------------------------------------------------------------------------------------------------
 float GetOcclusion(const vec2 uv) {
 #ifdef HAS_OCCLUSIONMAP
-    return texture2D(uOcclusionSampler, uv, uLOD).r;
+    return texture2D(uOcclusionSampler, uv).r;
 #else
     return 1.0;
 #endif
@@ -338,20 +337,10 @@ float GetOcclusion(const vec2 uv) {
 vec3 GetORM(const vec2 uv) {
     vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
 #ifdef HAS_ORM
-    ORM *= texture2D(uORMSampler, uv, uLOD).rgb;
+    ORM *= texture2D(uORMSampler, uv).rgb;
 #endif
     return ORM;
 }
-
-#ifdef HAS_NORMALMAP
-#ifdef HAS_PARALLAXMAP
-//----------------------------------------------------------------------------------------------------------------------
-vec2 ParallaxMapping(const vec2 uv, const vec3 viewDir)
-{
-    return -(viewDir.xy * (uOffsetScale * texture2D(uNormalSampler, uv, uLOD).a));
-}
-#endif
-#endif
 
 
 #ifdef HAS_REFLECTION
@@ -381,15 +370,13 @@ void main()
 {
     vec3 v = normalize(CameraPosition - vPosition);
     vec2 tex_coord = vUV0.xy;
-
-
 #ifdef TERRAIN
     tex_coord *= uTerrainTexScale;
 #endif
 
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-    tex_coord += ParallaxMapping(tex_coord, v);
+    tex_coord -= (v.xy * (uOffsetScale * texture2D(uNormalSampler, tex_coord).a));
 #endif
 #endif
 
@@ -532,7 +519,7 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
+    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
 #else
     total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
