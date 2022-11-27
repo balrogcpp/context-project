@@ -20,7 +20,7 @@ fragment_program PBRS_Paged_fs glsl glsles : PBRS_I_fs
 
 vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_COLORS,MAX_LIGHTS=8,PAGED_GEOMETRY,GRASS
+    preprocessor_defines HAS_UV,HAS_COLORS,MAX_LIGHTS=8,PAGED_GEOMETRY,GRASS
     default_params
     {
         param_named_auto Time time

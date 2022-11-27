@@ -82,6 +82,9 @@ out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 #ifdef HAS_REFLECTION
 out vec4 projectionCoord;
 #endif
+#ifdef GRASS
+out vec3 vNormal;
+#endif
 
 
 #ifdef GRASS
@@ -149,6 +152,7 @@ void main()
 
 #ifdef PAGED_GEOMETRY
 #ifdef GRASS
+  vNormal = vec3(0.0, 1.0, 0.0);
   if (uv0.y < 0.9 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
     new_position = ApplyWaveAnimation(new_position, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
   }
