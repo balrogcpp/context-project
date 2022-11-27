@@ -247,18 +247,14 @@ mat3 GetTGN()
 {
 // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
-    vec3 t = vec3(1, 0, 0);
-    vec3 pos_dx = dFdx(vPosition);
-    vec3 pos_dy = dFdy(vPosition);
-
 #ifdef HAS_NORMALS
     vec3 ng = normalize(vNormal);
 #else //!HAS_NORMALS
-    vec3 ng = cross(pos_dx, pos_dy);
+    vec3 ng = cross(dFdx(vPosition), dFdy(vPosition));
 #endif //HAS_NORMALS
 
-    vec3 b = normalize(cross(ng, t));
-    t = normalize(cross(ng ,b));
+    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
+    vec3 t = normalize(cross(ng ,b));
     return mat3(t, b, ng);
 
 #else //HAS_TANGENTS
@@ -272,10 +268,9 @@ mat3 GetTgnTerrain()
 {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
-    vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
-    vec3 b = normalize(cross(ng, t));
-    t = normalize(cross(ng ,b));
+    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
+    vec3 t = normalize(cross(ng ,b));
     mat3 tbn = mat3(t, b, ng);
 #else //HAS_TANGENTS
     mat3 tbn = vTBN;
