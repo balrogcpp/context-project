@@ -51,7 +51,7 @@ class WindowListener {
   /// Callback called when Window back into focus
   virtual void OnFocusGained() {}
   ///
-  virtual void OnSizeChanged(int x, int y, unsigned int id) {}
+  virtual void OnSizeChanged(int x, int y, uint32_t id) {}
 };
 
 /// This Singleton class is main part of Observer implementation

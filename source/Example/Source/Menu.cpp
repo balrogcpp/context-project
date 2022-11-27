@@ -172,7 +172,7 @@ void Menu::BeforeRender(float time) {
   SDL_DisplayMode displayMode;
   std::string displays;
   static int index = window.GetDisplay();
-  for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+  for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
     if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
       std::string buff = " #" + std::to_string(i) + ": " + SDL_GetDisplayName(i) + " " + std::to_string(displayMode.w) + "x" +
                          std::to_string(displayMode.h) + " @" + std::to_string(displayMode.refresh_rate);

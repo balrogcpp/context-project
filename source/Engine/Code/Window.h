@@ -64,7 +64,7 @@ class Window : public WindowListener {
 
   std::string title;
   bool fullscreen;
-  unsigned int display;
+  int display;
   int sizeX;
   int sizeY;
   uint32_t sdlFlags;

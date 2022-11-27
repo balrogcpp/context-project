@@ -36,7 +36,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 
   // select biggest display
   if (display < 0) {
-    for (unsigned int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+    for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
       if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
         string buff = "Display #" + to_string(i) + ": " + SDL_GetDisplayName(i) + " " + to_string(displayMode.w) + "x" + to_string(displayMode.h) +
                       " @" + to_string(displayMode.refresh_rate);
