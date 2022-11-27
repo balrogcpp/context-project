@@ -199,7 +199,7 @@ index 5cb05203..b5a4742c 100644
  
                      // this is a monolitic program so we can use the cache of any attached shader
 -                    GLUniformCache* uniformCache =  mShaders[GPT_VERTEX_PROGRAM]->getUniformCache();
-+                    GLUniformCache* uniformCache =  mShaders[fromProgType]->getUniformCache();
++                    GLUniformCache* uniformCache =  mShaders[GPT_FRAGMENT_PROGRAM]->getUniformCache();
                      void* val = def->isSampler() ? (void*)params->getRegPointer(def->physicalIndex)
                                                   : (void*)params->getFloatPointer(def->physicalIndex);
  
@@ -255,24 +255,3 @@ index 6cab8836..f176b465 100644
  
          return mHeight;
      }
-diff --git a/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp b/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
-index d2fd9284..dcbd4ccf 100644
---- a/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
-+++ b/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
-@@ -28,6 +28,7 @@
-
- #include "OgreGLUniformCache.h"
- #include "OgreCommon.h"
-+#include "OgreComponents.h"
-
- namespace Ogre {
-
-@@ -40,7 +41,7 @@ namespace Ogre {
-
-     bool GLUniformCache::updateUniform(int location, const void *value, int length)
-     {
--#ifdef OGRE_ENABLE_STATE_CACHE
-+#if defined(OGRE_ENABLE_STATE_CACHE) && defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) && !defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
-         uint32 current = mUniformValueMap[location];
-         uint32 hash = Ogre::FastHash((const char *)value, length);
-         // First check if the uniform name is in the map. If not, this is new so insert it into the map.
