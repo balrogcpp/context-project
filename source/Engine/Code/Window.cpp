@@ -126,6 +126,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   renderParams["currentGLContext"] = TRUE_STR;
   renderParams["preserveContext"] = TRUE_STR;
+  renderParams["externalGLControl"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   renderParams["currentGLContext"] = TRUE_STR;
@@ -362,7 +363,7 @@ bool Window::IsVsyncEnabled() {
 void Window::Delete() {}
 
 void Window::RenderFrame() const {
-#if defined(WINDOWS) || defined(ANDROID)
+#if OGRE_PLATFORM == OGRE_PLATFORM_WINDOWS || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   SDL_GL_SwapWindow(sdlWindow);
 #endif
 }
