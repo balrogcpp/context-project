@@ -27,12 +27,10 @@
 in vec2 vUV0;
 in float vDepth;
 in vec3 vPosition;
+in vec3 vColor;
 #ifndef NO_MRT
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
-#endif
-#ifdef HAS_COLORS
-in vec3 vColor;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -301,11 +299,8 @@ vec3 GetNormal(const vec2 uv)
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(const vec2 uv) {
-#ifdef HAS_COLORS
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * vColor, 1.0);
-#else
-    vec4 albedo = vec4(SurfaceDiffuseColour.rgb, 1.0);
-#endif
+
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(uAlbedoSampler, uv, uLOD);
 #endif
@@ -541,12 +536,12 @@ void main()
 #ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
 
-    FragData[1].r = (vDepth / FarClipDistance);
+    FragData[1] = vec4(vDepth / FarClipDistance, 0.0, 0.0, 1.0);
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     vec2 velocity = (0.0166667 / FrameTime) * 0.5 * vec2(a - b);
-    FragData[2].rg = velocity;
+    FragData[2] = vec4(velocity, 0.0, 1.0);
 #else
     total_colour = ApplyFog(total_colour, FogParams, FogColour.rgb, vDepth);
     FragColor = LINEARtoSRGB(vec4(total_colour, alpha), 1.0);

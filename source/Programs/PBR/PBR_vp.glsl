@@ -54,7 +54,7 @@ in vec4 normal;
 in vec4 tangent;
 #endif
 #ifdef HAS_COLORS
-in vec4 color;
+in vec4 colour;
 #endif
 #ifndef VERTEX_COMPRESSION
 #ifdef HAS_UV
@@ -71,12 +71,10 @@ in vec4 uv2;
 out vec2 vUV0;
 out float vDepth;
 out vec3 vPosition;
+out vec3 vColor;
 #ifndef NO_MRT
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;
-#endif
-#ifdef HAS_COLORS
-out vec3 vColor;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -159,6 +157,8 @@ void main()
 #endif
 
 #ifdef HAS_COLORS
+  vColor = colour.rgb;
+#else
   vColor = vec3(1.0);
 #endif
 

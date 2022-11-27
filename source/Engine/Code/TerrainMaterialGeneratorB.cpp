@@ -54,7 +54,6 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreT
 
       Matrix4 posIndexToObjectSpace = OgreTerrainPtr->getPointTransform();
 
-      vert_params->setIgnoreMissingParams(true);
       vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
       Real baseUVScale = 1.0f / (OgreTerrainPtr->getSize() - 1);
       vert_params->setNamedConstant("baseUVScale", baseUVScale);

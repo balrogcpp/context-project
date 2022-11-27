@@ -87,9 +87,9 @@ void main()
     color = SRGBtoLINEAR(color);
 
 #ifndef NO_MRT
-    FragData[0].rgb = color;
-    FragData[1].r = 0.05;
-    FragData[2].rg = vec2(0.0);
+    FragData[0] = vec4(color, 1.0);
+    FragData[1] = vec4(0.05, 0.0, 0.0, 1.0);
+    FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
 #else
     color = ApplyFog(color, FogParams, FogColour.rgb, 0.05 * FarClipDistance);
     FragColor.rgb = LINEARtoSRGB(color, 1.0);

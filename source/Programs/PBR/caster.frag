@@ -24,5 +24,5 @@ void main()
     if (texture2D(uAlbedoSampler, vUV0.xy).a < SurfaceAlphaRejection) discard;
 #endif
 
-    FragColor.r = gl_FragCoord.z;
+    FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
 }
