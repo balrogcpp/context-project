@@ -14,7 +14,7 @@
 #include "header.frag"
 
 in vec3 vPosition;
-in vec3 vTexCoords;
+//in vec3 vTexCoords;
 
 uniform vec3 uSunDirection;
 #ifndef GPU_HOSEK
@@ -34,14 +34,16 @@ uniform vec3 Z;
 uniform vec4 FogParams;
 uniform float FarClipDistance;
 #endif
-uniform vec3 FogColour;
-uniform vec3 uSunColor;
-uniform float Time;
-uniform float uTimeScale;
-uniform float uCirrus;
-uniform float uCumulus;
+
+uniform vec4 FogColour;
 uniform float uSunSize;
-uniform samplerCube uCubeMap;
+uniform vec3 uSunColor;
+//uniform float Time;
+//uniform float uTimeScale;
+//uniform float uCirrus;
+//uniform float uCumulus;
+//uniform samplerCube uCubeMap;
+
 
 #ifdef GPU_HOSEK
 #include "hosek.glsl"
@@ -77,9 +79,11 @@ void main()
 #endif
 
     color = XYZtoRGB(color);
-    if (gamma <= uSunSize) color += uSunColor;
+    if (gamma <= uSunSize) {
+       color += uSunColor;
+    }
     color = expose(color, 0.1);
-    // if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
+    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
     color = SRGBtoLINEAR(color);
 
 #ifndef NO_MRT
@@ -87,7 +91,7 @@ void main()
     FragData[1].r = 0.05;
     FragData[2].rg = vec2(0.0);
 #else
-    color = ApplyFog(color, FogParams, FogColour, 0.05 * FarClipDistance);
+    color = ApplyFog(color, FogParams, FogColour.rgb, 0.05 * FarClipDistance);
     FragColor.rgb = LINEARtoSRGB(color, 1.0);
 #endif
 }
