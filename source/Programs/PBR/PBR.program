@@ -3,8 +3,6 @@
 shared_params PBR_Shared_frag
 {
     shared_param_named uNormalScale float 1.0
-    shared_param_named uOffsetScale float 0.001
-    shared_param_named uLOD float 0.0
     shared_param_named ShadowFilterSize float 4.0
     shared_param_named ShadowFilterIterations int 8
     shared_param_named uPssmSplitPoints float4 6.7367 18.4907 400.0 400.0

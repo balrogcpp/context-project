@@ -70,6 +70,9 @@ uniform sampler2D uMetallicSampler;
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
 #endif
+#ifdef HAS_PARALLAXMAP
+uniform sampler2D uOffsetSampler;
+#endif
 #ifdef USE_IBL
 uniform samplerCube uDiffuseEnvSampler;
 uniform samplerCube uSpecularEnvSampler;
@@ -343,6 +346,14 @@ vec3 GetORM(const vec2 uv) {
     return ORM;
 }
 
+#ifdef HAS_PARALLAXMAP
+//----------------------------------------------------------------------------------------------------------------------
+vec2 ParallaxMapping(const vec2 uv, const vec3 viewDir)
+{
+    return -(viewDir.xy * (uOffsetScale * texture2D(uOffsetSampler, uv, uLOD).r));
+}
+#endif
+
 
 #ifdef HAS_REFLECTION
 //----------------------------------------------------------------------------------------------------------------------
@@ -365,15 +376,6 @@ vec3 ApplyReflection(const vec3 color, const vec3 n, const vec3 v, const float m
 }
 #endif
 
-#ifdef HAS_PARALLAXMAP
-//----------------------------------------------------------------------------------------------------------------------
-vec2 ParallaxMapping(const vec2 uv, const vec3 viewDir)
-{
-    float displacement = uOffsetScale * texture2D(uNormalSampler, uv, uLOD).a;
-    return uv - viewDir.xy * displacement;
-}
-#endif
-
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
@@ -381,12 +383,13 @@ void main()
     vec3 v = normalize(CameraPosition - vPosition);
     vec2 tex_coord = vUV0.xy;
 
+
 #ifdef TERRAIN
     tex_coord *= uTerrainTexScale;
 #endif
 
 #ifdef HAS_PARALLAXMAP
-    tex_coord = ParallaxMapping(tex_coord, v);
+    tex_coord += ParallaxMapping(tex_coord, v);
 #endif
 
     vec4 albedo = GetAlbedo(tex_coord);

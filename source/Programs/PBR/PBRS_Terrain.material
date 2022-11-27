@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
 
-import PBRS from PBRS.material
 import PBRS_I_vs from PBRS.program
 import PBRS_BaseI_fs from PBRS.program
 
@@ -16,6 +15,7 @@ abstract fragment_program PBRS_Terrain_I_fs glsl glsles : PBRS_BaseI_fs
     default_params
     {
         param_named uTerrainTexScale float 10.0
+        param_named uOffsetScale float 0.02
     }
 }
 
@@ -40,6 +40,7 @@ abstract material PBRS_Terrain
     set $Normal normal.dds
     set $ORM white.dds
     set $Emissive black.dds
+    set $Offset black.dds
 
     technique
     {
@@ -49,7 +50,6 @@ abstract material PBRS_Terrain
             specular 1 1 1 1
             ambient 1 1 1
             emissive 0 0 0
-            alpha_rejection greater_equal 127
 
             texture_unit Albedo
             {
@@ -67,6 +67,12 @@ abstract material PBRS_Terrain
             {
                 texture $Emissive
             }
+
+            texture_unit Offset
+            {
+                texture $Offset
+                filtering bilinear
+            }
             texture_unit GlobalNormal
             {
                 texture $Normal
@@ -81,7 +87,8 @@ abstract material PBRS_Terrain
                 param_named uNormalSampler       int 1
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
-                param_named uGlobalNormalSampler int 4
+                param_named uOffsetSampler       int 4
+                param_named uGlobalNormalSampler int 5
             }
         }
     }
@@ -101,7 +108,8 @@ abstract material PBRS_Terrain_vc : PBRS_Terrain // with vertex compression
                 param_named uNormalSampler       int 1
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
-                param_named uGlobalNormalSampler int 4
+                param_named uOffsetSampler       int 4
+                param_named uGlobalNormalSampler int 5
             }
         }
     }

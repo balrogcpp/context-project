@@ -3,8 +3,6 @@
 shared_params PBRS_Shared_frag
 {
     shared_param_named uNormalScale float 1.0
-    shared_param_named uOffsetScale float 0.001
-    shared_param_named uLOD float 0.0
 }
 
 shared_params PBRS_Shared_vert {}
