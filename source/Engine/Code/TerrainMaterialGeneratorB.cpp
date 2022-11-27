@@ -19,7 +19,10 @@ TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *pare
 
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
-bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const { return false; }
+bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
+  static bool result = !Ogre::TerrainGlobalOptions::getSingletonPtr()->getCastsDynamicShadows();
+  return result;
+}
 
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { enableLightmap = enabled; }
 
@@ -31,7 +34,17 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *OgreTerrainP
 }
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreTerrainPtr) {
-  std::string material_name = "TerrainCustom";
+  std::string material_name;
+
+  if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE)
+    material_name = "TerrainCustom";
+  else
+    material_name = "TerrainCustomPBRS";
+
+  if (isVertexCompressionSupported()) {
+    material_name += "_vc";
+  }
+
   const std::string GENERATOR = "_0";
 
   if (isVertexCompressionSupported()) {

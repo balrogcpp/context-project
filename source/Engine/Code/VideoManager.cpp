@@ -422,6 +422,7 @@ void VideoManager::InitOgreRoot() {
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
   terrainGlobalOptions->setCompositeMapDistance(300);
   terrainGlobalOptions->setCastsDynamicShadows(false);
+  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
 #endif
   ogreRoot->initialise(false);
 }
