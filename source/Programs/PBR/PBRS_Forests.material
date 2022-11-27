@@ -15,7 +15,7 @@ vertex_program PBRS_Paged_vs glsl glsles : PBRS_I_vs
 
 fragment_program PBRS_Paged_fs glsl glsles : PBRS_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLORS,HAS_ALPHA,MAX_LIGHTS=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLORS,MAX_LIGHTS=8
 }
 
 vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
@@ -32,7 +32,7 @@ vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
 
 fragment_program PBRS_Grass_fs glsl glsles : PBRS_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_COLORS,HAS_ALPHA,MAX_LIGHTS=8
+    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_COLORS,MAX_LIGHTS=8
 }
 
 abstract material PBRS_Grass : PBRS_Basic

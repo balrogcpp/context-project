@@ -15,7 +15,7 @@ vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
 
 fragment_program PBR_Paged_fs glsl glsles : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLORS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLORS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
@@ -32,7 +32,7 @@ vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 
 fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
 {
-    preprocessor_definesHAS_NORMALS,HAS_BASECOLORMAP,HAS_COLORS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_definesHAS_NORMALS,HAS_BASECOLORMAP,HAS_COLORS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 abstract material PBR_Grass : PBR_Basic
@@ -95,6 +95,7 @@ abstract material PBR_Paged : PBR_Basic
 
 abstract material PBR_Plant : PBR_Basic
 {
+    receive_shadows on
     transparency_casts_shadows on
 
     set $Albedo white.dds

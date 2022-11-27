@@ -30,12 +30,13 @@ void main()
   vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
   vec2 velocity = uScale * texture2D(uSpeedSampler, vUV0).rg;
   float speed = length(velocity * PixelSize1);
-  int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
-  for (int i = 1; i < MAX_SAMPLES; i++) {
+  float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
+  float invSamples = 1.0 / nSamples;
+  for (float i = 1; i < float(MAX_SAMPLES); i += 1.0) {
     if (nSamples <= i) break;
-    vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
+    vec2 offset = velocity * vec2(i * invSamples - 0.5);
     scene += texture2D(uSceneSampler, vUV0 + offset).rgb;
   }
-  scene /= float(nSamples);
+  scene *= invSamples;
   FragColor.rgb = scene;
 }

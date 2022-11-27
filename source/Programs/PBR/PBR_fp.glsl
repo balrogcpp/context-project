@@ -439,7 +439,8 @@ void main()
     vec3 total_colour = vec3(0.0);
 
 #if MAX_LIGHTS > 0
-    for (int i = 0; i < int(LightCount); i++) {
+    for (int i = 0; i < MAX_LIGHTS; i++) {
+        if (int(LightCount) <= i) break;
         vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
         vec3 h = normalize(l+v); // Half vector between both l and v
         float NdotL = clamp(dot(n, l), 0.001, 1.0);
