@@ -490,22 +490,20 @@ void main()
         float shadow = 1.0;
 
         if (LightCastsShadowsArray[i] > 0.0) {
-            #define EPSILON 0.000001
-
             #if MAX_SHADOW_TEXTURES > 2
                 if (LightAttenuationArray[0].x < 100000.0) {
-                    shadow = (tmp > EPSILON) ? GetShadow(i) : 1.0;
+                    shadow = (tmp > 0.000001) ? GetShadow(i) : 1.0;
                 } else {
                     if (i == 0) {
-                        shadow = (tmp > EPSILON) ? CalcPSSMDepthShadow(uPssmSplitPoints, \
+                        shadow = (tmp > 0.000001) ? CalcPSSMDepthShadow(uPssmSplitPoints, \
                                                     LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
                                                     uShadowMap0, uShadowMap1, uShadowMap2) : 1.0;
                     } else {
-                        shadow = (tmp > EPSILON) ? GetShadow(i + 2) : 1.0;
+                        shadow = (tmp > 0.000001) ? GetShadow(i + 2) : 1.0;
                     }
                 }
             #else
-                shadow = (tmp > EPSILON) ? GetShadow(i) : 1.0;
+                shadow = (tmp > 0.000001) ? GetShadow(i) : 1.0;
             #endif
         }
 
