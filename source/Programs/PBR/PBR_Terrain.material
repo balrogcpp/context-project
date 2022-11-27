@@ -16,14 +16,14 @@ abstract fragment_program PBR_Terrain_I_fs glsl glsles : PBR_BaseI_fs
     {
         param_named uTerrainTexScale float 10.0
         param_named uOffsetScale float 0.02
-        param_named uShadowMap0 int 6
-        param_named uShadowMap1 int 7
-        param_named uShadowMap2 int 8
-        param_named uShadowMap3 int 9
-        param_named_auto ShadowTexel0 inverse_texture_size 6
-        param_named_auto ShadowTexel1 inverse_texture_size 7
-        param_named_auto ShadowTexel2 inverse_texture_size 8
-        param_named_auto ShadowTexel3 inverse_texture_size 9
+        param_named uShadowMap0 int 5
+        param_named uShadowMap1 int 6
+        param_named uShadowMap2 int 7
+        param_named uShadowMap3 int 8
+        param_named_auto ShadowTexel0 inverse_texture_size 5
+        param_named_auto ShadowTexel1 inverse_texture_size 6
+        param_named_auto ShadowTexel2 inverse_texture_size 7
+        param_named_auto ShadowTexel3 inverse_texture_size 8
     }
 }
 
@@ -48,7 +48,6 @@ abstract material PBR_Terrain
     set $Normal normal.dds
     set $ORM white.dds
     set $Emissive black.dds
-    set $Offset black.dds
 
     technique
     {
@@ -76,11 +75,6 @@ abstract material PBR_Terrain
                 texture $Emissive
             }
 
-            texture_unit Offset
-            {
-                texture $Offset
-                filtering bilinear
-            }
             texture_unit GlobalNormal
             {
                 texture $Normal
@@ -116,8 +110,7 @@ abstract material PBR_Terrain
                 param_named uNormalSampler       int 1
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
-                param_named uOffsetSampler       int 4
-                param_named uGlobalNormalSampler int 5
+                param_named uGlobalNormalSampler int 4
             }
         }
     }
@@ -137,8 +130,7 @@ abstract material PBR_Terrain_vc : PBR_Terrain // with vertex compression
                 param_named uNormalSampler       int 1
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
-                param_named uOffsetSampler       int 4
-                param_named uGlobalNormalSampler int 5
+                param_named uGlobalNormalSampler int 4
             }
         }
     }

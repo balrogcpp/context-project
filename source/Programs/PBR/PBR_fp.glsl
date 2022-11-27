@@ -70,9 +70,6 @@ uniform sampler2D uMetallicSampler;
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
 #endif
-#ifdef HAS_PARALLAXMAP
-uniform sampler2D uOffsetSampler;
-#endif
 #ifdef USE_IBL
 uniform samplerCube uDiffuseEnvSampler;
 uniform samplerCube uSpecularEnvSampler;
@@ -346,12 +343,14 @@ vec3 GetORM(const vec2 uv) {
     return ORM;
 }
 
+#ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
 //----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(const vec2 uv, const vec3 viewDir)
 {
-    return -(viewDir.xy * (uOffsetScale * texture2D(uOffsetSampler, uv, uLOD).r));
+    return -(viewDir.xy * (uOffsetScale * texture2D(uNormalSampler, uv, uLOD).a));
 }
+#endif
 #endif
 
 
@@ -388,8 +387,10 @@ void main()
     tex_coord *= uTerrainTexScale;
 #endif
 
+#ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
     tex_coord += ParallaxMapping(tex_coord, v);
+#endif
 #endif
 
     vec4 albedo = GetAlbedo(tex_coord);
