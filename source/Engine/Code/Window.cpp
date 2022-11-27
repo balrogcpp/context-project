@@ -168,10 +168,6 @@ void Window::SetFullscreen(bool fullscreen) {
   this->fullscreen = fullscreen;
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   fullscreen ? SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP) : SDL_SetWindowFullscreen(sdlWindow, 0);
-  SDL_DisplayMode dm;
-  int result = SDL_GetCurrentDisplayMode(display, &dm);
-  ASSERTION(!result, "displayMode not available");
-  ogreWindow->setFullscreen(fullscreen, dm.w, dm.h);
 }
 
 void Window::SetMaximized() {

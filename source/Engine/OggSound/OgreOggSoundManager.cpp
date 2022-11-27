@@ -148,8 +148,10 @@ namespace OgreOggSound
 		mShuttingDown = true;
 		if ( mUpdateThread )
 		{
+#ifndef __APPLE__
 			mUpdateThread->join();
 			OGRE_FREE(mUpdateThread, Ogre::MEMCATEGORY_GENERAL);
+#endif
 			mUpdateThread = 0;
 			mShuttingDown=false;
 		}
