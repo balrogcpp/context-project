@@ -190,6 +190,19 @@ index b3e9fe78..8bc84113 100644
  #ifdef HAVE_ZLIB
  #include <zlib.h>
  static Ogre::uchar* custom_zlib_compress(Ogre::uchar* data, int data_len, int* out_len, int /*quality*/)
+diff --git a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+index 5cb05203..b5a4742c 100644
+--- a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
++++ b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+@@ -199,7 +199,7 @@ namespace Ogre {
+                     GLsizei glArraySize = (GLsizei)def->arraySize;
+ 
+                     // this is a monolitic program so we can use the cache of any attached shader
+-                    GLUniformCache* uniformCache =  mShaders[GPT_VERTEX_PROGRAM]->getUniformCache();
++                    GLUniformCache* uniformCache =  mShaders[fromProgType]->getUniformCache();
+                     void* val = def->isSampler() ? (void*)params->getRegPointer(def->physicalIndex)
+                                                  : (void*)params->getFloatPointer(def->physicalIndex);
+ 
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 index 024ddebf..19220d48 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
@@ -247,15 +260,15 @@ index d2fd9284..dcbd4ccf 100644
 --- a/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
 +++ b/RenderSystems/GLSupport/src/OgreGLUniformCache.cpp
 @@ -28,6 +28,7 @@
- 
+
  #include "OgreGLUniformCache.h"
  #include "OgreCommon.h"
 +#include "OgreComponents.h"
- 
+
  namespace Ogre {
- 
+
 @@ -40,7 +41,7 @@ namespace Ogre {
- 
+
      bool GLUniformCache::updateUniform(int location, const void *value, int length)
      {
 -#ifdef OGRE_ENABLE_STATE_CACHE
