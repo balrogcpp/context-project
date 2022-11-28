@@ -24,9 +24,8 @@ material SSAO
         pass
         {
             cull_hardware none
-            lighting off
-            polygon_mode_overrideable false
             depth_check off
+            polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
@@ -78,9 +77,8 @@ material SSAO_mod
         pass
         {
             cull_hardware none
-            lighting off
-            polygon_mode_overrideable false
             depth_check off
+            polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 

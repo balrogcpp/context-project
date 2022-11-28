@@ -10,7 +10,7 @@ material FilterY
 		pass
 		{
 		    cull_hardware none
-			lighting off
+            depth_check off
             polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -35,7 +35,7 @@ material FilterX
 		pass
 		{
 		    cull_hardware none
-			lighting off
+            depth_check off
             polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -150,7 +150,7 @@ material Bypass
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none none none
             }
         }
     }

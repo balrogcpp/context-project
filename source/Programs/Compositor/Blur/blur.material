@@ -20,9 +20,8 @@ material Blur
 		pass
 		{
 		    cull_hardware none
-			lighting off
+			depth_check off
             polygon_mode_overrideable false
-            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 

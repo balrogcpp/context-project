@@ -142,19 +142,20 @@ vec4 WaveTree(const vec4 v)
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
+#ifdef HAS_UV
 #ifndef VERTEX_COMPRESSION
   vec4 new_position = position;
+  vec2 new_uv = uv0.xy;
 #else
   vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
-  #define uv0 _uv0
-  vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
+  vec2 new_uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
-#ifdef HAS_UV
-  vUV0.xy = uv0.xy;
+  vUV0.xy = new_uv.xy;
 #else
   vUV0.xy = vec2(0.0);
 #endif
+
 
 #ifdef HAS_COLORS
   vColor = colour.rgb;
