@@ -7,7 +7,8 @@
 using namespace std;
 
 namespace Glue {
-CompositorManager::CompositorManager() : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom") {}
+CompositorManager::CompositorManager()
+    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(7) {}
 CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
@@ -54,6 +55,14 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
 void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+
+  if (name == BLOOM_COMPOSITOR) {
+    for (int i = 0; i < mipChain; i++) {
+      string newName = BLOOM_COMPOSITOR + "It" + to_string(i);
+      ASSERTION(compositorChain->getCompositorPosition(newName) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+      compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
+    }
+  }
 }
 
 void CompositorManager::SetFixedViewportSize(int x, int y) {
@@ -130,6 +139,7 @@ void CompositorManager::InitMipChain() {
   // check textures
   auto *tech = bloomCompositor->getTechnique();
 
+  ASSERTION(tech->getTextureDefinition("rt0"), "[CompositorManager] rt0 texture failed to create");
   ASSERTION(tech->getTextureDefinition("rt1"), "[CompositorManager] rt1 texture failed to create");
   ASSERTION(tech->getTextureDefinition("rt2"), "[CompositorManager] rt2 texture failed to create");
   ASSERTION(tech->getTextureDefinition("rt3"), "[CompositorManager] rt3 texture failed to create");
@@ -142,6 +152,13 @@ void CompositorManager::InitMipChain() {
   ASSERTION(tech->getTextureDefinition("rt10"), "[CompositorManager] rt10 texture failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, false);
+
+  for (int i = 0; i < mipChain; i++) {
+    string name = BLOOM_COMPOSITOR + "It" + to_string(i);
+    auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name, i + 2);
+    ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compoitor");
+    compositorManager->setCompositorEnabled(ogreViewport, name, false);
+  }
 }
 
 void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) {}

@@ -31,6 +31,7 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
 
   const std::string MRT_COMPOSITOR;
   const std::string BLOOM_COMPOSITOR;
+  const int mipChain;
   bool fixedViewportSize;
   int forceSizeX, forceSizeY;
 

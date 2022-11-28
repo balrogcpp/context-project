@@ -20,9 +20,8 @@ material Bloom_threshold
 		pass
 		{
 		    cull_hardware none
-			lighting off
+			depth_check off
             polygon_mode_overrideable false
-            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
@@ -62,117 +61,32 @@ material Bloom_mod
 		pass
 		{
 		    cull_hardware none
-			lighting off
+			depth_check off
             polygon_mode_overrideable false
-            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
 			fragment_program_ref bloom_mod_fs
 			{
-                param_named uSampler int 0
-                param_named uRT1 int 1
-                param_named uRT2 int 2
-                param_named uRT3 int 3
-                param_named uRT4 int 4
-                param_named uRT5 int 5
-                param_named uRT6 int 6
-                param_named uRT7 int 7
-                param_named uRT8 int 8
-                param_named uRT9 int 9
-                param_named uRT10 int 10
-
-                param_named_auto TexelSize0 inverse_texture_size 0
-                param_named_auto TexelSize1 inverse_texture_size 1
-                param_named_auto TexelSize2 inverse_texture_size 2
-                param_named_auto TexelSize3 inverse_texture_size 3
-                param_named_auto TexelSize4 inverse_texture_size 4
-                param_named_auto TexelSize5 inverse_texture_size 5
-                param_named_auto TexelSize6 inverse_texture_size 6
-                param_named_auto TexelSize7 inverse_texture_size 7
-                param_named_auto TexelSize8 inverse_texture_size 8
-                param_named_auto TexelSize9 inverse_texture_size 9
+                param_named uRT int 0
+                param_named uRT0 int 1
 			}
 
-			texture_unit scene
+			texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none none none
             }
-            texture_unit rt1
+            texture_unit rt0
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none none none
             }
-            texture_unit rt2
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt3
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt4
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt5
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt6
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt7
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt8
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt9
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-            texture_unit rt10
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-
-		}
+        }
 	}
 }
 
@@ -196,9 +110,8 @@ material Flares
 		pass
 		{
 		    cull_hardware none
-			lighting off
+			depth_check off
             polygon_mode_overrideable false
-            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
