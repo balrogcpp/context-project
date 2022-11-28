@@ -57,9 +57,9 @@ void main()
   vec3 I = Upscale3x3(uRT9, vUV0, TexelSize8);
   vec3 K = Upscale3x3(uRT10, vUV0, TexelSize9);
 
-  scene += (A + B + C + D) * 0.65;
-  scene += (E + F + G + H) * 0.25;
-  scene += (I + K) * 0.25;
+  scene += (A + B + C + D) * 0.1625; //  0.65/4
+  scene += (E + F + G + H) * 0.0625; //  0.25/4
+  scene += (I + K) * 0.05; //  0.1/2
 #ifdef USE_HDR
   {
     float lum = dot(K, vec3(0.27, 0.67, 0.06));

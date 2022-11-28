@@ -30,9 +30,9 @@ fragment_program box_filter_fs glsl glsles
     }
 }
 
-fragment_program downscale3x3_fs glsl glsles
+fragment_program downscale4x4_fs glsl glsles
 {
-	source downscale3x3.frag
+	source downscale4x4.frag
     default_params
     {
         param_named uSampler int 0
@@ -51,6 +51,35 @@ fragment_program downscale2x2_fs glsl glsles
 }
 
 fragment_program downscale_fs glsl glsles
+{
+	source linear.frag
+    default_params
+    {
+        param_named uSampler int 0
+    }
+}
+
+fragment_program upscale2x2_fs glsl glsles
+{
+	source upscale2x2.frag
+    default_params
+    {
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+fragment_program upscale3x3_fs glsl glsles
+{
+	source upscale3x3.frag
+    default_params
+    {
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+fragment_program upscale_fs glsl glsles
 {
 	source linear.frag
     default_params

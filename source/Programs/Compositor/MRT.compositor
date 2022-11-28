@@ -145,7 +145,7 @@ compositor Bloom
         texture rt9 target_width_scaled 0.001953125 target_height_scaled 0.001953125 PF_R11G11B10_FLOAT
         texture rt10 target_width_scaled 0.0009765625 target_height_scaled 0.0009765625 PF_R11G11B10_FLOAT
 
-        target rt1
+        target rt0
         {
             pass render_quad
             {
@@ -154,11 +154,20 @@ compositor Bloom
             }
         }
 
+        target rt1
+        {
+            pass render_quad
+            {
+                material Downscale4x4
+                input 0 rt0
+            }
+        }
+
         target rt2
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt1
             }
         }
@@ -167,7 +176,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt2
             }
         }
@@ -176,7 +185,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt3
             }
         }
@@ -185,7 +194,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt4
             }
         }
@@ -194,16 +203,16 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt5
             }
         }
 
-        target rt7
+        /*target rt7
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt6
             }
         }
@@ -212,7 +221,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt7
             }
         }
@@ -221,7 +230,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt8
             }
         }
@@ -230,10 +239,10 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale4x4
                 input 0 rt9
             }
-        }
+        }*/
 
         target rt
         {

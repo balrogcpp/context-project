@@ -56,7 +56,7 @@ material FilterX
 //----------------------------------------------------------------------------------------------------------------------
 // Tent downsampling
 //----------------------------------------------------------------------------------------------------------------------
-material Downscale3x3
+material Downscale4x4
 {
     technique
     {
@@ -68,7 +68,7 @@ material Downscale3x3
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-            fragment_program_ref downscale3x3_fs {}
+            fragment_program_ref downscale4x4_fs {}
 
             texture_unit rt
             {
@@ -132,6 +132,113 @@ material Downscale
 }
 
 material Bypass
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref bypass_fs {}
+
+            texture_unit rt
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Tent upsampling
+//----------------------------------------------------------------------------------------------------------------------
+material Upscale3x3
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref upscale3x3_fs {}
+
+            texture_unit rt
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}
+
+material Upscale2x2
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref upscale2x2_fs {}
+
+            texture_unit rt
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}
+
+material Upscale
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref upscale_fs {}
+
+            texture_unit rt
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// Simple filters
+//----------------------------------------------------------------------------------------------------------------------
+material Linear
 {
     technique
     {

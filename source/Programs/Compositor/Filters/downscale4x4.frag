@@ -18,5 +18,5 @@ uniform vec2 TexelSize;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = Downscale3x3(uSampler, vUV0, TexelSize);
+  FragColor.rgb = Downscale4x4(uSampler, vUV0, TexelSize);
 }

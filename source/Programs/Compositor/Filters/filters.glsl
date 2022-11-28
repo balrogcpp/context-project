@@ -10,6 +10,31 @@ vec3 Linear(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+vec3 BoxFilter4(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+{
+  vec3 color = vec3(0.0);
+  for (int x = -1; x < 1; x++)
+  for (int y = -1; y < 1; y++)
+    color += texture2D(sampler, uv + vec2(float(x), float(y)) * tsize).rgb;
+  color *= 0.25; // 1/4
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float BoxFilter4R(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+{
+  float color = 0.0;
+  for (int x = -1; x < 1; x++)
+  for (int y = -1; y < 1; y++)
+    color += texture2D(sampler, uv + vec2(float(x), float(y)) * tsize).r;
+  color *= 0.25; // 1/4
+
+  return color;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 vec3 BoxFilter9(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
   vec3 color = vec3(0.0);
@@ -28,7 +53,7 @@ float BoxFilter9R(const sampler2D sampler, const vec2 uv, const vec2 tsize)
   for (int x = -2; x < 1; x++)
   for (int y = -2; y < 1; y++)
     color += texture2D(sampler, uv + vec2(float(x), float(y)) * tsize).r;
-  color *= 0.0625; // 1/16
+  color *= 0.11111111111111111111; // 1/9
 
   return color;
 }
@@ -52,7 +77,7 @@ float BoxFilter16R(const sampler2D sampler, const vec2 uv, const vec2 tsize)
   for (int x = -2; x < 2; x++)
   for (int y = -2; y < 2; y++)
     color += texture2D(sampler, uv + vec2(float(x), float(y)) * tsize).r;
-  color *= 0.11111111111111111111; // 1/9
+  color *= 0.0625; // 1/16
 
   return color;
 }
@@ -92,7 +117,7 @@ vec3 Upscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
   vec3 B = texture2D(sampler, uv + tsize * vec2(0.0, -1.0)).rgb;
   vec3 C = texture2D(sampler, uv + tsize * vec2(1.0, -1.0)).rgb;
   vec3 D = texture2D(sampler, uv + tsize * vec2(-1.0, 0.0)).rgb;
-  vec3 E = texture2D(sampler, uv + tsize          ).rgb;
+  vec3 E = texture2D(sampler, uv + tsize                  ).rgb;
   vec3 F = texture2D(sampler, uv + tsize * vec2(1.0, 0.0)).rgb;
   vec3 G = texture2D(sampler, uv + tsize * vec2(-1.0, 1.0)).rgb;
   vec3 H = texture2D(sampler, uv + tsize * vec2(0.0,  1.0)).rgb;
@@ -132,7 +157,7 @@ vec3 Downscale2x2(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 Downscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+vec3 Downscale4x4(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(sampler, uv + tsize * vec2(-1.0, -1.0)).rgb;
   vec3 B = texture2D(sampler, uv + tsize * vec2( 0.0, -1.0)).rgb;
@@ -148,11 +173,11 @@ vec3 Downscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
   vec3 L = texture2D(sampler, uv + tsize * vec2( 0.0,  1.0)).rgb;
   vec3 M = texture2D(sampler, uv + tsize * vec2( 1.0,  1.0)).rgb;
 
-  vec3 color = (D + E + I + J) * 0.125;
-  color += (A + B + G + F) * 0.03125;
-  color += (B + C + H + G) * 0.03125;
-  color += (F + G + L + K) * 0.03125;
-  color += (G + H + M + L) * 0.03125;
+  vec3 color = (D + E + I + J) * 0.125; // 1/8
+  color += (A + B + G + F) * 0.03125; // 1/32
+  color += (B + C + H + G) * 0.03125; // 1/32
+  color += (F + G + L + K) * 0.03125; // 1/32
+  color += (G + H + M + L) * 0.03125; // 1/32
 
   return color;
 }
