@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "SinbadCharacterController.h"
+#include "TerrainManager.h"
 
 using namespace std;
 
@@ -200,7 +201,7 @@ void SinbadCharacterController::UpdateBody(float FrameTime) {
   float z = bodyNode->getPosition().z;
   //  float y = GetComponent<SceneManager>().GetHeight(x, z) + CHAR_HEIGHT;
   float y = CHAR_HEIGHT;
-  bodyNode->setPosition(x, y, z);
+  bodyNode->setPosition(x, y + GetComponent<TerrainManager>().GetHeight(x, z), z);
 
   if (keyDirection != Ogre::Vector3::ZERO && baseAnimID != ANIM_DANCE) {
     // calculate actually goal direction in world based on player's key

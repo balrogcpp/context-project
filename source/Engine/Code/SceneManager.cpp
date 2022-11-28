@@ -183,14 +183,25 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   }
 }
 
-void SceneManager::RegCamera(Ogre::Camera *camera) {}
+void SceneManager::RegCamera(Ogre::Camera *camera) {
+  Ogre::SceneNode *node = camera->getParentSceneNode();
+  Ogre::Vector3 position = node->getPosition();
+  node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
+}
 
-void SceneManager::RegLight(Ogre::Light *light) {}
+void SceneManager::RegLight(Ogre::Light *light) {
+  Ogre::SceneNode *node = light->getParentSceneNode();
+  Ogre::Vector3 position = node->getPosition();
+  node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
+}
 
 void SceneManager::RegEntity(const std::string &name) { RegEntity(ogreSceneManager->getEntity(name)); }
 
 void SceneManager::RegEntity(Ogre::Entity *entity) {
   // EnsureHasTangents(entity->getMesh());
+  Ogre::SceneNode *node = entity->getParentSceneNode();
+  Ogre::Vector3 position = node->getPosition();
+  node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
 
   if (entity->hasSkeleton()) {
     for (auto it : entity->getAttachedObjects()) {
