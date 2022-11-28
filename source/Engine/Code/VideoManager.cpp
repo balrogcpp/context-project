@@ -30,7 +30,6 @@
 #include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-#include "TerrainMaterialGeneratorB.h"
 #include <Terrain/OgreTerrainGroup.h>
 #ifdef OGRE_BUILD_COMPONENT_PAGING
 #include <Terrain/OgreTerrainPaging.h>
@@ -418,11 +417,6 @@ void VideoManager::InitOgreRoot() {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
-  terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
-  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-  terrainGlobalOptions->setCompositeMapDistance(300);
-  terrainGlobalOptions->setCastsDynamicShadows(false);
-  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
 #endif
   ogreRoot->initialise(false);
 }

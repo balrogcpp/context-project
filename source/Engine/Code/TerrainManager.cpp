@@ -29,14 +29,15 @@ void TerrainManager::OnSetUp() {
   ogreCamera = ogreSceneManager->getCamera("Default");
 
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
-  if (!terrainGlobalOptions) {
-    terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
-    terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
-    terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-    terrainGlobalOptions->setCompositeMapDistance(300);
-    terrainGlobalOptions->setCastsDynamicShadows(false);
-    terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
-  }
+  if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
+
+  terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
+  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
+  terrainGlobalOptions->setCompositeMapDistance(1000);
+  terrainGlobalOptions->setCastsDynamicShadows(false);
+  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
+  terrainGlobalOptions->setLightMapSize(2048);
+  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829));
 }
 
 float TerrainManager::GetHeight(float x, float z) { return ogreTerrainGroup ? ogreTerrainGroup->getHeightAtWorldPosition(x, 10000.0, z) : 0.0; }

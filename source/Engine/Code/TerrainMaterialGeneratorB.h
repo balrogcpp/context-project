@@ -16,18 +16,22 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     SM2Profile(Ogre::TerrainMaterialGenerator *parent, const Ogre::String &name, const Ogre::String &desc);
     virtual ~SM2Profile();
 
-    Ogre::MaterialPtr generate(const Ogre::Terrain *OgreTerrainPtr) override;
+    Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) override;
     Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) override;
     Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return terrainMaxLayers; }
     void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
     void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
-    void requestOptions(Ogre::Terrain *OgreTerrainPtr) override;
+    void requestOptions(Ogre::Terrain *terrain) override;
     bool isVertexCompressionSupported() const override;
     void setLightmapEnabled(bool enabled) override;
+    bool isLightmapEnabled();
+    void setNormalmapEnabled(bool enabled);
+    bool isNormalmapEnabled();
 
    protected:
-    bool enableLightmap = false;
-    int8_t terrainMaxLayers = 4;
+    bool enableLightmap;
+    bool enableNormalmap;
+    int8_t terrainMaxLayers;
   };
 };
 }  // namespace Ogre

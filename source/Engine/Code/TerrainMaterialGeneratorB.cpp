@@ -15,7 +15,7 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() {}
 
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name, const String &desc)
-    : Profile(parent, name, desc) {}
+    : Profile(parent, name, desc), enableLightmap(false), enableNormalmap(true), terrainMaxLayers(4) {}
 
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
@@ -25,70 +25,74 @@ bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const
 }
 
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { enableLightmap = enabled; }
+bool TerrainMaterialGeneratorB::SM2Profile::isLightmapEnabled() { return enableLightmap; }
+void TerrainMaterialGeneratorB::SM2Profile::setNormalmapEnabled(bool enabled) { enableNormalmap = enabled; }
+bool TerrainMaterialGeneratorB::SM2Profile::isNormalmapEnabled() { return enableNormalmap; }
 
-void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *OgreTerrainPtr) {
-  OgreTerrainPtr->_setMorphRequired(true);
-  OgreTerrainPtr->_setNormalMapRequired(true);
-  OgreTerrainPtr->_setLightMapRequired(enableLightmap, false);
-  OgreTerrainPtr->_setCompositeMapRequired(false);
+void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *terrain) {
+  terrain->_setMorphRequired(true);
+  terrain->_setNormalMapRequired(true);
+  terrain->_setLightMapRequired(enableLightmap, true);
+  terrain->_setCompositeMapRequired(false);
 }
 
-MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreTerrainPtr) {
-  std::string material_name;
+MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terrain) {
+  std::string materialName;
 
   if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE)
-    material_name = "TerrainCustom";
+    materialName = "TerrainCustom";
   else
-    material_name = "TerrainCustomPBRS";
+    materialName = "TerrainCustomPBRS";
 
-  if (isVertexCompressionSupported()) {
-    material_name += "_vc";
-  }
+  if (isVertexCompressionSupported())
+    materialName += "_vc";
 
   const std::string GENERATOR = "_0";
 
   if (isVertexCompressionSupported()) {
-    auto material = MaterialManager::getSingleton().getByName(material_name);
+    auto material = MaterialManager::getSingleton().getByName(materialName);
     if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
       auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 
-      Matrix4 posIndexToObjectSpace = OgreTerrainPtr->getPointTransform();
+      Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
 
       vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
-      Real baseUVScale = 1.0f / (OgreTerrainPtr->getSize() - 1);
+      Real baseUVScale = 1.0f / (terrain->getSize() - 1);
       vert_params->setNamedConstant("baseUVScale", baseUVScale);
     }
   }
 
-  std::string new_name = material_name + GENERATOR;
-  bool EnableCastShadows = TerrainGlobalOptions::getSingleton().getCastsDynamicShadows();
+  std::string newName = materialName + GENERATOR;
 
-  if (MaterialManager::getSingleton().resourceExists(new_name)) {
-    return MaterialManager::getSingleton().getByName(new_name);
+  if (MaterialManager::getSingleton().resourceExists(newName)) {
+    return MaterialManager::getSingleton().getByName(newName);
   } else {
-    auto new_material = MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
+    auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
+    auto *pass = newMaterial->getTechnique(0)->getPass(0);
 
-    auto *texture_state = new_material->getTechnique(0)->getPass(0)->getTextureUnitState("GlobalNormal");
-    if (texture_state) {
-      texture_state->setTexture(OgreTerrainPtr->getTerrainNormalMap());
-      texture_state->setTextureFiltering(FO_LINEAR, FO_LINEAR, FO_NONE);
-      texture_state->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
+    auto *texState = pass->getTextureUnitState("GlobalNormal");
+    if (texState && SM2Profile::isNormalmapEnabled()) {
+      texState->setTexture(terrain->getTerrainNormalMap());
     }
 
-    return new_material;
+    auto *texState2 = pass->getTextureUnitState("GlobalLight");
+    if (texState2 && SM2Profile::isLightmapEnabled()) {
+      texState2->setTexture(terrain->getLightmap());
+    }
+
+    return newMaterial;
   }
 }
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Terrain *terrain) {
-  std::string material_name = "TerrainCustom";
-  const int GENERATOR = 1;
+  std::string materialName = "TerrainCustom";
+  const std::string GENERATOR = "_1";
+  std::string newName = materialName + GENERATOR;
 
-  std::string new_name = material_name + "_" + std::to_string(GENERATOR);
-
-  if (MaterialManager::getSingleton().resourceExists(new_name)) {
-    return MaterialManager::getSingleton().getByName(new_name);
+  if (MaterialManager::getSingleton().resourceExists(newName)) {
+    return MaterialManager::getSingleton().getByName(newName);
   } else {
-    auto new_material = MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
+    auto new_material = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
     return new_material;
   }
 }

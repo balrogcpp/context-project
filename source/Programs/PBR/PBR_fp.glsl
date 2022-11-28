@@ -77,6 +77,7 @@ uniform sampler2D uBrdfLUT;
 #endif
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
+uniform sampler2D uGlobalShadowSampler;
 #endif
 #ifdef HAS_REFLECTION
 uniform sampler2D uReflectionMap;
@@ -471,12 +472,21 @@ void main()
         vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
         float tmp = (NdotL * (fSpotT * fAtten));
 
+        // shadow block
+        {
+#ifdef TERRAIN
+        float globalShadow = texture2D(uGlobalShadowSampler, tex_coord).r;
+#else
+        float globalShadow = 1.0;
+#endif
+
+
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
         float shadow = 1.0;
 
         if (LightCastsShadowsArray[i] > 0.0) {
-            #if MAX_SHADOW_TEXTURES > 2
+#if MAX_SHADOW_TEXTURES > 2
                 if (LightAttenuationArray[0].x < 100000.0) {
                     shadow = (tmp > 0.000001) ? GetShadow(i) : 1.0;
                 } else {
@@ -488,17 +498,20 @@ void main()
                         shadow = (tmp > 0.000001) ? GetShadow(i + 2) : 1.0;
                     }
                 }
-            #else
+#else
                 shadow = (tmp > 0.000001) ? GetShadow(i) : 1.0;
-            #endif
+#endif
         }
-
+#ifdef TERRAIN
+        shadow = min(shadow, globalShadow);
+#endif
         total_colour += ShadowColour.rgb * color + (shadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
 #endif
 #else
-    total_colour += (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
+    total_colour += (globalShadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
 #endif
-    }
+        } //  shadow block
+    } //  lightning loop
 #endif
 
 // Calculate lighting contribution from image based lighting source (IBL)

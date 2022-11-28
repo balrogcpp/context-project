@@ -157,11 +157,18 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   // search for TerrainGroup
   const auto &objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
+    auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
     auto *terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
+
     for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
       auto *terrain = it.getNext()->instance;
       RegMaterial(terrain->getMaterial().get());
     }
+
+    if (ogreSceneManager->hasLight("Sun")) {
+      terrainGlobalOptions->setLightMapDirection(ogreSceneManager->getLight("Sun")->getDerivedDirection());
+    }
+
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
   }

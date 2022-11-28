@@ -72,6 +72,11 @@ abstract material PBRS_Terrain
                 texture $Normal
                 filtering bilinear
             }
+            texture_unit GlobalLight
+            {
+                texture white.dds
+                filtering bilinear
+            }
 
             vertex_program_ref PBRS_Terrain_vs {}
 
@@ -82,6 +87,7 @@ abstract material PBRS_Terrain
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
                 param_named uGlobalNormalSampler int 4
+                param_named uGlobalShadowSampler int 5
             }
         }
     }
@@ -102,6 +108,7 @@ abstract material PBRS_Terrain_vc : PBRS_Terrain // with vertex compression
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
                 param_named uGlobalNormalSampler int 4
+                param_named uGlobalShadowSamplerawwww int 5
             }
         }
     }

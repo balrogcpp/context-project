@@ -59,7 +59,7 @@ void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
   if (name == BLOOM_COMPOSITOR) {
     for (int i = 0; i < mipChain; i++) {
       string newName = BLOOM_COMPOSITOR + "It" + to_string(i);
-      ASSERTION(compositorChain->getCompositorPosition(newName) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+      ASSERTION(compositorChain->getCompositorPosition(newName) != Ogre::CompositorChain::NPOS, "[CompositorManager] Failed to find Bloom compositor");
       compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
     }
   }
