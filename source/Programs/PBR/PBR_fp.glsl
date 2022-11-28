@@ -78,6 +78,7 @@ uniform sampler2D uBrdfLUT;
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
 uniform sampler2D uGlobalShadowSampler;
+uniform vec2 TexelSize5;
 #endif
 #ifdef HAS_REFLECTION
 uniform sampler2D uReflectionMap;
@@ -176,6 +177,9 @@ uniform int ShadowFilterIterations;
 #endif
 #ifdef HAS_REFLECTION
 #include "noise.glsl"
+#endif
+#ifdef TERRAIN
+#include "filters.glsl"
 #endif
 
 
@@ -420,6 +424,12 @@ void main()
 
     vec3 total_colour = vec3(0.0);
 
+#ifdef TERRAIN
+    float globalShadow = BoxFilter9R(uGlobalShadowSampler, vUV0.xy, TexelSize5.xy);
+#else
+    float globalShadow = 1.0;
+#endif
+
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; i++) {
         if (int(LightCount) <= i) break;
@@ -474,13 +484,6 @@ void main()
 
         // shadow block
         {
-#ifdef TERRAIN
-        float globalShadow = texture2D(uGlobalShadowSampler, tex_coord).r;
-#else
-        float globalShadow = 1.0;
-#endif
-
-
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
         float shadow = 1.0;

@@ -117,6 +117,8 @@ abstract material PBR_Terrain
                 param_named uEmissiveSampler     int 3
                 param_named uGlobalNormalSampler int 4
                 param_named uGlobalShadowSampler int 5
+
+                param_named_auto TexelSize5 inverse_texture_size 5
             }
         }
     }

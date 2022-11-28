@@ -36,8 +36,8 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setCompositeMapDistance(1000);
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
-  terrainGlobalOptions->setLightMapSize(2048);
-  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829));
+  terrainGlobalOptions->setLightMapSize(256);
+  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
 }
 
 float TerrainManager::GetHeight(float x, float z) { return ogreTerrainGroup ? ogreTerrainGroup->getHeightAtWorldPosition(x, 10000.0, z) : 0.0; }
