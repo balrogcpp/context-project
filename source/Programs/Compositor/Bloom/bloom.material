@@ -9,7 +9,7 @@ fragment_program bloom_threshold_fs glsl glsles
 
     default_params
     {
-        param_named uThreshhold float 0.99
+        param_named uThreshhold float 0.5
     }
 }
 

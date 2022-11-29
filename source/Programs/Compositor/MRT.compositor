@@ -96,6 +96,9 @@ compositor Bloom
         texture rt8 target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT chain_scope
         texture rt9 target_width_scaled 0.001953125 target_height_scaled 0.001953125 PF_R11G11B10_FLOAT chain_scope
         texture rt10 target_width_scaled 0.0009765625 target_height_scaled 0.0009765625 PF_R11G11B10_FLOAT chain_scope
+        texture rt11 target_width_scaled 0.00048828125 target_height_scaled 0.00048828125 PF_R11G11B10_FLOAT chain_scope
+        texture rt12 target_width_scaled 0.000244140625 target_height_scaled 0.000244140625 PF_R11G11B10_FLOAT chain_scope
+        texture rt13 target_width_scaled 0.0001220703125 target_height_scaled 0.0001220703125 PF_R11G11B10_FLOAT chain_scope
 
         target rt1
         {
@@ -206,6 +209,9 @@ abstract compositor BloomIt
         texture_ref rt8 Bloom rt8
         texture_ref rt9 Bloom rt9
         texture_ref rt10 Bloom rt10
+        texture_ref rt11 Bloom rt11
+        texture_ref rt12 Bloom rt12
+        texture_ref rt13 Bloom rt13
     }
 }
 
@@ -844,6 +850,372 @@ compositor BloomIt10 : BloomIt
 {
     technique
     {
+        target rt9
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt10
+            }
+        }
+
+        target rt8
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt9
+            }
+        }
+
+        target rt7
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt8
+            }
+        }
+
+        target rt6
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt7
+            }
+        }
+
+        target rt5
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt6
+            }
+        }
+
+        target rt4
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt5
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt4
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt3
+            }
+        }
+
+        target rt1
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt2
+            }
+        }
+
+        target rt0
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt1
+            }
+        }
+
+        target rt
+        {
+            pass render_quad
+            {
+                material Bloom_mod
+                input 0 rt
+                input 1 rt0
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+compositor BloomIt11 : BloomIt
+{
+    technique
+    {
+        target rt10
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt11
+            }
+        }
+
+        target rt9
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt10
+            }
+        }
+
+        target rt8
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt9
+            }
+        }
+
+        target rt7
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt8
+            }
+        }
+
+        target rt6
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt7
+            }
+        }
+
+        target rt5
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt6
+            }
+        }
+
+        target rt4
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt5
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt4
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt3
+            }
+        }
+
+        target rt1
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt2
+            }
+        }
+
+        target rt0
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt1
+            }
+        }
+
+        target rt
+        {
+            pass render_quad
+            {
+                material Bloom_mod
+                input 0 rt
+                input 1 rt0
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+compositor BloomIt12 : BloomIt
+{
+    technique
+    {
+        target rt11
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt12
+            }
+        }
+
+        target rt10
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt11
+            }
+        }
+
+        target rt9
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt10
+            }
+        }
+
+        target rt8
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt9
+            }
+        }
+
+        target rt7
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt8
+            }
+        }
+
+        target rt6
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt7
+            }
+        }
+
+        target rt5
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt6
+            }
+        }
+
+        target rt4
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt5
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt4
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt3
+            }
+        }
+
+        target rt1
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt2
+            }
+        }
+
+        target rt0
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt1
+            }
+        }
+
+        target rt
+        {
+            pass render_quad
+            {
+                material Bloom_mod
+                input 0 rt
+                input 1 rt0
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+compositor BloomIt13 : BloomIt
+{
+    technique
+    {
+        target rt12
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt13
+            }
+        }
+
+        target rt10
+        {
+            pass render_quad
+            {
+                material Upscale3x3
+                input 0 rt11
+            }
+        }
+
         target rt9
         {
             pass render_quad

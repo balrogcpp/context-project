@@ -43,11 +43,11 @@ vec3 Downscale13T(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 //
 //  return color;
 
-  vec3 c1 = (D + E + I + J) * 0.125;     c1 /= (1.0 + luminance(LINEARtoSRGB(c1)));
-  vec3 c2 = (A + B + G + F) * 0.03125;   c2 /= (1.0 + luminance(LINEARtoSRGB(c2)));
-  vec3 c3 = (B + C + H + G) * 0.03125;   c3 /= (1.0 + luminance(LINEARtoSRGB(c3)));
-  vec3 c4 = (F + G + L + K) * 0.03125;   c4 /= (1.0 + luminance(LINEARtoSRGB(c4)));
-  vec3 c5 = (G + H + M + L) * 0.03125;   c5 /= (1.0 + luminance(LINEARtoSRGB(c5)));
+  vec3 c1 = (D + E + I + J);   c1 /= (1.0 + luminance(LINEARtoSRGB(c1))); c1 *= 0.125;
+  vec3 c2 = (A + B + G + F);   c2 /= (1.0 + luminance(LINEARtoSRGB(c2))); c2 *= 0.03125;
+  vec3 c3 = (B + C + H + G);   c3 /= (1.0 + luminance(LINEARtoSRGB(c3))); c3 *= 0.03125;
+  vec3 c4 = (F + G + L + K);   c4 /= (1.0 + luminance(LINEARtoSRGB(c4))); c4 *= 0.03125;
+  vec3 c5 = (G + H + M + L);   c5 /= (1.0 + luminance(LINEARtoSRGB(c5))); c5 *= 0.03125;
 
   return c1 + c2 + c3 + c4 + c5;
 }
@@ -70,5 +70,5 @@ vec3 Threshold(const vec3 color, const float threshold)
 void main()
 {
   vec3 color = Downscale13T(uSampler, vUV0, TexelSize0);
-  FragColor.rgb = Threshold(color, 0.78);
+  FragColor.rgb = Threshold(color, uThreshhold);
 }

@@ -10,9 +10,12 @@ SkyManager::SkyManager() : needsUpdate(false), hosekParamList({"A", "B", "C", "D
 SkyManager::~SkyManager() {}
 
 Ogre::Vector3 SkyManager::GetSunPosition() {
-  ASSERTION(ogreSceneManager->hasLight("Sun"), "[SkyManager] light Sun not created");
-  auto *SunPtr = ogreSceneManager->getLight("Sun");
-  return SunPtr ? -SunPtr->getDerivedDirection().normalisedCopy() : Ogre::Vector3::ZERO;
+  if (ogreSceneManager->hasLight("Sun")) {
+    auto *SunPtr = ogreSceneManager->getLight("Sun");
+    return SunPtr ? -SunPtr->getDerivedDirection().normalisedCopy() : Ogre::Vector3::ZERO;
+  } else {
+    return Ogre::Vector3::ZERO;
+  }
 }
 
 void SkyManager::SetUpSky() {

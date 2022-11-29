@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Glue {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(10) {}
+    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(14) {}
 CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
@@ -150,6 +150,9 @@ void CompositorManager::InitMipChain() {
   ASSERTION(tech->getTextureDefinition("rt8"), "[CompositorManager] rt8 texture failed to create");
   ASSERTION(tech->getTextureDefinition("rt9"), "[CompositorManager] rt9 texture failed to create");
   ASSERTION(tech->getTextureDefinition("rt10"), "[CompositorManager] rt10 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt11"), "[CompositorManager] rt11 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt12"), "[CompositorManager] rt12 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt13"), "[CompositorManager] rt13 texture failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, false);
 

@@ -79,12 +79,11 @@ void main()
 #endif
 
     color = XYZtoRGB(color);
-    if (gamma <= uSunSize) {
-       color += uSunColor;
-    }
-    color = expose(color, 0.1);
-    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
+    color = expose(color, 0.2);
     color = SRGBtoLINEAR(color);
+
+    if (gamma <= uSunSize) color += uSunColor;
+    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
 
 #ifndef NO_MRT
     FragData[0] = vec4(color, 1.0);

@@ -535,7 +535,7 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
+    total_colour += 100.0 * SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
 #else
     total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
