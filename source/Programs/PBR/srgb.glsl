@@ -3,10 +3,50 @@
 #ifndef SRGB_GLSL
 #define SRGB_GLSL
 
+
 #define MANUAL_SRGB
-#define SRGB_FAST_APPROXIMATION
-#define SRGB_HDR
-//#define SRGB_SQRT
+
+//#define SRGB_HDR
+#ifdef GL_ES
+  #define SRGB_VERY_FAST_APPROXIMATION
+#else
+  #define SRGB_FAST_APPROXIMATION
+#endif
+
+// https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
+
+//----------------------------------------------------------------------------------------------------------------------
+// https://en.wikipedia.org/wiki/Relative_luminance
+float luminance(const vec3 color) {
+  return dot(color, vec3(0.2126, 0.7152, 0.0722));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float luminance(const vec4 color) {
+  return dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// https://www.w3.org/TR/AERT/#color-contrast
+float luminance2(const vec3 color) {
+  return dot(color, vec3(0.299, 0.587, 0.114));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float luminance2(const vec4 color) {
+  return dot(color.rgb, vec3(0.299, 0.587, 0.114));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// https://alienryderflex.com/hsp.html
+float luminance3(const vec3 color) {
+  return sqrt(dot(color * color, vec3(0.299, 0.587, 0.114)));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float luminance3(const vec4 color) {
+  return sqrt(dot(color.rgb * color.rgb, vec3(0.299, 0.587, 0.114)));
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 expose(const vec3 color, const float exposure)
@@ -21,21 +61,44 @@ vec4 expose(const vec4 color, const float exposure)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+vec3 tone_map(vec3 inColour, const float lum)
+{
+  const float MIDDLE_GREY = 0.72;
+  const float FUDGE = 0.001;
+  const float L_WHITE = 1.5;
+
+  // From Reinhard et al
+  // "Photographic Tone Reproduction for Digital Images"
+
+  // Initial luminence scaling (equation 2)
+  inColour *= MIDDLE_GREY / (FUDGE + lum);
+
+  // Control white out (equation 4 nom)
+  inColour *= (1.0 + inColour / L_WHITE);
+
+  // Final mapping (equation 4 denom)
+  inColour /= (1.0 + inColour);
+
+  return inColour;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 vec4 SRGBtoLINEAR(const vec4 srgbIn)
 {
 #ifdef MANUAL_SRGB
-#ifdef SRGB_FAST_APPROXIMATION
-#ifdef SRGB_SQRT
+
+#if defined(SRGB_FAST_APPROXIMATION)
+    vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
+    //vec3 linOut = srgbIn.rgb * (srgbIn.rgb * (srgbIn.rgb * 0.305306011 + 0.682171111) + 0.012522878);
+#elif defined(SRGB_VERY_FAST_APPROXIMATION)
   vec3 linOut = srgbIn.rgb * srgbIn.rgb;
 #else
-  vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
-  //vec3 linOut = srgbIn.rgb * (srgbIn.rgb * (srgbIn.rgb * 0.305306011 + 0.682171111) + 0.012522878);
-#endif
-#else //SRGB_FAST_APPROXIMATION
   vec3 bLess = step(vec3(0.04045),srgbIn.rgb);
-  vec3 linOut = mix(srgbIn.rgb/vec3(12.92), pow((srgbIn.rgb+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );
+  vec3 linOut = mix(srgbIn.rgb/vec3(12.92), pow((srgbIn.rgb+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess);
 #endif //SRGB_FAST_APPROXIMATION
-  return vec4(linOut,srgbIn.w);
+
+  return vec4(linOut,srgbIn.a);
+
 #else //MANUAL_SRGB
   return srgbIn;
 #endif //MANUAL_SRGB
@@ -45,18 +108,19 @@ vec4 SRGBtoLINEAR(const vec4 srgbIn)
 vec3 SRGBtoLINEAR(const vec3 srgbIn)
 {
 #ifdef MANUAL_SRGB
-#ifdef SRGB_FAST_APPROXIMATION
-#ifdef SRGB_SQRT
+
+#if defined(SRGB_FAST_APPROXIMATION)
+  vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
+//vec3 linOut = srgbIn.rgb * (srgbIn.rgb * (srgbIn.rgb * 0.305306011 + 0.682171111) + 0.012522878);
+#elif defined(SRGB_VERY_FAST_APPROXIMATION)
   vec3 linOut = srgbIn.xyz * srgbIn.xyz;
 #else
-  vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
-  //vec3 linOut = srgbIn.rgb * (srgbIn.rgb * (srgbIn.rgb * 0.305306011 + 0.682171111) + 0.012522878);
-#endif
-  #else //SRGB_FAST_APPROXIMATION
   vec3 bLess = step(vec3(0.04045),srgbIn.rgb);
-  vec3 linOut = mix( srgbIn.rgb/vec3(12.92), pow((srgbIn.rgb+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );
+  vec3 linOut = mix(srgbIn.rgb/vec3(12.92), pow((srgbIn.rgb+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess);
 #endif //SRGB_FAST_APPROXIMATION
+
   return linOut;
+
 #else //MANUAL_SRGB
   return srgbIn;
 #endif //MANUAL_SRGB
@@ -65,73 +129,75 @@ vec3 SRGBtoLINEAR(const vec3 srgbIn)
 //----------------------------------------------------------------------------------------------------------------------
 vec4 LINEARtoSRGB(const vec4 linIn, const float exposure)
 {
-  vec4 srgbOut;
 #ifdef MANUAL_SRGB
+
 #ifdef SRGB_HDR
-  srgbOut = expose(linIn, exposure);
-#endif
-#ifdef SRGB_SQRT
-  return vec4(sqrt(srgbOut.rgb), linIn.a);
+  vec4 srgbOut = expose(linIn, exposure);
 #else
+  vec4 srgbOut = linIn;
+#endif
+
+#if defined(SRGB_FAST_APPROXIMATION)
   return vec4(pow(srgbOut.rgb, vec3(1.0 / 2.2)), linIn.a);
+#elif defined(SRGB_VERY_FAST_APPROXIMATION)
+  return vec4(sqrt(srgbOut.rgb), linIn.a);
 #endif
-#else
+
   return srgbOut;
-#endif
+#endif //  MANUAL_SRGB
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 LINEARtoSRGB(const vec3 linIn, const float exposure)
 {
-  vec3 srgbOut;
 #ifdef MANUAL_SRGB
+
 #ifdef SRGB_HDR
-  srgbOut = expose(linIn, exposure);
-#endif
-#ifdef SRGB_SQRT
-  return sqrt(srgbOut);
+  vec3 srgbOut = expose(linIn, exposure);
 #else
+  vec3 srgbOut = linIn;
+#endif
+
+#if defined(SRGB_FAST_APPROXIMATION)
   return pow(srgbOut, vec3(1.0 / 2.2));
+#elif defined(SRGB_VERY_FAST_APPROXIMATION)
+  return sqrt(srgbOut);
 #endif
-#else
+  
   return srgbOut;
-#endif
+#endif //  MANUAL_SRGB
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 LINEARtoSRGB(const vec4 linIn)
 {
-  vec4 srgbOut;
 #ifdef MANUAL_SRGB
-#ifdef SRGB_HDR
-  srgbOut = expose(linIn, 1.0);
+
+#if defined(SRGB_FAST_APPROXIMATION)
+  return vec4(pow(linIn.rgb, vec3(1.0 / 2.2)), linIn.a);
+#elif defined(SRGB_VERY_FAST_APPROXIMATION)
+  return vec4(sqrt(linIn.rgb), linIn.a);
 #endif
-#ifdef SRGB_SQRT
-  return vec4(sqrt(srgbOut.rgb), linIn.a);
+
 #else
-  return vec4(pow(srgbOut.rgb, vec3(1.0 / 2.2)), linIn.a);
-#endif
-#else
-  return srgbOut;
-#endif
+  return linIn;
+#endif //  MANUAL_SRGB
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 LINEARtoSRGB(const vec3 linIn)
 {
-  vec3 srgbOut;
 #ifdef MANUAL_SRGB
-#ifdef SRGB_HDR
-  srgbOut = expose(linIn, 1.0);
+
+#if defined(SRGB_FAST_APPROXIMATION)
+  return pow(linIn, vec3(1.0 / 2.2));
+#elif defined(SRGB_VERY_FAST_APPROXIMATION)
+  return sqrt(linIn);
 #endif
-#ifdef SRGB_SQRT
-  return sqrt(srgbOut);
+
 #else
-  return pow(srgbOut, vec3(1.0 / 2.2));
-#endif
-#else
-  return srgbOut;
-#endif
+  return linIn;
+#endif //  MANUAL_SRGB
 }
 
 //----------------------------------------------------------------------------------------------------------------------

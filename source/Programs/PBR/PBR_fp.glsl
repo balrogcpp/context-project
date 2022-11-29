@@ -390,7 +390,7 @@ void main()
     float alpha = albedo.a;
 
 #ifdef HAS_ALPHA
-    if (SurfaceAlphaRejection > 0.000001) {
+    if (SurfaceAlphaRejection > 0.0001) {
         if (alpha < SurfaceAlphaRejection) {
             discard;
         }
@@ -447,7 +447,7 @@ void main()
         vec4 vAttParams = LightAttenuationArray[i];
         float range = vAttParams.x;
 
-        if (range > 0.000001) {
+        if (range > 0.0001) {
             float attenuation_const = vAttParams.y;
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
@@ -457,7 +457,7 @@ void main()
             vec3 vSpotParams = LightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;
 
-            if (outer_radius > 0.000001) {
+            if (outer_radius > 0.0001) {
                 float fallof = vSpotParams.x;
                 float inner_radius = vSpotParams.y;
 
@@ -491,18 +491,18 @@ void main()
         if (LightCastsShadowsArray[i] > 0.0) {
 #if MAX_SHADOW_TEXTURES > 2
                 if (LightAttenuationArray[0].x < 100000.0) {
-                    shadow = (tmp > 0.000001) ? GetShadow(i) : 1.0;
+                    shadow = (tmp > 0.0001) ? GetShadow(i) : 1.0;
                 } else {
                     if (i == 0) {
-                        shadow = (tmp > 0.000001) ? CalcPSSMDepthShadow(uPssmSplitPoints, \
+                        shadow = (tmp > 0.0001) ? CalcPSSMDepthShadow(uPssmSplitPoints, \
                                                     LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
                                                     uShadowMap0, uShadowMap1, uShadowMap2) : 1.0;
                     } else {
-                        shadow = (tmp > 0.000001) ? GetShadow(i + 2) : 1.0;
+                        shadow = (tmp > 0.0001) ? GetShadow(i + 2) : 1.0;
                     }
                 }
 #else
-                shadow = (tmp > 0.000001) ? GetShadow(i) : 1.0;
+                shadow = (tmp > 0.0001) ? GetShadow(i) : 1.0;
 #endif
         }
 #ifdef TERRAIN

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Glue {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(7) {}
+    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(10) {}
 CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
