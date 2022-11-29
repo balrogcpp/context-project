@@ -21,9 +21,9 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
   void OnClean() override;
   void OnUpdate(float time) override;
 
-  void InitMRT();
-  void InitNoMRT();
-  void InitMipChain();
+  void InitMRT(bool enable = true);
+  void InitNoMRT(bool enable = true);
+  void InitMipChain(bool enable = false);
 
   /// Ogre::Viewport::Listener impl
   void viewportCameraChanged(Ogre::Viewport* viewport) override;

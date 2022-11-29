@@ -28,10 +28,10 @@ void CompositorManager::OnSetUp() {
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
   // init compositor chain
-  InitMRT();
+  InitMRT(true);
 
   // init bloom mipmaps
-  InitMipChain();
+  InitMipChain(false);
 
   // extra compositors
   AddCompositor("SSAO", false);
@@ -105,7 +105,7 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
   }
 }
 
-void CompositorManager::InitMRT() {
+void CompositorManager::InitMRT(bool enable) {
   auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0);
   ASSERTION(mrtCompositor, "[CompositorManager] Failed to add MRT compositor");
 
@@ -117,10 +117,10 @@ void CompositorManager::InitMRT() {
   ASSERTION(tech->getTextureDefinition("mrt1"), "[CompositorManager] mrt1 failed to create");
   ASSERTION(tech->getTextureDefinition("mrt2"), "[CompositorManager] mrt2 failed to create");
 
-  compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, true);
+  compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 }
 
-void CompositorManager::InitNoMRT() {
+void CompositorManager::InitNoMRT(bool enable) {
   auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, "NoMRT", 0);
   ASSERTION(mrtCompositor, "[CompositorManager] Failed to add MRT compositor");
 
@@ -129,10 +129,10 @@ void CompositorManager::InitNoMRT() {
 
   ASSERTION(tech->getTextureDefinition("rt"), "[CompositorManager] rt texture failed to create");
 
-  compositorManager->setCompositorEnabled(ogreViewport, "NoMRT", true);
+  compositorManager->setCompositorEnabled(ogreViewport, "NoMRT", enable);
 }
 
-void CompositorManager::InitMipChain() {
+void CompositorManager::InitMipChain(bool enable) {
   auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR, 1);
   ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
 
@@ -154,13 +154,13 @@ void CompositorManager::InitMipChain() {
   ASSERTION(tech->getTextureDefinition("rt12"), "[CompositorManager] rt12 texture failed to create");
   ASSERTION(tech->getTextureDefinition("rt13"), "[CompositorManager] rt13 texture failed to create");
 
-  compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, false);
+  compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, enable);
 
   for (int i = 0; i < mipChain; i++) {
     string name = BLOOM_COMPOSITOR + "It" + to_string(i);
     auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name, i + 2);
     ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compoitor");
-    compositorManager->setCompositorEnabled(ogreViewport, name, false);
+    compositorManager->setCompositorEnabled(ogreViewport, name, enable);
   }
 }
 

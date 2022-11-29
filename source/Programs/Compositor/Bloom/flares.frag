@@ -13,7 +13,7 @@
 
 in vec2 vUV0;
 uniform sampler2D uSampler;
-uniform vec2 TexelSize;
+uniform vec2 TexelSize0;
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Ghosts()
@@ -27,7 +27,7 @@ vec3 Ghosts()
         float d = distance(suv, vec2(0.5));
         float weight = 1.0 - smoothstep(0.0, 0.75, d); // reduce contributions from samples at the screen edge
         //vec3 s = texture2D(uSampler, uv).rgb;
-        vec3 s = Downscale4x4(uSampler, uv, TexelSize);
+        vec3 s = Downscale4x4(uSampler, uv, TexelSize0);
         ret += s * weight;
     }
 
@@ -43,7 +43,7 @@ vec3 Ghosts()
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec3 color = Downscale4x4(uSampler, vUV0, TexelSize);
+    vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
     color += Ghosts();
     FragColor.rgb = color;
 }
