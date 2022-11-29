@@ -9,28 +9,57 @@
 #endif
 
 #include "header.frag"
-#include "srgb.glsl"
+#include "filters.glsl"
+
 
 in vec2 vUV0;
 uniform sampler2D uSampler;
-uniform vec2 TexelSize;
+uniform vec2 TexelSize0;
 uniform float uThreshhold;
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ApplyThreshold(const vec3 color, const float threshold)
+vec3 _Downscale4x4(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+{
+  vec3 A = texture2D(sampler, uv + tsize * vec2(-1.0, -1.0)).rgb;
+  vec3 B = texture2D(sampler, uv + tsize * vec2( 0.0, -1.0)).rgb;
+  vec3 C = texture2D(sampler, uv + tsize * vec2( 1.0, -1.0)).rgb;
+  vec3 D = texture2D(sampler, uv + tsize * vec2(-0.5, -0.5)).rgb;
+  vec3 E = texture2D(sampler, uv + tsize * vec2( 0.5, -0.5)).rgb;
+  vec3 F = texture2D(sampler, uv + tsize * vec2(-1.0,  0.0)).rgb;
+  vec3 G = texture2D(sampler, uv                           ).rgb;
+  vec3 H = texture2D(sampler, uv + tsize * vec2( 1.0,  0.0)).rgb;
+  vec3 I = texture2D(sampler, uv + tsize * vec2(-0.5,  0.5)).rgb;
+  vec3 J = texture2D(sampler, uv + tsize * vec2( 0.5,  0.5)).rgb;
+  vec3 K = texture2D(sampler, uv + tsize * vec2(-1.0,  1.0)).rgb;
+  vec3 L = texture2D(sampler, uv + tsize * vec2( 0.0,  1.0)).rgb;
+  vec3 M = texture2D(sampler, uv + tsize * vec2( 1.0,  1.0)).rgb;
+
+  vec3 color = (D + E + I + J) * 0.125;
+  color += (A + B + G + F) * 0.03125;
+  color += (B + C + H + G) * 0.03125;
+  color += (F + G + L + K) * 0.03125;
+  color += (G + H + M + L) * 0.03125;
+
+  return color;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 Threshold(const vec3 color, const float threshold)
 {
   // convert rgb to grayscale/brightness
-  float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
-  if (brightness > threshold) {
+//  float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+  float brightness = max(color.x, max(color.y, color.z));
+
+  if (brightness > threshold)
     return color;
-  } else {
+  else
     return vec3(0.0);
-  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(uSampler, vUV0).rgb;
-  FragColor.rgb = ApplyThreshold(color, uThreshhold);
+  vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
+  FragColor.rgb = Threshold(color, uThreshhold);
 }

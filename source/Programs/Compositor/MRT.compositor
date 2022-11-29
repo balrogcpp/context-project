@@ -85,7 +85,7 @@ compositor Bloom
     technique
     {
         texture_ref rt MRT rt
-        texture rt0 target_width_scaled 1 target_height_scaled 1 PF_R11G11B10_FLOAT chain_scope
+        texture rt0 target_width_scaled 1 target_height_scaled 1 PF_FLOAT16_RGB chain_scope
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT chain_scope
         texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT chain_scope
         texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT chain_scope
@@ -97,21 +97,12 @@ compositor Bloom
         texture rt9 target_width_scaled 0.001953125 target_height_scaled 0.001953125 PF_R11G11B10_FLOAT chain_scope
         texture rt10 target_width_scaled 0.0009765625 target_height_scaled 0.0009765625 PF_R11G11B10_FLOAT chain_scope
 
-        target rt0
+        target rt1
         {
             pass render_quad
             {
                 material Bloom_threshold
                 input 0 rt
-            }
-        }
-
-        target rt1
-        {
-            pass render_quad
-            {
-                material Downscale4x4
-                input 0 rt0
             }
         }
 

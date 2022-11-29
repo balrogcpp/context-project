@@ -28,6 +28,8 @@ material Bloom_threshold
 			fragment_program_ref bloom_threshold_fs
 			{
                 param_named uSampler int 0
+
+                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
 			texture_unit scene
@@ -118,7 +120,8 @@ material Flares
 			fragment_program_ref flares_fs
 			{
                 param_named uSampler int 0
-                param_named_auto TexelSize inverse_texture_size 0
+
+                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
 			texture_unit rt

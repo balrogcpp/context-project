@@ -111,6 +111,7 @@ vec3 GaussH(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 vec3 Upscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(sampler, uv + tsize * vec2(-1.0, -1.0)).rgb;
@@ -123,9 +124,9 @@ vec3 Upscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
   vec3 H = texture2D(sampler, uv + tsize * vec2(0.0,  1.0)).rgb;
   vec3 I = texture2D(sampler, uv + tsize * vec2(1.0, 1.0)).rgb;
 
-  vec3 color = E * 0.25; // 4/16
-  color += (A + C + G + I) * 0.0625; // 1/16
-  color += (B + D + F + H) * 0.125; // 2/16
+  vec3 color = E * 0.25;
+  color += (B + D + F + H) * 0.125;
+  color += (A + C + G + I) * 0.0625;
 
   return color;
 }
@@ -157,6 +158,7 @@ vec3 Downscale2x2(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 vec3 Downscale4x4(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(sampler, uv + tsize * vec2(-1.0, -1.0)).rgb;
@@ -173,11 +175,11 @@ vec3 Downscale4x4(const sampler2D sampler, const vec2 uv, const vec2 tsize)
   vec3 L = texture2D(sampler, uv + tsize * vec2( 0.0,  1.0)).rgb;
   vec3 M = texture2D(sampler, uv + tsize * vec2( 1.0,  1.0)).rgb;
 
-  vec3 color = (D + E + I + J) * 0.125; // 1/8
-  color += (A + B + G + F) * 0.03125; // 1/32
-  color += (B + C + H + G) * 0.03125; // 1/32
-  color += (F + G + L + K) * 0.03125; // 1/32
-  color += (G + H + M + L) * 0.03125; // 1/32
+  vec3 color = (D + E + I + J) * 0.125;
+  color += (A + B + G + F) * 0.03125;
+  color += (B + C + H + G) * 0.03125;
+  color += (F + G + L + K) * 0.03125;
+  color += (G + H + M + L) * 0.03125;
 
   return color;
 }

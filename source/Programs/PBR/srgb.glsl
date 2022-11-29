@@ -29,6 +29,7 @@ vec4 SRGBtoLINEAR(const vec4 srgbIn)
   vec3 linOut = srgbIn.rgb * srgbIn.rgb;
 #else
   vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
+  //vec3 linOut = srgbIn.rgb * (srgbIn.rgb * (srgbIn.rgb * 0.305306011 + 0.682171111) + 0.012522878);
 #endif
 #else //SRGB_FAST_APPROXIMATION
   vec3 bLess = step(vec3(0.04045),srgbIn.rgb);
@@ -49,6 +50,7 @@ vec3 SRGBtoLINEAR(const vec3 srgbIn)
   vec3 linOut = srgbIn.xyz * srgbIn.xyz;
 #else
   vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
+  //vec3 linOut = srgbIn.rgb * (srgbIn.rgb * (srgbIn.rgb * 0.305306011 + 0.682171111) + 0.012522878);
 #endif
   #else //SRGB_FAST_APPROXIMATION
   vec3 bLess = step(vec3(0.04045),srgbIn.rgb);
