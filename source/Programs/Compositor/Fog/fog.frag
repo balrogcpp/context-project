@@ -22,7 +22,8 @@ uniform float FarClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
+  vec3 color = texture2D(uSceneSampler, vUV0).rgb;
   float clampedDepth = texture2D(uSceneDepthSampler, vUV0).r;
-  FragColor.rgb = ApplyFog(scene, FogParams, FogColour, clampedDepth * FarClipDistance);
+  vec3 fog = ApplyFog(color, FogParams, FogColour, clampedDepth * FarClipDistance);
+  FragColor.rgb = fog;
 }
