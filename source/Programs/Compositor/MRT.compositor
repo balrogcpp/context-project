@@ -84,8 +84,7 @@ compositor Bloom
 {
     technique
     {
-        texture_ref rt MRT rt
-        texture rt0 target_width_scaled 1 target_height_scaled 1 PF_R11G11B10_FLOAT chain_scope
+        texture_ref rt0 MRT rt
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT chain_scope
         texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT chain_scope
         texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT chain_scope
@@ -105,7 +104,7 @@ compositor Bloom
             pass render_quad
             {
                 material Bloom_threshold
-                input 0 rt
+                input 0 rt0
             }
         }
 
@@ -197,8 +196,7 @@ abstract compositor BloomIt
 {
     technique
     {
-        texture_ref rt MRT rt
-        texture_ref rt0 Bloom rt0
+        texture_ref rt0 MRT rt
         texture_ref rt1 Bloom rt1
         texture_ref rt2 Bloom rt2
         texture_ref rt3 Bloom rt3
@@ -224,18 +222,9 @@ compositor BloomIt0 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -259,18 +248,9 @@ compositor BloomIt1 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -303,18 +283,9 @@ compositor BloomIt2 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -356,18 +327,9 @@ compositor BloomIt3 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -418,18 +380,9 @@ compositor BloomIt4 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -489,18 +442,9 @@ compositor BloomIt5 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -560,18 +504,9 @@ compositor BloomIt6 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -640,18 +575,9 @@ compositor BloomIt7 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -729,18 +655,9 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -828,18 +745,9 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -935,18 +843,9 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -1051,18 +950,9 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -1176,18 +1066,9 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
@@ -1301,18 +1182,9 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
-                input 0 rt1
-            }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
                 material Bloom_mod
-                input 0 rt
-                input 1 rt0
+                input 0 rt0
+                input 1 rt1
             }
         }
     }
