@@ -130,7 +130,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Bloom_feat
                 input 0 rt3
             }
         }
