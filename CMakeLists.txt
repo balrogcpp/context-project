@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.18.1)
 
 
 # project version
-project(engine VERSION 0.1.0)
+project(ENGINE VERSION 0.1.0)
 
 
 # cxx standard
