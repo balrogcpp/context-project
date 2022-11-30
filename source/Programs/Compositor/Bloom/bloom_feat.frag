@@ -15,6 +15,7 @@
 in vec2 vUV0;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize0;
+uniform vec2 TexSize0;
 uniform vec4 ViewportSize;
 
 
@@ -46,7 +47,7 @@ vec3 SampleHalo(const sampler2D tex, const vec2 _uv, const float radius)
    vec2 ghostVec = (vec2(0.5) - uv) * 0.5;
    vec2 haloVec = normalize(ghostVec) * radius;
 
-  vec2 uvw = normalize(uv * ViewportSize.xy);
+  vec2 uvw = normalize(uv * TexSize0.xy);
    float weight = length(vec2(0.5) - fract(uvw + haloVec)) / length(vec2(0.5));
    weight = pow(1.0 - weight, 5.0);
    vec3 s = texture2D(tex, uv + haloVec).rgb;
