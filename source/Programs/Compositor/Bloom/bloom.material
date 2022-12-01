@@ -126,6 +126,7 @@ material Bloom_feat
             {
                 param_named uChromaticRadius float 0.01
                 param_named uSampler int 0
+                param_named uLensMask int 1
 
                 param_named_auto TexelSize0 inverse_texture_size 0
             }
@@ -133,6 +134,13 @@ material Bloom_feat
             texture_unit rt
             {
                 texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+            texture_unit mask
+            {
+                texture lens_dirt.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none

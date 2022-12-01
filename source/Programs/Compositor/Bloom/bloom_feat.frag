@@ -10,10 +10,12 @@
 
 #include "header.frag"
 #include "filters.glsl"
+#include "srgb.glsl"
 
 
 in vec2 vUV0;
 uniform sampler2D uSampler;
+uniform sampler2D uLensMask;
 uniform vec2 TexelSize0;
 uniform float uChromaticRadius;
 
@@ -58,7 +60,6 @@ vec3 SampleHalo(const sampler2D tex, const vec2 _uv, const float radius)
 {
   vec2 uv = vec2(1.0) - _uv;
   vec2 haloVec = (vec2(0.5) - uv) * 0.5;
-  //haloVec = normalize(haloVec);
 
   float aspectRatio = TexelSize0.x / TexelSize0.y;
   haloVec.x /= aspectRatio;
@@ -80,5 +81,7 @@ void main()
   vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
   color += SampleGhosts(uSampler, vUV0);
   color += SampleHalo(uSampler, vUV0, 1.0);
+  color *= SRGBtoLINEAR(vec3(texture2D(uLensMask, vUV0).r));
+
   FragColor.rgb = color;
 }
