@@ -425,7 +425,7 @@ void main()
     vec3 total_colour = vec3(0.0);
 
 #ifdef TERRAIN
-    float globalShadow = BoxFilter9R(uGlobalShadowSampler, vUV0.xy, TexelSize5.xy);
+    float globalShadow = BoxFilter4R(uGlobalShadowSampler, vUV0.xy, TexelSize5.xy);
 #else
     float globalShadow = 1.0;
 #endif
@@ -535,7 +535,7 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += 100.0 * SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
+    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
 #else
     total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
