@@ -18,7 +18,6 @@ uniform vec2 TexelSize1;
 uniform float mipCount;
 
 
-
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Upscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
@@ -38,7 +37,6 @@ vec3 Upscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 
   return color;
 }
-
 
 
 //----------------------------------------------------------------------------------------------------------------------
