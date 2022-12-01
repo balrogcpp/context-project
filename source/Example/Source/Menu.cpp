@@ -21,13 +21,12 @@ void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {
 }
 
 void Menu::OnSetUp() {
-//#ifdef MOBILE
+#ifdef MOBILE
   int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
-  GetComponent<VideoManager>().GetWindow().SetVsyncInterval(4);
   GetComponent<CompositorManager>().SetFixedViewportSize(x / 2, y / 2);
   GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
-//#endif
+#endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
   // auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
