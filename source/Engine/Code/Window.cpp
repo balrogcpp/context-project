@@ -15,11 +15,12 @@ inline void ParseSDLError(bool result, const char *message = "") {
 }  // namespace
 
 namespace Glue {
-Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI), vsync(true), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
+Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI), vsync(true), vsyncInt(1), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
 #ifdef EMSCRIPTEN
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
 #ifdef MOBILE
+  vsyncInt = 2;
   fullscreen = true;
 #endif
 }
@@ -137,10 +138,12 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["gamma"] = FALSE_STR;
   renderParams["FSAA"] = to_string(0);
   renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
-  SDL_GL_SetSwapInterval(vsync ? 1 : 0);
+  renderParams["vsyncInterval"] = to_string(vsyncInt);
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
   ogreWindow = ogreRoot->createRenderWindow("Default", sizeX, sizeY, fullscreen, &renderParams);
+  SDL_GL_SetSwapInterval(vsync ? vsyncInt : 0);
+  ogreWindow->setVSyncInterval(vsyncInt);
   renderTarget = ogreRoot->getRenderTarget("Default");
   ogreViewport = renderTarget->addViewport(ogreCamera);
 

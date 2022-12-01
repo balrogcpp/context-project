@@ -14,6 +14,7 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
   void SetCompositorEnabled(const std::string& name, bool enable);
 
   void SetFixedViewportSize(int x, int y);
+  void SetFixedViewport(bool fixed);
 
  protected:
   /// System impl
@@ -31,7 +32,8 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
 
   const std::string MRT_COMPOSITOR;
   const std::string BLOOM_COMPOSITOR;
-  const int mipChain;
+  int mipChain;
+  bool oddMipsOnly;
   bool fixedViewportSize;
   int forceSizeX, forceSizeY;
 

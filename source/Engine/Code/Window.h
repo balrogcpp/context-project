@@ -69,6 +69,7 @@ class Window : public WindowListener {
   int sizeY;
   uint32_t sdlFlags;
   bool vsync;
+  int vsyncInt;
   uint32_t id;
 
   SDL_Window* sdlWindow = nullptr;

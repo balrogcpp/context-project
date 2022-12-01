@@ -21,9 +21,13 @@ void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {
 }
 
 void Menu::OnSetUp() {
-#ifdef ANDROID
-  GetComponent<CompositorManager>().SetFixedViewportSize(1024, 768);
-#endif
+//#ifdef MOBILE
+  int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
+  int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
+  GetComponent<VideoManager>().GetWindow().SetVsyncInterval(4);
+  GetComponent<CompositorManager>().SetFixedViewportSize(x / 2, y / 2);
+  GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
+//#endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
   // auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
@@ -44,6 +48,10 @@ void Menu::BeforeRender(float time) {
   ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
+
+#ifdef MOBILE
+  return;
+#endif
 
   static VideoManager &manager = GetComponent<VideoManager>();
   static SystemLocator &system = GetComponent<SystemLocator>();

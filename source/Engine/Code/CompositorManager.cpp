@@ -6,9 +6,20 @@
 
 using namespace std;
 
+namespace {
+inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
+inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
+inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
+}  // namespace
+
 namespace Glue {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(14) {}
+    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(14), oddMipsOnly(false) {
+  if (RenderSystemIsGLES2()) {
+    mipChain /= 2;
+    oddMipsOnly = true;
+  }
+}
 CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
@@ -60,11 +71,19 @@ void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
     for (int i = 0; i < mipChain; i++) {
       string newName = BLOOM_COMPOSITOR + "It" + to_string(i);
       ASSERTION(compositorChain->getCompositorPosition(newName) != Ogre::CompositorChain::NPOS, "[CompositorManager] Failed to find Bloom compositor");
-      compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
+
+      if (!oddMipsOnly) {
+        compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
+      } else if (i % 2 == 1) {
+        compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
+      } else {
+        compositorManager->setCompositorEnabled(ogreViewport, newName, false);
+      }
     }
   }
 }
 
+void CompositorManager::SetFixedViewport(bool fixed) { fixedViewportSize = fixed; }
 void CompositorManager::SetFixedViewportSize(int x, int y) {
   fixedViewportSize = (x > 0) && (y > 0);
 
@@ -159,7 +178,7 @@ void CompositorManager::InitMipChain(bool enable) {
   for (int i = 0; i < mipChain; i++) {
     string name = BLOOM_COMPOSITOR + "It" + to_string(i);
     auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name, i + 2);
-    ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compoitor");
+    ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compositor");
     compositorManager->setCompositorEnabled(ogreViewport, name, enable);
   }
 }
