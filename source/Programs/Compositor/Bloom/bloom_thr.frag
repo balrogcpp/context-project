@@ -53,6 +53,7 @@ vec3 Threshold(const vec3 color, const float threshold)
   return max(color - vec3(threshold), vec3(0.0));
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {

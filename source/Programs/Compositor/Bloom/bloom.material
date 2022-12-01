@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 fragment_program bloom_threshold_fs glsl glsles
 {
-	source bloom_threshold.frag
+	source bloom_thr.frag
 
     default_params
     {
@@ -124,6 +124,7 @@ material Bloom_feat
 
             fragment_program_ref bloom_feat_fs
             {
+                param_named uChromaticRadius float 0.01
                 param_named uSampler int 0
 
                 param_named_auto TexelSize0 inverse_texture_size 0

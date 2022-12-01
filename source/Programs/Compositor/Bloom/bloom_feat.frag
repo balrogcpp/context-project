@@ -15,7 +15,20 @@
 in vec2 vUV0;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize0;
+uniform float uChromaticRadius;
 
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 SampleChromatic(const sampler2D tex, const vec2 _uv, const float radius)
+{
+  vec2 offset = normalize(vec2(0.5) - _uv) * radius;
+
+  return vec3(
+    texture2D(tex, _uv + offset).r,
+    texture2D(tex, _uv).g,
+    texture2D(tex, _uv - offset).b
+  );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 SampleGhosts(const sampler2D tex, const vec2 _uv)
@@ -27,7 +40,7 @@ vec3 SampleGhosts(const sampler2D tex, const vec2 _uv)
   for (float i = 1.0; i < 2.0; i += 1.0)
   {
     vec2 suv = fract(uv + ghostVec * vec2(i));
-    vec3 s = texture2D(tex, suv).rgb;
+    vec3 s = SampleChromatic(tex, suv, uChromaticRadius);
 
     //float d = length(vec2(0.5) - suv) / length(vec2(0.5));
     float d = distance(suv, vec2(0.5));
@@ -53,10 +66,9 @@ vec3 SampleHalo(const sampler2D tex, const vec2 _uv, const float radius)
   haloVec.x *= aspectRatio;
   haloVec *= 0.5 * radius;
 
-  //float d = length(vec2(0.5) - fract(uv + haloVec)) / length(vec2(0.5));
   float d = distance(fract(uv + haloVec), vec2(0.5));
   float weight = pow(1.0 - d, 10.0);
-  vec3 s = texture2D(tex, uv + haloVec).rgb;
+  vec3 s = SampleChromatic(tex, uv + haloVec, uChromaticRadius);
 
  return s * weight;
 }

@@ -9,6 +9,7 @@
 #endif
 
 #include "header.frag"
+#include "math.glsl"
 
 
 in vec2 vUV0;
@@ -40,10 +41,25 @@ vec3 Upscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 
 
 //----------------------------------------------------------------------------------------------------------------------
+float SampleStarburst(const sampler2D tex, const vec2 _uv, const float offset)
+{
+  vec2 uv = _uv - vec2(0.5);
+  //vec2 centerVec = vUv - vec2(0.5);
+  float d = length(uv);
+  float radial = acos(uv.x / d);
+  float mask = texture2D(tex, vec2(radial + offset * 1.0, 0.0)).r * texture2D(tex, vec2(radial - offset * 0.5, 0.0)).r;
+  mask = saturate(mask + (1.0 - smoothstep(0.0, 0.3, d)));
+
+  return mask;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
   vec3 rt = texture2D(uRT, vUV0).rgb;
   vec3 rt0 = Upscale3x3(uRT0, vUV0, TexelSize1);
+  //float w = SampleStarburst(uStarburst, vUV0, 1.0);
 
   FragColor.rgb = rt + rt0 * (1.0 / mipCount);
 }
