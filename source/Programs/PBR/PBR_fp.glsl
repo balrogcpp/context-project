@@ -25,12 +25,12 @@
 
 // in block
 in vec2 vUV0;
-in float vDepth;
-in vec3 vPosition;
+in highp float vDepth;
+in highp vec3 vPosition;
 in vec3 vColor;
 #ifndef NO_MRT
-in vec4 vScreenPosition;
-in vec4 vPrevScreenPosition;
+in highp vec4 vScreenPosition;
+in highp vec4 vPrevScreenPosition;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -40,7 +40,7 @@ in vec3 vNormal;
 #endif
 #endif
 #ifdef HAS_REFLECTION
-in vec4 projectionCoord;
+in highp vec4 projectionCoord;
 #endif
 
 
@@ -85,9 +85,9 @@ uniform sampler2D uReflectionMap;
 #endif
 
 // lights
-uniform float LightCount;
+uniform lowp float LightCount;
 #if MAX_LIGHTS > 0
-uniform vec4 LightPositionArray[MAX_LIGHTS];
+uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
 uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
@@ -108,14 +108,13 @@ uniform vec4 FogParams;
 uniform float FarClipDistance;
 uniform float FrameTime;
 #endif
-uniform float uLOD;
-uniform vec3 CameraPosition;
+uniform highp vec3 CameraPosition;
 #ifdef TERRAIN
-uniform float uTerrainTexScale;
+uniform lowp float uTerrainTexScale;
 #endif
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-uniform float uOffsetScale;
+uniform lowp float uOffsetScale;
 #endif
 #endif
 
@@ -123,8 +122,8 @@ uniform float uOffsetScale;
 // shadow receiver
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-in vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
-uniform float LightCastsShadowsArray[MAX_LIGHTS];
+in highp vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
+uniform lowp float LightCastsShadowsArray[MAX_LIGHTS];
 uniform sampler2D uShadowMap0;
 uniform vec2 ShadowTexel0;
 #if MAX_SHADOW_TEXTURES > 1
@@ -543,12 +542,12 @@ void main()
 #ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
 
-    FragData[1] = vec4(vDepth / FarClipDistance, 0.0, 0.0, 1.0);
+    FragData[1].r = vDepth / FarClipDistance;
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     vec2 velocity = (0.0166667 / FrameTime) * 0.5 * vec2(a - b);
-    FragData[2] = vec4(velocity, 0.0, 1.0);
+    FragData[2].rg = velocity;
 #else
     total_colour = ApplyFog(total_colour, FogParams, FogColour.rgb, vDepth);
     FragColor = LINEARtoSRGB(vec4(total_colour, alpha), 1.0);

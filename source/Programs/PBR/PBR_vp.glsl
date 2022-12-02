@@ -26,10 +26,10 @@ uniform mat4 uWorldViewProjPrev;
 #endif
 #ifdef PAGED_GEOMETRY
 uniform vec3 CameraPosition;
-uniform float Time;
-uniform float uFadeRange;
+uniform mediump float Time;
+uniform mediump float uFadeRange;
 #ifdef GRASS
-uniform float uWindRange;
+uniform mediump float uWindRange;
 #endif
 #endif // PAGED_GEOMETRY
 #ifdef SHADOWRECEIVER
@@ -40,7 +40,7 @@ uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 
 // in block
 #ifndef VERTEX_COMPRESSION
-in vec4 position;
+in vec3 position;
 #else
 in vec2 vertex;
 in float uv0;
@@ -48,20 +48,20 @@ uniform mat4 posIndexToObjectSpace;
 uniform float baseUVScale;
 #endif
 #ifdef HAS_NORMALS
-in vec4 normal;
+in mediump vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-in vec4 tangent;
+in mediump vec4 tangent;
 #endif
 #ifdef HAS_COLORS
-in vec4 colour;
+in mediump vec4 colour;
 #endif
 #ifndef VERTEX_COMPRESSION
 #ifdef HAS_UV
-in vec4 uv0;
+in mediump vec2 uv0;
 #ifdef TREES
-in vec4 uv1;
-in vec4 uv2;
+in mediump vec4 uv1;
+in mediump vec4 uv2;
 #endif
 #endif //  HAS_UV
 #endif //  !VERTEX_COMPRESSION
@@ -112,7 +112,7 @@ vec4 GetProjectionCoord(const vec4 position) {
 
 #ifdef GRASS
 //----------------------------------------------------------------------------------------------------------------------
-vec4 ApplyWaveAnimation(const vec4 position, const float time, const float frequency, const vec4 direction)
+vec4 ApplyWaveAnimation(const vec2 position, const float time, const float frequency, const vec4 direction)
 {
   float n = fbm(position.xy * time) * 2.0 - 2.0;
   return n * direction;
@@ -144,7 +144,7 @@ void main()
 {
 #ifdef HAS_UV
 #ifndef VERTEX_COMPRESSION
-  vec4 new_position = position;
+  vec4 new_position = vec4(position, 1.0);
   vec2 new_uv = uv0.xy;
 #else
   vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
@@ -169,11 +169,11 @@ void main()
 #ifdef PAGED_GEOMETRY
 #ifdef GRASS
   vTBN = mat3(vec3(1.0, 0.0, 0.0),
-              cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)),
+              vec3(0.0, 0.0, 0.0),
               vec3(0.0, 1.0, 0.0));
 
   if (uv0.y < 0.9 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
-    new_position += ApplyWaveAnimation(new_position, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
+    new_position += ApplyWaveAnimation(new_position.xy, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
   }
 #endif
 #ifdef TREES

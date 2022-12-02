@@ -12,9 +12,10 @@
 
 #define USE_MRT
 #include "header.frag"
+#include "math.glsl"
 
-in vec3 vPosition;
-//in vec3 vTexCoords;
+in highp vec3 vPosition;
+//in vec3 vUV0;
 
 uniform vec3 uSunDirection;
 #ifndef GPU_HOSEK
@@ -48,11 +49,12 @@ uniform vec3 uSunColor;
 #ifdef GPU_HOSEK
 #include "hosek.glsl"
 #endif
-#include "atmos.glsl"
-#include "srgb.glsl"
 #ifdef NO_MRT
 #include "fog.glsl"
 #endif
+#include "atmos.glsl"
+#include "srgb.glsl"
+
 
 #ifndef GPU_HOSEK
 //----------------------------------------------------------------------------------------------------------------------
@@ -63,14 +65,15 @@ vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 }
 #endif
 
+
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec3 V = normalize(vPosition);
-    vec3 N = normalize(-uSunDirection);
-    float cos_theta = clamp(V.y, 0.0, 1.0);
-    float cos_gamma = dot(V, N);
-    float gamma = acos(cos_gamma);
+    highp vec3 V = normalize(vPosition);
+    highp vec3 N = normalize(-uSunDirection);
+    highp float cos_theta = clamp(V.y, 0.0, 1.0);
+    highp float cos_gamma = dot(V, N);
+    highp float gamma = acos(cos_gamma);
 #ifndef GPU_HOSEK
     vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 #else
@@ -84,11 +87,11 @@ void main()
 
     if (gamma <= uSunSize) color += uSunColor;
     //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
+    color = SafeHDR(color);
 
 #ifndef NO_MRT
-    FragData[0] = vec4(color, 1.0);
-    FragData[1] = vec4(0.05, 0.0, 0.0, 1.0);
-    FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[0].rgb = color;
+    FragData[1].r = 0.05;
 #else
     color = ApplyFog(color, FogParams, FogColour.rgb, 0.05 * FarClipDistance);
     FragColor.rgb = LINEARtoSRGB(color, 1.0);

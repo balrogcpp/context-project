@@ -26,6 +26,7 @@ void Menu::OnSetUp() {
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
   GetComponent<CompositorManager>().SetFixedViewportSize(x / 1.5, y / 1.5);
   GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
+  //GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 #endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();

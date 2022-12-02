@@ -18,11 +18,11 @@ in vec4 position;
 in vec4 uv0;
 
 out vec3 vPosition;
-//out vec3 vTexCoords; // direction vector representing a 3D texture coordinate
+//out vec3 vUV0; // direction vector representing a 3D texture coordinate
 
 //----------------------------------------------------------------------------------------------------------------------
 void main() {
-    //vTexCoords = uv0.xyz;
+    //vUV0 = uv0.xyz;
     vPosition = position.xyz;
     gl_Position = worldViewProj * position;
 }

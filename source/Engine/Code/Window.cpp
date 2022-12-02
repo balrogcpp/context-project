@@ -20,7 +20,8 @@ Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI), vsync
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
 #ifdef MOBILE
-  vsyncInt = 2;
+  vsync = false;
+  //vsyncInt = 2;
   fullscreen = true;
 #endif
 }

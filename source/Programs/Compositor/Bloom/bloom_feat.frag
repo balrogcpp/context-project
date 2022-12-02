@@ -8,8 +8,10 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
 #include "filters.glsl"
+#include "math.glsl"
 #include "srgb.glsl"
 
 
@@ -44,7 +46,6 @@ vec3 SampleGhosts(const sampler2D tex, const vec2 _uv)
     vec2 suv = fract(uv + ghostVec * vec2(i));
     vec3 s = SampleChromatic(tex, suv, uChromaticRadius);
 
-    //float d = length(vec2(0.5) - suv) / length(vec2(0.5));
     float d = distance(suv, vec2(0.5));
     float weight = pow(1.0 - d, 10.0);
 
@@ -56,10 +57,11 @@ vec3 SampleGhosts(const sampler2D tex, const vec2 _uv)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 SampleHalo(const sampler2D tex, const vec2 _uv, const float radius)
+vec3 SampleHalo(const sampler2D tex, const vec2 _uv)
 {
   vec2 uv = vec2(1.0) - _uv;
   vec2 haloVec = (vec2(0.5) - uv) * 0.5;
+  float radius = 1.0;
 
   float aspectRatio = TexelSize0.x / TexelSize0.y;
   haloVec.x /= aspectRatio;
@@ -71,7 +73,39 @@ vec3 SampleHalo(const sampler2D tex, const vec2 _uv, const float radius)
   float weight = pow(1.0 - d, 10.0);
   vec3 s = SampleChromatic(tex, uv + haloVec, uChromaticRadius);
 
- return s * weight;
+  return s * weight;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 SampleFeatures(const sampler2D tex, const vec2 _uv)
+{
+  vec2 uv = vec2(1.0) - _uv;
+  vec2 ghostVec = (vec2(0.5) - uv) * 0.5;
+  vec3 ret = vec3(0.0);
+
+
+  // ghosts
+  vec2 suv = fract(uv + ghostVec);
+  float d = distance(suv, vec2(0.5));
+  float w = pow(1.0 - d, 10.0);
+
+  vec3 s0 = SampleChromatic(tex, suv, uChromaticRadius);
+  ret += s0 * w;
+
+
+  // halo
+  const float radius = 1.0;
+  float aspectRatio = TexelSize0.x / TexelSize0.y;
+  ghostVec.x /= aspectRatio;
+  ghostVec = normalize(ghostVec);
+  ghostVec.x *= aspectRatio;
+  ghostVec *= 0.5 * radius;
+
+  vec3 s1 = SampleChromatic(tex, uv + ghostVec, uChromaticRadius);
+  ret += s1 * w;
+
+  return ret;
 }
 
 
@@ -79,9 +113,8 @@ vec3 SampleHalo(const sampler2D tex, const vec2 _uv, const float radius)
 void main()
 {
   vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
-  color += SampleGhosts(uSampler, vUV0);
-  color += SampleHalo(uSampler, vUV0, 1.0);
-  color *= SRGBtoLINEAR(vec3(texture2D(uLensMask, vUV0).r));
+  color += SampleFeatures(uSampler, vUV0);
+  color *= SRGBtoLINEAR(texture2D(uLensMask, vUV0).rgb);
 
   FragColor.rgb = color;
 }
