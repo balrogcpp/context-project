@@ -48,10 +48,10 @@ uniform mat4 posIndexToObjectSpace;
 uniform float baseUVScale;
 #endif
 #ifdef HAS_NORMALS
-in vec4 normal;
+in mediump vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-in vec4 tangent;
+in mediump vec4 tangent;
 #endif
 #ifdef HAS_COLORS
 in mediump vec4 colour;
