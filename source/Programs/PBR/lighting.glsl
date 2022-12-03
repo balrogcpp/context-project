@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-#ifndef PBR_GLSL
-#define PBR_GLSL
+#ifndef LIGHT_GLSL
+#define LIGHT_GLSL
 
 #define M_PI 3.141592653589793
 
