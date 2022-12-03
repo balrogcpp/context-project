@@ -19,7 +19,7 @@ vec3 Diffuse(const vec3 diffuseColor)
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
 //----------------------------------------------------------------------------------------------------------------------
-highp vec3 SpecularReflection(const highp vec3 reflectance0, const highp vec3 reflectance90, const highp float VdotH)
+vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const float VdotH)
 {
     return reflectance0 + (reflectance90 - reflectance0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
 }
@@ -30,12 +30,12 @@ highp vec3 SpecularReflection(const highp vec3 reflectance0, const highp vec3 re
 // This implementation is based on [1] Equation 4, and we adopt their modifications to
 // alphaRoughness as input as originally proposed in [2].
 //----------------------------------------------------------------------------------------------------------------------
-highp float GeometricOcclusion(const highp float NdotL, const highp float NdotV, const highp float r)
+float GeometricOcclusion(const float NdotL, const float NdotV, const float r)
 {
-    highp float r2 = (r * r);
-    highp float r3 = (1.0 - r2);
-    highp float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
-    highp float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
+    float r2 = (r * r);
+    float r3 = (1.0 - r2);
+    float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
+    float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
     return attenuationL * attenuationV;
 }
 

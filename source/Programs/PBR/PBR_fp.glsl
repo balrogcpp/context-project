@@ -10,6 +10,7 @@
 #endif
 #endif
 
+
 #define USE_MRT
 #include "header.frag"
 #include "math.glsl"
@@ -409,22 +410,21 @@ void main()
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; i++) {
         if (int(LightCount) <= i) break;
+
         highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
         highp vec3 h = normalize(l + v); // Half vector between both l and v
         highp float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
         // attenuation is property of spot and point light
-        highp float attenuation = 1.0;
+        float attenuation = 1.0;
         vec4 vAttParams = LightAttenuationArray[i];
         float range = vAttParams.x;
 
         if (range > 0.0001) {
-            highp vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
-            highp float fLightD = length(vLightViewH);
-
-            // attenuation
-            highp float fLightD2 = (fLightD * fLightD);
-            highp vec3 vLightView = normalize(vLightViewH);
+            vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
+            float fLightD = length(vLightViewH);
+            float fLightD2 = (fLightD * fLightD);
+            vec3 vLightView = normalize(vLightViewH);
             float attenuation_const = vAttParams.y;
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
@@ -445,30 +445,28 @@ void main()
             }
         }
 
-        highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
-        highp float LdotH = clamp(dot(l, h), 0.0, 1.0);
-        highp float VdotH = clamp(dot(v, h), 0.0, 1.0);
         highp float alphaRoughness = (roughness * roughness);
+        highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
+        float LdotH = clamp(dot(l, h), 0.0, 1.0);
+        float VdotH = clamp(dot(v, h), 0.0, 1.0);
 
         // Calculate the shading terms for the microfacet specular shading model
-        highp vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
+        vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
         vec3 diffuseContrib = (1.0 - F) * Diffuse(diffuseColor);
 
         // Calculation of analytical lighting contribution
-        highp float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
+        float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
         highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
-        highp vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
-        float tmp = ftrim(NdotL * (attenuation));
+        vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
+        float tmp = ftrim(NdotL * attenuation);
 
         // shadow block
         {
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-        //float shadow = 1.0;
-
         if (LightCastsShadowsArray[i] > 0.0001) {
 #if MAX_SHADOW_TEXTURES > 2
-                if (LightAttenuationArray[0].x < 100000.0) {
+                if (range < 10000.0) {
                     tmp *= GetShadow(i);
                 } else {
                     if (i == 0) {
