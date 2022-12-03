@@ -46,8 +46,8 @@ uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #ifndef VERTEX_COMPRESSION
 in highp vec3 position;
 #else
-in highp vec2 vertex;
-in highp float uv0;
+in vec2 vertex;
+in float uv0;
 uniform mat4 posIndexToObjectSpace;
 uniform float baseUVScale;
 #endif
