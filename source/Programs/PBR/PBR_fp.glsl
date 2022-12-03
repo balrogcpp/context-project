@@ -247,19 +247,19 @@ float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-highp mat3 GetTGN()
+mat3 GetTGN()
 {
 // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
 
 #ifdef HAS_NORMALS
-    highp vec3 ng = normalize(vNormal);
+    vec3 ng = normalize(vNormal);
 #else //!HAS_NORMALS
-    highp vec3 ng = cross(dFdx(vPosition), dFdy(vPosition));
+    vec3 ng = cross(dFdx(vPosition), dFdy(vPosition));
 #endif //HAS_NORMALS
 
-    highp vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
-    highp vec3 t = normalize(cross(ng ,b));
+    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
+    vec3 t = normalize(cross(ng ,b));
     return mat3(t, b, ng);
 
 #else //HAS_TANGENTS
@@ -270,16 +270,16 @@ highp mat3 GetTGN()
 
 #ifdef TERRAIN
 //----------------------------------------------------------------------------------------------------------------------
-highp mat3 GetTgnTerrain()
+mat3 GetTgnTerrain()
 {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
-    highp vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
-    highp vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
-    highp vec3 t = normalize(cross(ng ,b));
-    highp mat3 tbn = mat3(t, b, ng);
+    vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
+    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
+    vec3 t = normalize(cross(ng ,b));
+    mat3 tbn = mat3(t, b, ng);
 #else //HAS_TANGENTS
-    highp mat3 tbn = vTBN;
+    mat3 tbn = vTBN;
 #endif //!HAS_TANGENTS
 
     return tbn;
