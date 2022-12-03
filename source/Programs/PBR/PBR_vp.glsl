@@ -10,7 +10,11 @@
 #endif
 #endif
 
+
 #include "header.vert"
+#ifdef GRASS
+#include "noise.glsl"
+#endif
 
 
 #ifndef MAX_SHADOW_TEXTURES
@@ -60,16 +64,16 @@ in mediump vec4 colour;
 #ifdef HAS_UV
 in mediump vec2 uv0;
 #ifdef TREES
-in mediump vec4 uv1;
-in mediump vec4 uv2;
+in vec4 uv1;
+in vec4 uv2;
 #endif
 #endif //  HAS_UV
 #endif //  !VERTEX_COMPRESSION
 
 
 // out block
-out vec2 vUV0;
-out float vDepth;
+out mediump vec2 vUV0;
+out mediump float vDepth;
 out vec3 vPosition;
 out vec3 vColor;
 #ifndef NO_MRT
@@ -95,29 +99,14 @@ out mediump mat3 vTBN;
 
 
 #ifdef GRASS
-#include "noise.glsl"
-#endif
-
-#ifdef HAS_REFLECTION
 //----------------------------------------------------------------------------------------------------------------------
-vec4 GetProjectionCoord(const vec4 position) {
-  return mat4(
-  0.5, 0.0, 0.0, 0.0,
-  0.0, 0.5, 0.0, 0.0,
-  0.0, 0.0, 0.5, 0.0,
-  0.5, 0.5, 0.5, 1.0
-  ) * position;
-}
-#endif
-
-#ifdef GRASS
-//----------------------------------------------------------------------------------------------------------------------
-vec4 ApplyWaveAnimation(const vec2 position, const float time, const float frequency, const vec4 direction)
+mediump vec4 ApplyWaveAnimation(const mediump vec2 position, const mediump float time, const mediump float frequency, const mediump vec4 direction)
 {
-  float n = fbm(position.xy * time) * 2.0 - 2.0;
+  mediump float n = fbm(position.xy * time) * 2.0 - 2.0;
   return n * direction;
 }
 #endif
+
 
 #ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
@@ -125,19 +114,21 @@ vec4 WaveTree(const vec4 v)
 {
   vec4 params = uv1;
   vec4 originPos = uv2;
-
   float radiusCoeff = params.x;
+  float radiusCoeff2 = radiusCoeff * radiusCoeff;
   float heightCoeff = params.y;
+  float heightCoeff2 = heightCoeff * heightCoeff;
   float factorX = params.z;
   float factorY = params.w;
 
-  vec4 result = v;
-  result.y += sin(Time + originPos.z + result.y + result.x) * radiusCoeff * radiusCoeff * factorY;
-  result.x += sin(Time + originPos.z ) * heightCoeff * heightCoeff * factorX;
+  vec4 ret = vec4(0.0);
+  ret.y = sin(Time + originPos.z + v.y + v.x) * radiusCoeff2 * factorY;
+  ret.x = sin(Time + originPos.z ) * heightCoeff2 * factorX;
 
-  return result;
+  return ret;
 }
 #endif
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
@@ -177,15 +168,15 @@ void main()
   }
 #endif
 #ifdef TREES
-    new_position = WaveTree(new_position);
+    new_position += WaveTree(new_position);
 #endif
 #endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-  vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
-  vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
-  vec3 b = cross(n, t) * tangent.w;
+  mediump vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
+  mediump vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
+  mediump vec3 b = cross(n, t) * tangent.w;
   vTBN = mat3(t, b, n);
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
@@ -214,6 +205,10 @@ void main()
 #endif
 
 #ifdef HAS_REFLECTION
-  projectionCoord = GetProjectionCoord(gl_Position);
+  projectionCoord = mat4(0.5, 0.0, 0.0, 0.0,
+                         0.0, 0.5, 0.0, 0.0,
+                         0.0, 0.0, 0.5, 0.0,
+                         0.5, 0.5, 0.5, 1.0
+                         ) * gl_Position;
 #endif
 }
