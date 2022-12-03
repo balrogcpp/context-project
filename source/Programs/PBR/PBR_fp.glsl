@@ -290,9 +290,9 @@ mat3 GetTgnTerrain()
 highp vec3 GetNormal(const vec2 uv)
 {
 #ifdef TERRAIN
-    highp mat3 tbn = GetTgnTerrain();
+    mat3 tbn = GetTgnTerrain();
 #else
-    highp mat3 tbn = GetTGN();
+    mat3 tbn = GetTGN();
 #endif
 
 #ifdef HAS_NORMALMAP
