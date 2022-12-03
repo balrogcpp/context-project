@@ -13,6 +13,7 @@
 #include "math.glsl"
 #include "srgb.glsl"
 
+
 #ifndef MAX_SAMPLES
 #define MAX_SAMPLES 4.0
 #endif
@@ -40,6 +41,7 @@ void main()
     vec2 offset = ((i * invSamples - 0.5) * velocity);
     color += texture2D(uSceneSampler, vUV0 + offset).rgb;
   }
+
   color = SafeHDR(color);
   color *= invSamples;
   FragColor.rgb = color;

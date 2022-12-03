@@ -7,9 +7,9 @@ compositor NoMRT
 {
     technique
     {
-        texture rt target_width target_height PF_BYTE_RGB
+        texture mrt0 target_width target_height PF_BYTE_RGB
 
-        target rt
+        target mrt0
         {
             pass clear {}
 
@@ -21,7 +21,7 @@ compositor NoMRT
             pass render_quad
             {
                 material Bypass
-                input 0 rt
+                input 0 mrt0
             }
         }
     }
@@ -36,9 +36,9 @@ compositor MRT
     technique
     {
         texture mrt target_width target_height PF_FLOAT16_RGB PF_FLOAT16_R PF_FLOAT16_GR
-        texture mrt1 target_width target_height PF_FLOAT16_R chain_scope
-        texture mrt2 target_width target_height PF_FLOAT16_GR chain_scope
-        texture rt target_width target_height PF_FLOAT16_RGB chain_scope
+        texture mrt0 target_width target_height PF_FLOAT16_RGB chain_scope pooled
+        texture mrt1 target_width target_height PF_FLOAT16_R chain_scope pooled
+        texture mrt2 target_width target_height PF_FLOAT16_GR chain_scope pooled
 
         target mrt
         {
@@ -47,7 +47,7 @@ compositor MRT
             pass render_scene {}
         }
 
-        target rt
+        target mrt0
         {
             pass render_quad
             {
@@ -84,20 +84,20 @@ compositor Bloom
 {
     technique
     {
-        texture_ref rt0 MRT rt
-        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT chain_scope
-        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT chain_scope
-        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT chain_scope
-        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT chain_scope
-        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT chain_scope
-        texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT chain_scope
-        texture rt7 target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT chain_scope
-        texture rt8 target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT chain_scope
-        texture rt9 target_width_scaled 0.001953125 target_height_scaled 0.001953125 PF_R11G11B10_FLOAT chain_scope
-        texture rt10 target_width_scaled 0.0009765625 target_height_scaled 0.0009765625 PF_R11G11B10_FLOAT chain_scope
-        texture rt11 target_width_scaled 0.00048828125 target_height_scaled 0.00048828125 PF_R11G11B10_FLOAT chain_scope
-        texture rt12 target_width_scaled 0.000244140625 target_height_scaled 0.000244140625 PF_R11G11B10_FLOAT chain_scope
-        texture rt13 target_width_scaled 0.0001220703125 target_height_scaled 0.0001220703125 PF_R11G11B10_FLOAT chain_scope
+        texture_ref rt0 MRT mrt0
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt7 target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt8 target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt9 target_width_scaled 0.001953125 target_height_scaled 0.001953125 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt10 target_width_scaled 0.0009765625 target_height_scaled 0.0009765625 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt11 target_width_scaled 0.00048828125 target_height_scaled 0.00048828125 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt12 target_width_scaled 0.000244140625 target_height_scaled 0.000244140625 PF_R11G11B10_FLOAT chain_scope pooled
+        texture rt13 target_width_scaled 0.0001220703125 target_height_scaled 0.0001220703125 PF_R11G11B10_FLOAT chain_scope pooled
 
         target rt1
         {
@@ -196,7 +196,7 @@ abstract compositor BloomIt
 {
     technique
     {
-        texture_ref rt0 MRT rt
+        texture_ref rt0 MRT mrt0
         texture_ref rt1 Bloom rt1
         texture_ref rt2 Bloom rt2
         texture_ref rt3 Bloom rt3
@@ -1199,7 +1199,7 @@ compositor SSAO
     technique
     {
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
-        texture_ref rt MRT rt
+        texture_ref rt MRT mrt0
         texture_ref mrt1 MRT mrt1
 
         target ssao
@@ -1245,19 +1245,33 @@ compositor SSAO
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
+abstract compositor FX
+{
+    technique
+    {
+        texture_ref mrt0 MRT mrt0
+        texture_ref mrt1 MRT mrt1
+        texture_ref mrt2 MRT mrt2
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
 compositor Fog
 {
     technique
     {
-        texture_ref rt MRT rt
+        texture_ref mrt0 MRT mrt0
         texture_ref mrt1 MRT mrt1
 
-        target rt
+        target mrt0
         {
             pass render_quad
             {
                 material Fog
-                input 0 rt
+                input 0 mrt0
                 input 1 mrt1
             }
         }
@@ -1272,16 +1286,15 @@ compositor Blur
 {
     technique
     {
-        texture_ref mrt MRT mrt
-        texture_ref rt MRT rt
+        texture_ref mrt0 MRT mrt0
         texture_ref mrt2 MRT mrt2
 
-        target rt
+        target mrt0
         {
             pass render_quad
             {
                 material Blur
-                input 0 rt
+                input 0 mrt0
                 input 1 mrt2
             }
         }
@@ -1296,14 +1309,14 @@ compositor FXAA
 {
     technique
     {
-        texture_ref rt MRT rt
+        texture_ref mrt0 MRT mrt0
 
-        target rt
+        target mrt0
         {
             pass render_quad
             {
                 material FXAA
-                input 0 rt
+                input 0 mrt0
             }
         }
     }
@@ -1317,14 +1330,14 @@ compositor Output
 {
     technique
     {
-        texture_ref rt MRT rt
+        texture_ref mrt0 MRT mrt0
 
         target_output
         {
             pass render_quad
             {
                 material Output
-                input 0 rt
+                input 0 mrt0
             }
         }
     }

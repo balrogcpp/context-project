@@ -8,6 +8,7 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.vert"
 
 in vec4 vertex;
@@ -15,6 +16,8 @@ uniform mat4 worldViewProj;
 
 out vec2 vUV0;
 
+
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
     gl_Position = worldViewProj * vertex;

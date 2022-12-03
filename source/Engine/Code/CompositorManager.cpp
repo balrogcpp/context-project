@@ -16,8 +16,8 @@ namespace Glue {
 CompositorManager::CompositorManager()
     : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(14), oddMipsOnly(false) {
   if (RenderSystemIsGLES2()) {
-    mipChain /= 2;
-    oddMipsOnly = true;
+    mipChain /= 2.0;
+    //oddMipsOnly = true;
   }
 }
 CompositorManager::~CompositorManager() {}
@@ -132,7 +132,7 @@ void CompositorManager::InitMRT(bool enable) {
   auto *tech = mrtCompositor->getTechnique();
 
   ASSERTION(tech->getTextureDefinition("mrt"), "[CompositorManager] mrt texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt"), "[CompositorManager] rt texture failed to create");
+  ASSERTION(tech->getTextureDefinition("mrt0"), "[CompositorManager] mrt0 texture failed to create");
   ASSERTION(tech->getTextureDefinition("mrt1"), "[CompositorManager] mrt1 failed to create");
   ASSERTION(tech->getTextureDefinition("mrt2"), "[CompositorManager] mrt2 failed to create");
 

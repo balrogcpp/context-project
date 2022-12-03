@@ -25,8 +25,8 @@ void Menu::OnSetUp() {
   int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
   GetComponent<CompositorManager>().SetFixedViewportSize(x / 1.5, y / 1.5);
-  //GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
-  //GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
+  GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
+  GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 #endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
@@ -50,7 +50,12 @@ void Menu::BeforeRender(float time) {
   ImGui::End();
 
 #ifdef MOBILE
-  return;
+  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
+  ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) {
+    showMenu = true;
+  }
+  ImGui::End();
 #endif
 
   static VideoManager &manager = GetComponent<VideoManager>();
@@ -64,12 +69,6 @@ void Menu::BeforeRender(float time) {
     window.SetMouseRelativeMode(false);
   }
 
-  //  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
-  //  ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  //  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) {
-  //    showMenu = true;
-  //  }
-  //  ImGui::End();
 
   ImGuiB::SetupImGuiStyle_NeverBlue();
 

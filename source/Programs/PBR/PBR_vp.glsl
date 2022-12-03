@@ -23,10 +23,10 @@
 
 
 // uniform block
-uniform mat4 MVPMatrix;
-uniform mat4 ModelMatrix;
+uniform highp mat4 MVPMatrix;
+uniform highp mat4 ModelMatrix;
 #ifndef NO_MRT
-uniform mat4 uWorldViewProjPrev;
+uniform highp mat4 uWorldViewProjPrev;
 #endif
 #ifdef PAGED_GEOMETRY
 uniform highp vec3 CameraPosition;
@@ -77,8 +77,8 @@ out float vDepth;
 out highp vec3 vPosition;
 out vec3 vColor;
 #ifndef NO_MRT
-out highp vec4 vScreenPosition;
-out highp vec4 vPrevScreenPosition;
+out vec4 vScreenPosition;
+out vec4 vPrevScreenPosition;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS

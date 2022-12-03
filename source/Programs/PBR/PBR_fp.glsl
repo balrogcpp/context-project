@@ -52,8 +52,8 @@ in vec2 vUV0;
 in float vDepth;
 in vec3 vColor;
 #ifndef NO_MRT
-in highp vec4 vScreenPosition;
-in highp vec4 vPrevScreenPosition;
+in vec4 vScreenPosition;
+in vec4 vPrevScreenPosition;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -63,7 +63,7 @@ in vec3 vNormal;
 #endif
 #endif
 #ifdef HAS_REFLECTION
-in highp vec4 projectionCoord;
+in vec4 projectionCoord;
 #endif
 
 
@@ -504,7 +504,7 @@ void main()
 #endif
 
 #ifdef HAS_REFLECTION
-    total_colour = ApplyReflection(total_colour, n, v, metallic);
+    total_colour = ApplyReflection(uReflectionMap, projectionCoord, total_colour, n, v, metallic);
 #endif //HAS_REFLECTION
 
 // Apply optional PBR terms for additional (optional) shading
