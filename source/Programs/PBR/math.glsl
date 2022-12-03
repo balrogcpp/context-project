@@ -142,6 +142,16 @@ bool AnyIsNan(vec4 x)
 }
 
 // Clamp HDR value within a safe range
+float SafeHDR(float c)
+{
+    return min(c, HALF_MAX);
+}
+
+vec2 SafeHDR(vec2 c)
+{
+    return min(c, HALF_MAX);
+}
+
 vec3 SafeHDR(vec3 c)
 {
     return min(c, HALF_MAX);

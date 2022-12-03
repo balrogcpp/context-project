@@ -8,8 +8,10 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
 #include "fog.glsl"
+
 
 in vec2 vUV0;
 uniform sampler2D uSceneSampler;

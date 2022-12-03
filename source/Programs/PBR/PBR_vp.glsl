@@ -26,10 +26,10 @@ uniform mat4 uWorldViewProjPrev;
 #endif
 #ifdef PAGED_GEOMETRY
 uniform vec3 CameraPosition;
-uniform mediump float Time;
-uniform mediump float uFadeRange;
+uniform float Time;
+uniform float uFadeRange;
 #ifdef GRASS
-uniform mediump float uWindRange;
+uniform float uWindRange;
 #endif
 #endif // PAGED_GEOMETRY
 #ifdef SHADOWRECEIVER
@@ -48,10 +48,10 @@ uniform mat4 posIndexToObjectSpace;
 uniform float baseUVScale;
 #endif
 #ifdef HAS_NORMALS
-in mediump vec4 normal;
+in vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-in mediump vec4 tangent;
+in vec4 tangent;
 #endif
 #ifdef HAS_COLORS
 in mediump vec4 colour;
@@ -78,9 +78,9 @@ out vec4 vPrevScreenPosition;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-out mat3 vTBN;
+out mediump mat3 vTBN;
 #else
-out vec3 vNormal;
+out mediump vec3 vNormal;
 #endif
 #endif // HAS_NORMALS
 #ifdef SHADOWRECEIVER
@@ -90,7 +90,7 @@ out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 out vec4 projectionCoord;
 #endif
 #ifdef GRASS
-out mat3 vTBN;
+out mediump mat3 vTBN;
 #endif
 
 

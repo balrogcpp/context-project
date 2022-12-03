@@ -14,6 +14,11 @@
 #include "header.frag"
 
 
+
+#ifndef F0
+#define F0 0.04
+#endif
+
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 0
 #endif
@@ -24,9 +29,9 @@
 
 
 // in block
-in vec2 vUV0;
-in highp float vDepth;
 in highp vec3 vPosition;
+in vec2 vUV0;
+in float vDepth;
 in vec3 vColor;
 #ifndef NO_MRT
 in highp vec4 vScreenPosition;
@@ -106,15 +111,15 @@ uniform vec4 FogParams;
 #endif
 #ifndef NO_MRT
 uniform float FarClipDistance;
-uniform float FrameTime;
+uniform highp float FrameTime;
 #endif
 uniform highp vec3 CameraPosition;
 #ifdef TERRAIN
-uniform lowp float uTerrainTexScale;
+uniform float uTerrainTexScale;
 #endif
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-uniform lowp float uOffsetScale;
+uniform float uOffsetScale;
 #endif
 #endif
 
@@ -244,18 +249,18 @@ float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-mat3 GetTGN()
+highp mat3 GetTGN()
 {
 // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
 #ifdef HAS_NORMALS
-    vec3 ng = normalize(vNormal);
+    highp vec3 ng = normalize(vNormal);
 #else //!HAS_NORMALS
-    vec3 ng = cross(dFdx(vPosition), dFdy(vPosition));
+    highp vec3 ng = cross(dFdx(vPosition), dFdy(vPosition));
 #endif //HAS_NORMALS
 
-    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(ng ,b));
+    highp vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
+    highp vec3 t = normalize(cross(ng ,b));
     return mat3(t, b, ng);
 
 #else //HAS_TANGENTS
@@ -265,16 +270,16 @@ mat3 GetTGN()
 
 #ifdef TERRAIN
 //----------------------------------------------------------------------------------------------------------------------
-mat3 GetTgnTerrain()
+highp mat3 GetTgnTerrain()
 {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
-    vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
-    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(ng ,b));
-    mat3 tbn = mat3(t, b, ng);
+    highp vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
+    highp vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
+    highp vec3 t = normalize(cross(ng ,b));
+    highp mat3 tbn = mat3(t, b, ng);
 #else //HAS_TANGENTS
-    mat3 tbn = vTBN;
+    highp mat3 tbn = vTBN;
 #endif //!HAS_TANGENTS
 
     return tbn;
@@ -282,19 +287,19 @@ mat3 GetTgnTerrain()
 #endif // TERRAIN
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetNormal(const vec2 uv)
+highp vec3 GetNormal(const vec2 uv)
 {
 #ifdef TERRAIN
-    mat3 tbn = GetTgnTerrain();
+    highp mat3 tbn = GetTgnTerrain();
 #else
-    mat3 tbn = GetTGN();
+    highp mat3 tbn = GetTGN();
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, uv).xyz;
+    highp vec3 n = texture2D(uNormalSampler, uv).xyz;
     n = normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
-    vec3 n = tbn[2].xyz;
+    highp vec3 n = tbn[2].xyz;
 #endif
 
     return n;
@@ -343,7 +348,7 @@ vec3 GetORM(const vec2 uv) {
 #ifdef HAS_ORM
     ORM *= texture2D(uORMSampler, uv).rgb;
 #endif
-    return ORM;
+    return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0));
 }
 
 
@@ -372,7 +377,7 @@ vec3 ApplyReflection(const vec3 color, const vec3 n, const vec3 v, const float m
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec3 v = normalize(CameraPosition - vPosition);
+    highp vec3 v = normalize(CameraPosition - vPosition);
     vec2 tex_coord = vUV0.xy;
 #ifdef TERRAIN
     tex_coord *= uTerrainTexScale;
@@ -401,12 +406,9 @@ void main()
     float roughness = ORM.g;
     float metallic = ORM.b;
 
-    roughness = clamp(roughness, F0, 1.0);
-
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    vec3 diffuseColor = color * vec3(1.0 - F0);
-    diffuseColor *= (1.0 - metallic);
+    vec3 diffuseColor = color * ((1.0 - F0) * (1.0 - metallic));
     vec3 specularColor = mix(vec3(F0), color, metallic);
 
     // Compute reflectance.
@@ -417,9 +419,9 @@ void main()
     vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
     vec3 reflectance0 = specularColor.rgb;
 
-    vec3 n = GetNormal(tex_coord);// normal at surface point
+    highp vec3 n = GetNormal(tex_coord);// normal at surface point
 
-    float NdotV = abs(dot(n, v)) + 0.001;
+    float NdotV = clamp(dot(n, v), 0.001, 1.0);
 
     vec3 total_colour = vec3(0.0);
 
@@ -432,26 +434,27 @@ void main()
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; i++) {
         if (int(LightCount) <= i) break;
-        vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
-        vec3 h = normalize(l+v); // Half vector between both l and v
-        float NdotL = clamp(dot(n, l), 0.001, 1.0);
+        highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
+        highp vec3 h = normalize(l + v); // Half vector between both l and v
+        highp float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
-        vec3 vLightView = LightPositionArray[i].xyz - vPosition;
-        float fLightD = length(vLightView);
-        vLightView = normalize(vLightView);
-
-        float fAtten = 1.0;
-        float fSpotT = 1.0;
+        highp float fAtten = 1.0;
+        highp float fSpotT = 1.0;
 
         vec4 vAttParams = LightAttenuationArray[i];
         float range = vAttParams.x;
 
         if (range > 0.0001) {
+            highp vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
+            highp float fLightD = length(vLightViewH);
+            highp float fLightD2 = (fLightD * fLightD);
+            highp vec3 vLightView = normalize(vLightViewH);
+
             float attenuation_const = vAttParams.y;
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
 
-            fAtten = float(fLightD < range) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * (fLightD * fLightD)));
+            fAtten = float(fLightD < range) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             vec3 vSpotParams = LightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;
@@ -466,19 +469,19 @@ void main()
               }
         }
 
-        float NdotH = clamp(dot(n, h), 0.0, 1.0);
-        float LdotH = clamp(dot(l, h), 0.0, 1.0);
-        float VdotH = clamp(dot(v, h), 0.0, 1.0);
-        float alphaRoughness = (roughness * roughness);
+        highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
+        highp float LdotH = clamp(dot(l, h), 0.0, 1.0);
+        highp float VdotH = clamp(dot(v, h), 0.0, 1.0);
+        highp float alphaRoughness = (roughness * roughness);
 
         // Calculate the shading terms for the microfacet specular shading model
-        vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
+        highp vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
         vec3 diffuseContrib = (1.0 - F) * Diffuse(diffuseColor);
 
         // Calculation of analytical lighting contribution
-        float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
-        float D = MicrofacetDistribution(alphaRoughness, NdotH);
-        vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
+        highp float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
+        highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
+        highp vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
         float tmp = (NdotL * (fSpotT * fAtten));
 
         // shadow block
@@ -487,7 +490,7 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
         float shadow = 1.0;
 
-        if (LightCastsShadowsArray[i] > 0.0) {
+        if (LightCastsShadowsArray[i] > 0.0001) {
 #if MAX_SHADOW_TEXTURES > 2
                 if (LightAttenuationArray[0].x < 100000.0) {
                     shadow = (tmp > 0.0001) ? GetShadow(i) : 1.0;
