@@ -19,7 +19,7 @@ uniform float uThreshhold;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-highp vec3 Downscale13T(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+vec3 Downscale13T(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(sampler, uv + tsize * vec2(-1.0, -1.0)).rgb;
   vec3 B = texture2D(sampler, uv + tsize * vec2( 0.0, -1.0)).rgb;
