@@ -110,7 +110,7 @@ uniform sampler2D uReflectionMap;
 // lights
 uniform lowp float LightCount;
 #if MAX_LIGHTS > 0
-uniform highp vec4 LightPositionArray[MAX_LIGHTS];
+uniform vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
 uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
@@ -145,7 +145,7 @@ uniform float uOffsetScale;
 // shadow receiver
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-in highp vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
+in vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 uniform lowp float LightCastsShadowsArray[MAX_LIGHTS];
 uniform sampler2D uShadowMap0;
 uniform vec2 ShadowTexel0;
@@ -251,6 +251,7 @@ highp mat3 GetTGN()
 {
 // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
+
 #ifdef HAS_NORMALS
     highp vec3 ng = normalize(vNormal);
 #else //!HAS_NORMALS
@@ -262,6 +263,7 @@ highp mat3 GetTGN()
     return mat3(t, b, ng);
 
 #else //HAS_TANGENTS
+
     return vTBN;
 #endif //!HAS_TANGENTS
 }
