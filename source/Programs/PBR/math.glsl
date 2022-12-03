@@ -78,6 +78,16 @@ float fbigger(float x, float y)
     return saturate((x - y) * FLT_MAX);
 }
 
+float fnull(float x)
+{
+    return saturate((x - EPSILON) * FLT_MAX);
+}
+
+float ftrim(float x)
+{
+    return clamp((x - EPSILON), 0.0, FLT_MAX);
+}
+
 float fsign(float x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;

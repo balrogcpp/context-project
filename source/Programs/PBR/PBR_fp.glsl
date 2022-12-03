@@ -12,7 +12,24 @@
 
 #define USE_MRT
 #include "header.frag"
-
+#include "math.glsl"
+#include "srgb.glsl"
+#ifdef NO_MRT
+#include "fog.glsl"
+#endif
+#include "lighting.glsl"
+#ifdef USE_IBL
+#include "ibl.glsl"
+#endif
+#ifdef SHADOWRECEIVER
+#include "receiver.glsl"
+#endif
+#ifdef TERRAIN
+#include "filters.glsl"
+#endif
+#ifdef HAS_REFLECTION
+#include "reflection.glsl"
+#endif
 
 
 #ifndef F0
@@ -166,25 +183,6 @@ uniform int ShadowFilterIterations;
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER
 
-
-// includes
-#include "srgb.glsl"
-#ifdef NO_MRT
-#include "fog.glsl"
-#endif
-#include "lighting.glsl"
-#ifdef USE_IBL
-#include "ibl.glsl"
-#endif
-#ifdef SHADOWRECEIVER
-#include "receiver.glsl"
-#endif
-#ifdef TERRAIN
-#include "filters.glsl"
-#endif
-#ifdef HAS_REFLECTION
-#include "reflection.glsl"
-#endif
 
 // helper functions
 #ifdef SHADOWRECEIVER
@@ -460,35 +458,35 @@ void main()
         highp float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
         highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
         highp vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
-        float tmp = (NdotL * (attenuation));
+        float tmp = ftrim(NdotL * (attenuation));
 
         // shadow block
         {
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-        float shadow = 1.0;
+        //float shadow = 1.0;
 
         if (LightCastsShadowsArray[i] > 0.0001) {
 #if MAX_SHADOW_TEXTURES > 2
                 if (LightAttenuationArray[0].x < 100000.0) {
-                    shadow = (tmp > 0.0001) ? GetShadow(i) : 1.0;
+                    tmp *= GetShadow(i);
                 } else {
                     if (i == 0) {
-                        shadow = (tmp > 0.0001) ? CalcPSSMDepthShadow(uPssmSplitPoints, \
+                        tmp *= CalcPSSMDepthShadow(uPssmSplitPoints, \
                                                     LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
-                                                    uShadowMap0, uShadowMap1, uShadowMap2) : 1.0;
+                                                    uShadowMap0, uShadowMap1, uShadowMap2);
                     } else {
-                        shadow = (tmp > 0.0001) ? GetShadow(i + 2) : 1.0;
+                        tmp *= GetShadow(i + 2);
                     }
                 }
 #else
-                shadow = (tmp > 0.0001) ? GetShadow(i) : 1.0;
+                tmp *= GetShadow(i);
 #endif
         }
 #ifdef TERRAIN
-        shadow = min(shadow, globalShadow);
+        tmp = min(tmp, globalShadow);
 #endif
-        total_colour += ShadowColour.rgb * color + (shadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
+        total_colour += ShadowColour.rgb * color + tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
 #endif
 #else
     total_colour += (globalShadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
