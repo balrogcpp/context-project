@@ -29,8 +29,8 @@ uniform mat4 ModelMatrix;
 uniform mat4 uWorldViewProjPrev;
 #endif
 #ifdef PAGED_GEOMETRY
-uniform vec3 CameraPosition;
-uniform float Time;
+uniform highp vec3 CameraPosition;
+uniform highp float Time;
 uniform float uFadeRange;
 #ifdef GRASS
 uniform float uWindRange;
@@ -44,25 +44,25 @@ uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 
 // in block
 #ifndef VERTEX_COMPRESSION
-in vec3 position;
+in highp vec3 position;
 #else
-in vec2 vertex;
-in float uv0;
+in highp vec2 vertex;
+in highp float uv0;
 uniform mat4 posIndexToObjectSpace;
 uniform float baseUVScale;
 #endif
 #ifdef HAS_NORMALS
-in mediump vec4 normal;
+in vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-in mediump vec4 tangent;
+in vec4 tangent;
 #endif
 #ifdef HAS_COLORS
-in mediump vec4 colour;
+in vec4 colour;
 #endif
 #ifndef VERTEX_COMPRESSION
 #ifdef HAS_UV
-in mediump vec2 uv0;
+in vec2 uv0;
 #ifdef TREES
 in vec4 uv1;
 in vec4 uv2;
@@ -72,19 +72,19 @@ in vec4 uv2;
 
 
 // out block
-out mediump vec2 vUV0;
-out mediump float vDepth;
-out vec3 vPosition;
+out vec2 vUV0;
+out float vDepth;
+out highp vec3 vPosition;
 out vec3 vColor;
 #ifndef NO_MRT
-out vec4 vScreenPosition;
-out vec4 vPrevScreenPosition;
+out highp vec4 vScreenPosition;
+out highp vec4 vPrevScreenPosition;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-out mediump mat3 vTBN;
+out mat3 vTBN;
 #else
-out mediump vec3 vNormal;
+out vec3 vNormal;
 #endif
 #endif // HAS_NORMALS
 #ifdef SHADOWRECEIVER
@@ -94,15 +94,15 @@ out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 out vec4 projectionCoord;
 #endif
 #ifdef GRASS
-out mediump mat3 vTBN;
+out mat3 vTBN;
 #endif
 
 
 #ifdef GRASS
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec4 ApplyWaveAnimation(const mediump vec2 position, const mediump float time, const mediump float frequency, const mediump vec4 direction)
+vec4 ApplyWaveAnimation(const vec2 position, const float time, const float frequency, const vec4 direction)
 {
-  mediump float n = fbm(position.xy * time) * 2.0 - 2.0;
+  float n = fbm(position.xy * time) * 2.0 - 2.0;
   return n * direction;
 }
 #endif
@@ -174,9 +174,9 @@ void main()
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-  mediump vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
-  mediump vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
-  mediump vec3 b = cross(n, t) * tangent.w;
+  vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
+  vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
+  vec3 b = cross(n, t) * tangent.w;
   vTBN = mat3(t, b, n);
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));

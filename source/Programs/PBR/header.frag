@@ -20,11 +20,6 @@
 
 #ifndef GL_ES
 
-#define precision
-#define highp
-#define mediump
-#define lowp
-
 #if __VERSION__ >= 150
 #define varying in
 #define texture1D texture
