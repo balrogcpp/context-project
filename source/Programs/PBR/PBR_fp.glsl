@@ -415,24 +415,25 @@ void main()
         highp vec3 h = normalize(l + v); // Half vector between both l and v
         highp float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
-        highp float fAtten = 1.0;
-        highp float fSpotT = 1.0;
-
+        // attenuation is property of spot and point light
+        highp float attenuation = 1.0;
         vec4 vAttParams = LightAttenuationArray[i];
         float range = vAttParams.x;
 
         if (range > 0.0001) {
             highp vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
             highp float fLightD = length(vLightViewH);
+
+            // attenuation
             highp float fLightD2 = (fLightD * fLightD);
             highp vec3 vLightView = normalize(vLightViewH);
-
             float attenuation_const = vAttParams.y;
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
 
-            fAtten = float(fLightD < range) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
+            attenuation = clamp((range - fLightD) * 3.402823466e+38, 0.0, 1.0) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
+            // spotlight
             vec3 vSpotParams = LightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;
 
@@ -442,8 +443,8 @@ void main()
 
                 float rho = dot(l, vLightView);
                 float fSpotE = clamp((rho - inner_radius) / (fallof - inner_radius), 0.0, 1.0);
-                fSpotT = pow(fSpotE, outer_radius);
-              }
+                attenuation *= pow(fSpotE, outer_radius);
+            }
         }
 
         highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
@@ -459,7 +460,7 @@ void main()
         highp float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
         highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
         highp vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
-        float tmp = (NdotL * (fSpotT * fAtten));
+        float tmp = (NdotL * (attenuation));
 
         // shadow block
         {

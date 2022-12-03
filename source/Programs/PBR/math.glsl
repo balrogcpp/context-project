@@ -73,6 +73,11 @@ vec4 saturate(vec4 x)
 }
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
+float fbigger(float x, float y)
+{
+    return saturate((x - y) * FLT_MAX);
+}
+
 float fsign(float x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;

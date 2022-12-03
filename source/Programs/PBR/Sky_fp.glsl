@@ -77,8 +77,7 @@ void main()
 #ifndef GPU_HOSEK
     vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 #else
-    float theta = acos(cos_theta);
-    vec3 color = sample_sky(theta, gamma, N.y, N.x);
+    vec3 color = sample_sky(acos(cos_theta), gamma, N.y, N.x);
 #endif
 
     color = XYZtoRGB(color);
