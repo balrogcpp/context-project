@@ -3,19 +3,30 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program SSAOCrytek_fp glsl glsles
+vertex_program ssao_vp glsl glsles
+{
+	source ssao.vert
+	default_params
+	{
+		param_named_auto worldViewProj worldviewproj_matrix
+	}
+}
+
+fragment_program ssao_fp glsl glsles
 {
 	source ssao.frag
 	default_params
 	{
-		param_named uSceneDepthSampler int 0
-        param_named_auto ViewportSize texture_size 0
-		param_named sRotSampler4x4 int 1
-        param_named_auto NearClipDistance near_clip_distance
+		param_named uGeom int 0
+		param_named uRand int 1
         param_named_auto FarClipDistance far_clip_distance
-        param_named_auto FOV fov
+        //param_named_auto ptMat projection_matrix
 	}
 }
+
+
+
+
 
 material SSAO
 {
@@ -27,17 +38,9 @@ material SSAO
             depth_check off
             polygon_mode_overrideable false
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+			vertex_program_ref ssao_vp {}
 
-            fragment_program_ref SSAOCrytek_fp
-            {
-				param_named uSampleInScreenspace float 0
-                param_named uSampleLengthScreenSpace float 0.06
-                param_named uSampleLengthWorldSpace float 2
-				param_named uOffsetScale float 0.05
-				param_named uDefaultAccessibility float 0.5
-				param_named uEdgeHighlight float 2
-            }
+            fragment_program_ref ssao_fp {}
 
             texture_unit depth
             {
@@ -48,14 +51,15 @@ material SSAO
             }
             texture_unit noise
             {
-                texture regularSphereJittered4.dds
+                texture random.png
                 tex_coord_set 0
                 tex_address_mode wrap
-                filtering linear linear none
+                filtering none
             }
         }
     }
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -84,6 +88,7 @@ material SSAO_mod
             {
                 param_named uSceneSampler int 0
                 param_named uSsaoSampler int 1
+                param_named_auto TexelSize1 inverse_texture_size 1
             }
 
             texture_unit scene
@@ -102,4 +107,78 @@ material SSAO_mod
             }
         }
     }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// Linear gaussian blur
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program ssao_filtery_fs glsl glsles
+{
+	source gaussy.frag
+    default_params
+    {
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+fragment_program ssao_filterx_fs glsl glsles
+{
+	source gaussx.frag
+    default_params
+    {
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+material SSAO_FilterY
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref ssao_filtery_fs {}
+
+			texture_unit rt
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+material SSAO_FilterX
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref ssao_filterx_fs {}
+
+			texture_unit rt
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
 }

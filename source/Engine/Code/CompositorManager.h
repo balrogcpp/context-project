@@ -5,7 +5,7 @@
 #include <Ogre.h>
 
 namespace Glue {
-class CompositorManager : public System<CompositorManager>, public Ogre::Viewport::Listener {
+class CompositorManager : public System<CompositorManager>, public Ogre::CompositorInstance::Listener, public Ogre::Viewport::Listener {
  public:
   CompositorManager();
   virtual ~CompositorManager();
@@ -29,6 +29,9 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
   /// Ogre::Viewport::Listener impl
   void viewportCameraChanged(Ogre::Viewport* viewport) override;
   void viewportDimensionsChanged(Ogre::Viewport* viewport) override;
+
+  /// Ogre::CompositorInstance::Listener impl
+  void notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
 
   const std::string MRT_COMPOSITOR;
   const std::string BLOOM_COMPOSITOR;

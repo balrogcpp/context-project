@@ -81,7 +81,7 @@ void main()
 #endif
 
     color = XYZtoRGB(color);
-    color = expose(color, 0.2);
+    color = expose(color, 0.1);
     color = SRGBtoLINEAR(color);
 
     if (gamma <= uSunSize) color += uSunColor;
@@ -90,7 +90,7 @@ void main()
 
 #ifndef NO_MRT
     FragData[0].rgb = color;
-    FragData[1].r = 0.05;
+    FragData[1] = vec4(0.0, 0.0, 0.0, 0.05);
 #else
     color = ApplyFog(color, FogParams, FogColour.rgb, 0.05 * FarClipDistance);
     FragColor.rgb = LINEARtoSRGB(color, 1.0);

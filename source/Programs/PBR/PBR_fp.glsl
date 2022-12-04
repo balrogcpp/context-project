@@ -521,7 +521,7 @@ void main()
 #ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
 
-    FragData[1].r = vDepth / FarClipDistance;
+    FragData[1] = vec4(n ,vDepth / FarClipDistance);
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);

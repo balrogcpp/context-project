@@ -64,6 +64,7 @@ void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
   ASSERTION(compositor, "[CompositorManager] Failed to add MRT compoitor");
+  compositor->addListener(this);
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
@@ -119,6 +120,7 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
     ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
 
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
+    compositorPtr->addListener(this);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
         jt->width = x * jt->widthFactor;
@@ -217,7 +219,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 
     auto *compositor = compositorManager->addCompositor(viewport, compositorName);
     ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
-
+    compositor->addListener(this);
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
@@ -228,5 +230,21 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 
     compositorManager->setCompositorEnabled(viewport, compositorName, enabled);
   }
+}
+
+void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) {
+  if (pass_id != 42)  // not SSAO, return
+    return;
+
+  // this is the camera you're using
+  Ogre::Camera *cam = compositorChain->getViewport()->getCamera();
+
+  // get the pass
+  Ogre::Pass *pass = mat->getBestTechnique()->getPass(0);
+
+  // get the fragment shader parameters
+  auto params = pass->getFragmentProgramParameters();
+  // set the projection matrix we need
+  params->setNamedConstant("ptMat", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * cam->getProjectionMatrixWithRSDepth());
 }
 }  // namespace Glue

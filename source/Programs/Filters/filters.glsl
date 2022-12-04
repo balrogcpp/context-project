@@ -158,6 +158,30 @@ vec3 Gauss5H(const sampler2D tex, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+float Gauss5VR(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  float A = texture2D(tex, uv).r;
+  float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3333333333333333)).r;
+  float C = texture2D(tex, uv - tsize * vec2(0.0, 1.3333333333333333)).r;
+
+  float color = A * 0.29411764705882354 + (B + C) * 0.35294117647058826;
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float Gauss5HR(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  float A = texture2D(tex, uv).r;
+  float B = texture2D(tex, uv + tsize * vec2(1.3333333333333333, 0.0)).r;
+  float C = texture2D(tex, uv - tsize * vec2(1.3333333333333333, 0.0)).r;
+
+  float color = A * 0.29411764705882354 + (B + C) * 0.35294117647058826;
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 vec3 Gauss9V(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(tex, uv).rgb;
@@ -186,6 +210,35 @@ vec3 Gauss9H(const sampler2D tex, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+float Gauss9VR(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  float A = texture2D(tex, uv).r;
+  float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).r;
+  float C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).r;
+  float D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).r;
+  float E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).r;
+
+  float color = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float Gauss9HR(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  float A = texture2D(tex, uv).r;
+  float B = texture2D(tex, uv + tsize * vec2(1.3846153846, 0.0)).r;
+  float C = texture2D(tex, uv - tsize * vec2(1.3846153846, 0.0)).r;
+  float D = texture2D(tex, uv + tsize * vec2(3.2307692308, 0.0)).r;
+  float E = texture2D(tex, uv - tsize * vec2(3.2307692308, 0.0)).r;
+
+  float color = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+
+  return color;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 vec3 Gauss13V(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(tex, uv).rgb;
@@ -200,6 +253,7 @@ vec3 Gauss13V(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
   return color;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Gauss13H(const sampler2D tex, const vec2 uv, const vec2 tsize)
@@ -216,6 +270,41 @@ vec3 Gauss13H(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
   return color;
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------
+float Gauss13VR(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  float A = texture2D(tex, uv).r;
+  float B = texture2D(tex, uv + tsize * vec2(0.0, 1.411764705882353)).r;
+  float C = texture2D(tex, uv - tsize * vec2(0.0, 1.411764705882353)).r;
+  float D = texture2D(tex, uv + tsize * vec2(0.0, 3.2941176470588234)).r;
+  float E = texture2D(tex, uv - tsize * vec2(0.0, 3.2941176470588234)).r;
+  float F = texture2D(tex, uv - tsize * vec2(0.0, 5.176470588235294)).r;
+  float G = texture2D(tex, uv - tsize * vec2(0.0, 5.176470588235294)).r;
+
+  float color = A * 0.1964825501511404 + (B + C) * 0.2969069646728344 + (D + E) * 0.09447039785044732 + (F + G) * 0.010381362401148057;
+
+  return color;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+float Gauss13HR(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  float A = texture2D(tex, uv).r;
+  float B = texture2D(tex, uv + tsize * vec2(1.411764705882353, 0.0)).r;
+  float C = texture2D(tex, uv - tsize * vec2(1.411764705882353, 0.0)).r;
+  float D = texture2D(tex, uv + tsize * vec2(3.2941176470588234, 0.0)).r;
+  float E = texture2D(tex, uv - tsize * vec2(3.2941176470588234, 0.0)).r;
+  float F = texture2D(tex, uv - tsize * vec2(5.176470588235294, 0.0)).r;
+  float G = texture2D(tex, uv - tsize * vec2(5.176470588235294, 0.0)).r;
+
+  float color = A * 0.1964825501511404 + (B + C) * 0.2969069646728344 + (D + E) * 0.09447039785044732 + (F + G) * 0.010381362401148057;
+
+  return color;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57

@@ -8,97 +8,84 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
+#include "math.glsl"
+
+
+uniform mat4 ptMat;
+uniform float FarClipDistance;
+uniform sampler2D uGeom;
+uniform sampler2D uRand;
+
 
 in vec2 vUV0;
-uniform sampler2D uSceneDepthSampler;
-uniform sampler2D sRotSampler4x4;
-uniform vec4 ViewportSize; // auto param width/height/inv. width/inv. height
-uniform float FOV; // vertical field of view in radians
-uniform float NearClipDistance;
-uniform float FarClipDistance;
-uniform float uSampleInScreenspace; // whether to sample in screen or world space
-uniform float uSampleLengthScreenSpace; // The sample length in screen space [0, 1]
-uniform float uSampleLengthWorldSpace; // the sample length in world space in units
-uniform float uOffsetScale; // [0, 1] The distance of the first sample. samples are the
-// placed in [uOffsetScale * uSampleLengthScreenSpace, uSampleLengthScreenSpace]
-uniform float uDefaultAccessibility; // the default value used in the lerp() expression for invalid samples [0, 1]
-uniform float uEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is full highlighting 2 is off
+in vec3 vRay;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  const float nSampleNum = 32.0; // number of samples
-  //const float nSampleNum = 16.0; // number of samples
+  #define MAX_RAND_SAMPLES 14
 
-  // get the depth of the current pixel and convert into world space unit [0, inf]
-  float clampedDepth = texture2D(uSceneDepthSampler, vUV0).r;
-  float fragmentWorldDepth = clampedDepth * FarClipDistance - NearClipDistance;
+  const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+  vec3[](
+      vec3(1, 0, 0),
+      vec3(-1, 0, 0),
+      vec3(0, 1, 0),
+      vec3(0, -1, 0),
+      vec3(0, 0, 1),
+      vec3(0, 0, -1),
+      normalize(vec3(1, 1, 1)),
+      normalize(vec3(-1, 1, 1)),
+      normalize(vec3(1, -1, 1)),
+      normalize(vec3(1, 1, -1)),
+      normalize(vec3(-1, -1, 1)),
+      normalize(vec3(-1, 1, -1)),
+      normalize(vec3(1, -1, -1)),
+      normalize(vec3(-1, -1, -1)));
 
-  if (fragmentWorldDepth <= 0.0)
+  // constant expression != const int :(
+  #define NUM_BASE_SAMPLES 16
+
+  // random normal lookup from a texture and expand to [-1..1]
+  vec3 randN = texture2D(uRand, vUV0 * 24.0).xyz * 2.0 - 1.0;
+  vec4 geom = texture2D(uGeom, vUV0);
+  float depth = geom.w;
+
+  // IN.ray will be distorted slightly due to interpolation
+  // it should be normalized here
+  vec3 viewPos = vRay * depth;
+
+  // By computing Z manually, we lose some accuracy under extreme angles
+  // considering this is just for bias, this loss is acceptable
+  vec3 viewNorm = geom.xyz;
+
+  // Accumulated occlusion factor
+  float occ = 0.0;
+  for (int i = 0; i < NUM_BASE_SAMPLES; ++i)
   {
-    FragColor.r = 1.0;
-    return;
+      // Reflected direction to move in for the sphere
+      // (based on random samples and a random texture sample)
+      // bias the random direction away from the normal
+      // this tends to minimize self occlusion
+      vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm;
+
+      // Move new view-space position back into texture space
+      #define RADIUS 0.2125
+      vec4 nuv = ptMat * vec4(viewPos.xyz + randomDir * RADIUS, 1.0);
+      nuv.xy /= nuv.w;
+
+      // Compute occlusion based on the (scaled) Z difference
+      float zd = clamp(FarClipDistance * (depth - texture2D(uGeom, nuv.xy).w), 0.0, 1.0);
+      // This is a sample occlusion function, you can always play with
+      // other ones, like 1.0 / (1.0 + zd * zd) and stuff
+      occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);
   }
 
-  float accessibility = 0.0;
-
-  // get rotation vector, rotation is tiled every 4 screen pixels
-  vec2 rotationTC = vUV0 * ViewportSize.xy / 4.0;
-  vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0;// [-1, 1]x[-1. 1]x[-1. 1]
-
-  float rUV = 0.0;// radius of influence in screen space
-  float r = 0.0;// radius of influence in world space
-  if (uSampleInScreenspace == 1.0)
-  {
-    rUV = uSampleLengthScreenSpace;
-    r = tan(rUV * FOV) * fragmentWorldDepth;
-  }
-  else
-  {
-    rUV = atan(uSampleLengthWorldSpace / fragmentWorldDepth) / FOV;// the radius of influence projected into screen space
-    r = uSampleLengthWorldSpace;
-  }
-
-  float sampleLength = uOffsetScale;// the offset for the first sample
-  float sampleLengthStep = pow((rUV / sampleLength), 1.0/nSampleNum);
-
-  // sample the sphere and accumulate accessibility
-  for (int i = 0; i < (int(nSampleNum)/8); i++)
-  {
-    for (int x = -1; x <= 1; x += 2)
-    for (int y = -1; y <= 1; y += 2)
-    for (int z = -1; z <= 1; z += 2)
-    {
-      //generate offset vector
-      vec3 offset = normalize(vec3(x, y, z)) * sampleLength;
-
-      // update sample length
-      sampleLength *= sampleLengthStep;
-
-      // reflect offset vector by random rotation sample (i.e. rotating it)
-      vec3 rotatedOffset = reflect(offset, rotationVector);
-
-      vec2 sampleTC = vUV0 + rotatedOffset.xy * rUV;
-
-      // read scene depth at sampling point and convert into world space units (m or whatever)
-      float sampleWorldDepth = texture2D(uSceneDepthSampler, sampleTC).r * FarClipDistance;
-
-      // check if depths of both pixels are close enough and sampling point should affect our center pixel
-      float fRangeIsInvalid = clamp((fragmentWorldDepth - sampleWorldDepth) / r, 0.0, 1.0);
-
-      // accumulate accessibility, use default value of 0.5 if right computations are not possible
-
-      accessibility += mix(float(sampleWorldDepth > (fragmentWorldDepth + rotatedOffset.z * r)), uDefaultAccessibility, fRangeIsInvalid);
-    }
-  }
-
-  // get average value
-  accessibility /= nSampleNum;
-
-  // normalize, remove edge highlighting
-  accessibility *= uEdgeHighlight;
+  // normalise
+  occ /= float(NUM_BASE_SAMPLES);
 
   // amplify and saturate if necessary
-  FragColor.r = accessibility;
+  FragColor.r = occ;
 }
