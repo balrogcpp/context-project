@@ -3,6 +3,7 @@
 #ifndef FILTERS_GLSL
 #define FILTERS_GLSL
 
+
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Linear(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {

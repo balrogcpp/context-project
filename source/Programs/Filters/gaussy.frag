@@ -8,12 +8,15 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
 #include "filters.glsl"
+
 
 in vec2 vUV0;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
