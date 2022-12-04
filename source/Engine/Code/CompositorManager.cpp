@@ -47,8 +47,8 @@ void CompositorManager::OnSetUp() {
   // extra compositors
   AddCompositor("SSAO", false);
   AddCompositor("Fog", true);
-  AddCompositor("FXAA", false);
   AddCompositor("Blur", false);
+  AddCompositor("FXAA", false);
   AddCompositor("Output", true);
 
   // reg as viewport listener
@@ -152,7 +152,7 @@ void CompositorManager::InitNoMRT(bool enable) {
 }
 
 void CompositorManager::InitMipChain(bool enable) {
-  auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR, 1);
+  auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR);
   ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
 
   // check textures
@@ -177,7 +177,7 @@ void CompositorManager::InitMipChain(bool enable) {
 
   for (int i = 0; i < mipChain; i++) {
     string name = BLOOM_COMPOSITOR + "It" + to_string(i);
-    auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name, i + 2);
+    auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name);
     ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compositor");
     compositorManager->setCompositorEnabled(ogreViewport, name, enable);
   }

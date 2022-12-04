@@ -1199,7 +1199,7 @@ compositor SSAO
     technique
     {
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
-        texture_ref rt MRT mrt0
+        texture_ref mrt0 MRT mrt0
         texture_ref mrt1 MRT mrt1
 
         target ssao
@@ -1229,29 +1229,15 @@ compositor SSAO
             }
         }
 
-        target rt
+        target mrt0
         {
             pass render_quad
             {
                 material SSAO_mod
-                input 0 rt
+                input 0 mrt0
                 input 1 ssao
             }
         }
-    }
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
-abstract compositor FX
-{
-    technique
-    {
-        texture_ref mrt0 MRT mrt0
-        texture_ref mrt1 MRT mrt1
-        texture_ref mrt2 MRT mrt2
     }
 }
 
