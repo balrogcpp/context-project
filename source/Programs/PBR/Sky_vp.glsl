@@ -21,7 +21,8 @@ out highp vec3 vPosition;
 //out vec3 vUV0; // direction vector representing a 3D texture coordinate
 
 //----------------------------------------------------------------------------------------------------------------------
-void main() {
+void main()
+{
     //vUV0 = uv0.xyz;
     vPosition = position.xyz;
     gl_Position = worldViewProj * position;

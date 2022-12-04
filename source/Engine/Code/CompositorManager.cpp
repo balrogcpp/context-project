@@ -41,13 +41,16 @@ void CompositorManager::OnSetUp() {
   // init compositor chain
   InitMRT(true);
 
+  // shadows before bloom
   AddCompositor("SSAO", false);
+
+  // fog is always enabled
+  AddCompositor("Fog", true);
 
   // init bloom mipmaps
   InitMipChain(false);
 
   // extra compositors
-  AddCompositor("Fog", true);
   AddCompositor("Blur", false);
   AddCompositor("FXAA", false);
   AddCompositor("Output", true);
@@ -135,9 +138,6 @@ void CompositorManager::InitMRT(bool enable) {
   auto *tech = mrtCompositor->getTechnique();
 
   ASSERTION(tech->getTextureDefinition("mrt"), "[CompositorManager] mrt texture failed to create");
-//  ASSERTION(tech->getTextureDefinition("mrt0"), "[CompositorManager] mrt0 texture failed to create");
-//  ASSERTION(tech->getTextureDefinition("mrt1"), "[CompositorManager] mrt1 failed to create");
-//  ASSERTION(tech->getTextureDefinition("mrt2"), "[CompositorManager] mrt2 failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 }

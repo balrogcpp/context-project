@@ -28,8 +28,8 @@ uniform float uEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-//   const float nSampleNum = 32.0; // number of samples
-  const float nSampleNum = 16.0; // number of samples
+  const float nSampleNum = 32.0; // number of samples
+  //const float nSampleNum = 16.0; // number of samples
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
   float clampedDepth = texture2D(uSceneDepthSampler, vUV0).r;

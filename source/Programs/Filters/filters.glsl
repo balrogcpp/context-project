@@ -12,11 +12,12 @@ vec3 Linear(const sampler2D tex, const vec2 uv, const vec2 tsize)
 //----------------------------------------------------------------------------------------------------------------------
 vec3 BoxFilter4(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-  vec3 color = vec3(0.0);
-  for (int x = -1; x < 1; x++)
-  for (int y = -1; y < 1; y++)
-    color += texture2D(tex, uv + vec2(float(x), float(y)) * tsize).rgb;
-  color *= 0.25; // 1/4
+  vec3 A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).rgb;
+  vec3 B = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).rgb;
+  vec3 C = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).rgb;
+  vec3 D = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).rgb;
+
+  vec3 color = (A + B + C + D) * 0.25;
 
   return color;
 }
@@ -24,11 +25,12 @@ vec3 BoxFilter4(const sampler2D tex, const vec2 uv, const vec2 tsize)
 //----------------------------------------------------------------------------------------------------------------------
 float BoxFilter4R(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-  float color = 0.0;
-  for (int x = -1; x < 1; x++)
-  for (int y = -1; y < 1; y++)
-    color += texture2D(tex, uv + vec2(float(x), float(y)) * tsize).r;
-  color *= 0.25; // 1/4
+  float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
+  float B = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).r;
+  float C = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
+  float D = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
+
+  float color = (A + B + C + D) * 0.25;
 
   return color;
 }
@@ -37,11 +39,19 @@ float BoxFilter4R(const sampler2D tex, const vec2 uv, const vec2 tsize)
 //----------------------------------------------------------------------------------------------------------------------
 vec3 BoxFilter9(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-  vec3 color = vec3(0.0);
-  for (int x = -2; x < 1; x++)
-  for (int y = -2; y < 1; y++)
-    color += texture2D(tex, uv + vec2(float(x), float(y)) * tsize).rgb;
-  color *= 0.11111111111111111111; // 1/9
+  vec3 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).rgb;
+  vec3 B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).rgb;
+  vec3 C = texture2D(tex, uv + (tsize * vec2(-2.0, 0.0))).rgb;
+  vec3 D = texture2D(tex, uv + (tsize * vec2(-1.0, -2.0))).rgb;
+  vec3 E = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).rgb;
+  vec3 F = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).rgb;
+  vec3 G = texture2D(tex, uv + (tsize * vec2(0.0, -2.0))).rgb;
+  vec3 H = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).rgb;
+  vec3 I = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).rgb;
+
+  vec3 color = (A + B + C) * 0.111111;
+  color += (D + E + F) * 0.111111;
+  color += (G + H + I) * 0.111111;
 
   return color;
 }
@@ -49,11 +59,19 @@ vec3 BoxFilter9(const sampler2D tex, const vec2 uv, const vec2 tsize)
 //----------------------------------------------------------------------------------------------------------------------
 float BoxFilter9R(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-  float color = 0.0;
-  for (int x = -2; x < 1; x++)
-  for (int y = -2; y < 1; y++)
-    color += texture2D(tex, uv + vec2(float(x), float(y)) * tsize).r;
-  color *= 0.11111111111111111111; // 1/9
+  float A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).r;
+  float B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).r;
+  float C = texture2D(tex, uv + (tsize * vec2(-2.0, 0.0))).r;
+  float D = texture2D(tex, uv + (tsize * vec2(-1.0, -2.0))).r;
+  float E = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
+  float F = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).r;
+  float G = texture2D(tex, uv + (tsize * vec2(0.0, -2.0))).r;
+  float H = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
+  float I = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
+
+  float color = (A + B + C) * 0.111111;
+  color += (D + E + F) * 0.111111;
+  color += (G + H + I) * 0.111111;
 
   return color;
 }
@@ -61,11 +79,27 @@ float BoxFilter9R(const sampler2D tex, const vec2 uv, const vec2 tsize)
 //----------------------------------------------------------------------------------------------------------------------
 vec3 BoxFilter16(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-  vec3 color = vec3(0.0);
-  for (int x = -2; x < 2; x++)
-  for (int y = -2; y < 2; y++)
-    color += texture2D(tex, uv + vec2(float(x), float(y)) * tsize).rgb;
-  color *= 0.0625; // 1/16
+  vec3 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).rgb;
+  vec3 B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).rgb;
+  vec3 C = texture2D(tex, uv + (tsize * vec2(-2.0, 0.0))).rgb;
+  vec3 D = texture2D(tex, uv + (tsize * vec2(-2.0, 1.0))).rgb;
+  vec3 E = texture2D(tex, uv + (tsize * vec2(-1.0, -2.0))).rgb;
+  vec3 F = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).rgb;
+  vec3 G = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).rgb;
+  vec3 H = texture2D(tex, uv + (tsize * vec2(-1.0, 1.0))).rgb;
+  vec3 I = texture2D(tex, uv + (tsize * vec2(0.0, -2.0))).rgb;
+  vec3 J = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).rgb;
+  vec3 K = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).rgb;
+  vec3 L = texture2D(tex, uv + (tsize * vec2(0.0, 1.0))).rgb;
+  vec3 M = texture2D(tex, uv + (tsize * vec2(1.0, -2.0))).rgb;
+  vec3 N = texture2D(tex, uv + (tsize * vec2(1.0, -1.0))).rgb;
+  vec3 O = texture2D(tex, uv + (tsize * vec2(1.0, 0.0))).rgb;
+  vec3 P = texture2D(tex, uv + (tsize * vec2(1.0, 1.0))).rgb;
+  
+  vec3 color = (A + B + C + D) * 0.0625;
+  color += (E + F + G + H) * 0.0625;
+  color += (I + J + K + L) * 0.0625;
+  color += (M + N + O + P) * 0.0625;
 
   return color;
 }
@@ -73,11 +107,27 @@ vec3 BoxFilter16(const sampler2D tex, const vec2 uv, const vec2 tsize)
 //----------------------------------------------------------------------------------------------------------------------
 float BoxFilter16R(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-  float color = 0.0;
-  for (int x = -2; x < 2; x++)
-  for (int y = -2; y < 2; y++)
-    color += texture2D(tex, uv + vec2(float(x), float(y)) * tsize).r;
-  color *= 0.0625; // 1/16
+  float A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).r;
+  float B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).r;
+  float C = texture2D(tex, uv + (tsize * vec2(-2.0, 0.0))).r;
+  float D = texture2D(tex, uv + (tsize * vec2(-2.0, 1.0))).r;
+  float E = texture2D(tex, uv + (tsize * vec2(-1.0, -2.0))).r;
+  float F = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
+  float G = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).r;
+  float H = texture2D(tex, uv + (tsize * vec2(-1.0, 1.0))).r;
+  float I = texture2D(tex, uv + (tsize * vec2(0.0, -2.0))).r;
+  float J = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
+  float K = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
+  float L = texture2D(tex, uv + (tsize * vec2(0.0, 1.0))).r;
+  float M = texture2D(tex, uv + (tsize * vec2(1.0, -2.0))).r;
+  float N = texture2D(tex, uv + (tsize * vec2(1.0, -1.0))).r;
+  float O = texture2D(tex, uv + (tsize * vec2(1.0, 0.0))).r;
+  float P = texture2D(tex, uv + (tsize * vec2(1.0, 1.0))).r;
+
+  float color = (A + B + C + D) * 0.0625;
+  color += (E + F + G + H) * 0.0625;
+  color += (I + J + K + L) * 0.0625;
+  color += (M + N + O + P) * 0.0625;
 
   return color;
 }
