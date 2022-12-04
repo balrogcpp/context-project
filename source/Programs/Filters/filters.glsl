@@ -49,9 +49,9 @@ vec3 BoxFilter9(const sampler2D tex, const vec2 uv, const vec2 tsize)
   vec3 H = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).rgb;
   vec3 I = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).rgb;
 
-  vec3 color = (A + B + C) * 0.111111;
-  color += (D + E + F) * 0.111111;
-  color += (G + H + I) * 0.111111;
+  vec3 color = (A + B + C) * 0.111111111111111;
+  color += (D + E + F) * 0.111111111111111;
+  color += (G + H + I) * 0.111111111111111;
 
   return color;
 }
@@ -69,9 +69,9 @@ float BoxFilter9R(const sampler2D tex, const vec2 uv, const vec2 tsize)
   float H = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
   float I = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
 
-  float color = (A + B + C) * 0.111111;
-  color += (D + E + F) * 0.111111;
-  color += (G + H + I) * 0.111111;
+  float color = (A + B + C) * 0.111111111111111;
+  color += (D + E + F) * 0.111111111111111;
+  color += (G + H + I) * 0.111111111111111;
 
   return color;
 }
@@ -133,7 +133,31 @@ float BoxFilter16R(const sampler2D tex, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GaussV(const sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 Gauss5V(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  vec3 A = texture2D(tex, uv).rgb;
+  vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3333333333333333)).rgb;
+  vec3 C = texture2D(tex, uv - tsize * vec2(0.0, 1.3333333333333333)).rgb;
+
+  vec3 color = A * 0.29411764705882354 + (B + C) * 0.35294117647058826;
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 Gauss5H(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  vec3 A = texture2D(tex, uv).rgb;
+  vec3 B = texture2D(tex, uv + tsize * vec2(1.3333333333333333, 0.0)).rgb;
+  vec3 C = texture2D(tex, uv - tsize * vec2(1.3333333333333333, 0.0)).rgb;
+
+  vec3 color = A * 0.29411764705882354 + (B + C) * 0.35294117647058826;
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 Gauss9V(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(tex, uv).rgb;
   vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).rgb;
@@ -147,7 +171,7 @@ vec3 GaussV(const sampler2D tex, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GaussH(const sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 Gauss9H(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(tex, uv).rgb;
   vec3 B = texture2D(tex, uv + tsize * vec2(1.3846153846, 0.0)).rgb;
@@ -156,6 +180,38 @@ vec3 GaussH(const sampler2D tex, const vec2 uv, const vec2 tsize)
   vec3 E = texture2D(tex, uv - tsize * vec2(3.2307692308, 0.0)).rgb;
 
   vec3 color = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 Gauss13V(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  vec3 A = texture2D(tex, uv).rgb;
+  vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.411764705882353)).rgb;
+  vec3 C = texture2D(tex, uv - tsize * vec2(0.0, 1.411764705882353)).rgb;
+  vec3 D = texture2D(tex, uv + tsize * vec2(0.0, 3.2941176470588234)).rgb;
+  vec3 E = texture2D(tex, uv - tsize * vec2(0.0, 3.2941176470588234)).rgb;
+  vec3 F = texture2D(tex, uv - tsize * vec2(0.0, 5.176470588235294)).rgb;
+  vec3 G = texture2D(tex, uv - tsize * vec2(0.0, 5.176470588235294)).rgb;
+
+  vec3 color = A * 0.1964825501511404 + (B + C) * 0.2969069646728344 + (D + E) * 0.09447039785044732 + (F + G) * 0.010381362401148057;
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 Gauss13H(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  vec3 A = texture2D(tex, uv).rgb;
+  vec3 B = texture2D(tex, uv + tsize * vec2(1.411764705882353, 0.0)).rgb;
+  vec3 C = texture2D(tex, uv - tsize * vec2(1.411764705882353, 0.0)).rgb;
+  vec3 D = texture2D(tex, uv + tsize * vec2(3.2941176470588234, 0.0)).rgb;
+  vec3 E = texture2D(tex, uv - tsize * vec2(3.2941176470588234, 0.0)).rgb;
+  vec3 F = texture2D(tex, uv - tsize * vec2(5.176470588235294, 0.0)).rgb;
+  vec3 G = texture2D(tex, uv - tsize * vec2(5.176470588235294, 0.0)).rgb;
+
+  vec3 color = A * 0.1964825501511404 + (B + C) * 0.2969069646728344 + (D + E) * 0.09447039785044732 + (F + G) * 0.010381362401148057;
 
   return color;
 }

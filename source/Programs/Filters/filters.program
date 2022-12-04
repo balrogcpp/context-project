@@ -1,8 +1,8 @@
 // created by Andrey Vasiliev
 
-fragment_program gauss_filter3y_fs glsl glsles
+fragment_program gauss_filtery_fs glsl glsles
 {
-	source gaussy3.frag
+	source gaussy.frag
     default_params
     {
         param_named uSampler int 0
@@ -10,9 +10,9 @@ fragment_program gauss_filter3y_fs glsl glsles
     }
 }
 
-fragment_program gauss_filter3x_fs glsl glsles
+fragment_program gauss_filterx_fs glsl glsles
 {
-	source gaussx3.frag
+	source gaussx.frag
     default_params
     {
         param_named uSampler int 0

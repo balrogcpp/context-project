@@ -15,7 +15,7 @@ material FilterY
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref gauss_filter3y_fs {}
+			fragment_program_ref gauss_filtery_fs {}
 
 			texture_unit rt
             {
@@ -40,7 +40,7 @@ material FilterX
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref gauss_filter3x_fs {}
+			fragment_program_ref gauss_filterx_fs {}
 
 			texture_unit rt
             {

@@ -18,5 +18,5 @@ uniform vec2 TexelSize;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = GaussV(uSampler, vUV0, TexelSize);
+  FragColor.rgb = Gauss9H(uSampler, vUV0, TexelSize);
 }
