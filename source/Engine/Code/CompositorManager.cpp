@@ -41,11 +41,12 @@ void CompositorManager::OnSetUp() {
   // init compositor chain
   InitMRT(true);
 
+  AddCompositor("SSAO", false);
+
   // init bloom mipmaps
   InitMipChain(false);
 
   // extra compositors
-  AddCompositor("SSAO", false);
   AddCompositor("Fog", true);
   AddCompositor("Blur", false);
   AddCompositor("FXAA", false);
@@ -80,6 +81,8 @@ void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
         compositorManager->setCompositorEnabled(ogreViewport, newName, false);
       }
     }
+
+    AddCompositor("BloomEnd", enable);
   }
 }
 
@@ -132,9 +135,9 @@ void CompositorManager::InitMRT(bool enable) {
   auto *tech = mrtCompositor->getTechnique();
 
   ASSERTION(tech->getTextureDefinition("mrt"), "[CompositorManager] mrt texture failed to create");
-  ASSERTION(tech->getTextureDefinition("mrt0"), "[CompositorManager] mrt0 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("mrt1"), "[CompositorManager] mrt1 failed to create");
-  ASSERTION(tech->getTextureDefinition("mrt2"), "[CompositorManager] mrt2 failed to create");
+//  ASSERTION(tech->getTextureDefinition("mrt0"), "[CompositorManager] mrt0 texture failed to create");
+//  ASSERTION(tech->getTextureDefinition("mrt1"), "[CompositorManager] mrt1 failed to create");
+//  ASSERTION(tech->getTextureDefinition("mrt2"), "[CompositorManager] mrt2 failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 }
@@ -181,6 +184,8 @@ void CompositorManager::InitMipChain(bool enable) {
     ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compositor");
     compositorManager->setCompositorEnabled(ogreViewport, name, enable);
   }
+
+  AddCompositor("BloomEnd", enable);
 }
 
 void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) {}
