@@ -28,38 +28,24 @@ void main()
   #define MAX_RAND_SAMPLES 14
 
   vec3 RAND_SAMPLES[MAX_RAND_SAMPLES];
-  RAND_SAMPLES[0] = vec3(1, 0, 0);
-  RAND_SAMPLES[1] = vec3(-1, 0, 0);
-  RAND_SAMPLES[2] = vec3(0, 1, 0);
-  RAND_SAMPLES[3] = vec3(0, -1, 0);
-  RAND_SAMPLES[4] = vec3(0, 0, 1);
-  RAND_SAMPLES[5] = vec3(0, 0, -1);
-  RAND_SAMPLES[6] = normalize(vec3(1, 1, 1));
-  RAND_SAMPLES[7] = normalize(vec3(-1, 1, 1));
-  RAND_SAMPLES[8] = normalize(vec3(1, -1, 1));
-  RAND_SAMPLES[9] = normalize(vec3(1, 1, -1));
-  RAND_SAMPLES[10] = normalize(vec3(-1, -1, 1));
-  RAND_SAMPLES[11] = normalize(vec3(-1, 1, -1));
-  RAND_SAMPLES[12] = normalize(vec3(1, -1, -1));
-  RAND_SAMPLES[13] = normalize(vec3(-1, -1, -1));
-//  vec3[](
-//      vec3(1, 0, 0),
-//      vec3(-1, 0, 0),
-//      vec3(0, 1, 0),
-//      vec3(0, -1, 0),
-//      vec3(0, 0, 1),
-//      vec3(0, 0, -1),
-//      normalize(vec3(1, 1, 1)),
-//      normalize(vec3(-1, 1, 1)),
-//      normalize(vec3(1, -1, 1)),
-//      normalize(vec3(1, 1, -1)),
-//      normalize(vec3(-1, -1, 1)),
-//      normalize(vec3(-1, 1, -1)),
-//      normalize(vec3(1, -1, -1)),
-//      normalize(vec3(-1, -1, -1)));
+  RAND_SAMPLES[0] = vec3(1.0, 0.0, 0.0);
+  RAND_SAMPLES[1] = vec3(-1.0, 0.0, 0.0);
+  RAND_SAMPLES[2] = vec3(0.0, 1.0, 0.0);
+  RAND_SAMPLES[3] = vec3(0.0, -1.0, 0.0);
+  RAND_SAMPLES[4] = vec3(0.0, 0.0, 1.0);
+  RAND_SAMPLES[5] = vec3(0.0, 0.0, -1.0);
+  RAND_SAMPLES[6] = normalize(vec3(1.0, 1.0, 1.0));
+  RAND_SAMPLES[7] = normalize(vec3(-1.0, 1.0, 1.0));
+  RAND_SAMPLES[8] = normalize(vec3(1.0, -1.0, 1.0));
+  RAND_SAMPLES[9] = normalize(vec3(1.0, 1.0, -1.0));
+  RAND_SAMPLES[10] = normalize(vec3(-1.0, -1.0, 1.0));
+  RAND_SAMPLES[11] = normalize(vec3(-1.0, 1.0, -1.0));
+  RAND_SAMPLES[12] = normalize(vec3(1.0, -1.0, -1.0));
+  RAND_SAMPLES[13] = normalize(vec3(-1.0, -1.0, -1.0));
+
 
   // constant expression != const int :(
-  #define NUM_BASE_SAMPLES 16
+  #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
 
   // random normal lookup from a texture and expand to [-1..1]
   vec3 randN = texture2D(uRand, vUV0 * 24.0).xyz * 2.0 - 1.0;

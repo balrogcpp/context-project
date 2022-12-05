@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "CompositorManager.h"
+#include <OgreCompositorLogic.h>
 #include <queue>
 
 using namespace std;
@@ -14,15 +15,20 @@ inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderS
 
 namespace Glue {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(14), oddMipsOnly(false) {
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(14), oddMipsOnly(false) {
   if (RenderSystemIsGLES2()) {
     mipChain /= 2.0;
-    //oddMipsOnly = true;
+    // oddMipsOnly = true;
   }
 }
 CompositorManager::~CompositorManager() {}
-
 void CompositorManager::OnUpdate(float time) {}
+
+class DeferredLogic final : public Ogre::CompositorLogic {
+ public:
+  void compositorInstanceCreated(Ogre::CompositorInstance *newInstance) override { newInstance->addListener(GetComponentPtr<CompositorManager>()); }
+  void compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) override {}
+};
 
 void CompositorManager::OnSetUp() {
 #ifdef MOBILE
@@ -30,6 +36,7 @@ void CompositorManager::OnSetUp() {
 #endif
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
+  compositorManager->registerCompositorLogic("DeferredLogic", new DeferredLogic());
   ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
   ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   ASSERTION(ogreSceneManager, "[CompositorManager] ogreSceneManager not initialised");
@@ -64,7 +71,6 @@ void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
   ASSERTION(compositor, "[CompositorManager] Failed to add MRT compoitor");
-  compositor->addListener(this);
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
@@ -75,7 +81,8 @@ void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
   if (name == BLOOM_COMPOSITOR) {
     for (int i = 0; i < mipChain; i++) {
       string newName = BLOOM_COMPOSITOR + "It" + to_string(i);
-      ASSERTION(compositorChain->getCompositorPosition(newName) != Ogre::CompositorChain::NPOS, "[CompositorManager] Failed to find Bloom compositor");
+      ASSERTION(compositorChain->getCompositorPosition(newName) != Ogre::CompositorChain::NPOS,
+                "[CompositorManager] Failed to find Bloom compositor");
 
       if (!oddMipsOnly) {
         compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
@@ -187,18 +194,18 @@ void CompositorManager::InitMipChain(bool enable) {
     compositorManager->setCompositorEnabled(ogreViewport, name, enable);
   }
 
-  AddCompositor("BloomEnd", enable);
+  AddCompositor(BLOOM_COMPOSITOR + "End", enable);
 }
 
-void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) {}
+void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) { ogreCamera = viewport->getCamera(); }
 void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   // don't update if viewport size handled manually
   if (fixedViewportSize) {
     return;
   }
 
-  int sizeY = ogreViewport->getActualDimensions().height();
-  int sizeX = ogreViewport->getActualDimensions().width();
+  int sizeY = viewport->getActualDimensions().height();
+  int sizeX = viewport->getActualDimensions().width();
   Ogre::LogManager::getSingleton().logMessage("[CompositorManager] Actual viewport size: " + to_string(sizeX) + "x" + to_string(sizeY),
                                               Ogre::LML_TRIVIAL);
 
@@ -219,7 +226,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 
     auto *compositor = compositorManager->addCompositor(viewport, compositorName);
     ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
-    compositor->addListener(this);
+
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
@@ -232,19 +239,15 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   }
 }
 
-void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) {
-  if (pass_id != 42)  // not SSAO, return
-    return;
+void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
+  if (pass_id == 42) {  // SSAO
+    // get the pass
+    Ogre::Pass *pass = mat->getBestTechnique()->getPass(0);
 
-  // this is the camera you're using
-  Ogre::Camera *cam = compositorChain->getViewport()->getCamera();
-
-  // get the pass
-  Ogre::Pass *pass = mat->getBestTechnique()->getPass(0);
-
-  // get the fragment shader parameters
-  auto params = pass->getFragmentProgramParameters();
-  // set the projection matrix we need
-  params->setNamedConstant("ptMat", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * cam->getProjectionMatrixWithRSDepth());
+    // get the fragment shader parameters
+    auto params = pass->getFragmentProgramParameters();
+    // set the projection matrix we need
+    params->setNamedConstant("ptMat", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
+  }
 }
 }  // namespace Glue
