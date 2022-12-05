@@ -229,6 +229,22 @@ index 6d11662e..fb16ef0c 100644
  #endif
          mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
  
+diff --git a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
+index 657a5cb1..6fd19ef0 100644
+--- a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
++++ b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
+@@ -76,9 +76,9 @@ namespace Ogre {
+         if(mShaderVersion < 150 && getLanguage() == "glsl" && rsc->isShaderProfileSupported("glsl150"))
+             verStr = "150";
+ #endif
+-
++        if (getLanguage() == "glsles" && mShaderVersion >= 300 && mSource.find("#ifndef __VERSION__") != String::npos) mSource = String("#version 300 es\n") + mSource;
+         cpp.Define("__VERSION__", 11, verStr.c_str(), verStr.size());
+-
++        if (getLanguage() == "glsl" && mShaderVersion >= 300 && mSource.find("#ifndef __VERSION__") != String::npos) mSource = String("#version 330 core\n") + mSource;
+         String defines = appendBuiltinDefines(mPreprocessorDefines);
+ 
+         for(const auto& def : parseDefines(defines))
 diff --git a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm b/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
 index 6cab8836..f176b465 100644
 --- a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm

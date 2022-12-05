@@ -202,8 +202,8 @@ void VideoManager::LoadResources() {
   const char *ASSETS_ZIP = "assets.bin";
   const int SCAN_DEPTH = 4;
   const char *PROGRAMS_DIR = "source/Programs";
-  const char *GLSL_DIR = "source/GLSL";
-  const char *GLSLES_DIR = "source/GLSLES";
+//  const char *GLSL_DIR = "source/GLSL";
+//  const char *GLSLES_DIR = "source/GLSLES";
   const char *ASSETS_DIR = "source/Example/Assets";
 
 #if defined(DESKTOP)
@@ -213,10 +213,10 @@ void VideoManager::LoadResources() {
     ScanLocation(FindPath("programs"), Ogre::RGN_INTERNAL);
   } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-    if (RenderSystemIsGLES2())
-      ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-    else
-      ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+//    if (RenderSystemIsGLES2())
+//      ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+//    else
+//      ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   } else {
     // InitEmbeddedResources();
   }

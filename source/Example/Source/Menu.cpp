@@ -24,9 +24,10 @@ void Menu::OnSetUp() {
 #ifdef MOBILE
   int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
-  GetComponent<CompositorManager>().SetFixedViewportSize(x / 1.5, y / 1.5);
+  GetComponent<CompositorManager>().SetFixedViewportSize(x / 2.5, y / 2.5);
   GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
   GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
+  GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", true);
 #endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();

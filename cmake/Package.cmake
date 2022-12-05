@@ -66,6 +66,6 @@ file(COPY ${files} DESTINATION ${ASSETS_DIR}/programs)
 ZipDirectory(${ASSETS_DIR}/programs bin)
 
 FlatZipDirectory(${ROOT_DIR}/source/Programs ${ASSETS_DIR}/programs zip)
-FlatZipDirectory(${ROOT_DIR}/source/GLSL ${ASSETS_DIR}/glsl zip)
-FlatZipDirectory(${ROOT_DIR}/source/GLSLES ${ASSETS_DIR}/glsles zip)
+#FlatZipDirectory(${ROOT_DIR}/source/GLSL ${ASSETS_DIR}/glsl zip)
+#FlatZipDirectory(${ROOT_DIR}/source/GLSLES ${ASSETS_DIR}/glsles zip)
 FlatZipDirectory(${ROOT_DIR}/source/Example/Assets ${ASSETS_DIR}/assets bin)

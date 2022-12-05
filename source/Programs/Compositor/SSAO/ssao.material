@@ -88,7 +88,6 @@ material SSAO_mod
             {
                 param_named uSceneSampler int 0
                 param_named uSsaoSampler int 1
-                param_named_auto TexelSize1 inverse_texture_size 1
             }
 
             texture_unit scene

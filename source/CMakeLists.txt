@@ -12,7 +12,7 @@ if (NOT ANDROID)
 else ()
     set(ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
 endif ()
-add_custom_target(assets ALL ${CMAKE_COMMAND} -DGLSLES=${GLSLES} -DROOT_DIR=${CMAKE_SOURCE_DIR} -DASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/Assets.cmake)
+add_custom_target(assets ALL ${CMAKE_COMMAND} -DGLSLES=${GLSLES} -DROOT_DIR=${CMAKE_SOURCE_DIR} -DASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
 
 
 # deps
