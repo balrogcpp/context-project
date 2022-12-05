@@ -3,6 +3,39 @@
 #ifndef NOISE_GLSL
 #define NOISE_GLSL
 
+
+// https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
+const uint k = 1103515245U;  // GLIB C
+vec3 uhash3( uvec3 x )
+{
+    x = ((x>>8U)^x.yzx)*k;
+    x = ((x>>8U)^x.yzx)*k;
+    x = ((x>>8U)^x.yzx)*k;
+    
+    return vec3(x)*(1.0/float(0xffffffffU));
+}
+
+highp float new_noise(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(co.xy ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
+}
+
+
+const float PHI = 1.61803398874989484820459;  // Φ = Golden Ratio   
+float gold_noise(in vec2 xy, in float seed){
+       return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float random(vec2 co){
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 float InterleavedGradientNoise(vec2 position_screen)
 {

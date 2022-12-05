@@ -10,7 +10,6 @@
 
 
 #include "header.frag"
-#include "math.glsl"
 
 
 uniform mat4 ptMat;
@@ -72,7 +71,8 @@ void main()
       vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm;
 
       // Move new view-space position back into texture space
-      #define RADIUS 0.2125
+      //#define RADIUS 0.2125
+      #define RADIUS 0.0525
       vec4 nuv = ptMat * vec4(viewPos.xyz + randomDir * RADIUS, 1.0);
       nuv.xy /= nuv.w;
 
