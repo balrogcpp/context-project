@@ -202,8 +202,8 @@ void VideoManager::LoadResources() {
   const char *ASSETS_ZIP = "assets.bin";
   const int SCAN_DEPTH = 4;
   const char *PROGRAMS_DIR = "source/Programs";
-//  const char *GLSL_DIR = "source/GLSL";
-//  const char *GLSLES_DIR = "source/GLSLES";
+  //  const char *GLSL_DIR = "source/GLSL";
+  //  const char *GLSLES_DIR = "source/GLSLES";
   const char *ASSETS_DIR = "source/Example/Assets";
 
 #if defined(DESKTOP)
@@ -213,10 +213,10 @@ void VideoManager::LoadResources() {
     ScanLocation(FindPath("programs"), Ogre::RGN_INTERNAL);
   } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-//    if (RenderSystemIsGLES2())
-//      ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-//    else
-//      ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+    //    if (RenderSystemIsGLES2())
+    //      ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+    //    else
+    //      ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   } else {
     // InitEmbeddedResources();
   }
@@ -453,7 +453,7 @@ void VideoManager::InitOgreOverlay() {
 #endif
 }
 
-void VideoManager::InitOgreScene() {
+void VideoManager::InitOgre() {
 #ifdef DESKTOP
   shadowEnabled = true;
 #else
@@ -501,6 +501,29 @@ void VideoManager::InitOgreScene() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
   }
+}
+
+void VideoManager::EnableShadows(bool enable) {
+  if (enable) {
+    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+  } else {
+    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+  }
+}
+
+void VideoManager::SetShadowTexSize(unsigned short size) {
+  ogreSceneManager->setShadowTextureSize(size);
+}
+
+void VideoManager::SetTexFiltering(unsigned int type, int anisotropy) {
+  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(static_cast<Ogre::TextureFilterOptions>(type));
+  Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
 void VideoManager::ClearScene() {
@@ -680,6 +703,6 @@ void VideoManager::OnSetUp() {
   InitOgreRTSS();
   InitOgreOverlay();
   LoadResources();
-  InitOgreScene();
+  InitOgre();
 }
 }  // namespace Glue

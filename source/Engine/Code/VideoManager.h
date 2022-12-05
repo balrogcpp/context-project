@@ -29,6 +29,10 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   ImFont* AddFont(const std::string& name, const std::string& group = Ogre::RGN_AUTODETECT, const ImFontConfig* cfg = nullptr,
                   const ImWchar* ranges = nullptr);
 
+  void EnableShadows(bool enable);
+  void SetShadowTexSize(unsigned short size);
+  void SetTexFiltering(unsigned int type, int anisotropy);
+
  protected:
   void MakeWindow();
   void InitOgreRoot();
@@ -36,7 +40,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void InitOgreRTSS();
   void InitOgreOverlay();
   void LoadResources();
-  void InitOgreScene();
+  void InitOgre();
   void CheckGPU();
 
   /// System impl

@@ -134,6 +134,10 @@ void Menu::BeforeRender(float time) {
     window.SetMouseRelativeMode(windowFlags[6]);
   }
 
+  if (ImGuiB::Checkbox("Enable shadows", &windowFlags[7])) {
+    manager.EnableShadows(windowFlags[7]);
+  }
+
   const char *intervalList = " -\0 1\0 2\0 3\0 4\0";
   if (ImGuiB::Combo("Vsync interval", &Combos[0], intervalList)) {
     if (Combos[0] == 0) {
@@ -173,6 +177,25 @@ void Menu::BeforeRender(float time) {
       }
     }
   }
+
+  const unsigned short texSizeList[] = {128, 256, 512, 1024, 2048, 4096};
+  const char *texSizeListStr = " 128\0 256\0 512\0 1024\0 2048\0 4096\0";
+  if (ImGuiB::Combo("Shadow tex size", &Combos[2], texSizeListStr)) {
+    manager.SetShadowTexSize(texSizeList[Combos[2]]);
+  }
+
+  const unsigned short anisotropyLevel[] = {1, 2, 4, 8, 16};
+  const char *anisotropyLevelStr = " 1\0 2\0 4\0 8\0 16\0";
+  if (ImGuiB::Combo("Anisotropy lvl", &Combos[3], anisotropyLevelStr)) {
+    manager.SetTexFiltering(anisotropyLevel[Combos[4]], Combos[3]);
+  }
+
+  const unsigned short texFiltering[] = {0, 1, 2, 3};
+  const char *texFilteringStr = " NONE\0 BILINEAR\0 TRILINEAR\0 ANISOTROPIC\0";
+  if (ImGuiB::Combo("Texture filtering", &Combos[4], texFilteringStr)) {
+    manager.SetTexFiltering(texFiltering[Combos[4]], Combos[3]);
+  }
+
 
 #endif
 
