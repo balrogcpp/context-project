@@ -93,7 +93,7 @@ void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
       }
     }
 
-    AddCompositor("BloomEnd", enable);
+    compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "End", enable);
   }
 }
 
@@ -127,7 +127,6 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
     ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
 
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
-    compositorPtr->addListener(this);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
         jt->width = x * jt->widthFactor;
