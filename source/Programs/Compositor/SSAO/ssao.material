@@ -53,7 +53,7 @@ material SSAO
             {
                 texture random.png
                 tex_coord_set 0
-                tex_address_mode wrap
+                //tex_address_mode wrap
                 filtering none
             }
         }
