@@ -19,21 +19,21 @@ uniform float uThreshhold;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 Downscale13T(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+vec3 Downscale13T(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-  vec3 A = texture2D(sampler, uv + tsize * vec2(-1.0, -1.0)).rgb;
-  vec3 B = texture2D(sampler, uv + tsize * vec2( 0.0, -1.0)).rgb;
-  vec3 C = texture2D(sampler, uv + tsize * vec2( 1.0, -1.0)).rgb;
-  vec3 D = texture2D(sampler, uv + tsize * vec2(-0.5, -0.5)).rgb;
-  vec3 E = texture2D(sampler, uv + tsize * vec2( 0.5, -0.5)).rgb;
-  vec3 F = texture2D(sampler, uv + tsize * vec2(-1.0,  0.0)).rgb;
-  vec3 G = texture2D(sampler, uv                           ).rgb;
-  vec3 H = texture2D(sampler, uv + tsize * vec2( 1.0,  0.0)).rgb;
-  vec3 I = texture2D(sampler, uv + tsize * vec2(-0.5,  0.5)).rgb;
-  vec3 J = texture2D(sampler, uv + tsize * vec2( 0.5,  0.5)).rgb;
-  vec3 K = texture2D(sampler, uv + tsize * vec2(-1.0,  1.0)).rgb;
-  vec3 L = texture2D(sampler, uv + tsize * vec2( 0.0,  1.0)).rgb;
-  vec3 M = texture2D(sampler, uv + tsize * vec2( 1.0,  1.0)).rgb;
+  vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
+  vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;
+  vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).rgb;
+  vec3 D = texture2D(tex, uv + tsize * vec2(-0.5, -0.5)).rgb;
+  vec3 E = texture2D(tex, uv + tsize * vec2( 0.5, -0.5)).rgb;
+  vec3 F = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).rgb;
+  vec3 G = texture2D(tex, uv                           ).rgb;
+  vec3 H = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).rgb;
+  vec3 I = texture2D(tex, uv + tsize * vec2(-0.5,  0.5)).rgb;
+  vec3 J = texture2D(tex, uv + tsize * vec2( 0.5,  0.5)).rgb;
+  vec3 K = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).rgb;
+  vec3 L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).rgb;
+  vec3 M = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).rgb;
 
   vec3 c1 = (D + E + I + J); c1 /= (1.0 + luminance(LINEARtoSRGB(c1))); c1 *= 0.125;
   vec3 c2 = (A + B + G + F); c2 /= (1.0 + luminance(LINEARtoSRGB(c2))); c2 *= 0.03125;

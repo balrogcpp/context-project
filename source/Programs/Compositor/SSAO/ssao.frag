@@ -15,11 +15,25 @@
 uniform mat4 ptMat;
 uniform float FarClipDistance;
 uniform sampler2D uGeom;
-uniform sampler2D uRand;
 
 
 in vec2 vUV0;
 in vec3 vRay;
+
+
+//----------------------------------------------------------------------------------------------------------------------
+float noise(vec2 co)
+{
+  float dt= dot(co, vec2(12.9898, 78.233));
+  float sn= mod(dt, 3.14159265359);
+  return fract(sin(sn) * 43758.5453);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 ssaoNoise(vec2 uv) {
+  return vec3(noise(vUV0.xy), noise(vUV0.yx), noise(vUV0.xx));
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -48,7 +62,7 @@ void main()
   #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
 
   // random normal lookup from a texture and expand to [-1..1]
-  vec3 randN = texture2D(uRand, vUV0 * 24.0).xyz * 2.0 - 1.0;
+  vec3 randN = ssaoNoise(vUV0);
   vec4 geom = texture2D(uGeom, vUV0);
   float depth = geom.w;
 
