@@ -3,6 +3,7 @@
 #ifndef IBL_GLSL
 #define IBL_GLSL
 
+
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.

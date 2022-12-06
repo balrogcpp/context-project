@@ -22,17 +22,18 @@ in vec3 vRay;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float noise(vec2 co)
+float noise(vec2 x)
 {
-  float dt= dot(co, vec2(12.9898, 78.233));
-  float sn= mod(dt, 3.14159265359);
+  float dt = dot(x, vec2(12.9898, 78.233));
+  float sn = mod(dt, 3.14159265359); //  M_PI
   return fract(sin(sn) * 43758.5453);
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ssaoNoise(vec2 uv) {
-  return vec3(noise(vUV0.xy), noise(vUV0.yx), noise(vUV0.xx));
+vec3 ssaoNoise(vec2 uv)
+{
+  return vec3(noise(vUV0.xy), noise(vUV0.yx), noise(vUV0.xy + vec2(0.1)));
 }
 
 

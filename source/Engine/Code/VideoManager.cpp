@@ -472,6 +472,7 @@ void VideoManager::InitOgre() {
     shadowTexSize = 512;
 #endif
 
+    // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
@@ -525,6 +526,10 @@ void VideoManager::SetShadowTexSize(unsigned short size) {
 void VideoManager::SetTexFiltering(unsigned int type, int anisotropy) {
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(static_cast<Ogre::TextureFilterOptions>(type));
   Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
+}
+
+std::vector<float> VideoManager::GetPSSMSplitPoints() {
+  return pssmSplitPointList;
 }
 
 void VideoManager::ClearScene() {

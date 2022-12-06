@@ -3,6 +3,7 @@
 #ifndef MATH_GLSL
 #define MATH_GLSL
 
+
 #define HALF_MAX        65504.0 // (2 - 2^-10) * 2^15
 #define HALF_MAX_MINUS1 65472.0 // (2 - 2^-9) * 2^15
 #define EPSILON         1.0e-4
@@ -22,14 +23,16 @@
 #define FLT_MIN         1.175494351e-38 // Minimum representable positive floating-point number
 #define FLT_MAX         3.402823466e+38 // Maximum representable floating-point number
 
+
 float rcp(float value)
 {
     return 1.0 / value;
 }
 
-#ifdef GL_ES
-#define mad(a, b, c) (a * b + c)
-#endif
+float mad(float a, float b, float c)
+{
+    return a * b + c;
+}
 
 float min3(float a, float b, float c)
 {
@@ -175,15 +178,6 @@ vec3 SafeHDR(vec3 c)
 vec4 SafeHDR(vec4 c)
 {
     return min(c, HALF_MAX);
-}
-
-// Interleaved gradient function from Jimenez 2014
-// http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare
-float GradientNoise(vec2 uv, vec2 params)
-{
-    uv = floor(uv * params.xy);
-    float f = dot(vec2(0.06711056, 0.00583715), uv);
-    return fract(52.9829189 * fract(f));
 }
 
 #endif // MATH_GLSL

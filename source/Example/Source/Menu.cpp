@@ -24,14 +24,14 @@ void Menu::OnSetUp() {
 #ifdef MOBILE
   int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
-  GetComponent<CompositorManager>().SetFixedViewportSize(x / 2.5, y / 2.5);
+  GetComponent<CompositorManager>().SetFixedViewportSize(x / 1.5, y / 1.5);
   GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
   GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
   GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", true);
 #endif
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
-  // auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
+  //auto *font = GetComponent<VideoManager>().AddFont("Muse700");
   GetComponent<VideoManager>().ShowOverlay(true);
   ImGuiB::SetupImGuiStyle_DiscordDark();
 }
@@ -90,18 +90,18 @@ void Menu::BeforeRender(float time) {
   ImGui::BeginChild("ScrollingRegion", ImVec2(ImGetWidth() * 0.5, ImGetHeight()), false);
 
   static bool windowFlags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  static int Combos[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  static int combos[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #ifndef ANDROID
-  if (ImGuiB::Checkbox("Fullscreen", &windowFlags[0])) {
+  if (ImGui::Checkbox("Fullscreen", &windowFlags[0])) {
     window.SetFullscreen(windowFlags[0]);
   }
 
-  if (ImGuiB::Checkbox("Resizable", &windowFlags[1])) {
+  if (ImGui::Checkbox("Resizable", &windowFlags[1])) {
     window.SetResizable(windowFlags[1]);
   }
 
-  if (ImGuiB::Checkbox("Maximize", &windowFlags[2])) {
+  if (ImGui::Checkbox("Maximize", &windowFlags[2])) {
     window.SetResizable(true);
 
     std::this_thread::sleep_for(100ms);
@@ -118,39 +118,40 @@ void Menu::BeforeRender(float time) {
     window.SetResizable(windowFlags[1]);
   }
 
-  if (ImGuiB::Checkbox("Always on top", &windowFlags[3])) {
+  if (ImGui::Checkbox("Always on top", &windowFlags[3])) {
     window.SetAlwaysOnTop(windowFlags[3]);
   }
 
-  if (ImGuiB::Checkbox("Hide border", &windowFlags[4])) {
+  if (ImGui::Checkbox("Hide border", &windowFlags[4])) {
     window.SetBordered(!windowFlags[4]);
   }
 
-  if (ImGuiB::Checkbox("Grab mouse", &windowFlags[5])) {
+  if (ImGui::Checkbox("Grab mouse", &windowFlags[5])) {
     window.SetGrabMouse(windowFlags[5]);
   }
 
-  if (ImGuiB::Checkbox("Hide mouse", &windowFlags[6])) {
+  if (ImGui::Checkbox("Hide mouse", &windowFlags[6])) {
     window.SetMouseRelativeMode(windowFlags[6]);
   }
 
-  if (ImGuiB::Checkbox("Enable shadows", &windowFlags[7])) {
+  if (ImGui::Checkbox("Enable shadows", &windowFlags[7])) {
     manager.EnableShadows(windowFlags[7]);
   }
 
   const char *intervalList = " -\0 1\0 2\0 3\0 4\0";
-  if (ImGuiB::Combo("Vsync interval", &Combos[0], intervalList)) {
-    if (Combos[0] == 0) {
+  if (ImGui::Combo("Vsync interval", &combos[0], intervalList)) {
+    if (combos[0] == 0) {
       window.EnableVsync(false);
+      combos[1] = 0;
     } else {
       window.EnableVsync(true);
-      window.SetVsyncInterval(Combos[0]);
+      window.SetVsyncInterval(combos[0]);
     }
   }
 
   const char *fpsList = " -\0 60\0 30\0 20\0 15\0";
-  if (ImGuiB::Combo("Lock FPS", &Combos[1], fpsList)) {
-    switch (Combos[1]) {
+  if (ImGui::Combo("Lock FPS", &combos[1], fpsList)) {
+    switch (combos[1]) {
       case (0): {
         system.EnableFpsLock(false);
         break;
@@ -180,20 +181,20 @@ void Menu::BeforeRender(float time) {
 
   const unsigned short texSizeList[] = {128, 256, 512, 1024, 2048, 4096};
   const char *texSizeListStr = " 128\0 256\0 512\0 1024\0 2048\0 4096\0";
-  if (ImGuiB::Combo("Shadow tex size", &Combos[2], texSizeListStr)) {
-    manager.SetShadowTexSize(texSizeList[Combos[2]]);
+  if (ImGui::Combo("Shadow tex size", &combos[2], texSizeListStr)) {
+    manager.SetShadowTexSize(texSizeList[combos[2]]);
   }
 
   const unsigned short anisotropyLevel[] = {1, 2, 4, 8, 16};
   const char *anisotropyLevelStr = " 1\0 2\0 4\0 8\0 16\0";
-  if (ImGuiB::Combo("Anisotropy lvl", &Combos[3], anisotropyLevelStr)) {
-    manager.SetTexFiltering(anisotropyLevel[Combos[4]], Combos[3]);
+  if (ImGui::Combo("Anisotropy lvl", &combos[3], anisotropyLevelStr)) {
+    manager.SetTexFiltering(anisotropyLevel[combos[4]], combos[3]);
   }
 
   const unsigned short texFiltering[] = {0, 1, 2, 3};
   const char *texFilteringStr = " NONE\0 BILINEAR\0 TRILINEAR\0 ANISOTROPIC\0";
-  if (ImGuiB::Combo("Texture filtering", &Combos[4], texFilteringStr)) {
-    manager.SetTexFiltering(texFiltering[Combos[4]], Combos[3]);
+  if (ImGui::Combo("Texture filtering", &combos[4], texFilteringStr)) {
+    manager.SetTexFiltering(texFiltering[combos[4]], combos[3]);
   }
 
 
@@ -247,7 +248,7 @@ void Menu::BeforeRender(float time) {
   }
 
   static int j = 0;
-  if (ImGuiB::Combo("Resolution", &j, resStr.c_str())) {
+  if (ImGui::Combo("Resolution", &j, resStr.c_str())) {
     int x, y;
     if (j > 0) {
       if (j == 1) {
@@ -268,19 +269,19 @@ void Menu::BeforeRender(float time) {
   }
 
   static bool compositorFlags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-  if (ImGuiB::Checkbox("Bloom", &compositorFlags[0])) {
+  if (ImGui::Checkbox("Bloom", &compositorFlags[0])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", compositorFlags[0]);
   }
 
-  if (ImGuiB::Checkbox("Blur", &compositorFlags[1])) {
+  if (ImGui::Checkbox("Blur", &compositorFlags[1])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("Blur", compositorFlags[1]);
   }
 
-  if (ImGuiB::Checkbox("SSAO", &compositorFlags[2])) {
+  if (ImGui::Checkbox("SSAO", &compositorFlags[2])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", compositorFlags[2]);
   }
 
-  if (ImGuiB::Checkbox("FXAA", &compositorFlags[3])) {
+  if (ImGui::Checkbox("FXAA", &compositorFlags[3])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", compositorFlags[3]);
   }
 

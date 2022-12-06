@@ -32,6 +32,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void EnableShadows(bool enable);
   void SetShadowTexSize(unsigned short size);
   void SetTexFiltering(unsigned int type, int anisotropy);
+  std::vector<float> GetPSSMSplitPoints();
 
  protected:
   void MakeWindow();
