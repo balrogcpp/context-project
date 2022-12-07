@@ -76,8 +76,8 @@ int main(int numargs, char** args)
   outFileDataPos+= sprintf(outFileDataPos, "#pragma once\n\n");
 
   // declare and init the content of the zip file to a static buffer
-  outFileDataPos+= sprintf(outFileDataPos, "\t\tconstexpr unsigned char %s_zip[] = \n", fileNameWithoutExt.c_str());
-  outFileDataPos+= sprintf(outFileDataPos, "\t\t{\n\t\t\t");
+  outFileDataPos+= sprintf(outFileDataPos, "constexpr unsigned char %s_zip[] = \n", fileNameWithoutExt.c_str());
+  outFileDataPos+= sprintf(outFileDataPos, "{\n    ");
   int posCurOutInLine = 0;
   for( std::streamsize i = 0 ;  i < fileSize ; i++ )
   {
@@ -106,13 +106,13 @@ int main(int numargs, char** args)
 
     // cut the line every 100 chars
     if (posCurOutInLine > 100) {
-      outFileDataPos+= sprintf(outFileDataPos, "\n\t\t\t");
+      outFileDataPos+= sprintf(outFileDataPos, "\n    ");
       posCurOutInLine = 0;
     }
   }
 
   // close the static buffer that holds the file data
-  outFileDataPos+= sprintf(outFileDataPos, "\n\t\t};\n");
+  outFileDataPos+= sprintf(outFileDataPos, "\n};\n");
 
   // write out the cpp file
   std::ofstream writeStream;
