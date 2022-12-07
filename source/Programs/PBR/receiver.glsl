@@ -3,10 +3,30 @@
 #ifndef RECEIVER_GLSL
 #define RECEIVER_GLSL
 
-#include "noise.glsl"
+
+//----------------------------------------------------------------------------------------------------------------------
+float InterleavedGradientNoise(vec2 position_screen)
+{
+    vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    return fract(magic.z * fract(dot(position_screen, magic.xy)));
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
+{
+    #define GoldenAngle 2.4
+
+    float r = sqrt((float(sampleIndex) + 0.5) / float(samplesCount));
+    float theta = float(sampleIndex) * GoldenAngle + phi;
+    float sine = sin(theta);
+    float cosine = cos(theta);
+
+    return vec2(r * cosine, r * sine);
+}
+
 
 #ifdef PENUMBRA
-
 //----------------------------------------------------------------------------------------------------------------------
 float AvgBlockersDepthToPenumbra(const float z_shadowMapView, const float avgBlockersDepth)
 {
@@ -56,6 +76,7 @@ float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gr
 }
 
 #endif // PENUMBRA
+
 
 //----------------------------------------------------------------------------------------------------------------------
 float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 filter_size, const int iterations)

@@ -10,15 +10,20 @@
 #endif
 #endif
 
+
 #include "header.vert"
 
+
 uniform highp mat4 worldViewProj;
+
 
 in highp vec4 position;
 in vec4 uv0;
 
+
 out highp vec3 vPosition;
 //out vec3 vUV0; // direction vector representing a 3D texture coordinate
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()

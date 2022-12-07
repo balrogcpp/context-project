@@ -87,7 +87,7 @@ if (NOT EMSCRIPTEN)
             DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
             SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
             GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-            GIT_TAG release-2.26.0
+            GIT_TAG release-2.26.1
             GIT_SHALLOW true
             GIT_PROGRESS false
             DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}

@@ -18,24 +18,20 @@
 #ifdef NO_MRT
 #include "fog.glsl"
 #endif
-#include "lighting.glsl"
-#ifdef USE_IBL
-#include "ibl.glsl"
-#endif
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
 #endif
-#ifdef TERRAIN
-#include "filters.glsl"
-#endif
-#ifdef HAS_REFLECTION
-#include "reflection.glsl"
+
+
+#ifndef M_PI
+#define M_PI 3.141592653589793
 #endif
 
 
 #ifndef F0
 #define F0 0.04
 #endif
+
 
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 0
@@ -45,6 +41,114 @@
 #define MAX_SHADOW_TEXTURES 0
 #endif
 
+
+// Basic Lambertian diffuse
+// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
+// See also [1], Equation 1
+//----------------------------------------------------------------------------------------------------------------------
+vec3 Diffuse(const vec3 diffuseColor)
+{
+    return (diffuseColor / M_PI);
+}
+
+
+// The following equation models the Fresnel reflectance term of the spec equation (aka F())
+// Implementation of fresnel from [4], Equation 15
+//----------------------------------------------------------------------------------------------------------------------
+vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const float VdotH)
+{
+    return reflectance0 + (reflectance90 - reflectance0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
+}
+
+
+// This calculates the specular geometric attenuation (aka G()),
+// where rougher material will reflect less light back to the viewer.
+// This implementation is based on [1] Equation 4, and we adopt their modifications to
+// alphaRoughness as input as originally proposed in [2].
+//----------------------------------------------------------------------------------------------------------------------
+float GeometricOcclusion(const float NdotL, const float NdotV, const float r)
+{
+    float r2 = (r * r);
+    float r3 = (1.0 - r2);
+    float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
+    float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
+    return attenuationL * attenuationV;
+}
+
+
+// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
+// Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
+// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
+//----------------------------------------------------------------------------------------------------------------------
+highp float MicrofacetDistribution(const highp float alphaRoughness, const highp float NdotH)
+{
+    highp float roughnessSq = alphaRoughness * alphaRoughness;
+    highp float f = (NdotH * roughnessSq - NdotH) * NdotH + 1.0;
+    return roughnessSq / (M_PI * (f * f));
+}
+
+
+#ifdef USE_IBL
+// Calculation of the lighting contribution from an optional Image Based Light source.
+// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
+// See our README.md on Environment Maps [3] for additional discussion.
+//----------------------------------------------------------------------------------------------------------------------
+vec3 GetIBLContribution(const sampler2D uBrdfLUT, const samplerCube uDiffuseEnvSampler, const samplerCube uSpecularEnvSampler, const vec3 diffuseColor, const vec3 specularColor, const float perceptualRoughness, const float NdotV, const vec3 n, const vec3 reflection)
+{
+  // retrieve a scale and bias to F0. See [1], Figure 3
+  vec3 brdf = SRGBtoLINEAR(texture2D(uBrdfLUT, vec2(NdotV, 1.0 - perceptualRoughness))).rgb;
+  vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
+
+#ifdef USE_TEX_LOD
+  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, perceptualRoughness * 9.0)).rgb;
+#else
+  vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
+#endif
+
+  vec3 diffuse = (diffuseLight * diffuseColor);
+  vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
+
+  return diffuse + specular;
+}
+#endif
+
+
+#ifdef HAS_REFLECTION
+//----------------------------------------------------------------------------------------------------------------------
+vec3 ApplyReflection(const sampler2D refMap, const vec4 projection, const vec3 color, const vec3 n, const vec3 v, const float metallic)
+{
+    const float fresnelBias = 0.1;
+    const float fresnelScale = 1.8;
+    const float fresnelPower = 8.0;
+    const float filter_max_size = 0.1;
+    const int sample_count = 8;
+
+    float cosa = dot(n, -v);
+    float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
+    fresnel = clamp(fresnel, 0.0, 1.0);
+    float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+    vec4 uv = projection;
+    uv.xy += VogelDiskSample(3, sample_count, gradientNoise) * filter_max_size;
+    vec3 reflectionColour = texture2DProj(refMap, uv).rgb;
+    return mix(color, reflectionColour, fresnel * metallic);
+}
+#endif
+
+
+#ifdef TERRAIN
+//----------------------------------------------------------------------------------------------------------------------
+float BoxFilter4F(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+  float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
+  float B = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).r;
+  float C = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
+  float D = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
+
+  float color = (A + B + C + D) * 0.25;
+
+  return color;
+}
+#endif
 
 // in block
 in highp vec3 vPosition;
@@ -404,7 +508,7 @@ void main()
     vec3 total_colour = vec3(0.0);
 
 #ifdef TERRAIN
-    float globalShadow = BoxFilter4R(uGlobalShadowSampler, vUV0.xy, TexelSize5.xy);
+    float globalShadow = BoxFilter4F(uGlobalShadowSampler, vUV0.xy, TexelSize5.xy);
 #else
     float globalShadow = 1.0;
 #endif
