@@ -8,8 +8,10 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
 #include "srgb.glsl"
+
 
 #ifndef MAX_SAMPLES
 #define MAX_SAMPLES 4
@@ -24,5 +26,5 @@ uniform float uExposure;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = LINEARtoSRGB(texture2D(uSceneSampler, vUV0).rgb);
+  FragColor.rgb = LINEARtoSRGB(texture2D(uSceneSampler, vUV0).rgb, uExposure);
 }

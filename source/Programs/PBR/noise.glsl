@@ -33,20 +33,20 @@ float gold_noise(const vec2 xy, const float seed)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float random(vec2 co)
+float random(const vec2 co)
 {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float InterleavedGradientNoise(vec2 position_screen)
+float InterleavedGradientNoise(const vec2 position_screen)
 {
     vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
     return fract(magic.z * fract(dot(position_screen, magic.xy)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
+vec2 VogelDiskSample(const int sampleIndex, const int samplesCount, const float phi)
 {
     #define GoldenAngle 2.4
 
@@ -61,21 +61,21 @@ vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 //----------------------------------------------------------------------------------------------------------------------
 // Interleaved gradient function from Jimenez 2014
 // http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare
-float GradientNoise(vec2 uv, vec2 params)
+float GradientNoise(const vec2 _uv, const vec2 params)
 {
-    uv = floor(uv * params.xy);
+    vec2 uv = floor(_uv * params.xy);
     float f = dot(vec2(0.06711056, 0.00583715), uv);
     return fract(52.9829189 * fract(f));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float hash(float n)
+float hash(const float n)
 {
     return fract(sin(n) * 43758.5453);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float noise(vec2 x)
+float noise(const vec2 x)
 {
     vec2 p = floor(x);
     vec2 f = fract(x);
@@ -86,7 +86,7 @@ float noise(vec2 x)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float fbm(vec2 p)
+float fbm(const vec2 p)
 {
     //float f = 0.0;
     //f += 0.50000 * noise(p); p = p * 2.02;

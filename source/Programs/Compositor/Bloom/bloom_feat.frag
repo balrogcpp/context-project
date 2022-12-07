@@ -10,14 +10,12 @@
 
 
 #include "header.frag"
-#include "filters.glsl"
-#include "math.glsl"
 #include "srgb.glsl"
 
 
 in vec2 vUV0;
 uniform sampler2D uSampler;
-uniform sampler2D uLensMask;
+//uniform sampler2D uLensMask;
 uniform vec2 TexelSize0;
 uniform float uChromaticRadius;
 
@@ -84,7 +82,6 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv)
   vec2 ghostVec = (vec2(0.5) - uv) * 0.5;
   vec3 ret = vec3(0.0);
 
-
   // ghosts
   vec2 suv = fract(uv + ghostVec);
   float d = distance(suv, vec2(0.5));
@@ -92,7 +89,6 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv)
 
   vec3 s0 = SampleChromatic(tex, suv, uChromaticRadius);
   ret += s0 * w;
-
 
   // halo
   const float radius = 1.0;
@@ -114,7 +110,7 @@ void main()
 {
   vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
   color += SampleFeatures(uSampler, vUV0);
-  color *= SRGBtoLINEAR(texture2D(uLensMask, vUV0).rgb);
+  //color *= SRGBtoLINEAR(texture2D(uLensMask, vUV0).rgb);
 
   FragColor.rgb = color;
 }

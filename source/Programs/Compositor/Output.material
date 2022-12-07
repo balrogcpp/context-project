@@ -9,7 +9,7 @@ fragment_program Output_fs glsl glsles
     preprocessor_defines NONE
 	default_params
 	{
-		//param_named uExposure float 1.0
+		param_named uExposure float 1.0
 	}
 }
 

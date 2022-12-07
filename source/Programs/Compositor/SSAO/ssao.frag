@@ -22,7 +22,7 @@ in vec3 vRay;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float noise(vec2 x)
+float noise(const vec2 x)
 {
   float dt = dot(x, vec2(12.9898, 78.233));
   float sn = mod(dt, 3.14159265359); //  M_PI
@@ -31,9 +31,9 @@ float noise(vec2 x)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ssaoNoise(vec2 uv)
+vec3 ssaoNoise(const vec2 uv)
 {
-  return vec3(noise(vUV0.xy), noise(vUV0.yx), noise(vUV0.xy + vec2(0.1)));
+  return vec3(noise(uv), noise(uv + vec2(0.1)), noise(uv + vec2(0.2)));
 }
 
 

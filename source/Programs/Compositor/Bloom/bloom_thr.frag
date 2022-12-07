@@ -8,6 +8,7 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
 #include "srgb.glsl"
 
