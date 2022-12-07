@@ -48,9 +48,9 @@ float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gr
 {
   float avgBlockersDepth = 0.0;
   float blockersCount = 0.0;
-  const float penumbraFilterMaxSize = 0.01;
+  #define penumbraFilterMaxSize 0.01
 
-  for(int i = 0; i < samplesCount; i++)
+  for(int i = 0; i < samplesCount; ++i)
   {
     vec2 sampleUV = VogelDiskSample(i, samplesCount, gradientNoise);
     sampleUV = shadowMapUV + penumbraFilterMaxSize * sampleUV;
@@ -90,7 +90,7 @@ float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 fil
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
   //float penumbra = Penumbra(shadowMap, gradientNoise, lightSpace.xy, current_depth, iterations);
 
-  for (int i = 0; i < iterations; i++)
+  for (int i = 0; i < iterations; ++i)
   {
     lightSpace.xy += VogelDiskSample(i, iterations, gradientNoise) * filter_size;
 #ifdef PENUMBRA

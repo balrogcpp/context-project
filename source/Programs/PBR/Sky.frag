@@ -68,11 +68,9 @@ void main()
     highp float gamma = acos(cos_gamma);
     vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 
-
     color = XYZtoRGB(color);
     color = expose(color, 0.1);
     color = SRGBtoLINEAR(color);
-
 
     if (gamma <= uSunSize) color += uSunColor;
     //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);

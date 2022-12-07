@@ -514,7 +514,7 @@ void main()
 #endif
 
 #if MAX_LIGHTS > 0
-    for (int i = 0; i < MAX_LIGHTS; i++) {
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
         highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light

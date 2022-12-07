@@ -26,5 +26,7 @@ uniform float uExposure;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = LINEARtoSRGB(texture2D(uSceneSampler, vUV0).rgb, uExposure);
+  vec3 color = texture2D(uSceneSampler, vUV0).rgb;
+  color = expose(color, uExposure);
+  FragColor.rgb = LINEARtoSRGB(color, uExposure);
 }

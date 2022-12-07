@@ -519,18 +519,16 @@ void VideoManager::EnableShadows(bool enable) {
   }
 }
 
-void VideoManager::SetShadowTexSize(unsigned short size) {
-  ogreSceneManager->setShadowTextureSize(size);
-}
+bool VideoManager::IsShadowEnabled() { return ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE; }
+void VideoManager::SetShadowTexSize(unsigned short size) { ogreSceneManager->setShadowTextureSize(size); }
+unsigned short VideoManager::GetShadowTexSize() { return IsShadowEnabled() ? ogreSceneManager->getShadowTextureConfigList()[0].height : 0; }
 
 void VideoManager::SetTexFiltering(unsigned int type, int anisotropy) {
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(static_cast<Ogre::TextureFilterOptions>(type));
   Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
-std::vector<float> VideoManager::GetPSSMSplitPoints() {
-  return pssmSplitPointList;
-}
+std::vector<float> VideoManager::GetPSSMSplitPoints() { return pssmSplitPointList; }
 
 void VideoManager::ClearScene() {
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);

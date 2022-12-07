@@ -17,34 +17,40 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 // https://en.wikipedia.org/wiki/Relative_luminance
-float luminance(const vec3 color) {
+float luminance(const vec3 color)
+{
   return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float luminance(const vec4 color) {
+float luminance(const vec4 color)
+{
   return dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // https://www.w3.org/TR/AERT/#color-contrast
-float luminance2(const vec3 color) {
+float luminance2(const vec3 color)
+{
   return dot(color, vec3(0.299, 0.587, 0.114));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float luminance2(const vec4 color) {
+float luminance2(const vec4 color)
+{
   return dot(color.rgb, vec3(0.299, 0.587, 0.114));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // https://alienryderflex.com/hsp.html
-float luminance3(const vec3 color) {
+float luminance3(const vec3 color)
+{
   return sqrt(dot(color * color, vec3(0.299, 0.587, 0.114)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float luminance3(const vec4 color) {
+float luminance3(const vec4 color)
+{
   return sqrt(dot(color.rgb * color.rgb, vec3(0.299, 0.587, 0.114)));
 }
 
@@ -63,9 +69,9 @@ vec4 expose(const vec4 color, const float exposure)
 //----------------------------------------------------------------------------------------------------------------------
 vec3 tone_map(vec3 inColour, const float lum)
 {
-  const float MIDDLE_GREY = 0.72;
-  const float FUDGE = 0.001;
-  const float L_WHITE = 1.5;
+  #define MIDDLE_GREY 0.72
+  #define FUDGE 0.001
+  #define L_WHITE 1.5
 
   // From Reinhard et al
   // "Photographic Tone Reproduction for Digital Images"

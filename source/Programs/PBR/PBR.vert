@@ -197,7 +197,7 @@ void main()
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
   // Calculate the position of vertex in light space
-  for (int i = 0; i < MAX_SHADOW_TEXTURES; i++) {
+  for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
     if (ShadowTextureCount <= i) break;
     LightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
   }

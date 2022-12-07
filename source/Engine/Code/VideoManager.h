@@ -30,7 +30,9 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
                   const ImWchar* ranges = nullptr);
 
   void EnableShadows(bool enable);
+  bool IsShadowEnabled();
   void SetShadowTexSize(unsigned short size);
+  unsigned short GetShadowTexSize();
   void SetTexFiltering(unsigned int type, int anisotropy);
   std::vector<float> GetPSSMSplitPoints();
 

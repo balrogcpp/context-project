@@ -197,7 +197,6 @@ void Menu::BeforeRender(float time) {
     manager.SetTexFiltering(texFiltering[combos[4]], combos[3]);
   }
 
-
 #endif
 
   // used to generate display list

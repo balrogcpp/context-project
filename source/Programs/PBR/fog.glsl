@@ -3,6 +3,7 @@
 #ifndef FOG_GLSL
 #define FOG_GLSL
 
+
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyFogLinear(const vec3 color, const vec4 fog_params, const vec3 fog_color, const float depth)
 {

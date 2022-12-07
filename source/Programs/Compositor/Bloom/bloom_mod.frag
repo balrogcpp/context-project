@@ -43,7 +43,7 @@ void main()
   //float w = SampleStarburst(uStarburst, vUV0, 1.0);
   float w = 1.0 / mipCount;
 #ifdef GL_ES
-  w *= 4.0;
+  w *= 2.0;
 #endif
 
   FragColor.rgb = rt + rt0 * w;
