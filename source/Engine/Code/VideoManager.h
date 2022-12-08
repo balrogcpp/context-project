@@ -26,7 +26,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
 
   void GamepadEnable(bool enable);
   void ShowOverlay(bool show);
-  ImFont* AddFont(const std::string& name, const std::string& group = Ogre::RGN_AUTODETECT, const ImFontConfig* cfg = nullptr,
+  ImFont* AddFont(const std::string& name, const int size = 0, const std::string& group = Ogre::RGN_AUTODETECT, const ImFontConfig* cfg = nullptr,
                   const ImWchar* ranges = nullptr);
 
   void EnableShadows(bool enable);

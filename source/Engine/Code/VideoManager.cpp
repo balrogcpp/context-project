@@ -630,7 +630,7 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGen = nullptr;
 };
 
-ImFont *VideoManager::AddFont(const std::string &name, const std::string &group, const ImFontConfig *cfg, const ImWchar *ranges) {
+ImFont *VideoManager::AddFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg, const ImWchar *ranges) {
   typedef std::vector<ImWchar> CodePointRange;
   std::vector<CodePointRange> mCodePointRanges;
   static ImGuiIO &io = ImGui::GetIO();
@@ -657,8 +657,9 @@ ImFont *VideoManager::AddFont(const std::string &name, const std::string &group,
   }
 
   float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
+  int size_ = size > 0 ? size : font->getTrueTypeSize();
 
-  return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, cfg, ranges);
+  return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), size_ * vpScale, cfg, ranges);
 }
 
 void VideoManager::GamepadEnable(bool enable) { gamepadSupport = enable; }

@@ -9,6 +9,10 @@ using namespace std;
 
 namespace {
 bool showMenu = false;
+ImFont *font0 = nullptr;
+ImFont *font1 = nullptr;
+ImFont *font2 = nullptr;
+ImFont *font3 = nullptr;
 }  // namespace
 
 namespace Glue {
@@ -29,9 +33,14 @@ void Menu::OnSetUp() {
   GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
   GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", true);
 #endif
-  GetComponent<SceneManager>().LoadFromFile("1.scene");
-  GetComponent<SkyManager>().SetUpSky();
-  //auto *font = GetComponent<VideoManager>().AddFont("Muse700");
+
+  static ImGuiIO &io = ImGui::GetIO();
+  static ImGuiStyle &style = ImGui::GetStyle();
+
+  //GetComponent<SceneManager>().LoadFromFile("1.scene");
+  //GetComponent<SkyManager>().SetUpSky();
+  font0 = io.Fonts->AddFontDefault();
+  font1 = GetComponent<VideoManager>().AddFont("Muse300", 24);
   GetComponent<VideoManager>().ShowOverlay(true);
   ImGuiB::SetupImGuiStyle_DiscordDark();
 }
@@ -39,8 +48,10 @@ void Menu::OnSetUp() {
 void Menu::OnUpdate(float time) {}
 
 void Menu::BeforeRender(float time) {
-  const static ImGuiIO &io = ImGui::GetIO();
+  static ImGuiIO &io = ImGui::GetIO();
+  static ImGuiStyle &style = ImGui::GetStyle();
   const static auto *viewport = ImGui::GetMainViewport();
+
 
   Ogre::ImGuiOverlay::NewFrame();
 
@@ -49,6 +60,7 @@ void Menu::BeforeRender(float time) {
   ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
+
 
 #ifdef MOBILE
   ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
@@ -71,42 +83,45 @@ void Menu::BeforeRender(float time) {
   }
 
 
-  ImGuiB::SetupImGuiStyle_NeverBlue();
+  ImGuiB::SetupImGuiStyle_NeverBlue(); 
 
   float vx = viewport->Size.x, vy = viewport->Size.y;
   float scale = 0.95;
   float border = 0.5 - 0.5 * scale;
 
+  //style.ScaleAllSizes(vy / 4096);
+
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
   ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoDecoration);
+  ImGui::PushFont(font1);
 
-  static int activeTab = 0;
-  std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
+ // static int activeTab = 0;
+  //std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
 
   const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 
-  ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGetHeight() * 0.065), tabs, activeTab);
+  //ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGetHeight() * 0.065), tabs, activeTab);
   ImGui::BeginChild("ScrollingRegion", ImVec2(ImGetWidth() * 0.5, ImGetHeight()), false);
 
-  static bool windowFlags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  static bool flags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   static int combos[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #ifndef ANDROID
-  if (ImGui::Checkbox("Fullscreen", &windowFlags[0])) {
-    window.SetFullscreen(windowFlags[0]);
+  if (ImGui::Checkbox("Fullscreen", &flags[0])) {
+    window.SetFullscreen(flags[0]);
   }
 
-  if (ImGui::Checkbox("Resizable", &windowFlags[1])) {
-    window.SetResizable(windowFlags[1]);
+  if (ImGui::Checkbox("Resizable", &flags[1])) {
+    window.SetResizable(flags[1]);
   }
 
-  if (ImGui::Checkbox("Maximize", &windowFlags[2])) {
+  if (ImGui::Checkbox("Maximize", &flags[2])) {
     window.SetResizable(true);
 
     std::this_thread::sleep_for(100ms);
 
-    if (windowFlags[2]) {
+    if (flags[2]) {
       window.SetMaximized();
       window.SetRefresh();
     } else {
@@ -115,27 +130,27 @@ void Menu::BeforeRender(float time) {
       window.SetPositionCentered();
     }
 
-    window.SetResizable(windowFlags[1]);
+    window.SetResizable(flags[1]);
   }
 
-  if (ImGui::Checkbox("Always on top", &windowFlags[3])) {
-    window.SetAlwaysOnTop(windowFlags[3]);
+  if (ImGui::Checkbox("Always on top", &flags[3])) {
+    window.SetAlwaysOnTop(flags[3]);
   }
 
-  if (ImGui::Checkbox("Hide border", &windowFlags[4])) {
-    window.SetBordered(!windowFlags[4]);
+  if (ImGui::Checkbox("Hide border", &flags[4])) {
+    window.SetBordered(!flags[4]);
   }
 
-  if (ImGui::Checkbox("Grab mouse", &windowFlags[5])) {
-    window.SetGrabMouse(windowFlags[5]);
+  if (ImGui::Checkbox("Grab mouse", &flags[5])) {
+    window.SetGrabMouse(flags[5]);
   }
 
-  if (ImGui::Checkbox("Hide mouse", &windowFlags[6])) {
-    window.SetMouseRelativeMode(windowFlags[6]);
+  if (ImGui::Checkbox("Hide mouse", &flags[6])) {
+    window.SetMouseRelativeMode(flags[6]);
   }
 
-  if (ImGui::Checkbox("Enable shadows", &windowFlags[7])) {
-    manager.EnableShadows(windowFlags[7]);
+  if (ImGui::Checkbox("Enable shadows", &flags[7])) {
+    manager.EnableShadows(flags[7]);
   }
 
   const char *intervalList = " -\0 1\0 2\0 3\0 4\0";
@@ -235,7 +250,7 @@ void Menu::BeforeRender(float time) {
   // used to generate resolution string
   int sizeX = window.GetDisplaySizeX();
   int sizeY = window.GetDisplaySizeY();
-  std::string resStr = std::string("  ") + '\0';
+  std::string resStr = std::string(" -") + '\0';
   resStr += std::to_string(sizeX) + "x" + std::to_string(sizeY) + " (native)" + '\0';
   for (const auto &it : resList) {
     if (sizeX >= it.x && sizeY >= it.y) {
@@ -258,7 +273,7 @@ void Menu::BeforeRender(float time) {
         y = resList[j - 2].y;
       }
 
-      if (windowFlags[0]) {
+      if (flags[0]) {
         GetComponent<CompositorManager>().SetFixedViewportSize(x, y);
       } else {
         window.SetSize(x, y);
@@ -285,9 +300,9 @@ void Menu::BeforeRender(float time) {
   }
 
   ImGui::EndChild();
-
   //  ImGui::BeginChild("ScrollingRegion2", ImVec2(ImGetWidth() * 0.5, ImGetHeight()), false);
   //  ImGui::EndChild();
+  ImGui::PopFont();
 
   ImGui::End();
 }

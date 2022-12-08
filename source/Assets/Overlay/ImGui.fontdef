@@ -1,5 +1,34 @@
 // created by Andrey Vasiliev
 
+
+font Muse900
+{
+	type 		truetype
+	source 		museosanscyrl-900.ttf
+	size 		15
+}
+
+font Muse700
+{
+	type 		truetype
+	source 		museosanscyrl-700.ttf
+	size 		15
+}
+
+font Muse500
+{
+	type 		truetype
+	source 		museosanscyrl-500.ttf
+	size 		15
+}
+
+font Muse300
+{
+	type 		truetype
+	source 		museosanscyrl-300.ttf
+	size 		15
+}
+
 font NotoSans-Regular
 {
 	type 		truetype
