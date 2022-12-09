@@ -249,7 +249,8 @@ VideoManager::VideoManager()
       pssmSplitCount(3),
       shadowFarDistance(400.0),
       shadowTexSize(512),
-      gamepadSupport(false) {}
+      gamepadSupport(false),
+      keyboardSupport(false) {}
 
 VideoManager::~VideoManager() {
   if (imguiOverlay) {
@@ -446,8 +447,6 @@ void VideoManager::InitOgreOverlay() {
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
   io.WantSaveIniSettings = false;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 #ifdef MOBILE
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 #endif
@@ -662,7 +661,17 @@ ImFont *VideoManager::AddFont(const std::string &name, const int size, const std
   return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), size_ * vpScale, cfg, ranges);
 }
 
-void VideoManager::GamepadEnable(bool enable) { gamepadSupport = enable; }
+void VideoManager::EnableGamepadNav(bool enable) {
+  static ImGuiIO &io = ImGui::GetIO();
+  enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableGamepad;
+  gamepadSupport = enable;
+}
+
+void VideoManager::EnableKeyboardNav(bool enable) {
+  static ImGuiIO &io = ImGui::GetIO();
+  enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
+  keyboardSupport = enable;
+}
 
 void VideoManager::ShowOverlay(bool show) {
   if (show) {
