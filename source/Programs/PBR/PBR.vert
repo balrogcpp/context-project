@@ -189,7 +189,7 @@ void main()
 
 #ifndef NO_MRT
   vScreenPosition = gl_Position;
-#ifndef TREES
+#ifndef PAGED_GEOMETRY
   vPrevScreenPosition = uWorldViewProjPrev * new_position;
 #else
   vPrevScreenPosition = uWorldViewProjPrev * ModelMatrix * new_position;

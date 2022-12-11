@@ -83,10 +83,12 @@ void Menu::BeforeRender(float time) {
   if (!showMenu) {
     window.SetMouseRelativeMode(true);
     GetComponent<SystemLocator>().SetSleep(false);
+    GetComponent<SceneManager>().SetSleep(false);
     return;
   } else {
     window.SetMouseRelativeMode(false);
     GetComponent<SystemLocator>().SetSleep(true);
+    GetComponent<SceneManager>().SetSleep(true);
   }
 
 

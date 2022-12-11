@@ -629,7 +629,7 @@ void main()
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-    vec2 velocity = (0.0166667 / FrameTime) * 0.5 * vec2(a - b);
+    vec2 velocity = (0.0166667 / FrameTime) * (b - a);
     FragData[2].rg = velocity;
 #else
     total_colour = ApplyFog(total_colour, FogParams, FogColour.rgb, vDepth);

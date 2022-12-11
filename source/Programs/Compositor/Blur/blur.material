@@ -6,7 +6,7 @@
 fragment_program Blur_fs glsl glsles
 {
     source blur.frag
-    preprocessor_defines MAX_SAMPLES=4.0
+    preprocessor_defines MAX_SAMPLES=5.0
 	default_params
 	{
         param_named uScale float 1.0

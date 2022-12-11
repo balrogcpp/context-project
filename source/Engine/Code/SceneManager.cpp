@@ -313,25 +313,56 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
+
+
+  if (_sleep) {
+    return;
+  }
+
   auto &vp = pass->getVertexProgramParameters();
   auto &fp = pass->getFragmentProgramParameters();
-
-  static Ogre::Matrix4 Model;
-
-  rend->getWorldTransforms(&Model);
+  Ogre::Matrix4 MVP;
+  rend->getWorldTransforms(&MVP);
+  MVP = ViewProj * MVP;
 
   Ogre::Any value = rend->getUserAny();
-  if (value.has_value()) {
-    vp->setIgnoreMissingParams(true);
+  rend->setUserAny(MVP);
+  vp->setIgnoreMissingParams(true);
 
-    if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend))
+  // hotfix skip grass, getWorldTransforms does not work properly
+  if (auto *entity = dynamic_cast<Ogre::SubEntity *>(rend)) {
+    if (!entity->getParent()->getName().rfind("GrassLDR", 0)) {
       vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
-    else
-      vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev * Ogre::any_cast<Ogre::Matrix4>(rend->getUserAny()));
-
-      vp->setIgnoreMissingParams(false);
+    } else if (value.has_value()) {
+      vp->setNamedConstant("uWorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
+    }
   }
-  rend->setUserAny(Model);
+
+  // skip BatchedGeometry
+  else if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend)) {
+    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+  }
+
+  // skip StaticGeometry
+  else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend)) {
+    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+  }
+
+  // skip manual objects
+  else if (dynamic_cast<Ogre::ManualObject::ManualObjectSection *>(rend)) {
+    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+  }
+
+  // skip instances
+  else if (dynamic_cast<Ogre::InstanceBatch *>(rend)) {
+    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+  }
+
+  else if (value.has_value()) {
+    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+  }
+
+  vp->setIgnoreMissingParams(false);
 }
 
 }  // namespace Glue
