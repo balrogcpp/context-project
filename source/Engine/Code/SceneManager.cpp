@@ -88,8 +88,8 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }  // namespace
 
 namespace {
-static Ogre::Matrix4 MVP;
-static Ogre::Matrix4 MVPprev;
+static Ogre::Matrix4 ViewProj;
+static Ogre::Matrix4 ViewProjPrev;
 }  // namespace
 
 namespace Glue {
@@ -121,8 +121,8 @@ void SceneManager::OnUpdate(float time) {
     sinbad->Update(time);
   }
 
-  MVPprev = MVP;
-  MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
+  ViewProjPrev = ViewProj;
+  ViewProj = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
 }
 
 static inline void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
@@ -316,9 +316,22 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   auto &vp = pass->getVertexProgramParameters();
   auto &fp = pass->getFragmentProgramParameters();
 
-  vp->setIgnoreMissingParams(true);
-  vp->setNamedConstant("uWorldViewProjPrev", MVPprev);
-  vp->setIgnoreMissingParams(false);
+  static Ogre::Matrix4 Model;
+
+  rend->getWorldTransforms(&Model);
+
+  Ogre::Any value = rend->getUserAny();
+  if (value.has_value()) {
+    vp->setIgnoreMissingParams(true);
+
+    if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend))
+      vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+    else
+      vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev * Ogre::any_cast<Ogre::Matrix4>(rend->getUserAny()));
+
+      vp->setIgnoreMissingParams(false);
+  }
+  rend->setUserAny(Model);
 }
 
 }  // namespace Glue

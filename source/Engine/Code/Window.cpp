@@ -4,7 +4,7 @@
 #include "Window.h"
 #include "Platform.h"
 #include <Ogre.h>
-#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_syswm.h> 
 
 using namespace std;
 

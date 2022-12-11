@@ -1938,7 +1938,7 @@ bool BeginComboB(const char *label, const char *preview_value, ImGuiComboFlags f
   const float w = ImGui::GetColumnWidth();
   const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y * 2.0f + 5.f));
   const ImRect total_bb(bb.Min, bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
-  const ImRect combo_bb(bb.Min + ImVec2(w - 135, 3.f), ImVec2(bb.Min.x + w - 10.f, bb.Max.y - 3));
+  const ImRect combo_bb(bb.Min + ImVec2(1.5*w - ImGetWidth(), 3.f), ImVec2(bb.Min.x + w - 10.f, bb.Max.y - 3));
   ItemSize(bb, style.FramePadding.y);
   if (!ItemAdd(total_bb, id, &bb)) return false;
 

@@ -189,7 +189,11 @@ void main()
 
 #ifndef NO_MRT
   vScreenPosition = gl_Position;
+#ifndef TREES
+  vPrevScreenPosition = uWorldViewProjPrev * new_position;
+#else
   vPrevScreenPosition = uWorldViewProjPrev * ModelMatrix * new_position;
+#endif
 #endif
 
   vDepth = gl_Position.z;

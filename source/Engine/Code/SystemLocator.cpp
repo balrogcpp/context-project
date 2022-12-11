@@ -89,7 +89,7 @@ bool SystemLocator::frameEnded(const Ogre::FrameEvent &evt) { return true; }
 bool SystemLocator::frameStarted(const Ogre::FrameEvent &evt) { return true; }
 bool SystemLocator::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   for (auto it : componentList) {
-    if (!it->IsSleeping()) {
+    if (!it->IsSleeping() && !_sleep) {
       it->OnUpdate(evt.timeSinceLastFrame);
     }
   }

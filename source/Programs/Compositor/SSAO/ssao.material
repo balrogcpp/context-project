@@ -19,7 +19,6 @@ fragment_program ssao_fp glsl glsles
 	{
 		param_named uGeom int 0
         param_named_auto FarClipDistance far_clip_distance
-        //param_named_auto ptMat projection_matrix
 	}
 }
 
