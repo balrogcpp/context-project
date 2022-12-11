@@ -314,9 +314,15 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
+  if (_sleep || !pLightList || !pass || suppressRenderStateChanges) {
+    return;
+  }
 
+  if (!pass->hasVertexProgram() || !pass->hasFragmentProgram()) {
+    return;
+  }
 
-  if (_sleep) {
+  if (!pass->getLightingEnabled() || pass->getFogOverride()) {
     return;
   }
 
@@ -324,13 +330,11 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   auto &fp = pass->getFragmentProgramParameters();
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);
-  MVP = ViewProj * MVP;
-
   Ogre::Any value = rend->getUserAny();
-  rend->setUserAny(MVP);
+  rend->setUserAny(ViewProj * MVP);
   vp->setIgnoreMissingParams(true);
 
-  // apply for entities, except grass
+  // apply for entities, skip grass
   if (auto *entity = dynamic_cast<Ogre::SubEntity *>(rend)) {
     if (!entity->getParent()->getName().rfind("GrassLDR", 0)) {
       vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
