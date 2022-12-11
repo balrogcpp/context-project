@@ -7,6 +7,7 @@
 #include "TerrainManager.h"
 #include "VideoManager.h"
 #include <PagedGeometry/PagedGeometryAll.h>
+#include <Terrain/OgreTerrainQuadTreeNode.h>
 
 using namespace std;
 
@@ -329,7 +330,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   rend->setUserAny(MVP);
   vp->setIgnoreMissingParams(true);
 
-  // hotfix skip grass, getWorldTransforms does not work properly
+  // apply for entities, except grass
   if (auto *entity = dynamic_cast<Ogre::SubEntity *>(rend)) {
     if (!entity->getParent()->getName().rfind("GrassLDR", 0)) {
       vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
@@ -348,16 +349,12 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
     vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
   }
 
-  // skip manual objects
-  else if (dynamic_cast<Ogre::ManualObject::ManualObjectSection *>(rend)) {
+  // skip terrain
+  else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend)) {
     vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
   }
 
-  // skip instances
-  else if (dynamic_cast<Ogre::InstanceBatch *>(rend)) {
-    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
-  }
-
+  // default, keep it as it is
   else if (value.has_value()) {
     vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
   }
