@@ -37,30 +37,35 @@ void Menu::OnSetUp() {
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
 
-  //GetComponent<SceneManager>().LoadFromFile("1.scene");
-  //GetComponent<SkyManager>().SetUpSky();
+  GetComponent<SceneManager>().LoadFromFile("1.scene");
+  GetComponent<SkyManager>().SetUpSky();
   font0 = io.Fonts->AddFontDefault();
-  font1 = GetComponent<VideoManager>().AddFont("Muse300", 24);
+  //font1 = GetComponent<VideoManager>().AddFont("Muse500", 24);
   GetComponent<VideoManager>().ShowOverlay(true);
   ImGuiB::SetupImGuiStyle_DiscordDark();
 }
 
 void Menu::OnUpdate(float time) {}
 
+void Menu::OnSizeChanged(int x, int y, uint32_t id) {
+  static ImGuiIO &io = ImGui::GetIO();
+  static ImGuiStyle &style = ImGui::GetStyle();
+}
+
 void Menu::BeforeRender(float time) {
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
   const static auto *viewport = ImGui::GetMainViewport();
-
 
   Ogre::ImGuiOverlay::NewFrame();
 
   // fps counter
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+  ImGui::PushFont(font0);
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
+  ImGui::PopFont();
   ImGui::End();
-
 
 #ifdef MOBILE
   ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
@@ -88,8 +93,6 @@ void Menu::BeforeRender(float time) {
   float vx = viewport->Size.x, vy = viewport->Size.y;
   float scale = 0.95;
   float border = 0.5 - 0.5 * scale;
-
-  //style.ScaleAllSizes(vy / 4096);
 
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});

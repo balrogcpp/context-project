@@ -87,11 +87,13 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }
 }  // namespace
 
+namespace {
+static Ogre::Matrix4 MVP;
+static Ogre::Matrix4 MVPprev;
+}  // namespace
+
 namespace Glue {
-SceneManager::SceneManager() {
-  vpParams.reserve(200);
-  fpParams.reserve(200);
-}
+SceneManager::SceneManager() {}
 SceneManager::~SceneManager() { ogreSceneManager->removeRenderObjectListener(this); }
 
 void SceneManager::OnSetUp() {
@@ -108,7 +110,6 @@ void SceneManager::OnSetUp() {
 void SceneManager::OnClean() {
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   ogreSceneManager->clearScene();
-  ogreSceneManager->removeRenderObjectListener(this);
   InputSequencer::GetInstance().UnregDeviceListener(sinbad.get());
   sinbad.reset();
   fpParams.clear();
@@ -119,13 +120,9 @@ void SceneManager::OnUpdate(float time) {
   if (sinbad) {
     sinbad->Update(time);
   }
-  static Ogre::Matrix4 MVP;
-  static Ogre::Matrix4 MVPprev;
+
   MVPprev = MVP;
   MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
-  for (auto &it : vpParams) {
-    it->setNamedConstant("uWorldViewProjPrev", MVPprev);
-  }
 }
 
 static inline void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
@@ -159,11 +156,6 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
     auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
     auto *terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
-
-    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
-      auto *terrain = it.getNext()->instance;
-      RegMaterial(terrain->getMaterial().get());
-    }
 
     if (ogreSceneManager->hasLight("Sun")) {
       terrainGlobalOptions->setLightMapDirection(ogreSceneManager->getLight("Sun")->getDerivedDirection());
@@ -228,10 +220,6 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
     }
   }
 
-  for (const auto &it : entity->getSubEntities()) {
-    RegMaterial(it->getMaterial().get());
-  }
-
   auto objBindings = entity->getUserObjectBindings();
   if (objBindings.getUserAny("proxy").has_value()) {
     Glue::GetComponent<Glue::PhysicsManager>().ProcessData(entity);
@@ -242,6 +230,9 @@ void SceneManager::RegMaterial(const Ogre::Material *material) {
   Ogre::LogManager::getSingleton().logMessage("[ScanNode] Material: " + material->getName());
 
   // UpgradeTransparentShadowCaster(material);
+
+  // skip registering, keep it for future needs
+  return;
 
   const auto *pass = material->getTechnique(0)->getPass(0);
 
@@ -308,7 +299,7 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
       Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Forests::BatchedGeometry: " + it->getName());
       auto it = geometry->getSubBatchIterator();
       while (it.hasMoreElements()) {
-        RegMaterial(it.getNext()->getMaterial().get());
+        it.getNext();
       }
       continue;
     }
@@ -321,6 +312,13 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 }
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
-                                            const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {}
+                                            const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
+  auto &vp = pass->getVertexProgramParameters();
+  auto &fp = pass->getFragmentProgramParameters();
+
+  vp->setIgnoreMissingParams(true);
+  vp->setNamedConstant("uWorldViewProjPrev", MVPprev);
+  vp->setIgnoreMissingParams(false);
+}
 
 }  // namespace Glue

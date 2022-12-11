@@ -14,5 +14,6 @@ class Menu final : public AppState {
   void BeforeRender(float time) override;
   void OnClean() override ;
   void OnKeyEvent(SDL_Scancode key, bool pressed) override;
+  void OnSizeChanged(int x, int y, uint32_t id) override;
 };
 }  // namespace Glue

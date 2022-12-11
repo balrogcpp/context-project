@@ -229,7 +229,7 @@ static ImGuiKey ImGui_ImplSDL2_KeycodeToImGuiKey(int keycode)
 
 static void ImGui_ImplSDL2_UpdateKeyModifiers(SDL_Keymod sdl_key_mods)
 {
-    ImGuiIO& io = ImGui::GetIO();
+    static ImGuiIO& io = ImGui::GetIO();
     io.AddKeyEvent(ImGuiKey_ModCtrl, (sdl_key_mods & KMOD_CTRL) != 0);
     io.AddKeyEvent(ImGuiKey_ModShift, (sdl_key_mods & KMOD_SHIFT) != 0);
     io.AddKeyEvent(ImGuiKey_ModAlt, (sdl_key_mods & KMOD_ALT) != 0);
@@ -243,7 +243,7 @@ static void ImGui_ImplSDL2_UpdateKeyModifiers(SDL_Keymod sdl_key_mods)
 // If you have multiple SDL events and some of them are not meant to be used by dear imgui, you may need to filter events based on their windowID field.
 bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
 {
-    ImGuiIO& io = ImGui::GetIO();
+    static ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
 
     switch (event->type)
@@ -303,7 +303,7 @@ bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
 
 static bool ImGui_ImplSDL2_Init(SDL_Window* window, SDL_Renderer* renderer)
 {
-    ImGuiIO& io = ImGui::GetIO();
+    static ImGuiIO& io = ImGui::GetIO();
     IM_ASSERT(io.BackendPlatformUserData == NULL && "Already initialized a platform backend!");
 
     // Check and store if we are on a SDL backend that supports global mouse position
@@ -399,13 +399,8 @@ bool ImGui_ImplSDL2_InitForSDLRenderer(SDL_Window* window, SDL_Renderer* rendere
 
 void ImGui_ImplSDL2_Shutdown()
 {
-    ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
-
-    if (!bd) {
-      return;
-    }
-
-    ImGuiIO& io = ImGui::GetIO();
+    ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData(); if (!bd) return;
+    static ImGuiIO& io = ImGui::GetIO();
 
     if (bd->ClipboardTextData)
         SDL_free(bd->ClipboardTextData);
@@ -420,7 +415,7 @@ void ImGui_ImplSDL2_Shutdown()
 static void ImGui_ImplSDL2_UpdateMouseData()
 {
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
-    ImGuiIO& io = ImGui::GetIO();
+    static ImGuiIO& io = ImGui::GetIO();
 
     // We forward mouse input when hovered or captured (via SDL_MOUSEMOTION) or when focused (below)
 #if SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE
@@ -450,7 +445,7 @@ static void ImGui_ImplSDL2_UpdateMouseData()
 
 static void ImGui_ImplSDL2_UpdateMouseCursor()
 {
-    ImGuiIO& io = ImGui::GetIO();
+    static ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange)
         return;
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
@@ -471,7 +466,7 @@ static void ImGui_ImplSDL2_UpdateMouseCursor()
 
 static void ImGui_ImplSDL2_UpdateGamepads()
 {
-    ImGuiIO& io = ImGui::GetIO();
+    static ImGuiIO& io = ImGui::GetIO();
     if ((io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) == 0)
         return;
 
@@ -519,7 +514,7 @@ void ImGui_ImplSDL2_NewFrame()
 {
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
     IM_ASSERT(bd != NULL && "Did you call ImGui_ImplSDL2_Init()?");
-    ImGuiIO& io = ImGui::GetIO();
+    static ImGuiIO& io = ImGui::GetIO();
 
     // Setup display size (every frame to accommodate for window resizing)
     int w, h;
