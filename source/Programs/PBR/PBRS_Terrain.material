@@ -5,12 +5,12 @@ import PBRS_BaseI_fs from PBRS.program
 
 abstract vertex_program PBRS_Terrain_I_vs glsl glsles : PBRS_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,PAGED_GEOMETRY
 }
 
 abstract fragment_program PBRS_Terrain_I_fs glsl glsles : PBRS_BaseI_fs
 {
-    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
+    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,TERRAIN
 
     default_params
     {
@@ -21,13 +21,10 @@ abstract fragment_program PBRS_Terrain_I_fs glsl glsles : PBRS_BaseI_fs
 
 vertex_program PBRS_Terrain_vc_vs glsl glsles : PBRS_Terrain_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,VERTEX_COMPRESSION
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,VERTEX_COMPRESSION,PAGED_GEOMETRY
 }
 
-vertex_program PBRS_Terrain_vs glsl glsles : PBRS_Terrain_I_vs
-{
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8
-}
+vertex_program PBRS_Terrain_vs glsl glsles : PBRS_Terrain_I_vs {}
 
 fragment_program PBRS_Terrain_fs glsl glsles : PBRS_Terrain_I_fs {}
 

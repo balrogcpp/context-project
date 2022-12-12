@@ -314,25 +314,26 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
+
   if (_sleep || !pLightList || !pass || suppressRenderStateChanges) {
     return;
   }
 
-  if (!pass->hasVertexProgram() || !pass->hasFragmentProgram()) {
+  if (!pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) {
     return;
   }
 
-  if (!pass->getLightingEnabled() || pass->getFogOverride()) {
-    return;
-  }
+  //Ogre::Matrix4 MVP = ViewProj * source->getWorldMatrix();
+  Ogre::Matrix4 MVP;
+  rend->getWorldTransforms(&MVP);
+  MVP = ViewProj * MVP;
+  Ogre::Any value = rend->getUserAny();
+  rend->setUserAny(MVP);
 
   const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
-  Ogre::Matrix4 MVP;
-  rend->getWorldTransforms(&MVP);
-  Ogre::Any value = rend->getUserAny();
-  rend->setUserAny(ViewProj * MVP);
   vp->setIgnoreMissingParams(true);
+
 
   // apply for entities, skip grass
   if (auto *entity = dynamic_cast<Ogre::SubEntity *>(rend)) {
@@ -353,7 +354,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
     vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
   }
 
-  // skip terrain
+  // skip Ogre::Terrain
   else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend)) {
     vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
   }

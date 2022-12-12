@@ -5,12 +5,12 @@ import PBR_BaseI_fs from PBR.program
 
 abstract vertex_program PBR_Terrain_I_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,PAGED_GEOMETRY,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 abstract fragment_program PBR_Terrain_I_fs glsl glsles : PBR_BaseI_fs
 {
-    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,TERRAIN,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 
     default_params
     {
@@ -29,13 +29,10 @@ abstract fragment_program PBR_Terrain_I_fs glsl glsles : PBR_BaseI_fs
 
 vertex_program PBR_Terrain_vc_vs glsl glsles : PBR_Terrain_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4,VERTEX_COMPRESSION
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,VERTEX_COMPRESSION,PAGED_GEOMETRY,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
-vertex_program PBR_Terrain_vs glsl glsles : PBR_Terrain_I_vs
-{
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-}
+vertex_program PBR_Terrain_vs glsl glsles : PBR_Terrain_I_vs {}
 
 fragment_program PBR_Terrain_fs glsl glsles : PBR_Terrain_I_fs {}
 

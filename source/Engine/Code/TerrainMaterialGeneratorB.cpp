@@ -20,8 +20,7 @@ TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *pare
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-  static bool result = !Ogre::TerrainGlobalOptions::getSingletonPtr()->getCastsDynamicShadows();
-  return result;
+  return !Ogre::TerrainGlobalOptions::getSingletonPtr()->getCastsDynamicShadows();
 }
 
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { enableLightmap = enabled; }
@@ -38,62 +37,55 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *terrain) {
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terrain) {
   std::string materialName;
+  static long long GENERATOR = 0;
+  std::string newName = materialName + std::to_string(GENERATOR++);
 
-  if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE)
+  if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE) {
     materialName = "TerrainCustom";
-  else
+  } else {
     materialName = "TerrainCustomPBRS";
+  }
 
-  if (isVertexCompressionSupported())
+  if (isVertexCompressionSupported()) {
     materialName += "_vc";
+  }
 
-  const std::string GENERATOR = "_0";
 
   if (isVertexCompressionSupported()) {
     auto material = MaterialManager::getSingleton().getByName(materialName);
-    if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
-      auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+    auto *pass = material->getTechnique(0)->getPass(0);
+    if (pass->hasVertexProgram()) {
+      auto vert_params = pass->getVertexProgramParameters();
 
       Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
-
       vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
       Real baseUVScale = 1.0f / (terrain->getSize() - 1);
       vert_params->setNamedConstant("baseUVScale", baseUVScale);
     }
   }
 
-  std::string newName = materialName + GENERATOR;
 
-  if (MaterialManager::getSingleton().resourceExists(newName)) {
-    return MaterialManager::getSingleton().getByName(newName);
-  } else {
-    auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
-    auto *pass = newMaterial->getTechnique(0)->getPass(0);
+  auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
+  auto *pass = newMaterial->getTechnique(0)->getPass(0);
+  auto *texState = pass->getTextureUnitState("GlobalNormal");
+  auto *texState2 = pass->getTextureUnitState("GlobalLight");
 
-    auto *texState = pass->getTextureUnitState("GlobalNormal");
-    if (texState && SM2Profile::isNormalmapEnabled()) {
-      texState->setTexture(terrain->getTerrainNormalMap());
-    }
-
-    auto *texState2 = pass->getTextureUnitState("GlobalLight");
-    if (texState2 && SM2Profile::isLightmapEnabled()) {
-      texState2->setTexture(terrain->getLightmap());
-    }
-
-    return newMaterial;
+  if (texState && SM2Profile::isNormalmapEnabled()) {
+    texState->setTexture(terrain->getTerrainNormalMap());
   }
+
+  if (texState2 && SM2Profile::isLightmapEnabled()) {
+    texState2->setTexture(terrain->getLightmap());
+  }
+
+  return newMaterial;
 }
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Terrain *terrain) {
   std::string materialName = "TerrainCustom";
-  const std::string GENERATOR = "_1";
-  std::string newName = materialName + GENERATOR;
+  static long long GENERATOR = 0;
+  std::string newName = materialName + "Composite" + std::to_string(GENERATOR++);
 
-  if (MaterialManager::getSingleton().resourceExists(newName)) {
-    return MaterialManager::getSingleton().getByName(newName);
-  } else {
-    auto new_material = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
-    return new_material;
-  }
+  return MaterialManager::getSingleton().getByName(materialName)->clone(newName);
 }
 }  // namespace Ogre
