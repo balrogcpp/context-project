@@ -326,8 +326,8 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
     return;
   }
 
-  auto &vp = pass->getVertexProgramParameters();
-  auto &fp = pass->getFragmentProgramParameters();
+  const auto &vp = pass->getVertexProgramParameters();
+  const auto &fp = pass->getFragmentProgramParameters();
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);
   Ogre::Any value = rend->getUserAny();

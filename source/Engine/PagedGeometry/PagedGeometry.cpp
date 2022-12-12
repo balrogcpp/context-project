@@ -98,7 +98,7 @@ PagedGeometry::~PagedGeometry()
         delete pageLoader;
 }
 
-void PagedGeometry::setCastShadows(bool enable) { for (auto it : managerList) it->setCastShadows(enable); }
+void PagedGeometry::setCastShadows(bool enable) { shadowEnabled = enable; for (auto it : managerList) it->setCastShadows(enable); }
 
 void PagedGeometry::setTempDir(Ogre::String dir)
 {
@@ -263,7 +263,7 @@ void PagedGeometry::update(float deltaTime)
 			prevMgr = mgr;
 		}
 	}
-
+   setCastShadows(shadowEnabled);
 	//Update misc. subsystems
    StaticBillboardSet::updateAll(_convertToLocal(sceneCam->getDerivedDirection()), getFragmentProgramName());
 }

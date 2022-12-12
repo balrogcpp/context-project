@@ -691,7 +691,7 @@ protected:
 
 	Ogre::SceneManager *sceneMgr;
 	Ogre::SceneNode *rootNode;				//PagedGeometry's own "root" node
-	bool shadersEnabled;
+	bool shadersEnabled; bool shadowEnabled = false;
 	Ogre::String shaderLanguage;
 
 	bool geometryAllowedVisible;	//If set to false, all geometry managed by this PagedGeometry is hidden

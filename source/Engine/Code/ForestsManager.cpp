@@ -39,7 +39,6 @@ void ForestsManager::OnUpdate(float time) {
   if (!_sleep) {
     for (auto it : pagedGeometryList) {
       it->update(time);
-      it->setCastShadows(false);
     }
   }
 }
