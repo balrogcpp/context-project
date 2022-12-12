@@ -189,6 +189,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
     int x = StringConverter::parseInt(XMLNode.attribute("x").value());
     int y = StringConverter::parseInt(XMLNode.attribute("y").value());
     std::string treeMeshName = XMLNode.attribute("trees").value();
+    static long long counter = 0;
     SceneManager* sceneManager = pCamera->getSceneManager();
     int i = 0; // counter
 
@@ -206,7 +207,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
         auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
 
         trees->setPageLoader(treeLoader);
-        Entity* treeEntity = sceneManager->createEntity(treeMeshName, treeMeshName);
+        Entity* treeEntity = sceneManager->createEntity(treeMeshName + std::to_string(counter++), treeMeshName);
         trees->setCustomParam(treeMeshName, "windFactorX", 30);
         trees->setCustomParam(treeMeshName, "windFactorY", 0.01);
 
@@ -767,7 +768,7 @@ void DotSceneLoaderB::processTrackTarget(pugi::xml_node& XMLNode, SceneNode* pPa
 }
 
 void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
-{
+{ 
     // Process attributes
     String name = getAttrib(XMLNode, "name");
 
