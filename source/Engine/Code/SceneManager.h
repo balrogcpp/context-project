@@ -12,14 +12,10 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   virtual ~SceneManager();
 
   void LoadFromFile(const std::string &filename);
-  void RegCamera(Ogre::Camera *camera);
-  void RegLight(Ogre::Light *light);
-  void RegEntity(Ogre::Entity *entity);
-  void RegEntity(const std::string &name);
-  void RegMaterial(const Ogre::Material *material);
-  void UnregMaterial(const Ogre::Material *material);
-  void RegMaterial(const std::string &name);
-  void UnregMaterial(const std::string &name);
+  void ScanCamera(Ogre::Camera *camera);
+  void ScanLight(Ogre::Light *light);
+  void ScanEntity(Ogre::Entity *entity);
+  void ScanEntity(const std::string &name);
   void ScanNode(Ogre::SceneNode *node);
 
  protected:
@@ -34,8 +30,6 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
 
   std::unique_ptr<SinbadCharacterController> sinbad;
   std::vector<Ogre::Entity *> entityList;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> fpParams;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> vpParams;
 
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *ogreSceneManager = nullptr;

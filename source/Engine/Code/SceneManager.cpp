@@ -113,8 +113,6 @@ void SceneManager::OnClean() {
   ogreSceneManager->clearScene();
   InputSequencer::GetInstance().UnregDeviceListener(sinbad.get());
   sinbad.reset();
-  fpParams.clear();
-  vpParams.clear();
 }
 
 void SceneManager::OnUpdate(float time) {
@@ -176,21 +174,21 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   }
 }
 
-void SceneManager::RegCamera(Ogre::Camera *camera) {
+void SceneManager::ScanCamera(Ogre::Camera *camera) {
   Ogre::SceneNode *node = camera->getParentSceneNode();
   Ogre::Vector3 position = node->getPosition();
   node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
 }
 
-void SceneManager::RegLight(Ogre::Light *light) {
+void SceneManager::ScanLight(Ogre::Light *light) {
   Ogre::SceneNode *node = light->getParentSceneNode();
   Ogre::Vector3 position = node->getPosition();
   node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
 }
 
-void SceneManager::RegEntity(const std::string &name) { RegEntity(ogreSceneManager->getEntity(name)); }
+void SceneManager::ScanEntity(const std::string &name) { ScanEntity(ogreSceneManager->getEntity(name)); }
 
-void SceneManager::RegEntity(Ogre::Entity *entity) {
+void SceneManager::ScanEntity(Ogre::Entity *entity) {
   // EnsureHasTangents(entity->getMesh());
 
   if (entity->getName().rfind("GrassLDR", 0)) {
@@ -211,19 +209,19 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
     for (auto it : entity->getAttachedObjects()) {
       if (auto camera = dynamic_cast<Ogre::Camera *>(it)) {
         Ogre::LogManager::getSingleton().logMessage("[ScanNode] AnimatedEntity: " + entity->getName() + "  Camera: " + it->getName());
-        RegCamera(camera);
+        ScanCamera(camera);
         continue;
       }
 
       if (auto light = dynamic_cast<Ogre::Light *>(it)) {
         Ogre::LogManager::getSingleton().logMessage("[ScanNode] AnimatedEntity: " + entity->getName() + "  Light: " + it->getName());
-        RegLight(light);
+        ScanLight(light);
         continue;
       }
 
       if (auto entity = dynamic_cast<Ogre::Entity *>(it)) {
         Ogre::LogManager::getSingleton().logMessage("[ScanNode] AnimatedEntity: " + entity->getName() + "  Entity: " + it->getName());
-        RegEntity(entity);
+        ScanEntity(entity);
         continue;
       }
     }
@@ -235,72 +233,23 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
   }
 }
 
-void SceneManager::RegMaterial(const Ogre::Material *material) {
-  Ogre::LogManager::getSingleton().logMessage("[ScanNode] Material: " + material->getName());
-
-  // UpgradeTransparentShadowCaster(material);
-
-  // skip registering, keep it for future needs
-  return;
-
-  const auto *pass = material->getTechnique(0)->getPass(0);
-
-  if (!pass->hasVertexProgram() || !pass->hasFragmentProgram()) {
-    return;
-  }
-
-  const auto &vp = pass->getVertexProgramParameters();
-  const auto &fp = pass->getFragmentProgramParameters();
-
-  if (vp->getConstantDefinitions().map.count("uWorldViewProjPrev") > 0) {
-    if (find(vpParams.begin(), vpParams.end(), vp) == vpParams.end()) {
-      vpParams.push_back(vp);
-    }
-
-    if (find(fpParams.begin(), fpParams.end(), fp) == fpParams.end()) {
-      fpParams.push_back(fp);
-    }
-  }
-}
-
-void SceneManager::UnregMaterial(const Ogre::Material *material) {
-  const auto *pass = material->getTechnique(0)->getPass(0);
-  const auto &vp = pass->getVertexProgramParameters();
-  const auto &fp = pass->getFragmentProgramParameters();
-
-  auto it = find(vpParams.begin(), vpParams.end(), vp), end = vpParams.end();
-  if (it != end) {
-    swap(it, --end);
-    vpParams.pop_back();
-  }
-
-  it = find(fpParams.begin(), fpParams.end(), fp), end = fpParams.end();
-  if (it != end) {
-    swap(it, --end);
-    fpParams.pop_back();
-  }
-}
-
-void SceneManager::RegMaterial(const std::string &name) { RegMaterial(Ogre::MaterialManager::getSingleton().getByName(name).get()); }
-void SceneManager::UnregMaterial(const std::string &name) { UnregMaterial(Ogre::MaterialManager::getSingleton().getByName(name).get()); }
-
 void SceneManager::ScanNode(Ogre::SceneNode *node) {
   for (auto it : node->getAttachedObjects()) {
     if (auto camera = dynamic_cast<Ogre::Camera *>(it)) {
       Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Camera: " + it->getName());
-      RegCamera(camera);
+      ScanCamera(camera);
       continue;
     }
 
     if (auto light = dynamic_cast<Ogre::Light *>(it)) {
       Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Light: " + it->getName());
-      RegLight(light);
+      ScanLight(light);
       continue;
     }
 
     if (auto entity = dynamic_cast<Ogre::Entity *>(it)) {
       Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Entity: " + it->getName());
-      RegEntity(entity);
+      ScanEntity(entity);
       continue;
     }
 
