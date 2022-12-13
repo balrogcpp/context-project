@@ -27,6 +27,8 @@ uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
 #ifndef NO_MRT
 uniform highp mat4 uWorldViewProjPrev;
+uniform lowp float uStaticObj;
+uniform lowp float uMovableObj;
 #endif
 #ifdef PAGED_GEOMETRY
 uniform highp vec3 CameraPosition;
@@ -189,11 +191,7 @@ void main()
 
 #ifndef NO_MRT
   vScreenPosition = gl_Position;
-#ifndef PAGED_GEOMETRY
-  vPrevScreenPosition = uWorldViewProjPrev * new_position;
-#else
-  vPrevScreenPosition = uWorldViewProjPrev * ModelMatrix * new_position;
-#endif
+  vPrevScreenPosition = uStaticObj * uWorldViewProjPrev * ModelMatrix * new_position + uMovableObj * uWorldViewProjPrev * new_position;
 #endif
 
   vDepth = gl_Position.z;

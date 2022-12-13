@@ -330,48 +330,42 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
     return;
   }
 
-  Ogre::Any value = rend->getUserAny();
-
   const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
 
   // apply for entities, skip grass
-  if (auto *entity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    if (!entity->getParent()->getMesh()->isReloadable()) {
-      vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
-    } else {
+  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
+    if (subentity->getParent()->getMesh()->isReloadable()) {
       Ogre::Matrix4 MVP;
+      Ogre::Any value = rend->getUserAny();
       rend->getWorldTransforms(&MVP);
       rend->setUserAny(ViewProj * MVP);
 
       if (value.has_value()) {
         vp->setNamedConstant("uWorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
+        vp->setNamedConstant("uStaticObj", Ogre::Real(0.0));
+        vp->setNamedConstant("uMovableObj", Ogre::Real(1.0));
       }
+
+    } else {
+      vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+      vp->setNamedConstant("uStaticObj", Ogre::Real(1.0));
+      vp->setNamedConstant("uMovableObj", Ogre::Real(0.0));
     }
-
   }
 
-  // skip BatchedGeometry
-  else if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend)) {
+  else {
     vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+    vp->setNamedConstant("uStaticObj", Ogre::Real(1.0));
+    vp->setNamedConstant("uMovableObj", Ogre::Real(0.0));
   }
 
-  // skip StaticGeometry
-  else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend)) {
-    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
-  }
-
-  // skip Ogre::Terrain
-  else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend)) {
-    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
-  }
-
-  // default, keep it as it is
-  else if (value.has_value()) {
-    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
-  }
+  // skip this part
+  // else if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend))
+  // else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend))
+  // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend))
 
   vp->setIgnoreMissingParams(false);
   fp->setIgnoreMissingParams(false);
