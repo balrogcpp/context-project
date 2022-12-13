@@ -156,7 +156,7 @@ void processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
     std::string densityMap = XMLNode.attribute("densityMap").value();
     std::string colorMap = XMLNode.attribute("colorMap").value();
     SceneManager* sceneManager = pCamera->getSceneManager();
-    static long long GENERATOR = 0; // counter
+    static unsigned long long GENERATOR = 0; // counter
 
     if (!grassMaterial.empty())
     {
@@ -189,9 +189,9 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
     int x = StringConverter::parseInt(XMLNode.attribute("x").value());
     int y = StringConverter::parseInt(XMLNode.attribute("y").value());
     std::string treeMeshName = XMLNode.attribute("trees").value();
-    static long long counter = 0;
+    static unsigned long long counter = 0;
     SceneManager* sceneManager = pCamera->getSceneManager();
-    static long long GENERATOR = 0;  // counter
+    static unsigned long long GENERATOR = 0;  // counter
 
     if (!treeMeshName.empty())
     {

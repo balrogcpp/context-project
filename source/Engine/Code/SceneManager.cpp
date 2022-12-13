@@ -124,15 +124,15 @@ void SceneManager::OnUpdate(float time) {
   ViewProj = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
 }
 
-static inline void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
+static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
   auto &forests = GetComponent<ForestsManager>();
-  int i = 0;  // counter
-  std::string key = base + to_string(i++);
+  unsigned long long GENERATOR = 0;
+  std::string key = base + to_string(GENERATOR++);
   Ogre::Any value = objBindings.getUserAny(key);
 
   while (value.has_value()) {
     forests.RegPagedGeometry(Ogre::any_cast<Forests::PagedGeometry *>(value));
-    key = base + to_string(i++);
+    key = base + to_string(GENERATOR++);
     value = objBindings.getUserAny(key);
   }
 }
@@ -199,7 +199,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
 
   if (entity->getMesh()->isReloadable()) {
     static unsigned long long GENERATOR = 0;
-    for (const auto it : entity->getSubEntities()) {
+    for (auto &it : entity->getSubEntities()) {
       const auto &material = it->getMaterial();
       it->setMaterial(material->clone(std::to_string(GENERATOR++)));
     }

@@ -1294,7 +1294,7 @@ GrassPage::~GrassPage()
 void GrassPage::addEntity(Entity *entity, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale, const Ogre::ColourValue &color)
 {
 	SceneNode *node = rootNode->createChildSceneNode();
-	node->translate(position);
+    node->setPosition(position);
 	nodeList.push_back(node);
 
 	entity->setCastShadows(false);
