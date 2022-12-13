@@ -199,6 +199,14 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
     node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
   }
 
+  if (entity->getMesh()->isReloadable()) {
+    static unsigned long long GENERATOR = 0;
+    for (const auto it : entity->getSubEntities()) {
+      const auto &material = it->getMaterial();
+      it->setMaterial(material->clone(std::to_string(GENERATOR++)));
+    }
+  }
+
   if (entity->hasSkeleton()) {
     for (auto it : entity->getAttachedObjects()) {
       if (auto camera = dynamic_cast<Ogre::Camera *>(it)) {
@@ -314,7 +322,6 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-
   if (_sleep || !pLightList || !pass || suppressRenderStateChanges) {
     return;
   }
@@ -323,25 +330,27 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
     return;
   }
 
-  //Ogre::Matrix4 MVP = ViewProj * source->getWorldMatrix();
-  Ogre::Matrix4 MVP;
-  rend->getWorldTransforms(&MVP);
-  MVP = ViewProj * MVP;
   Ogre::Any value = rend->getUserAny();
-  rend->setUserAny(MVP);
 
   const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
   vp->setIgnoreMissingParams(true);
-
+  fp->setIgnoreMissingParams(true);
 
   // apply for entities, skip grass
   if (auto *entity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    if (!entity->getParent()->getName().rfind("GrassLDR", 0)) {
+    if (!entity->getParent()->getMesh()->isReloadable()) {
       vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
-    } else if (value.has_value()) {
-      vp->setNamedConstant("uWorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
+    } else {
+      Ogre::Matrix4 MVP;
+      rend->getWorldTransforms(&MVP);
+      rend->setUserAny(ViewProj * MVP);
+
+      if (value.has_value()) {
+        vp->setNamedConstant("uWorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
+      }
     }
+
   }
 
   // skip BatchedGeometry
@@ -365,6 +374,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   }
 
   vp->setIgnoreMissingParams(false);
+  fp->setIgnoreMissingParams(false);
 }
 
 }  // namespace Glue

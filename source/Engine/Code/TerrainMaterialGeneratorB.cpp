@@ -37,8 +37,6 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *terrain) {
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terrain) {
   std::string materialName;
-  static long long GENERATOR = 0;
-  std::string newName = materialName + std::to_string(GENERATOR++);
 
   if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE) {
     materialName = "TerrainCustom";
@@ -50,6 +48,8 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
     materialName += "_vc";
   }
 
+  static unsigned long long GENERATOR = 0;
+  std::string newName = materialName + std::to_string(GENERATOR++);
 
   if (isVertexCompressionSupported()) {
     auto material = MaterialManager::getSingleton().getByName(materialName);
@@ -83,7 +83,7 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Terrain *terrain) {
   std::string materialName = "TerrainCustom";
-  static long long GENERATOR = 0;
+  static unsigned long long GENERATOR = 0;
   std::string newName = materialName + "Composite" + std::to_string(GENERATOR++);
 
   return MaterialManager::getSingleton().getByName(materialName)->clone(newName);
