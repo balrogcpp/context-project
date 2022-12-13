@@ -7,7 +7,6 @@
 #include "TerrainManager.h"
 #include "VideoManager.h"
 #include <PagedGeometry/PagedGeometryAll.h>
-#include <Terrain/OgreTerrainQuadTreeNode.h>
 
 using namespace std;
 
@@ -89,8 +88,8 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }  // namespace
 
 namespace {
-static Ogre::Matrix4 ViewProj;
-static Ogre::Matrix4 ViewProjPrev;
+Ogre::Matrix4 ViewProj;
+Ogre::Matrix4 ViewProjPrev;
 }  // namespace
 
 namespace Glue {
@@ -160,6 +159,10 @@ void SceneManager::LoadFromFile(const std::string &filename) {
       terrainGlobalOptions->setLightMapDirection(ogreSceneManager->getLight("Sun")->getDerivedDirection());
     }
 
+    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
+      auto *terrain = it.getNext()->instance;
+    }
+
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
   }
@@ -227,6 +230,9 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     }
   }
 
+  for (const auto &it : entity->getSubEntities()) {
+    // do smth
+  }
   auto objBindings = entity->getUserObjectBindings();
   if (objBindings.getUserAny("proxy").has_value()) {
     Glue::GetComponent<Glue::PhysicsManager>().ProcessData(entity);

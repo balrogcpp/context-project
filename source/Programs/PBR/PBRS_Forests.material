@@ -2,7 +2,7 @@
 
 import PBRS_Basic from PBRS.material
 import PBRS_I_vs from PBRS.program
-import PBRS_I_fs from PBRS.program
+import PBRS_Basic_fs from PBRS.program
 
 vertex_program PBRS_Paged_vs glsl glsles : PBRS_I_vs
 {
@@ -11,11 +11,6 @@ vertex_program PBRS_Paged_vs glsl glsles : PBRS_I_vs
     {
         param_named_auto Time time
     }
-}
-
-fragment_program PBRS_Paged_fs glsl glsles : PBRS_I_fs
-{
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8
 }
 
 vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
@@ -28,11 +23,6 @@ vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
         param_named uWindRange float 50.0
         param_named_auto CameraPosition camera_position
     }
-}
-
-fragment_program PBRS_Grass_fs glsl glsles : PBRS_I_fs
-{
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8
 }
 
 abstract material PBRS_Grass : PBRS_Basic
@@ -58,7 +48,7 @@ abstract material PBRS_Grass : PBRS_Basic
 
             vertex_program_ref PBRS_Grass_vs {}
 
-            fragment_program_ref PBRS_Grass_fs
+            fragment_program_ref PBRS_Basic_fs
             {
                 param_named uAlbedoSampler int 0
             }
@@ -85,7 +75,7 @@ abstract material PBRS_Paged : PBRS_Basic
 
             vertex_program_ref PBRS_Paged_vs {}
 
-            fragment_program_ref PBRS_Paged_fs
+            fragment_program_ref PBRS_Basic_fs
             {
                 param_named uAlbedoSampler int 0
             }
@@ -113,7 +103,7 @@ abstract material PBRS_Plant : PBRS_Basic
 
             vertex_program_ref PBRS_Grass_vs {}
 
-            fragment_program_ref PBRS_Grass_fs
+            fragment_program_ref PBRS_Basic_fs
             {
                 param_named uAlbedoSampler int 0
             }

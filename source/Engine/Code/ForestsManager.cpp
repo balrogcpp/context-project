@@ -8,7 +8,7 @@
 using namespace std;
 
 namespace Glue {
-ForestsManager::ForestsManager() { pagedGeometryList.reserve(100); }
+ForestsManager::ForestsManager() {}
 ForestsManager::~ForestsManager() {}
 
 void ForestsManager::OnSetUp() {
@@ -46,7 +46,6 @@ void ForestsManager::OnClean() {
   }
 
   pagedGeometryList.clear();
-  pagedGeometryList.resize(100);
   pagedGeometryList.shrink_to_fit();
 }
 }  // namespace Glue

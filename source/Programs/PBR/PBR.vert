@@ -111,12 +111,12 @@ vec4 WaveGrass(const vec2 position, const float time, const float frequency, con
 //----------------------------------------------------------------------------------------------------------------------
 vec4 WaveTree(const vec4 v, const vec4 params, const vec4 originPos)
 {
-  const float radiusCoeff = params.x;
-  const float radiusCoeff2 = radiusCoeff * radiusCoeff;
-  const float heightCoeff = params.y;
-  const float heightCoeff2 = heightCoeff * heightCoeff;
-  const float factorX = params.z;
-  const float factorY = params.w;
+  float radiusCoeff = params.x;
+  float radiusCoeff2 = radiusCoeff * radiusCoeff;
+  float heightCoeff = params.y;
+  float heightCoeff2 = heightCoeff * heightCoeff;
+  float factorX = params.z;
+  float factorY = params.w;
 
   vec4 ret = vec4(0.0);
   ret.y = sin(Time + originPos.z + v.y + v.x) * radiusCoeff2 * factorY;

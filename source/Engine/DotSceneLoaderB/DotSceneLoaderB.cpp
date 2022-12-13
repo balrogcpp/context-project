@@ -146,7 +146,7 @@ struct DotSceneCodecB : public Codec
     }
 };
 
-void processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup) {
+void processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long long id) {
     static TerrainGroup* terrainGroupLocal = terrainGroup;
     int x = StringConverter::parseInt(XMLNode.attribute("x").value());
     int y = StringConverter::parseInt(XMLNode.attribute("y").value());
@@ -156,7 +156,6 @@ void processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
     std::string densityMap = XMLNode.attribute("densityMap").value();
     std::string colorMap = XMLNode.attribute("colorMap").value();
     SceneManager* sceneManager = pCamera->getSceneManager();
-    static unsigned long long GENERATOR = 0; // counter
 
     if (!grassMaterial.empty())
     {
@@ -181,17 +180,16 @@ void processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
         layer->setDensity(density);
         layer->setMaximumSize(maxSize, maxSize);
 
-        sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("GrassPage" + std::to_string(GENERATOR++), grass);
+        sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("GrassPage" + std::to_string(id++), grass);
     }
 }
 
-void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup) {
+void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long long id) {
     int x = StringConverter::parseInt(XMLNode.attribute("x").value());
     int y = StringConverter::parseInt(XMLNode.attribute("y").value());
     std::string treeMeshName = XMLNode.attribute("trees").value();
-    static unsigned long long counter = 0;
     SceneManager* sceneManager = pCamera->getSceneManager();
-    static unsigned long long GENERATOR = 0;  // counter
+    static unsigned long long GENERATOR = 0;
 
     if (!treeMeshName.empty())
     {
@@ -207,7 +205,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
         auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
 
         trees->setPageLoader(treeLoader);
-        Entity* treeEntity = sceneManager->createEntity(treeMeshName + std::to_string(counter++), treeMeshName);
+        Entity* treeEntity = sceneManager->createEntity(treeMeshName + std::to_string(GENERATOR++), treeMeshName);
         trees->setCustomParam(treeMeshName, "windFactorX", 30);
         trees->setCustomParam(treeMeshName, "windFactorY", 0.01);
 
@@ -226,7 +224,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
             treeLoader->addTree(treeEntity, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
         }
 
-    sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("BatchPage" + std::to_string(GENERATOR++), trees);
+    sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("BatchPage" + std::to_string(id), trees);
     }
 }
 
@@ -414,8 +412,10 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 
     for (auto &pPageElement : XMLNode.children("terrain"))
     {
-        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup);
-        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup);
+        static unsigned long long GENERATOR = 0;
+        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup, GENERATOR);
+        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup, GENERATOR);
+        GENERATOR++;
     }
 
     terrainGroup->freeTemporaryResources();
@@ -461,8 +461,10 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
 
     for (auto& pPageElement : XMLNode.children("terrain"))
     {
-        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup.get());
-        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup.get());
+        static unsigned long long GENERATOR = 0;
+        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup.get(), GENERATOR);
+        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup.get(), GENERATOR);
+        GENERATOR++;
     }
 
 
