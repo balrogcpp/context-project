@@ -15,7 +15,7 @@ vertex_program PBR_FX_vs glsl glsles
 fragment_program PBR_FX_fs glsl glsles
 {
 	source PBR.frag
-    preprocessor_defines HAS_BASECOLORMAP,HAS_VERTEXCOLOR,HAS_ALPHA,MAX_LIGHTS=0
+    preprocessor_defines HAS_BASECOLORMAP,MAX_LIGHTS=0
 }
 
 abstract material PBR_FX : PBRS_Basic

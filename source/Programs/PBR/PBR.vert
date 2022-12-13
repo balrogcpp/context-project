@@ -12,7 +12,7 @@
 
 
 #include "header.vert"
-#ifdef GRASS
+#ifdef PAGED_GEOMETRY
 #include "noise.glsl"
 #endif
 
@@ -59,7 +59,7 @@ in vec4 normal;
 #ifdef HAS_TANGENTS
 in vec4 tangent;
 #endif
-#ifdef HAS_COLORS
+#ifdef HAS_VERTEXCOLOR
 in vec4 colour;
 #endif
 #ifndef VERTEX_COMPRESSION
@@ -88,7 +88,7 @@ out mat3 vTBN;
 #else
 out vec3 vNormal;
 #endif
-#endif // HAS_NORMALS
+#endif //  HAS_NORMALS
 #ifdef SHADOWRECEIVER
 out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -100,28 +100,23 @@ out mat3 vTBN;
 #endif
 
 
-#ifdef GRASS
+#ifdef PAGED_GEOMETRY
 //----------------------------------------------------------------------------------------------------------------------
-vec4 ApplyWaveAnimation(const vec2 position, const float time, const float frequency, const vec4 direction)
+vec4 WaveGrass(const vec2 position, const float time, const float frequency, const vec4 direction)
 {
   float n = fbm(position.xy * time) * 2.0 - 2.0;
   return n * direction;
 }
-#endif
 
-
-#ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
-vec4 WaveTree(const vec4 v)
+vec4 WaveTree(const vec4 v, const vec4 params, const vec4 originPos)
 {
-  vec4 params = uv1;
-  vec4 originPos = uv2;
-  float radiusCoeff = params.x;
-  float radiusCoeff2 = radiusCoeff * radiusCoeff;
-  float heightCoeff = params.y;
-  float heightCoeff2 = heightCoeff * heightCoeff;
-  float factorX = params.z;
-  float factorY = params.w;
+  const float radiusCoeff = params.x;
+  const float radiusCoeff2 = radiusCoeff * radiusCoeff;
+  const float heightCoeff = params.y;
+  const float heightCoeff2 = heightCoeff * heightCoeff;
+  const float factorX = params.z;
+  const float factorY = params.w;
 
   vec4 ret = vec4(0.0);
   ret.y = sin(Time + originPos.z + v.y + v.x) * radiusCoeff2 * factorY;
@@ -150,7 +145,7 @@ void main()
 #endif
 
 
-#ifdef HAS_COLORS
+#ifdef HAS_VERTEXCOLOR
   vColor = colour.rgb;
 #else
   vColor = vec3(1.0);
@@ -165,12 +160,12 @@ void main()
               vec3(0.0, 0.0, 0.0),
               vec3(0.0, 1.0, 0.0));
 
-  if (uv0.y < 0.9 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
-    new_position += ApplyWaveAnimation(new_position.xy, 0.2 * Time, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
+  if (uv0.y < 0.5 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
+    new_position += WaveGrass(new_position.xy, 0.2 * Time, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
   }
 #endif
 #ifdef TREES
-    new_position += WaveTree(new_position);
+    new_position += WaveTree(new_position, uv1, uv2);
 #endif
 #endif // PAGED_GEOMETRY
 
