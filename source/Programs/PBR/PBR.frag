@@ -214,7 +214,7 @@ uniform sampler2D uReflectionMap;
 // lights
 uniform lowp float LightCount;
 #if MAX_LIGHTS > 0
-uniform vec4 LightPositionArray[MAX_LIGHTS];
+highp uniform vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
 uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
@@ -527,10 +527,10 @@ void main()
         float range = vAttParams.x;
 
         if (range > 0.0001) {
-            vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
-            float fLightD = length(vLightViewH);
-            float fLightD2 = (fLightD * fLightD);
-            vec3 vLightView = normalize(vLightViewH);
+            highp vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
+            highp float fLightD = length(vLightViewH);
+            highp float fLightD2 = (fLightD * fLightD);
+            highp vec3 vLightView = normalize(vLightViewH);
             float attenuation_const = vAttParams.y;
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;

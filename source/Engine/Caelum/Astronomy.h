@@ -5,15 +5,10 @@
 #ifndef CAELUM__ASTRONOMY_H
 #define CAELUM__ASTRONOMY_H
 
-#include <Ogre.h>
+#include "CaelumPrerequisites.h"
 
 namespace Caelum
 {
-
-    // Caelum needs a lot of precission for astronomical calculations.
-    // Very few calculations use it, and the precission IS required.
-    typedef double LongReal;
-
     /** Static class with astronomy routines.
      *  This class contains various astronomical routines useful in Caelum.
      *
@@ -30,7 +25,7 @@ namespace Caelum
      *  unless otherwise mentioned. Ogre::Degree and Ogre::Radian use
      *  Ogre::Real and should be avoided here.
      */
-    class Astronomy
+    class CAELUM_EXPORT Astronomy
     {
     private:
         Astronomy() {}
@@ -91,6 +86,14 @@ namespace Caelum
                 LongReal longitude, LongReal latitude,
                 LongReal rasc,      LongReal decl,
                 LongReal &azimuth,  LongReal &altitude);
+
+        /** Hour angle is zero for objects on sky meridian, and grows to the east.
+         *  @param jday Astronomical time as julian day.
+         *  @param longitude Observer's longitude in degrees east.
+         *  @param hourAngle Hour angle in degrees east.
+         */
+        static void getVernalEquinoxHourAngle (
+                LongReal jday, LongReal longitude, LongReal& hourAngle);
 
         /** Get the sun's position in the sky in, relative to the horizon.
          *  @param jday Astronomical time as julian day.
@@ -169,8 +172,53 @@ namespace Caelum
         static void getGregorianDateFromJulianDay (
                 LongReal julianDay, int &year, int &month, int &day);
 
-        static const Ogre::Vector3 makeDirection (
-            Ogre::Degree azimuth, Ogre::Degree altitude);
+        /** Enter high-precission floating-point mode.
+         *
+         *  By default Direct3D decreases the precission of ALL floating
+         *  point calculations, enough to stop Caelum's astronomy routines
+         *  from working correctly.
+         *  
+         *  To trigger this behaviour in a standard ogre demo select the
+         *  Direct3D render system and set "Floating-point mode" to
+         *  "Fastest". Otherwise it's not a problem.
+         *          
+         *  It can be fixed by changing the precission only inside caelum's
+         *  astronomy routines using the _controlfp function. This only works
+         *  for MSVC on WIN32; This is a no-op on other compilers.
+         *
+         *  @note: Must be paired with restoreFloatingPointMode.
+         *  @return Value to pass to restoreFloatingModeMode.
+         */
+        static int enterHighPrecissionFloatingPointMode ();
+
+        /** Restore old floating point precission.
+         *  @see enterHighPrecissionFloatingPointMode.
+         */
+        static void restoreFloatingPointMode (int oldMode);
+    };
+
+    /** Dummy class to increase floting point precission in a block
+     *  This class will raise precission in the ctor and restore it
+     *  in the destructor. During it's lifetime floating-point
+     *  precission will be increased.
+     *
+     *  To use this class just create a instance on the stack at the start of a block.
+     *
+     *  @see Astronomy::enterHighPrecissionFloatingPointMode
+     */ 
+    class CAELUM_EXPORT ScopedHighPrecissionFloatSwitch
+    {
+    private:
+        int mOldFpMode;
+
+    public:
+        inline ScopedHighPrecissionFloatSwitch() {
+            mOldFpMode = Astronomy::enterHighPrecissionFloatingPointMode ();
+        }
+
+        inline ~ScopedHighPrecissionFloatSwitch() {
+            Astronomy::restoreFloatingPointMode (mOldFpMode);
+        }
     };
 }
 

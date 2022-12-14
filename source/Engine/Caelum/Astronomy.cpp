@@ -2,6 +2,7 @@
 // It is subject to the license terms in the LICENSE file found in the top-level directory
 // of this distribution.
 
+#include "CaelumPrecompiled.h"
 #include "Astronomy.h"
 
 namespace Caelum
@@ -74,7 +75,22 @@ namespace Caelum
         z = dist * sinDeg (decl);
     }
 
-	void Astronomy::convertEquatorialToHorizontal (
+    void Astronomy::getVernalEquinoxHourAngle(
+            LongReal jday, LongReal longitude, LongReal& hourAngle)
+    {
+        // julian days since J2000
+        LongReal d = jday - 2451545.0;
+        // julian centuries since J2000
+        LongReal T = d / 36525.0;
+        // Greenweech Mean Sidereal Time in seconds  of a day of 86400s UT1 at 0h UT1
+        LongReal GMST0 = 24110.54841 + 8640184.812866 * T + 0.093104 * (T * T) - 0.0000062 * (T * T * T);
+        // Universal time of day in degrees.
+        LongReal UT = LongReal(fmod(d, 1) * 360);
+        // Hour angle, in degrees
+        hourAngle = GMST0 * (360.0 / 86400.0) + LongReal(180) + UT + longitude;
+    }
+
+    void Astronomy::convertEquatorialToHorizontal (
             LongReal jday,
             LongReal longitude,   LongReal latitude,
             LongReal rasc,        LongReal decl,
@@ -254,6 +270,8 @@ namespace Caelum
             int year, int month, int day,
             int hour, int minute, LongReal second)
     {
+        ScopedHighPrecissionFloatSwitch precissionSwitch;
+
         int jdn = getJulianDayFromGregorianDate (year, month, day);
         // These are NOT integer divisions.
         LongReal jd = jdn + (hour - 12) / 24.0 + minute / 1440.0 + second / 86400.0;
@@ -300,6 +318,7 @@ namespace Caelum
         // Integer julian days are at noon.
         // static_cast<int)(floor( is more precise than Ogre::Math::IFloor.
         // Yes, it does matter.
+        int fpmode = enterHighPrecissionFloatingPointMode();
         julianDay += (LongReal)0.5;
        int ijd = static_cast<int>(floor(julianDay));
         getGregorianDateFromJulianDay(ijd, year, month, day);
@@ -312,6 +331,7 @@ namespace Caelum
         minute = static_cast<int>(floor(s / 60));
         s -= minute * 60;
         second = s;
+      restoreFloatingPointMode(fpmode);
     }
 
     void Astronomy::getGregorianDateFromJulianDay(
@@ -323,13 +343,29 @@ namespace Caelum
         getGregorianDateTimeFromJulianDay(julianDay, year, month, day, hour, minute, second);
     }
 
-    const Ogre::Vector3 Astronomy::makeDirection (
-        Ogre::Degree azimuth, Ogre::Degree altitude)
+#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32) && (OGRE_COMPILER == OGRE_COMPILER_MSVC) && (OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32)
+    int Astronomy::enterHighPrecissionFloatingPointMode ()
     {
-      Ogre::Vector3 res;
-      res.z = -Ogre::Math::Cos (azimuth) * Ogre::Math::Cos (altitude);  // North
-      res.x =  Ogre::Math::Sin (azimuth) * Ogre::Math::Cos (altitude);  // East
-      res.y = -Ogre::Math::Sin (altitude); // Zenith
-      return res;
+        int oldMode = ::_controlfp (0, 0);
+        ::_controlfp (_PC_64, _MCW_PC);
+        return oldMode;
     }
+
+    void Astronomy::restoreFloatingPointMode (int oldMode)
+    {
+        ::_controlfp (oldMode, _MCW_PC);
+    }
+#else
+    int Astronomy::enterHighPrecissionFloatingPointMode ()
+    {
+        // Meaningless
+        return 0xC0FFEE;
+    }
+
+    void Astronomy::restoreFloatingPointMode (int oldMode)
+    {
+        // Useless check.
+        assert(oldMode == 0xC0FFEE);
+    }
+#endif
 }

@@ -36,7 +36,11 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setCompositeMapDistance(1000);
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
+#ifdef DESKTOP
+  terrainGlobalOptions->setLightMapSize(512);
+#else
   terrainGlobalOptions->setLightMapSize(256);
+#endif
   terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
 }
 

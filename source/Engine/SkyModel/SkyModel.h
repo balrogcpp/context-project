@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ArHosekSkyModel.h"
-#include "Astronomy.h"
+#include "Caelum/Astronomy.h"
 #include <OgreVector3.h>
 #include <cmath>
 
