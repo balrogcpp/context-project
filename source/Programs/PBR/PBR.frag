@@ -214,7 +214,7 @@ uniform sampler2D uReflectionMap;
 // lights
 uniform lowp float LightCount;
 #if MAX_LIGHTS > 0
-highp uniform vec4 LightPositionArray[MAX_LIGHTS];
+uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
 uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
