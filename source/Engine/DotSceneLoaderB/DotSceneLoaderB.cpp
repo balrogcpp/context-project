@@ -205,9 +205,10 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
         auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
 
         trees->setPageLoader(treeLoader);
-        Entity* treeEntity = sceneManager->createEntity(treeMeshName + std::to_string(GENERATOR++), treeMeshName);
-        trees->setCustomParam(treeMeshName, "windFactorX", 30);
-        trees->setCustomParam(treeMeshName, "windFactorY", 0.01);
+        std::string newName = treeMeshName + std::to_string(GENERATOR++);
+        Entity* treeEntity = sceneManager->createEntity(newName, treeMeshName);
+        trees->setCustomParam(newName, "windFactorX", 30);
+        trees->setCustomParam(newName, "windFactorY", 0.01);
 
         for (int i = 0; i < 23; i++)
         {
