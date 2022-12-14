@@ -409,10 +409,10 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 
     OgreAssert(mSceneMgr->hasCamera("Default"), "[DotSceneLoaderB] No default camera found");
     auto* defaultCamera = mSceneMgr->getCamera("Default");
+    unsigned long long GENERATOR = 0;
 
     for (auto &pPageElement : XMLNode.children("terrain"))
     {
-        static unsigned long long GENERATOR = 0;
         processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup, GENERATOR);
         processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup, GENERATOR);
         GENERATOR++;
@@ -458,10 +458,10 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
 
     OgreAssert(mSceneMgr->hasCamera("Default"), "[DotSceneLoaderB] No default camera found");
     auto* defaultCamera = mSceneMgr->getCamera("Default");
+    unsigned long long GENERATOR = 0;
 
     for (auto& pPageElement : XMLNode.children("terrain"))
     {
-        static unsigned long long GENERATOR = 0;
         processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup.get(), GENERATOR);
         processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup.get(), GENERATOR);
         GENERATOR++;
