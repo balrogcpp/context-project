@@ -74,6 +74,17 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
+bool CompositorManager::IsCompositorEnabled(const std::string &name) {
+  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+  size_t index = compositorChain->getCompositorPosition(name);
+  return compositorChain->getCompositor(index)->getEnabled();
+}
+
+void CompositorManager::SetCompositorScale(const std::string &name, float scale) {
+  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+  size_t index = compositorChain->getCompositorPosition(name);
+}
+
 void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
@@ -238,6 +249,9 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   }
 }
 
+void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
+  }
+
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   if (pass_id == 42) {  // SSAO
     // get the pass
@@ -247,6 +261,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     auto params = pass->getFragmentProgramParameters();
     // set the projection matrix we need
     params->setNamedConstant("ptMat", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
+  } else {
+    std::string name = mat->getName();
+    auto &fpConst = mat->getTechnique(0)->getPass(0)->getFragmentProgram()->getConstantDefinitions();
   }
 }
 }  // namespace Glue

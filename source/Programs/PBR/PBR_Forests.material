@@ -2,7 +2,7 @@
 
 import PBR_Basic from PBR.material
 import PBR_I_vs from PBR.program
-import PBRS_Basic_fs from PBR.program
+import PBR_Basic_fs from PBR.program
 
 vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
 {

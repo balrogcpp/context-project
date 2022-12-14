@@ -15,6 +15,8 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Composi
 
   void SetFixedViewportSize(int x, int y);
   void SetFixedViewport(bool fixed);
+  void SetCompositorScale(const std::string& name, float scale);
+  bool IsCompositorEnabled(const std::string& name);
 
  protected:
   /// System impl
@@ -31,6 +33,7 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Composi
   void viewportDimensionsChanged(Ogre::Viewport* viewport) override;
 
   /// Ogre::CompositorInstance::Listener impl
+  void notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
   void notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
 
   const std::string MRT_COMPOSITOR;

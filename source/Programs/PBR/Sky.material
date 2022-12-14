@@ -34,7 +34,7 @@ abstract material SkyBoxI
     receive_shadows off
     transparency_casts_shadows off
 
-    set $CubeMap black.dds
+    set $CubeMap white.dds
 
 	technique
 	{

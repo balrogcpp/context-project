@@ -90,6 +90,7 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 namespace {
 Ogre::Matrix4 ViewProj;
 Ogre::Matrix4 ViewProjPrev;
+Ogre::Vector4 PssmPoints;
 }  // namespace
 
 namespace Glue {
@@ -121,6 +122,13 @@ void SceneManager::OnUpdate(float time) {
 
   ViewProjPrev = ViewProj;
   ViewProj = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
+
+  auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
+  const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
+  PssmPoints.w = ogreSceneManager->getShadowFarDistance();
+  for (unsigned j = 0; j < pssm->getSplitCount(); j++) {
+    PssmPoints[j] = splitPointList[j + 1];
+  }
 }
 
 static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
@@ -321,6 +329,8 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   // else if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend))
   // else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend))
   // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend))
+
+  fp->setNamedConstant("uPssmSplitPoints", PssmPoints);
 
   vp->setIgnoreMissingParams(false);
   fp->setIgnoreMissingParams(false);

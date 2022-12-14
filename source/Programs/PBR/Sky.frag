@@ -10,6 +10,7 @@
 #endif
 #endif
 
+
 #define USE_MRT
 #include "header.frag"
 #include "math.glsl"
@@ -19,10 +20,9 @@
 #endif
 
 
-in highp vec3 vPosition;
-//in vec3 vUV0;
-
 uniform vec3 uSunDirection;
+uniform float uSunSize;
+uniform vec3 uSunColor;
 uniform vec3 A;
 uniform vec3 B;
 uniform vec3 C;
@@ -33,21 +33,22 @@ uniform vec3 G;
 uniform vec3 H;
 uniform vec3 I;
 uniform vec3 Z;
-
-
+uniform samplerCube uCubeMap;
 #ifdef NO_MRT
+uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform float FarClipDistance;
 #endif
 
-uniform vec4 FogColour;
-uniform float uSunSize;
-uniform vec3 uSunColor;
+
+in highp vec3 vPosition;
+in vec3 vUV0;
+
+
 //uniform float Time;
 //uniform float uTimeScale;
 //uniform float uCirrus;
 //uniform float uCumulus;
-//uniform samplerCube uCubeMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -73,6 +74,7 @@ void main()
     color = SRGBtoLINEAR(color);
 
     if (gamma <= uSunSize) color += uSunColor;
+    color += SRGBtoLINEAR(textureCube(uCubeMap, vUV0).rgb);
     //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
     color = SafeHDR(color);
 
@@ -81,6 +83,6 @@ void main()
     FragData[1] = vec4(0.0, 0.0, 0.0, 0.05);
 #else
     color = ApplyFog(color, FogParams, FogColour.rgb, 0.05 * FarClipDistance);
-    FragColor.rgb = LINEARtoSRGB(color, 1.0);
+    FragColor.rgb = LINEARtoSRGB(color);
 #endif
 }
