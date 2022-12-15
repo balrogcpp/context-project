@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.18.1)
 
 
 # project
-project(contrib)
+project(CONTRIB)
 
 
 # externalproject_add and c++ flags
@@ -1530,14 +1530,14 @@ externalproject_add(Target_QT5
 
 
 # list of dependency targets
-add_custom_target(contrib COMMAND ${CMAKE_COMMAND} -E touch ${DEPS_SOURCE_LOCATION}/contrib_ready)
-add_dependencies(contrib Target_SDL2)
-add_dependencies(contrib Target_pugixml)
-add_dependencies(contrib Target_asio)
-add_dependencies(contrib Target_Lua)
-add_dependencies(contrib Target_sol2)
-add_dependencies(contrib Target_OpenAL)
-add_dependencies(contrib Target_Ogg)
-add_dependencies(contrib Target_Vorbis)
-add_dependencies(contrib Target_Bullet)
-add_dependencies(contrib Target_OGRE)
+add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E touch ${DEPS_SOURCE_LOCATION}/contrib_ready)
+add_dependencies(Contrib Target_SDL2)
+add_dependencies(Contrib Target_pugixml)
+add_dependencies(Contrib Target_asio)
+add_dependencies(Contrib Target_Lua)
+add_dependencies(Contrib Target_sol2)
+add_dependencies(Contrib Target_OpenAL)
+add_dependencies(Contrib Target_Ogg)
+add_dependencies(Contrib Target_Vorbis)
+add_dependencies(Contrib Target_Bullet)
+add_dependencies(Contrib Target_OGRE)

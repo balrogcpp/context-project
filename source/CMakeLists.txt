@@ -8,12 +8,18 @@ include(BuildVariables)
 
 # assets
 if (NOT ANDROID)
-    set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
+set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
 else ()
     set(ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
 endif ()
-add_custom_target(assets ALL ${CMAKE_COMMAND} -DGLSLES=${GLSLES} -DROOT_DIR=${CMAKE_SOURCE_DIR} -DASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
 
+add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+                         COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
+                         COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} zip2cpp programs
+                         COMMAND ${CMAKE_COMMAND} -E copy ${ASSETS_DIR}/programs.zip.h ${CMAKE_SOURCE_DIR}/source/Engine/Code)
+
+add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+                         COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
 
 # deps
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
@@ -62,12 +68,13 @@ endif ()
 
 
 # static library
-add_library(engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
-include_directories(engine ${ENGINE_INCLUDE_DIRS})
-target_precompile_headers(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
+add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
+include_directories(Engine ${ENGINE_INCLUDE_DIRS})
+target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
+add_dependencies(Engine Programs)
 
 
-# example vs project folders
+# Example vs project folders
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.hpp)
 file(GLOB_RECURSE ASSET_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Example/Assets/*)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Example/Source PREFIX "Example" FILES ${SAMPLE_SOURCE_FILES})
@@ -83,27 +90,27 @@ endif ()
 # executable
 if (NOT ANDROID)
     if (CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
-        add_executable(example WIN32 ${SAMPLE_SOURCE_FILES})
+        add_executable(Example WIN32 ${SAMPLE_SOURCE_FILES})
     else ()
-        add_executable(example ${SAMPLE_SOURCE_FILES})
+        add_executable(Example ${SAMPLE_SOURCE_FILES})
     endif ()
 else ()
-    add_library(example SHARED ${SAMPLE_SOURCE_FILES})
+    add_library(Example SHARED ${SAMPLE_SOURCE_FILES})
 endif ()
-include_directories(example include ${ENGINE_INCLUDE_DIRS})
-target_link_directories(example PUBLIC ${ENGINE_LINK_DIRS})
-target_precompile_headers(example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
+include_directories(Example include ${ENGINE_INCLUDE_DIRS})
+target_link_directories(Example PUBLIC ${ENGINE_LINK_DIRS})
+target_precompile_headers(Example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
 if (ANDROID)
-    set_target_properties(example PROPERTIES OUTPUT_NAME "main")
+    set_target_properties(Example PROPERTIES OUTPUT_NAME "main")
 elseif (EMSCRIPTEN)
-    set_target_properties(example PROPERTIES OUTPUT_NAME "index")
+    set_target_properties(Example PROPERTIES OUTPUT_NAME "index")
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 else ()
-    set_target_properties(example PROPERTIES OUTPUT_NAME "app")
+    set_target_properties(Example PROPERTIES OUTPUT_NAME "app")
 endif ()
-target_link_libraries(example PUBLIC engine ${ENGINE_LIBRARIES})
+target_link_libraries(Example PUBLIC Engine ${ENGINE_LIBRARIES})
 if (ANDROID)
-    add_dependencies(example assets)
+    add_dependencies(Example Assets)
 endif ()
 
 
@@ -112,19 +119,19 @@ if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${DEPS_ROOT}/bin/*.dll)
     file(COPY ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
-install(TARGETS example RUNTIME DESTINATION .)
+install(TARGETS Example RUNTIME DESTINATION .)
 if (EMSCRIPTEN)
     install(FILES
-            "$<TARGET_FILE_DIR:example>/index.html"
-            "$<TARGET_FILE_DIR:example>/index.js"
-            "$<TARGET_FILE_DIR:example>/index.wasm"
-            "$<TARGET_FILE_DIR:example>/index.data"
-            "$<TARGET_FILE_DIR:example>/index.worker.js"
+            "$<TARGET_FILE_DIR:Example>/index.html"
+            "$<TARGET_FILE_DIR:Example>/index.js"
+            "$<TARGET_FILE_DIR:Example>/index.wasm"
+            "$<TARGET_FILE_DIR:Example>/index.data"
+            "$<TARGET_FILE_DIR:Example>/index.worker.js"
             DESTINATION .)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-    install(FILES ${ASSETS_DIR}/assets.bin DESTINATION .)
-    install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
+    install(FILES ${ASSETS_DIR}/Assets.bin DESTINATION .)
+    #install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
 endif ()
 set(PACKAGE_NAME "Glue${TARGET_NAME}")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})

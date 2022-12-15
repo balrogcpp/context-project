@@ -207,12 +207,14 @@ void VideoManager::LoadResources() {
 #if defined(DESKTOP)
   if (!FindPath(PROGRAMS_ZIP).empty()) {
     ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP), ZIP, Ogre::RGN_INTERNAL);
+  } else if (!FindPath("programs.zip").empty()) {
+    ogreResourceManager.addResourceLocation(FindPath("programs.zip"), ZIP, Ogre::RGN_INTERNAL);
   } else if (!FindPath("programs").empty()) {
     ScanLocation(FindPath("programs"), Ogre::RGN_INTERNAL);
   } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   } else {
-    // InitEmbeddedResources();
+    InitEmbeddedResources();
   }
 
   if (!FindPath(ASSETS_ZIP).empty()) {

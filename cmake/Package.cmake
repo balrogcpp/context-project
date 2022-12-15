@@ -50,22 +50,28 @@ macro(FlatZipDirectory curdir destination extention)
     endforeach ()
 
     file(GLOB filelist RELATIVE ${destination} ${destination}/*)
+
+    if (UNIX)
+        execute_process(COMMAND touch ${destination}/* -t 1564840800)
+    elseif (WIN32)
+        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | Where-Object {! $_.PSIsContainer} | ForEach-Object{$_.CreationTime = (\"3 August 2019 17:00:00\")}")
+        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | Where-Object {! $_.PSIsContainer} | ForEach-Object{$_.LastWriteTime = (\"3 August 2019 17:00:00\")}")
+        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | Where-Object {! $_.PSIsContainer} | ForEach-Object{$_.LastAccessTime = (\"3 August 2019 17:00:00\")}")
+    endif ()
+
     execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}.${extention} --format=zip ${filelist})
+
+    if (UNIX)
+        execute_process(COMMAND touch ${destination}.${extention} -t 1564840800)
+    else ()
+        execute_process(COMMAND powershell "(Get-Item ${destination}.${extention}).CreationTime = (\"3 August 2019 17:00:00\")")
+        execute_process(COMMAND powershell "(Get-Item ${destination}.${extention}).LastWriteTime = (\"3 August 2019 17:00:00\")")
+        execute_process(COMMAND powershell "(Get-Item ${destination}.${extention}).LastAccessTime = (\"3 August 2019 17:00:00\")")
+    endif ()
+
     file(REMOVE_RECURSE ${destination})
 endmacro()
 
 
 # do the job
-FlatCopy(${ROOT_DIR}/source/Programs ${ASSETS_DIR}/programs)
-if (ANDROID OR IOS OR EMSCRIPTEN OR GLSLES)
-    file(GLOB files ${ROOT_DIR}/source/GLSLES/*)
-else ()
-    file(GLOB files ${ROOT_DIR}/source/GLSL/*)
-endif ()
-file(COPY ${files} DESTINATION ${ASSETS_DIR}/programs)
-ZipDirectory(${ASSETS_DIR}/programs bin)
-
-FlatZipDirectory(${ROOT_DIR}/source/Programs ${ASSETS_DIR}/programs zip)
-#FlatZipDirectory(${ROOT_DIR}/source/GLSL ${ASSETS_DIR}/glsl zip)
-#FlatZipDirectory(${ROOT_DIR}/source/GLSLES ${ASSETS_DIR}/glsles zip)
-FlatZipDirectory(${ROOT_DIR}/source/Example/Assets ${ASSETS_DIR}/assets bin)
+FlatZipDirectory(${INPUT} ${OUTPUT} ${FORMAT})
