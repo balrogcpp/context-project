@@ -7,21 +7,20 @@ include(BuildVariables)
 
 
 # assets
-if (NOT ANDROID)
 set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
-else ()
-    set(ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
-endif ()
+set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
 
 add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-                         COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
-                         COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ./zip2cpp programs
-                         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR})
+        COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
+        COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ./zip2cpp programs
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR})
 
 
 add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-                         COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
-
+        COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR_ANDROID}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSETS_DIR_ANDROID}
+        COMMAND ${CMAKE_COMMAND} -E copy ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID})
 
 
 # deps
@@ -133,7 +132,7 @@ if (EMSCRIPTEN)
             DESTINATION .)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-    install(FILES ${ASSETS_DIR}/Assets.bin DESTINATION .)
+    install(FILES ${ASSETS_DIR}/assets.bin DESTINATION .)
     #install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
 endif ()
 set(PACKAGE_NAME "Glue${TARGET_NAME}")
