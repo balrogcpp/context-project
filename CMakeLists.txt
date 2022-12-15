@@ -58,10 +58,6 @@ list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 add_subdirectory(source)
 
 
-# doc
-#include(Doxygen)
-
-
 # cpack
 set(PACKAGE_NAME "GlueSample")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})

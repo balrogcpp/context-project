@@ -1,6 +1,6 @@
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
-set(CMAKE_CROSSCOMPILING ON)
+set(CMAKE_CROSSCOMPILING 1)
 set(triple x86_64-w64-mingw32)
 
 # which compilers to use for C and C++

@@ -1,6 +1,7 @@
 # macro insert_dependency and c++ flags, includes and libraries
 include(CppFlags)
 include(Platform)
+include(TimeStampEraser)
 set(CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 set(CMAKE_PREFIX_PATH ${DEPS_ROOT})
 include(BuildVariables)
@@ -9,22 +10,37 @@ include(BuildVariables)
 # assets
 set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
 set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
-make_directory(${ASSETS_DIR_ANDROID})
+
+if (NOT CPP_COMPILER)
+    if (CMAKE_CROSSCOMPILING)
+        find_program(CPP_COMPILER NAMES c++ clang++ g++ cl bcc32 bcc xlc PATHS ENV PATH NO_DEFAULT_PATH)
+    else ()
+        set(CPP_COMPILER ${CMAKE_CXX_COMPILER})
+    endif ()
+endif ()
+if (NOT CPP_COMPILER)
+    message(FATAL_ERROR "CXX compiler not found manually")
+else ()
+    message(STATUS "CXX compiler found manually: ${CPP_COMPILER}")
+endif ()
 
 add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-        COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
+        COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CPP_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
         COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ./zip2cpp programs
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR})
 
 add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
         COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR_ANDROID}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSETS_DIR_ANDROID}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID})
+        #COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
 
 
 # deps
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
-    add_dependencies(AndroidDummy contrib)
+    add_dependencies(AndroidDummy Contrib)
     message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib). Exiting...")
     return()
 endif ()
@@ -112,6 +128,12 @@ target_link_libraries(Example PUBLIC Engine ${ENGINE_LIBRARIES})
 if (ANDROID)
     add_dependencies(Example Assets)
 endif ()
+
+#set(BINARY_NAME "$<TARGET_FILE:Example>")
+#install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DTARGET=${BINARY_NAME} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
+#             COMMAND ${CMAKE_COMMAND} -DTARGET=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)
+#             COMMAND ${CMAKE_COMMAND} -DTARGET=${DEPS_ROOT}/bin -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)"
+#        COMPONENT Example)
 
 
 # package
