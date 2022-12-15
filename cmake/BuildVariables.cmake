@@ -47,6 +47,7 @@ set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
 set(ENGINE_INCLUDE_DIRS
         ${ENGINE_SOURCE_DIR}
         ${ENGINE_SOURCE_DIR}/Code
+        ${CMAKE_BINARY_DIR}
         ${DEPS_ROOT}/include
         )
 
