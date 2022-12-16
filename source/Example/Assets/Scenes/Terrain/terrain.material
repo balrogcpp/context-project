@@ -1,7 +1,5 @@
 import PBR_Terrain from PBR_Terrain.material
 import PBR_Terrain_vc from PBR_Terrain.material
-import PBRS_Terrain from PBRS_Terrain.material
-import PBRS_Terrain_vc from PBRS_Terrain.material
 
 material TerrainCustom : PBR_Terrain
 {
@@ -17,32 +15,6 @@ material TerrainCustom : PBR_Terrain
 }
 
 material TerrainCustom_vc : PBR_Terrain_vc
-{
-    /*set $Albedo bog_albedo.dds
-    set $Normal bog_normal.dds
-    set $ORM bog_orm.dds*/
-
-    technique {
-        pass {
-            diffuse 0.11 0.33 0.15 1.00
-        }
-    }
-}
-
-material TerrainCustomPBRS : PBRS_Terrain
-{
-    /*set $Albedo bog_albedo.dds
-    set $Normal bog_normal.dds
-    set $ORM bog_orm.dds*/
-
-    technique {
-        pass {
-            diffuse 0.11 0.33 0.15 1.00
-        }
-    }
-}
-
-material TerrainCustomPBRS_vc : PBRS_Terrain_vc
 {
     /*set $Albedo bog_albedo.dds
     set $Normal bog_normal.dds

@@ -1,5 +1,4 @@
 import PBR from PBR.material
-import PBRS from PBRS.material
 import PBR_IBL from PBR_IBL.material
 
 material Cube : PBR

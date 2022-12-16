@@ -1,23 +1,20 @@
 // created by Andrey Vasiliev
 
 import PBR_Basic from PBR.material
-import PBRS_Basic from PBRS.material
 import PBR_Grass from PBR_Forests.material
-import PBRS_Grass from PBRS_Forests.material
 import PBR_Paged from PBR_Forests.material
-import PBRS_Paged from PBRS_Forests.material
 
 material GrassCustom : PBR_Grass
 {
     set $Albedo Grass_A.dds
 }
 
-material 3D-Diggers/fir01 : PBRS_Paged
+material 3D-Diggers/fir01 : PBR_Paged
 {
     set $Albedo fir01.dds
 }
 
-material 3D-Diggers/fir02 : PBRS_Paged
+material 3D-Diggers/fir02 : PBR_Paged
 {
     set $Albedo fir02.dds
 }

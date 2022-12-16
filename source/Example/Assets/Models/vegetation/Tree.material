@@ -1,7 +1,6 @@
 import PBR_Paged from PBR_Forests.material
-import PBRS_Paged from PBRS_Forests.material
 
-material leaf08png : PBRS_Paged
+material leaf08png : PBR_Paged
 {
 	technique
 	{
@@ -17,7 +16,7 @@ material leaf08png : PBRS_Paged
 	}
 }
 
-material wood03png : PBRS_Paged
+material wood03png : PBR_Paged
 {
 	technique
 	{

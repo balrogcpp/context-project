@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import PBRS_Basic from PBRS.material
+import PBR_Basic from PBR.material
 
 vertex_program PBR_FX_vs glsl glsles
 {
@@ -18,7 +18,7 @@ fragment_program PBR_FX_fs glsl glsles
     preprocessor_defines HAS_BASECOLORMAP,MAX_LIGHTS=0
 }
 
-abstract material PBR_FX : PBRS_Basic
+abstract material PBR_FX : PBR_Basic
 {
     receive_shadows off
     transparency_casts_shadows off
