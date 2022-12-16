@@ -85,7 +85,9 @@ endif ()
 add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(Engine ${ENGINE_INCLUDE_DIRS})
 target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
-add_dependencies(Engine Programs)
+if (RELEASE OR MOBILE)
+    add_dependencies(Engine Programs)
+endif ()
 
 
 # Example vs project folders
@@ -127,12 +129,13 @@ if (ANDROID)
     add_dependencies(Example Assets)
 endif ()
 
-#set(BINARY_NAME "$<TARGET_FILE:Example>")
-#install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DTARGET=${BINARY_NAME} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
-#             COMMAND ${CMAKE_COMMAND} -DTARGET=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)
-#             COMMAND ${CMAKE_COMMAND} -DTARGET=${DEPS_ROOT}/bin -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)"
-#        COMPONENT Example)
-
+if (RELEASE)
+    set(BINARY_NAME "$<TARGET_FILE:Example>")
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DTARGET=${BINARY_NAME} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
+                 COMMAND ${CMAKE_COMMAND} -DTARGET=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)
+                 COMMAND ${CMAKE_COMMAND} -DTARGET=${DEPS_ROOT}/bin -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)"
+            COMPONENT Example)
+endif ()
 
 # package
 if (WIN32)
@@ -151,7 +154,9 @@ if (EMSCRIPTEN)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
     install(FILES ${ASSETS_DIR}/assets.bin DESTINATION .)
-    #install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
+if (NOT RELEASE)
+    install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
+endif ()
 endif ()
 set(PACKAGE_NAME "Glue${TARGET_NAME}")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})
