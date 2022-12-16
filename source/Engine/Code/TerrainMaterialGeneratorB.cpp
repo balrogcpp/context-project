@@ -36,13 +36,7 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *terrain) {
 }
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terrain) {
-  std::string materialName;
-
-  if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE) {
-    materialName = "TerrainCustom";
-  } else {
-    materialName = "TerrainCustomPBRS";
-  }
+  std::string materialName = "TerrainCustom";
 
   if (isVertexCompressionSupported()) {
     materialName += "_vc";
