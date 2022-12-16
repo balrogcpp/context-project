@@ -32,7 +32,7 @@ add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR_ANDROID}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSETS_DIR_ANDROID}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID})
-        #COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
+#COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
 
 
 # deps
@@ -129,12 +129,14 @@ if (ANDROID)
     add_dependencies(Example Assets)
 endif ()
 
+set(CPACK_INSTALL_CMAKE_PROJECTS "Example")
 if (RELEASE)
     set(BINARY_NAME "$<TARGET_FILE:Example>")
-    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DTARGET=${BINARY_NAME} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
-                 COMMAND ${CMAKE_COMMAND} -DTARGET=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)
+    install (CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DTARGET=${BINARY_NAME} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
+                 COMMAND ${CMAKE_COMMAND} -DTARGET=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
                  COMMAND ${CMAKE_COMMAND} -DTARGET=${DEPS_ROOT}/bin -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)"
-            COMPONENT Example)
+            COMPONENT Example
+            )
 endif ()
 
 # package
@@ -154,9 +156,9 @@ if (EMSCRIPTEN)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
     install(FILES ${ASSETS_DIR}/assets.bin DESTINATION .)
-if (NOT RELEASE)
-    install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
-endif ()
+    if (NOT RELEASE)
+        install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
+    endif ()
 endif ()
 set(PACKAGE_NAME "Glue${TARGET_NAME}")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})
