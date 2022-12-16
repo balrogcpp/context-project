@@ -28,6 +28,13 @@ if (GLSL)
 elseif (GLSLES)
     insert_dependency(OpenGLES2)
 endif ()
+
+
+if (DEPS_ROOT)
+    set(CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
+    set(CMAKE_PREFIX_PATH ${DEPS_ROOT})
+endif ()
+
 insert_dependency_static(Bullet)
 mark_as_advanced(BULLET_INCLUDE_DIR)
 insert_dependency_static2(Lua LUA_LIBRARY)

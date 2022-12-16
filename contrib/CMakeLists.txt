@@ -77,56 +77,52 @@ endmacro()
 
 
 # list of third-party targets
-if (NOT EMSCRIPTEN)
-    check_stamp_patch(Target_SDL2 sdl2-2.26.0.patch)
-    externalproject_add(Target_SDL2
-            EXCLUDE_FROM_ALL true
-            BUILD_ALWAYS false
-            BUILD_IN_SOURCE false
-            PREFIX ${DEPS_PREFIX_LOCATION}
-            DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-            SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
-            GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-            GIT_TAG release-2.26.1
-            GIT_SHALLOW true
-            GIT_PROGRESS false
-            DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-            UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-            COMMAND ${CREATE_DOWNLOAD_STAMP}
-            PATCH_COMMAND ${PATCH_PLACEHOLDER}
-            CMAKE_ARGS
-            -G ${CMAKE_GENERATOR}
-            -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-            -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-            -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
-            -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
-            -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
-            -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
-            -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
-            -DANDROID_NDK=${ANDROID_NDK}
-            -DANDROID_ABI=${ANDROID_ABI}
-            -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-            -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
-            -DSDL_TEST=OFF
-            -DSDL_WERROR=OFF
-            -DLIBC=ON
-            -DSDL_LIBC=ON
-            -DRENDER_METAL=OFF
-            -DSDL_RENDER_METAL=OFF
-            -DSDL_METAL=OFF
-            -DSDL_VULKAN=OFF
-            -DHIDAPI=OFF
-            -DSDL_HIDAPI=OFF
-            -DSDL_HIDAPI_JOYSTICK=OFF
-            TEST_AFTER_INSTALL ON
-            TEST_COMMAND ${CREATE_PATCH_STAMP}
-            )
-else ()
-    add_custom_target(Target_SDL2 COMMAND ${CMAKE_COMMAND} -E true)
-endif ()
+check_stamp_patch(Target_SDL2 sdl2-2.24.0.patch)
+externalproject_add(Target_SDL2
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG release-2.24.2
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
+        -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
+        -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
+        -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
+        -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
+        -DSDL_TEST=OFF
+        -DSDL_WERROR=OFF
+        -DLIBC=ON
+        -DSDL_LIBC=ON
+        -DRENDER_METAL=OFF
+        -DSDL_RENDER_METAL=OFF
+        -DSDL_METAL=OFF
+        -DSDL_VULKAN=OFF
+        -DHIDAPI=OFF
+        -DSDL_HIDAPI=OFF
+        -DSDL_HIDAPI_JOYSTICK=OFF
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+        )
 
 
 check_stamp(Target_OIS)
@@ -225,58 +221,54 @@ externalproject_add(Target_Bullet
         )
 
 
-if (NOT EMSCRIPTEN)
-    check_stamp_patch(Target_OpenAL openal-1.21.1.patch)
-    externalproject_add(Target_OpenAL
-            EXCLUDE_FROM_ALL true
-            BUILD_ALWAYS false
-            BUILD_IN_SOURCE false
-            PREFIX ${DEPS_PREFIX_LOCATION}
-            DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-            SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenAL
-            GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-            GIT_TAG 1.22.2
-            GIT_SHALLOW true
-            GIT_PROGRESS false
-            DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-            UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-            COMMAND ${CREATE_DOWNLOAD_STAMP}
-            PATCH_COMMAND ${PATCH_PLACEHOLDER}
-            CMAKE_ARGS
-            -G ${CMAKE_GENERATOR}
-            -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-            -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-            -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
-            -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
-            -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
-            -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
-            -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
-            -DANDROID_NDK=${ANDROID_NDK}
-            -DANDROID_ABI=${ANDROID_ABI}
-            -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-            -DALSOFT_TESTS=OFF
-            -DALSOFT_UTILS=OFF
-            -DALSOFT_EXAMPLES=OFF
-            -DALSOFT_CONFIG=OFF
-            -DALSOFT_EAX=OFF
-            -DALSOFT_BACKEND_SDL2=OFF
-            -DALSOFT_BACKEND_SNDIO=OFF
-            -DALSOFT_BACKEND_WASAPI=OFF
-            -DALSOFT_BACKEND_WINMM=OFF
-            -DALSOFT_BACKEND_WAVE=OFF
-            -DALSOFT_BACKEND_OSS=OFF
-            -DALSOFT_BACKEND_JACK=OFF
-            -DLIBTYPE=SHARED
-            -DALSOFT_OSX_FRAMEWORK=OFF
-            TEST_AFTER_INSTALL ON
-            TEST_COMMAND ${CREATE_PATCH_STAMP}
-            )
-else ()
-    add_custom_target(Target_OpenAL COMMAND ${CMAKE_COMMAND} -E true)
-endif ()
+check_stamp_patch(Target_OpenAL openal-1.21.1.patch)
+externalproject_add(Target_OpenAL
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenAL
+        GIT_REPOSITORY https://github.com/kcat/openal-soft.git
+        GIT_TAG 1.22.2
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
+        -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
+        -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
+        -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
+        -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DALSOFT_TESTS=OFF
+        -DALSOFT_UTILS=OFF
+        -DALSOFT_EXAMPLES=OFF
+        -DALSOFT_CONFIG=OFF
+        -DALSOFT_EAX=OFF
+        -DALSOFT_BACKEND_SDL2=OFF
+        -DALSOFT_BACKEND_SNDIO=OFF
+        -DALSOFT_BACKEND_WASAPI=OFF
+        -DALSOFT_BACKEND_WINMM=OFF
+        -DALSOFT_BACKEND_WAVE=OFF
+        -DALSOFT_BACKEND_OSS=OFF
+        -DALSOFT_BACKEND_JACK=OFF
+        -DLIBTYPE=SHARED
+        -DALSOFT_OSX_FRAMEWORK=OFF
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+        )
 
 
 check_stamp_patch(Target_Ogg ogg-1.3.5.patch)
@@ -398,49 +390,45 @@ externalproject_add(Target_Theora
         )
 
 
-if (NOT EMSCRIPTEN)
-    check_stamp(Target_zlib)
-    externalproject_add(Target_zlib
-            EXCLUDE_FROM_ALL true
-            BUILD_ALWAYS false
-            BUILD_IN_SOURCE false
-            PREFIX ${DEPS_PREFIX_LOCATION}
-            DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-            SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
-            GIT_REPOSITORY https://github.com/madler/zlib.git
-            GIT_TAG v1.2.13
-            GIT_SHALLOW true
-            GIT_PROGRESS false
-            DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-            UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-            COMMAND ${CREATE_DOWNLOAD_STAMP}
-            PATCH_COMMAND ${PATCH_PLACEHOLDER}
-            CMAKE_ARGS
-            -G ${CMAKE_GENERATOR}
-            -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-            -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-            -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-            -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
-            -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
-            -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
-            -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
-            -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
-            -DANDROID_NDK=${ANDROID_NDK}
-            -DANDROID_ABI=${ANDROID_ABI}
-            -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-            -DBUILD_SHARED_LIBS=OFF
-            -DCMAKE_DEBUG_POSTFIX=
-            TEST_AFTER_INSTALL ON
-            TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -rf
-            lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
-            COMMAND ${CREATE_PATCH_STAMP}
-            )
-else ()
-    add_custom_target(Target_zlib COMMAND ${CMAKE_COMMAND} -E true)
-endif ()
+check_stamp(Target_zlib)
+externalproject_add(Target_zlib
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
+        GIT_REPOSITORY https://github.com/madler/zlib.git
+        GIT_TAG v1.2.13
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
+        -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
+        -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
+        -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
+        -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DBUILD_SHARED_LIBS=OFF
+        -DCMAKE_DEBUG_POSTFIX=
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -rf
+        lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
+        COMMAND ${CREATE_PATCH_STAMP}
+        )
 
 
 check_stamp(Target_ZZIP)
@@ -1531,12 +1519,14 @@ externalproject_add(Target_QT5
 
 # list of dependency targets
 add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E touch ${DEPS_SOURCE_LOCATION}/contrib_ready)
-add_dependencies(Contrib Target_SDL2)
+if (NOT EMSCRIPTEN)
+    add_dependencies(Contrib Target_SDL2)
+    add_dependencies(Contrib Target_OpenAL)
+endif ()
 add_dependencies(Contrib Target_pugixml)
 add_dependencies(Contrib Target_asio)
 add_dependencies(Contrib Target_Lua)
 add_dependencies(Contrib Target_sol2)
-add_dependencies(Contrib Target_OpenAL)
 add_dependencies(Contrib Target_Ogg)
 add_dependencies(Contrib Target_Vorbis)
 add_dependencies(Contrib Target_Bullet)

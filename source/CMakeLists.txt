@@ -2,8 +2,6 @@
 include(CppFlags)
 include(Platform)
 include(TimeStampEraser)
-set(CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
-set(CMAKE_PREFIX_PATH ${DEPS_ROOT})
 include(BuildVariables)
 
 
