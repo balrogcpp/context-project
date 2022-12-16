@@ -77,7 +77,7 @@ endmacro()
 
 
 # list of third-party targets
-check_stamp_patch(Target_SDL2 sdl2-2.24.0.patch)
+check_stamp_patch(Target_SDL2 sdl2-2.26.0.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -86,7 +86,7 @@ externalproject_add(Target_SDL2
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.24.2
+        GIT_TAG release-2.26.1
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
