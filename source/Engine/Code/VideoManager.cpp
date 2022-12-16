@@ -219,6 +219,8 @@ void VideoManager::LoadResources() {
 
   if (!FindPath(ASSETS_ZIP).empty()) {
     ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), ZIP, Ogre::RGN_DEFAULT);
+  } else if (!FindPath("assets.zip").empty()) {
+    ogreResourceManager.addResourceLocation(FindPath("assets.zip"), ZIP, Ogre::RGN_DEFAULT);
   } else if (!FindPath("assets").empty()) {
     ScanLocation(FindPath("assets"), Ogre::RGN_DEFAULT);
   } else {
@@ -380,7 +382,7 @@ void VideoManager::InitOgreRoot() {
 
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
-  InitOgreRenderSystemGL3();
+  InitOgreRenderSystemGLES2();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
   InitOgreRenderSystemGLES2();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
