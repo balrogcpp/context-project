@@ -1,7 +1,7 @@
 import PBR from PBR.material
-import PBR_Basic from PBR.material
+import PBR from PBR.material
 
-material Plane : PBR_Basic
+material Plane : PBR
 {
     //set $Albedo dungeon-stone1-albedo2.png
     //set $Normal dungeon-stone1-normal.png

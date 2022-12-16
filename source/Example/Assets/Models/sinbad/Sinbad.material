@@ -1,63 +1,63 @@
-import PBR_Basic from PBR.material
+import PBR from PBR.material
 import PBR from PBR.material
 
 
-material Sinbad/Body : PBR_Basic
+material Sinbad/Body : PBR
 {
     set $Albedo sinbad_body.dds
 }
 
-material Sinbad/Gold : PBR_Basic
+material Sinbad/Gold : PBR
 {
     set $Albedo sinbad_clothes.dds
 }
 
-material Sinbad/Sheaths : PBR_Basic
+material Sinbad/Sheaths : PBR
 {
     set $Albedo sinbad_sword.dds
 }
 
-material Sinbad/Clothes : PBR_Basic
+material Sinbad/Clothes : PBR
 {
     set $Albedo sinbad_clothes.dds
 }
 
-material Sinbad/Teeth : PBR_Basic
+material Sinbad/Teeth : PBR
 {
     set $Albedo sinbad_body.dds
 }
 
-material Sinbad/Eyes : PBR_Basic
+material Sinbad/Eyes : PBR
 {
     set $Albedo sinbad_body.dds
 }
 
-material Sinbad/Spikes : PBR_Basic
+material Sinbad/Spikes : PBR
 {
     set $Albedo sinbad_clothes.dds
 }
 
-material Sinbad/Blade : PBR_Basic
+material Sinbad/Blade : PBR
 {
     set $Albedo sinbad_sword.dds
 }
 
-material Sinbad/Ruby : PBR_Basic
+material Sinbad/Ruby : PBR
 {
     set $Albedo sinbad_sword.dds
 }
 
-material Sinbad/Hilt : PBR_Basic
+material Sinbad/Hilt : PBR
 {
     set $Albedo sinbad_sword.dds
 }
 
-material Sinbad/Handle : PBR_Basic
+material Sinbad/Handle : PBR
 {
     set $Albedo sinbad_sword.dds
 }
 
-material Examples/LightRibbonTrail : PBR_Basic
+material Examples/LightRibbonTrail : PBR
 {
     //receive_shadows off
     //transparency_casts_shadows off
@@ -83,7 +83,7 @@ material Examples/LightRibbonTrail : PBR_Basic
 	}
 }
 
-material Examples/LightRibbonTrail2 : PBR_Basic
+material Examples/LightRibbonTrail2 : PBR
 {
 	technique
 	{

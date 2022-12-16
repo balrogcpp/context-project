@@ -32,58 +32,6 @@ sampler PBRIBLSampler
 }
 
 
-abstract material PBR_Basic
-{
-    transparency_casts_shadows off
-    receive_shadows on
-
-    set $Albedo white.dds
-
-    technique
-    {
-        pass
-        {
-            specular 1 1 1 1
-            diffuse 1 1 1
-            ambient 1 1 1
-            emissive 0 0 0
-
-            texture_unit Albedo
-            {
-                texture $Albedo
-            }
-
-            texture_unit uShadowMap0
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit uShadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit uShadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit uShadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-
-            vertex_program_ref PBR_vs {}
-
-            fragment_program_ref PBR_Basic_fs
-            {
-                param_named uAlbedoSampler int 0
-            }
-        }
-    }
-}
-
 abstract material PBR
 {
     transparency_casts_shadows off

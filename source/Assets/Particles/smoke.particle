@@ -1,4 +1,4 @@
-import PBR_Basic from PBR.material
+import PBR from PBR.material
 import PBR_FX from PBR_FX.material
 
 material Examples/Smoke : PBR_FX

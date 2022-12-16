@@ -214,9 +214,7 @@ void VideoManager::LoadResources() {
   } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   } else {
-#ifdef NDEBUG
     InitEmbeddedResources();
-#endif
   }
 
   if (!FindPath(ASSETS_ZIP).empty()) {
