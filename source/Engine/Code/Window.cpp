@@ -4,24 +4,35 @@
 #include "Window.h"
 #include "Platform.h"
 #include <Ogre.h>
-#include <SDL2/SDL_syswm.h> 
+#include <SDL2/SDL_syswm.h>
 
 using namespace std;
 
 namespace {
+inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
+inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
+inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
 inline void ParseSDLError(bool result, const char *message = "") {
   if (!result) LogError(message, SDL_GetError());
 }
 }  // namespace
 
 namespace Glue {
-Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI), vsync(true), vsyncInt(1), sizeX(1270), display(0), sizeY(720), fullscreen(false), id(0) {
+Window::Window()
+    : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI),
+      vsync(true),
+      vsyncInt(1),
+      sizeX(1270),
+      display(0),
+      sizeY(720),
+      fullscreen(false),
+      id(0) {
 #ifdef EMSCRIPTEN
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
 #ifdef MOBILE
   vsync = false;
-  //vsyncInt = 2;
+  // vsyncInt = 2;
   fullscreen = true;
 #endif
 }
@@ -73,9 +84,15 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   }
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  if (RenderSystemIsGL3()) {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  } else if (RenderSystemIsGLES2()) {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  }
   sdlFlags |= SDL_WINDOW_OPENGL;
 
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
@@ -242,7 +259,7 @@ void Window::SetCaption(const char *caption) {
 
 void Window::SetIcon(const char *icon) {
   ASSERTION(sdlWindow, "sdlWindow not initialised");
-  //SDL_SetWindowIcon(sdlWindow, icon);
+  // SDL_SetWindowIcon(sdlWindow, icon);
 }
 
 void Window::SetGrabMouse(bool grab) {
