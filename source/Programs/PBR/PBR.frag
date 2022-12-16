@@ -564,7 +564,7 @@ void main()
         float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
         highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
         vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
-        float tmp = ftrim(NdotL * attenuation);
+        float tmp = NdotL * attenuation;
 
         // shadow block
         {

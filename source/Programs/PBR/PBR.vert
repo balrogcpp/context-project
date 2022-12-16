@@ -12,7 +12,7 @@
 
 
 #include "header.vert"
-#ifdef PAGED_GEOMETRY
+#ifdef GRASS
 #include "noise.glsl"
 #endif
 
@@ -31,13 +31,13 @@ uniform lowp float uStaticObj;
 uniform lowp float uMovableObj;
 #endif
 #ifdef PAGED_GEOMETRY
-uniform highp vec3 CameraPosition;
 uniform highp float Time;
-uniform float uFadeRange;
-#ifdef GRASS
-uniform float uWindRange;
 #endif
-#endif // PAGED_GEOMETRY
+#ifdef GRASS
+uniform highp vec3 CameraPosition;
+uniform float uFadeRange;
+uniform float uWindRange;
+#endif //  GRASS
 #ifdef SHADOWRECEIVER
 uniform int ShadowTextureCount;
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
@@ -89,27 +89,31 @@ out mat3 vTBN;
 out vec3 vNormal;
 #endif
 #endif //  HAS_NORMALS
+
+#ifdef GRASS
+out mat3 vTBN;
+#endif
+
 #ifdef SHADOWRECEIVER
 out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 #ifdef HAS_REFLECTION
 out vec4 projectionCoord;
 #endif
+
+
 #ifdef GRASS
-out mat3 vTBN;
-#endif
-
-
-#ifdef PAGED_GEOMETRY
 //----------------------------------------------------------------------------------------------------------------------
 vec4 WaveGrass(const vec2 position, const float time, const float frequency, const vec4 direction)
 {
   float n = fbm(position.xy * time) * 2.0 - 2.0;
   return n * direction;
 }
+#endif
 
+#ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
-vec4 WaveTree(const vec4 v, const vec4 params, const vec4 originPos)
+vec4 WaveTree(const vec4 v, const vec4 params, const vec4 originPos, const float time)
 {
   float radiusCoeff = params.x;
   float radiusCoeff2 = radiusCoeff * radiusCoeff;
@@ -119,8 +123,8 @@ vec4 WaveTree(const vec4 v, const vec4 params, const vec4 originPos)
   float factorY = params.w;
 
   vec4 ret = vec4(0.0);
-  ret.y = sin(Time + originPos.z + v.y + v.x) * radiusCoeff2 * factorY;
-  ret.x = sin(Time + originPos.z ) * heightCoeff2 * factorX;
+  ret.y = sin(time + originPos.z + v.y + v.x) * radiusCoeff2 * factorY;
+  ret.x = sin(time + originPos.z ) * heightCoeff2 * factorX;
 
   return ret;
 }
@@ -154,7 +158,6 @@ void main()
   vec4 model_position = ModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
 
-#ifdef PAGED_GEOMETRY
 #ifdef GRASS
   vTBN = mat3(vec3(1.0, 0.0, 0.0),
               vec3(0.0, 0.0, 0.0),
@@ -165,9 +168,8 @@ void main()
   }
 #endif
 #ifdef TREES
-    new_position += WaveTree(new_position, uv1, uv2);
+    new_position += WaveTree(new_position, uv1, uv2, Time);
 #endif
-#endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS

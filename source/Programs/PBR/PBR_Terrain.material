@@ -5,7 +5,7 @@ import PBR_BaseI_fs from PBR.program
 
 abstract vertex_program PBR_Terrain_I_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,PAGED_GEOMETRY,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 abstract fragment_program PBR_Terrain_I_fs glsl glsles : PBR_BaseI_fs
@@ -29,7 +29,7 @@ abstract fragment_program PBR_Terrain_I_fs glsl glsles : PBR_BaseI_fs
 
 vertex_program PBR_Terrain_vc_vs glsl glsles : PBR_Terrain_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,VERTEX_COMPRESSION,PAGED_GEOMETRY,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,VERTEX_COMPRESSION,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 vertex_program PBR_Terrain_vs glsl glsles : PBR_Terrain_I_vs {}
