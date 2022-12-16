@@ -1,5 +1,37 @@
 // created by Andrey Vasiliev
 
+sampler ShadowSampler
+{
+    filtering linear linear none
+    tex_address_mode border
+    tex_border_colour 1 1 1 1
+}
+
+sampler PBRSampler
+{
+    filtering anisotropic
+    max_anisotropy 8
+}
+
+sampler PBRSSAOSampler
+{
+    tex_address_mode clamp
+    filtering none
+}
+
+sampler PBRLUTSampler
+{
+    filtering none
+    tex_address_mode clamp
+}
+
+sampler PBRIBLSampler
+{
+    filtering bilinear
+    tex_address_mode clamp
+}
+
+
 abstract material PBR_Basic
 {
     transparency_casts_shadows off
@@ -117,6 +149,48 @@ abstract material PBR
                 param_named uNormalSampler      int 1
                 param_named uORMSampler         int 2
                 param_named uEmissiveSampler    int 3
+            }
+        }
+    }
+}
+
+abstract material PBR_IBL : PBR
+{
+    set $IBL_Diffuse white.dds
+    set $IBL_Specular black.dds
+    set $IBL_LUT brdfLUT.dds
+
+    technique
+    {
+        pass
+        {
+            texture_unit IBL_Diffuse
+            {
+                texture $IBL_Diffuse cubic
+                sampler_ref PBRIBLSampler
+            }
+            texture_unit IBL_Specular
+            {
+                texture $IBL_Specular cubic
+                sampler_ref PBRIBLSampler
+            }
+            texture_unit IBL_LUT
+            {
+                texture $IBL_LUT
+                sampler_ref PBRLUTSampler
+            }
+
+            vertex_program_ref PBR_vs {}
+
+            fragment_program_ref PBR_IBL_fs
+            {
+                param_named uAlbedoSampler      int 0
+                param_named uNormalSampler      int 1
+                param_named uORMSampler         int 2
+                param_named uEmissiveSampler    int 3
+                param_named uDiffuseEnvSampler  int 4
+                param_named uSpecularEnvSampler int 5
+                param_named uBrdfLUT            int 6
             }
         }
     }

@@ -15,9 +15,6 @@
 #include "header.frag"
 #include "math.glsl"
 #include "srgb.glsl"
-#ifdef NO_MRT
-#include "fog.glsl"
-#endif
 
 
 uniform vec3 uSunDirection;
@@ -34,11 +31,6 @@ uniform vec3 H;
 uniform vec3 I;
 uniform vec3 Z;
 uniform samplerCube uCubeMap;
-#ifdef NO_MRT
-uniform vec4 FogColour;
-uniform vec4 FogParams;
-uniform float FarClipDistance;
-#endif
 
 
 in highp vec3 vPosition;
@@ -78,11 +70,6 @@ void main()
     //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
     color = SafeHDR(color);
 
-#ifndef NO_MRT
     FragData[0].rgb = color;
     FragData[1] = vec4(0.0, 0.0, 0.0, 0.05);
-#else
-    color = ApplyFog(color, FogParams, FogColour.rgb, 0.05 * FarClipDistance);
-    FragColor.rgb = LINEARtoSRGB(color);
-#endif
 }

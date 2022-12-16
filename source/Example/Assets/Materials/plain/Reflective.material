@@ -1,4 +1,3 @@
-import PBR_Plane from PBR_Plane.material
 import PBR from PBR.material
 import PBR_Basic from PBR.material
 

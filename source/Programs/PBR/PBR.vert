@@ -25,11 +25,9 @@
 // uniform block
 uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
-#ifndef NO_MRT
 uniform highp mat4 uWorldViewProjPrev;
 uniform lowp float uStaticObj;
 uniform lowp float uMovableObj;
-#endif
 #ifdef PAGED_GEOMETRY
 uniform highp float Time;
 #endif
@@ -78,10 +76,8 @@ out vec2 vUV0;
 out float vDepth;
 out highp vec3 vPosition;
 out vec3 vColor;
-#ifndef NO_MRT
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;
-#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 out mat3 vTBN;
@@ -186,10 +182,8 @@ void main()
 
   gl_Position = MVPMatrix * new_position;
 
-#ifndef NO_MRT
   vScreenPosition = gl_Position;
   vPrevScreenPosition = uStaticObj * uWorldViewProjPrev * ModelMatrix * new_position + uMovableObj * uWorldViewProjPrev * new_position;
-#endif
 
   vDepth = gl_Position.z;
 

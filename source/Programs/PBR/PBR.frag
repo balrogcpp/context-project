@@ -15,9 +15,6 @@
 #include "header.frag"
 #include "math.glsl"
 #include "srgb.glsl"
-#ifdef NO_MRT
-#include "fog.glsl"
-#endif
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
 #endif
@@ -155,10 +152,8 @@ in highp vec3 vPosition;
 in vec2 vUV0;
 in float vDepth;
 in vec3 vColor;
-#ifndef NO_MRT
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
-#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 in mat3 vTBN;
@@ -227,14 +222,9 @@ uniform vec4 SurfaceSpecularColour;
 uniform vec4 SurfaceShininessColour;
 uniform vec4 SurfaceEmissiveColour;
 uniform float SurfaceAlphaRejection;
-#ifdef NO_MRT
-uniform vec4 FogColour;
-uniform vec4 FogParams;
-#endif
-#ifndef NO_MRT
 uniform float FarClipDistance;
 uniform highp float FrameTime;
-#endif
+
 uniform highp vec3 CameraPosition;
 #ifdef TERRAIN
 uniform float uTerrainTexScale;
@@ -622,17 +612,12 @@ void main()
     total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 
-#ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
 
     FragData[1] = vec4(n, vDepth / FarClipDistance);
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-    vec2 velocity = (0.0166667 / FrameTime) * (b - a) * 0.5;
+    vec2 velocity = (0.0166667 / FrameTime) * ((b - a) * 0.5);
     FragData[2].rg = velocity;
-#else
-    total_colour = ApplyFog(total_colour, FogParams, FogColour.rgb, vDepth);
-    FragColor = LINEARtoSRGB(vec4(total_colour, alpha), 1.0);
-#endif
 }
