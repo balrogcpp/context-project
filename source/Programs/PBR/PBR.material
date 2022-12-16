@@ -7,30 +7,6 @@ sampler ShadowSampler
     tex_border_colour 1 1 1 1
 }
 
-sampler PBRSampler
-{
-    filtering anisotropic
-    max_anisotropy 8
-}
-
-sampler PBRSSAOSampler
-{
-    tex_address_mode clamp
-    filtering none
-}
-
-sampler PBRLUTSampler
-{
-    filtering none
-    tex_address_mode clamp
-}
-
-sampler PBRIBLSampler
-{
-    filtering bilinear
-    tex_address_mode clamp
-}
-
 
 abstract material PBR
 {
@@ -115,17 +91,20 @@ abstract material PBR_IBL : PBR
             texture_unit IBL_Diffuse
             {
                 texture $IBL_Diffuse cubic
-                sampler_ref PBRIBLSampler
+                filtering bilinear
+                tex_address_mode clamp
             }
             texture_unit IBL_Specular
             {
                 texture $IBL_Specular cubic
-                sampler_ref PBRIBLSampler
+                filtering bilinear
+                tex_address_mode clamp
             }
             texture_unit IBL_LUT
             {
                 texture $IBL_LUT
-                sampler_ref PBRLUTSampler
+                filtering none
+                tex_address_mode clamp
             }
 
             vertex_program_ref PBR_vs {}

@@ -13,7 +13,6 @@
 
 #define USE_MRT
 #include "header.frag"
-#include "math.glsl"
 #include "srgb.glsl"
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"

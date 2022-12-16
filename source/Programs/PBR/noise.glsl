@@ -4,18 +4,6 @@
 #define NOISE_GLSL
 
 
-// https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
-//const uint k = 1103515245U;  // GLIB C
-//vec3 uhash3( uvec3 x )
-//{
-//    x = ((x>>8U)^x.yzx)*k;
-//    x = ((x>>8U)^x.yzx)*k;
-//    x = ((x>>8U)^x.yzx)*k;
-//
-//    return vec3(x)*(1.0/float(0xffffffffU));
-//}
-
-
 //----------------------------------------------------------------------------------------------------------------------
 float new_random(vec2 x)
 {
@@ -88,13 +76,6 @@ float noise(const vec2 x)
 //----------------------------------------------------------------------------------------------------------------------
 float fbm(const vec2 p)
 {
-    //float f = 0.0;
-    //f += 0.50000 * noise(p); p = p * 2.02;
-    //  f += 0.25000 * noise(p); p = p * 2.03;
-    //  f += 0.12500 * noise(p); p = p * 2.01;
-    //  f += 0.06250 * noise(p); p = p * 2.04;
-    //  f += 0.03125 * noise(p);
-    //return f / 0.984375;
     return noise(p);
 }
 

@@ -37,7 +37,7 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
 #ifdef DESKTOP
-  terrainGlobalOptions->setLightMapSize(512);
+  terrainGlobalOptions->setLightMapSize(256);
 #else
   terrainGlobalOptions->setLightMapSize(256);
 #endif

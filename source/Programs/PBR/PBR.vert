@@ -33,7 +33,7 @@ uniform highp float Time;
 #endif
 #ifdef GRASS
 uniform highp vec3 CameraPosition;
-uniform float uFadeRange;
+//uniform float uFadeRange;
 uniform float uWindRange;
 #endif //  GRASS
 #ifdef SHADOWRECEIVER
