@@ -74,9 +74,15 @@ float noise(const vec2 x)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float fbm(const vec2 p)
+float fbm(vec2 p)
 {
-    return noise(p);
+    float f = 0.0;
+    f += 0.50000 * noise(p); p *= 2.02;
+    f += 0.25000 * noise(p); p *= 2.03;
+    f += 0.12500 * noise(p); p *= 2.01;
+    f += 0.06250 * noise(p); p *= 2.04;
+    f += 0.03125 * noise(p);
+    return f / 0.984375;
 }
 
 #endif //NOISE_GLSL

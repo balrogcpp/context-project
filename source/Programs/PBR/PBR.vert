@@ -102,7 +102,7 @@ out vec4 projectionCoord;
 //----------------------------------------------------------------------------------------------------------------------
 vec4 WaveGrass(const vec2 position, const float time, const float frequency, const vec4 direction)
 {
-  float n = fbm(position.xy * time) * 2.0 - 2.0;
+  float n = noise(position.xy * time) * 2.0 - 2.0;
   return n * direction;
 }
 #endif
