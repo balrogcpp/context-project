@@ -316,6 +316,22 @@ float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0
     else
         return 1.0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+float GetPSSMShadow(const int number)
+{
+    //  special case, as only light #0 can be with pssm shadows
+    if (LightAttenuationArray[0].x > 10000.0) {
+        if (number == 0)
+            return CalcPSSMDepthShadow(uPssmSplitPoints, \
+                                    LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
+                                    uShadowMap0, uShadowMap1, uShadowMap2);
+        else
+            return GetShadow(number + 2);
+    } else {
+        return GetShadow(number);
+    }
+}
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER
 
@@ -483,28 +499,6 @@ void main()
 
     vec3 total_colour = vec3(0.0);
 
-//  special case, as only light #0 can be with pssm shadows
-#if MAX_LIGHTS > 0
-#ifdef SHADOWRECEIVER
-    float pssm_shadow = 1.0;
-    int pssm = 0;
-
-#if MAX_SHADOW_TEXTURES > 2
-    if (LightCount * LightCastsShadowsArray[0] > 0.0) {
-        if (LightAttenuationArray[0].x > 10000.0) {
-            pssm = 1;
-            pssm_shadow = CalcPSSMDepthShadow(uPssmSplitPoints, \
-                                        LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
-                                        uShadowMap0, uShadowMap1, uShadowMap2);
-        } else {
-            pssm = 0;
-            pssm_shadow = GetShadow(0);
-        }
-    }
-#endif
-#endif
-#endif
-
 
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -559,20 +553,17 @@ void main()
         vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
         float light = NdotL * attenuation;
 
-        // shadow block
-        {
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
             if (LightCastsShadowsArray[i] > 0.0) {
 #if MAX_SHADOW_TEXTURES > 2
-                light *= (i == 0) ? pssm_shadow : GetShadow(i + 2 * pssm);
+                light *= GetPSSMShadow(i);
 #else
                 light *= GetShadow(i);
 #endif //  MAX_SHADOW_TEXTURES > 2
             }
 #endif //  MAX_SHADOW_TEXTURES > 0
 #endif //  SHADOWRECEIVER
-        } //  shadow block
 
         total_colour += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
     } //  lightning loop
