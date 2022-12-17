@@ -131,22 +131,7 @@ vec3 ApplyReflection(const sampler2D refMap, const vec4 projection, const vec3 c
 #endif
 
 
-#ifdef TERRAIN
-//----------------------------------------------------------------------------------------------------------------------
-float BoxFilter4F(const sampler2D tex, const vec2 uv, const vec2 tsize)
-{
-  float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
-  float B = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).r;
-  float C = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
-  float D = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
-
-  float color = (A + B + C + D) * 0.25;
-
-  return color;
-}
-#endif
-
-// in block
+// ins
 in highp vec3 vPosition;
 in vec2 vUV0;
 in float vDepth;
@@ -165,7 +150,7 @@ in vec4 projectionCoord;
 #endif
 
 
-// uniform block
+// uniforms
 
 // samplers
 #ifdef HAS_BASECOLORMAP
@@ -198,7 +183,6 @@ uniform sampler2D uBrdfLUT;
 #endif
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
-uniform sampler2D uGlobalShadowSampler;
 uniform vec2 TexelSize5;
 #endif
 #ifdef HAS_REFLECTION
@@ -223,7 +207,6 @@ uniform vec4 SurfaceEmissiveColour;
 uniform float SurfaceAlphaRejection;
 uniform float FarClipDistance;
 uniform highp float FrameTime;
-
 uniform highp vec3 CameraPosition;
 #ifdef TERRAIN
 uniform float uTerrainTexScale;
@@ -233,7 +216,6 @@ uniform float uTerrainTexScale;
 uniform float uOffsetScale;
 #endif
 #endif
-
 
 // shadow receiver
 #ifdef SHADOWRECEIVER
@@ -282,7 +264,8 @@ uniform int ShadowFilterIterations;
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------
-float GetShadow(const int counter) {
+float GetShadow(const int counter)
+{
     if (vDepth >= uPssmSplitPoints.w)
         return 1.0;
 #if MAX_SHADOW_TEXTURES > 0
@@ -399,7 +382,8 @@ highp vec3 GetNormal(const vec2 uv)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec4 GetAlbedo(const vec2 uv) {
+vec4 GetAlbedo(const vec2 uv)
+{
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * vColor, 1.0);
 
 #ifdef HAS_BASECOLORMAP
@@ -409,7 +393,8 @@ vec4 GetAlbedo(const vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetMetallic(const vec2 uv) {
+float GetMetallic(const vec2 uv)
+{
     float metallic = SurfaceShininessColour.r;
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv).r;
@@ -418,7 +403,8 @@ float GetMetallic(const vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetRoughness(const vec2 uv) {
+float GetRoughness(const vec2 uv)
+{
     float roughness = SurfaceSpecularColour.r;
 #ifdef HAS_ROUGHNESSMAP
     roughness *= texture2D(uRoughnessSampler, uv).r;
@@ -427,7 +413,8 @@ float GetRoughness(const vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetOcclusion(const vec2 uv) {
+float GetOcclusion(const vec2 uv)
+{
 #ifdef HAS_OCCLUSIONMAP
     return texture2D(uOcclusionSampler, uv).r;
 #else
@@ -436,7 +423,8 @@ float GetOcclusion(const vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetORM(const vec2 uv) {
+vec3 GetORM(const vec2 uv)
+{
     vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
 #ifdef HAS_ORM
     ORM *= texture2D(uORMSampler, uv).rgb;
@@ -496,11 +484,27 @@ void main()
 
     vec3 total_colour = vec3(0.0);
 
-#ifdef TERRAIN
-    float globalShadow = BoxFilter4F(uGlobalShadowSampler, vUV0.xy, TexelSize5.xy);
-#else
-    float globalShadow = 1.0;
+//  special case, as only light #0 can be with pssm shadows
+#if MAX_LIGHTS > 0
+#ifdef SHADOWRECEIVER
+    float pssm_shadow = 1.0;
+    int pssm = 0;
+
+#if MAX_SHADOW_TEXTURES > 2
+    if (LightCount * LightCastsShadowsArray[0] > 0.0) {
+        if (LightAttenuationArray[0].x > 10000.0) {
+            pssm = 1;
+            pssm_shadow = clamp(CalcPSSMDepthShadow(uPssmSplitPoints, \
+                                        LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
+                                        uShadowMap0, uShadowMap1, uShadowMap2) + ShadowColour.r, 0.0, 1.0);
+        } else {
+            pssm_shadow = clamp(GetShadow(0) + ShadowColour.r, 0.0, 1.0);
+        }
+    }
 #endif
+#endif
+#endif
+
 
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -553,36 +557,23 @@ void main()
         float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
         highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
         vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
-        float tmp = NdotL * attenuation;
+        float light = NdotL * attenuation;
 
         // shadow block
         {
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-        if (LightCastsShadowsArray[i] > 0.0001) {
+        if (LightCastsShadowsArray[i] > 0.0) {
 #if MAX_SHADOW_TEXTURES > 2
-                if (range < 10000.0) {
-                    tmp *= GetShadow(i);
-                } else {
-                    if (i == 0) {
-                        tmp *= CalcPSSMDepthShadow(uPssmSplitPoints, \
-                                                    LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
-                                                    uShadowMap0, uShadowMap1, uShadowMap2);
-                    } else {
-                        tmp *= GetShadow(i + 2);
-                    }
-                }
+            light *= (i == 0) ? pssm_shadow : clamp(GetShadow(i + 2 * pssm), 0.0, 1.0);
 #else
-                tmp *= GetShadow(i);
+            light *= clamp(GetShadow(i) + ShadowColour.r, 0.0, 1.0);
 #endif
         }
-#ifdef TERRAIN
-        tmp = min(tmp, globalShadow);
-#endif
-        total_colour += ShadowColour.rgb * color + tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
+        total_colour += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
 #endif
 #else
-    total_colour += (globalShadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
+    total_colour += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
 #endif
         } //  shadow block
     } //  lightning loop

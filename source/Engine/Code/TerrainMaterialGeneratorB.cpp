@@ -15,7 +15,7 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() {}
 
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name, const String &desc)
-    : Profile(parent, name, desc), enableLightmap(true), enableNormalmap(true), terrainMaxLayers(4) {}
+    : Profile(parent, name, desc), enableLightmap(false), enableNormalmap(true), terrainMaxLayers(4) {}
 
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 

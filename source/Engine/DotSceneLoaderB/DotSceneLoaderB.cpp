@@ -389,6 +389,10 @@ void DotSceneLoaderB::processEnvironment(pugi::xml_node& XMLNode)
     // Process colourBackground (?)
     if (auto pElement = XMLNode.child("colourBackground"))
         mBackgroundColour = parseColour(pElement);
+
+    // Process colourBackground (?)
+    if (auto pElement = XMLNode.child("shadowColour"))
+        mSceneMgr->setShadowColour(parseColour(pElement));
 }
 
 void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
