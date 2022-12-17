@@ -93,9 +93,6 @@ out mat3 vTBN;
 #ifdef SHADOWRECEIVER
 out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
-#ifdef HAS_REFLECTION
-out vec4 projectionCoord;
-#endif
 
 
 #ifdef GRASS
@@ -195,13 +192,5 @@ void main()
     LightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
-#endif
-
-#ifdef HAS_REFLECTION
-  projectionCoord = mat4(0.5, 0.0, 0.0, 0.0,
-                         0.0, 0.5, 0.0, 0.0,
-                         0.0, 0.0, 0.5, 0.0,
-                         0.5, 0.5, 0.5, 1.0
-                         ) * gl_Position;
 #endif
 }

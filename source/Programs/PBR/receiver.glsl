@@ -49,9 +49,11 @@ float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gr
   float avgBlockersDepth = 0.0;
   float blockersCount = 0.0;
   #define penumbraFilterMaxSize 0.01
+  #define MAX_SAMPLES 32
 
-  for(int i = 0; i < samplesCount; ++i)
-  {
+  for (int i = 0; i < MAX_SAMPLES; ++i) {
+    if (samplesCount <= i) break;
+
     vec2 sampleUV = VogelDiskSample(i, samplesCount, gradientNoise);
     sampleUV = shadowMapUV + penumbraFilterMaxSize * sampleUV;
 
@@ -92,8 +94,10 @@ float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 fil
   float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, current_depth, iterations);
 #endif
 
-  for (int i = 0; i < iterations; ++i)
-  {
+  #define MAX_SAMPLES 32
+  for (int i = 0; i < MAX_SAMPLES; ++i) {
+    if (iterations <= i) break;
+
     vec2 offset = VogelDiskSample(i, iterations, gradientNoise) * filter_size;
 #ifdef PENUMBRA
     offset *= penumbra;

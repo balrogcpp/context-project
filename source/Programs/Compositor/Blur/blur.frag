@@ -36,7 +36,7 @@ void main()
   float nSamples = ceil(clamp(speed, 1.0, MAX_SAMPLES));
   float invSamples = 1.0 / nSamples;
 
-  for (float i = 1.0; i < MAX_SAMPLES; i += 1.0) {
+  for (float i = 1.0; i < float(MAX_SAMPLES); i += 1.0) {
     if (nSamples <= i) break;
     vec2 offset = ((i * invSamples - 0.5) * velocity);
     color += texture2D(uSceneSampler, vUV0 + offset).rgb;

@@ -109,28 +109,6 @@ vec3 GetIBLContribution(const sampler2D uBrdfLUT, const samplerCube uDiffuseEnvS
 #endif
 
 
-#ifdef HAS_REFLECTION
-//----------------------------------------------------------------------------------------------------------------------
-vec3 ApplyReflection(const sampler2D refMap, const vec4 projection, const vec3 color, const vec3 n, const vec3 v, const float metallic)
-{
-    #define fresnelBias 0.1
-    #define fresnelScale 1.8
-    #define fresnelPower 8.0
-    #define filter_max_size 0.1
-    #define sample_count 8
-
-    float cosa = dot(n, -v);
-    float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
-    fresnel = clamp(fresnel, 0.0, 1.0);
-    //float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
-    vec4 uv = projection;
-    //uv.xy += VogelDiskSample(3, sample_count, gradientNoise) * filter_max_size;
-    vec3 reflectionColour = texture2DProj(refMap, uv).rgb;
-    return mix(color, reflectionColour, fresnel * metallic);
-}
-#endif
-
-
 // ins
 in highp vec3 vPosition;
 in vec2 vUV0;
@@ -144,9 +122,6 @@ in mat3 vTBN;
 #else
 in vec3 vNormal;
 #endif
-#endif
-#ifdef HAS_REFLECTION
-in vec4 projectionCoord;
 #endif
 
 
@@ -184,9 +159,6 @@ uniform sampler2D uBrdfLUT;
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
 uniform vec2 TexelSize5;
-#endif
-#ifdef HAS_REFLECTION
-uniform sampler2D uReflectionMap;
 #endif
 
 // lights
@@ -576,10 +548,6 @@ void main()
 #else
     total_colour += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * color));
 #endif
-
-#ifdef HAS_REFLECTION
-    total_colour = ApplyReflection(uReflectionMap, projectionCoord, total_colour, n, v, metallic);
-#endif //HAS_REFLECTION
 
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
