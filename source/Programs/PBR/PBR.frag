@@ -253,7 +253,6 @@ uniform sampler2D uShadowMap7;
 uniform vec2 ShadowTexel7;
 #endif
 uniform vec4 uPssmSplitPoints;
-uniform vec4 ShadowColour;
 uniform float ShadowFilterSize;
 uniform int ShadowFilterIterations;
 #endif // MAX_SHADOW_TEXTURES > 0
@@ -494,11 +493,12 @@ void main()
     if (LightCount * LightCastsShadowsArray[0] > 0.0) {
         if (LightAttenuationArray[0].x > 10000.0) {
             pssm = 1;
-            pssm_shadow = clamp(CalcPSSMDepthShadow(uPssmSplitPoints, \
+            pssm_shadow = CalcPSSMDepthShadow(uPssmSplitPoints, \
                                         LightSpacePosArray[0], LightSpacePosArray[1], LightSpacePosArray[2], \
-                                        uShadowMap0, uShadowMap1, uShadowMap2) + ShadowColour.r, 0.0, 1.0);
+                                        uShadowMap0, uShadowMap1, uShadowMap2);
         } else {
-            pssm_shadow = clamp(GetShadow(0) + ShadowColour.r, 0.0, 1.0);
+            pssm = 0;
+            pssm_shadow = GetShadow(0);
         }
     }
 #endif
@@ -563,21 +563,20 @@ void main()
         {
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-        if (LightCastsShadowsArray[i] > 0.0) {
+            if (LightCastsShadowsArray[i] > 0.0) {
 #if MAX_SHADOW_TEXTURES > 2
-            light *= (i == 0) ? pssm_shadow : clamp(GetShadow(i + 2 * pssm) + ShadowColour.r, 0.0, 1.0);
+                light *= (i == 0) ? pssm_shadow : GetShadow(i + 2 * pssm);
 #else
-            light *= clamp(GetShadow(i) + ShadowColour.r, 0.0, 1.0);
-#endif
-        }
-        total_colour += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
-#endif
-#else
-    total_colour += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
-#endif
+                light *= GetShadow(i);
+#endif //  MAX_SHADOW_TEXTURES > 2
+            }
+#endif //  MAX_SHADOW_TEXTURES > 0
+#endif //  SHADOWRECEIVER
         } //  shadow block
+
+        total_colour += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
     } //  lightning loop
-#endif
+#endif //  MAX_LIGHTS > 0
 
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
