@@ -31,9 +31,8 @@
     </nodes>
     <environment>
         <colourAmbient r="60" g="60" b="60"/>
-        <shadowColor b="60"/>
         <skyBox active="true" material="SkyBox" distance="500"/>
-        <fog mode="exp" density="0.007">
+        <fog mode="exp" density="0.005">
             <colour r="155" g="171" b="187"/>
         </fog>
     </environment>

@@ -565,7 +565,7 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] > 0.0) {
 #if MAX_SHADOW_TEXTURES > 2
-            light *= (i == 0) ? pssm_shadow : clamp(GetShadow(i + 2 * pssm), 0.0, 1.0);
+            light *= (i == 0) ? pssm_shadow : clamp(GetShadow(i + 2 * pssm) + ShadowColour.r, 0.0, 1.0);
 #else
             light *= clamp(GetShadow(i) + ShadowColour.r, 0.0, 1.0);
 #endif
