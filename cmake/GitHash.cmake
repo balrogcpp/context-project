@@ -23,5 +23,13 @@ if (NOT GIT_SHA AND NOT GIT_SHA_SHORT AND GIT_FOUND AND IS_DIRECTORY ${CMAKE_SOU
                 OUTPUT_VARIABLE GIT_SHA
                 OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+    elseif (EXISTS "${CMAKE_SOURCE_DIR}/.git/HEAD")
+        file(READ "${CMAKE_SOURCE_DIR}/.git/HEAD" GIT_HEAD)
+        string(REGEX MATCH "[^ ]+$" GIT_HEAD ${GIT_HEAD})
+        string(STRIP ${GIT_HEAD} GIT_HEAD)
+        if (EXISTS "${CMAKE_SOURCE_DIR}/.git/${GIT_HEAD}")
+            file(READ "${CMAKE_SOURCE_DIR}/.git/${GIT_HEAD}" GIT_SHA)
+            string(SUBSTRING ${GIT_SHA} 0 8 GIT_SHA_SHORT)
+        endif ()
     endif ()
 endif ()
