@@ -23,12 +23,14 @@ else ()
     message(STATUS "CXX compiler found manually: ${CPP_COMPILER}")
 endif ()
 
-add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-        COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CPP_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
-        COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ./zip2cpp programs
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR})
 
 if (RELEASE)
+    add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+            COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CPP_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
+            COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ./zip2cpp programs
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR}/programs.zip ${ASSETS_DIR}/programs.zip.h)
+
     add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR_ANDROID}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSETS_DIR_ANDROID}
@@ -136,13 +138,21 @@ endif ()
 
 set(CPACK_INSTALL_CMAKE_PROJECTS "Example")
 if (RELEASE)
-    set(BINARY_NAME "$<TARGET_FILE:Example>")
+    set(BINARY_NAME $<TARGET_FILE:Example>)
     install (CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DTARGET=${BINARY_NAME} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
                  COMMAND ${CMAKE_COMMAND} -DTARGET=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
                  COMMAND ${CMAKE_COMMAND} -DTARGET=${DEPS_ROOT}/bin -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)"
             COMPONENT Example
             )
 endif ()
+
+
+# post-build
+if (RELEASE)
+    set(TARGET_NAME "Example")
+    include(ReallySmallPostBuild)
+endif ()
+
 
 # package
 if (WIN32)

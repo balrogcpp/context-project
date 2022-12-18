@@ -198,15 +198,13 @@ void VideoManager::LoadResources() {
   const char *ZIP = "Zip";
   const char *APKZIP = "APKZip";
   const char *EMZIP = "EmbeddedZip";
-  const char *PROGRAMS_ZIP = "programs.bin";
-  const char *ASSETS_ZIP = "assets.bin";
   const int SCAN_DEPTH = 4;
   const char *PROGRAMS_DIR = "source/Programs";
   const char *ASSETS_DIR = "source/Example/Assets";
 
 #if defined(DESKTOP)
-  if (!FindPath(PROGRAMS_ZIP).empty()) {
-    ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP), ZIP, Ogre::RGN_INTERNAL);
+  if (!FindPath("programs.bin").empty()) {
+    ogreResourceManager.addResourceLocation(FindPath("programs.bin"), ZIP, Ogre::RGN_INTERNAL);
   } else if (!FindPath("programs.zip").empty()) {
     ogreResourceManager.addResourceLocation(FindPath("programs.zip"), ZIP, Ogre::RGN_INTERNAL);
   } else if (!FindPath("programs").empty()) {
@@ -217,13 +215,13 @@ void VideoManager::LoadResources() {
     InitEmbeddedResources();
   }
 
-  if (!FindPath(ASSETS_ZIP).empty()) {
-    ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), ZIP, Ogre::RGN_DEFAULT);
+  if (!FindPath("assets.bin").empty()) {
+    ogreResourceManager.addResourceLocation(FindPath("assets.bin"), ZIP, Ogre::RGN_DEFAULT);
   } else if (!FindPath("assets.zip").empty()) {
     ogreResourceManager.addResourceLocation(FindPath("assets.zip"), ZIP, Ogre::RGN_DEFAULT);
   } else if (!FindPath("assets").empty()) {
     ScanLocation(FindPath("assets"), Ogre::RGN_DEFAULT);
-  } else {
+  } else if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
   }
 
@@ -235,7 +233,11 @@ void VideoManager::LoadResources() {
 #endif
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
 #elif defined(IOS) || defined(EMSCRIPTEN)
+#ifdef NDEBUG
   InitEmbeddedResources();
+#else
+  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
+#endif
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
 #endif
 

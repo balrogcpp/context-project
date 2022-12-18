@@ -3,12 +3,15 @@
 #ifdef NDEBUG
 #include <OgreRoot.h>
 #include <OgreZip.h>
+
 #if __has_include("programs.zip.h")
 #include "programs.zip.h"
 #endif
-#if __has_include("assets.zip.h")
-#include "assets.zip.h"
-#endif
+
+//#if __has_include("assets.zip.h")
+//#include "assets.zip.h"
+//#endif
+
 #endif
 
 namespace Glue {
@@ -23,7 +26,7 @@ void InitEmbeddedResources() {
 
 //#if __has_include("assets.zip.h")
 //  Ogre::EmbeddedZipArchiveFactory::addEmbbeddedFile("assets.zip", assets_zip, sizeof(assets_zip), nullptr);
-//  ogreResourceManager.addResourceLocation("assets.zip", "EmbeddedZip", Ogre::RGN_INTERNAL);
+//  ogreResourceManager.addResourceLocation("assets.zip", "EmbeddedZip", Ogre::RGN_DEFAULT);
 //#endif
 
 #endif

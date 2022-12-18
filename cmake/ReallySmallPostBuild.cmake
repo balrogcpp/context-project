@@ -1,4 +1,12 @@
+# include guard
+if (_upx_included)
+    return()
+endif (_upx_included)
+set(_upx_included true)
+
+
 find_package(SelfPackers QUIET)
+
 
 # Stripping don't work on macos replaced with -g0 -s compiler flags
 #if (CMAKE_STRIP AND NOT APPLE)
@@ -11,7 +19,8 @@ find_package(SelfPackers QUIET)
 #    )
 #endif ()
 
-if (SELF_PACKER_FOR_EXECUTABLE AND NOT APPLE)
+
+if (SELF_PACKER_FOR_EXECUTABLE AND NOT APPLE AND NOT ANDROID AND NOT EMSCRIPTEN)
     add_custom_command(
             TARGET ${TARGET_NAME}
             POST_BUILD
