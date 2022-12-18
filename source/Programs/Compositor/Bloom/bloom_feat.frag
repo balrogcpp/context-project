@@ -13,6 +13,11 @@
 #include "srgb.glsl"
 
 
+#ifndef MAX_LIGHTS
+#define MAX_LIGHTS 1
+#endif
+
+
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 vec3 Downscale4x4(const sampler2D tex, const vec2 uv, const vec2 tsize)
@@ -42,14 +47,14 @@ vec3 Downscale4x4(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 SampleChromatic(const sampler2D tex, const vec2 _uv, const float radius)
+vec3 SampleChromatic(const sampler2D tex, const vec2 uv, const float radius)
 {
-  vec2 offset = normalize(vec2(0.5) - _uv) * radius;
+  vec2 offset = normalize(vec2(0.5) - uv) * radius;
 
   return vec3(
-    texture2D(tex, _uv + offset).r,
-    texture2D(tex, _uv).g,
-    texture2D(tex, _uv - offset).b
+    texture2D(tex, uv + offset).r,
+    texture2D(tex, uv).g,
+    texture2D(tex, uv - offset).b
   );
 }
 
@@ -84,11 +89,35 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------
+vec3 GodRays(const float density, const float weight, const float decay, const float exposure, const int numSamples, const sampler2D occlusionTexture, const vec2 screenSpaceLightPos, const vec2 uv)
+{
+  vec3 fragColor = vec3(0.0);
+	vec2 textCoo = uv.xy;
+  float illuminationDecay = 1.0;
+  vec2 deltaTextCoord = vec2(uv - screenSpaceLightPos.xy);
+	deltaTextCoord *= (1.0 /  float(numSamples)) * density;
+
+	for(int i = 0; i < 100; ++i) {
+	  if(numSamples < i) break;
+
+		textCoo -= deltaTextCoord;
+		vec3 samp = texture2D(occlusionTexture, textCoo).xyz;
+		samp *= illuminationDecay * weight;
+		fragColor += samp;
+		illuminationDecay *= decay;
+	}
+
+  return expose(fragColor, exposure);
+}
+
+
 in vec2 vUV0;
 uniform sampler2D uSampler;
-//uniform sampler2D uLensMask;
+
 uniform vec2 TexelSize0;
 uniform float uChromaticRadius;
+uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -96,7 +125,10 @@ void main()
 {
   vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
   color += SampleFeatures(uSampler, vUV0, TexelSize0, uChromaticRadius);
-  //color *= SRGBtoLINEAR(texture2D(uLensMask, vUV0).rgb);
+
+#ifndef GL_ES
+  color += GodRays(1.0, 0.05, 1.0, 0.02, 100, uSampler, LightPositionViewSpace[0].xy, vUV0);
+#endif
 
   FragColor.rgb = color;
 }
