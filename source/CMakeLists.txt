@@ -8,6 +8,7 @@ include(BuildVariables)
 # assets
 set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
 set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
+make_directory(${ASSETS_DIR_ANDROID})
 
 if (NOT CPP_COMPILER)
     if (CMAKE_CROSSCOMPILING)
@@ -35,8 +36,6 @@ if (RELEASE)
 else ()
     add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-            COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR_ANDROID}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSETS_DIR_ANDROID}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
 endif ()
