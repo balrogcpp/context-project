@@ -5,7 +5,7 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float InterleavedGradientNoise(vec2 position_screen)
+float InterleavedGradientNoise(const vec2 position_screen)
 {
     vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
     return fract(magic.z * fract(dot(position_screen, magic.xy)));
@@ -13,16 +13,14 @@ float InterleavedGradientNoise(vec2 position_screen)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
+vec2 VogelDiskSample(const float sampleIndex, const float samplesCount, const float phi)
 {
-    #define GoldenAngle 2.4
+    #define GOLDEN_ANGLE 2.4
 
-    float r = sqrt((float(sampleIndex) + 0.5) / float(samplesCount));
-    float theta = float(sampleIndex) * GoldenAngle + phi;
-    float sine = sin(theta);
-    float cosine = cos(theta);
+    float r = sqrt((sampleIndex + 0.5) / samplesCount);
+    float theta = sampleIndex * GOLDEN_ANGLE + phi;
 
-    return vec2(r * cosine, r * sine);
+    return vec2(r * cos(theta), r * sin(theta));
 }
 
 
@@ -44,7 +42,7 @@ float AvgBlockersDepthToPenumbra(const float lightSize, const float z_shadowMapV
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gradientNoise, const float z_shadowMapView, const int samplesCount)
+float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gradientNoise, const float z_shadowMapView, const int iterations)
 {
   float avgBlockersDepth = 0.0;
   float blockersCount = 0.0;
@@ -52,9 +50,9 @@ float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gr
   #define MAX_SAMPLES 32
 
   for (int i = 0; i < MAX_SAMPLES; ++i) {
-    if (samplesCount <= i) break;
+    if (iterations <= i) break;
 
-    vec2 sampleUV = VogelDiskSample(i, samplesCount, gradientNoise);
+    vec2 sampleUV = VogelDiskSample(float(i), float(iterations), float(gradientNoise));
     sampleUV = shadowMapUV + penumbraFilterMaxSize * sampleUV;
 
     float sampleDepth = texture2D(shadowMap, sampleUV).x;
@@ -98,13 +96,13 @@ float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 fil
   for (int i = 0; i < MAX_SAMPLES; ++i) {
     if (iterations <= i) break;
 
-    vec2 offset = VogelDiskSample(i, iterations, gradientNoise) * filter_size;
+    vec2 offset = VogelDiskSample(float(i), float(iterations), float(gradientNoise)) * filter_size;
 #ifdef PENUMBRA
     offset *= penumbra;
 #endif
     lightSpace.xy += offset;
     float depth = texture2D(shadowMap, lightSpace.xy).x;
-    shadow -= ((depth < current_depth) ? 1.0 / float(iterations) : 0.0);
+    shadow -= clamp((current_depth - depth) * 3.402823466e+38, 0.0, 1.0) * (1.0 / float(iterations));
   }
 
   return shadow;

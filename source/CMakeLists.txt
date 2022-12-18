@@ -146,13 +146,8 @@ if (WIN32)
 endif ()
 install(TARGETS Example RUNTIME DESTINATION .)
 if (EMSCRIPTEN)
-    install(FILES
-            "$<TARGET_FILE_DIR:Example>/index.html"
-            "$<TARGET_FILE_DIR:Example>/index.js"
-            "$<TARGET_FILE_DIR:Example>/index.wasm"
-            "$<TARGET_FILE_DIR:Example>/index.data"
-            "$<TARGET_FILE_DIR:Example>/index.worker.js"
-            DESTINATION .)
+    set(FILE_DIR $<TARGET_FILE_DIR:Example>)
+    install(FILES "${FILE_DIR}/index.html" "${FILE_DIR}/index.js" "${FILE_DIR}/index.wasm" "${FILE_DIR}/index.data" "${FILE_DIR}/index.worker.js" DESTINATION .)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
     install(FILES ${ASSETS_DIR}/assets.bin DESTINATION .)

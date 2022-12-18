@@ -15,7 +15,7 @@
 
 
 #ifndef MAX_SAMPLES
-#define MAX_SAMPLES 4.0
+#define MAX_SAMPLES 5
 #endif
 
 
@@ -33,12 +33,13 @@ void main()
   vec3 color = texture2D(uSceneSampler, vUV0).rgb;
   vec2 velocity = uScale * texture2D(uSpeedSampler, vUV0).rg;
   float speed = length(velocity * PixelSize1);
-  float nSamples = ceil(clamp(speed, 1.0, MAX_SAMPLES));
+  float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
   float invSamples = 1.0 / nSamples;
 
-  for (float i = 1.0; i < float(MAX_SAMPLES); i += 1.0) {
-    if (nSamples <= i) break;
-    vec2 offset = ((i * invSamples - 0.5) * velocity);
+  for (int i = 1; i < MAX_SAMPLES; ++i) {
+    if (int(nSamples) <= i) break;
+
+    vec2 offset = (float(i) * invSamples - 0.5) * velocity;
     color += texture2D(uSceneSampler, vUV0 + offset).rgb;
   }
 

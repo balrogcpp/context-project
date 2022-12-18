@@ -189,6 +189,7 @@ void main()
   // Calculate the position of vertex in light space
   for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
     if (ShadowTextureCount <= i) break;
+    
     LightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
