@@ -127,7 +127,7 @@ void main()
   color += SampleFeatures(uSampler, vUV0, TexelSize0, uChromaticRadius);
 
 #ifndef GL_ES
-  color += GodRays(1.0, 0.05, 1.0, 0.02, 100, uSampler, LightPositionViewSpace[0].xy, vUV0);
+  //color += GodRays(1.0, 0.05, 1.0, 0.02, 100, uSampler, LightPositionViewSpace[0].xy, vUV0);
 #endif
 
   FragColor.rgb = color;

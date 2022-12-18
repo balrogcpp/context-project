@@ -23,13 +23,12 @@ else ()
     message(STATUS "CXX compiler found manually: ${CPP_COMPILER}")
 endif ()
 
-
 if (RELEASE)
     add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CPP_COMPILER} ${CMAKE_SOURCE_DIR}/source/Tools/Zip2Cpp.cpp -o zip2cpp
             COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ./zip2cpp programs
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR}
-            COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR}/programs.zip ${ASSETS_DIR}/programs.zip.h)
+            COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR}/programs.zip)
 
     add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR_ANDROID}
@@ -41,6 +40,7 @@ else ()
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
 endif ()
+
 
 # deps
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
@@ -136,25 +136,15 @@ if (ANDROID)
     add_dependencies(Example Assets)
 endif ()
 
-set(CPACK_INSTALL_CMAKE_PROJECTS "Example")
-if (RELEASE)
-    set(BINARY_NAME $<TARGET_FILE:Example>)
-    install (CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DTARGET=${BINARY_NAME} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
-                 COMMAND ${CMAKE_COMMAND} -DTARGET=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake
-                 COMMAND ${CMAKE_COMMAND} -DTARGET=${DEPS_ROOT}/bin -P ${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake)"
-            COMPONENT Example
-            )
-endif ()
+
+# post-build, pre-package
+#if (RELEASE)
+#    set(TARGET_NAME "Example")
+#    include(ReallySmallPostBuild)
+#endif ()
 
 
-# post-build
-if (RELEASE)
-    set(TARGET_NAME "Example")
-    include(ReallySmallPostBuild)
-endif ()
-
-
-# package
+# install
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${DEPS_ROOT}/bin/*.dll)
     file(COPY ${EXTERNAL_DLL_GLOB} DESTINATION .)
@@ -170,8 +160,30 @@ else ()
         install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
     endif ()
 endif ()
-set(PACKAGE_NAME "Glue${TARGET_NAME}")
+
+
+# package
+if (RELEASE)
+    set(CPACK_INSTALL_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake")
+    set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPreBuild.cmake")
+    set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPostBuild.cmake")
+endif ()
+
+set(PACKAGE_NAME "GlueSample")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})
-if (NOT CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
+if (NOT RELEASE)
     string(APPEND ARTIFACT_NAME "_${CMAKE_BUILD_TYPE_LOWER}")
 endif ()
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
+elseif (WIN32)
+    install(FILES DESTINATION .)
+endif ()
+set(CPACK_PACKAGE_DIRECTORY ${ARTIFACT_DIR})
+set(CPACK_PACKAGE_FILE_NAME ${ARTIFACT_NAME})
+if (UNIX)
+    set(CPACK_GENERATOR "TGZ")
+elseif (WIN32)
+    set(CPACK_GENERATOR "ZIP")
+endif ()
+include(CPack)
