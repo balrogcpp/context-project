@@ -3,6 +3,7 @@ include(CppFlags)
 include(Platform)
 include(TimeStampEraser)
 include(BuildVariables)
+include(DateTime)
 
 
 # assets
@@ -173,6 +174,8 @@ set(PACKAGE_NAME "GlueSample")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})
 if (NOT RELEASE)
     string(APPEND ARTIFACT_NAME "_${CMAKE_BUILD_TYPE_LOWER}")
+else ()
+    string(APPEND ARTIFACT_NAME "_${GIT_SHA_SHORT}_${DATE_TIME}")
 endif ()
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)

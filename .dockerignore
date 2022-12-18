@@ -3,5 +3,7 @@
 !/cmake/
 !/source/
 !/CMakeLists.txt/
-!/contrib/CMakeLists.txt
+!/contrib/CMakeLists.txt/
 !/contrib/patch/
+!/.git/HEAD/
+!/.git/refs/

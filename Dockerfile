@@ -10,6 +10,7 @@ COPY ./source ./source
 COPY ./contrib ./contrib
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
+COPY ./.git ./.git
 
 
 # https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
