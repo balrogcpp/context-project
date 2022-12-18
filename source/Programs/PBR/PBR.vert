@@ -91,7 +91,7 @@ out mat3 vTBN;
 #endif
 
 #ifdef SHADOWRECEIVER
-out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
+out vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
 
@@ -190,7 +190,7 @@ void main()
   for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
     if (ShadowTextureCount <= i) break;
     
-    LightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
+    vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
 #endif
