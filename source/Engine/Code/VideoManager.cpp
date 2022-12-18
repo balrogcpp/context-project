@@ -228,12 +228,14 @@ void VideoManager::LoadResources() {
   }
 
 #elif defined(ANDROID)
+#ifdef NDEBUG
   InitEmbeddedResources();
-  //ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
+#else
+  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
+#endif
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
 #elif defined(IOS) || defined(EMSCRIPTEN)
   InitEmbeddedResources();
-  //ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
 #endif
 
