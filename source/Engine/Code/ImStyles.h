@@ -2,6 +2,9 @@
 
 #pragma once
 #include <imgui.h>
+#include <vector>
+#include <map>
+#include <string>
 
 inline ImVec2 operator+(const ImVec2 &a, const ImVec2 &b) { return ImVec2(a.x + b.x, a.y + b.y); }
 inline ImVec4 operator+(const ImVec4 &a, const ImVec4 &b) { return ImVec4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w); }

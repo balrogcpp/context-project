@@ -3,7 +3,8 @@
 #include "ArHosekSkyModel.h"
 #include "Caelum/Astronomy.h"
 #include <OgreVector3.h>
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 enum class ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
 
