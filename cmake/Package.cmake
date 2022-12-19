@@ -80,6 +80,7 @@ macro(FlatZipDirectory curdir destination extention)
     else ()
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}.${extention} --format=zip ${filelist})
     endif ()
+    ClearTimeStamp(${destination}.${extention})
     file(REMOVE_RECURSE ${destination})
 endmacro()
 

@@ -10,4 +10,6 @@ macro(ClearTimeStampDirectory destination)
 endmacro()
 
 
-ClearTimeStampDirectory(${CPACK_TEMPORARY_INSTALL_DIRECTORY})
+if (IS_DIRECTORY ${CPACK_TEMPORARY_INSTALL_DIRECTORY})
+    ClearTimeStampDirectory(${CPACK_TEMPORARY_INSTALL_DIRECTORY})
+endif ()

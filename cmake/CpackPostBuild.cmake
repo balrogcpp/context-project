@@ -10,4 +10,6 @@ macro(ClearTimeStamp file)
 endmacro()
 
 
-ClearTimeStamp(${CPACK_OUTPUT_FILE_PATH})
+if (EXISTS ${CPACK_OUTPUT_FILE_PATH})
+    ClearTimeStamp(${CPACK_OUTPUT_FILE_PATH})
+endif ()
