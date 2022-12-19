@@ -175,9 +175,6 @@ if (RELEASE)
 endif ()
 
 # android
-if (NOT ANY_NOT_FOUND)
-    set(GRADLE_DEPLOY 1)
-endif ()
 if (UNIX)
     set(SH "sh")
 endif ()
@@ -185,7 +182,7 @@ endif ()
 add_custom_target(GradleContrib COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED}
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets)
 
-add_custom_target(GradleBuild COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=${GRADLE_DEPLOY} ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED})
+add_custom_target(GradleBuild COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=1 ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED})
 
 set(PACKAGE_NAME "example")
 set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
