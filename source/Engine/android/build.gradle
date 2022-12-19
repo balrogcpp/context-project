@@ -40,8 +40,8 @@ android {
             def time = new Date().format('HHMMSS')
             def sha1 = System.getenv("GIT_SHA1") ?: "1.0"
             def deploy = System.getenv("GRADLE_DEPLOY")
-            outputFileName = "artifacts/example-${sha1}-android-arm64-${date}T${time}-${variant.name}.apk"
-            if (deploy) outputFileName = "../../../../../../../" + outputFileName
+            outputFileName = "example-${sha1}-android-arm64-${date}T${time}-${variant.name}.apk"
+            if (deploy) outputFileName = "../../../../../../../artifacts/" + outputFileName
         }
     }
     sourceSets.main {
