@@ -1,5 +1,5 @@
 # project
-project(EXAMPLE)
+project(COMPILE)
 
 
 # macro insert_dependency and c++ flags, includes and libraries
