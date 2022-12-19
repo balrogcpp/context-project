@@ -198,6 +198,8 @@ void VideoManager::LoadResources() {
   const char *ZIP = "Zip";
   const char *APKZIP = "APKZip";
   const char *EMZIP = "EmbeddedZip";
+  const char *PROGRAMS_ZIP = "programs.bin";
+  const char *ASSETS_ZIP = "assets.bin";
   const int SCAN_DEPTH = 4;
   const char *PROGRAMS_DIR = "source/Programs";
   const char *ASSETS_DIR = "source/Example/Assets";
@@ -226,18 +228,18 @@ void VideoManager::LoadResources() {
   }
 
 #elif defined(ANDROID)
-#ifdef NDEBUG
-  InitEmbeddedResources();
-#else
-  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
-#endif
+  #ifdef NDEBUG
+    InitEmbeddedResources();
+  #else
+    ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
+  #endif
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
 #elif defined(IOS) || defined(EMSCRIPTEN)
-#ifdef NDEBUG
-  InitEmbeddedResources();
-#else
-  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
-#endif
+  #ifdef NDEBUG
+    InitEmbeddedResources();
+  #else
+    ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
+  #endif
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
 #endif
 
