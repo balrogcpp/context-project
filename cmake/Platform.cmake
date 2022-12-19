@@ -63,11 +63,15 @@ endif ()
 
 if (CMAKE_BUILD_TYPE_LOWER STREQUAL "debug")
     set(DEBUG 1)
+    set(CMAKE_BUILD_TYPE_NORMALISED "Debug")
 elseif (CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
     set(RELEASE 1)
+    set(CMAKE_BUILD_TYPE_NORMALISED "Release")
 elseif (CMAKE_BUILD_TYPE_LOWER STREQUAL "relwithdebinfo")
     set(RELWITHDEBINFO 1)
+    set(CMAKE_BUILD_TYPE_NORMALISED "RelWithDebInfo")
 endif ()
+
 
 if (MOBILE OR EMSCRIPTEN)
     set(GLSLES 1)

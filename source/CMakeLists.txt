@@ -44,7 +44,7 @@ endif ()
 
 
 # deps
-if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
+if (ANDROID AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy Contrib)
     message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib). Exiting...")
@@ -171,17 +171,13 @@ if (RELEASE)
 endif ()
 
 # android
-if (RELEASE)
-    set(CMAKE_BUILD_TYPE_NORMALISED "Release")
-else ()
-    set(CMAKE_BUILD_TYPE_NORMALISED "Debug")
-endif ()
 if (NOT ANY_NOT_FOUND)
     set(GRADLE_DEPLOY 1)
 endif ()
 if (UNIX)
     set(SH "sh")
 endif ()
+
 add_custom_target(BuildGradle COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=${GRADLE_DEPLOY} ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED}
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets)
 
