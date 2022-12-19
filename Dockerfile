@@ -80,6 +80,7 @@ RUN apt-get update \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release .. \
     && cmake --build . --target BuildGradle \
+    && rm -f ../artifacts/*.apk \
     && cmake --build . --target BuildGradle \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-8-jdk \
