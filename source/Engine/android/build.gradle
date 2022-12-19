@@ -34,6 +34,13 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            def date = new Date().format('YYYYMMdd')
+            def time = new Date().format('HHMMSS')
+            outputFileName = "example-${variant.versionName}-android-arm64-${date}T${time}-${variant.name}.apk"
+        }
+    }
     sourceSets.main {
         jniLibs.srcDir 'libs'
     }
@@ -56,7 +63,6 @@ android {
             assets.srcDirs = ['assets']
         }
     }
-
     lintOptions {
         abortOnError false
     }
