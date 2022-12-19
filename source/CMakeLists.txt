@@ -176,7 +176,13 @@ if (RELEASE)
 else ()
     set(CMAKE_BUILD_TYPE_NORMALISED "Debug")
 endif ()
-add_custom_target(BuildGradle COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ./gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED}
+if (NOT ANY_NOT_FOUND)
+    set(GRADLE_DEPLOY 1)
+endif ()
+if (UNIX)
+    set(SH "sh")
+endif ()
+add_custom_target(BuildGradle COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=${GRADLE_DEPLOY} ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED}
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets)
 
 set(PACKAGE_NAME "example")
