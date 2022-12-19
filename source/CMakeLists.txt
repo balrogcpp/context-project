@@ -170,6 +170,14 @@ if (RELEASE)
     set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPostBuild.cmake")
 endif ()
 
+# android
+if (RELEASE)
+    set(CMAKE_BUILD_TYPE_NORMALISED "Release")
+else ()
+    set(CMAKE_BUILD_TYPE_NORMALISED "Debug")
+endif ()
+add_custom_target(BuildGradle COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ./gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED})
+
 set(PACKAGE_NAME "example")
 set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_LOWER}-${DATE_TIME_CPACK})
 if (NOT RELEASE)

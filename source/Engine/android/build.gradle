@@ -39,7 +39,7 @@ android {
             def date = new Date().format('YYYYMMdd')
             def time = new Date().format('HHMMSS')
             def sha1 = System.getenv("GIT_SHA1") ?: "1.0"
-            outputFileName = "example-${sha1}-android-arm64-${date}T${time}-${variant.name}.apk"
+            outputFileName = "../../../../../../../artifacts/example-${sha1}-android-arm64-${date}T${time}-${variant.name}.apk"
         }
     }
     sourceSets.main {
