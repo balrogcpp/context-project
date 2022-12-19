@@ -79,9 +79,9 @@ RUN apt-get update \
     && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME}  \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-    && cmake --build . --target BuildGradle \
+    && cmake --build . --target GradleContrib \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-    && cmake --build . --target BuildGradle \
+    && cmake --build . --target GradleBuild \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-8-jdk \
     && apt-get -y autoremove
