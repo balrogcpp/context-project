@@ -186,7 +186,7 @@ add_custom_target(BuildGradle COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets)
 
 set(PACKAGE_NAME "example")
-set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_LOWER}-${DATE_TIME_CPACK})
+set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
 if (NOT RELEASE)
     string(APPEND ARTIFACT_NAME "-${CMAKE_BUILD_TYPE_LOWER}")
 endif ()

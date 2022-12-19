@@ -108,7 +108,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     endif ()
 
     string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /utf-8 /D_USE_MATH_DEFINES /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
-    string(APPEND CMAKE_C_FLAGS " /MP /GS- /GF /utf-8 /D_USE_MATH_DEFINES")
+    string(APPEND CMAKE_C_FLAGS " /MP /GS- /GF /utf-8")
 
     if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "release")
         string(APPEND CMAKE_CXX_FLAGS " /Ot /GL")
