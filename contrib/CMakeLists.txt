@@ -1493,6 +1493,7 @@ externalproject_add(Target_opencv
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )
 
+
 check_stamp(Target_QT5)
 externalproject_add(Target_QT5
         EXCLUDE_FROM_ALL true
