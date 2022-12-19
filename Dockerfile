@@ -80,9 +80,8 @@ RUN apt-get update \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release .. \
     && cmake --build . --target BuildGradle \
-    && rm -rf build .gradle android/.cxx android/build android/assets \
     && cmake --build . --target BuildGradle \
-    && rm -rf build .gradle android/.cxx android/build android/assets ../../artifacts/_CPack_Packages ../../contrib/build ../../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
+    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-8-jdk \
     && apt-get -y autoremove
 
