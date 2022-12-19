@@ -2,9 +2,8 @@
 
 #include "ArHosekSkyModel.h"
 #include "Caelum/Astronomy.h"
-#include <OgreVector3.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <OgreVector.h>
+
 
 enum class ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
 
@@ -13,8 +12,8 @@ constexpr float FP16Scale = 0.0009765625f;
 constexpr float FP16Max = 65000.0f;
 
 // Useful shader functions
-inline float Deg2Rad(float deg) { return deg * (1.0f / 180.0f) * M_PI; }
-inline float Rad2Deg(float rad) { return rad * (1.0f / M_PI) * 180.0f; }
+inline float Deg2Rad(float deg) { return deg * (1.0f / 180.0f) * Ogre::Math::PI; }
+inline float Rad2Deg(float rad) { return rad * (1.0f / Ogre::Math::PI) * 180.0f; }
 inline float Clamp(float val, float min, float max) { assert(max >= min); val = val < min ? min : val > max ? max : val; return val; }
 inline static float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) { return std::acos(std::max(dir0.dotProduct(dir1), 0.00001f)); }
 inline float Mix(float x, float y, float s) { return x + (y - x) * s; }

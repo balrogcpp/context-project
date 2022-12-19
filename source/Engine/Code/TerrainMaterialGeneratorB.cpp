@@ -11,12 +11,10 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
   setActiveProfile(mProfiles.back());
 }
-
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() {}
 
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name, const String &desc)
     : Profile(parent, name, desc), enableLightmap(false), enableNormalmap(true), terrainMaxLayers(4) {}
-
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
@@ -57,7 +55,6 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
       vert_params->setNamedConstant("baseUVScale", baseUVScale);
     }
   }
-
 
   auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
   auto *pass = newMaterial->getTechnique(0)->getPass(0);

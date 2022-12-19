@@ -131,7 +131,7 @@ namespace OgreOggSound
 		}
 
 		// mFormatData.mFormat: Should be 16 unless compressed ( compressed NOT supported )
-		if ( !mFormatData.mFormat->mHeaderSize >= 16 )
+		if ( mFormatData.mFormat->mHeaderSize < 16 )
 		{
 			OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR, mAudioName + " - Compressed WAV NOT supported!", "OgreOggStaticWavSound::_openImpl()");
 		}

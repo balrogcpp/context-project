@@ -1,4 +1,4 @@
-#include <OgreVector3.h>
+#include <OgreVector.h>
 #include "SkyModel.h"
 #include "ArHosekSkyModel.h"
 #include <cstdlib>
@@ -18,7 +18,7 @@ void SkyModel::SetupSky(const Ogre::Vector3f &_sunDir, float _sunSize, Ogre::Vec
 	Shutdown();
 
 	float thetaS = AngleBetween(sunDir, Ogre::Vector3f(0, 1, 0));
-	float elevation = M_PI_2 - thetaS;
+    float elevation = Ogre::Math::TWO_PI - thetaS;
 	StateX = arhosek_xyz_skymodelstate_alloc_init(_turbidity, groundAlbedo.x, elevation);
 	StateY = arhosek_xyz_skymodelstate_alloc_init(_turbidity, groundAlbedo.y, elevation);
 	StateZ = arhosek_xyz_skymodelstate_alloc_init(_turbidity, groundAlbedo.z, elevation);

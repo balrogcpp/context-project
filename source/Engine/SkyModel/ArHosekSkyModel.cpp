@@ -101,10 +101,10 @@ All instructions on how to use this code are in the accompanying header file.
 #include "ArHosekSkyModelData_Spectral.h"
 #include "ArHosekSkyModelData_CIEXYZ.h"
 #include "ArHosekSkyModelData_RGB.h"
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 
 //   Some macro definitions that occur elsewhere in ART, and that have to be
 //   replicated to make this a stand-alone module.
