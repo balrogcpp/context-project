@@ -3,6 +3,7 @@
 #ifndef RECEIVER_GLSL
 #define RECEIVER_GLSL
 
+//#define PENUMBRA
 
 //----------------------------------------------------------------------------------------------------------------------
 float InterleavedGradientNoise(const vec2 position_screen)
@@ -29,24 +30,21 @@ vec2 VogelDiskSample(const float sampleIndex, const float samplesCount, const fl
 float AvgBlockersDepthToPenumbra(const float z_shadowMapView, const float avgBlockersDepth)
 {
   float penumbra = (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
-  penumbra *= penumbra;
-  return clamp(80.0 * penumbra, 0.0, 1.0);
+  return clamp(80.0 * penumbra * penumbra, 0.0, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 float AvgBlockersDepthToPenumbra(const float lightSize, const float z_shadowMapView, const float avgBlockersDepth)
 {
   float penumbra = lightSize * (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
-  penumbra *= penumbra;
-  return clamp(penumbra, 0.0, 1.0);
+  return clamp(penumbra * penumbra, 0.0, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gradientNoise, const float z_shadowMapView, const int iterations)
+float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gradientNoise, const float z_shadowMapView, const float penumbraFilterMaxSize, const int iterations)
 {
   float avgBlockersDepth = 0.0;
-  float blockersCount = 0.0;
-  #define penumbraFilterMaxSize 0.01
+  float blockersCount = 0.001;
   #define MAX_SAMPLES 32
 
   for (int i = 0; i < MAX_SAMPLES; ++i) {
@@ -54,25 +52,15 @@ float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gr
 
     vec2 sampleUV = VogelDiskSample(float(i), float(iterations), float(gradientNoise));
     sampleUV = shadowMapUV + penumbraFilterMaxSize * sampleUV;
-
     float sampleDepth = texture2D(shadowMap, sampleUV).x;
 
-    if(sampleDepth < z_shadowMapView)
-    {
-      avgBlockersDepth += sampleDepth;
-      blockersCount += 1.0;
-    }
+    float depthTest = clamp((z_shadowMapView - sampleDepth), 0.0, 1.0);
+    avgBlockersDepth += depthTest * sampleDepth;
+    blockersCount += depthTest;
   }
 
-  if(blockersCount > 0.0)
-  {
-    avgBlockersDepth /= blockersCount;
-    return AvgBlockersDepthToPenumbra(10000.0, z_shadowMapView, avgBlockersDepth);
-  }
-  else
-  {
-    return 0.0;
-  }
+
+  return AvgBlockersDepthToPenumbra(10000.0, z_shadowMapView, avgBlockersDepth / blockersCount);
 }
 
 #endif // PENUMBRA
@@ -86,10 +74,11 @@ float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 fil
   lightSpace.z = lightSpace.z * 0.5 + 0.5; // convert -1..1 to 0..1
   float shadow = 1.0;
   float current_depth = lightSpace.z;
+  #define penumbraFilterMaxSize 0.05
 
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
-  float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, current_depth, iterations);
+  float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, current_depth, penumbraFilterMaxSize, iterations);
 #endif
 
   #define MAX_SAMPLES 32

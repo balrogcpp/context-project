@@ -13,11 +13,6 @@
 #include "srgb.glsl"
 
 
-#ifndef MAX_SAMPLES
-#define MAX_SAMPLES 4
-#endif
-
-
 in vec2 vUV0;
 uniform sampler2D uSceneSampler;
 uniform float uExposure;
