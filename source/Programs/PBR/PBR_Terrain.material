@@ -113,7 +113,7 @@ abstract material PBR_Terrain
     }
 }
 
-abstract material PBR_Terrain_vc : PBR_Terrain // with vertex compression
+abstract material PBR_Terrain_vc : PBR_Terrain // vertex compression
 {
     technique
     {
@@ -129,6 +129,24 @@ abstract material PBR_Terrain_vc : PBR_Terrain // with vertex compression
                 param_named uEmissiveSampler     int 3
                 param_named uGlobalNormalSampler int 4
             }
+        }
+    }
+}
+
+material TerrainCustom : PBR_Terrain
+{
+    technique {
+        pass {
+            diffuse 0.11 0.33 0.15 1.00
+        }
+    }
+}
+
+material TerrainCustom_vc : PBR_Terrain_vc
+{
+    technique {
+        pass {
+            diffuse 0.11 0.33 0.15 1.00
         }
     }
 }
