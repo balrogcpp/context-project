@@ -202,7 +202,7 @@ void VideoManager::LoadResources() {
   const char *ASSETS_ZIP = "assets.bin";
   const int SCAN_DEPTH = 4;
   const char *PROGRAMS_DIR = "source/Programs";
-  const char *ASSETS_DIR = "source/Example/Assets";
+  const char *ASSETS_DIR = "source/Demo/Assets";
 
 #if defined(DESKTOP)
   if (!FindPath("programs.bin").empty()) {

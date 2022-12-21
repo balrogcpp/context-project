@@ -35,12 +35,12 @@ if (RELEASE)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR}
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR}/programs.zip)
 
-    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Demo/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR_ANDROID}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSETS_DIR_ANDROID}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID})
 else ()
-    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Example/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Demo/Assets -DOUTPUT=${ASSETS_DIR}/assets -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
@@ -102,11 +102,11 @@ if (RELEASE)
 endif ()
 
 
-# Example vs project folders
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.hpp)
-file(GLOB_RECURSE ASSET_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Example/Assets/*)
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Example/Source PREFIX "Example" FILES ${SAMPLE_SOURCE_FILES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Example/Assets PREFIX "Assets" FILES ${ASSET_FILES})
+# Demo vs project folders
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Demo/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Demo/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Demo/*.hpp)
+file(GLOB_RECURSE ASSET_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Demo/Assets/*)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Demo/Source PREFIX "Demo" FILES ${SAMPLE_SOURCE_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Demo/Assets PREFIX "Assets" FILES ${ASSET_FILES})
 list(APPEND SAMPLE_SOURCE_FILES ${ASSET_FILES})
 if (MSVC)
     set_source_files_properties(${ASSET_FILES} PROPERTIES LANGUAGE shaders)
@@ -118,26 +118,26 @@ endif ()
 # executable
 if (NOT ANDROID)
     if (CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
-        add_executable(Example WIN32 ${SAMPLE_SOURCE_FILES})
+        add_executable(Demo WIN32 ${SAMPLE_SOURCE_FILES})
     else ()
-        add_executable(Example ${SAMPLE_SOURCE_FILES})
+        add_executable(Demo ${SAMPLE_SOURCE_FILES})
     endif ()
 else ()
-    add_library(Example SHARED ${SAMPLE_SOURCE_FILES})
+    add_library(Demo SHARED ${SAMPLE_SOURCE_FILES})
 endif ()
-include_directories(Example include ${ENGINE_INCLUDE_DIRS})
-target_link_directories(Example PUBLIC ${ENGINE_LINK_DIRS})
-target_precompile_headers(Example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
-set_target_properties(Example PROPERTIES OUTPUT_NAME "app")
-target_link_libraries(Example PUBLIC Engine ${ENGINE_LIBRARIES})
+include_directories(Demo include ${ENGINE_INCLUDE_DIRS})
+target_link_directories(Demo PUBLIC ${ENGINE_LINK_DIRS})
+target_precompile_headers(Demo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
+set_target_properties(Demo PROPERTIES OUTPUT_NAME "app")
+target_link_libraries(Demo PUBLIC Engine ${ENGINE_LIBRARIES})
 if (ANDROID)
-    add_dependencies(Example Assets)
+    add_dependencies(Demo Assets)
 endif ()
 
 
 # post-build, pre-package
 #if (RELEASE)
-#    set(TARGET_NAME "Example")
+#    set(TARGET_NAME "Demo")
 #    include(ReallySmallPostBuild)
 #endif ()
 
@@ -147,7 +147,7 @@ if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${DEPS_ROOT}/bin/*.dll)
     file(COPY ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
-install(TARGETS Example RUNTIME DESTINATION .)
+install(TARGETS Demo RUNTIME DESTINATION .)
 if (NOT EMSCRIPTEN)
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
     install(FILES ${ASSETS_DIR}/assets.bin DESTINATION .)
@@ -155,7 +155,7 @@ if (NOT EMSCRIPTEN)
         install(FILES ${ASSETS_DIR}/programs.bin DESTINATION .)
     endif ()
 else ()
-    set(FILE_DIR $<TARGET_FILE_DIR:Example>)
+    set(FILE_DIR $<TARGET_FILE_DIR:Demo>)
     install(FILES "${FILE_DIR}/app.html" "${FILE_DIR}/app.js" "${FILE_DIR}/app.wasm" "${FILE_DIR}/app.data" "${FILE_DIR}/app.worker.js" DESTINATION .)
 endif ()
 
@@ -178,7 +178,7 @@ add_custom_target(GradleContrib COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURREN
 add_custom_target(GradleBuild COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=1 ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED})
 
 #cpack
-set(PACKAGE_NAME "example")
+set(PACKAGE_NAME "demo")
 set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
 if (NOT RELEASE)
     string(APPEND ARTIFACT_NAME "-${CMAKE_BUILD_TYPE_LOWER}")
