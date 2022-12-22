@@ -1,4 +1,4 @@
-/// created by Andrey VasilievBullet
+/// created by Andrey Vasiliev
 
 #include "pch.h"
 #include "PhysicsManager.h"

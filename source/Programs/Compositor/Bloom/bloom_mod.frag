@@ -15,7 +15,6 @@
 in vec2 vUV0;
 uniform sampler2D uRT;
 uniform sampler2D uRT0;
-//uniform sampler2D uStarburst;
 uniform vec2 TexelSize1;
 uniform float mipCount;
 

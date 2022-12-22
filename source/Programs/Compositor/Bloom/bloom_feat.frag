@@ -90,23 +90,20 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GodRays(const float density, const float weight, const float decay, const float exposure, const int numSamples, const sampler2D occlusionTexture, const vec2 screenSpaceLightPos, const vec2 uv)
+vec3 GodRays(const float density, const float weight, const float decay, const float exposure, const int numSamples, const sampler2D tex, const vec2 screenSpaceLightPos, const vec2 uv)
 {
   vec3 fragColor = vec3(0.0);
-	vec2 textCoo = uv.xy;
+  vec2 suv = uv.st;
   float illuminationDecay = 1.0;
-  vec2 deltaTextCoord = vec2(uv - screenSpaceLightPos.xy);
-	deltaTextCoord *= (1.0 /  float(numSamples)) * density;
+  vec2 deltaTextCoord = vec2(uv - screenSpaceLightPos.xy) * (1.0 /  float(numSamples)) * density;
 
-	for(int i = 0; i < 100; ++i) {
+  for(int i = 0; i < 100; ++i) {
 	  if(numSamples < i) break;
 
-		textCoo -= deltaTextCoord;
-		vec3 samp = texture2D(occlusionTexture, textCoo).xyz;
-		samp *= illuminationDecay * weight;
-		fragColor += samp;
-		illuminationDecay *= decay;
-	}
+	  suv -= deltaTextCoord;
+	  fragColor += texture2D(tex, suv).rgb * (illuminationDecay * weight);
+	  illuminationDecay *= decay;
+  }
 
   return expose(fragColor, exposure);
 }
@@ -123,11 +120,12 @@ uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
+  //vec3 color = texture2D(uSampler, vUV0).rgb;
   vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
   color += SampleFeatures(uSampler, vUV0, TexelSize0, uChromaticRadius);
 
 #ifndef GL_ES
-  //color += GodRays(1.0, 0.05, 1.0, 0.02, 100, uSampler, LightPositionViewSpace[0].xy, vUV0);
+  //color += GodRays(1.0, 0.01, 1.0, 0.1, 100, uSampler, LightPositionViewSpace[0].xy, vUV0);
 #endif
 
   FragColor.rgb = color;
