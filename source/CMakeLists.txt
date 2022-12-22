@@ -61,11 +61,6 @@ endif ()
 
 # this required to to disable windows upscaling @hdp monitors @windows
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.hpp)
-if (MINGW)
-    list(APPEND ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/manifest.rc)
-elseif (MSVC)
-    list(APPEND ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/app.manifest)
-endif ()
 
 
 # engine vs project folders
@@ -112,6 +107,11 @@ if (MSVC)
     set_source_files_properties(${ASSET_FILES} PROPERTIES LANGUAGE shaders)
 elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
     set_source_files_properties(${ASSET_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
+endif ()
+if (MINGW)
+    list(APPEND SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/manifest.rc)
+elseif (MSVC)
+    list(APPEND SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/app.manifest)
 endif ()
 
 
