@@ -60,19 +60,24 @@ vec3 SampleChromatic(const sampler2D tex, const vec2 uv, const float radius)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const float chromaticRadius)
+vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const int counter, const float chromaticRadius)
 {
   vec2 uv = vec2(1.0) - _uv;
   vec2 ghostVec = (vec2(0.5) - uv) * 0.5;
   vec3 ret = vec3(0.0);
+  #define MAX_GHOST_COUNT 12
 
   // ghosts
-  vec2 suv = fract(uv + ghostVec * vec2(1.0));
-  float d = distance(suv, vec2(0.5));
-  float w = pow(1.0 - d, 10.0);
+  for (int i = 0; i < MAX_GHOST_COUNT; ++i) {
+    if (counter <= i) break;
 
-  vec3 s0 = SampleChromatic(tex, suv, chromaticRadius);
-  ret += s0 * w;
+    vec2 suv = fract(uv + ghostVec * vec2(float(i)));
+    float d = distance(suv, vec2(0.5));
+    float w = pow(1.0 - d, 10.0);
+
+    vec3 s0 = SampleChromatic(tex, suv, chromaticRadius);
+    ret += s0 * w;
+  }
 
   // halo
   #define RADIUS 1.0
@@ -82,7 +87,11 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
   ghostVec.x *= aspectRatio;
   ghostVec *= 0.5 * RADIUS;
 
-  vec3 s1 = SampleChromatic(tex, uv + ghostVec, chromaticRadius);
+  vec2 suv = fract(uv + ghostVec);
+  float d = distance(suv, vec2(0.5));
+  float w = pow(1.0 - d, 10.0);
+
+  vec3 s1 = SampleChromatic(tex, suv, chromaticRadius);
   ret += s1 * w;
 
   return ret;
@@ -90,15 +99,15 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GodRays(const float density, const float weight, const float decay, const float exposure, const int numSamples, const sampler2D tex, const vec2 screenSpaceLightPos, const vec2 uv)
+vec3 GodRays(const float density, const float weight, const float decay, const float exposure, const int counter, const sampler2D tex, const vec2 screenSpaceLightPos, const vec2 uv)
 {
   vec3 fragColor = vec3(0.0);
   vec2 suv = uv.st;
   float illuminationDecay = 1.0;
-  vec2 deltaTextCoord = vec2(uv - screenSpaceLightPos.xy) * (1.0 /  float(numSamples)) * density;
+  vec2 deltaTextCoord = vec2(uv - screenSpaceLightPos.xy) * (1.0 /  float(counter)) * density;
 
   for(int i = 0; i < 100; ++i) {
-	  if(numSamples < i) break;
+	  if (counter <= i) break;
 
 	  suv -= deltaTextCoord;
 	  fragColor += texture2D(tex, suv).rgb * (illuminationDecay * weight);
@@ -121,10 +130,10 @@ uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
 void main()
 {
   vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
-  color += SampleFeatures(uSampler, vUV0, TexelSize0, uChromaticRadius);
+  color += SampleFeatures(uSampler, vUV0, TexelSize0, 1, uChromaticRadius);
 
 #ifndef GL_ES
-  //color += GodRays(1.0, 0.01, 1.0, 0.1, 100, uSampler, LightPositionViewSpace[0].xy, vUV0);
+  //color += GodRays(1.0, 0.01, 1.0, 0.1, 50, uSampler, LightPositionViewSpace[0].xy, vUV0);
 #endif
 
   FragColor.rgb = color;
