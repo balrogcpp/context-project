@@ -120,7 +120,6 @@ uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  //vec3 color = texture2D(uSampler, vUV0).rgb;
   vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
   color += SampleFeatures(uSampler, vUV0, TexelSize0, uChromaticRadius);
 
