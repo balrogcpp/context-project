@@ -78,8 +78,7 @@ compositor SSAO
         {
             pass render_quad
             {
-                identifier 42
-
+                identifier 10
                 quad_normals camera_far_corners_view_space
 
                 material SSAO
@@ -149,6 +148,36 @@ compositor Fog
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
+compositor Rays
+{
+    technique
+    {
+        //texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_FLOAT16_RGB
+        texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Rays
+                input 0 rt
+                input 1 mrt 1
+            }
+        }
+    }
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
 compositor Bloom
 {
     technique
@@ -168,6 +197,7 @@ compositor Bloom
         texture rt12 target_width_scaled 0.000244140625 target_height_scaled 0.000244140625 PF_R11G11B10_FLOAT chain_scope
         texture rt13 target_width_scaled 0.0001220703125 target_height_scaled 0.0001220703125 PF_R11G11B10_FLOAT chain_scope
 
+        compositor_logic DeferredLogic
 
         target rt0
         {
@@ -183,11 +213,20 @@ compositor Bloom
             }
         }
 
-        target rt2
+        target rt1
         {
             pass render_quad
             {
                 material Bloom_feat
+                input 0 rt1
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material Downscale4x4
                 input 0 rt1
             }
         }

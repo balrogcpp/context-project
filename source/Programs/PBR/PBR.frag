@@ -13,6 +13,7 @@
 
 #define USE_MRT
 #include "header.frag"
+#include "math.glsl"
 #include "srgb.glsl"
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
@@ -494,7 +495,7 @@ void main()
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
 
-            attenuation = clamp((range - fLightD) * 3.402823466e+38, 0.0, 1.0) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
+            attenuation = bigger(range - fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             // spotlight
             vec3 vSpotParams = LightSpotParamsArray[i].xyz;

@@ -8,7 +8,7 @@ vertex_program ssao_vp glsl glsles
 	source ssao.vert
 	default_params
 	{
-		param_named_auto worldViewProj worldviewproj_matrix
+		param_named_auto WorldViewProj worldviewproj_matrix
 	}
 }
 
@@ -17,8 +17,10 @@ fragment_program ssao_fp glsl glsles
 	source ssao.frag
 	default_params
 	{
-		param_named uGeom int 0
+        //param_named_auto ProjMatrix projection_matrix
         param_named_auto FarClipDistance far_clip_distance
+
+		param_named uGeom int 0
 	}
 }
 

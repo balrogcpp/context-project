@@ -12,7 +12,7 @@
 #include "header.frag"
 
 
-uniform mat4 ptMat;
+uniform mat4 ProjMatrix;
 uniform float FarClipDistance;
 uniform sampler2D uGeom;
 
@@ -88,7 +88,8 @@ void main()
       // Move new view-space position back into texture space
       //#define RADIUS 0.2125
       #define RADIUS 0.0525
-      vec4 nuv = ptMat * vec4(viewPos.xyz + randomDir * RADIUS, 1.0);
+
+      vec4 nuv = ProjMatrix * vec4(viewPos.xyz + randomDir * RADIUS, 1.0);
       nuv.xy /= nuv.w;
 
       // Compute occlusion based on the (scaled) Z difference

@@ -249,21 +249,69 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   }
 }
 
-void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
+//  source https://wiki.ogre3d.org/GetScreenspaceCoords
+static Ogre::Vector4 getScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
+  if (!object->isInScene()) {
+    return Ogre::Vector4();
   }
+
+  const Ogre::AxisAlignedBox &AABB = object->getWorldBoundingBox(true);
+
+  /**
+   * If you need the point above the object instead of the center point:
+   * This snippet derives the average point between the top-most corners of the bounding box
+   * Ogre::Vector3 point = (AABB.getCorner(AxisAlignedBox::FAR_LEFT_TOP)
+   *    + AABB.getCorner(AxisAlignedBox::FAR_RIGHT_TOP)
+   *    + AABB.getCorner(AxisAlignedBox::NEAR_LEFT_TOP)
+   *    + AABB.getCorner(AxisAlignedBox::NEAR_RIGHT_TOP)) / 4;
+   */
+
+  // Get the center point of the object's bounding box
+  Ogre::Vector3 center = AABB.getCenter();
+  Ogre::Vector4 point = Ogre::Vector4(center, 1.0);
+
+  // Is the camera facing that point? If not, return false
+  Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
+  if (cameraPlane.getSide(center) != Ogre::Plane::NEGATIVE_SIDE) {
+    return Ogre::Vector4();
+  }
+
+  // Transform the 3D point into screen space
+  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
+  point /= point.w;
+
+  return point;
+}
+
+static Ogre::Vector4 LightScreenspaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
+  Ogre::Vector4 point;
+
+  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
+    point = Ogre::Vector4(-light->getDerivedDirection(), 0.0);
+  else
+    point = Ogre::Vector4(light->getDerivedPosition(), 1.0);
+
+  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
+  point /= point.w;
+
+  return point;
+}
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 42) {  // SSAO
-    // get the pass
-    Ogre::Pass *pass = mat->getBestTechnique()->getPass(0);
+  if (pass_id == 10) {  // SSAO
+    auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 
-    // get the fragment shader parameters
-    auto params = pass->getFragmentProgramParameters();
-    // set the projection matrix we need
-    params->setNamedConstant("ptMat", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
-  } else {
-    std::string name = mat->getName();
-    auto &fpConst = mat->getTechnique(0)->getPass(0)->getFragmentProgram()->getConstantDefinitions();
+    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
+
+  } else if (pass_id == 11) {
+    auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
+
+    fp->setNamedConstant("LightCount", static_cast<Ogre::Real>(lightList.size()));
+    fp->setNamedConstant("LightPositionViewSpace", LightScreenspaceCoords(lightList[0], ogreCamera));
   }
 }
+
+void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
+
 }  // namespace Glue

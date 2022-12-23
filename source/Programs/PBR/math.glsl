@@ -75,13 +75,54 @@ vec4 saturate(vec4 x)
     return clamp(x, 0.0, 1.0);
 }
 
+float lerp(float a, float b, float c)
+{
+    return mix(a, b, c);
+}
+
+vec2 lerp(vec2 a, vec2 b, vec2 c)
+{
+    return mix(a, b, c);
+}
+
+vec3 lerp(vec3 a, vec3 b, vec3 c)
+{
+    return mix(a, b, c);
+}
+
+vec4 lerp(vec4 a, vec4 b, vec4 c)
+{
+    return mix(a, b, c);
+}
+
+vec2 lerp(vec2 a, vec2 b, float c)
+{
+    return mix(a, b, c);
+}
+
+vec3 lerp(vec3 a, vec3 b, float c)
+{
+    return mix(a, b, c);
+}
+
+vec4 lerp(vec4 a, vec4 b, float c)
+{
+    return mix(a, b, c);
+}
+
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float fbigger(float x, float y)
+float bigger(float x, float y)
 {
     return saturate((x - y) * FLT_MAX);
 }
 
-float fnull(float x)
+// https://twitter.com/SebAaltonen/status/878250919879639040
+float bigger(float x)
+{
+    return saturate(x * FLT_MAX);
+}
+
+float not_zero(float x)
 {
     return saturate((x - EPSILON) * FLT_MAX);
 }

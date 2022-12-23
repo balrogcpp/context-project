@@ -13,7 +13,7 @@
 
 in vec4 vertex;
 in vec3 normal;
-uniform mat4 worldViewProj;
+uniform mat4 WorldViewProj;
 
 out vec2 vUV0;
 out vec3 vRay;
@@ -22,7 +22,7 @@ out vec3 vRay;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    gl_Position = worldViewProj * vertex;
+    gl_Position = WorldViewProj * vertex;
 
     vec2 inPos = sign(vertex.xy);
     vUV0 = (vec2(inPos.x, -inPos.y) + 1.0) * 0.5;

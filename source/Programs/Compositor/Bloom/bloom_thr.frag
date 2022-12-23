@@ -49,7 +49,6 @@ vec3 Downscale13T(const sampler2D tex, const vec2 uv, const vec2 tsize)
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Threshold(const vec3 color, const float threshold)
 {
-  // convert rgb to grayscale/brightness
   return max(color - vec3(threshold), vec3(0.0));
 }
 

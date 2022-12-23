@@ -16,7 +16,7 @@ in vec2 vUV0;
 uniform sampler2D uRT;
 uniform sampler2D uRT0;
 uniform vec2 TexelSize1;
-uniform float mipCount;
+uniform float uMipCount;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ void main()
 {
   vec3 rt = texture2D(uRT, vUV0).rgb;
   vec3 rt0 = Upscale3x3(uRT0, vUV0, TexelSize1);
-  float w = 1.0 / mipCount;
+  float w = 1.0 / uMipCount;
 #ifdef GL_ES
   w *= 2.0;
 #endif
