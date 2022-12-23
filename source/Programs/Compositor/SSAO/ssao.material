@@ -23,9 +23,6 @@ fragment_program ssao_fp glsl glsles
 }
 
 
-
-
-
 material SSAO
 {
     technique

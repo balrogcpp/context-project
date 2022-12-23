@@ -2,7 +2,7 @@
 <scene author="balrog" formatVersion="1.1">
     <nodes>
         <node name="Sun">
-            <position x="0" y="0" z="0"/>
+			<position x="40.659888" y="-20.704975" z="-30.950829"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
             <light name="Sun" powerScale="5" type="directional" castShadows="true"/>
         </node>

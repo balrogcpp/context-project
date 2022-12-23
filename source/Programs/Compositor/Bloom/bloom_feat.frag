@@ -71,7 +71,7 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
   for (int i = 0; i < MAX_GHOST_COUNT; ++i) {
     if (counter <= i) break;
 
-    vec2 suv = fract(uv + ghostVec * vec2(float(i)));
+    vec2 suv = fract(uv + ghostVec * float(i));
     float d = distance(suv, vec2(0.5));
     float w = pow(1.0 - d, 10.0);
 
@@ -99,22 +99,26 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GodRays(const float density, const float weight, const float decay, const float exposure, const int counter, const sampler2D tex, const vec2 screenSpaceLightPos, const vec2 uv)
+vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int counter, const float density, const float weight, const float decay, const float exposure)
 {
-  vec3 fragColor = vec3(0.0);
+  vec3 color = vec3(0.0);
   vec2 suv = uv.st;
   float illuminationDecay = 1.0;
-  vec2 deltaTextCoord = vec2(uv - screenSpaceLightPos.xy) * (1.0 /  float(counter)) * density;
+  vec2 deltaTextCoord = (uv - lightPos) * (1.0 /  float(counter)) * density;
 
   for(int i = 0; i < 100; ++i) {
 	  if (counter <= i) break;
 
 	  suv -= deltaTextCoord;
-	  fragColor += texture2D(tex, suv).rgb * (illuminationDecay * weight);
+	  color += texture2D(tex, suv).rgb * (illuminationDecay * weight);
 	  illuminationDecay *= decay;
   }
 
-  return expose(fragColor, exposure);
+  color *= exposure;
+
+  if (distance(uv, lightPos) < 0.1) color = vec3(1.0, 0.0, 0.0);
+
+  return color;
 }
 
 
@@ -133,7 +137,12 @@ void main()
   color += SampleFeatures(uSampler, vUV0, TexelSize0, 1, uChromaticRadius);
 
 #ifndef GL_ES
-  //color += GodRays(1.0, 0.01, 1.0, 0.1, 50, uSampler, LightPositionViewSpace[0].xy, vUV0);
+  const float decay=0.96815;
+  const float exposure=0.2;
+  const float density=0.926;
+  const float weight=0.58767;
+
+  color += GodRays(uSampler, vUV0, LightPositionViewSpace[0].xy, 100, density, weight, decay, exposure);
 #endif
 
   FragColor.rgb = color;
