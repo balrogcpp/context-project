@@ -97,16 +97,16 @@ out vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 
 #ifdef GRASS
 //----------------------------------------------------------------------------------------------------------------------
-vec4 WaveGrass(const vec2 position, const float time, const float frequency, const vec4 direction)
+vec4 WaveGrass(const vec4 position, const float time, const float frequency, const vec4 direction)
 {
-  float n = noise(position.xy * time) * 2.0 - 2.0;
+  float n = noise(position.xz * time) * 2.0 - 2.0;
   return n * direction;
 }
 #endif
 
 #ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
-vec4 WaveTree(const vec4 v, const vec4 params, const vec4 originPos, const float time)
+vec4 WaveTree(const vec4 v, const vec4 params, const vec4 position, const float time)
 {
   float radiusCoeff = params.x;
   float radiusCoeff2 = radiusCoeff * radiusCoeff;
@@ -116,8 +116,8 @@ vec4 WaveTree(const vec4 v, const vec4 params, const vec4 originPos, const float
   float factorY = params.w;
 
   vec4 ret = vec4(0.0);
-  ret.y = sin(time + originPos.z + v.y + v.x) * radiusCoeff2 * factorY;
-  ret.x = sin(time + originPos.z ) * heightCoeff2 * factorX;
+  ret.y = sin(time + position.z + v.y + v.x) * radiusCoeff2 * factorY;
+  ret.x = sin(time + position.z ) * heightCoeff2 * factorX;
 
   return ret;
 }
@@ -157,7 +157,7 @@ void main()
               vec3(0.0, 1.0, 0.0));
 
   if (uv0.y < 0.5 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
-    new_position += WaveGrass(new_position.xy, 0.2 * Time, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
+    new_position += WaveGrass(new_position, 0.2 * Time, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
   }
 #endif
 #ifdef TREES

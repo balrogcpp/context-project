@@ -485,10 +485,10 @@ void main()
         vec4 vAttParams = LightAttenuationArray[i];
         float range = vAttParams.x;
 
-        if (range > 0.0001) {
+        if (range > 0.0) {
             highp vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
             highp float fLightD = length(vLightViewH);
-            highp float fLightD2 = (fLightD * fLightD);
+            highp float fLightD2 = fLightD * fLightD;
             highp vec3 vLightView = normalize(vLightViewH);
             float attenuation_const = vAttParams.y;
             float attenuation_linear = vAttParams.z;
@@ -500,7 +500,7 @@ void main()
             vec3 vSpotParams = LightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;
 
-            if (outer_radius > 0.0001) {
+            if (outer_radius > 0.0) {
                 float fallof = vSpotParams.x;
                 float inner_radius = vSpotParams.y;
 
