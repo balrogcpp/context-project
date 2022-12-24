@@ -303,36 +303,33 @@ float GetPSSMShadow(const int number)
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-mat3 GetTGN()
-{
-#ifndef HAS_TANGENTS
-#ifndef HAS_NORMALS
-    vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
-    vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(n ,b));
-    return mat3(t, b, n);
-#endif
-#endif
-
-    return vTBN;
-}
-
-
-//  Sampler helper functions
-//----------------------------------------------------------------------------------------------------------------------
 highp vec3 GetNormal(const vec2 uv)
 {
-    mat3 tbn = GetTGN();
+#ifndef HAS_NORMALS
+#ifndef HAS_TANGENTS
+    highp vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
+    highp vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
+    highp vec3 t = normalize(cross(n ,b));
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = texture2D(uNormalSampler, uv).xyz;
-    return normalize(tbn * ((2.0 * n - 1.0)));
+    highp vec3 n0 = texture2D(uNormalSampler, uv).xyz;
+    return normalize(mat3(t, b, n) * ((2.0 * n0 - 1.0)));
 #else
-    return tbn[2].xyz;
+    return n;
+#endif
+#endif
+#endif
+
+#ifdef HAS_NORMALMAP
+    highp vec3 n0 = texture2D(uNormalSampler, uv).xyz;
+    return normalize(vTBN * ((2.0 * n0 - 1.0)));
+#else
+    return vTBN[2].xyz;
 #endif
 }
 
 
+// Sampler helper functions
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(const vec2 uv)
 {
