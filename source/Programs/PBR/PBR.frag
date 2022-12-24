@@ -307,12 +307,12 @@ highp vec3 GetNormal(const vec2 uv)
 {
 #ifndef HAS_NORMALS
 #ifndef HAS_TANGENTS
-    highp vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
-    highp vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
-    highp vec3 t = normalize(cross(n ,b));
+    vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n0 = texture2D(uNormalSampler, uv).xyz;
+    vec3 n0 = texture2D(uNormalSampler, uv).xyz;
+    vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
+    vec3 t = normalize(cross(n ,b));
     return normalize(mat3(t, b, n) * ((2.0 * n0 - 1.0)));
 #else
     return n;
@@ -321,7 +321,7 @@ highp vec3 GetNormal(const vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n0 = texture2D(uNormalSampler, uv).xyz;
+    vec3 n0 = texture2D(uNormalSampler, uv).xyz;
     return normalize(vTBN * ((2.0 * n0 - 1.0)));
 #else
     return vTBN[2].xyz;
