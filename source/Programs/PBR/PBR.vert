@@ -22,6 +22,36 @@
 #endif
 
 
+#ifdef GRASS
+//----------------------------------------------------------------------------------------------------------------------
+vec4 WaveGrass(const vec4 position, const float time, const float frequency, const vec4 direction)
+{
+  float n = noise(position.xz * time) * 2.0 - 2.0;
+  return n * direction;
+}
+#endif
+
+
+#ifdef TREES
+//----------------------------------------------------------------------------------------------------------------------
+vec4 WaveTree(const vec4 vertex, const vec4 params, const vec4 position, const float time)
+{
+  float radiusCoeff = params.x;
+  float radiusCoeff2 = radiusCoeff * radiusCoeff;
+  float heightCoeff = params.y;
+  float heightCoeff2 = heightCoeff * heightCoeff;
+  float factorX = params.z;
+  float factorY = params.w;
+
+  vec4 ret = vec4(0.0);
+  ret.y = sin(time + position.z + vertex.y + vertex.x) * radiusCoeff2 * factorY;
+  ret.x = sin(time + position.z ) * heightCoeff2 * factorX;
+
+  return ret;
+}
+#endif
+
+
 // uniform block
 uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
@@ -32,9 +62,8 @@ uniform lowp float uMovableObj;
 uniform highp float Time;
 #endif
 #ifdef GRASS
-uniform highp vec3 CameraPosition;
+//uniform vec3 CameraPosition;
 //uniform float uFadeRange;
-uniform float uWindRange;
 #endif //  GRASS
 #ifdef SHADOWRECEIVER
 uniform int ShadowTextureCount;
@@ -75,36 +104,6 @@ out vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
 
-#ifdef GRASS
-//----------------------------------------------------------------------------------------------------------------------
-vec4 WaveGrass(const vec4 position, const float time, const float frequency, const vec4 direction)
-{
-  float n = noise(position.xz * time) * 2.0 - 2.0;
-  return n * direction;
-}
-#endif
-
-
-#ifdef TREES
-//----------------------------------------------------------------------------------------------------------------------
-vec4 WaveTree(const vec4 v, const vec4 params, const vec4 position, const float time)
-{
-  float radiusCoeff = params.x;
-  float radiusCoeff2 = radiusCoeff * radiusCoeff;
-  float heightCoeff = params.y;
-  float heightCoeff2 = heightCoeff * heightCoeff;
-  float factorX = params.z;
-  float factorY = params.w;
-
-  vec4 ret = vec4(0.0);
-  ret.y = sin(time + position.z + v.y + v.x) * radiusCoeff2 * factorY;
-  ret.x = sin(time + position.z ) * heightCoeff2 * factorX;
-
-  return ret;
-}
-#endif
-
-
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
@@ -126,7 +125,8 @@ void main()
   vPosition = model_position.xyz / model_position.w;
 
 #ifdef GRASS
-  if (uv0.y < 0.5 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
+  //if (uv0.y < 0.5 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
+  if (uv0.y < 0.5) {
     new_position += WaveGrass(new_position, 0.2 * Time, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
   }
 #endif

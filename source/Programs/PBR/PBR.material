@@ -1,5 +1,9 @@
 // created by Andrey Vasiliev
 
+
+//----------------------------------------------------------------------------------------------------------------------
+// PBR
+//----------------------------------------------------------------------------------------------------------------------
 sampler ShadowSampler
 {
     filtering linear linear none
@@ -78,6 +82,10 @@ abstract material PBR
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+// IBL
+//----------------------------------------------------------------------------------------------------------------------
 abstract material PBR_IBL : PBR
 {
     set $IBL_Diffuse white.dds
@@ -119,6 +127,96 @@ abstract material PBR_IBL : PBR
                 param_named uSpecularEnvSampler int 5
                 param_named uBrdfLUT            int 6
             }
+        }
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// TERRAIN
+//----------------------------------------------------------------------------------------------------------------------
+abstract material PBR_Terrain
+{
+    transparency_casts_shadows off
+    receive_shadows on
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM white.dds
+    set $Emissive black.dds
+
+    technique
+    {
+        pass
+        {
+            diffuse 1 1 1
+            specular 1 1 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
+            }
+
+            // texture_unit GlobalNormal
+            // {
+            //     texture $Normal
+            //     filtering bilinear
+            // }
+
+            texture_unit uShadowMap0
+            {
+                content_type shadow
+                sampler_ref ShadowSampler
+            }
+            texture_unit uShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowSampler
+            }
+            texture_unit uShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowSampler
+            }
+            texture_unit uShadowMap3
+            {
+                content_type shadow
+                sampler_ref ShadowSampler
+            }
+
+            vertex_program_ref PBR_Terrain_vs {}
+
+            fragment_program_ref PBR_Terrain_fs
+            {
+                param_named uAlbedoSampler       int 0
+                param_named uNormalSampler       int 1
+                param_named uORMSampler          int 2
+                param_named uEmissiveSampler     int 3
+                //param_named uGlobalNormalSampler int 4
+            }
+        }
+    }
+}
+
+material TerrainCustom : PBR_Terrain
+{
+    technique {
+        pass {
+            diffuse 0.11 0.33 0.15 1.00
         }
     }
 }
