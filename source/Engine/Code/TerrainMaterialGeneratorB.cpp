@@ -46,7 +46,7 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
   auto *pass = newMaterial->getTechnique(0)->getPass(0);
   auto *texState = pass->getTextureUnitState("GlobalNormal");
   auto *texState2 = pass->getTextureUnitState("GlobalLight");
-  float uvScale = 20.0f * (terrain->getWorldSize() / terrain->getSize());
+  float uvScale = 2.0f * (terrain->getSize() - 1) / terrain->getWorldSize();
 
   if (pass->hasFragmentProgram()) {
     auto &fp = pass->getFragmentProgramParameters();

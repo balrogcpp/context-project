@@ -171,12 +171,6 @@ abstract material PBR_Terrain
                 texture $Emissive
             }
 
-            // texture_unit GlobalNormal
-            // {
-            //     texture $Normal
-            //     filtering bilinear
-            // }
-
             texture_unit uShadowMap0
             {
                 content_type shadow
