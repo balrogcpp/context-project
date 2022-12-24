@@ -115,7 +115,7 @@ fragment_program PBR_IBL_fs glsl glsles : PBR_IBLI_fs
 //----------------------------------------------------------------------------------------------------------------------
 vertex_program PBR_Terrain_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program PBR_Terrain_fs glsl glsles : PBR_BaseI_fs

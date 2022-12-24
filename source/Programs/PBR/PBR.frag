@@ -265,6 +265,7 @@ float GetShadow(const int counter)
     return 1.0;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0, const vec4 lightSpacePos1, const vec4 lightSpacePos2, const sampler2D uShadowMap0, const sampler2D uShadowMap1, const sampler2D uShadowMap2)
 {
@@ -278,6 +279,7 @@ float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0
     else
         return 1.0;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetPSSMShadow(const int number)
@@ -297,6 +299,7 @@ float GetPSSMShadow(const int number)
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER
 
+
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
@@ -315,18 +318,20 @@ mat3 GetTGN()
 }
 
 
+//  Sampler helper functions
 //----------------------------------------------------------------------------------------------------------------------
 highp vec3 GetNormal(const vec2 uv)
 {
-    highp mat3 tbn = GetTGN();
+    mat3 tbn = GetTGN();
 
 #ifdef HAS_NORMALMAP
     highp vec3 n = texture2D(uNormalSampler, uv).xyz;
     return normalize(tbn * ((2.0 * n - 1.0)));
-#else //!HAS_NORMALMAP
+#else
     return tbn[2].xyz;
 #endif
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(const vec2 uv)
@@ -339,6 +344,7 @@ vec4 GetAlbedo(const vec2 uv)
     return SRGBtoLINEAR(albedo);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 float GetMetallic(const vec2 uv)
 {
@@ -348,6 +354,7 @@ float GetMetallic(const vec2 uv)
 #endif
     return metallic;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetRoughness(const vec2 uv)
@@ -359,6 +366,7 @@ float GetRoughness(const vec2 uv)
     return roughness;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 float GetOcclusion(const vec2 uv)
 {
@@ -368,6 +376,7 @@ float GetOcclusion(const vec2 uv)
     return 1.0;
 #endif
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetORM(const vec2 uv)
