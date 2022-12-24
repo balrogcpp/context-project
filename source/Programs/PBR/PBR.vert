@@ -43,7 +43,7 @@ uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 
 
 // in block
-in highp vec3 position;
+in highp vec4 position;
 #ifdef HAS_NORMALS
 in vec4 normal;
 #endif
@@ -69,18 +69,7 @@ out highp vec3 vPosition;
 out vec3 vColor;
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
 out mat3 vTBN;
-#else
-out vec3 vNormal;
-#endif
-#endif //  HAS_NORMALS
-
-#ifdef GRASS
-out mat3 vTBN;
-#endif
-
 #ifdef SHADOWRECEIVER
 out vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -94,6 +83,7 @@ vec4 WaveGrass(const vec4 position, const float time, const float frequency, con
   return n * direction;
 }
 #endif
+
 
 #ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
@@ -119,11 +109,8 @@ vec4 WaveTree(const vec4 v, const vec4 params, const vec4 position, const float 
 void main()
 {
 #ifdef HAS_UV
-
-  vec4 new_position = vec4(position, 1.0);
-  vec2 new_uv = uv0.xy;
-
-  vUV0.xy = new_uv.xy;
+  vec4 new_position = position;
+  vUV0.xy = uv0.xy;
 #else
   vUV0.xy = vec2(0.0);
 #endif
@@ -139,10 +126,6 @@ void main()
   vPosition = model_position.xyz / model_position.w;
 
 #ifdef GRASS
-  vTBN = mat3(vec3(1.0, 0.0, 0.0),
-              vec3(0.0, 0.0, 0.0),
-              vec3(0.0, 1.0, 0.0));
-
   if (uv0.y < 0.5 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
     new_position += WaveGrass(new_position, 0.2 * Time, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
   }
@@ -157,11 +140,18 @@ void main()
   vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
   vec3 b = cross(n, t) * tangent.w;
   vTBN = mat3(t, b, n);
-#else // HAS_TANGENTS != 1
-  vNormal = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
+#else // NO HAS_TANGENTS
+  vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
+  vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
+  vec3 t = normalize(cross(n ,b));
+  //vec3 t = vec3(1.0, 0.0, 0.0);
+  //vec3 b = cross(n, t) * tangent.w;
+  vTBN = mat3(t, b, n);
 #endif
 #else // !HAS_NORMALS
-
+  vTBN = mat3(vec3(1.0, 0.0, 0.0),
+              vec3(0.0, 0.0, 0.0),
+              vec3(0.0, 1.0, 0.0));
 #endif // HAS_NORMALS
 
   gl_Position = MVPMatrix * new_position;

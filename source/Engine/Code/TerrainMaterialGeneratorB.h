@@ -27,10 +27,13 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     bool isLightmapEnabled();
     void setNormalmapEnabled(bool enabled);
     bool isNormalmapEnabled();
+    void setCompositeMapEnabled(bool enabled);
+    bool isCompositeMapEnabled();
 
    protected:
     bool enableLightmap;
     bool enableNormalmap;
+    bool enableCompositeMap;
     int8_t terrainMaxLayers;
   };
 };

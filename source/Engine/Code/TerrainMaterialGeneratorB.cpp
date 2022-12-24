@@ -14,21 +14,22 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() {}
 
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name, const String &desc)
-    : Profile(parent, name, desc), enableLightmap(false), enableNormalmap(true), terrainMaxLayers(4) {}
+    : Profile(parent, name, desc), enableLightmap(false), enableNormalmap(false), enableCompositeMap(false), terrainMaxLayers(4) {}
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const { return false; }
-
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { enableLightmap = enabled; }
 bool TerrainMaterialGeneratorB::SM2Profile::isLightmapEnabled() { return enableLightmap; }
 void TerrainMaterialGeneratorB::SM2Profile::setNormalmapEnabled(bool enabled) { enableNormalmap = enabled; }
 bool TerrainMaterialGeneratorB::SM2Profile::isNormalmapEnabled() { return enableNormalmap; }
+void TerrainMaterialGeneratorB::SM2Profile::setCompositeMapEnabled(bool enabled) { enableCompositeMap = enabled; }
+bool TerrainMaterialGeneratorB::SM2Profile::isCompositeMapEnabled() { return enableCompositeMap; }
 
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *terrain) {
   terrain->_setMorphRequired(true);
-  terrain->_setNormalMapRequired(true);
+  terrain->_setNormalMapRequired(enableNormalmap);
   terrain->_setLightMapRequired(enableLightmap, true);
-  terrain->_setCompositeMapRequired(false);
+  terrain->_setCompositeMapRequired(enableCompositeMap);
 }
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terrain) {

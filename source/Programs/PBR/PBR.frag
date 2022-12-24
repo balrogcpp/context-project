@@ -117,13 +117,7 @@ in float vDepth;
 in vec3 vColor;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
 in mat3 vTBN;
-#else
-in vec3 vNormal;
-#endif
-#endif
 
 
 // uniforms
@@ -157,10 +151,10 @@ uniform samplerCube uDiffuseEnvSampler;
 uniform samplerCube uSpecularEnvSampler;
 uniform sampler2D uBrdfLUT;
 #endif
-#ifdef TERRAIN
-uniform sampler2D uGlobalNormalSampler;
-uniform vec2 TexelSize5;
-#endif
+// #ifdef TERRAIN
+// uniform sampler2D uGlobalNormalSampler;
+// uniform vec2 TexelSize5;
+// #endif
 
 // lights
 uniform lowp float LightCount;
@@ -313,51 +307,44 @@ float GetPSSMShadow(const int number)
 //----------------------------------------------------------------------------------------------------------------------
 mat3 GetTGN()
 {
-// Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
-
-#ifdef HAS_NORMALS
-    vec3 ng = normalize(vNormal);
-#else //!HAS_NORMALS
-    vec3 ng = cross(dFdx(vPosition), dFdy(vPosition));
-#endif //HAS_NORMALS
-
-    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(ng ,b));
-    return mat3(t, b, ng);
-
-#else //HAS_TANGENTS
+#ifndef HAS_NORMALS
+    vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
+    vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
+    vec3 t = normalize(cross(n ,b));
+    return mat3(t, b, n);
+#endif
+#endif
 
     return vTBN;
-#endif //!HAS_TANGENTS
 }
 
-#ifdef TERRAIN
-//----------------------------------------------------------------------------------------------------------------------
-mat3 GetTgnTerrain()
-{
-    // Retrieve the tangent space matrix
-#ifndef HAS_TANGENTS
-    vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
-    vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(ng ,b));
-    mat3 tbn = mat3(t, b, ng);
-#else //HAS_TANGENTS
-    mat3 tbn = vTBN;
-#endif //!HAS_TANGENTS
+// #ifdef TERRAIN
+// //----------------------------------------------------------------------------------------------------------------------
+// mat3 GetTgnTerrain()
+// {
+//     // Retrieve the tangent space matrix
+// #ifndef HAS_TANGENTS
+//     vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
+//     vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
+//     vec3 t = normalize(cross(ng ,b));
+//     mat3 tbn = mat3(t, b, ng);
+// #else //HAS_TANGENTS
+//     mat3 tbn = vTBN;
+// #endif //!HAS_TANGENTS
 
-    return tbn;
-}
-#endif // TERRAIN
+//     return tbn;
+// }
+// #endif // TERRAIN
 
 //----------------------------------------------------------------------------------------------------------------------
 highp vec3 GetNormal(const vec2 uv)
 {
-#ifdef TERRAIN
-    mat3 tbn = GetTgnTerrain();
-#else
+// #ifdef TERRAIN
+//     mat3 tbn = GetTgnTerrain();
+// #else
     mat3 tbn = GetTGN();
-#endif
+// #endif
 
 #ifdef HAS_NORMALMAP
     highp vec3 n = texture2D(uNormalSampler, uv).xyz;
