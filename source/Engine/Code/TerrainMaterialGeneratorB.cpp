@@ -42,23 +42,29 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
   static unsigned long long GENERATOR = 0;
   std::string newName = materialName + std::to_string(GENERATOR++);
 
-  if (isVertexCompressionSupported()) {
-    auto material = MaterialManager::getSingleton().getByName(materialName);
-    auto *pass = material->getTechnique(0)->getPass(0);
-    if (pass->hasVertexProgram()) {
-      auto vert_params = pass->getVertexProgramParameters();
-
-      Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
-      vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
-      Real baseUVScale = 1.0f / (terrain->getSize() - 1);
-      vert_params->setNamedConstant("baseUVScale", baseUVScale);
-    }
-  }
-
   auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
   auto *pass = newMaterial->getTechnique(0)->getPass(0);
   auto *texState = pass->getTextureUnitState("GlobalNormal");
   auto *texState2 = pass->getTextureUnitState("GlobalLight");
+  float uvScale = 20.0f * (terrain->getWorldSize() / terrain->getSize());
+
+  if (pass->hasFragmentProgram()) {
+    auto &fp = pass->getFragmentProgramParameters();
+
+    fp->setNamedConstant("uTexScale", uvScale);
+  }
+
+  if (isVertexCompressionSupported()) {
+    if (pass->hasVertexProgram()) {
+      auto &vp = pass->getVertexProgramParameters();
+
+      Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
+      vp->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
+      Real baseUVScale = 1.0f / (terrain->getSize() - 1);
+      vp->setNamedConstant("baseUVScale", baseUVScale);
+    }
+  }
+
 
   if (texState && SM2Profile::isNormalmapEnabled()) {
     texState->setTexture(terrain->getTerrainNormalMap());
