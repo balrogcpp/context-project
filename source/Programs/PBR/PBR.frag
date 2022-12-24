@@ -151,10 +151,7 @@ uniform samplerCube uDiffuseEnvSampler;
 uniform samplerCube uSpecularEnvSampler;
 uniform sampler2D uBrdfLUT;
 #endif
-// #ifdef TERRAIN
-// uniform sampler2D uGlobalNormalSampler;
-// uniform vec2 TexelSize5;
-// #endif
+
 
 // lights
 uniform lowp float LightCount;
@@ -175,9 +172,7 @@ uniform float SurfaceAlphaRejection;
 uniform float FarClipDistance;
 uniform highp float FrameTime;
 uniform highp vec3 CameraPosition;
-#ifdef TERRAIN
-uniform float uTerrainTexScale;
-#endif
+uniform float uTexScale;
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
 uniform float uOffsetScale;
@@ -319,41 +314,18 @@ mat3 GetTGN()
     return vTBN;
 }
 
-// #ifdef TERRAIN
-// //----------------------------------------------------------------------------------------------------------------------
-// mat3 GetTgnTerrain()
-// {
-//     // Retrieve the tangent space matrix
-// #ifndef HAS_TANGENTS
-//     vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
-//     vec3 b = normalize(cross(ng, vec3(1.0, 0.0, 0.0)));
-//     vec3 t = normalize(cross(ng ,b));
-//     mat3 tbn = mat3(t, b, ng);
-// #else //HAS_TANGENTS
-//     mat3 tbn = vTBN;
-// #endif //!HAS_TANGENTS
-
-//     return tbn;
-// }
-// #endif // TERRAIN
 
 //----------------------------------------------------------------------------------------------------------------------
 highp vec3 GetNormal(const vec2 uv)
 {
-// #ifdef TERRAIN
-//     mat3 tbn = GetTgnTerrain();
-// #else
-    mat3 tbn = GetTGN();
-// #endif
+    highp mat3 tbn = GetTGN();
 
 #ifdef HAS_NORMALMAP
     highp vec3 n = texture2D(uNormalSampler, uv).xyz;
-    n = normalize(tbn * ((2.0 * n - 1.0)));
+    return normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
-    highp vec3 n = tbn[2].xyz;
+    return tbn[2].xyz;
 #endif
-
-    return n;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -413,9 +385,7 @@ void main()
 {
     highp vec3 v = normalize(CameraPosition - vPosition);
     vec2 tex_coord = vUV0.xy;
-#ifdef TERRAIN
-    tex_coord *= uTerrainTexScale;
-#endif
+    tex_coord *= (1.0 + uTexScale);
 
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP

@@ -125,7 +125,6 @@ void main()
   vPosition = model_position.xyz / model_position.w;
 
 #ifdef GRASS
-  //if (uv0.y < 0.5 && distance(CameraPosition.xyz, vPosition.xyz) < uWindRange) {
   if (uv0.y < 0.5) {
     new_position += WaveGrass(new_position, 0.2 * Time, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
   }
@@ -144,8 +143,6 @@ void main()
   vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
   vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
   vec3 t = normalize(cross(n ,b));
-  //vec3 t = vec3(1.0, 0.0, 0.0);
-  //vec3 b = cross(n, t) * tangent.w;
   vTBN = mat3(t, b, n);
 #endif
 #else // !HAS_NORMALS
