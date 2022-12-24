@@ -110,8 +110,6 @@ void main()
 #ifdef HAS_UV
   vec4 new_position = position;
   vUV0.xy = uv0.xy;
-#else
-  vUV0.xy = vec2(0.0);
 #endif
 
 

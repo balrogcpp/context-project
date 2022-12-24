@@ -200,7 +200,6 @@ abstract material PBR_Terrain
                 param_named uNormalSampler       int 1
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
-                //param_named uGlobalNormalSampler int 4
             }
         }
     }
