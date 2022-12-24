@@ -35,7 +35,7 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
   terrainGlobalOptions->setCompositeMapDistance(1000);
   terrainGlobalOptions->setCastsDynamicShadows(false);
-  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
+  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(false);
   terrainGlobalOptions->setLightMapSize(256);
   terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
 }

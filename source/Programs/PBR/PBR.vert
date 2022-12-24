@@ -43,14 +43,7 @@ uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 
 
 // in block
-#ifndef VERTEX_COMPRESSION
 in highp vec3 position;
-#else
-in vec2 vertex;
-in float uv0;
-uniform mat4 posIndexToObjectSpace;
-uniform float baseUVScale;
-#endif
 #ifdef HAS_NORMALS
 in vec4 normal;
 #endif
@@ -60,7 +53,6 @@ in vec4 tangent;
 #ifdef HAS_VERTEXCOLOR
 in vec4 colour;
 #endif
-#ifndef VERTEX_COMPRESSION
 #ifdef HAS_UV
 in vec2 uv0;
 #ifdef TREES
@@ -68,7 +60,6 @@ in vec4 uv1;
 in vec4 uv2;
 #endif
 #endif //  HAS_UV
-#endif //  !VERTEX_COMPRESSION
 
 
 // out block
@@ -128,13 +119,9 @@ vec4 WaveTree(const vec4 v, const vec4 params, const vec4 position, const float 
 void main()
 {
 #ifdef HAS_UV
-#ifndef VERTEX_COMPRESSION
+
   vec4 new_position = vec4(position, 1.0);
   vec2 new_uv = uv0.xy;
-#else
-  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
-  vec2 new_uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
-#endif
 
   vUV0.xy = new_uv.xy;
 #else

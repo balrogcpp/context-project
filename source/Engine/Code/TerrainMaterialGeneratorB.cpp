@@ -17,9 +17,7 @@ TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *pare
     : Profile(parent, name, desc), enableLightmap(false), enableNormalmap(true), terrainMaxLayers(4) {}
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
-bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-  return !Ogre::TerrainGlobalOptions::getSingletonPtr()->getCastsDynamicShadows();
-}
+bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const { return false; }
 
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { enableLightmap = enabled; }
 bool TerrainMaterialGeneratorB::SM2Profile::isLightmapEnabled() { return enableLightmap; }
