@@ -41,9 +41,9 @@ android {
             def sha1 = System.getenv("GIT_SHA1") ?: "1.0"
             def deploy = System.getenv("GRADLE_DEPLOY")
             if (variant.name == "release") {
-                outputFileName = "example-${sha1}-android-arm64-${variant.name}-${date}.apk"
+                outputFileName = "demo-${sha1}-android-arm64-${variant.name}-${date}.apk"
              } else {
-                outputFileName = "example-${sha1}-android-arm64-${variant.name}.apk"
+                outputFileName = "demo-${sha1}-android-arm64-${variant.name}.apk"
              }
             if (deploy) {
                 outputFileName = "../../../../../../../artifacts/" + outputFileName
