@@ -39,7 +39,6 @@ void Menu::OnSetUp() {
 
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
-  //font = io.Fonts->AddFontDefault();
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", 16.0);
   GetComponent<VideoManager>().ShowOverlay(true);
   ImGuiB::SetupImGuiStyle_Unreal();
@@ -48,6 +47,10 @@ void Menu::OnSetUp() {
 void Menu::OnUpdate(float time) {}
 
 void Menu::OnSizeChanged(int x, int y, uint32_t id) {
+  if (x <= 0 || y <= 0) {
+    return;
+  }
+
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
   float diag0 = sqrt(1366 * 1366 + 768 * 768);
@@ -76,6 +79,7 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
 
   io.Fonts->Clear();
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(16.0 * scale));
+  GetComponent<VideoManager>().RebuildOVerlayFontAtlas();
 }
 
 void Menu::BeforeRender(float time) {
@@ -96,9 +100,7 @@ void Menu::BeforeRender(float time) {
 #ifdef MOBILE
   ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
   ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) {
-    showMenu = true;
-  }
+  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) showMenu = true;
   ImGui::End();
 #endif
 

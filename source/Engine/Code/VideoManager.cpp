@@ -636,6 +636,25 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGen = nullptr;
 };
 
+void VideoManager::RebuildOVerlayFontAtlas() {
+  static ImGuiIO &io = ImGui::GetIO();
+  unsigned char *pixels;
+  int width, height;
+
+  io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
+  const auto &mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL);
+  if (mat) {
+    Ogre::TexturePtr tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->_getTexturePtr();
+    Ogre::TextureManager::getSingleton().unload("ImGui/FontTex");
+    Ogre::TextureManager::getSingleton().remove("ImGui/FontTex");
+    tex.reset();  // to be sure memory is freed
+    tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
+                                                            Ogre::PF_BYTE_RGBA);
+    tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
+  }
+}
+
 ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
                                      const ImWchar *ranges) {
   typedef std::vector<ImWchar> CodePointRange;
@@ -667,21 +686,6 @@ ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, co
   int size_ = size > 0 ? size : font->getTrueTypeSize();
 
   ImFont *res = io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), size_ * vpScale, cfg, ranges);
-
-  unsigned char *pixels;
-  int width, height;
-  io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-
-  const auto &mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL);
-  if (mat) {
-    Ogre::TexturePtr tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->_getTexturePtr();
-    Ogre::TextureManager::getSingleton().unload("ImGui/FontTex");
-    Ogre::TextureManager::getSingleton().remove("ImGui/FontTex");
-    tex.reset(); // to be sure that memory is freed
-    tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
-                                                            Ogre::PF_BYTE_RGBA);
-    tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
-  }
 
   return res;
 }
