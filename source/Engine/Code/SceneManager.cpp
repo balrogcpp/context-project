@@ -48,6 +48,7 @@ inline void CheckTransparentShadowCaster(const std::string &material) {
 }
 
 inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
+  bool hasNormals = false;
   bool hasTangents = false;
   bool hasUVs = false;
   auto &elementList = vertex_declaration->getElements();
@@ -57,12 +58,13 @@ inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declarat
   while (it != end && !hasTangents) {
     const auto &vertexElem = *it;
     if (vertexElem.getSemantic() == Ogre::VES_TANGENT) hasTangents = true;
+    if (vertexElem.getSemantic() == Ogre::VES_NORMAL) hasNormals = true;
     if (vertexElem.getSemantic() == Ogre::VES_TEXTURE_COORDINATES) hasUVs = true;
 
     ++it;
   }
 
-  return !hasTangents && hasUVs;
+  return !hasTangents && hasUVs && hasNormals;
 }
 
 inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
@@ -87,14 +89,9 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }
 }  // namespace
 
-namespace {
-Ogre::Matrix4 ViewProj;
-Ogre::Matrix4 ViewProjPrev;
-Ogre::Vector4 PssmPoints;
-}  // namespace
 
 namespace Glue {
-SceneManager::SceneManager() {}
+SceneManager::SceneManager() : viewProj(Ogre::Matrix4::ZERO), viewProjPrev(Ogre::Matrix4::ZERO), pssmPoints(Ogre::Vector4::ZERO) {}
 SceneManager::~SceneManager() { ogreSceneManager->removeRenderObjectListener(this); }
 
 void SceneManager::OnSetUp() {
@@ -120,18 +117,18 @@ void SceneManager::OnUpdate(float time) {
     sinbad->Update(time);
   }
 
-  ViewProjPrev = ViewProj;
-  ViewProj = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
+  viewProjPrev = viewProj;
+  viewProj = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
 
   if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
     auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-    PssmPoints.w = ogreSceneManager->getShadowFarDistance();
+    pssmPoints.w = ogreSceneManager->getShadowFarDistance();
     for (unsigned int j = 0; j < 3; j++) {
-      PssmPoints[j] = splitPointList[j + 1];
+      pssmPoints[j] = splitPointList[j + 1];
     }
   } else {
-    PssmPoints = Ogre::Vector4(0.0);
+    pssmPoints = Ogre::Vector4(0.0);
   }
 }
 
@@ -204,7 +201,7 @@ void SceneManager::ScanLight(Ogre::Light *light) {
 void SceneManager::ScanEntity(const std::string &name) { ScanEntity(ogreSceneManager->getEntity(name)); }
 
 void SceneManager::ScanEntity(Ogre::Entity *entity) {
-  // EnsureHasTangents(entity->getMesh());
+  EnsureHasTangents(entity->getMesh());
 
   if (entity->getName().rfind("GrassLDR", 0)) {
     Ogre::SceneNode *node = entity->getParentSceneNode();
@@ -308,7 +305,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
       Ogre::Matrix4 MVP;
       Ogre::Any value = rend->getUserAny();
       rend->getWorldTransforms(&MVP);
-      rend->setUserAny(ViewProj * MVP);
+      rend->setUserAny(viewProj * MVP);
 
       if (value.has_value()) {
         vp->setNamedConstant("uWorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
@@ -317,14 +314,14 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
       }
 
     } else {
-      vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+      vp->setNamedConstant("uWorldViewProjPrev", viewProjPrev);
       vp->setNamedConstant("uStaticObj", Ogre::Real(1.0));
       vp->setNamedConstant("uMovableObj", Ogre::Real(0.0));
     }
   }
 
   else {
-    vp->setNamedConstant("uWorldViewProjPrev", ViewProjPrev);
+    vp->setNamedConstant("uWorldViewProjPrev", viewProjPrev);
     vp->setNamedConstant("uStaticObj", Ogre::Real(1.0));
     vp->setNamedConstant("uMovableObj", Ogre::Real(0.0));
   }
@@ -334,7 +331,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   // else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend))
   // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend))
 
-  fp->setNamedConstant("uPssmSplitPoints", PssmPoints);
+  fp->setNamedConstant("uPssmSplitPoints", pssmPoints);
 
   vp->setIgnoreMissingParams(false);
   fp->setIgnoreMissingParams(false);

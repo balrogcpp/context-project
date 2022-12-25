@@ -228,18 +228,18 @@ void VideoManager::LoadResources() {
   }
 
 #elif defined(ANDROID)
-  #ifdef NDEBUG
-    InitEmbeddedResources();
-  #else
-    ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
-  #endif
+#ifdef NDEBUG
+  InitEmbeddedResources();
+#else
+  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
+#endif
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
 #elif defined(IOS) || defined(EMSCRIPTEN)
-  #ifdef NDEBUG
-    InitEmbeddedResources();
-  #else
-    ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
-  #endif
+#ifdef NDEBUG
+  InitEmbeddedResources();
+#else
+  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
+#endif
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
 #endif
 
@@ -458,7 +458,7 @@ void VideoManager::InitOgreOverlay() {
 #endif
 }
 
-void VideoManager::InitOgre() {
+void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
   shadowEnabled = true;
 #else
@@ -726,6 +726,6 @@ void VideoManager::OnSetUp() {
   InitOgreRTSS();
   InitOgreOverlay();
   LoadResources();
-  InitOgre();
+  InitOgreSceneManager();
 }
 }  // namespace Glue

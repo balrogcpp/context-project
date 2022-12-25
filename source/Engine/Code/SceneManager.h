@@ -34,5 +34,9 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
+
+  Ogre::Matrix4 viewProj;
+  Ogre::Matrix4 viewProjPrev;
+  Ogre::Vector4 pssmPoints;
 };
 }  // namespace Glue

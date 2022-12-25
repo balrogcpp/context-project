@@ -44,7 +44,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void InitOgreRTSS();
   void InitOgreOverlay();
   void LoadResources();
-  void InitOgre();
+  void InitOgreSceneManager();
   void CheckGPU();
 
   /// System impl
