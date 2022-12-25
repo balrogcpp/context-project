@@ -307,13 +307,14 @@ highp vec3 GetNormal(const vec2 uv)
 {
 #ifndef HAS_NORMALS
 #ifndef HAS_TANGENTS
-    vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
+    highp vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
 
 #ifdef HAS_NORMALMAP
-    vec3 n0 = texture2D(uNormalSampler, uv).xyz;
+    highp vec3 n0 = texture2D(uNormalSampler, uv).xyz;
     vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     vec3 t = normalize(cross(n ,b));
-    return normalize(mat3(t, b, n) * ((2.0 * n0 - 1.0)));
+    n0 = normalize(mat3(t, b, n) * ((2.0 * n0 - 1.0)));
+    return n0;
 #else
     return n;
 #endif
@@ -321,10 +322,12 @@ highp vec3 GetNormal(const vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n0 = texture2D(uNormalSampler, uv).xyz;
-    return normalize(vTBN * ((2.0 * n0 - 1.0)));
+    highp vec3 n = texture2D(uNormalSampler, uv).xyz;
+    n = normalize(vTBN * ((2.0 * n - 1.0)));
+    return n;
 #else
-    return vTBN[2].xyz;
+    highp vec3 n = vTBN[2].xyz;
+    return n;
 #endif
 }
 
@@ -474,7 +477,7 @@ void main()
             }
         }
 
-        highp float alphaRoughness = (roughness * roughness);
+        highp float alphaRoughness = roughness * roughness;
         highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
         float LdotH = clamp(dot(l, h), 0.0, 1.0);
         float VdotH = clamp(dot(v, h), 0.0, 1.0);
