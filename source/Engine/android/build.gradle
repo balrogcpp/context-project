@@ -40,7 +40,11 @@ android {
             def date = zonedDate.format("YYYYMMdd'T'HHMMSS'Z'")
             def sha1 = System.getenv("GIT_SHA1") ?: "1.0"
             def deploy = System.getenv("GRADLE_DEPLOY")
-            outputFileName = "example-${sha1}-android-arm64-${date}-${variant.name}.apk"
+            if (variant.name == "release") {
+                outputFileName = "example-${sha1}-android-arm64-${variant.name}-${date}.apk"
+             } else {
+                outputFileName = "example-${sha1}-android-arm64-${variant.name}.apk"
+             }
             if (deploy) {
                 outputFileName = "../../../../../../../artifacts/" + outputFileName
             }
