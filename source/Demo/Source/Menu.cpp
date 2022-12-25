@@ -9,10 +9,7 @@ using namespace std;
 
 namespace {
 bool showMenu = false;
-ImFont *font0 = nullptr;
 ImFont *font = nullptr;
-ImFont *font2 = nullptr;
-ImFont *font3 = nullptr;
 }  // namespace
 
 namespace Glue {
@@ -32,16 +29,25 @@ void Menu::OnSetUp() {
   // GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
   GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
   GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", true);
+#else
+  int x = GetComponent<VideoManager>().GetWindow().GetSizeX();
+  int y = GetComponent<VideoManager>().GetWindow().GetSizeY();
 #endif
 
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
+  //ImGuiB::SetupImGuiStyle_Unreal();
+  ImGuiB::SetupImGuiStyle_SpectrumDark();
 
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
-  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", 16.0);
+
+  float diag0 = sqrt(1920 * 1920 + 1080 * 1080);
+  float diag = sqrt(x * x + y * y);
+  float scale = diag / diag0;
+  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(24 * scale));
+
   GetComponent<VideoManager>().ShowOverlay(true);
-  ImGuiB::SetupImGuiStyle_Unreal();
 }
 
 void Menu::OnUpdate(float time) {}
@@ -53,32 +59,30 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
 
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
-  float diag0 = sqrt(1366 * 1366 + 768 * 768);
+  float diag0 = sqrt(1920 * 1920 + 1080 * 1080);
   float diag = sqrt(x * x + y * y);
   float scale = diag / diag0;
-  // ImGuiB::SetupImGuiStyle_Unreal();
 
   //  Setup Dear ImGui style
-  ImGuiStyle styleold = style;  // Backup colors
-  style = ImGuiStyle();         // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
-  style.WindowBorderSize = 1.0f;
-  style.ChildBorderSize = 1.0f;
-  style.PopupBorderSize = 1.0f;
-  style.FrameBorderSize = 1.0f;
-  style.TabBorderSize = 1.0f;
-  style.WindowRounding = 0.0f;
-  style.ChildRounding = 0.0f;
-  style.PopupRounding = 0.0f;
-  style.FrameRounding = 0.0f;
-  style.ScrollbarRounding = 0.0f;
-  style.GrabRounding = 0.0f;
-  style.TabRounding = 0.0f;
-  style.ScaleAllSizes(scale);
-  memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));  // Restore colors
-  style.ScaleAllSizes(scale);
+   ImGuiStyle styleold = style;  // Backup colors
+   style = ImGuiStyle();         // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
+   style.WindowBorderSize = 1.0f;
+   style.ChildBorderSize = 1.0f;
+   style.PopupBorderSize = 1.0f;
+   style.FrameBorderSize = 1.0f;
+   style.TabBorderSize = 1.0f;
+   style.WindowRounding = 0.0f;
+   style.ChildRounding = 0.0f;
+   style.PopupRounding = 0.0f;
+   style.FrameRounding = 0.0f;
+   style.ScrollbarRounding = 0.0f;
+   style.GrabRounding = 0.0f;
+   style.TabRounding = 0.0f;
+   style.ScaleAllSizes(scale);
+   memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));  // Restore colors
 
   io.Fonts->Clear();
-  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(16.0 * scale));
+  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(24 * scale));
   GetComponent<VideoManager>().RebuildOVerlayFontAtlas();
 }
 
@@ -92,7 +96,7 @@ void Menu::BeforeRender(float time) {
   // fps counter
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
-  ImGui::PushFont(font0);
+  ImGui::PushFont(nullptr);
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::PopFont();
   ImGui::End();
@@ -127,7 +131,7 @@ void Menu::BeforeRender(float time) {
 
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
-  ImGui::SetNextWindowBgAlpha(0.5);
+  ImGui::SetNextWindowBgAlpha(0.7);
   ImGui::Begin("Graphics Settings", 0, ImGuiWindowFlags_NoDecoration);
 
   ImGui::PushFont(font);
@@ -136,7 +140,7 @@ void Menu::BeforeRender(float time) {
   std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
 
   const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-  ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
+  //ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
 
   ImGui::BeginChild("ScrollingRegion1", ImVec2(ImGetWidth(), ImGetHeight()), false);
 
@@ -144,15 +148,15 @@ void Menu::BeforeRender(float time) {
   static int combos[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #ifndef ANDROID
-  if (ImGuiB::Checkbox("Fullscreen", &flags[0])) {
+  if (ImGui::Checkbox("Fullscreen", &flags[0])) {
     window.SetFullscreen(flags[0]);
   }
 
-  if (ImGuiB::Checkbox("Resizable", &flags[1])) {
+  if (ImGui::Checkbox("Resizable", &flags[1])) {
     window.SetResizable(flags[1]);
   }
 
-  if (ImGuiB::Checkbox("Maximize", &flags[2])) {
+  if (ImGui::Checkbox("Maximize", &flags[2])) {
     window.SetResizable(true);
 
     std::this_thread::sleep_for(100ms);
@@ -169,15 +173,15 @@ void Menu::BeforeRender(float time) {
     window.SetResizable(flags[1]);
   }
 
-  if (ImGuiB::Checkbox("Always on top", &flags[3])) {
+  if (ImGui::Checkbox("Always on top", &flags[3])) {
     window.SetAlwaysOnTop(flags[3]);
   }
 
-  if (ImGuiB::Checkbox("Hide border", &flags[4])) {
+  if (ImGui::Checkbox("Hide border", &flags[4])) {
     window.SetBordered(!flags[4]);
   }
 
-  if (ImGuiB::Checkbox("Grab mouse", &flags[5])) {
+  if (ImGui::Checkbox("Grab mouse", &flags[5])) {
     window.SetGrabMouse(flags[5]);
   }
 
