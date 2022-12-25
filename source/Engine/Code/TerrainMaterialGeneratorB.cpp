@@ -49,14 +49,14 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
   float uvScale = 2.0f * (terrain->getSize() - 1) / terrain->getWorldSize();
 
   if (pass->hasFragmentProgram()) {
-    auto &fp = pass->getFragmentProgramParameters();
+    const auto &fp = pass->getFragmentProgramParameters();
 
     fp->setNamedConstant("uTexScale", uvScale);
   }
 
   if (isVertexCompressionSupported()) {
     if (pass->hasVertexProgram()) {
-      auto &vp = pass->getVertexProgramParameters();
+      const auto &vp = pass->getVertexProgramParameters();
 
       Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
       vp->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);

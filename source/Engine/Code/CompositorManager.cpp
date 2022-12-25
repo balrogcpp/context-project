@@ -252,7 +252,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 //  source https://wiki.ogre3d.org/GetScreenspaceCoords
 static Ogre::Vector4 getScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
   if (!object->isInScene()) {
-    return Ogre::Vector4();
+    return Ogre::Vector4::ZERO;
   }
 
   const Ogre::AxisAlignedBox &AABB = object->getWorldBoundingBox(true);
@@ -273,7 +273,7 @@ static Ogre::Vector4 getScreenspaceCoords(Ogre::MovableObject *object, Ogre::Cam
   // Is the camera facing that point? If not, return false
   Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
   if (cameraPlane.getSide(center) != Ogre::Plane::NEGATIVE_SIDE) {
-    return Ogre::Vector4();
+    return Ogre::Vector4::ZERO;
   }
 
   // Transform the 3D point into screen space
@@ -299,12 +299,12 @@ static Ogre::Vector4 LightScreenspaceCoords(Ogre::Light *light, Ogre::Camera *ca
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   if (pass_id == 10) {  // SSAO
-    auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
 
   } else if (pass_id == 11) {
-    auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
     fp->setNamedConstant("LightCount", static_cast<Ogre::Real>(lightList.size()));
