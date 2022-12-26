@@ -3,6 +3,14 @@
 #ifndef HEADER_VERT
 #define HEADER_VERT
 
+#ifndef MAX_LIGHTS
+#define MAX_LIGHTS 8
+#endif
+
+#ifndef MAX_SHADOW_TEXTURES
+#define MAX_SHADOW_TEXTURES 4
+#endif
+
 #ifdef GL_ES
 #if __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
@@ -20,7 +28,7 @@
 #define out varying
 #endif // __VERSION__ > 150
 
-#else // GL_ES
+#else
 
 precision mediump float;
 precision lowp int;

@@ -18,7 +18,7 @@ shared_params PBR_Shared_vert
 abstract vertex_program PBR_I_vs glsl glsles
 {
 	source PBR.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 
     default_params
     {
@@ -32,13 +32,13 @@ abstract vertex_program PBR_I_vs glsl glsles
 
 vertex_program PBR_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
-abstract fragment_program PBR_BaseI_fs glsl glsles
+abstract fragment_program PBR_I_fs glsl glsles
 {
 	source PBR.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER
     
     default_params
     {
@@ -65,11 +65,6 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
     }
 }
 
-abstract fragment_program PBR_I_fs glsl glsles : PBR_BaseI_fs
-{
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-}
-
 fragment_program PBR_fs glsl glsles : PBR_I_fs
 {
     default_params
@@ -89,9 +84,9 @@ fragment_program PBR_fs glsl glsles : PBR_I_fs
 //----------------------------------------------------------------------------------------------------------------------
 // IBL
 //----------------------------------------------------------------------------------------------------------------------
-abstract fragment_program PBR_IBLI_fs glsl glsles : PBR_BaseI_fs
+abstract fragment_program PBR_IBLI_fs glsl glsles : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,SHADOWRECEIVER
 }
 
 fragment_program PBR_IBL_fs glsl glsles : PBR_IBLI_fs

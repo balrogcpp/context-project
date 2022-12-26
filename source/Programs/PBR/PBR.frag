@@ -407,7 +407,7 @@ void main()
     float alpha = albedo.a;
 
 #ifdef HAS_ALPHA
-    if (SurfaceAlphaRejection > 0.0001) {
+    if (SurfaceAlphaRejection > 0.0) {
         if (alpha < SurfaceAlphaRejection) {
             discard;
         }

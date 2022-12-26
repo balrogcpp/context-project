@@ -3,24 +3,22 @@
 import PBR from PBR.material
 import PBR_I_vs from PBR.program
 import PBR_I_fs from PBR.program
+import PBR_fs from PBR.program
 
 vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,PAGED_GEOMETRY,TREES,HAS_VERTEXCOLOR,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,PAGED_GEOMETRY,TREES,HAS_VERTEXCOLOR,SHADOWRECEIVER
     default_params
     {
         param_named_auto Time time
     }
 }
 
-fragment_program PBR_Paged_fs glsl glsles : PBR_I_fs
-{
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-}
+fragment_program PBR_Paged_fs glsl glsles : PBR_I_fs {}
 
 vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,MAX_LIGHTS=8,PAGED_GEOMETRY,GRASS,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY,GRASS,SHADOWRECEIVER
     default_params
     {
         param_named_auto Time time
@@ -29,17 +27,11 @@ vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
     }
 }
 
-fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
-{
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-}
+fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs {}
 
 abstract material PBR_Grass : PBR
 {
-    receive_shadows on
     transparency_casts_shadows off
-
-    set $Albedo white.dds
 
     technique
     {
@@ -47,20 +39,10 @@ abstract material PBR_Grass : PBR
         {
             alpha_rejection greater_equal 127
             cull_hardware none
-            //scene_blend alpha_blend
-
-            texture_unit Albedo
-            {
-                texture $Albedo
-                tex_address_mode clamp
-            }
 
             vertex_program_ref PBR_Grass_vs {}
 
-            fragment_program_ref PBR_Grass_fs
-            {
-                param_named uAlbedoSampler int 0
-            }
+            fragment_program_ref PBR_Grass_fs {}
         }
     }
 }
@@ -69,25 +51,15 @@ abstract material PBR_Paged : PBR
 {
     transparency_casts_shadows on
 
-    set $Albedo white.dds
-
     technique
     {
         pass
         {
             alpha_rejection greater_equal 127
 
-            texture_unit Albedo
-            {
-                texture $Albedo
-            }
-
             vertex_program_ref PBR_Paged_vs {}
 
-            fragment_program_ref PBR_Paged_fs
-            {
-                param_named uAlbedoSampler int 0
-            }
+            fragment_program_ref PBR_Paged_fs {}
         }
     }
 }
