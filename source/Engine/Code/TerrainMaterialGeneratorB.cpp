@@ -33,7 +33,7 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *terrain) {
 }
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terrain) {
-  std::string materialName = "TerrainCustom";
+  std::string materialName = "Terrain";
 
   if (isVertexCompressionSupported()) {
     materialName += "_vc";

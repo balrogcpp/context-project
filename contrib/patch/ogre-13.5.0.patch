@@ -80,7 +80,7 @@ index c7109963..3492f2e7 100644
          {
              // float3 position
 -            sz += sizeof(float) * 3;
-+            sz += sizeof(float) * 3; sz += sizeof(float) * 3; // float3 normal
++            sz += sizeof(float) * 9; // + normal + tangent
              // float2 uv
              sz += sizeof(float) * 2;
          }
@@ -102,7 +102,7 @@ index 18dbc9a7..0ae16566 100644
                  // POSITION 
                  // float3(x, y, z)
 -                offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_POSITION).getSize();
-+                offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_POSITION).getSize(); offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_NORMAL).getSize();
++                offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_POSITION).getSize(); offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_NORMAL).getSize(); offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_TANGENT).getSize();
                  // UV0
                  // float2(u, v)
                  dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0).getSize();
@@ -111,14 +111,14 @@ index 18dbc9a7..0ae16566 100644
              *pPosBuf++ = pos.y;
              *pPosBuf++ = pos.z;
 -            
-+            Vector3 n = Vector3::ZERO, c, adj[8];
++            Vector3 n = Vector3::ZERO, c, adj[8], t = Vector3::ZERO;
 +            mTerrain->getPointFromSelfOrNeighbour(x  , y,   &c);
 +            mTerrain->getPointFromSelfOrNeighbour(x+1, y,   &adj[0]); mTerrain->getPointFromSelfOrNeighbour(x+1, y+1, &adj[1]);
 +            mTerrain->getPointFromSelfOrNeighbour(x,   y+1, &adj[2]); mTerrain->getPointFromSelfOrNeighbour(x-1, y+1, &adj[3]);
 +            mTerrain->getPointFromSelfOrNeighbour(x-1, y,   &adj[4]); mTerrain->getPointFromSelfOrNeighbour(x-1, y-1, &adj[5]);
 +            mTerrain->getPointFromSelfOrNeighbour(x,   y-1, &adj[6]); mTerrain->getPointFromSelfOrNeighbour(x+1, y-1, &adj[7]);
-+            for (int i = 0; i < 8; ++i) n += Math::calculateBasicFaceNormal(c, adj[i], adj[(i+1)%8]);
-+            n.normalise(); *pPosBuf++ = n.x; *pPosBuf++ = n.y; *pPosBuf++ = n.z;
++            for (int i = 0; i < 8; ++i) n += Math::calculateBasicFaceNormal(c, adj[i], adj[(i+1)%8]); n.normalise(); *pPosBuf++ = n.x; *pPosBuf++ = n.y; *pPosBuf++ = n.z;
++            t = adj[4].x >= 0.0 ? adj[4] - c : c - adj[0] ; t.normalise(); *pPosBuf++ = t.x; *pPosBuf++ = t.y; *pPosBuf++ = t.z;
              // UVs - base UVs vary from 0 to 1, all other values
              // will be derived using scalings
              *pPosBuf++ = x * uvScale;

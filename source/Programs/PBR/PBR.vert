@@ -140,7 +140,7 @@ void main()
 #else // NO HAS_TANGENTS
   vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
   vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
-  vec3 t = normalize(cross(n ,b));
+  vec3 t = normalize(cross(n, b));
   vTBN = mat3(t, b, n);
 #endif
 #else // !HAS_NORMALS
