@@ -111,7 +111,7 @@ vec4 lerp(vec4 a, vec4 b, float c)
 }
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float hbigger(highp float x, highp float y)
+float biggerhp(highp float x, highp float y)
 {
     return saturate((x - y - HALF_EPSILON) * FLT_MAX);
 }
@@ -122,7 +122,7 @@ float bigger(mediump float x, mediump float y)
 }
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float hbigger(highp float x)
+float biggerhp(highp float x)
 {
     return saturate((x - FLT_EPSILON) * FLT_MAX);
 }
@@ -132,22 +132,22 @@ float bigger(mediump float x)
     return saturate((x - FLT_EPSILON) * HALF_MAX);
 }
 
-float hfsign(highp float x)
+float fsinghp(highp float x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec2 hfsign(highp vec2 x)
+vec2 fsinghp(highp vec2 x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec3 hfsign(highp vec3 x)
+vec3 fsinghp(highp vec3 x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec4 hfsign(highp vec4 x)
+vec4 fsinghp(highp vec4 x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }

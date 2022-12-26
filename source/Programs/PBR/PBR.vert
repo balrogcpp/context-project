@@ -24,9 +24,9 @@
 
 #ifdef GRASS
 //----------------------------------------------------------------------------------------------------------------------
-vec4 WaveGrass(const vec4 position, const float time, const float frequency, const vec4 direction)
+vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
 {
-  float n = noise(position.xz * time) * 2.0 - 2.0;
+  float n = NoiseHp(position.xz * time) * 2.0 - 2.0;
   return n * direction;
 }
 #endif
@@ -34,18 +34,18 @@ vec4 WaveGrass(const vec4 position, const float time, const float frequency, con
 
 #ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
-vec4 WaveTree(const vec4 vertex, const vec4 params, const vec4 position, const float time)
+vec4 WaveTree(const highp vec4 position, const highp vec4 params1, const vec4 params2, const float time)
 {
-  float radiusCoeff = params.x;
+  float radiusCoeff = params1.x;
   float radiusCoeff2 = radiusCoeff * radiusCoeff;
-  float heightCoeff = params.y;
+  float heightCoeff = params1.y;
   float heightCoeff2 = heightCoeff * heightCoeff;
-  float factorX = params.z;
-  float factorY = params.w;
+  float factorX = params1.z;
+  float factorY = params1.w;
 
   vec4 ret = vec4(0.0);
-  ret.y = sin(time + position.z + vertex.y + vertex.x) * radiusCoeff2 * factorY;
-  ret.x = sin(time + position.z ) * heightCoeff2 * factorX;
+  ret.y = sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY;
+  ret.x = sin(time + params2.z ) * heightCoeff2 * factorX;
 
   return ret;
 }

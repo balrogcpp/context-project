@@ -442,7 +442,7 @@ void main()
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
 
-            attenuation = hbigger(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
+            attenuation = biggerhp(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             // spotlight
             vec3 vSpotParams = LightSpotParamsArray[i].xyz;
