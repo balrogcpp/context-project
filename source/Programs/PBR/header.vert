@@ -30,7 +30,7 @@
 
 #else
 
-precision mediump float;
+precision highp float;
 precision lowp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
