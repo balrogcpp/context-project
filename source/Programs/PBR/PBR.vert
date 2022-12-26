@@ -17,11 +17,6 @@
 #endif
 
 
-#ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 0
-#endif
-
-
 #ifdef GRASS
 //----------------------------------------------------------------------------------------------------------------------
 vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
