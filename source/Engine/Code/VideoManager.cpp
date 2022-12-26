@@ -86,9 +86,6 @@ namespace fs = ghc::filesystem;
 using namespace std;
 
 namespace {
-inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
-inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
-inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
 inline void ParseSDLError(bool result, const char *message = "") {
   if (!result) LogError(message, SDL_GetError());
 }
@@ -153,7 +150,7 @@ void ScanLocation(const string &path, const string &groupName) {
 
     if (it->is_directory())
       ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
-    else if (it->is_regular_file() && fileExtention == ".bin")
+    else if (it->is_regular_file() && (fileExtention == ".bin" || fileExtention == ".zip"))
       ogreResourceManager.addResourceLocation(fullPath, ZIP, groupName);
   }
 }

@@ -4,6 +4,7 @@
 #include <OgreComponents.h>
 #include <OgrePlatform.h>
 #include <OgrePlatformInformation.h>
+#include <OgreRoot.h>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WINDOWS
@@ -53,3 +54,7 @@
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL) || defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) || defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
 #define OGRE_OPENGL
 #endif
+
+inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
+inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
+inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
