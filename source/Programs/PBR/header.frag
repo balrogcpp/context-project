@@ -45,7 +45,7 @@ out vec4 FragColor;
 
 #else // GLSLES
 
-precision highp float;
+precision mediump float;
 precision lowp int;
 precision lowp sampler2D;
 precision lowp samplerCube;

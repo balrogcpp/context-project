@@ -3,7 +3,10 @@
 #ifndef RECEIVER_GLSL
 #define RECEIVER_GLSL
 
+
+#include "math.glsl"
 //#define PENUMBRA
+
 
 //----------------------------------------------------------------------------------------------------------------------
 float InterleavedGradientNoise(const vec2 position_screen)
@@ -44,7 +47,7 @@ float AvgBlockersDepthToPenumbra(const float lightSize, const float z_shadowMapV
 float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gradientNoise, const float z_shadowMapView, const float penumbraFilterMaxSize, const int iterations)
 {
   float avgBlockersDepth = 0.0;
-  float blockersCount = 0.001;
+  float blockersCount = HALF_EPSILON;
   #define MAX_SAMPLES 32
 
   for (int i = 0; i < MAX_SAMPLES; ++i) {
@@ -74,11 +77,11 @@ float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 fil
   lightSpace.z = lightSpace.z * 0.5 + 0.5; // convert -1..1 to 0..1
   float shadow = 1.0;
   float current_depth = lightSpace.z;
-  #define penumbraFilterMaxSize 0.05
+  #define MAX_PENUMBRA_FILTER 0.05
 
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
-  float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, current_depth, penumbraFilterMaxSize, iterations);
+  float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, current_depth, MAX_PENUMBRA_FILTER, iterations);
 #endif
 
   #define MAX_SAMPLES 32
@@ -91,7 +94,7 @@ float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 fil
 #endif
     lightSpace.xy += offset;
     float depth = texture2D(shadowMap, lightSpace.xy).x;
-    shadow -= clamp((current_depth - depth) * 3.402823466e+38, 0.0, 1.0) * (1.0 / float(iterations));
+    shadow -= bigger(current_depth, depth) * (1.0 / float(iterations));
   }
 
   return shadow;

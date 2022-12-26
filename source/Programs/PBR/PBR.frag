@@ -20,25 +20,6 @@
 #endif
 
 
-#ifndef M_PI
-#define M_PI 3.141592653589793
-#endif
-
-
-#ifndef F0
-#define F0 0.04
-#endif
-
-
-#ifndef MAX_LIGHTS
-#define MAX_LIGHTS 0
-#endif
-
-#ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 0
-#endif
-
-
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
@@ -450,9 +431,9 @@ void main()
         // attenuation is property of spot and point light
         float attenuation = 1.0;
         vec4 vAttParams = LightAttenuationArray[i];
-        float range = vAttParams.x;
+        highp float range = vAttParams.x;
 
-        if (range > 0.0) {
+        if (range < HALF_MAX_MINUS1) {
             highp vec3 vLightViewH = LightPositionArray[i].xyz - vPosition;
             highp float fLightD = length(vLightViewH);
             highp float fLightD2 = fLightD * fLightD;
@@ -461,7 +442,7 @@ void main()
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
 
-            attenuation = bigger(range - fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
+            attenuation = hbigger(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             // spotlight
             vec3 vSpotParams = LightSpotParamsArray[i].xyz;
@@ -477,6 +458,7 @@ void main()
             }
         }
 
+        float light = NdotL * attenuation;
         highp float alphaRoughness = roughness * roughness;
         highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
         float LdotH = clamp(dot(l, h), 0.0, 1.0);
@@ -490,7 +472,6 @@ void main()
         float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
         highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
         vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
-        float light = NdotL * attenuation;
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0

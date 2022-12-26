@@ -6,7 +6,7 @@
 
 #define HALF_MAX        65504.0 // (2 - 2^-10) * 2^15
 #define HALF_MAX_MINUS1 65472.0 // (2 - 2^-9) * 2^15
-#define EPSILON         1.0e-4
+#define HALF_EPSILON    1.0e-4
 #define PI              3.14159265359
 #define TWO_PI          6.28318530718
 #define FOUR_PI         12.56637061436
@@ -16,12 +16,12 @@
 #define HALF_PI         1.57079632679
 #define INV_HALF_PI     0.636619772367
 
-#define M_PI PI
-#define F0 0.04
-
 #define FLT_EPSILON     1.192092896e-07 // Smallest positive number, such that 1.0 + FLT_EPSILON != 1.0
 #define FLT_MIN         1.175494351e-38 // Minimum representable positive floating-point number
 #define FLT_MAX         3.402823466e+38 // Maximum representable floating-point number
+
+#define M_PI PI
+#define F0 0.04
 
 
 float rcp(float value)
@@ -111,69 +111,67 @@ vec4 lerp(vec4 a, vec4 b, float c)
 }
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float bigger(float x, float y)
+float hbigger(highp float x, highp float y)
 {
-    return saturate((x - y) * FLT_MAX);
+    return saturate((x - y - HALF_EPSILON) * FLT_MAX);
+}
+
+float bigger(mediump float x, mediump float y)
+{
+    return saturate((x - y - HALF_EPSILON) * HALF_MAX);
 }
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float bigger(float x)
+float hbigger(highp float x)
 {
-    return saturate(x * FLT_MAX);
+    return saturate((x - FLT_EPSILON) * FLT_MAX);
 }
 
-float not_zero(float x)
+float bigger(mediump float x)
 {
-    return saturate((x - EPSILON) * FLT_MAX);
+    return saturate((x - FLT_EPSILON) * HALF_MAX);
 }
 
-float ftrim(float x)
-{
-    return clamp((x - EPSILON), 0.0, FLT_MAX);
-}
-
-float fsign(float x)
+float hfsign(highp float x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec2 fsign(vec2 x)
+vec2 hfsign(highp vec2 x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec3 fsign(vec3 x)
+vec3 hfsign(highp vec3 x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec4 fsign(vec4 x)
+vec4 hfsign(highp vec4 x)
 {
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-// Using pow often result to a warning like this
-// "pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them"
-// PositivePow remove this warning when you know the value is positive and avoid inf/NAN.
-float PositivePow(float base, float power)
+float fsign(mediump float x)
 {
-    return pow(max(abs(base), float(FLT_EPSILON)), power);
+    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec2 PositivePow(vec2 base, vec2 power)
+vec2 fsign(mediump vec2 x)
 {
-    return pow(max(abs(base), vec2(FLT_EPSILON, FLT_EPSILON)), power);
+    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec3 PositivePow(vec3 base, vec3 power)
+vec3 fsign(mediump vec3 x)
 {
-    return pow(max(abs(base), vec3(FLT_EPSILON, FLT_EPSILON, FLT_EPSILON)), power);
+    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec4 PositivePow(vec4 base, vec4 power)
+vec4 fsign(mediump vec4 x)
 {
-    return pow(max(abs(base), vec4(FLT_EPSILON, FLT_EPSILON, FLT_EPSILON, FLT_EPSILON)), power);
+    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
+
 
 // NaN checker
 // /Gic isn't enabled on fxc so we can't rely on isnan() anymore
