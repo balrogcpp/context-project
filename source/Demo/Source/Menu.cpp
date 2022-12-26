@@ -36,7 +36,7 @@ void Menu::OnSetUp() {
 
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
-  //ImGuiB::SetupImGuiStyle_Unreal();
+  // ImGuiB::SetupImGuiStyle_Unreal();
   ImGuiB::SetupImGuiStyle_SpectrumDark();
 
   GetComponent<SceneManager>().LoadFromFile("1.scene");
@@ -45,7 +45,7 @@ void Menu::OnSetUp() {
   float diag0 = sqrt(1920 * 1920 + 1080 * 1080);
   float diag = sqrt(x * x + y * y);
   float scale = diag / diag0;
-  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(24 * scale));
+  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
 
   GetComponent<VideoManager>().ShowOverlay(true);
 }
@@ -64,25 +64,25 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
   float scale = diag / diag0;
 
   //  Setup Dear ImGui style
-   ImGuiStyle styleold = style;  // Backup colors
-   style = ImGuiStyle();         // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
-   style.WindowBorderSize = 1.0f;
-   style.ChildBorderSize = 1.0f;
-   style.PopupBorderSize = 1.0f;
-   style.FrameBorderSize = 1.0f;
-   style.TabBorderSize = 1.0f;
-   style.WindowRounding = 0.0f;
-   style.ChildRounding = 0.0f;
-   style.PopupRounding = 0.0f;
-   style.FrameRounding = 0.0f;
-   style.ScrollbarRounding = 0.0f;
-   style.GrabRounding = 0.0f;
-   style.TabRounding = 0.0f;
-   style.ScaleAllSizes(scale);
-   memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));  // Restore colors
+  ImGuiStyle styleold = style;  // Backup colors
+  style = ImGuiStyle();         // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
+  style.WindowBorderSize = 1.0f;
+  style.ChildBorderSize = 1.0f;
+  style.PopupBorderSize = 1.0f;
+  style.FrameBorderSize = 1.0f;
+  style.TabBorderSize = 1.0f;
+  style.WindowRounding = 0.0f;
+  style.ChildRounding = 0.0f;
+  style.PopupRounding = 0.0f;
+  style.FrameRounding = 0.0f;
+  style.ScrollbarRounding = 0.0f;
+  style.GrabRounding = 0.0f;
+  style.TabRounding = 0.0f;
+  style.ScaleAllSizes(scale);
+  memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));  // Restore colors
 
   io.Fonts->Clear();
-  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(24 * scale));
+  font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
   GetComponent<VideoManager>().RebuildOVerlayFontAtlas();
 }
 
@@ -104,7 +104,7 @@ void Menu::BeforeRender(float time) {
 #ifdef MOBILE
   ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
   ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) showMenu = true;
+  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) showMenu = !showMenu;
   ImGui::End();
 #endif
 
