@@ -86,9 +86,6 @@ namespace fs = ghc::filesystem;
 using namespace std;
 
 namespace {
-inline void ParseSDLError(bool result, const char *message = "") {
-  if (!result) LogError(message, SDL_GetError());
-}
 
 #ifdef DESKTOP
 // based on tensorflow GetBinaryDir
@@ -330,7 +327,7 @@ void VideoManager::InitSDL() {
 #endif
 
   int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-  ParseSDLError(!result, "SDL_Init failed");
+  if (!result) LogError("SDL_Init failed", SDL_GetError());
   ASSERTION(!result, "Failed to init SDL");
 }
 
