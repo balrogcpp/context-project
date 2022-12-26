@@ -93,7 +93,7 @@ vec3 GetIBLContribution(const sampler2D uBrdfLUT, const samplerCube uDiffuseEnvS
 
 // ins
 in highp vec3 vPosition;
-in vec2 vUV0;
+in highp vec2 vUV0;
 in float vDepth;
 in vec3 vColor;
 in vec4 vScreenPosition;
@@ -374,7 +374,7 @@ vec3 GetORM(const vec2 uv)
 void main()
 {
     highp vec3 v = normalize(CameraPosition - vPosition);
-    vec2 tex_coord = vUV0.xy;
+    highp vec2 tex_coord = vUV0.xy;
     tex_coord *= (1.0 + uTexScale);
 
 #ifdef HAS_NORMALMAP
