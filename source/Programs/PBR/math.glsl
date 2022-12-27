@@ -24,15 +24,12 @@
 #define F0 0.04
 
 
-float rcp(float value)
-{
-    return 1.0 / value;
-}
+// some hlsl functions as macros
+#define rcp(a) ( 1.0 / (a) )
+#define mad(a, b, c) ( (a) * (b) + (c) )
+#define lerp mix
+#define fmod modf
 
-float mad(float a, float b, float c)
-{
-    return a * b + c;
-}
 
 float min3(float a, float b, float c)
 {
@@ -53,6 +50,7 @@ float max3(vec3 a)
 {
     return max3(a.x, a.y, a.z);
 }
+
 
 // https://community.khronos.org/t/saturate/53155
 float saturate(float x)
@@ -75,40 +73,6 @@ vec4 saturate(vec4 x)
     return clamp(x, 0.0, 1.0);
 }
 
-float lerp(float a, float b, float c)
-{
-    return mix(a, b, c);
-}
-
-vec2 lerp(vec2 a, vec2 b, vec2 c)
-{
-    return mix(a, b, c);
-}
-
-vec3 lerp(vec3 a, vec3 b, vec3 c)
-{
-    return mix(a, b, c);
-}
-
-vec4 lerp(vec4 a, vec4 b, vec4 c)
-{
-    return mix(a, b, c);
-}
-
-vec2 lerp(vec2 a, vec2 b, float c)
-{
-    return mix(a, b, c);
-}
-
-vec3 lerp(vec3 a, vec3 b, float c)
-{
-    return mix(a, b, c);
-}
-
-vec4 lerp(vec4 a, vec4 b, float c)
-{
-    return mix(a, b, c);
-}
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
 float biggerhp(highp float x, highp float y)
@@ -197,6 +161,7 @@ bool AnyIsNan(vec4 x)
 {
     return IsNan(x.x) || IsNan(x.y) || IsNan(x.z) || IsNan(x.w);
 }
+
 
 // Clamp HDR value within a safe range
 float SafeHDR(float c)
