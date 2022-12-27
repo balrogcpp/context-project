@@ -95,7 +95,7 @@ vec3 GetIBLContribution(const sampler2D uBrdfLUT, const samplerCube uDiffuseEnvS
 in highp vec3 vPosition;
 in highp vec2 vUV0;
 in float vDepth;
-in vec3 vColor;
+in vec4 vColor;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
 in mat3 vTBN;
@@ -317,7 +317,7 @@ highp vec3 GetNormal(const vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(const vec2 uv)
 {
-    vec4 albedo = vec4(SurfaceDiffuseColour.rgb * vColor, 1.0);
+    vec4 albedo = SurfaceDiffuseColour.rgba * vColor;
 
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(uAlbedoSampler, uv);

@@ -43,10 +43,14 @@ void Menu::OnSetUp() {
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
 
-  float diag0 = sqrt(1920 * 1920 + 1080 * 1080);
+  float diag0 = 150000.0;
   float diag = sqrt(x * x + y * y);
   float scale = diag / diag0;
-  scale *= dpi / 72;
+  scale *= dpi;
+#ifdef MOBILE
+  scale *= 0.5;
+#endif
+
   style.ScaleAllSizes(scale);
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
 
@@ -62,27 +66,30 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
 
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
-  float diag0 = sqrt(1920 * 1920 + 1080 * 1080);
+  float diag0 = 150000.0;
   float diag = sqrt(x * x + y * y);
   float dpi = GetComponent<VideoManager>().GetWindow().GetDisplayDPI();
   float scale = diag / diag0;
-  scale *= dpi / 72;
+  scale *= dpi;
+#ifdef MOBILE
+  scale *= 0.5;
+#endif
 
   //  Setup Dear ImGui style
   ImGuiStyle styleold = style;  // Backup colors
   style = ImGuiStyle();         // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
-  style.WindowBorderSize = 1.0f;
-  style.ChildBorderSize = 1.0f;
-  style.PopupBorderSize = 1.0f;
-  style.FrameBorderSize = 1.0f;
-  style.TabBorderSize = 1.0f;
-  style.WindowRounding = 0.0f;
-  style.ChildRounding = 0.0f;
-  style.PopupRounding = 0.0f;
-  style.FrameRounding = 0.0f;
-  style.ScrollbarRounding = 0.0f;
-  style.GrabRounding = 0.0f;
-  style.TabRounding = 0.0f;
+  style.WindowBorderSize = 1.0;
+  style.ChildBorderSize = 1.0;
+  style.PopupBorderSize = 1.0;
+  style.FrameBorderSize = 1.0;
+  style.TabBorderSize = 1.0;
+  style.WindowRounding = 0.0;
+  style.ChildRounding = 0.0;
+  style.PopupRounding = 0.0;
+  style.FrameRounding = 0.0;
+  style.ScrollbarRounding = 0.0;
+  style.GrabRounding = 0.0;
+  style.TabRounding = 0.0;
   style.ScaleAllSizes(scale);
   memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));  // Restore colors
 
@@ -128,15 +135,15 @@ void Menu::BeforeRender(float time) {
     GetComponent<SceneManager>().SetSleep(true);
   }
 
-  ImGuiB::SetupImGuiStyle_NeverBlue();
+  //ImGuiB::SetupImGuiStyle_NeverBlue();
 
   float vx = viewport->Size.x, vy = viewport->Size.y;
-  float scale = 0.8;
+  float scale = 7.0 / 8.0;
   float border = 0.5 - 0.5 * scale;
 
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
-  ImGui::SetNextWindowBgAlpha(0.7);
+  ImGui::SetNextWindowBgAlpha(0.8);
   ImGui::Begin("Graphics Settings", 0, ImGuiWindowFlags_NoDecoration);
 
   ImGui::PushFont(font);
@@ -167,7 +174,6 @@ void Menu::BeforeRender(float time) {
 
   if (ImGui::Checkbox("Maximize", &flags[2])) {
     window.SetResizable(true);
-
     std::this_thread::sleep_for(100ms);
 
     if (flags[2]) {

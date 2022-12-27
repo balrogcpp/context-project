@@ -13,22 +13,19 @@
 
 #include "header.vert"
 #include "math.glsl"
-#ifdef GRASS
+#ifdef PAGED_GEOMETRY
 #include "noise.glsl"
 #endif
 
 
-#ifdef GRASS
+#ifdef PAGED_GEOMETRY
 //----------------------------------------------------------------------------------------------------------------------
 highp vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
 {
   highp float n = NoiseHp(position.xz * time) * 2.0 - 2.0;
   return n * direction;
 }
-#endif
 
-
-#ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
 highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec4 params1, const vec4 params2)
 {
@@ -55,12 +52,10 @@ uniform highp mat4 uWorldViewProjPrev;
 uniform lowp float uStaticObj;
 uniform lowp float uMovableObj;
 #ifdef PAGED_GEOMETRY
-uniform highp vec4 TimePack;
+uniform highp vec4 Time;
+uniform vec3 CameraPosition;
+uniform float uFadeRange;
 #endif
-#ifdef GRASS
-//uniform vec3 CameraPosition;
-//uniform float uFadeRange;
-#endif //  GRASS
 #ifdef SHADOWRECEIVER
 uniform int ShadowTextureCount;
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
@@ -79,11 +74,9 @@ in vec4 tangent;
 in vec4 colour;
 #endif
 #ifdef HAS_UV
-in vec2 uv0;
-#ifdef TREES
+in vec4 uv0;
 in vec4 uv1;
 in vec4 uv2;
-#endif
 #endif //  HAS_UV
 
 
@@ -91,7 +84,7 @@ in vec4 uv2;
 out vec2 vUV0;
 out float vDepth;
 out highp vec3 vPosition;
-out vec3 vColor;
+out vec4 vColor;
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;
 out mat3 vTBN;
@@ -104,27 +97,25 @@ out vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 void main()
 {
 #ifdef HAS_UV
-  vec4 new_position = position;
   vUV0.xy = uv0.xy;
 #endif
 
-
 #ifdef HAS_VERTEXCOLOR
-  vColor = colour.rgb;
+  vColor = max3(colour.rgb) > 0.0 ? colour.rgba : vec4(1.0);
 #else
-  vColor = vec3(1.0);
+  vColor = vec4(1.0);
 #endif
-
+  vec4 new_position = position;
   vec4 model_position = ModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
 
 #ifdef GRASS
   if (uv0.y < 0.5) {
-    new_position += WaveGrass(new_position, TimePack.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
+    new_position += WaveGrass(new_position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
   }
 #endif
 #ifdef TREES
-    new_position += WaveTree(new_position, TimePack.x, uv1, uv2);
+    new_position += WaveTree(new_position, Time.x, uv1, uv2);
 #endif
 
 #ifdef HAS_NORMALS

@@ -329,6 +329,7 @@ void VideoManager::InitSDL() {
   int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
   if (!result) LogError("SDL_Init failed", SDL_GetError());
   ASSERTION(!result, "Failed to init SDL");
+  SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
 }
 
 class MutedLogListener final : public Ogre::LogListener {
@@ -546,24 +547,21 @@ float VideoManager::GetDisplayDPI(int index) {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
-  ASSERTION(!res, "SDL_GetDisplayDPI failed");
-  return ddpi;
+  return !res ? ddpi : 1.0;
 }
 
 float VideoManager::GetDisplayHDPI(int index) {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
-  ASSERTION(!res, "SDL_GetDisplayDPI failed");
-  return hdpi;
+  return !res ? hdpi : 1.0;
 }
 
 float VideoManager::GetDisplayVDPI(int index) {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
-  ASSERTION(!res, "SDL_GetDisplayDPI failed");
-  return vdpi;
+  return !res ? vdpi : 1.0;
 }
 
 void VideoManager::ClearScene() {
@@ -666,6 +664,15 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGen = nullptr;
 };
 
+void VideoManager::ShowOverlay(bool show) {
+  if (show) {
+    imguiOverlay->show();
+    ShaderResolver::ResolveMaterial("ImGui/material", Ogre::RGN_INTERNAL);
+  } else {
+    imguiOverlay->hide();
+  }
+}
+
 void VideoManager::RebuildOVerlayFontAtlas() {
   static ImGuiIO &io = ImGui::GetIO();
   unsigned char *pixels;
@@ -676,10 +683,11 @@ void VideoManager::RebuildOVerlayFontAtlas() {
   const auto &mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL);
   if (mat) {
     Ogre::TexturePtr tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->_getTexturePtr();
-    Ogre::TextureManager::getSingleton().unload("ImGui/FontTex");
-    Ogre::TextureManager::getSingleton().remove("ImGui/FontTex");
+    std::string texName = tex->getName();
+    Ogre::TextureManager::getSingleton().unload(texName, Ogre::RGN_INTERNAL);
+    Ogre::TextureManager::getSingleton().remove(texName, Ogre::RGN_INTERNAL);
     tex.reset();  // to be sure memory is freed
-    tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
+    tex = Ogre::TextureManager::getSingleton().createManual(texName, Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
                                                             Ogre::PF_BYTE_RGBA);
     tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
   }
@@ -730,15 +738,6 @@ void VideoManager::EnableKeyboardNav(bool enable) {
   static ImGuiIO &io = ImGui::GetIO();
   enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
   keyboardSupport = enable;
-}
-
-void VideoManager::ShowOverlay(bool show) {
-  if (show) {
-    imguiOverlay->show();
-    ShaderResolver::ResolveMaterial("ImGui/material", Ogre::RGN_INTERNAL);
-  } else {
-    imguiOverlay->hide();
-  }
 }
 
 void VideoManager::InitOgreRTSS() {

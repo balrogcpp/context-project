@@ -184,7 +184,6 @@ void Window::SetSize(int x, int y) {
   sizeY = y;
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowSize(sdlWindow, x, y);
-  ogreWindow->resize(x, y);
 }
 
 void Window::SetFullscreen(bool fullscreen) {
@@ -351,24 +350,21 @@ float Window::GetDisplayDPI() {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(GetDisplay(), &ddpi, &hdpi, &vdpi);
-  ASSERTION(!res, "SDL_GetDisplayDPI failed");
-  return ddpi;
+  return !res ? ddpi : 1.0;
 }
 
 float Window::GetDisplayHDPI() {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(GetDisplay(), &ddpi, &hdpi, &vdpi);
-  ASSERTION(!res, "SDL_GetDisplayDPI failed");
-  return hdpi;
+  return !res ? hdpi : 1.0;
 }
 
 float Window::GetDisplayVDPI() {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(GetDisplay(), &ddpi, &hdpi, &vdpi);
-  ASSERTION(!res, "SDL_GetDisplayDPI failed");
-  return vdpi;
+  return !res ? vdpi : 1.0;
 }
 
 bool Window::IsFullscreen() {

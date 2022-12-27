@@ -18,7 +18,7 @@ shared_params PBR_Shared_vert
 abstract vertex_program PBR_I_vs glsl glsles
 {
 	source PBR.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER
 
     default_params
     {
@@ -27,13 +27,14 @@ abstract vertex_program PBR_I_vs glsl glsles
         param_named_auto MVPMatrix worldviewproj_matrix
         param_named_auto ModelMatrix world_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
-        param_named_auto TimePack time_0_x_packed 1000
+        param_named_auto Time time_0_x_packed 1000
+        param_named_auto CameraPosition camera_position
     }
 }
 
 vertex_program PBR_vs glsl glsles : PBR_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER
 }
 
 abstract fragment_program PBR_I_fs glsl glsles
