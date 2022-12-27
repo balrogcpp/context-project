@@ -12,6 +12,7 @@
 
 
 #include "header.vert"
+#include "math.glsl"
 #ifdef GRASS
 #include "noise.glsl"
 #endif
@@ -19,9 +20,9 @@
 
 #ifdef GRASS
 //----------------------------------------------------------------------------------------------------------------------
-highp vec4 WaveGrass(const highp vec4 position, const float time, const float frequency, const vec4 direction)
+highp vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
 {
-  float n = NoiseHp(position.xz * time) * 2.0 - 2.0;
+  highp float n = NoiseHp(position.xz * time) * 2.0 - 2.0;
   return n * direction;
 }
 #endif
@@ -29,14 +30,14 @@ highp vec4 WaveGrass(const highp vec4 position, const float time, const float fr
 
 #ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
-highp vec4 WaveTree(const highp vec4 position, const vec4 params1, const vec4 params2, const float time)
+highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec4 params1, const vec4 params2)
 {
-  float radiusCoeff = params1.x;
-  float radiusCoeff2 = radiusCoeff * radiusCoeff;
-  float heightCoeff = params1.y;
-  float heightCoeff2 = heightCoeff * heightCoeff;
-  float factorX = params1.z;
-  float factorY = params1.w;
+  highp float radiusCoeff = params1.x;
+  highp float radiusCoeff2 = radiusCoeff * radiusCoeff;
+  highp float heightCoeff = params1.y;
+  highp float heightCoeff2 = heightCoeff * heightCoeff;
+  highp float factorX = params1.z;
+  highp float factorY = params1.w;
 
   return vec4(
     sin(time + params2.z ) * heightCoeff2 * factorX,
@@ -54,7 +55,7 @@ uniform highp mat4 uWorldViewProjPrev;
 uniform lowp float uStaticObj;
 uniform lowp float uMovableObj;
 #ifdef PAGED_GEOMETRY
-uniform vec4 TimePack;
+uniform highp vec4 TimePack;
 #endif
 #ifdef GRASS
 //uniform vec3 CameraPosition;
@@ -119,11 +120,11 @@ void main()
 
 #ifdef GRASS
   if (uv0.y < 0.5) {
-    new_position += WaveGrass(new_position, 10.0*TimePack.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
+    new_position += WaveGrass(new_position, TimePack.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
   }
 #endif
 #ifdef TREES
-    new_position += WaveTree(new_position, uv1, uv2, 50.0*TimePack.x);
+    new_position += WaveTree(new_position, TimePack.x, uv1, uv2);
 #endif
 
 #ifdef HAS_NORMALS

@@ -27,7 +27,7 @@ abstract vertex_program PBR_I_vs glsl glsles
         param_named_auto MVPMatrix worldviewproj_matrix
         param_named_auto ModelMatrix world_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
-        param_named_auto TimePack time_0_2pi_packed 100
+        param_named_auto TimePack time_0_x_packed 1000
     }
 }
 
