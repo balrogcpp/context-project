@@ -184,6 +184,9 @@ void Window::SetSize(int x, int y) {
   sizeY = y;
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowSize(sdlWindow, x, y);
+#ifdef MOBILE
+  ogreWindow->resize(x, y);
+#endif
 }
 
 void Window::SetFullscreen(bool fullscreen) {

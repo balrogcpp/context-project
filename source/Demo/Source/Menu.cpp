@@ -48,7 +48,7 @@ void Menu::OnSetUp() {
   float scale = diag / diag0;
   scale *= dpi;
 #ifdef MOBILE
-  scale *= 0.5;
+  scale *= 0.35;
 #endif
 
   style.ScaleAllSizes(scale);
@@ -72,7 +72,7 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
   float scale = diag / diag0;
   scale *= dpi;
 #ifdef MOBILE
-  scale *= 0.5;
+  scale *= 0.35;
 #endif
 
   //  Setup Dear ImGui style
@@ -101,9 +101,17 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
 void Menu::BeforeRender(float time) {
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
-  const static auto *viewport = ImGui::GetMainViewport();
+  static auto *viewport = ImGui::GetMainViewport();
+  static VideoManager &manager = GetComponent<VideoManager>();
+  static SystemLocator &system = GetComponent<SystemLocator>();
+  static Window &window = manager.GetWindow();
 
   Ogre::ImGuiOverlay::NewFrame();
+
+  float vx = viewport->Size.x, vy = viewport->Size.y;
+  float scale = 7.0 / 8.0;
+  float border = 0.5 - 0.5 * scale;
+
 
   // fps counter
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
@@ -114,15 +122,13 @@ void Menu::BeforeRender(float time) {
   ImGui::End();
 
 #ifdef MOBILE
-  ImGui::SetNextWindowPos(ImVec2(ImGetWidth() * 0.1, ImGetHeight() * 0.1), ImGuiCond_Always);
+  ImGui::SetNextWindowPos({0.0f, 0.1f * vy}, ImGuiCond_Always);
+  ImGui::SetNextWindowSize({vx * 0.15f, vy * 0.15f});
   ImGui::Begin("WindowOpenMenu", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  if (ImGui::Button("OpenMenu", ImVec2(180, 30))) showMenu = !showMenu;
+  if (ImGui::Button("MENU", {vx * 0.2f, vy * 0.2f})) showMenu = !showMenu;
   ImGui::End();
 #endif
 
-  static VideoManager &manager = GetComponent<VideoManager>();
-  static SystemLocator &system = GetComponent<SystemLocator>();
-  static Window &window = manager.GetWindow();
 
   if (!showMenu) {
     window.SetMouseRelativeMode(true);
@@ -137,9 +143,6 @@ void Menu::BeforeRender(float time) {
 
   //ImGuiB::SetupImGuiStyle_NeverBlue();
 
-  float vx = viewport->Size.x, vy = viewport->Size.y;
-  float scale = 7.0 / 8.0;
-  float border = 0.5 - 0.5 * scale;
 
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
