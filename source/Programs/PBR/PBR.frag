@@ -136,6 +136,7 @@ uniform sampler2D uBrdfLUT;
 
 // lights
 uniform lowp float LightCount;
+uniform highp vec3 CameraPosition;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
@@ -151,8 +152,7 @@ uniform vec4 SurfaceShininessColour;
 uniform vec4 SurfaceEmissiveColour;
 uniform float SurfaceAlphaRejection;
 uniform float FarClipDistance;
-uniform highp float FrameTime;
-uniform highp vec3 CameraPosition;
+uniform float FrameTime;
 uniform float uTexScale;
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP

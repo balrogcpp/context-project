@@ -133,3 +133,42 @@ abstract material PBR_IBL : PBR
        
 // TERRAIN
 material Terrain : PBR {}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// PAGED_GEOMETRY
+//----------------------------------------------------------------------------------------------------------------------
+abstract material Grass : PBR
+{
+    transparency_casts_shadows off
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 127
+            cull_hardware none
+
+            vertex_program_ref PBR_Grass_vs {}
+
+            fragment_program_ref PBR_Grass_fs {}
+        }
+    }
+}
+
+abstract material Paged : PBR
+{
+    transparency_casts_shadows on
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 127
+
+            vertex_program_ref PBR_Paged_vs {}
+
+            fragment_program_ref PBR_Paged_fs {}
+        }
+    }
+}

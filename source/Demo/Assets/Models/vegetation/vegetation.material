@@ -1,42 +1,40 @@
 // created by Andrey Vasiliev
 
 import PBR from PBR.material
-import PBR_Grass from PBR_Forests.material
-import PBR_Paged from PBR_Forests.material
+import Grass from PBR.material
+import Paged from PBR.material
 
-material GrassCustom : PBR_Grass
+material GrassCustom : Grass
 {
     set $Albedo Grass_A.dds
 }
 
-material 3D-Diggers/fir01 : PBR_Paged
+material 3D-Diggers/fir01 : Paged
 {
     set $Albedo fir01.dds
 }
 
-material 3D-Diggers/fir02 : PBR_Paged
+material 3D-Diggers/fir02 : Paged
 {
     set $Albedo fir02.dds
 }
 
-material 3D-Diggers/farn01 : PBR_Paged
+material 3D-Diggers/farn01 : Paged
 {
     set $Albedo farn01.dds
 }
 
-material 3D-Diggers/farn02 : PBR_Paged
+material 3D-Diggers/farn02 : Paged
 {
     set $Albedo farn01.dds
 }
 
-material 3D-Diggers/plant1 : PBR_Paged
+material 3D-Diggers/plant1 : Paged
 {
     set $Albedo plant1.dds
-    receive_shadows off
-    transparency_casts_shadows off
 }
 
-material 3D-Diggers/plant2 : PBR_Paged
+material 3D-Diggers/plant2 : Paged
 {
     set $Albedo plant2.dds
 }
