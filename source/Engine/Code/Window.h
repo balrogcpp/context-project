@@ -45,6 +45,10 @@ class Window : public WindowListener {
   int GetDisplay();
   int GetDisplaySizeX();
   int GetDisplaySizeY();
+  float GetDisplayDPI();
+  float GetDisplayHDPI();
+  float GetDisplayVDPI();
+
   std::string GetCaption();
 
   void EnableVsync(bool enable);

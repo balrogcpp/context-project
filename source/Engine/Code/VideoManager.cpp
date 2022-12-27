@@ -532,6 +532,40 @@ void VideoManager::SetTexFiltering(unsigned int type, int anisotropy) {
 
 std::vector<float> VideoManager::GetPSSMSplitPoints() { return pssmSplitPointList; }
 
+int VideoManager::GetDisplaySizeX(int index) {
+  SDL_DisplayMode displayMode;
+  return !SDL_GetCurrentDisplayMode(index, &displayMode) ? displayMode.w : -1;
+}
+
+int VideoManager::GetDisplaySizeY(int index) {
+  SDL_DisplayMode displayMode;
+  return !SDL_GetCurrentDisplayMode(index, &displayMode) ? displayMode.h : -1;
+}
+
+float VideoManager::GetDisplayDPI(int index) {
+  SDL_DisplayMode displayMode;
+  float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
+  int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
+  ASSERTION(!res, "SDL_GetDisplayDPI failed");
+  return ddpi;
+}
+
+float VideoManager::GetDisplayHDPI(int index) {
+  SDL_DisplayMode displayMode;
+  float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
+  int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
+  ASSERTION(!res, "SDL_GetDisplayDPI failed");
+  return hdpi;
+}
+
+float VideoManager::GetDisplayVDPI(int index) {
+  SDL_DisplayMode displayMode;
+  float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
+  int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
+  ASSERTION(!res, "SDL_GetDisplayDPI failed");
+  return vdpi;
+}
+
 void VideoManager::ClearScene() {
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   ogreSceneManager->clearScene();

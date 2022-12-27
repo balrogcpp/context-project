@@ -339,12 +339,36 @@ int Window::GetDisplay() {
 
 int Window::GetDisplaySizeX() {
   SDL_DisplayMode displayMode;
-  return !SDL_GetCurrentDisplayMode(display, &displayMode) ? displayMode.w : -1;
+  return !SDL_GetCurrentDisplayMode(GetDisplay(), &displayMode) ? displayMode.w : -1;
 }
 
 int Window::GetDisplaySizeY() {
   SDL_DisplayMode displayMode;
-  return !SDL_GetCurrentDisplayMode(display, &displayMode) ? displayMode.h : -1;
+  return !SDL_GetCurrentDisplayMode(GetDisplay(), &displayMode) ? displayMode.h : -1;
+}
+
+float Window::GetDisplayDPI() {
+  SDL_DisplayMode displayMode;
+  float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
+  int res = SDL_GetDisplayDPI(GetDisplay(), &ddpi, &hdpi, &vdpi);
+  ASSERTION(!res, "SDL_GetDisplayDPI failed");
+  return ddpi;
+}
+
+float Window::GetDisplayHDPI() {
+  SDL_DisplayMode displayMode;
+  float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
+  int res = SDL_GetDisplayDPI(GetDisplay(), &ddpi, &hdpi, &vdpi);
+  ASSERTION(!res, "SDL_GetDisplayDPI failed");
+  return hdpi;
+}
+
+float Window::GetDisplayVDPI() {
+  SDL_DisplayMode displayMode;
+  float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
+  int res = SDL_GetDisplayDPI(GetDisplay(), &ddpi, &hdpi, &vdpi);
+  ASSERTION(!res, "SDL_GetDisplayDPI failed");
+  return vdpi;
 }
 
 bool Window::IsFullscreen() {

@@ -244,7 +244,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 }
 
 //  source https://wiki.ogre3d.org/GetScreenspaceCoords
-static Ogre::Vector4 getScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
+static Ogre::Vector4 GetScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
   if (!object->isInScene()) {
     return Ogre::Vector4::ZERO;
   }
@@ -277,7 +277,7 @@ static Ogre::Vector4 getScreenspaceCoords(Ogre::MovableObject *object, Ogre::Cam
   return point;
 }
 
-static Ogre::Vector4 LightScreenspaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
+static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
   Ogre::Vector4 point;
 
   if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
@@ -302,7 +302,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
     fp->setNamedConstant("LightCount", static_cast<Ogre::Real>(lightList.size()));
-    fp->setNamedConstant("LightPositionViewSpace", LightScreenspaceCoords(lightList[0], ogreCamera));
+    fp->setNamedConstant("LightPositionViewSpace", GetLightScreenspaceCoords(lightList[0], ogreCamera));
   }
 }
 

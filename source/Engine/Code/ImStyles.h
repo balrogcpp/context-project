@@ -82,8 +82,6 @@ enum ImGuiToggleFlags_ {
   ImGuiToggleFlags_Default = ImGuiToggleFlags_Static,  // The default flags used when no ImGuiToggleFlags_ are specified.
 };
 
-typedef int ImGuiToggleFlags;  // -> enum ImGuiToggleFlags_        // Flags: for Toggle() modes
-
 // Widgets: Toggle Switches
 // - Toggles behave similarly to ImGui::Checkbox()
 // - Sometimes called a toggle switch, see also: https://en.wikipedia.org/wiki/Toggle_switch_(widget)
@@ -95,8 +93,8 @@ typedef int ImGuiToggleFlags;  // -> enum ImGuiToggleFlags_        // Flags: for
 // - knob_rounding: A scalar that controls how rounded the toggle knob is. 0 is square, 1 is round. (0, 1) default 1.0f
 bool ToggleA(const char *label, bool *v);
 bool Toggle(const char *label, bool *v);
-bool Toggle(const char *label, bool *v, ImGuiToggleFlags flags);
-bool Toggle(const char *label, bool *v, ImGuiToggleFlags flags, float speed);
-bool Toggle(const char *label, bool *v, ImGuiToggleFlags flags, float frame_rounding, float knob_rounding);
-bool Toggle(const char *label, bool *v, ImGuiToggleFlags flags, float speed, float frame_rounding, float knob_rounding);
+bool Toggle(const char *label, bool *v, int flags);
+bool Toggle(const char *label, bool *v, int flags, float speed);
+bool Toggle(const char *label, bool *v, int flags, float frame_rounding, float knob_rounding);
+bool Toggle(const char *label, bool *v, int flags, float speed, float frame_rounding, float knob_rounding);
 }  // namespace ImGui

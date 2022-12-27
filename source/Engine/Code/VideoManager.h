@@ -27,8 +27,8 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void EnableGamepadNav(bool enable);
   void EnableKeyboardNav(bool enable);
   void ShowOverlay(bool show);
-  ImFont* AddOverlayFont(const std::string& name, const int size = 0, const std::string& group = Ogre::RGN_AUTODETECT, const ImFontConfig* cfg = nullptr,
-                  const ImWchar* ranges = nullptr);
+  ImFont* AddOverlayFont(const std::string& name, const int size = 0, const std::string& group = Ogre::RGN_AUTODETECT,
+                         const ImFontConfig* cfg = nullptr, const ImWchar* ranges = nullptr);
   void RebuildOVerlayFontAtlas();
 
   void EnableShadows(bool enable);
@@ -37,6 +37,12 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   unsigned short GetShadowTexSize();
   void SetTexFiltering(unsigned int type, int anisotropy);
   std::vector<float> GetPSSMSplitPoints();
+
+  int GetDisplaySizeX(int index);
+  int GetDisplaySizeY(int index);
+  float GetDisplayDPI(int index);
+  float GetDisplayHDPI(int index);
+  float GetDisplayVDPI(int index);
 
  protected:
   void MakeWindow();

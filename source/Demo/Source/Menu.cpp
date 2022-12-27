@@ -16,7 +16,7 @@ namespace Glue {
 void Menu::OnClean() { GetComponent<SystemLocator>().OnClean(); }
 
 void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {
-  if (key == SDL_SCANCODE_ESCAPE && pressed) {
+  if (pressed && key == SDL_SCANCODE_ESCAPE) {
     showMenu = !showMenu;
   }
 }
@@ -33,6 +33,7 @@ void Menu::OnSetUp() {
   int x = GetComponent<VideoManager>().GetWindow().GetSizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetSizeY();
 #endif
+  float dpi = GetComponent<VideoManager>().GetWindow().GetDisplayDPI();
 
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
@@ -45,6 +46,8 @@ void Menu::OnSetUp() {
   float diag0 = sqrt(1920 * 1920 + 1080 * 1080);
   float diag = sqrt(x * x + y * y);
   float scale = diag / diag0;
+  scale *= dpi / 72;
+  style.ScaleAllSizes(scale);
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
 
   GetComponent<VideoManager>().ShowOverlay(true);
@@ -61,7 +64,9 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
   static ImGuiStyle &style = ImGui::GetStyle();
   float diag0 = sqrt(1920 * 1920 + 1080 * 1080);
   float diag = sqrt(x * x + y * y);
+  float dpi = GetComponent<VideoManager>().GetWindow().GetDisplayDPI();
   float scale = diag / diag0;
+  scale *= dpi / 72;
 
   //  Setup Dear ImGui style
   ImGuiStyle styleold = style;  // Backup colors
@@ -140,12 +145,16 @@ void Menu::BeforeRender(float time) {
   std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
 
   const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-  //ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
+  // ImGui::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
 
   ImGui::BeginChild("ScrollingRegion1", ImVec2(ImGetWidth(), ImGetHeight()), false);
 
   static bool flags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   static int combos[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+#ifdef ANDROID
+  flags[0] = 1;
+#endif
 
 #ifndef ANDROID
   if (ImGui::Checkbox("Fullscreen", &flags[0])) {
@@ -185,16 +194,16 @@ void Menu::BeforeRender(float time) {
     window.SetGrabMouse(flags[5]);
   }
 
-  if (ImGuiB::Checkbox("Hide mouse", &flags[6])) {
+  if (ImGui::Checkbox("Hide mouse", &flags[6])) {
     window.SetMouseRelativeMode(flags[6]);
   }
 
-  if (ImGuiB::Checkbox("Enable shadows", &flags[7])) {
+  if (ImGui::Checkbox("Enable shadows", &flags[7])) {
     manager.EnableShadows(flags[7]);
   }
 
   const char *intervalList = " -\0 1\0 2\0 3\0 4\0";
-  if (ImGuiB::Combo("Vsync interval", &combos[0], intervalList)) {
+  if (ImGui::Combo("Vsync interval", &combos[0], intervalList)) {
     if (combos[0] == 0) {
       window.EnableVsync(false);
       combos[1] = 0;
@@ -205,7 +214,7 @@ void Menu::BeforeRender(float time) {
   }
 
   const char *fpsList = " -\0 60\0 30\0 20\0 15\0";
-  if (ImGuiB::Combo("Lock FPS", &combos[1], fpsList)) {
+  if (ImGui::Combo("Lock FPS", &combos[1], fpsList)) {
     switch (combos[1]) {
       case (0): {
         system.EnableFpsLock(false);
@@ -236,22 +245,21 @@ void Menu::BeforeRender(float time) {
 
   const unsigned short texSizeList[] = {128, 256, 512, 1024, 2048, 4096};
   const char *texSizeListStr = " 128\0 256\0 512\0 1024\0 2048\0 4096\0";
-  if (ImGuiB::Combo("Shadow tex size", &combos[2], texSizeListStr)) {
+  if (ImGui::Combo("Shadow tex size", &combos[2], texSizeListStr)) {
     manager.SetShadowTexSize(texSizeList[combos[2]]);
   }
 
   const unsigned short anisotropyLevel[] = {1, 2, 4, 8, 16};
   const char *anisotropyLevelStr = " 1\0 2\0 4\0 8\0 16\0";
-  if (ImGuiB::Combo("Anisotropy lvl", &combos[3], anisotropyLevelStr)) {
+  if (ImGui::Combo("Anisotropy lvl", &combos[3], anisotropyLevelStr)) {
     manager.SetTexFiltering(anisotropyLevel[combos[4]], combos[3]);
   }
 
   const unsigned short texFiltering[] = {0, 1, 2, 3};
   const char *texFilteringStr = " None\0 Bilinear\0 Trilinear\0 Anisotropic\0";
-  if (ImGuiB::Combo("Texture filtering", &combos[4], texFilteringStr)) {
+  if (ImGui::Combo("Texture filtering", &combos[4], texFilteringStr)) {
     manager.SetTexFiltering(texFiltering[combos[4]], combos[3]);
   }
-
 #endif
 
   // used to generate display list
@@ -268,7 +276,7 @@ void Menu::BeforeRender(float time) {
     }
   }
 
-  if (ImGuiB::Combo("DisplayList", &index, displays.c_str())) {
+  if (ImGui::Combo("DisplayList", &index, displays.c_str())) {
     window.SetDisplay(index);
   }
 
@@ -302,7 +310,7 @@ void Menu::BeforeRender(float time) {
   }
 
   static int j = 0;
-  if (ImGuiB::Combo("Resolution", &j, resStr.c_str())) {
+  if (ImGui::Combo("Resolution", &j, resStr.c_str())) {
     int x, y;
     if (j > 0) {
       if (j == 1) {
@@ -323,19 +331,19 @@ void Menu::BeforeRender(float time) {
   }
 
   static bool compositorFlags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-  if (ImGuiB::Checkbox("Bloom", &compositorFlags[0])) {
+  if (ImGui::Checkbox("Bloom", &compositorFlags[0])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", compositorFlags[0]);
   }
 
-  if (ImGuiB::Checkbox("Blur", &compositorFlags[1])) {
+  if (ImGui::Checkbox("Blur", &compositorFlags[1])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("Blur", compositorFlags[1]);
   }
 
-  if (ImGuiB::Checkbox("SSAO", &compositorFlags[2])) {
+  if (ImGui::Checkbox("SSAO", &compositorFlags[2])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", compositorFlags[2]);
   }
 
-  if (ImGuiB::Checkbox("FXAA", &compositorFlags[3])) {
+  if (ImGui::Checkbox("FXAA", &compositorFlags[3])) {
     GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", compositorFlags[3]);
   }
 
