@@ -19,7 +19,7 @@
 
 #ifdef GRASS
 //----------------------------------------------------------------------------------------------------------------------
-highp vec4 WaveGrass(const highp vec4 position, const float time, const float frequency, const vec4 direction)
+vec4 WaveGrass(const vec4 position, const float time, const float frequency, const vec4 direction)
 {
   float n = NoiseHp(position.xz * time) * 2.0 - 2.0;
   return n * direction;
@@ -29,7 +29,7 @@ highp vec4 WaveGrass(const highp vec4 position, const float time, const float fr
 
 #ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
-highp vec4 WaveTree(const highp vec4 position, const vec4 params1, const vec4 params2, const float time)
+vec4 WaveTree(const vec4 position, const vec4 params1, const vec4 params2, const float time)
 {
   float radiusCoeff = params1.x;
   float radiusCoeff2 = radiusCoeff * radiusCoeff;

@@ -470,7 +470,7 @@ void main()
 
         // Calculation of analytical lighting contribution
         float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
-        highp float D = MicrofacetDistribution(alphaRoughness, NdotH);
+        float D = MicrofacetDistribution(alphaRoughness, NdotH);
         vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
 
 #ifdef SHADOWRECEIVER
