@@ -109,13 +109,8 @@ void main()
   vec4 model_position = ModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
 
-#ifdef GRASS
-  if (uv0.y < 0.5) {
-    new_position += WaveGrass(new_position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
-  }
-#endif
-#ifdef TREES
-    new_position += WaveTree(new_position, Time.x, uv1, uv2);
+#ifdef PAGED_GEOMETRY
+   new_position +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(new_position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(new_position, Time.x, uv1, uv2);
 #endif
 
 #ifdef HAS_NORMALS
