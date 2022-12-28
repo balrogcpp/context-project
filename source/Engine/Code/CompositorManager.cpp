@@ -45,6 +45,9 @@ void CompositorManager::OnSetUp() {
   // shadows before bloom
   AddCompositor("SSAO", false);
 
+  // ambient is always enabled
+  AddCompositor("Ambient", true);
+
   // fog is always enabled
   AddCompositor("Fog", true);
 

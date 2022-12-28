@@ -329,7 +329,6 @@ void VideoManager::InitSDL() {
   int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
   if (!result) LogError("SDL_Init failed", SDL_GetError());
   ASSERTION(!result, "Failed to init SDL");
-  SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
 }
 
 class MutedLogListener final : public Ogre::LogListener {
@@ -429,7 +428,7 @@ void VideoManager::MakeWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
   ogreCamera = ogreSceneManager->createCamera("Default");
-  mainWindow->Create("Example0", ogreCamera, 0, 1270, 720, 0);
+  mainWindow->Create("Demo0", ogreCamera, 0, 1270, 720, 0);
   ogreViewport = mainWindow->ogreViewport;
   InputSequencer::GetInstance().RegWindowListener(mainWindow);
 }

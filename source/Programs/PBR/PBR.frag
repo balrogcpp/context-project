@@ -383,9 +383,9 @@ void main()
 #endif
 #endif
 
-    vec4 albedo = GetAlbedo(tex_coord);
-    vec3 color = albedo.rgb;
-    float alpha = albedo.a;
+    vec4 s = GetAlbedo(tex_coord);
+    vec3 albedo = s.rgb;
+    float alpha = s.a;
 
 #ifdef HAS_ALPHA
     if (SurfaceAlphaRejection > 0.0) {
@@ -402,8 +402,8 @@ void main()
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    vec3 diffuseColor = color * ((1.0 - F0) * (1.0 - metallic));
-    vec3 specularColor = mix(vec3(F0), color, metallic);
+    vec3 diffuseColor = albedo * ((1.0 - F0) * (1.0 - metallic));
+    vec3 specularColor = mix(vec3(F0), albedo, metallic);
 
     // Compute reflectance.
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
@@ -417,7 +417,7 @@ void main()
 
     float NdotV = clamp(dot(n, v), 0.001, 1.0);
 
-    vec3 total_colour = vec3(0.0);
+    vec3 color = vec3(0.0);
 
 
 #if MAX_LIGHTS > 0
@@ -485,30 +485,31 @@ void main()
 #endif //  MAX_SHADOW_TEXTURES > 0
 #endif //  SHADOWRECEIVER
 
-        total_colour += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
+        color += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
     } //  lightning loop
 #endif //  MAX_LIGHTS > 0
 
+    vec3 ambient = vec3(0.0);
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     vec3 reflection = -normalize(reflect(v, n));
-    total_colour += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection) * color));
+    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
 #else
-    total_colour += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * color));
+    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
 #endif
 
 // Apply optional PBR terms for additional (optional) shading
-#ifdef HAS_OCCLUSIONMAP
-    total_colour *= occlusion;
+#ifdef HAS_ORM
+    color *= occlusion;
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
+    ambient += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
 #else
-    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
+    ambient += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 
-    FragData[0] = vec4(total_colour, alpha);
+    FragData[0] = vec4(color, alpha);
 
     FragData[1] = vec4(n, vDepth / FarClipDistance);
 
@@ -516,4 +517,5 @@ void main()
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
     FragData[2].rg = velocity;
+    FragData[3].rgb = ambient;
 }

@@ -1,0 +1,50 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+
+fragment_program Ambient_fs glsl glsles
+{
+    source ambient.frag
+    preprocessor_defines NONE
+	default_params
+	{
+	}
+}
+
+material Ambient
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			depth_check off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Ambient_fs
+			{
+                param_named uSceneSampler int 0
+                param_named uAmbientSampler int 1
+			}
+
+			texture_unit scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit ambient
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+		}
+	}
+}
