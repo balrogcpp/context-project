@@ -122,7 +122,8 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   ParseSDLError(context, "SDL_GLContext is null");
   ASSERTION(context, "SDL_GLContext is null");
 #else
-  sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, sdlFlags);
+  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
+  sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
   ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 #endif

@@ -10,7 +10,10 @@ fragment_program fbo_fs glsl glsles
 
     default_params
     {
-        //param_named uThreshhold float 0.5
+        param_named_auto FarClipDistance far_clip_distance
+        param_named uSampler int 0
+        param_named_auto TexelSize0 inverse_texture_size 0
+        param_named uDepth int 1
     }
 }
 
@@ -26,12 +29,7 @@ material FBO
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref fbo_fs
-			{
-                param_named uSampler int 0
-
-                param_named_auto TexelSize0 inverse_texture_size 0
-			}
+			fragment_program_ref fbo_fs {}
 
 			texture_unit scene
             {
@@ -40,6 +38,14 @@ material FBO
                 tex_address_mode clamp
                 filtering linear linear none
             }
+            texture_unit depth
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
 		}
 	}
 }
@@ -54,7 +60,7 @@ fragment_program rays_fs glsl glsles
 
     default_params
     {
-        param_named uRayCount int 50
+        param_named uRayCount int 100
         param_named uDecay float 0.96815
         param_named uExposure float 0.0034
         param_named uDensity float 0.84
@@ -85,7 +91,7 @@ material Rays
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
             texture_unit fbo
             {

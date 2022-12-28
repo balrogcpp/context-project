@@ -52,12 +52,14 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Fog", true);
 
   // init bloom mipmaps
+  AddCompositor("Rays", false);
   InitMipChain(false);
 
   // extra compositors
   AddCompositor("Blur", false);
   AddCompositor("FXAA", false);
   AddCompositor("Output", true);
+  AddCompositor("Paused", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);
@@ -280,15 +282,18 @@ static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   if (pass_id == 10) {  // SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-
+    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
+    fp->setIgnoreMissingParams(false);
 
   } else if (pass_id == 11) {
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
-    fp->setNamedConstant("LightCount", static_cast<Ogre::Real>(lightList.size()));
+    fp->setIgnoreMissingParams(true);
+    fp->setNamedConstant("LightCount", lightList.size() > 0 ? static_cast<Ogre::Real>(1.0) : static_cast<Ogre::Real>(0.0));
     fp->setNamedConstant("LightPositionViewSpace", GetLightScreenspaceCoords(lightList[0], ogreCamera));
+    fp->setIgnoreMissingParams(false);
   }
 }
 

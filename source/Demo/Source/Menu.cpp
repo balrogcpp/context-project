@@ -134,11 +134,15 @@ void Menu::BeforeRender(float time) {
     window.SetMouseRelativeMode(true);
     GetComponent<SystemLocator>().SetSleep(false);
     GetComponent<SceneManager>().SetSleep(false);
+    if (GetComponent<CompositorManager>().IsCompositorEnabled("Paused")) {
+      GetComponent<CompositorManager>().SetCompositorEnabled("Paused", false);
+    }
     return;
   } else {
     window.SetMouseRelativeMode(false);
     GetComponent<SystemLocator>().SetSleep(true);
     GetComponent<SceneManager>().SetSleep(true);
+    GetComponent<CompositorManager>().SetCompositorEnabled("Paused", true);
   }
 
   //ImGuiB::SetupImGuiStyle_NeverBlue();

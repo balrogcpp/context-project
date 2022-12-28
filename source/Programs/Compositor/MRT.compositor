@@ -34,6 +34,7 @@ compositor MRT
 {
     technique
     {
+        // color + alpha; geometry + depth; speed + roughness/metallic; ambient + emissive
         texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_RGBA PF_FLOAT16_GR PF_FLOAT16_RGB chain_scope
 
         target mrt
@@ -80,7 +81,6 @@ compositor SSAO
             {
                 identifier 10
                 quad_normals camera_far_corners_view_space
-
                 material SSAO
                 input 0 mrt 1
             }
@@ -181,7 +181,7 @@ compositor Rays
 {
     technique
     {
-        //texture_ref mrt MRT mrt
+        texture_ref mrt MRT mrt
         texture rt target_width target_height PF_FLOAT16_RGB
         texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
 
@@ -197,7 +197,8 @@ compositor Rays
             pass render_quad
             {
                 material FBO
-                input 0 rt0
+                input 0 rt
+                input 1 mrt 1
             }
         }
 
@@ -253,14 +254,14 @@ compositor Bloom
             }
         }
 
-        target rt1
-        {
-            pass render_quad
-            {
-                material Bloom_feat
-                input 0 rt1
-            }
-        }
+        // target rt1
+        // {
+        //     pass render_quad
+        //     {
+        //         material Bloom_feat
+        //         input 0 rt1
+        //     }
+        // }
 
         target rt2
         {
@@ -1436,6 +1437,53 @@ compositor Output
             {
                 material Output
                 input 0 rt
+            }
+        }
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+compositor Paused
+{
+    technique
+    {
+        texture rt target_width target_height PF_FLOAT16_RGB
+        texture rtx target_width target_height PF_FLOAT16_RGB
+        texture rty target_width target_height PF_FLOAT16_RGB
+
+        target rt
+        {
+            input previous
+            only_initial on
+        }
+
+        target rtx
+        {
+            pass render_quad
+            {
+                material FilterX
+                input 0 rt
+            }
+        }
+
+        target rty
+        {
+            pass render_quad
+            {
+                material FilterY
+                input 0 rtx
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Bypass
+                input 0 rty
             }
         }
     }
