@@ -53,7 +53,7 @@ uniform lowp float uStaticObj;
 uniform lowp float uMovableObj;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
-uniform vec3 CameraPosition;
+uniform highp vec3 CameraPosition;
 uniform float uFadeRange;
 #endif
 #ifdef SHADOWRECEIVER

@@ -10,6 +10,7 @@ fragment_program Ambient_fs glsl glsles
     preprocessor_defines NONE
 	default_params
 	{
+        //param_named_auto AmbientLightColour ambient_light_colour
 	}
 }
 

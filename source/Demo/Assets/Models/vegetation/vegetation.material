@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
 
-import PBR from PBR.material
 import Grass from PBR.material
 import Paged from PBR.material
 

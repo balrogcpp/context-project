@@ -155,10 +155,10 @@ uniform float FarClipDistance;
 uniform float FrameTime;
 uniform float uTexScale;
 #ifdef HAS_NORMALMAP
-#ifdef HAS_PARALLAXMAP
+#define HAS_PARALLAXMAP
 uniform float uOffsetScale;
 #endif
-#endif
+
 
 // shadow receiver
 #ifdef SHADOWRECEIVER
@@ -371,6 +371,18 @@ vec3 GetORM(const vec2 uv)
 
 
 //----------------------------------------------------------------------------------------------------------------------
+vec3 GetEmission(const vec2 uv)
+{
+#ifdef HAS_EMISSIVEMAP
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, uv).rgb);
+#else
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
+#endif
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
     highp vec3 v = normalize(CameraPosition - vPosition);
@@ -499,15 +511,9 @@ void main()
 #endif
 
 // Apply optional PBR terms for additional (optional) shading
-#ifdef HAS_ORM
     color *= occlusion;
-#endif
 
-#ifdef HAS_EMISSIVEMAP
-    ambient += SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, tex_coord).rgb);
-#else
-    ambient += SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
-#endif
+    ambient += GetEmission(tex_coord);
 
     FragData[0] = vec4(color, alpha);
 
