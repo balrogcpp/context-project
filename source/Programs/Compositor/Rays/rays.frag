@@ -20,15 +20,15 @@ vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int 
   vec3 color = vec3(0.0);
   vec2 suv = uv.st;
   float illuminationDecay = 1.0;
-  vec2 deltaTextCoord = (uv - lightPos) * (1.0 /  float(counter)) * density;
+  vec2 deltaTextCoord = (uv - lightPos) * (1.0 / float(counter)) * density;
   #define MAX_RAYS 100
 
   for(int i = 0; i < MAX_RAYS; ++i) {
-	if (counter <= i) break;
+    if (counter <= i) break;
 
-	suv -= deltaTextCoord;
-	color += texture2D(tex, suv).rgb * (illuminationDecay * weight);
-	illuminationDecay *= decay;
+    suv -= deltaTextCoord;
+    color += texture2D(tex, suv).rgb * (illuminationDecay * weight);
+    illuminationDecay *= decay;
   }
 
   return expose(color, exposure);
@@ -60,5 +60,5 @@ void main()
     color += GodRays(uFBO, vUV0, LightPositionViewSpace[i].xy, uRayCount, uDensity, uWeight, uDecay, uExposure);
   }
 
-  FragColor.rgb = color;
+  FragColor.rgb = SafeHDR(color);
 }

@@ -14,11 +14,6 @@
 #include "srgb.glsl"
 
 
-#ifndef MAX_LIGHTS
-#define MAX_LIGHTS 1
-#endif
-
-
 //----------------------------------------------------------------------------------------------------------------------
 vec3 SampleChromatic(const sampler2D tex, const vec2 uv, const float radius)
 {
@@ -38,6 +33,7 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
   vec2 uv = vec2(1.0) - _uv;
   vec2 ghostVec = (vec2(0.5) - uv) * 0.5;
   vec3 ret = vec3(0.0);
+
   #define MAX_GHOST_COUNT 12
 
   // ghosts
@@ -46,8 +42,7 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
 
     vec2 suv = fract(uv + ghostVec * float(i));
     float d = distance(suv, vec2(0.5));
-    float w = pow(1.0 - d, 10.0);
-
+    float w = pow(1.0 - d, 10.0) * (1.0 / float(counter)) * 0.5;
     vec3 s0 = SampleChromatic(tex, suv, chromaticRadius);
     ret += s0 * w;
   }
@@ -62,8 +57,7 @@ vec3 SampleFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const
 
   vec2 suv = fract(uv + ghostVec);
   float d = distance(suv, vec2(0.5));
-  float w = pow(1.0 - d, 10.0);
-
+  float w = pow(1.0 - d, 10.0) * 0.5;
   vec3 s1 = SampleChromatic(tex, suv, chromaticRadius);
   ret += s1 * w;
 
@@ -85,5 +79,5 @@ void main()
   vec3 color = texture2D(uSampler, vUV0).rgb;
   color += SampleFeatures(uSampler, vUV0, TexelSize0, uFeaturesCount, uChromaticRadius);
 
-  FragColor.rgb = color;
+  FragColor.rgb = SafeHDR(color);
 }

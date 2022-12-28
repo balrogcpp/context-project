@@ -37,14 +37,14 @@ material Blur
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
             texture_unit velocity
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
 		}
 	}

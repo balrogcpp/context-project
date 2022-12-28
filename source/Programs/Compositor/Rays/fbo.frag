@@ -11,7 +11,7 @@
 
 #include "header.frag"
 #include "math.glsl"
-#include "filters.glsl"
+#include "srgb.glsl"
 
 
 in vec2 vUV0;
@@ -26,7 +26,7 @@ uniform vec2 TexelSize0;
 void main()
 {
   vec3 color = texture2D(uSampler, vUV0).rgb;
-  //vec3 color = Downscale4x4(uSampler, vUV0, TexelSize0);
+  color /= (1.0 + luminance((color)));
   float depth = texture2D(uDepth, vUV0).w;
   FragColor.rgb = bigger(depth, 0.5) * color;
 }

@@ -10,6 +10,7 @@
 
 
 #include "header.frag"
+#include "math.glsl"
 
 
 in vec2 vUV0;
@@ -51,5 +52,5 @@ void main()
   w *= 2.0;
 #endif
 
-  FragColor.rgb = rt + rt0 * w;
+  FragColor.rgb = SafeHDR(rt + rt0 * w);
 }
