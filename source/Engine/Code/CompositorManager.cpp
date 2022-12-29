@@ -283,7 +283,7 @@ static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera 
   else
     point.z = Ogre::Math::saturate(v.dotProduct(l));
 
-  //point.z = std::sqrt(point.z);
+  point.z = std::sin(point.z * Ogre::Math::HALF_PI);
 
   return point;
 }
