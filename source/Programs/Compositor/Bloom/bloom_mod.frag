@@ -13,13 +13,6 @@
 #include "math.glsl"
 
 
-in vec2 vUV0;
-uniform sampler2D uRT;
-uniform sampler2D uRT0;
-uniform vec2 TexelSize1;
-uniform float uMipCount;
-
-
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 vec3 Upscale3x3(const sampler2D tex, const vec2 uv, const vec2 tsize)
@@ -40,6 +33,14 @@ vec3 Upscale3x3(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
   return color;
 }
+
+
+in vec2 vUV0;
+uniform sampler2D uRT;
+uniform sampler2D uRT0;
+uniform vec2 TexelSize1;
+uniform float uMipCount;
+
 
 
 //----------------------------------------------------------------------------------------------------------------------

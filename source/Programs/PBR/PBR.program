@@ -28,7 +28,7 @@ abstract vertex_program PBR_I_vs glsl glsles
         param_named_auto ModelMatrix world_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
         param_named_auto LightCastsShadowsArray light_casts_shadows_array 8
-        param_named_auto Time time_0_x_packed 300
+        param_named_auto Time time_0_x_packed 100
         //param_named_auto CameraPosition camera_position
     }
 }

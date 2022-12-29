@@ -13,12 +13,6 @@
 #include "srgb.glsl"
 
 
-in vec2 vUV0;
-uniform sampler2D uSampler;
-uniform vec2 TexelSize0;
-uniform float uThreshhold;
-
-
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Downscale13T(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
@@ -51,6 +45,13 @@ vec3 Threshold(const vec3 color, const float threshold)
 {
   return max(color - vec3(threshold), vec3(0.0));
 }
+
+
+in vec2 vUV0;
+uniform sampler2D uSampler;
+uniform vec2 TexelSize0;
+uniform float uThreshhold;
+
 
 
 //----------------------------------------------------------------------------------------------------------------------

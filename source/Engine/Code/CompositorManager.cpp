@@ -52,8 +52,8 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Fog", true);
 
   // init bloom mipmaps
-  AddCompositor("Rays", false);
   InitMipChain(false);
+  AddCompositor("Rays", false);
 
   // extra compositors
   AddCompositor("Blur", false);

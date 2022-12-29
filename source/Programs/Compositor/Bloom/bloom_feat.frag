@@ -42,9 +42,9 @@ vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const 
 
     vec2 suv = fract(uv + ghostVec * float(i));
     float d = distance(suv, vec2(0.5));
-    float w = pow(1.0 - d, 10.0) * (1.0 / float(counter)) * 0.5;
-    vec3 s0 = SampleChromatic(tex, suv, chromaticRadius);
-    ret += s0 * w;
+    float w = pow(1.0 - d, 10.0);
+    vec3 s = SampleChromatic(tex, suv, chromaticRadius);
+    ret += (s * w) * (1.0 / float(counter));
   }
 
   return ret;
@@ -58,8 +58,6 @@ vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const i
   vec2 ghostVec = (vec2(0.5) - uv) * 0.5;
   vec3 ret = vec3(0.0);
 
-  #define MAX_GHOST_COUNT 12
-
   // halo
   #define RADIUS 1.0
   float aspectRatio = texel.x / texel.y;
@@ -70,9 +68,9 @@ vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const i
 
   vec2 suv = fract(uv + ghostVec);
   float d = distance(suv, vec2(0.5));
-  float w = pow(1.0 - d, 10.0) * 0.5;
-  vec3 s1 = SampleChromatic(tex, suv, chromaticRadius);
-  ret += s1 * w;
+  float w = pow(1.0 - d, 10.0);
+  vec3 s = SampleChromatic(tex, suv, chromaticRadius);
+  ret += s * w;
 
   return ret;
 }
@@ -91,8 +89,8 @@ uniform int uFeaturesCount;
 void main()
 {
   vec3 color = texture2D(uSampler, vUV0).rgb;
-  color += GhostFeatures(uSampler, vUV0, TexelSize0, uFeaturesCount, uChromaticRadius);
-  color += HaloFeatures(uSampler, vUV0, TexelSize0, uFeaturesCount, uChromaticRadius);
+  color += 0.5 * GhostFeatures(uSampler, vUV0, TexelSize0, uFeaturesCount, uChromaticRadius);
+  color += 0.5 * HaloFeatures(uSampler, vUV0, TexelSize0, uFeaturesCount, uChromaticRadius);
 
   FragColor.rgb = SafeHDR(color);
 }

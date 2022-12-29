@@ -55,7 +55,7 @@ fragment_program bloom_mod_fs glsl glsles
 
     default_params
     {
-        param_named uMipCount float 14
+        param_named uMipCount float 12
     }
 }
 
@@ -108,7 +108,7 @@ fragment_program bloom_feat_fs glsl glsles
 
     default_params
     {
-        param_named uChromaticRadius float 0.01
+        param_named uChromaticRadius float 0.004
         param_named uFeaturesCount int 1
 
         param_named uSampler int 0
