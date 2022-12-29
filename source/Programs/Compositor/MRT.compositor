@@ -185,11 +185,11 @@ compositor Rays
         compositor_logic DeferredLogic
 
         texture_ref mrt MRT mrt
-        texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
-        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
-        texture fbx target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
-        texture fby target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
         texture rt target_width target_height PF_FLOAT16_RGB
+        texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture fbx target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture fby target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
 
 
         target rt
