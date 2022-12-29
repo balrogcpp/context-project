@@ -34,14 +34,14 @@ material FBO
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
             texture_unit depth
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
 
 		}
@@ -64,8 +64,7 @@ fragment_program rays_fs glsl glsles
         param_named uDensity float 0.84
         param_named uWeight float 5.65
 
-        param_named uSampler int 0
-        param_named uFBO int 1
+        param_named uFBO int 0
     }
 }
 
@@ -84,6 +83,49 @@ material Rays
 
             fragment_program_ref rays_fs {}
 
+            texture_unit fbo
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// Rays_mod
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program rays_mod_fs glsl glsles
+{
+	source rays_mod.frag
+    preprocessor_defines NONE
+
+    default_params
+    {
+        param_named uSampler int 0
+        param_named uFBO int 1
+        param_named_auto TexelSize1 inverse_texture_size 1
+    }
+}
+
+
+material Rays_mod
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref rays_mod_fs {}
+
             texture_unit rt
             {
                 texture black.dds
@@ -96,7 +138,7 @@ material Rays
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }

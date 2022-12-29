@@ -37,9 +37,7 @@ vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int 
 
 in vec2 vUV0;
 
-uniform sampler2D uSampler;
 uniform sampler2D uFBO;
-uniform vec2 TexelSize0;
 uniform float LightCount;
 uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
 uniform int uRayCount;
@@ -52,7 +50,7 @@ uniform float uExposure;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(uSampler, vUV0).rgb;
+  vec3 color = vec3(0.0);
 
   for (int i = 0; i < MAX_LIGHTS; ++i) {
     if (int(LightCount) <= i) break;

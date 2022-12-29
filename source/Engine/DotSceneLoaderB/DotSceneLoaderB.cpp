@@ -189,7 +189,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
     int y = StringConverter::parseInt(XMLNode.attribute("y").value());
     std::string treeMeshName = XMLNode.attribute("trees").value();
     SceneManager* sceneManager = pCamera->getSceneManager();
-    static unsigned long long GENERATOR = 0;
+    static unsigned long long generator = 0;
 
     if (!treeMeshName.empty())
     {
@@ -205,7 +205,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
         auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
 
         trees->setPageLoader(treeLoader);
-        std::string newName = treeMeshName + std::to_string(GENERATOR++);
+        std::string newName = treeMeshName + std::to_string(generator++);
         Entity* treeEntity = sceneManager->createEntity(newName, treeMeshName);
         trees->setCustomParam(newName, "windFactorX", 30);
         trees->setCustomParam(newName, "windFactorY", 0.01);
@@ -414,13 +414,13 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 
     OgreAssert(mSceneMgr->hasCamera("Default"), "[DotSceneLoaderB] No default camera found");
     auto* defaultCamera = mSceneMgr->getCamera("Default");
-    unsigned long long GENERATOR = 0;
+    unsigned long long generator = 0;
 
     for (auto &pPageElement : XMLNode.children("terrain"))
     {
-        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup, GENERATOR);
-        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup, GENERATOR);
-        GENERATOR++;
+        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup, generator);
+        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup, generator);
+        generator++;
     }
 
     terrainGroup->freeTemporaryResources();
@@ -463,13 +463,13 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
 
     OgreAssert(mSceneMgr->hasCamera("Default"), "[DotSceneLoaderB] No default camera found");
     auto* defaultCamera = mSceneMgr->getCamera("Default");
-    unsigned long long GENERATOR = 0;
+    unsigned long long generator = 0;
 
     for (auto& pPageElement : XMLNode.children("terrain"))
     {
-        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup.get(), GENERATOR);
-        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup.get(), GENERATOR);
-        GENERATOR++;
+        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup.get(), generator);
+        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup.get(), generator);
+        generator++;
     }
 
 

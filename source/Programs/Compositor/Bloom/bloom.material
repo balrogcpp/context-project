@@ -38,7 +38,7 @@ material Bloom_threshold
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
 		}
 	}
@@ -91,7 +91,7 @@ material Bloom_mod
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
 	}
@@ -136,7 +136,7 @@ material Bloom_feat
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }

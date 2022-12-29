@@ -43,7 +43,7 @@ material PSSM/shadow_caster_alpha
             {
                 texture white.dds
                 tex_address_mode clamp
-				filtering linear linear none
+				filtering bilinear
             }
 		}
 	}

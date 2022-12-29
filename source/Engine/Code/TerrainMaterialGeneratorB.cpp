@@ -39,8 +39,8 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
     materialName += "_vc";
   }
 
-  static unsigned long long GENERATOR = 0;
-  std::string newName = materialName + std::to_string(GENERATOR++);
+  static unsigned long long generator = 0;
+  std::string newName = materialName + std::to_string(generator++);
 
   auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
   auto *pass = newMaterial->getTechnique(0)->getPass(0);
@@ -79,8 +79,8 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Terrain *terrain) {
   std::string materialName = "TerrainCustom";
-  static unsigned long long GENERATOR = 0;
-  std::string newName = materialName + "Composite" + std::to_string(GENERATOR++);
+  static unsigned long long generator = 0;
+  std::string newName = materialName + "Composite" + std::to_string(generator++);
 
   return MaterialManager::getSingleton().getByName(materialName)->clone(newName);
 }

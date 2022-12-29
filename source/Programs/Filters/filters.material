@@ -22,7 +22,7 @@ material FilterY
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
 		}
 	}
@@ -47,7 +47,7 @@ material FilterX
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
 		}
 	}
@@ -75,7 +75,7 @@ material Downscale4x4
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -100,7 +100,7 @@ material Downscale2x2
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -125,7 +125,7 @@ material Downscale
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -150,7 +150,7 @@ material Bypass
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none none none
+                filtering none
             }
         }
     }
@@ -178,7 +178,7 @@ material Upscale3x3
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -203,7 +203,7 @@ material Upscale2x2
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -228,7 +228,7 @@ material Upscale
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -257,7 +257,7 @@ material Linear
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -282,7 +282,7 @@ material BoxFilter
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering bilinear
             }
         }
     }
@@ -326,14 +326,14 @@ material Add
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none none none
+                filtering none
             }
             texture_unit rt0
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none none none
+                filtering none
             }
         }
 	}

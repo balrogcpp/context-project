@@ -186,6 +186,7 @@ compositor Rays
 
         texture_ref mrt MRT mrt
         texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
+        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB
         texture rt target_width target_height PF_FLOAT16_RGB
 
 
@@ -204,14 +205,23 @@ compositor Rays
             }
         }
 
-        target_output
+        target fbo1
         {
             pass render_quad
             {
                 identifier 11
                 material Rays
+                input 0 fbo
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Rays_mod
                 input 0 rt
-                input 1 fbo
+                input 1 fbo1
             }
         }
     }
