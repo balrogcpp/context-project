@@ -14,6 +14,18 @@
 #include "srgb.glsl"
 
 
+in vec2 vUV0;
+
+uniform sampler2D uFBO;
+uniform float LightCount;
+uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
+uniform int uRayCount;
+uniform float uDecay;
+uniform float uDensity;
+uniform float uWeight;
+uniform float uExposure;
+
+
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int counter, const float density, const float weight, const float decay, const float exposure)
 {
@@ -34,17 +46,6 @@ vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int 
   return expose(color, exposure);
 }
 
-
-in vec2 vUV0;
-
-uniform sampler2D uFBO;
-uniform float LightCount;
-uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
-uniform int uRayCount;
-uniform float uDecay;
-uniform float uDensity;
-uniform float uWeight;
-uniform float uExposure;
 
 
 //----------------------------------------------------------------------------------------------------------------------

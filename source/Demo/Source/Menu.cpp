@@ -52,6 +52,7 @@ void Menu::OnSetUp() {
 #endif
 
   style.ScaleAllSizes(scale);
+  io.Fonts->AddFontDefault();
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
 
   GetComponent<VideoManager>().ShowOverlay(true);
@@ -94,6 +95,7 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
   memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));  // Restore colors
 
   io.Fonts->Clear();
+  io.Fonts->AddFontDefault();
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
   GetComponent<VideoManager>().RebuildOVerlayFontAtlas();
 }
@@ -145,21 +147,20 @@ void Menu::BeforeRender(float time) {
     GetComponent<CompositorManager>().SetCompositorEnabled("Paused", true);
   }
 
-  //ImGuiB::SetupImGuiStyle_NeverBlue();
 
 
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
   ImGui::SetNextWindowBgAlpha(0.8);
-  ImGui::Begin("Graphics Settings", 0, ImGuiWindowFlags_NoDecoration);
+  ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoDecoration);
 
   ImGui::PushFont(font);
 
-  static int activeTab = 0;
-  std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
-
-  const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-  // ImGui::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
+  //ImGuiB::SetupImGuiStyle_NeverBlue();
+  //static int activeTab = 0;
+  //std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
+  //const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+  //ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
 
   ImGui::BeginChild("ScrollingRegion1", ImVec2(ImGetWidth(), ImGetHeight()), false);
 

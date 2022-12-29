@@ -98,6 +98,8 @@ void main()
 {
 #ifdef HAS_UV
   vUV0.xy = uv0.xy;
+#else
+  vUV0.xy = vec2(0.0);
 #endif
 
 #ifdef HAS_VERTEXCOLOR
@@ -105,6 +107,7 @@ void main()
 #else
   vColor = vec4(1.0);
 #endif
+
   vec4 new_position = position;
   vec4 model_position = ModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
@@ -127,7 +130,7 @@ void main()
 #endif
 #else // !HAS_NORMALS
   vTBN = mat3(vec3(1.0, 0.0, 0.0),
-              vec3(0.0, 0.0, 0.0),
+              normalize(dot(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0))),
               vec3(0.0, 1.0, 0.0));
 #endif // HAS_NORMALS
 

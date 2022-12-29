@@ -113,16 +113,6 @@ uniform sampler2D uNormalSampler;
 #endif
 #ifdef HAS_ORM
 uniform sampler2D uORMSampler;
-#else // ! HAS_ORM
-#ifdef HAS_OCCLUSIONMAP
-uniform sampler2D uOcclusionSampler;
-#endif
-#ifdef HAS_ROUGHNESSMAP
-uniform sampler2D uRoughnessSampler;
-#endif
-#ifdef HAS_METALLICMAP
-uniform sampler2D uMetallicSampler;
-#endif
 #endif // HAS_ORM
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
@@ -154,6 +144,7 @@ uniform float SurfaceAlphaRejection;
 uniform float FarClipDistance;
 uniform float FrameTime;
 uniform float uTexScale;
+uniform float uTexLod;
 #ifdef HAS_NORMALMAP
 #define HAS_PARALLAXMAP
 uniform float uOffsetScale;
@@ -291,7 +282,7 @@ highp vec3 GetNormal(const vec2 uv)
     highp vec3 n = cross(dFdx(vPosition), dFdy(vPosition));
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n0 = texture2D(uNormalSampler, uv).xyz;
+    highp vec3 n0 = texture2D(uNormalSampler, uv, uTexLod).xyz;
     vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     vec3 t = normalize(cross(n ,b));
     n0 = normalize(mat3(t, b, n) * ((2.0 * n0 - 1.0)));
@@ -303,7 +294,7 @@ highp vec3 GetNormal(const vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = texture2D(uNormalSampler, uv).xyz;
+    highp vec3 n = texture2D(uNormalSampler, uv, uTexLod).xyz;
     n = normalize(vTBN * ((2.0 * n - 1.0)));
     return n;
 #else
@@ -320,42 +311,9 @@ vec4 GetAlbedo(const vec2 uv)
     vec4 albedo = SurfaceDiffuseColour.rgba * vColor;
 
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(uAlbedoSampler, uv);
+    albedo *= texture2D(uAlbedoSampler, uv, uTexLod);
 #endif
     return SRGBtoLINEAR(albedo);
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-float GetMetallic(const vec2 uv)
-{
-    float metallic = SurfaceShininessColour.r;
-#ifdef HAS_METALLICMAP
-    metallic *= texture2D(uMetallicSampler, uv).r;
-#endif
-    return metallic;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-float GetRoughness(const vec2 uv)
-{
-    float roughness = SurfaceSpecularColour.r;
-#ifdef HAS_ROUGHNESSMAP
-    roughness *= texture2D(uRoughnessSampler, uv).r;
-#endif
-    return roughness;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-float GetOcclusion(const vec2 uv)
-{
-#ifdef HAS_OCCLUSIONMAP
-    return texture2D(uOcclusionSampler, uv).r;
-#else
-    return 1.0;
-#endif
 }
 
 
@@ -364,7 +322,7 @@ vec3 GetORM(const vec2 uv)
 {
     vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
 #ifdef HAS_ORM
-    ORM *= texture2D(uORMSampler, uv).rgb;
+    ORM *= texture2D(uORMSampler, uv, uTexLod).rgb;
 #endif
     return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0));
 }
@@ -374,7 +332,7 @@ vec3 GetORM(const vec2 uv)
 vec3 GetEmission(const vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, uv).rgb);
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, uv, uTexLod).rgb);
 #else
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
@@ -391,7 +349,7 @@ void main()
 
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-    tex_coord -= (v.xy * (uOffsetScale * texture2D(uNormalSampler, tex_coord).a));
+    tex_coord -= (v.xy * (uOffsetScale * texture2D(uNormalSampler, tex_coord, uTexLod).a));
 #endif
 #endif
 
