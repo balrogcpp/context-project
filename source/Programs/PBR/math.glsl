@@ -29,6 +29,15 @@
 #define mad(a, b, c) ( (a) * (b) + (c) )
 #define lerp mix
 #define fmod modf
+#define float4x4 mat4
+#define float3x3 mat3
+#define float2x2 mat2
+#define float4x4 vec4
+#define float3x3 vec3
+#define float2x2 vec2
+#define atan2 atan
+#define ddx dFdx
+#define ddy dFdy
 
 
 float min3(float a, float b, float c)
