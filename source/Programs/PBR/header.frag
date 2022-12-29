@@ -8,7 +8,7 @@
 #endif
 
 #ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 4
+#define MAX_SHADOW_TEXTURES 8
 #endif
 
 #ifdef GL_ES

@@ -1,11 +1,17 @@
 // created by Andrey Vasiliev
 
-import Grass from PBR.material
 import Paged from PBR.material
 
-material GrassCustom : Grass
+material GrassCustom : Paged
 {
     set $Albedo Grass_A.dds
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+        }
+    }
 }
 
 material 3D-Diggers/fir01 : Paged

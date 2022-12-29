@@ -360,6 +360,10 @@ void Menu::BeforeRender(float time) {
     GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", compositorFlags[3]);
   }
 
+  if (ImGui::Checkbox("Rays", &compositorFlags[4])) {
+    GetComponent<CompositorManager>().SetCompositorEnabled("Rays", compositorFlags[4]);
+  }
+
   ImGui::EndChild();
   ImGui::PopFont();
 

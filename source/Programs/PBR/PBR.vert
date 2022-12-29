@@ -57,8 +57,8 @@ uniform highp vec3 CameraPosition;
 uniform float uFadeRange;
 #endif
 #ifdef SHADOWRECEIVER
-uniform int ShadowTextureCount;
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
+uniform lowp float LightCastsShadowsArray[MAX_LIGHTS];
 #endif // SHADOWRECEIVER
 
 
@@ -142,7 +142,7 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
   // Calculate the position of vertex in light space
   for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
-    if (ShadowTextureCount <= i) break;
+    if (LightCastsShadowsArray[i] == 0.0) break;
     
     vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
   }

@@ -104,7 +104,7 @@ material Bloom_mod
 fragment_program bloom_feat_fs glsl glsles
 {
 	source bloom_feat.frag
-    preprocessor_defines MAX_LIGHTS=8
+    preprocessor_defines NONE
 
     default_params
     {
