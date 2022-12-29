@@ -266,7 +266,7 @@ static Ogre::Vector4 GetScreenspaceCoords(Ogre::MovableObject *object, Ogre::Cam
 }
 
 static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
-  Ogre::Vector4 point;
+  Ogre::Vector4 point = Ogre::Vector4::ZERO;
 
   if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
     point = Ogre::Vector4(-light->getDerivedDirection(), 0.0);
@@ -275,6 +275,12 @@ static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera 
 
   point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
   point /= point.w;
+
+  // Is the camera facing that point? If not, return false
+  //Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
+  //if (cameraPlane.getSide(-light->getDerivedPosition()) == Ogre::Plane::POSITIVE_SIDE) {
+  //}
+
 
   return point;
 }
