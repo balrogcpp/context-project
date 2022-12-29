@@ -73,10 +73,9 @@ float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gr
 float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const vec2 filter_size, const int iterations)
 {
   lightSpace /= lightSpace.w;
-
   lightSpace.z = lightSpace.z * 0.5 + 0.5; // convert -1..1 to 0..1
   float shadow = 1.0;
-  float current_depth = lightSpace.z;
+  float current_depth = lightSpace.z + HALF_EPSILON * 0.96; //  1.0 - F0
   #define MAX_PENUMBRA_FILTER 0.05
 
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
