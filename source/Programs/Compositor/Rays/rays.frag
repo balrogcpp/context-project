@@ -56,7 +56,8 @@ void main()
   for (int i = 0; i < MAX_LIGHTS; ++i) {
     if (int(LightCount) <= i) break;
 
-    color += GodRays(uFBO, vUV0, LightPositionViewSpace[i].xy, uRayCount, uDensity, uWeight, uDecay, uExposure);
+    vec4 point = LightPositionViewSpace[i];
+    color += GodRays(uFBO, vUV0, point.xy, uRayCount, uDensity, uWeight * point.z, uDecay, uExposure);
   }
 
   FragColor.rgb = SafeHDR(color);

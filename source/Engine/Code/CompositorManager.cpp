@@ -273,14 +273,17 @@ static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera 
   else
     point = Ogre::Vector4(light->getDerivedPosition(), 1.0);
 
+  Ogre::Vector3 v = point.xyz().normalisedCopy();
+  Ogre::Vector3 l = camera->getDerivedOrientation().zAxis().normalisedCopy();
   point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
   point /= point.w;
 
-  // Is the camera facing that point? If not, return false
-  //Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
-  //if (cameraPlane.getSide(-light->getDerivedPosition()) == Ogre::Plane::POSITIVE_SIDE) {
-  //}
+  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
+    point.z = Ogre::Math::saturate(-v.dotProduct(l));
+  else
+    point.z = Ogre::Math::saturate(v.dotProduct(l));
 
+  //point.z = std::sqrt(point.z);
 
   return point;
 }
@@ -297,8 +300,17 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
     fp->setIgnoreMissingParams(true);
+    const int N = OGRE_MAX_SIMULTANEOUS_LIGHTS * 4;
+    Ogre::Real LightPositionViewSpace[N];
+    for (int i = 0; i < lightList.size(); i++) {
+      Ogre::Vector4 point = GetLightScreenspaceCoords(lightList[i], ogreCamera);
+      LightPositionViewSpace[4 * i] = point.x;
+      LightPositionViewSpace[4 * i + 1] = point.y;
+      LightPositionViewSpace[4 * i + 2] = point.z;
+      LightPositionViewSpace[4 * i + 3] = point.w;
+    }
+    fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
     fp->setNamedConstant("LightCount", lightList.size() > 0 ? static_cast<Ogre::Real>(1.0) : static_cast<Ogre::Real>(0.0));
-    fp->setNamedConstant("LightPositionViewSpace", GetLightScreenspaceCoords(lightList[0], ogreCamera));
     fp->setIgnoreMissingParams(false);
   }
 }

@@ -107,7 +107,6 @@ fragment_program rays_mod_fs glsl glsles
     {
         param_named uSampler int 0
         param_named uFBO int 1
-        param_named_auto TexelSize1 inverse_texture_size 1
     }
 }
 
