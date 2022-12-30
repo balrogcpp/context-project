@@ -9,7 +9,7 @@ using namespace std;
 
 namespace Glue {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(14), oddMipsOnly(false) {
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(12), oddMipsOnly(false) {
   if (RenderSystemIsGLES2()) {
     mipChain /= 2.0;
     // oddMipsOnly = true;
