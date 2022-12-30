@@ -31,13 +31,21 @@ vec3 SampleChromatic(const sampler2D tex, const vec2 uv, const float radius)
 }
 
 
+// https://john-chapman.github.io/2017/11/05/pseudo-lens-flare.html
+// Cubic window; map [0, _radius] in [1, 0] as a cubic falloff from _center.
+float Window_Cubic(float _x, float _center, float _radius)
+{
+  _x = min(abs(_x - _center) / _radius, 1.0);
+  return 1.0 - _x * _x * (3.0 - 2.0 * _x);
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const int counter, const float chromaticRadius)
 {
   vec2 uv = vec2(1.0) - _uv;
-  vec2 ghostVec = vec2(0.5) - uv;
+  vec2 ghostVec = (vec2(0.5) - uv) * 0.44;
   vec3 ret = vec3(0.0);
-  ghostVec *= 0.45;
 
   #define MAX_GHOST_COUNT 24
 
@@ -64,7 +72,7 @@ vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const i
   vec3 ret = vec3(0.0);
 
   // halo
-  #define RADIUS 1.0
+  #define RADIUS 0.45
   float aspectRatio = texel.y / texel.x;
   haloVec.x *= aspectRatio;
   haloVec = normalize(haloVec);
@@ -72,7 +80,7 @@ vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const i
   vec2 wuv = (uv - vec2(0.5, 0.0)) / vec2(aspectRatio, 1.0) + vec2(0.5, 0.0);
   float d = distance(wuv, vec2(0.5));
   float w = pow(1.0 - d, 5.0);
-  haloVec *= 0.5 * RADIUS;
+  haloVec *= RADIUS;
 
   vec2 suv = uv + haloVec;
   vec3 s = SampleChromatic(tex, suv, chromaticRadius);
