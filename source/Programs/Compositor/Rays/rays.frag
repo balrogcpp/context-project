@@ -60,5 +60,5 @@ void main()
     color += GodRays(uFBO, vUV0, point.xy, uRayCount, uDensity, uWeight * point.z, uDecay, uExposure);
   }
 
-  FragColor.rgb = SafeHDR(color);
+  FragColor.rgb = color;
 }

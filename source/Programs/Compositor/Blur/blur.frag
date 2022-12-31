@@ -43,7 +43,6 @@ void main()
     color += texture2D(uSceneSampler, vUV0 + offset).rgb;
   }
 
-  color = SafeHDR(color);
   color *= invSamples;
   FragColor.rgb = color;
 }

@@ -473,7 +473,7 @@ void main()
 
     ambient += GetEmission(tex_coord);
 
-    FragData[0] = vec4(SafeHDR(color), alpha);
+    FragData[0] = vec4(color, alpha);
 
     FragData[1] = vec4(n, vDepth / FarClipDistance);
 

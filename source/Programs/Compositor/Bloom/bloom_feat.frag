@@ -26,7 +26,6 @@ vec3 SampleChromatic(const sampler2D tex, const vec2 uv, const float radius)
   );
 
   color /= (1.0 + luminance(LINEARtoSRGB(color)));
-
   return color;
 }
 
@@ -45,7 +44,7 @@ vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const 
 {
   vec2 uv = vec2(1.0) - _uv;
   vec2 ghostVec = (vec2(0.5) - uv) * 0.44;
-  vec3 ret = vec3(0.0);
+  vec3 color = vec3(0.0);
 
   #define MAX_GHOST_COUNT 24
 
@@ -55,12 +54,12 @@ vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const 
 
     vec2 suv = fract(uv + ghostVec * float(i));
     float d = distance(suv, vec2(0.5));
-    float w = pow(1.0 - d, 5.0);
+    float w = pow(1.0 - d, 5.0) / float(counter);
     vec3 s = SampleChromatic(tex, suv, chromaticRadius);
-    ret += (s * w) * (1.0 / float(counter));
+    color += s * w;
   }
 
-  return ret;
+  return color;
 }
 
 
@@ -69,7 +68,6 @@ vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const i
 {
   vec2 uv = vec2(1.0) - _uv;
   vec2 haloVec = vec2(0.5) - uv;
-  vec3 ret = vec3(0.0);
 
   // halo
   #define RADIUS 0.45
@@ -84,9 +82,9 @@ vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const i
 
   vec2 suv = uv + haloVec;
   vec3 s = SampleChromatic(tex, suv, chromaticRadius);
-  ret += s * w;
+  vec3 color = s * w;
 
-  return ret;
+  return color;
 }
 
 
