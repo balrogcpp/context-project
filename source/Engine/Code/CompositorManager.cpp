@@ -318,11 +318,11 @@ static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera 
   point /= point.w;
 
   if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
-    point.z = Ogre::Math::saturate(-v.dotProduct(l));
+    point.w = Ogre::Math::saturate(-v.dotProduct(l));
   else
-    point.z = Ogre::Math::saturate(v.dotProduct(l));
+    point.w = Ogre::Math::saturate(v.dotProduct(l));
 
-  point.z = std::sin(point.z * Ogre::Math::HALF_PI);
+  point.w = std::sin(point.w * Ogre::Math::HALF_PI);
 
   return point;
 }
@@ -339,8 +339,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
     fp->setIgnoreMissingParams(true);
-    const int N = OGRE_MAX_SIMULTANEOUS_LIGHTS * 4;
-    Ogre::Real LightPositionViewSpace[N];
+    Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
     for (int i = 0; i < lightList.size(); i++) {
       Ogre::Vector4 point = GetLightScreenspaceCoords(lightList[i], ogreCamera);
       LightPositionViewSpace[4 * i] = point.x;

@@ -97,7 +97,7 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
   io.Fonts->Clear();
   io.Fonts->AddFontDefault();
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
-  GetComponent<VideoManager>().RebuildOVerlayFontAtlas();
+  GetComponent<VideoManager>().RebuildOverlayFontAtlas();
 }
 
 void Menu::BeforeRender(float time) {

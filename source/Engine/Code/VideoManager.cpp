@@ -672,7 +672,7 @@ void VideoManager::ShowOverlay(bool show) {
   }
 }
 
-void VideoManager::RebuildOVerlayFontAtlas() {
+void VideoManager::RebuildOverlayFontAtlas() {
   static ImGuiIO &io = ImGui::GetIO();
   unsigned char *pixels;
   int width, height;
@@ -686,8 +686,7 @@ void VideoManager::RebuildOVerlayFontAtlas() {
     Ogre::TextureManager::getSingleton().unload(texName, Ogre::RGN_INTERNAL);
     Ogre::TextureManager::getSingleton().remove(texName, Ogre::RGN_INTERNAL);
     tex.reset();  // to be sure memory is freed
-    tex = Ogre::TextureManager::getSingleton().createManual(texName, Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
-                                                            Ogre::PF_BYTE_RGBA);
+    tex = Ogre::TextureManager::getSingleton().createManual(texName, Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1, Ogre::PF_BYTE_RGBA);
     tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
   }
 }

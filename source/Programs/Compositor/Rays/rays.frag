@@ -57,7 +57,7 @@ void main()
     if (int(LightCount) <= i) break;
 
     vec4 point = LightPositionViewSpace[i];
-    color += GodRays(uFBO, vUV0, point.xy, uRayCount, uDensity, uWeight * point.z, uDecay, uExposure);
+    color += GodRays(uFBO, vUV0, point.xy, uRayCount, uDensity, uWeight * point.w, uDecay, uExposure);
   }
 
   FragColor.rgb = color;
