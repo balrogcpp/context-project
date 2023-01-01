@@ -1489,12 +1489,13 @@ compositor Paused
 
         target rt
         {
-            input previous
             only_initial on
+            input previous
         }
 
         target rtx
         {
+            only_initial on
             pass render_quad
             {
                 material FilterX
@@ -1504,6 +1505,7 @@ compositor Paused
 
         target rty
         {
+            only_initial on
             pass render_quad
             {
                 material FilterY

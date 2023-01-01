@@ -3,7 +3,6 @@
 #include "pch.h"
 #include "CompositorManager.h"
 #include <OgreCompositorLogic.h>
-#include <queue>
 
 using namespace std;
 
@@ -187,6 +186,46 @@ void CompositorManager::InitMipChain(bool enable) {
   }
 
   AddCompositor(BLOOM_COMPOSITOR + "End", enable);
+}
+
+void CompositorManager::CacheCompositorChain() {
+  // remove compositors that have to be changed
+  for (const auto &it : compositorChain->getCompositorInstances()) {
+    compositorList.push(make_pair(it->getCompositor()->getName(), it->getEnabled()));
+  }
+}
+
+void CompositorManager::RemoveAllCompositors() { compositorChain->removeAllCompositors(); }
+
+void CompositorManager::DisableRendering() {
+  compositorChain->getCompositor(0)->getTechnique()->getTargetPass(0)->getPass(1)->setType(Ogre::CompositionPass::PT_CLEAR);
+}
+void CompositorManager::EnableRendering() {
+  compositorChain->getCompositor(0)->getTechnique()->getTargetPass(0)->getPass(1)->setType(Ogre::CompositionPass::PT_RENDERSCENE);
+}
+
+Ogre::Camera *CompositorManager::GetOgreCamera() { return ogreCamera; }
+
+void CompositorManager::ApplyCachedCompositorChain() {
+  // compositors are automatically resized according to actual viewport size when added to chain
+  while (!compositorList.empty()) {
+    const std::string compositorName = compositorList.front().first;
+    const bool enabled = compositorList.front().second;
+    compositorList.pop();
+
+    auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
+    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+
+    auto *compositorPtr = compositorChain->getCompositor(compositorName);
+    for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
+      if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
+        jt->width = 0;
+        jt->height = 0;
+      }
+    }
+
+    compositorManager->setCompositorEnabled(ogreViewport, compositorName, enabled);
+  }
 }
 
 void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) { ogreCamera = viewport->getCamera(); }

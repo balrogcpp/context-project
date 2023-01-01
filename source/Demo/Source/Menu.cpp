@@ -43,8 +43,8 @@ void Menu::OnSetUp() {
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
 
-  float diag0 = 150000.0;
-  float diag = sqrt(x * x + y * y);
+  float diag0 = 100000.0;
+  float diag = min(x, y);
   float scale = diag / diag0;
   scale *= dpi;
 #ifdef MOBILE
@@ -67,8 +67,8 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
 
   static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
-  float diag0 = 150000.0;
-  float diag = sqrt(x * x + y * y);
+  float diag0 = 100000.0;
+  float diag = min(x, y);
   float dpi = GetComponent<VideoManager>().GetWindow().GetDisplayDPI();
   float scale = diag / diag0;
   scale *= dpi;
@@ -144,9 +144,10 @@ void Menu::BeforeRender(float time) {
     window.SetMouseRelativeMode(false);
     GetComponent<SystemLocator>().SetSleep(true);
     GetComponent<SceneManager>().SetSleep(true);
-    GetComponent<CompositorManager>().SetCompositorEnabled("Paused", true);
+    if (!GetComponent<CompositorManager>().IsCompositorEnabled("Paused")) {
+      GetComponent<CompositorManager>().SetCompositorEnabled("Paused", true);
+    }
   }
-
 
 
   ImGui::SetNextWindowPos({border * vx, border * vy});

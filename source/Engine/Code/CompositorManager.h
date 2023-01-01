@@ -3,6 +3,7 @@
 #pragma once
 #include "System.h"
 #include <Ogre.h>
+#include <queue>
 
 namespace Glue {
 class CompositorManager : public System<CompositorManager>, public Ogre::CompositorInstance::Listener, public Ogre::Viewport::Listener {
@@ -17,6 +18,13 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Composi
   void SetFixedViewport(bool fixed);
   void SetCompositorScale(const std::string& name, float scale);
   bool IsCompositorEnabled(const std::string& name);
+
+  void CacheCompositorChain();
+  void ApplyCachedCompositorChain();
+  void RemoveAllCompositors();
+  void DisableRendering();
+  void EnableRendering();
+  Ogre::Camera* GetOgreCamera();
 
  protected:
   /// System impl
@@ -42,6 +50,7 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Composi
   bool oddMipsOnly;
   bool fixedViewportSize;
   int forceSizeX, forceSizeY;
+  std::queue<std::pair<std::string, bool>> compositorList;
 
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;

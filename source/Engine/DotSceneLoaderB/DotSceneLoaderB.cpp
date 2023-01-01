@@ -108,15 +108,11 @@ Quaternion parseQuaternion(const pugi::xml_node& XMLNode, Quaternion defaultValu
         orientation.z = StringConverter::parseReal(XMLNode.attribute("z").value());
     }
 
-  Ogre::Vector3 direction = orientation * Ogre::Vector3::NEGATIVE_UNIT_Z;
-  direction = Vector3(direction.x, direction.z, -direction.y).normalisedCopy();
-  auto *scene = Root::getSingleton().getSceneManager("Default");
-  auto *node = scene->getRootSceneNode()->createChildSceneNode("tmp");
-  node->setDirection(direction);
-  orientation = node->getOrientation();
-  scene->destroySceneNode(node);
+    Vector3 direction = orientation.zAxis();
+    direction = Vector3(direction.x, direction.z, -direction.y).normalisedCopy();
+    orientation = direction.getRotationTo(Ogre::Vector3::UNIT_Z, Ogre::Vector3::ZERO);
 
-  return orientation;
+    return orientation;
 }
 
 ColourValue parseColour(pugi::xml_node& XMLNode, ColourValue defaultValue = ColourValue::Black)
