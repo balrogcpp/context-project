@@ -20,7 +20,9 @@ void CompositorManager::OnUpdate(float time) {}
 class DeferredLogic final : public Ogre::CompositorLogic {
  public:
   void compositorInstanceCreated(Ogre::CompositorInstance *newInstance) override { newInstance->addListener(GetComponentPtr<CompositorManager>()); }
-  void compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) override {}
+  void compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) override {
+    destroyedInstance->removeListener(GetComponentPtr<CompositorManager>());
+  }
 };
 
 void CompositorManager::OnSetUp() {
