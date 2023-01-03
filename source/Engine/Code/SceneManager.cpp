@@ -213,45 +213,48 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     for (auto &it : entity->getSubEntities()) {
       const auto &old = it->getMaterial();
       const auto &mat = old->clone(std::to_string(generator++));
-      auto *pass = mat->getTechnique(0)->getPass(0);
-      auto &vp =  pass->getVertexProgram();
-      auto &fp = pass->getFragmentProgram();
 
-      std::string vpDefines = vp->getParameter("preprocessor_defines");
-      std::string fpDefines = fp->getParameter("preprocessor_defines");
+      if (false) {
+        auto *pass = mat->getTechnique(0)->getPass(0);
+        auto &vp = pass->getVertexProgram();
+        auto &fp = pass->getFragmentProgram();
 
-      if (auto *tex = pass->getTextureUnitState("Albedo")) {
-        if (tex->getTextureName() == "white.dds") {
-          auto i = fpDefines.find("HAS_BASECOLORMAP");
-          if (i != std::string::npos) fpDefines[i] = 'X';
+        std::string vpDefines = vp->getParameter("preprocessor_defines");
+        std::string fpDefines = fp->getParameter("preprocessor_defines");
+
+        if (auto *tex = pass->getTextureUnitState("Albedo")) {
+          if (tex->getTextureName() == "white.dds") {
+            auto i = fpDefines.find("HAS_BASECOLORMAP");
+            if (i != std::string::npos) fpDefines[i] = 'X';
+          }
         }
-      }
 
-      if (auto *tex = pass->getTextureUnitState("Normal")) {
-        if (tex->getTextureName() == "normal.dds") {
-          auto i = fpDefines.find("HAS_NORMALMAP");
-          if (i != std::string::npos) fpDefines[i] = 'X';
+        if (auto *tex = pass->getTextureUnitState("Normal")) {
+          if (tex->getTextureName() == "normal.dds") {
+            auto i = fpDefines.find("HAS_NORMALMAP");
+            if (i != std::string::npos) fpDefines[i] = 'X';
+          }
         }
-      }
 
-      if (auto *tex = pass->getTextureUnitState("ORM")) {
-        if (tex->getTextureName() == "white.dds") {
-          auto i = fpDefines.find("HAS_ORM");
-          if (i != std::string::npos) fpDefines[i] = 'X';
+        if (auto *tex = pass->getTextureUnitState("ORM")) {
+          if (tex->getTextureName() == "white.dds") {
+            auto i = fpDefines.find("HAS_ORM");
+            if (i != std::string::npos) fpDefines[i] = 'X';
+          }
         }
-      }
 
-      if (auto *tex = pass->getTextureUnitState("Emissive")) {
-        if (tex->getTextureName() == "black.dds") {
-          auto i = fpDefines.find("HAS_EMISSIVEMAP");
-          if (i != std::string::npos) fpDefines[i] = 'X';
+        if (auto *tex = pass->getTextureUnitState("Emissive")) {
+          if (tex->getTextureName() == "black.dds") {
+            auto i = fpDefines.find("HAS_EMISSIVEMAP");
+            if (i != std::string::npos) fpDefines[i] = 'X';
+          }
         }
-      }
 
-      //vp->setParameter("preprocessor_defines", vpDefines);
-      //fp->setParameter("preprocessor_defines", fpDefines);
-      //vp->reload();
-      //fp->reload();
+        vp->setParameter("preprocessor_defines", vpDefines);
+        fp->setParameter("preprocessor_defines", fpDefines);
+        vp->reload();
+        fp->reload();
+      }
 
       it->setMaterial(mat);
     }

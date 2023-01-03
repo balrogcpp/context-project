@@ -32,15 +32,15 @@ vec3 SampleChromatic(const sampler2D tex, const vec2 uv, const float radius)
 
 // https://john-chapman.github.io/2017/11/05/pseudo-lens-flare.html
 // Cubic window; map [0, _radius] in [1, 0] as a cubic falloff from _center.
-float Window_Cubic(float _x, float _center, float _radius)
+float Window_Cubic(const float _x, const float _center, const float _radius)
 {
-  _x = min(abs(_x - _center) / _radius, 1.0);
-  return 1.0 - _x * _x * (3.0 - 2.0 * _x);
+  float x = min(abs(_x - _center) / _radius, 1.0);
+  return 1.0 - x * x * (3.0 - 2.0 * x);
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const int counter, const float chromaticRadius)
+vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const int counter, const float radius)
 {
   vec2 uv = vec2(1.0) - _uv;
   vec2 ghostVec = (vec2(0.5) - uv) * 0.44;
@@ -55,7 +55,7 @@ vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const 
     vec2 suv = fract(uv + ghostVec * float(i));
     float d = distance(suv, vec2(0.5));
     float w = pow(1.0 - d, 5.0) / float(counter);
-    vec3 s = SampleChromatic(tex, suv, chromaticRadius);
+    vec3 s = SampleChromatic(tex, suv, radius);
     color += s * w;
   }
 
@@ -64,24 +64,24 @@ vec3 GhostFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const 
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const int counter, const float chromaticRadius)
+vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const int counter, const float radius)
 {
   vec2 uv = vec2(1.0) - _uv;
   vec2 haloVec = vec2(0.5) - uv;
 
   // halo
   #define RADIUS 0.45
-  float aspectRatio = texel.y / texel.x;
-  haloVec.x *= aspectRatio;
+  float ratio = texel.y / texel.x;
+  haloVec.x *= ratio;
   haloVec = normalize(haloVec);
-  haloVec.x /= aspectRatio;
-  vec2 wuv = (uv - vec2(0.5, 0.0)) / vec2(aspectRatio, 1.0) + vec2(0.5, 0.0);
+  haloVec.x /= ratio;
+  vec2 wuv = (uv - vec2(0.5, 0.0)) / vec2(ratio, 1.0) + vec2(0.5, 0.0);
   float d = distance(wuv, vec2(0.5));
   float w = pow(1.0 - d, 5.0);
   haloVec *= RADIUS;
 
   vec2 suv = uv + haloVec;
-  vec3 s = SampleChromatic(tex, suv, chromaticRadius);
+  vec3 s = SampleChromatic(tex, suv, radius);
   vec3 color = s * w;
 
   return color;

@@ -48,7 +48,8 @@ void Menu::OnSetUp() {
   float scale = diag / diag0;
   scale *= dpi;
 #ifdef MOBILE
-  scale *= 0.35;
+  //  scale *= (7.0 / 8.0);
+  scale *= 0.5;
 #endif
 
   style.ScaleAllSizes(scale);
@@ -114,12 +115,13 @@ void Menu::BeforeRender(float time) {
   float scale = 7.0 / 8.0;
   float border = 0.5 - 0.5 * scale;
 
-
   // fps counter
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
   ImGui::PushFont(nullptr);
+  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
+  ImGui::PopStyleColor();
   ImGui::PopFont();
   ImGui::End();
 
@@ -130,7 +132,6 @@ void Menu::BeforeRender(float time) {
   if (ImGui::Button("MENU", {vx * 0.2f, vy * 0.2f})) showMenu = !showMenu;
   ImGui::End();
 #endif
-
 
   if (!showMenu) {
     window.SetMouseRelativeMode(true);
@@ -149,7 +150,6 @@ void Menu::BeforeRender(float time) {
     }
   }
 
-
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
   ImGui::SetNextWindowBgAlpha(0.8);
@@ -157,11 +157,11 @@ void Menu::BeforeRender(float time) {
 
   ImGui::PushFont(font);
 
-  //ImGuiB::SetupImGuiStyle_NeverBlue();
-  //static int activeTab = 0;
-  //std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
-  //const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-  //ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
+  // ImGuiB::SetupImGuiStyle_NeverBlue();
+  // static int activeTab = 0;
+  // std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
+  // const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+  // ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
 
   ImGui::BeginChild("ScrollingRegion1", ImVec2(ImGetWidth(), ImGetHeight()), false);
 
