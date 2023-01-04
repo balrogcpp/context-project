@@ -32,7 +32,7 @@ vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int 
   vec3 color = vec3(0.0);
   vec2 suv = uv.st;
   float illuminationDecay = 1.0;
-  vec2 deltaTextCoord = (uv - lightPos) * (1.0 / float(counter)) * density;
+  vec2 deltaTextCoord = (uv - lightPos) * (density / float(counter));
   #define MAX_RAYS 100
 
   for(int i = 0; i < MAX_RAYS; ++i) {
