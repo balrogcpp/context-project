@@ -484,6 +484,7 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
+    ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
 
     // pssm stuff
     pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
@@ -503,6 +504,7 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+    ogreSceneManager->setShadowTextureCount(0);
   }
 }
 

@@ -58,7 +58,6 @@ uniform float uFadeRange;
 #endif
 #ifdef SHADOWRECEIVER
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
-uniform lowp float LightCastsShadowsArray[MAX_LIGHTS];
 #endif // SHADOWRECEIVER
 
 
@@ -98,8 +97,6 @@ void main()
 {
 #ifdef HAS_UV
   vUV0.xy = uv0.xy;
-#else
-  vUV0.xy = vec2(0.0);
 #endif
 
 #ifdef HAS_VERTEXCOLOR
@@ -144,9 +141,7 @@ void main()
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
   // Calculate the position of vertex in light space
-  for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
-    if (LightCastsShadowsArray[i] == 0.0) break;
-    
+  for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {   
     vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif

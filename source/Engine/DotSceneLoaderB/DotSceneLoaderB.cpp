@@ -1039,23 +1039,23 @@ void DotSceneLoaderB::processLightShadowProperties(Light* pLight)
         static ShadowCameraSetupPtr cameraSetup = LiSPSMShadowCameraSetup::create();
 
         pLight->setCustomShadowCameraSetup(cameraSetup);
-        int texCount = mSceneMgr->getShadowTextureConfigList().size();
-        mSceneMgr->setShadowTextureCount(texCount + 1);
 
-        shadowTexConfig.height *= pow(2.0, -floor(texCount / 3.0));
-        shadowTexConfig.width *= pow(2.0, -floor(texCount / 3.0));
-        mSceneMgr->setShadowTextureConfig(texCount, shadowTexConfig);
+//        int texCount = mSceneMgr->getShadowTextureConfigList().size();
+//        mSceneMgr->setShadowTextureCount(texCount + 1);
+//        shadowTexConfig.height *= pow(2.0, -floor(texCount / 3.0));
+//        shadowTexConfig.width *= pow(2.0, -floor(texCount / 3.0));
+//        mSceneMgr->setShadowTextureConfig(texCount, shadowTexConfig);
     }
     else if (pLight->getType() == Light::LT_DIRECTIONAL)
     {
-        int perLight = mSceneMgr->getShadowTextureCountPerLightType(Light::LT_DIRECTIONAL);
-        int texCount = mSceneMgr->getShadowTextureConfigList().size();
-        mSceneMgr->setShadowTextureCount(texCount + perLight);
-
-        for (int i = 0; i < perLight; i++)
-        {
-            mSceneMgr->setShadowTextureConfig(texCount - 1 + i, shadowTexConfig);
-        }
+//        int perLight = mSceneMgr->getShadowTextureCountPerLightType(Light::LT_DIRECTIONAL);
+//        int texCount = mSceneMgr->getShadowTextureConfigList().size();
+//        mSceneMgr->setShadowTextureCount(texCount + perLight);
+//
+//        for (int i = 0; i < perLight; i++)
+//        {
+//            mSceneMgr->setShadowTextureConfig(texCount - 1 + i, shadowTexConfig);
+//        }
     }
 }
 

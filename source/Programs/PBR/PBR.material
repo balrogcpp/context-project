@@ -68,6 +68,26 @@ abstract material PBR
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
+            // texture_unit uShadowMap4
+            // {
+            //     content_type shadow
+            //     sampler_ref ShadowSampler            
+            // }
+            // texture_unit uShadowMap5
+            // {
+            //     content_type shadow
+            //     sampler_ref ShadowSampler            
+            // }
+            // texture_unit uShadowMap6
+            // {
+            //     content_type shadow
+            //     sampler_ref ShadowSampler            
+            // }
+            // texture_unit uShadowMap7
+            // {
+            //     content_type shadow
+            //     sampler_ref ShadowSampler            
+            // }
 
             vertex_program_ref PBR_vs {}
 
