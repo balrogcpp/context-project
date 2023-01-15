@@ -77,7 +77,7 @@ endmacro()
 
 
 # list of third-party targets
-check_stamp_patch(Target_SDL2 sdl2-2.26.0.patch)
+check_stamp_patch(Target_SDL2 sdl2-2.26.1.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false

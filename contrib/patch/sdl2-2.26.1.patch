@@ -11,3 +11,16 @@ index 021b66cd..76a77814 100644
          set(SDL_FRAMEWORK_GAMECONTROLLER 1)
          set(SDL_FRAMEWORK_COREHAPTICS 1)
        endif()
+diff --git a/src/joystick/iphoneos/SDL_mfijoystick.m b/src/joystick/iphoneos/SDL_mfijoystick.m
+index 2ffdab5f..6d3c7699 100644
+--- a/src/joystick/iphoneos/SDL_mfijoystick.m
++++ b/src/joystick/iphoneos/SDL_mfijoystick.m
+@@ -640,7 +640,7 @@ IOS_JoystickInit(void)
+ {
+ #if defined(__MACOSX__)
+ #if _SDL_HAS_BUILTIN(__builtin_available)
+-    if (@available(macOS 10.16, *)) {
++    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_15) {
+         /* Continue with initialization on macOS 11+ */
+     } else {
+         return 0;
