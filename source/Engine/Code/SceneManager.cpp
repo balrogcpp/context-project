@@ -363,16 +363,16 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
     }
   }
 
+  // skip this part
+  // else if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend)) {}
+  // else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend)) {}
+  // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend)) {}
+
   else {
     vp->setNamedConstant("uWorldViewProjPrev", viewProjPrev);
     vp->setNamedConstant("uStaticObj", Ogre::Real(1.0));
     vp->setNamedConstant("uMovableObj", Ogre::Real(0.0));
   }
-
-  // skip this part
-  // else if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend))
-  // else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend))
-  // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend))
 
   fp->setNamedConstant("uPssmSplitPoints", pssmPoints);
 
