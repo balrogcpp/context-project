@@ -26,7 +26,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Diffuse(const vec3 diffuseColor)
 {
-    return (diffuseColor / M_PI);
+    return diffuseColor / M_PI;
 }
 
 

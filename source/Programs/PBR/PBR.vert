@@ -19,6 +19,7 @@
 
 
 #ifdef PAGED_GEOMETRY
+// Apply grass waving animation to vertex
 //----------------------------------------------------------------------------------------------------------------------
 highp vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
 {
@@ -26,7 +27,9 @@ highp vec4 WaveGrass(const highp vec4 position, const highp float time, const fl
   return n * direction;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
+// Apply tree waving animation to vertex
 highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec4 params1, const vec4 params2)
 {
   highp float radiusCoeff = params1.x;
@@ -39,7 +42,8 @@ highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec
   return vec4(
     sin(time + params2.z ) * heightCoeff2 * factorX,
     sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY,
-    0.0, 0.0
+    0.0,
+    0.0
   );
 }
 #endif
@@ -141,7 +145,7 @@ void main()
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
   // Calculate the position of vertex in light space
-  for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {   
+  for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
     vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
