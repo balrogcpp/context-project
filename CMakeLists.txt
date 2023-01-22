@@ -18,8 +18,21 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
-    message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to Release")
-    set(CMAKE_BUILD_TYPE "Release")
+    file(TO_CMAKE_PATH "${CMAKE_BINARY_DIR}" BINARY_DIR)
+    string(TOLOWER ${BINARY_DIR} BINARY_DIR_LOWER)
+    if (BINARY_DIR_LOWER MATCHES "debug$")
+        message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to Debug")
+        set(CMAKE_BUILD_TYPE "Debug")
+    elseif (BINARY_DIR_LOWER MATCHES "relwithdebinfo$")
+        message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to RelWithDebInfo")
+        set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+    elseif (BINARY_DIR_LOWER MATCHES "release")
+        message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to Release")
+        set(CMAKE_BUILD_TYPE "Release")
+    else ()
+        message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to Release")
+        set(CMAKE_BUILD_TYPE "Release")
+    endif ()
 endif ()
 
 
@@ -32,7 +45,7 @@ if (NOT ${CMAKE_BUILD_TYPE_LOWER} IN_LIST ALLOWED_BUILD_TYPES_LOWER)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
 
-
+ 
 # include modules
 include(Platform)
 include(GitHash)
