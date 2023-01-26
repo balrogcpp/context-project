@@ -109,12 +109,12 @@ void main()
   vColor = vec4(1.0);
 #endif
 
-  vec4 new_position = position;
-  vec4 model_position = ModelMatrix * new_position;
-  vPosition = model_position.xyz / model_position.w;
+  vec4 vertex = position;
+  vec4 model = ModelMatrix * vertex;
+  vPosition = model.xyz / model.w;
 
 #ifdef PAGED_GEOMETRY
-   new_position +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(new_position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(new_position, Time.x, uv1, uv2);
+   vertex +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(vertex, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(vertex, Time.x, uv1, uv2);
 #endif
 
 #ifdef HAS_NORMALS
@@ -135,10 +135,10 @@ void main()
               vec3(0.0, 1.0, 0.0));
 #endif // HAS_NORMALS
 
-  gl_Position = MVPMatrix * new_position;
+  gl_Position = MVPMatrix * vertex;
 
   vScreenPosition = gl_Position;
-  vPrevScreenPosition = uStaticObj * uWorldViewProjPrev * ModelMatrix * new_position + uMovableObj * uWorldViewProjPrev * new_position;
+  vPrevScreenPosition = uStaticObj * uWorldViewProjPrev * ModelMatrix * vertex + uMovableObj * uWorldViewProjPrev * vertex;
 
   vDepth = gl_Position.z;
 
@@ -146,7 +146,7 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
   // Calculate the position of vertex in light space
   for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
-    vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
+    vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * vertex;
   }
 #endif
 #endif

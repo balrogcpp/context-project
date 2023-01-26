@@ -344,16 +344,16 @@ vec3 GetEmission(const vec2 uv)
 void main()
 {
     highp vec3 v = normalize(CameraPosition - vPosition);
-    highp vec2 tex_coord = vUV0.xy;
-    tex_coord *= (1.0 + uTexScale);
+    highp vec2 uv = vUV0.xy;
+    uv *= (1.0 + uTexScale);
 
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-    tex_coord -= (v.xy * (uOffsetScale * texture2D(uNormalSampler, tex_coord, uTexLod).a));
+    uv -= (v.xy * (uOffsetScale * texture2D(uNormalSampler, uv, uTexLod).a));
 #endif
 #endif
 
-    vec4 s = GetAlbedo(tex_coord);
+    vec4 s = GetAlbedo(uv);
     vec3 albedo = s.rgb;
     float alpha = s.a;
 
@@ -365,7 +365,7 @@ void main()
     }
 #endif
 
-    vec3 ORM = GetORM(tex_coord);
+    vec3 ORM = GetORM(uv);
     float occlusion = ORM.r;
     float roughness = ORM.g;
     float metallic = ORM.b;
@@ -383,10 +383,9 @@ void main()
     vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
     vec3 reflectance0 = specularColor.rgb;
 
-    highp vec3 n = GetNormal(tex_coord);// normal at surface point
-
+    // Normal at surface point
+    highp vec3 n = GetNormal(uv);
     float NdotV = clamp(dot(n, v), 0.001, 1.0);
-
     vec3 color = vec3(0.0);
 
 
@@ -471,7 +470,7 @@ void main()
 // Apply optional PBR terms for additional (optional) shading
     color *= occlusion;
 
-    ambient += GetEmission(tex_coord);
+    ambient += GetEmission(uv);
 
     FragData[0] = vec4(color, alpha);
 
