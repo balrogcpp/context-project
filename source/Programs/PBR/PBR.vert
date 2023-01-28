@@ -131,7 +131,7 @@ void main()
 #endif
 #else // !HAS_NORMALS
   vTBN = mat3(vec3(1.0, 0.0, 0.0),
-              normalize(dot(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0))),
+              normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0))),
               vec3(0.0, 1.0, 0.0));
 #endif // HAS_NORMALS
 
