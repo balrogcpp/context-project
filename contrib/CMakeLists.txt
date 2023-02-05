@@ -1392,7 +1392,7 @@ externalproject_add(Target_entt
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_entt
         GIT_REPOSITORY https://github.com/skypjack/entt.git
-        GIT_TAG v3.11.0
+        GIT_TAG v3.11.1
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1459,7 +1459,7 @@ externalproject_add(Target_opencv
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_opencv
         GIT_REPOSITORY https://github.com/opencv/opencv.git
-        GIT_TAG 4.6.0
+        GIT_TAG 4.7.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
