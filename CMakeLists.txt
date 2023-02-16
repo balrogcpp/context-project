@@ -45,7 +45,7 @@ if (NOT ${CMAKE_BUILD_TYPE_LOWER} IN_LIST ALLOWED_BUILD_TYPES_LOWER)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
 
- 
+
 # include modules
 include(Platform)
 include(GitHash)

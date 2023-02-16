@@ -5,9 +5,6 @@
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "Platform.h"
 #include "imgui_impl_sdl.h"
-#ifdef OGRE_OPENGL
-#include <OgreGLRenderSystemCommon.h>
-#endif
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #endif
@@ -44,6 +41,10 @@
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL) || defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) || defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
+#include <OgreGLRenderSystemCommon.h>
+#endif
+#include <Ogre.h>
 #include <SDL2/SDL.h>
 #include <chrono>
 #include <iomanip>
