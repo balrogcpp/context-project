@@ -27,7 +27,7 @@ endif ()
 
 if (${DOXYGEN_FOUND})
     message(STATUS "Doxygen found. Doxygen generation enabled")
-    add_custom_target(doxygen
+    add_custom_target(DoxygenHtml
             COMMAND ${DOXYGEN_EXECUTABLE} .codedocs
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
@@ -40,8 +40,8 @@ endif ()
 
 if (${LATEX_PDFLATEX_FOUND})
     message(STATUS "Latex PDF found. PDF generation enabled")
-    add_custom_target(latexpdf
-            DEPENDS doxygen
+    add_custom_target(DoxygenPdf
+            DEPENDS DoxygenHtml
             COMMAND ${CMAKE_COMMAND} -E chdir ${ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
             COMMAND ${CMAKE_COMMAND} -E copy ${ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${ARTIFACT_DIR}/Doxygen
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
