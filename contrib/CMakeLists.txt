@@ -784,7 +784,7 @@ externalproject_add(Target_imgui
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.87 # same version as used by OGRE
+        GIT_TAG v1.89.3 # same version as used by OGRE
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -887,6 +887,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_PLUGIN_EXRCODEC=OFF
         -DOGRE_BUILD_PLUGIN_ASSIMP=OFF
         -DOGRE_BUILD_PLUGIN_STBI=ON
+        -DOGRE_BUILD_PLUGIN_RSIMAGE=OFF
         -DOGRE_BUILD_PLUGIN_BSP=OFF
         -DOGRE_BUILD_PLUGIN_PCZ=OFF
         -DOGRE_BUILD_PLUGIN_PFX=ON

@@ -4,7 +4,7 @@
 #include "VideoManager.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "Platform.h"
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #endif
