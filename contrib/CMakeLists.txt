@@ -1504,7 +1504,7 @@ externalproject_add(Target_QT5
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_QT5
         GIT_REPOSITORY https://github.com/qt/qt5.git
-        GIT_TAG v5.15.2
+        GIT_TAG v5.15.8-lts-lgpl
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
