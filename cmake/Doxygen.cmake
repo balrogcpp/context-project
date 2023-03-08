@@ -5,7 +5,7 @@ endif (_doxygen_included)
 set(_doxygen_included true)
 
 
-set(CMAKE_FOLDER Doxygen)
+set(CMAKE_FOLDER doxygen)
 find_package(Doxygen COMPONENTS dot QUIET)
 find_package(LATEX COMPONENTS PDFLATEX QUIET)
 include(ProcessorCount)
@@ -42,8 +42,8 @@ if (${LATEX_PDFLATEX_FOUND})
     message(STATUS "Latex PDF found. PDF generation enabled")
     add_custom_target(DoxygenPdf
             DEPENDS DoxygenHtml
-            COMMAND ${CMAKE_COMMAND} -E chdir ${ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
-            COMMAND ${CMAKE_COMMAND} -E copy ${ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${ARTIFACT_DIR}/Doxygen
+            COMMAND ${CMAKE_COMMAND} -E chdir ${ARTIFACT_DIR}/doxygen/latex ${DOXYGEN_MAKE_COMMAND}
+            COMMAND ${CMAKE_COMMAND} -E copy ${ARTIFACT_DIR}/doxygen/latex/refman.pdf ${ARTIFACT_DIR}/doxygen
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
             USES_TERMINAL
