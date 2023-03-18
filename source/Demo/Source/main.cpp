@@ -5,7 +5,7 @@
 #include "Game.h"
 #include "Menu.h"
 
-using namespace Glue;
+using namespace gge;
 
 #if defined(_WIN32) && defined(NDEBUG)
 #include <windows.h>
@@ -16,7 +16,7 @@ int main()
 {
   try {
     // main app class object
-    Glue::Application app;
+    gge::Application app;
     app.Init();
 
     GetComponent<VideoManager>().ShowWindow(true);

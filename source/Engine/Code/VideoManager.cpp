@@ -155,7 +155,7 @@ void ScanLocation(const string &path, const string &groupName) {
 #endif  // DESKTOP
 }  // namespace
 
-namespace Glue {
+namespace gge {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 void InitOgreRenderSystemGL3();
 #endif
@@ -780,4 +780,4 @@ void VideoManager::OnSetUp() {
   LoadResources();
   InitOgreSceneManager();
 }
-}  // namespace Glue
+}  // namespace gge

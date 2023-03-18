@@ -2,4 +2,4 @@
 
 #pragma once
 
-namespace Glue {}
+namespace gge {}

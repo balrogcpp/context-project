@@ -1,4 +1,4 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+// This source file is part of gge Engine. Created by Andrey Vasiliev
 
 #pragma once
 #include "SDLListener.h"
@@ -13,7 +13,7 @@
 #define JUMP_ACCEL SCALE * 30.0f  // character jump acceleration in upward units per squared second
 #define GRAVITY SCALE * 90.0f     // gravity in downward units per squared second
 
-namespace Glue {
+namespace gge {
 class SinbadCharacterController : public DeviceListener {
  public:
   // all the animations our character has, and a null ID
@@ -76,4 +76,4 @@ class SinbadCharacterController : public DeviceListener {
   float verticalVelocity;       // for jumping
   float timer;                  // general timer to see how long animations have been playing
 };
-}  // namespace Glue
+}  // namespace gge

@@ -7,7 +7,7 @@
 #include <OgreRoot.h>
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 
-namespace Glue {
+namespace gge {
 void InitOgreRenderSystemGLES2() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem()); }
-}  // namespace Glue
+}  // namespace gge
 #endif  // OGRE_BUILD_RENDERSYSTEM_GLES2

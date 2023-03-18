@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace Glue {
+namespace gge {
 TerrainManager::TerrainManager() {}
 TerrainManager::~TerrainManager() {
   OnClean();
@@ -65,4 +65,4 @@ void TerrainManager::OnClean() {
     ogreTerrainGroup.reset();
   }
 }
-}  // namespace Glue
+}  // namespace gge

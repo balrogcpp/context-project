@@ -4,7 +4,7 @@
 #include "System.h"
 #include <Terrain/OgreTerrainGroup.h>
 
-namespace Glue {
+namespace gge {
 class TerrainManager final : public System<TerrainManager> {
  public:
   TerrainManager();
@@ -27,4 +27,4 @@ class TerrainManager final : public System<TerrainManager> {
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
 };
-}  // namespace Glue
+}  // namespace gge

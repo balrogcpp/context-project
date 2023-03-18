@@ -4,7 +4,7 @@
 #include "Singleton.h"
 #include <OgreFrameListener.h>
 
-namespace Glue {
+namespace gge {
 /// @class ComponentI
 /// Component interface. Components are
 class SystemI {
@@ -37,4 +37,4 @@ T& GetComponent() {
   static T& ref = *System<T>::GetInstancePtr();
   return ref;
 }
-}  // namespace Glue
+}  // namespace gge

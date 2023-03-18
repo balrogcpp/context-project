@@ -5,7 +5,7 @@
 #include "System.h"
 #include <Ogre.h>
 
-namespace Glue {
+namespace gge {
 class SceneManager final : public System<SceneManager>, public Ogre::RenderObjectListener {
  public:
   SceneManager();
@@ -39,4 +39,4 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   Ogre::Matrix4 viewProjPrev;
   Ogre::Vector4 pssmPoints;
 };
-}  // namespace Glue
+}  // namespace gge

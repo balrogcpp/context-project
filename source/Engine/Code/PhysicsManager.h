@@ -15,7 +15,7 @@ class DynamicsWorld;
 class DebugDrawer;
 }  // namespace BtOgre
 
-namespace Glue {
+namespace gge {
 class PhysicsManager final : public System<PhysicsManager> {
  public:
   PhysicsManager();
@@ -40,4 +40,4 @@ class PhysicsManager final : public System<PhysicsManager> {
   std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
   std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
 };
-}  // namespace Glue
+}  // namespace gge

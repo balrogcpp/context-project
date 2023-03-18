@@ -5,7 +5,7 @@
 #include "SDLListener.h"
 #include <Ogre.h>
 
-namespace Glue {
+namespace gge {
 AppStateManager::AppStateManager() {}
 AppStateManager::~AppStateManager() {}
 void AppStateManager::Init() {
@@ -76,4 +76,4 @@ bool AppStateManager::frameEnded(const Ogre::FrameEvent &evt) {
   activeAppState->AfterRender(evt.timeSinceLastFrame);
   return true;
 };
-}  // namespace Glue
+}  // namespace gge

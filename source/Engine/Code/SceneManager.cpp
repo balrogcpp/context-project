@@ -89,7 +89,7 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }
 }  // namespace
 
-namespace Glue {
+namespace gge {
 SceneManager::SceneManager() : viewProj(Ogre::Matrix4::ZERO), viewProjPrev(Ogre::Matrix4::ZERO), pssmPoints(Ogre::Vector4::ZERO) {}
 SceneManager::~SceneManager() { ogreSceneManager->removeRenderObjectListener(this); }
 
@@ -287,7 +287,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
   }
   auto objBindings = entity->getUserObjectBindings();
   if (objBindings.getUserAny("proxy").has_value()) {
-    Glue::GetComponent<Glue::PhysicsManager>().ProcessData(entity);
+    gge::GetComponent<gge::PhysicsManager>().ProcessData(entity);
   }
 }
 
@@ -380,4 +380,4 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   fp->setIgnoreMissingParams(false);
 }
 
-}  // namespace Glue
+}  // namespace gge

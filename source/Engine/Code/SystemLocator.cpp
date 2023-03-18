@@ -15,7 +15,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 using namespace std;
 
-namespace Glue {
+namespace gge {
 SystemLocator::SystemLocator() : sleep(false), lockFps(false), targetFps(60) {
   componentList.reserve(50);
 #ifdef MOBILE
@@ -119,4 +119,4 @@ void SystemLocator::FrameControl(chrono::microseconds frameDuration) {
     this_thread::sleep_for(delay);
   }
 }
-}  // namespace Glue
+}  // namespace gge

@@ -3,7 +3,7 @@
 #pragma once
 #include "Assertion.h"
 
-namespace Glue {
+namespace gge {
 /// Deletes copy constructor
 class NoCopy {
  public:
@@ -64,4 +64,4 @@ class LazySingleton : public DynamicSingleton<T> {
     return t;
   }
 };
-}  // namespace Glue
+}  // namespace gge

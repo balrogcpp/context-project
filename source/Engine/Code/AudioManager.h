@@ -9,7 +9,7 @@ class Root;
 class OgreOggSoundManager;
 }  // namespace OgreOggSound
 
-namespace Glue {
+namespace gge {
 class AudioManager final : public System<AudioManager> {
  public:
   AudioManager();
@@ -39,4 +39,4 @@ class AudioManager final : public System<AudioManager> {
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
 };
-}  // namespace Glue
+}  // namespace gge

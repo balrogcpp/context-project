@@ -10,7 +10,7 @@
 
 #endif
 
-namespace Glue {
+namespace gge {
 void InitEmbeddedResources() {
 #ifdef NDEBUG
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
@@ -22,4 +22,4 @@ void InitEmbeddedResources() {
 
 #endif
 }
-}  // namespace Glue
+}  // namespace gge

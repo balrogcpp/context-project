@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace Glue {
+namespace gge {
 Application::Application() : exiting(false), sleep(false) {
   std::ios_base::sync_with_stdio(false);
   engine = make_unique<SystemLocator>();
@@ -67,4 +67,4 @@ int Application::Main() {
   Go();
   return 0;
 }
-}  // namespace Glue
+}  // namespace gge

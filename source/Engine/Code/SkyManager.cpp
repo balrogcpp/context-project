@@ -5,7 +5,7 @@
 #include "Platform.h"
 #include <SkyModel/SkyModel.h>
 
-namespace Glue {
+namespace gge {
 SkyManager::SkyManager() : needsUpdate(false), hosekParamList({"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"}) {}
 SkyManager::~SkyManager() {}
 
@@ -68,4 +68,4 @@ void SkyManager::OnUpdate(float time) {
 }
 
 void SkyManager::OnClean() {}
-}  // namespace Glue
+}  // namespace gge

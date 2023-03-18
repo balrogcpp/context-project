@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace Glue {
+namespace gge {
 class DeviceListener {
  public:
   /// Callback on keyboard key down
@@ -247,4 +247,4 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     }
   }
 };
-}  // namespace Glue
+}  // namespace gge

@@ -13,7 +13,7 @@
 #include "VideoManager.h"
 #include <OgreFrameListener.h>
 
-namespace Glue {
+namespace gge {
 class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, WindowListener {
  public:
   SystemLocator();
@@ -62,4 +62,4 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   std::unique_ptr<TerrainManager> terrain;
   std::unique_ptr<ForestsManager> forests;
 };
-}  // namespace Glue
+}  // namespace gge

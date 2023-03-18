@@ -12,7 +12,7 @@ bool showMenu = false;
 ImFont *font = nullptr;
 }  // namespace
 
-namespace Glue {
+namespace gge {
 void Menu::OnClean() { GetComponent<SystemLocator>().OnClean(); }
 
 void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {
@@ -371,4 +371,4 @@ void Menu::BeforeRender(float time) {
 
   ImGui::End();
 }
-}  // namespace Glue
+}  // namespace gge

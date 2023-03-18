@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace Glue {
+namespace gge {
 CompositorManager::CompositorManager()
     : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(12), oddMipsOnly(false) {
   if (RenderSystemIsGLES2()) {
@@ -357,4 +357,4 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
 void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
 
-}  // namespace Glue
+}  // namespace gge

@@ -6,7 +6,7 @@
 #include "Singleton.h"
 #include "SystemLocator.h"
 
-namespace Glue {
+namespace gge {
 class Application final : public WindowListener, public DynamicSingleton<Application> {
  public:
   /// Constructors
@@ -32,4 +32,4 @@ class Application final : public WindowListener, public DynamicSingleton<Applica
   bool exiting;
   bool sleep;
 };
-}  // namespace Glue
+}  // namespace gge

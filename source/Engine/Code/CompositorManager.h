@@ -1,11 +1,11 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+// This source file is part of gge Engine. Created by Andrey Vasiliev
 
 #pragma once
 #include "System.h"
 #include <Ogre.h>
 #include <queue>
 
-namespace Glue {
+namespace gge {
 class CompositorManager : public System<CompositorManager>, public Ogre::CompositorInstance::Listener, public Ogre::Viewport::Listener {
  public:
   CompositorManager();
@@ -58,4 +58,4 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Composi
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
 };
-}  // namespace Glue
+}  // namespace gge

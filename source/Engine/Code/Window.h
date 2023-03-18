@@ -6,7 +6,7 @@
 
 struct SDL_Window;
 
-namespace Glue {
+namespace gge {
 class Window : public WindowListener {
  public:
   Window();
@@ -84,4 +84,4 @@ class Window : public WindowListener {
   Ogre::Viewport* ogreViewport = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
 };
-}  // namespace Glue
+}  // namespace gge

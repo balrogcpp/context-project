@@ -5,7 +5,7 @@
 #include "AppStateManager.h"
 
 
-namespace Glue {
+namespace gge {
 class Menu final : public AppState {
  public:
   std::string GetName() override { return "Menu"; }
@@ -16,4 +16,4 @@ class Menu final : public AppState {
   void OnKeyEvent(SDL_Scancode key, bool pressed) override;
   void OnSizeChanged(int x, int y, uint32_t id) override;
 };
-}  // namespace Glue
+}  // namespace gge

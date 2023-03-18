@@ -8,7 +8,7 @@ namespace Forests {
 class PagedGeometry;
 }
 
-namespace Glue {
+namespace gge {
 class ForestsManager final : public System<ForestsManager> {
  public:
   ForestsManager();
@@ -29,4 +29,4 @@ class ForestsManager final : public System<ForestsManager> {
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
 };
-}  // namespace Glue
+}  // namespace gge

@@ -7,7 +7,7 @@
 #include <OgreRoot.h>
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
 
-namespace Glue {
+namespace gge {
 void InitOgreRenderSystemGL3() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GL3PlusRenderSystem()); }
-}  // namespace Glue
+}  // namespace gge
 #endif  // OGRE_BUILD_RENDERSYSTEM_GL3PLUS

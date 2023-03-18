@@ -7,7 +7,7 @@
 #include <Ogre.h>
 #include <OgreImGuiOverlay.h>
 
-namespace Glue {
+namespace gge {
 class VideoManager final : public WindowListener, public System<VideoManager> {
  protected:
   class ShaderResolver;
@@ -85,4 +85,4 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   Ogre::Viewport* ogreViewport = nullptr;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
 };
-}  // namespace Glue
+}  // namespace gge

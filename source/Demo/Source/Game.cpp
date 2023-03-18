@@ -4,8 +4,8 @@
 #include "Game.h"
 #include "SystemLocator.h"
 
-namespace Glue {
+namespace gge {
 void Game::OnClean() { GetComponent<SystemLocator>().OnClean(); }
 void Game::OnSetUp() {}
 void Game::OnUpdate(float time) {}
-}  // namespace Glue
+}  // namespace gge

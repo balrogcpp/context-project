@@ -1,4 +1,4 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+// This source file is part of gge Engine. Created by Andrey Vasiliev
 
 #include "pch.h"
 #include "SinbadCharacterController.h"
@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace Glue {
+namespace gge {
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *camera) : baseAnimID(ANIM_NONE), topAnimID(ANIM_NONE) {
   SetupCamera(camera);
   SetupBody();
@@ -428,4 +428,4 @@ void SinbadCharacterController::SetTopAnimation(AnimID ID, bool reset) {
   // else
   //  GetAudio().StopSound("walk_grass");
 }
-}  // namespace Glue
+}  // namespace gge

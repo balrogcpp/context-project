@@ -3,4 +3,4 @@
 #include "pch.h"
 #include "GlobalOptions.h"
 
-namespace Glue {}
+namespace gge {}
