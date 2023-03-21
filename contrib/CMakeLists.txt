@@ -1157,7 +1157,7 @@ externalproject_add(Target_GoogleTest
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleTest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.12.1
+        GIT_TAG v1.13.0
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1525,6 +1525,7 @@ if (NOT EMSCRIPTEN)
     add_dependencies(Contrib Target_SDL2)
     add_dependencies(Contrib Target_OpenAL)
 endif ()
+add_dependencies(Contrib Target_GoogleTest)
 add_dependencies(Contrib Target_pugixml)
 add_dependencies(Contrib Target_asio)
 add_dependencies(Contrib Target_Lua)
