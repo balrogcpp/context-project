@@ -1,0 +1,56 @@
+vertex_program Ocean_vs glsl glsles
+{
+    source ocean.vert
+    default_params
+    {
+        //param_named_auto ModelMatrix world_matrix
+        param_named_auto WorldMatrix worldviewproj_matrix
+        param_named_auto eyePosition camera_position_object_space
+        param_named_auto cameraPos camera_position_object_space
+    }
+}
+
+fragment_program Ocean_fs glsl glsles
+{
+    source ocean.frag
+    default_params
+    {
+        param_named_auto cameraPos camera_position_object_space
+        param_named_auto FarClipDistance far_clip_distance
+        param_named_auto FrameTime frame_time
+
+        param_named_auto timer time
+        param_named color_density float 0.5
+        param_named water_opacity float 0.9
+        param_named light_scattering float 3.0
+        param_named water_distortion float 0.0
+        param_named sun_color float3 1.0 0.5 0.2
+
+    }
+}
+
+material Water
+{
+    technique
+    {
+        pass
+        {
+            //scene_blend alpha_blend
+            cull_hardware none
+            //cull_software none
+
+            vertex_program_ref Ocean_vs {}
+
+            fragment_program_ref Ocean_fs
+            {
+                param_named normalSampler int 0
+            }
+
+            texture_unit
+            {
+                texture WaterNormal1.tga
+                filtering bilinear
+            }
+        }
+    }
+}
