@@ -2,7 +2,7 @@
 
 abstract vertex_program SkyBoxCustomVp_I glsl glsles
 {
-	source Sky.vert
+	source sky.vert
     default_params
     {
         param_named_auto worldViewProj worldviewproj_matrix
@@ -11,7 +11,7 @@ abstract vertex_program SkyBoxCustomVp_I glsl glsles
 
 abstract fragment_program SkyBoxCustomFp_I glsl glsles
 {
-	source Sky.frag
+	source sky.frag
     default_params
     {
         param_named_auto uSunDirection light_direction 0

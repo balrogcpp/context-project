@@ -17,7 +17,7 @@ shared_params PBR_Shared_frag
 
 abstract vertex_program PBR_I_vs glsl glsles
 {
-	source PBR.vert
+	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER
 
     default_params
@@ -36,7 +36,7 @@ vertex_program PBR_vs glsl glsles : PBR_I_vs {}
 
 abstract fragment_program PBR_I_fs glsl glsles
 {
-	source PBR.frag
+	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER
     
     default_params
