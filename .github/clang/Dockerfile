@@ -129,7 +129,7 @@ RUN apt-get update \
 
 
 # clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
-ARG CLANG_MAJOR=15
+ARG CLANG_MAJOR=16
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
@@ -168,7 +168,7 @@ ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.25.3
+ARG CMAKE_VERSION=3.26.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.0.2
