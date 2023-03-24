@@ -1,11 +1,31 @@
-attribute vec4 vertex;
-attribute vec4 uv0;
+// created by Andrey Vasiliev
+
+#ifndef __VERSION__
+#ifndef GL_ES
+#version 330 core
+#define __VERSION__ 330
+#else
+#version 300 es
+#define __VERSION__ 300
+#endif
+#endif
+
+
+#include "header.vert"
+#include "math.glsl"
+
+in vec4 vertex;
+in vec4 uv0;
+
 uniform mat4 ModelMatrix;
 uniform mat4 WorldMatrix;
-varying vec3 viewPos, worldPos;
-varying vec4 projectionCoord;
 uniform vec3 eyePosition;
 uniform vec3 cameraPos;
+
+out vec3 viewPos;
+out vec3 worldPos;
+out vec4 projectionCoord;
+
 
 void main()
 {

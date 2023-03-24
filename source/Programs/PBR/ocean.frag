@@ -1,5 +1,25 @@
-varying vec4 projectionCoord;
-varying vec3 viewPos, worldPos;
+// created by Andrey Vasiliev
+
+#ifndef __VERSION__
+#ifndef GL_ES
+#version 330 core
+#define __VERSION__ 330
+#else
+#version 300 es
+#define __VERSION__ 300
+#endif
+#endif
+
+
+#define USE_MRT
+#include "header.frag"
+#include "math.glsl"
+
+// original GLSL shader source
+in vec4 projectionCoord;
+in vec3 viewPos;
+in vec3 worldPos;
+
 uniform float timer;
 uniform sampler2D normalSampler;
 uniform vec3 cameraPos;
@@ -29,7 +49,7 @@ float bump = 2.6; //overall water surface bumpyness
 float reflBump = 0.04; //reflection distortion amount
 float refrBump = 0.03; //refraction distortion amount
 
-vec3 sunPos = vec3(gl_ModelViewMatrixInverse*gl_LightSource[0].position);
+vec3 sunPos = vec3(0.0);
 float sunSpec = 1000.0; //Sun specular hardness
 float scatterAmount = 3.5; //amount of sunlight scattering of waves
 vec3 scatterColor = vec3(0.0,1.0,0.95);// color of the sunlight scattering
@@ -56,7 +76,7 @@ float fresnel_dielectric(vec3 Incoming, vec3 Normal, float eta)
 
 void main() {
     vec2 nCoord = vec2(0.0); //normal coords
-    vec2 coo = ((gl_TexCoord[0].st)/1106.208)-0.5;
+    vec2 coo = ((worldPos.st)/1106.208)-0.5;
     float depth = 0.1;
     float coast = smoothstep(0.3,0.7,depth);
     float coast1 = smoothstep(0.49,0.5,depth);
@@ -92,7 +112,7 @@ void main() {
 
     float normalFade = 1.0 - min(exp(-projectionCoord.w / 1000.0), 1.0);
 
-    vec3 nVec = mix(normal.xzy, vec3(0, 1, 0), normalFade-water_distortion); // converting normals to tangent space
+    vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade-water_distortion); // converting normals to tangent space
     vec3 vVec = normalize(viewPos);
     vec3 lVec = normalize(sunPos);
 
@@ -103,7 +123,7 @@ void main() {
     normal4 * smallWaves.x*0.1 + normal5 * smallWaves.y*0.1);
 
 
-    lNormal = mix(lNormal.xzy, vec3(0, 1, 0), normalFade-water_distortion);
+    lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade-water_distortion);
     vec3 lR = reflect(lVec, lNormal);
 
     float sunFade = clamp((sunPos.y+10.0)/20.0,0.0,1.0);
@@ -124,7 +144,7 @@ void main() {
     fresnel = clamp(fresnel,0.0,1.0);
 
 
-    vec3 reflection = vec3(1,1,1);
+    vec3 reflection = vec3(1.0,1.0,1.0);
 
     vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection*2.0),light_scattering);
@@ -136,7 +156,7 @@ void main() {
     vec3 specColor = mix(sun_color, vec3(1.0,1.0,1.0), clamp(1.0-exp(-(sunPos.y)*sunext),0.0,1.0));
 
 
-    vec3 refraction = vec3(0,0,0);
+    vec3 refraction = vec3(0.0,0.0,0.0);
 
 
     // Finalize
@@ -167,5 +187,5 @@ void main() {
         color = mix(vec4(refraction, a), vec4(reflection, a), 0.0);
     }
 
-    gl_FragColor = color+(vec4(specColor, 1.0)*specular);
+    FragData[0] = color+(vec4(specColor, 1.0)*specular);
 }

@@ -1,6 +1,7 @@
 vertex_program Ocean_vs glsl glsles
 {
     source ocean.vert
+
     default_params
     {
         //param_named_auto ModelMatrix world_matrix
@@ -13,6 +14,7 @@ vertex_program Ocean_vs glsl glsles
 fragment_program Ocean_fs glsl glsles
 {
     source ocean.frag
+
     default_params
     {
         param_named_auto cameraPos camera_position_object_space
@@ -35,9 +37,8 @@ material Water
     {
         pass
         {
-            //scene_blend alpha_blend
+            scene_blend alpha_blend
             cull_hardware none
-            //cull_software none
 
             vertex_program_ref Ocean_vs {}
 
