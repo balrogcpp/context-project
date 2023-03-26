@@ -1,0 +1,41 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+compositor Fresnel
+{
+    technique
+    {
+        texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_FLOAT16_RGB
+        texture reflection 512 512 PF_BYTE_RGB
+        texture refraction 512 512 PF_BYTE_RGB
+
+        target rt
+        {
+            input previous
+        }
+
+        target reflection
+        {
+            visibility_mask 0x00F // SURFACE objects
+            //input previous
+            pass clear {}
+            pass render_scene {}
+        }
+
+        target refraction
+        {
+            visibility_mask 0x0F0 // SUBMERGED objects
+            //input previous
+            //pass clear {}
+            //pass render_scene {}
+        }
+
+        target_output
+        {
+            input previous
+        }
+    }
+}

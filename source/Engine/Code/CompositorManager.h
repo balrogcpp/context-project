@@ -6,7 +6,7 @@
 #include <queue>
 
 namespace gge {
-class CompositorManager : public System<CompositorManager>, public Ogre::CompositorInstance::Listener, public Ogre::Viewport::Listener {
+class CompositorManager : public System<CompositorManager>, public Ogre::CompositorInstance::Listener, public Ogre::Viewport::Listener, public Ogre::RenderTargetListener {
  public:
   CompositorManager();
   virtual ~CompositorManager();
@@ -43,6 +43,10 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Composi
   /// Ogre::CompositorInstance::Listener impl
   void notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
   void notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
+
+  /// Ogre::RenderTargetListener impl
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
 
   const std::string MRT_COMPOSITOR;
   const std::string BLOOM_COMPOSITOR;

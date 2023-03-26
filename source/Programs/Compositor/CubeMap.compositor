@@ -1,3 +1,5 @@
+// created by Andrey Vasiliev
+
 //----------------------------------------------------------------------------------------------------------------------
 // Abstract node to avoid copy & paste
 //----------------------------------------------------------------------------------------------------------------------
@@ -25,35 +27,6 @@ compositor CubeMap
         target tex 3 : CubeFace {}
         target tex 4 : CubeFace {}
         target tex 5 : CubeFace {}
-
-        target_output
-        {
-            input previous
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
-compositor Fresnel
-{
-    technique
-    {
-        texture reflection 512 512 PF_BYTE_RGB
-        texture refraction 512 512 PF_BYTE_RGB
-
-        target reflection
-        {
-            visibility_mask 0x00F // SURFACE objects
-            input previous
-        }
-
-        target refraction
-        {
-            visibility_mask 0x0F0 // SUBMERGED objects
-            input previous
-        }
 
         target_output
         {

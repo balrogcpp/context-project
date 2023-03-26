@@ -25,6 +25,25 @@ class DeferredLogic final : public Ogre::CompositorLogic {
   }
 };
 
+void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {}
+
+void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {}
+
+class ReflTexListener : public Ogre::RenderTargetListener {
+ public:
+  ReflTexListener(Ogre::Camera *camera) { ogreCamera = camera; }
+
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+    const static Ogre::Plane plane = Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0);
+    ogreCamera->enableReflection(plane);
+  }
+
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->disableReflection(); }
+
+ private:
+  Ogre::Camera *ogreCamera = nullptr;
+};
+
 void CompositorManager::OnSetUp() {
 #ifdef MOBILE
   fixedViewportSize = true;
@@ -60,6 +79,10 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Blur", false);
   AddCompositor("FXAA", false);
   AddCompositor("Output", true);
+
+  AddCompositor("Fresnel", true);
+  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addListener(new ReflTexListener(ogreCamera));
+
   AddCompositor("Paused", false);
 
   // reg as viewport listener

@@ -15,25 +15,20 @@
 #include "math.glsl"
 
 in highp vec4 position;
-in vec4 uv0;
 
 uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
 
 out highp vec3 vPosition;
 out vec4 vScreenPosition;
-out vec3 vUV0;
 
 
 void main()
 {
-    vec4 vertex = position;
     vec4 model = ModelMatrix * position;
     vPosition = model.xyz / model.w;
 
-    vUV0 = uv0.xyz;
-
-    gl_Position = MVPMatrix * vertex;
+    gl_Position = MVPMatrix * position;
 
     vScreenPosition = gl_Position;
 }

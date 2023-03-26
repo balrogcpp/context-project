@@ -39,7 +39,7 @@ fragment_program Ocean_fs glsl glsles
     }
 }
 
-material Water
+material Ocean
 {
     technique
     {
@@ -61,22 +61,18 @@ material Water
             texture_unit NormalTex
             {
                 texture WaterNormal1.tga
-                filtering bilinear
             }
             texture_unit ReflectionTex
             {
-                texture white.dds
-                filtering bilinear
+                content_type compositor Fresnel reflection
             }
             texture_unit RefractionTex
             {
-                texture black.dds
-                filtering bilinear
+                content_type compositor Fresnel refraction
             }
             texture_unit CameraDepthTex
             {
-                texture black.dds
-                filtering bilinear
+                content_type compositor MRT mrt 1
             }
         }
     }

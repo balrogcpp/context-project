@@ -22,7 +22,6 @@ const vec2 smallWaves = vec2(0.15, 0.1); // strength of small waves
 
 in highp vec3 vPosition;
 in vec4 vScreenPosition;
-in highp vec3 vUV0;
 
 uniform sampler2D NormalTex;
 uniform sampler2D ReflectionTex;
@@ -72,7 +71,12 @@ float fresnel_dielectric(const vec3 Incoming, const vec3 Normal, const float eta
 
 void main()
 {
-    vec2 fragCoord = vScreenPosition.xy;// / vUV0.w;
+    vec4 proj = mat4(0.5, 0.0, 0.0, 0.0,
+                    0.0, 0.5, 0.0, 0.0,
+                    0.0, 0.0, 0.5, 0.0,
+                    0.5, 0.5, 0.5, 1.0) * vScreenPosition;
+
+    vec2 fragCoord = proj.xy / proj.w;
     fragCoord = clamp(fragCoord, 0.002, 0.998);
     
     bool aboveWater = CameraPosition.y > 0.0;
@@ -132,8 +136,7 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    //float refractedDepth = LinearEyeDepth(UNITY_SAMPLE_DEPTH(texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0)));
-    float refractedDepth = FarClipDistance * texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).r;
+    float refractedDepth = FarClipDistance * texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).a;
     float surfaceDepth = vScreenPosition.w;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
