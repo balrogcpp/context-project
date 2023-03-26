@@ -1,13 +1,13 @@
+// created by Andrey Vasiliev
+
 vertex_program Ocean_vs glsl glsles
 {
     source ocean.vert
 
     default_params
     {
-        //param_named_auto ModelMatrix world_matrix
-        param_named_auto WorldMatrix worldviewproj_matrix
-        param_named_auto eyePosition camera_position_object_space
-        param_named_auto cameraPos camera_position_object_space
+        param_named_auto MVPMatrix worldviewproj_matrix
+        param_named_auto ModelMatrix world_matrix
     }
 }
 
@@ -17,17 +17,25 @@ fragment_program Ocean_fs glsl glsles
 
     default_params
     {
-        param_named_auto cameraPos camera_position_object_space
+        param_named_auto CameraPosition camera_position
         param_named_auto FarClipDistance far_clip_distance
-        param_named_auto FrameTime frame_time
+        param_named_auto Time time_0_x_packed 100
+        param_named_auto WorldSpaceLightPos0 light_position 0
+        param_named_auto LightColor0 light_diffuse_colour_power_scaled 0
 
-        param_named_auto timer time
-        param_named color_density float 0.5
-        param_named water_opacity float 0.9
-        param_named light_scattering float 3.0
-        param_named water_distortion float 0.0
-        param_named sun_color float3 1.0 0.5 0.2
-
+        param_named Visibility float 28.0
+        param_named WindDirection float2 0.5 -0.8
+        param_named WindSpeed float 0.2
+        param_named WaveScale float 1.0
+        param_named ScatterAmount float 3.5
+        param_named ScatterColor float3 0.0 1.0 0.95
+        param_named ReflDistortionAmount float 0.04
+        param_named RefrDistortionAmount float 0.03
+        param_named AberrationAmount float 0.002
+        param_named WaterExtinction float3 0.45 0.55 0.68
+        param_named SunTransmittance float3 1.0 0.0 1.0
+        param_named SunFade float 0.5 0.0 1.0
+        param_named ScatterFade float 0.25 0.0 1.0
     }
 }
 
@@ -37,19 +45,37 @@ material Water
     {
         pass
         {
-            scene_blend alpha_blend
+            //scene_blend alpha_blend
             cull_hardware none
 
             vertex_program_ref Ocean_vs {}
 
             fragment_program_ref Ocean_fs
             {
-                param_named normalSampler int 0
+                param_named NormalTex int 0
+                param_named ReflectionTex int 1
+                param_named RefractionTex int 2
+                param_named CameraDepthTex int 3
             }
 
-            texture_unit
+            texture_unit NormalTex
             {
                 texture WaterNormal1.tga
+                filtering bilinear
+            }
+            texture_unit ReflectionTex
+            {
+                texture white.dds
+                filtering bilinear
+            }
+            texture_unit RefractionTex
+            {
+                texture black.dds
+                filtering bilinear
+            }
+            texture_unit CameraDepthTex
+            {
+                texture black.dds
                 filtering bilinear
             }
         }

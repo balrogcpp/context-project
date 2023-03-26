@@ -14,32 +14,26 @@
 #include "header.vert"
 #include "math.glsl"
 
-in vec4 vertex;
+in highp vec4 position;
 in vec4 uv0;
 
-uniform mat4 ModelMatrix;
-uniform mat4 WorldMatrix;
-uniform vec3 eyePosition;
-uniform vec3 cameraPos;
+uniform highp mat4 MVPMatrix;
+uniform highp mat4 ModelMatrix;
 
-out vec3 viewPos;
-out vec3 worldPos;
-out vec4 projectionCoord;
+out highp vec3 vPosition;
+out vec4 vScreenPosition;
+out vec3 vUV0;
 
 
 void main()
 {
-    projectionCoord = vec4(WorldMatrix * vertex);
+    vec4 vertex = position;
+    vec4 model = ModelMatrix * position;
+    vPosition = model.xyz / model.w;
 
-    worldPos = vec3(uv0);
+    vUV0 = uv0.xyz;
 
-    vec3 pos = vec3(vertex);
-    viewPos = pos - eyePosition;
+    gl_Position = MVPMatrix * vertex;
 
-    gl_Position = WorldMatrix * vertex;
-
-    if (cameraPos.y < 0.0)
-    {
-        gl_Position = vec4(vertex.xzy, 1.0);
-    }
+    vScreenPosition = gl_Position;
 }

@@ -40,7 +40,7 @@ highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec
   highp float factorY = params1.w;
 
   return vec4(
-    sin(time + params2.z ) * heightCoeff2 * factorX,
+    sin(time + params2.z) * heightCoeff2 * factorX,
     sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY,
     0.0,
     0.0
@@ -57,7 +57,7 @@ uniform lowp float uStaticObj;
 uniform lowp float uMovableObj;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
-uniform highp vec3 CameraPosition;
+uniform highp vec4 CameraPosition;
 uniform float uFadeRange;
 #endif
 #ifdef SHADOWRECEIVER
