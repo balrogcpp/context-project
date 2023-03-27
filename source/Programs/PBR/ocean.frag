@@ -14,6 +14,7 @@
 #define USE_MRT
 #include "header.frag"
 #include "math.glsl"
+precision highp float;
 
 
 const vec2 bigWaves = vec2(0.3, 0.3); // strength of big waves
@@ -30,7 +31,7 @@ uniform sampler2D CameraDepthTex;
 
 uniform highp vec3 CameraPosition;
 uniform float FarClipDistance;
-uniform float Time;
+uniform vec4 Time;
 uniform vec4 WorldSpaceLightPos0;
 uniform vec4 LightColor0;
 
@@ -78,25 +79,25 @@ void main()
 
     vec2 fragCoord = proj.xy / proj.w;
     fragCoord = clamp(fragCoord, 0.002, 0.998);
-    
+
     bool aboveWater = CameraPosition.y > 0.0;
 
     float normalFade = 1 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
-    vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
-    vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
-    nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time * WindSpeed * 0.08;
-    vec3 normal1 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015)).xyz - 1.0;
+    vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
+    vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
+    nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
+    vec3 normal1 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
 
-    nCoord = vPosition.xz * WaveScale * 0.25 + WindDirection * Time * WindSpeed * 0.07;
-    vec3 normal2 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.04, -Time * 0.03)).xyz - 1.0;
-    nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
-    vec3 normal3 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
+    nCoord = vPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
+    vec3 normal2 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
+    nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
+    vec3 normal3 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
 
-    nCoord = vPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
-    vec3 normal4 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;  
-    nCoord = vPosition.xz * WaveScale * 2.0 + WindDirection * Time * WindSpeed * 0.7;
-    vec3 normal5 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
+    nCoord = vPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
+    vec3 normal4 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
+    nCoord = vPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
+    vec3 normal5 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
 
     vec3 normal = normalize(normal0 * bigWaves.x + normal1 * bigWaves.y +
                             normal2 * midWaves.x + normal3 * midWaves.y +

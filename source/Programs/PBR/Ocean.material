@@ -45,7 +45,7 @@ material Ocean
     {
         pass
         {
-            //scene_blend alpha_blend
+            scene_blend alpha_blend
             cull_hardware none
 
             vertex_program_ref Ocean_vs {}
@@ -71,7 +71,8 @@ material Ocean
             }
             texture_unit RefractionTex
             {
-                content_type compositor Fresnel refraction
+                texture black.dds
+                //content_type compositor Fresnel refraction
                 tex_address_mode clamp
             }
             texture_unit CameraDepthTex

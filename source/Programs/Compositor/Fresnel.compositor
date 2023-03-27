@@ -22,8 +22,8 @@ compositor Fresnel
         {
             visibility_mask 0x0F0 // SUBMERGED objects
             //input previous
-            //pass clear {}
-            //pass render_scene {}
+            pass clear {}
+            pass render_scene {}
         }
 
         target_output

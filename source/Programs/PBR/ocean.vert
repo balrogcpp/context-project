@@ -13,6 +13,7 @@
 
 #include "header.vert"
 #include "math.glsl"
+precision highp float;
 
 in highp vec4 position;
 
