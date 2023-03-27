@@ -61,18 +61,22 @@ material Ocean
             texture_unit NormalTex
             {
                 texture WaterNormal1.tga
+                tex_address_mode wrap
             }
             texture_unit ReflectionTex
             {
                 content_type compositor Fresnel reflection
+                tex_address_mode clamp
             }
             texture_unit RefractionTex
             {
                 content_type compositor Fresnel refraction
+                tex_address_mode clamp
             }
             texture_unit CameraDepthTex
             {
                 content_type compositor MRT mrt 1
+                tex_address_mode clamp
             }
         }
     }
