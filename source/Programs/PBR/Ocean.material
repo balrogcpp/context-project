@@ -17,7 +17,7 @@ fragment_program Ocean_fs glsl glsles
 
     default_params
     {
-        param_named_auto CameraPosition camera_position
+        param_named_auto CameraPosition camera_position_object_space
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto Time time_0_x_packed 100
         param_named_auto WorldSpaceLightPos0 light_position 0
@@ -61,6 +61,7 @@ material Ocean
             texture_unit NormalTex
             {
                 texture WaterNormal1.tga
+                filtering bilinear
                 tex_address_mode wrap
             }
             texture_unit ReflectionTex

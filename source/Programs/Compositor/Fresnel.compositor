@@ -7,15 +7,8 @@ compositor Fresnel
 {
     technique
     {
-        texture_ref mrt MRT mrt
-        texture rt target_width target_height PF_FLOAT16_RGB
-        texture reflection 512 512 PF_BYTE_RGB
-        texture refraction 512 512 PF_BYTE_RGB
-
-        target rt
-        {
-            input previous
-        }
+        texture reflection 1024 1024 PF_BYTE_RGB
+        texture refraction 1024 1024 PF_BYTE_RGB
 
         target reflection
         {

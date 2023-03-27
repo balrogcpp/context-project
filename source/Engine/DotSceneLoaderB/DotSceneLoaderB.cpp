@@ -895,7 +895,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
 
-    ent->setMaterialName(material); ent->setVisibilityFlags(0xF00);
+    ent->setMaterialName(material); ent->setVisibilityFlags(0xF00); ent->setCastShadows(false);
 
     pParent->attachObject(ent);
 
