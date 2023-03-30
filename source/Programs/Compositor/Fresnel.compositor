@@ -1,29 +1,27 @@
 // created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
-//
+// https://github.com/OGRECave/ogre/blob/6e1560ec9a920f72eb43182336926cdb7de596b4/Samples/Media/materials/scripts/Examples.compositor#L827
 //----------------------------------------------------------------------------------------------------------------------
 compositor Fresnel
 {
     technique
     {
-        texture reflection 1024 1024 PF_BYTE_RGB
-        texture refraction 1024 1024 PF_BYTE_RGB
+        texture reflection 512 512 PF_BYTE_RGB
+        texture refraction 512 512 PF_BYTE_RGB
 
         target reflection
         {
             visibility_mask 0x00F // SURFACE objects
-            //input previous
-            pass clear {}
-            pass render_scene {}
+            pass clear { colour_value 0.1 0.2 0.8 0 }
+            input previous
         }
 
         target refraction
         {
             visibility_mask 0x0F0 // SUBMERGED objects
-            //input previous
-            pass clear {}
-            pass render_scene {}
+            pass clear { colour_value 0 0 0 0 }
+            input previous
         }
 
         target_output

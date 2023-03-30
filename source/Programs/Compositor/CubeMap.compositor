@@ -15,6 +15,9 @@ abstract target CubeFace
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// https://github.com/OGRECave/ogre/blob/6e1560ec9a920f72eb43182336926cdb7de596b4/Samples/Media/materials/scripts/Examples.compositor#L808
+//----------------------------------------------------------------------------------------------------------------------
 compositor CubeMap
 {
     technique

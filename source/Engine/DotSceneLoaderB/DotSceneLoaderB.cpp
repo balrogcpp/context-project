@@ -45,14 +45,20 @@ int getAttribInt(const pugi::xml_node& XMLNode, const String& attrib, int defaul
         return defaultValue;
 }
 
+uint32_t getAttribUInt(const pugi::xml_node& XMLNode, const String& attrib, int defaultValue = 0)
+{
+    if (auto anode = XMLNode.attribute(attrib.c_str()))
+        return StringConverter::parseUnsignedInt(anode.value());
+    else
+        return defaultValue;
+}
+
 bool getAttribBool(const pugi::xml_node& XMLNode, const String& attrib, bool defaultValue = false)
 {
     if (auto anode = XMLNode.attribute(attrib.c_str()))
         return anode.as_bool();
     else
         return defaultValue;
-
-    return false;
 }
 
 Vector3 parseVector3(const pugi::xml_node& XMLNode, Vector3 defaultValue = Vector3::ZERO)
@@ -888,6 +894,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     bool hasNormals = getAttribBool(XMLNode, "hasNormals", true);
     Vector3 normal = parseVector3(XMLNode.child("normal"), {0, 1, 0});
     Vector3 up = parseVector3(XMLNode.child("upVector"), {0, 0, 1});
+    Ogre::uint32 flags = getAttribUInt(XMLNode, "flags", 0xFFFFFFFF);
 
     Plane plane(normal, distance);
     MeshPtr res =
@@ -895,7 +902,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
 
-    ent->setMaterialName(material); ent->setVisibilityFlags(0xF00); ent->setCastShadows(false);
+    ent->setMaterialName(material); ent->setVisibilityFlags(flags); ent->setCastShadows(false);
 
     pParent->attachObject(ent);
 

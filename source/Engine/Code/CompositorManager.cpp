@@ -87,6 +87,17 @@ void CompositorManager::OnSetUp() {
 
   // reg as viewport listener
   ogreViewport->addListener(this);
+
+  // use compositors for easy referencing in material
+  //Ogre::CompositorManager::getSingleton().addCompositor(ogreViewport, "CubeMap");
+  //Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogreViewport, "CubeMap", true);
+
+  // create the camera used to render to our cubemap
+  //cubeCamera = ogreSceneManager->createCamera("CubeMapCamera");
+  //cubeCamera->setFOVy(Ogre::Degree(90.0));
+  //cubeCamera->setAspectRatio(1.0);
+  //cubeCamera->setNearClipDistance(5.0);
+  //ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
 }
 
 void CompositorManager::OnClean() { ogreViewport->removeListener(this); }

@@ -1,5 +1,4 @@
 import PBR from PBR.material
-import PBR from PBR.material
 
 material Plane : PBR
 {

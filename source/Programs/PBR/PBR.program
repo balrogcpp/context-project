@@ -61,6 +61,7 @@ abstract fragment_program PBR_I_fs glsl glsles
         param_named_auto CameraPosition camera_position
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto FrameTime frame_time
+        //param_named_auto Time time_0_x_packed 100
     }
 }
 

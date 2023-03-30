@@ -17,17 +17,14 @@
 precision highp float;
 
 
-const vec2 bigWaves = vec2(0.3, 0.3); // strength of big waves
-const vec2 midWaves = vec2(0.3, 0.15); // strength of middle sized waves
-const vec2 smallWaves = vec2(0.15, 0.1); // strength of small waves
 
 in highp vec3 vPosition;
 in vec4 vScreenPosition;
 
 uniform sampler2D NormalTex;
-uniform sampler2D ReflectionTex;
-uniform sampler2D RefractionTex;
-uniform sampler2D CameraDepthTex;
+// uniform sampler2D ReflectionTex;
+// uniform sampler2D RefractionTex;
+// uniform sampler2D CameraDepthTex;
 
 uniform highp vec3 CameraPosition;
 uniform float FarClipDistance;
@@ -35,6 +32,9 @@ uniform vec4 Time;
 uniform vec4 WorldSpaceLightPos0;
 uniform vec4 LightColor0;
 
+uniform vec2 bigWaves;
+uniform vec2 midWaves;
+uniform vec2 smallWaves;
 uniform float Visibility;
 uniform vec2 WindDirection;
 uniform float WindSpeed;
@@ -50,18 +50,18 @@ uniform float SunFade;
 uniform float ScatterFade;
 
 
-float fresnel_dielectric(const vec3 Incoming, const vec3 Normal, const float eta)
+float FresnelDielectric(const highp vec3 Incoming, const highp vec3 Normal, const highp float eta)
 {
     // compute fresnel reflectance without explicitly computing
     // the refracted direction
-    float c = abs(dot(Incoming, Normal));
-    float g = eta * eta - 1.0 + c * c;
+    highp float c = abs(dot(Incoming, Normal));
+    highp float g = eta * eta - 1.0 + c * c;
 
     if (g > 0.0)
     {
         g = sqrt(g);
-        float A = (g - c) / (g + c);
-        float B = (c * (g + c) - 1.0) / (c * (g - c) + 1.0);
+        highp float A = (g - c) / (g + c);
+        highp float B = (c * (g + c) - 1.0) / (c * (g - c) + 1.0);
         
         return 0.5 * A * A * (1.0 + B * B);
     }
@@ -72,13 +72,13 @@ float fresnel_dielectric(const vec3 Incoming, const vec3 Normal, const float eta
 
 void main()
 {
-    vec4 proj = mat4(0.5, 0.0, 0.0, 0.0,
-                    0.0, 0.5, 0.0, 0.0,
-                    0.0, 0.0, 0.5, 0.0,
-                    0.5, 0.5, 0.5, 1.0) * vScreenPosition;
+    // vec4 proj = mat4(0.5, 0.0, 0.0, 0.0,
+    //                  0.0, 0.5, 0.0, 0.0,
+    //                  0.0, 0.0, 0.5, 0.0,
+    //                  0.5, 0.5, 0.5, 1.0) * vScreenPosition;
 
-    vec2 fragCoord = proj.xy / proj.w;
-    fragCoord = clamp(fragCoord, 0.002, 0.998);
+    // vec2 fragCoord = proj.xy / proj.w;
+    // fragCoord = clamp(fragCoord, 0.002, 0.998);
 
     bool aboveWater = CameraPosition.y > 0.0;
 
@@ -121,10 +121,11 @@ void main()
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
-    float fresnel = fresnel_dielectric(-vVec, nVec, ior);
+    float fresnel = FresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
+    vec3 reflection = vec3(1.0);
+    // reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
 
     vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
@@ -137,15 +138,15 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = FarClipDistance * texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).a;
-    float surfaceDepth = vScreenPosition.w;
+    // float refractedDepth = FarClipDistance * texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).a;
+    float surfaceDepth = vScreenPosition.z;
 
-    float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
+    // float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
     vec3 refraction = vec3(0.0);
-    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
-    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
-    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
+    // refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
+    // refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
+    // refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
 
     float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  

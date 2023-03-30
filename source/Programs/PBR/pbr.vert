@@ -136,9 +136,9 @@ void main()
 #endif // HAS_NORMALS
 
   gl_Position = MVPMatrix * vertex;
-  vDepth = gl_Position.z;
 
   vScreenPosition = gl_Position;
+  vDepth = gl_Position.z;
   vPrevScreenPosition = uStaticObj * uWorldViewProjPrev * ModelMatrix * vertex + uMovableObj * uWorldViewProjPrev * vertex;
 
 #ifdef SHADOWRECEIVER
