@@ -19,9 +19,11 @@ in highp vec4 position;
 
 uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
+uniform highp mat4 uWorldViewProjPrev;
 
 out highp vec3 vPosition;
 out vec4 vScreenPosition;
+out vec4 vPrevScreenPosition;
 
 
 void main()
@@ -32,4 +34,5 @@ void main()
     gl_Position = MVPMatrix * position;
 
     vScreenPosition = gl_Position;
+    vPrevScreenPosition = uWorldViewProjPrev * ModelMatrix * position;
 }

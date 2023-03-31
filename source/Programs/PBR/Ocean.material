@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program Ocean2_vs glsl glsles
+vertex_program Ocean_vs glsl glsles
 {
     source ocean.vert
 
@@ -11,14 +11,15 @@ vertex_program Ocean2_vs glsl glsles
     }
 }
 
-fragment_program Ocean2_fs glsl glsles
+fragment_program Ocean_fs glsl glsles
 {
     source ocean.frag
 
     default_params
     {
-        param_named_auto CameraPosition camera_position_object_space
+        param_named_auto CameraPosition camera_position
         param_named_auto FarClipDistance far_clip_distance
+        param_named_auto FrameTime frame_time
         param_named_auto Time time_0_x_packed 100
         param_named_auto WorldSpaceLightPos0 light_position 0
         param_named_auto LightColor0 light_diffuse_colour_power_scaled 0
@@ -43,18 +44,18 @@ fragment_program Ocean2_fs glsl glsles
     }
 }
 
-material Ocean2
+material Ocean
 {
     technique
     {
         pass
         {
-            // scene_blend alpha_blend
+            //scene_blend alpha_blend
             cull_hardware none
 
-            vertex_program_ref Ocean2_vs {}
+            vertex_program_ref Ocean_vs {}
 
-            fragment_program_ref Ocean2_fs
+            fragment_program_ref Ocean_fs
             {
                 param_named NormalTex int 0
                 // param_named ReflectionTex int 1

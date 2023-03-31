@@ -20,6 +20,7 @@ precision highp float;
 
 in highp vec3 vPosition;
 in vec4 vScreenPosition;
+in vec4 vPrevScreenPosition;
 
 uniform sampler2D NormalTex;
 // uniform sampler2D ReflectionTex;
@@ -29,6 +30,7 @@ uniform sampler2D NormalTex;
 uniform highp vec3 CameraPosition;
 uniform float FarClipDistance;
 uniform vec4 Time;
+uniform float FrameTime;
 uniform vec4 WorldSpaceLightPos0;
 uniform vec4 LightColor0;
 
@@ -124,11 +126,11 @@ void main()
     float fresnel = FresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = vec3(1.0);
     // reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
 
-    vec3 luminosity = vec3(0.30, 0.59, 0.11);
-    float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
+    const vec3 reflection = vec3(1.0);
+    const vec3 luminosity = vec3(0.30, 0.59, 0.11);
+    const float reflectivity = pow(dot(luminosity, reflection * 2.0), 3.0);
 
     vec3 R = reflect(vVec, nVec);
 
@@ -180,4 +182,12 @@ void main()
     }
 
     FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
+    float vDepth = vScreenPosition.z;
+    FragData[1] = vec4(lNormal, vDepth / FarClipDistance);
+
+    vec2 a = (vScreenPosition.xz / vScreenPosition.w);
+    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
+    vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
+    FragData[2].rg = velocity;
+    //FragData[3].rgb = ambient;
 }

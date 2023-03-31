@@ -80,8 +80,8 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", false);
   AddCompositor("Output", true);
 
-  AddCompositor("Fresnel", true);
-  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addListener(new ReflTexListener(ogreCamera));
+  //AddCompositor("Fresnel", true);
+  //compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addListener(new ReflTexListener(ogreCamera));
 
   AddCompositor("Paused", false);
 
