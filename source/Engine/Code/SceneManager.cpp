@@ -214,7 +214,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       const auto &old = it->getMaterial();
       const auto &mat = old->clone(std::to_string(generator++));
 
-      if (false) {
+      if (0) {
         auto *pass = mat->getTechnique(0)->getPass(0);
         auto &vp = pass->getVertexProgram();
         auto &fp = pass->getFragmentProgram();

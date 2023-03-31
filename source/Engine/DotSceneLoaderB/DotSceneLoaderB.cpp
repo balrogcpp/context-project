@@ -895,6 +895,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     Vector3 normal = parseVector3(XMLNode.child("normal"), {0, 1, 0});
     Vector3 up = parseVector3(XMLNode.child("upVector"), {0, 0, 1});
     Ogre::uint32 flags = getAttribUInt(XMLNode, "flags", 0xFFFFFFFF);
+    bool castShadows = getAttribBool(XMLNode, "castShadows", true);
 
     Plane plane(normal, distance);
     MeshPtr res =
@@ -902,7 +903,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
 
-    ent->setMaterialName(material); ent->setVisibilityFlags(flags); ent->setCastShadows(false);
+    ent->setMaterialName(material); ent->setVisibilityFlags(flags); ent->setCastShadows(castShadows);
 
     pParent->attachObject(ent);
 

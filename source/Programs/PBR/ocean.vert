@@ -34,5 +34,5 @@ void main()
     gl_Position = MVPMatrix * position;
 
     vScreenPosition = gl_Position;
-    vPrevScreenPosition = uWorldViewProjPrev * ModelMatrix * position;
+    vPrevScreenPosition = uWorldViewProjPrev * position;
 }

@@ -58,9 +58,9 @@ material Ocean
             fragment_program_ref Ocean_fs
             {
                 param_named NormalTex int 0
-                // param_named ReflectionTex int 1
-                // param_named RefractionTex int 2
-                // param_named CameraDepthTex int 3
+                param_named ReflectionTex int 1
+                param_named RefractionTex int 2
+                param_named CameraDepthTex int 3
             }
 
             texture_unit NormalTex
@@ -68,21 +68,24 @@ material Ocean
                 texture WaterNormal1.dds
                 filtering bilinear
             }
-            // texture_unit ReflectionTex
-            // {
-            //     content_type compositor Fresnel reflection
-            //     tex_address_mode clamp
-            // }
-            // texture_unit RefractionTex
-            // {
-            //     content_type compositor Fresnel refraction
-            //     tex_address_mode clamp
-            // }
-            // texture_unit CameraDepthTex
-            // {
-            //     content_type compositor MRT mrt 1
-            //     tex_address_mode clamp
-            // }
+            texture_unit ReflectionTex
+            {
+                texture white.dds
+                //content_type compositor Fresnel reflection
+                tex_address_mode clamp
+            }
+            texture_unit RefractionTex
+            {
+                texture black.dds
+                //content_type compositor Fresnel refraction
+                tex_address_mode clamp
+            }
+            texture_unit CameraDepthTex
+            {
+                texture black.dds
+                //content_type compositor MRT mrt 1
+                tex_address_mode clamp
+            }
         }
     }
 }
