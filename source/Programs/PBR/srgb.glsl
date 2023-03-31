@@ -103,7 +103,7 @@ vec4 SRGBtoLINEAR(const vec4 srgbIn)
 #ifdef MANUAL_SRGB
 
 #if defined(SRGB_FAST_APPROXIMATION)
-    vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
+  vec3 linOut = pow(srgbIn.rgb, vec3(2.2));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
   vec3 linOut = srgbIn.rgb * srgbIn.rgb;
 #else

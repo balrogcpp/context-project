@@ -3,9 +3,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 // PBR
 //----------------------------------------------------------------------------------------------------------------------
-shared_params PBR_Shared_vert
-{
-}
+shared_params PBR_Shared_vert {}
 
 shared_params PBR_Shared_frag
 {
@@ -28,7 +26,7 @@ abstract vertex_program PBR_I_vs glsl glsles
         param_named_auto ModelMatrix world_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
         param_named_auto Time time_0_x_packed 100
-        //param_named_auto CameraPosition camera_position
+        param_named_auto CameraPosition camera_position
     }
 }
 
@@ -61,7 +59,7 @@ abstract fragment_program PBR_I_fs glsl glsles
         param_named_auto CameraPosition camera_position
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto FrameTime frame_time
-        //param_named_auto Time time_0_x_packed 100
+        param_named_auto Time time_0_x_packed 100
     }
 }
 
@@ -73,18 +71,10 @@ fragment_program PBR_fs glsl glsles : PBR_I_fs
         param_named uShadowMap1 int 5
         param_named uShadowMap2 int 6
         param_named uShadowMap3 int 7
-        // param_named uShadowMap4 int 8
-        // param_named uShadowMap5 int 9
-        // param_named uShadowMap6 int 10
-        // param_named uShadowMap7 int 11
         param_named_auto ShadowTexel0 inverse_texture_size 4
         param_named_auto ShadowTexel1 inverse_texture_size 5
         param_named_auto ShadowTexel2 inverse_texture_size 6
         param_named_auto ShadowTexel3 inverse_texture_size 7
-        // param_named_auto ShadowTexel4 inverse_texture_size 8
-        // param_named_auto ShadowTexel5 inverse_texture_size 9
-        // param_named_auto ShadowTexel6 inverse_texture_size 10
-        // param_named_auto ShadowTexel7 inverse_texture_size 11
     }
 }
 
@@ -92,7 +82,7 @@ fragment_program PBR_fs glsl glsles : PBR_I_fs
 //----------------------------------------------------------------------------------------------------------------------
 // IBL
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program PBR_IBL_fs glsl glsles : PBR_I_fs
+fragment_program IBL_fs glsl glsles : PBR_I_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER,USE_IBL
 
@@ -102,18 +92,10 @@ fragment_program PBR_IBL_fs glsl glsles : PBR_I_fs
         param_named uShadowMap1 int 8
         param_named uShadowMap2 int 9
         param_named uShadowMap3 int 10
-        // param_named uShadowMap4 int 11
-        // param_named uShadowMap5 int 12
-        // param_named uShadowMap6 int 13
-        // param_named uShadowMap7 int 14
         param_named_auto ShadowTexel0 inverse_texture_size 7
         param_named_auto ShadowTexel1 inverse_texture_size 8
         param_named_auto ShadowTexel2 inverse_texture_size 9
         param_named_auto ShadowTexel3 inverse_texture_size 10
-        // param_named_auto ShadowTexel4 inverse_texture_size 11
-        // param_named_auto ShadowTexel5 inverse_texture_size 12
-        // param_named_auto ShadowTexel6 inverse_texture_size 13
-        // param_named_auto ShadowTexel7 inverse_texture_size 14
     }
 }
 

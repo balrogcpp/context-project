@@ -81,14 +81,14 @@ vec3 GetIBLContribution(const sampler2D uBrdfLUT, const samplerCube uDiffuseEnvS
   vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, perceptualRoughness * 9.0)).rgb;
 #else
   vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
-#endif
+#endif // USE_TEX_LOD
 
   vec3 diffuse = (diffuseLight * diffuseColor);
   vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
 
   return diffuse + specular;
 }
-#endif
+#endif // USE_IBL
 
 
 // ins
@@ -107,33 +107,34 @@ in mat3 vTBN;
 #ifdef HAS_BASECOLORMAP
 #define HAS_ALPHA
 uniform sampler2D uAlbedoSampler;
-#endif
+#endif // HAS_BASECOLORMAP
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
-#endif
+#endif // HAS_NORMALMAP
 #ifdef HAS_ORM
 uniform sampler2D uORMSampler;
 #endif // HAS_ORM
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
-#endif
+#endif // HAS_EMISSIVEMAP
 #ifdef USE_IBL
 uniform samplerCube uDiffuseEnvSampler;
 uniform samplerCube uSpecularEnvSampler;
 uniform sampler2D uBrdfLUT;
-#endif
+#endif // USE_IBL
 
 
 // lights
-uniform lowp float LightCount;
 uniform highp vec3 CameraPosition;
+uniform highp vec4 Time;
+uniform lowp float LightCount;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
 uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
 uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
-#endif
+#endif // MAX_LIGHTS > 0
 uniform vec4 AmbientLightColour;
 uniform vec4 SurfaceAmbientColour;
 uniform vec4 SurfaceDiffuseColour;
@@ -148,7 +149,7 @@ uniform float uTexLod;
 #ifdef HAS_NORMALMAP
 #define HAS_PARALLAXMAP
 uniform float uOffsetScale;
-#endif
+#endif // HAS_NORMALMAP
 
 
 // shadow receiver
@@ -350,8 +351,8 @@ void main()
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
     uv -= (v.xy * (uOffsetScale * texture2D(uNormalSampler, uv, uTexLod).a));
-#endif
-#endif
+#endif // HAS_PARALLAXMAP
+#endif // HAS_NORMALMAP
 
     vec4 s = GetAlbedo(uv);
     vec3 albedo = s.rgb;
@@ -465,7 +466,7 @@ void main()
     ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
 #else
     ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
-#endif
+#endif // USE_IBL
 
 // Apply optional PBR terms for additional (optional) shading
     color *= occlusion;

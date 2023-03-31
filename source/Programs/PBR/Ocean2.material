@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program Ocean_vs glsl glsles
+vertex_program Ocean2_vs glsl glsles
 {
     source ocean.vert
 
@@ -11,7 +11,7 @@ vertex_program Ocean_vs glsl glsles
     }
 }
 
-fragment_program Ocean_fs glsl glsles
+fragment_program Ocean2_fs glsl glsles
 {
     source ocean.frag
 
@@ -38,12 +38,12 @@ fragment_program Ocean_fs glsl glsles
         param_named AberrationAmount float 0.002
         param_named WaterExtinction float3 0.45 0.55 0.68
         param_named SunTransmittance float3 1.0 0.0 1.0
-        param_named SunFade float 0.5 0.0 1.0
-        param_named ScatterFade float 0.25 0.0 1.0
+        param_named SunFade float 0.5
+        param_named ScatterFade float 0.25
     }
 }
 
-material Ocean
+material Ocean2
 {
     technique
     {
@@ -52,9 +52,9 @@ material Ocean
             // scene_blend alpha_blend
             cull_hardware none
 
-            vertex_program_ref Ocean_vs {}
+            vertex_program_ref Ocean2_vs {}
 
-            fragment_program_ref Ocean_fs
+            fragment_program_ref Ocean2_fs
             {
                 param_named NormalTex int 0
                 // param_named ReflectionTex int 1

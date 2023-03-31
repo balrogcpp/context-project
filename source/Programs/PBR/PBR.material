@@ -13,7 +13,7 @@ sampler ShadowSampler
 
 abstract material PBR
 {
-    transparency_casts_shadows off
+    transparency_casts_shadows on
     receive_shadows on
 
     set $Albedo white.dds
@@ -29,6 +29,7 @@ abstract material PBR
             specular 1 1 1 1
             ambient 1 1 1
             emissive 0 0 0
+            alpha_rejection greater_equal 127
 
             texture_unit Albedo
             {
@@ -67,26 +68,6 @@ abstract material PBR
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
-            // texture_unit uShadowMap4
-            // {
-            //     content_type shadow
-            //     sampler_ref ShadowSampler            
-            // }
-            // texture_unit uShadowMap5
-            // {
-            //     content_type shadow
-            //     sampler_ref ShadowSampler            
-            // }
-            // texture_unit uShadowMap6
-            // {
-            //     content_type shadow
-            //     sampler_ref ShadowSampler            
-            // }
-            // texture_unit uShadowMap7
-            // {
-            //     content_type shadow
-            //     sampler_ref ShadowSampler            
-            // }
 
             vertex_program_ref PBR_vs {}
 
@@ -136,7 +117,7 @@ abstract material IBL : PBR
 
             vertex_program_ref PBR_vs {}
 
-            fragment_program_ref PBR_IBL_fs
+            fragment_program_ref IBL_fs
             {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
@@ -156,14 +137,10 @@ abstract material IBL : PBR
 //----------------------------------------------------------------------------------------------------------------------
 abstract material Paged : PBR
 {
-    transparency_casts_shadows on
-
     technique
     {
         pass
         {
-            alpha_rejection greater_equal 127
-
             vertex_program_ref Paged_vs {}
 
             fragment_program_ref Paged_fs {}
