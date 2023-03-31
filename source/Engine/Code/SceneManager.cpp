@@ -344,7 +344,12 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
 
   // apply for entities, skip grass
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    if (subentity->getParent()->getMesh()->isReloadable()) {
+    auto *entity = subentity->getParent();
+    if (!entity->isInScene() || !entity->isVisible()) {
+      return;
+    }
+
+    if (entity->getMesh()->isReloadable()) {
       Ogre::Matrix4 MVP;
       Ogre::Any value = rend->getUserAny();
       rend->getWorldTransforms(&MVP);
