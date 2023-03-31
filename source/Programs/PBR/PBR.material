@@ -153,5 +153,5 @@ abstract material Paged : PBR
 // IMPL for abstract materials
 //----------------------------------------------------------------------------------------------------------------------
 material ImplPBR : PBR {}
-material ImplPBR_IBL : IBL {}
-material PagedImpl : Paged {}
+material ImplIBL : IBL {}
+material ImplPaged : Paged {}
