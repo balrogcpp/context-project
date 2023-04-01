@@ -67,14 +67,14 @@ void CompositorManager::OnSetUp() {
   // init compositor chain
   InitMRT(true);
 
-  // screen-space reflections
-  AddCompositor("SSR", false);
-
   // shadows before bloom
   AddCompositor("SSAO", false);
 
   // ambient is always enabled
   AddCompositor("Ambient", true);
+
+  // screen-space reflections
+  AddCompositor("SSR", false);
 
   // fog is always enabled
   AddCompositor("Fog", true);
@@ -403,7 +403,7 @@ static Ogre::Vector4 GetLightScreenspaceCoords(Ogre::Light *light, Ogre::Camera 
 
   Ogre::Vector3 v = point.xyz().normalisedCopy();
   Ogre::Vector3 l = camera->getDerivedOrientation().zAxis().normalisedCopy();
-  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
+  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * point;
   point /= point.w;
 
   if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
@@ -420,14 +420,16 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   if (pass_id == 10) {  // SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
-    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
+    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setIgnoreMissingParams(false);
 
   } else if (pass_id == 11) {  // SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
-    fp->setNamedConstant("ProjMatrix", ogreCamera->getProjectionMatrixWithRSDepth());
-    fp->setNamedConstant("InvProjMatrix", ogreCamera->getProjectionMatrixWithRSDepth().inverse());
+    Ogre::Matrix4 proj = ogreCamera->getProjectionMatrix();
+    fp->setNamedConstant("ProjMatrix", proj);
+    fp->setNamedConstant("InvProjMatrix", proj.inverse());
+    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setIgnoreMissingParams(false);
 
   } else if (pass_id == 12) { // Rays

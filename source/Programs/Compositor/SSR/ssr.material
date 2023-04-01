@@ -8,9 +8,8 @@ fragment_program ssr_fp glsl glsles
 	source ssr.frag
 	default_params
 	{
-	    param_named_auto InvViewMatrix inverse_view_matrix
-        //param_named_auto ProjMatrix projection_matrix
-        //param_named_auto InvProjMatrix inverse_projection_matrix
+        param_named_auto FarClipDistance far_clip_distance
+        param_named_auto NearClipDistance near_clip_distance
 	}
 }
 

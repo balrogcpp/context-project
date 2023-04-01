@@ -14,30 +14,32 @@
 precision highp float;
 
 
+in vec2 vUV0;
+
 uniform sampler2D depthMap;
-uniform sampler2D normalMap; // in view space
+uniform sampler2D normalMap;
 uniform sampler2D ssrValuesMap;
 uniform sampler2D colorMap;
 
 uniform mat4 ProjMatrix;
 uniform mat4 InvProjMatrix;
 uniform mat4 InvViewMatrix;
-uniform vec3 skyColor;
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 
-
-in vec2 vUV0;
-//in vec3 vRay;
 
 // SSR based on tutorial by Imanol Fotia
 // http://imanolfotia.com/blog/update/2017/03/11/ScreenSpaceReflections.html
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 PositionFromDepth(const float depth)
+vec3 GetPosition(const vec2 uv)
 {
+    float depth = texture(depthMap, uv).x;
     float z = depth * 2.0 - 1.0;
+    z = z * FarClipDistance + NearClipDistance;
 
-    vec4 clipSpacePosition = vec4(vUV0 * 2.0 - 1.0, z, 1.0);
+    vec4 clipSpacePosition = vec4(uv * 2.0 - 1.0, z, 1.0);
     vec4 viewSpacePosition = InvProjMatrix * clipSpacePosition;
 
     // Perspective division
@@ -46,12 +48,6 @@ vec3 PositionFromDepth(const float depth)
     return viewSpacePosition.xyz;
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-vec3 GetPosition(const vec2 uv)
-{
-    return PositionFromDepth(texture2D(depthMap, uv).r).xyz;
-}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -114,7 +110,7 @@ vec2 RayCast(vec3 dir, vec3 hitCoord, float dDepth)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 Hash(vec3 a)
+vec3 hash(vec3 a)
 {
     a = fract(a * vec3(0.8));
     a += dot(a, a.yxz + 19.19);
@@ -141,7 +137,7 @@ void main()
 {
     float reflectionStrength = texture2D(ssrValuesMap, vUV0).r;
 
-    if (reflectionStrength == 0.0)
+    if (reflectionStrength < F0)
     {
         FragColor.rgb = texture2D(colorMap, vUV0).rgb;
         return;
@@ -151,7 +147,7 @@ void main()
     vec3 viewPos = GetPosition(vUV0);
 
     vec3 worldPos = vec3(vec4(viewPos, 1.0) * InvViewMatrix);
-    vec3 jitt = Hash(worldPos) * texture2D(ssrValuesMap, vUV0).g;
+    vec3 jitt = hash(worldPos) * texture2D(ssrValuesMap, vUV0).g;
 
     // Reflection vector
     vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal)));
@@ -177,5 +173,5 @@ void main()
         return;
     }
 
-    FragColor.rgb = mix(texture2D(colorMap, vUV0), vec4(skyColor, 1.0), reflectionStrength).rgb;
+    FragColor.rgb = mix(texture2D(colorMap, vUV0), vec4(vec3(0.0, 0.5, 0.0), 1.0), reflectionStrength).rgb;
 }

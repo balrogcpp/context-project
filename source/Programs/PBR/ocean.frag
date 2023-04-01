@@ -174,6 +174,6 @@ void main()
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
     FragData[3].xy = velocity;
-    FragData[4].rg = vec2(1.0, 0.0);
+    FragData[4].rg = vec2(fresnel, 0.0);
     // FragData[5].rgb = ambient;
 }
