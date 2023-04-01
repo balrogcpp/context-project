@@ -17,12 +17,12 @@ compositor Fresnel
             input previous
         }
 
-        target refraction
-        {
-            visibility_mask 0x0F0 // SUBMERGED objects
-            pass clear { colour_value 0 0 0 0 }
-            input previous
-        }
+        // target refraction
+        // {
+        //     visibility_mask 0x0F0 // SUBMERGED objects
+        //     pass clear { colour_value 0 0 0 0 }
+        //     input previous
+        // }
 
         target_output
         {

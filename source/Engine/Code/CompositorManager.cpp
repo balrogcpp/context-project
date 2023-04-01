@@ -45,9 +45,6 @@ class ReflTexListener : public Ogre::RenderTargetListener {
 };
 
 void CompositorManager::OnSetUp() {
-#ifdef MOBILE
-  fixedViewportSize = true;
-#endif
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
   compositorManager->registerCompositorLogic("DeferredLogic", new DeferredLogic());
@@ -80,24 +77,65 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", false);
   AddCompositor("Output", true);
 
-//  AddCompositor("Fresnel", true);
-//  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addListener(new ReflTexListener(ogreCamera));
-
   AddCompositor("Paused", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);
+}
 
-  // use compositors for easy referencing in material
-//  Ogre::CompositorManager::getSingleton().addCompositor(ogreViewport, "CubeMap");
-//  Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogreViewport, "CubeMap", true);
+void CompositorManager::AddReflCamera() {
+  reflCamera = ogreSceneManager->createCamera("ReflCamera");
+  ogreCamera->getParentSceneNode()->attachObject(reflCamera);
+  reflCamera->setAspectRatio(ogreCamera->getAspectRatio());
+  reflCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
+  reflCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
+  reflCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::UNIT_Y, -2.0));
+  reflCamera->enableReflection(Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0));
 
+  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addViewport(reflCamera);
+  if (!IsCompositorInChain("Fresnel")) AddCompositor("Fresnel", true);
+}
+
+void CompositorManager::DestroyReflCamera() {
+  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
+  compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
+  ogreSceneManager->destroyCamera(reflCamera);
+}
+
+void CompositorManager::AddRefrCamera() {
+  refrCamera = ogreSceneManager->createCamera("RefrCamera");
+  ogreCamera->getParentSceneNode()->attachObject(refrCamera);
+  refrCamera->setAspectRatio(ogreCamera->getAspectRatio());
+  refrCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
+  refrCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
+  refrCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::NEGATIVE_UNIT_Y, -2.0));
+
+  compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->addViewport(refrCamera);
+  if (!IsCompositorInChain("Fresnel")) AddCompositor("Fresnel", true);
+}
+
+void CompositorManager::DestroyRefrCamera() {
+  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
+  compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
+  ogreSceneManager->destroyCamera(reflCamera);
+}
+
+void CompositorManager::AddCubeCamera() {
   // create the camera used to render to our cubemap
-//  cubeCamera = ogreSceneManager->createCamera("CubeMapCamera");
-//  cubeCamera->setFOVy(Ogre::Degree(90.0));
-//  cubeCamera->setAspectRatio(1.0);
-//  cubeCamera->setNearClipDistance(5.0);
-//  ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
+  cubeCamera = ogreSceneManager->createCamera("CubeCamera");
+  cubeCamera->setFOVy(Ogre::Degree(90.0));
+  cubeCamera->setAspectRatio(1.0);
+  cubeCamera->setNearClipDistance(5.0);
+  ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
+
+  compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->addViewport(cubeCamera);
+  if (!IsCompositorInChain("Fresnel")) AddCompositor("CubeMap", true);
+}
+
+void CompositorManager::DestroyCubeCamera() {
+  compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->removeAllViewports();
+  compositorChain->removeCompositor(compositorChain->getCompositorPosition("CubeMap"));
+  ogreSceneManager->destroyCamera(cubeCamera);
 }
 
 void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
@@ -108,8 +146,12 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
+bool CompositorManager::IsCompositorInChain(const std::string &name) {
+  return compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS;
+}
+
 bool CompositorManager::IsCompositorEnabled(const std::string &name) {
-  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+  if (compositorChain->getCompositorPosition(name) == Ogre::CompositorChain::NPOS) return false;
   size_t index = compositorChain->getCompositorPosition(name);
   return compositorChain->getCompositor(index)->getEnabled();
 }

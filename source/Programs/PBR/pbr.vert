@@ -46,7 +46,7 @@ highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec
     0.0
   );
 }
-#endif
+#endif // PAGED_GEOMETRY
 
 
 // uniform block
@@ -59,7 +59,7 @@ uniform lowp float uMovableObj;
 uniform highp vec4 Time;
 uniform highp vec4 CameraPosition;
 uniform float uFadeRange;
-#endif
+#endif // PAGED_GEOMETRY
 #ifdef SHADOWRECEIVER
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif // SHADOWRECEIVER
@@ -101,13 +101,13 @@ void main()
 {
 #ifdef HAS_UV
   vUV0.xy = uv0.xy;
-#endif
+#endif // HAS_UV
 
 #ifdef HAS_VERTEXCOLOR
   vColor = max3(colour.rgb) > 0.0 ? colour.rgba : vec4(1.0);
 #else
   vColor = vec4(1.0);
-#endif
+#endif // HAS_VERTEXCOLOR
 
   vec4 vertex = position;
   vec4 model = ModelMatrix * vertex;
@@ -115,7 +115,7 @@ void main()
 
 #ifdef PAGED_GEOMETRY
    vertex +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(vertex, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(vertex, Time.x, uv1, uv2);
-#endif
+#endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -123,13 +123,13 @@ void main()
   vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
   vec3 b = cross(n, t) * tangent.w;
   vTBN = mat3(t, b, n);
-#else // NO HAS_TANGENTS
+#else
   vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
   vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
   vec3 t = normalize(cross(n, b));
   vTBN = mat3(t, b, n);
-#endif
-#else // !HAS_NORMALS
+#endif // HAS_TANGENTS
+#else
   vTBN = mat3(vec3(1.0, 0.0, 0.0),
               normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0))),
               vec3(0.0, 1.0, 0.0));
@@ -147,6 +147,6 @@ void main()
   for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
     vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * vertex;
   }
-#endif
-#endif
+#endif // MAX_SHADOW_TEXTURES > 0
+#endif // SHADOWRECEIVER
 }

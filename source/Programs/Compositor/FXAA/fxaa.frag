@@ -15,9 +15,9 @@
 //----------------------------------------------------------------------------------------------------------------------
 vec3 FXAA(const sampler2D tex, const vec2 uv, const vec2 tsize, const float strength)
 {
-  #define reducemul 0.125 // 1/8
-  #define reducemin 0.0078125 // 1/128
-  #define gray vec3(0.299, 0.587, 0.114)
+  const float reducemul = 0.125; // 1/8
+  const float reducemin = 0.0078125; // 1/128
+  const vec3 gray = vec3(0.299, 0.587, 0.114);
 
   vec3 basecol = texture2D(tex, uv).rgb;
   vec3 baseNW = texture2D(tex, uv - tsize).rgb;

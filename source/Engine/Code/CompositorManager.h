@@ -20,6 +20,7 @@ class CompositorManager : public System<CompositorManager>,
   void SetFixedViewportSize(int x, int y);
   void SetFixedViewport(bool fixed);
   void SetCompositorScale(const std::string& name, float scale);
+  bool IsCompositorInChain(const std::string& name);
   bool IsCompositorEnabled(const std::string& name);
 
   void CacheCompositorChain();
@@ -28,6 +29,13 @@ class CompositorManager : public System<CompositorManager>,
   void DisableRendering();
   void EnableRendering();
   Ogre::Camera* GetOgreCamera();
+
+  void AddReflCamera();
+  void DestroyReflCamera();
+  void AddRefrCamera();
+  void DestroyRefrCamera();
+  void AddCubeCamera();
+  void DestroyCubeCamera();
 
  protected:
   /// System impl
@@ -64,6 +72,8 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::SceneManager* ogreSceneManager = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
+  Ogre::Camera* reflCamera = nullptr;
+  Ogre::Camera* refrCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
 };
 }  // namespace gge

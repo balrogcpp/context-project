@@ -22,14 +22,14 @@ compositor CubeMap
 {
     technique
     {
-        texture tex 128 128 PF_BYTE_RGB cubic
+        texture cube 128 128 PF_BYTE_RGB cubic
 
-        target tex 0 : CubeFace {}
-        target tex 1 : CubeFace {}
-        target tex 2 : CubeFace {}
-        target tex 3 : CubeFace {}
-        target tex 4 : CubeFace {}
-        target tex 5 : CubeFace {}
+        target cube 0 : CubeFace {}
+        target cube 1 : CubeFace {}
+        target cube 2 : CubeFace {}
+        target cube 3 : CubeFace {}
+        target cube 4 : CubeFace {}
+        target cube 5 : CubeFace {}
 
         target_output
         {
