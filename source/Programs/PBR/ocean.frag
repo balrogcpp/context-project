@@ -23,9 +23,6 @@ in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
 
 uniform sampler2D NormalTex;
-uniform sampler2D ReflectionTex;
-uniform sampler2D RefractionTex;
-uniform sampler2D CameraDepthTex;
 
 uniform highp vec3 CameraPosition;
 uniform float FarClipDistance;
@@ -74,14 +71,6 @@ float FresnelDielectric(const vec3 Incoming, const vec3 Normal, const float eta)
 
 void main()
 {
-    vec4 proj = mat4(0.5, 0.0, 0.0, 0.0,
-                    0.0, 0.5, 0.0, 0.0,
-                    0.0, 0.0, 0.5, 0.0,
-                    0.5, 0.5, 0.5, 1.0) * vScreenPosition;
-
-    vec2 fragCoord = proj.xy / proj.w;
-    fragCoord = clamp(fragCoord, 0.002, 0.998);
-
     bool aboveWater = CameraPosition.y > 0.0;
 
     float normalFade = 1 - min(exp(-vScreenPosition.w / 40.0), 1.0);
@@ -126,7 +115,7 @@ void main()
     float fresnel = FresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
+    vec3 reflection = vec3(1.0);
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
@@ -139,15 +128,9 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = FarClipDistance * texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).a;
     float surfaceDepth = vScreenPosition.w;
 
-    float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
-
     vec3 refraction = vec3(0.0);
-    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
-    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
-    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
 
     float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  

@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-abstract vertex_program SkyBoxCustomVp_I glsl glsles
+vertex_program SkyBoxCustomVp glsl glsles
 {
 	source sky.vert
     default_params
@@ -9,7 +9,7 @@ abstract vertex_program SkyBoxCustomVp_I glsl glsles
     }
 }
 
-abstract fragment_program SkyBoxCustomFp_I glsl glsles
+fragment_program SkyBoxCustomFp glsl glsles
 {
 	source sky.frag
     default_params
@@ -17,19 +17,10 @@ abstract fragment_program SkyBoxCustomFp_I glsl glsles
         param_named_auto uSunDirection light_direction 0
         param_named uSunSize float 0.03
         param_named uSunColor float3 10000 10000 10000
-        //param_named_auto Time time
-        //param_named_auto FarClipDistance far_clip_distance
-        //param_named uTimeScale float 0.03
-        //param_named uCirrus float 0.4
-        //param_named uCumulus float 0.4
     }
 }
 
-vertex_program SkyBoxCustomVp glsl glsles : SkyBoxCustomVp_I {}
-
-fragment_program SkyBoxCustomFp glsl glsles : SkyBoxCustomFp_I {}
-
-abstract material SkyBoxI
+material SkyBox
 {
     receive_shadows off
     transparency_casts_shadows off
@@ -51,12 +42,7 @@ abstract material SkyBoxI
 
 			vertex_program_ref SkyBoxCustomVp {}
 
-			fragment_program_ref SkyBoxCustomFp
-			{
-			    //param_named uCubeMap int 0
-			}
+			fragment_program_ref SkyBoxCustomFp {}
 		}
 	}
 }
-
-material SkyBox : SkyBoxI {}
