@@ -14,8 +14,8 @@
 #define USE_MRT
 #include "header.frag"
 #include "math.glsl"
+#include "srgb.glsl"
 precision highp float;
-
 
 
 in highp vec3 vPosition;
