@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
-//
+// SSAO
 //----------------------------------------------------------------------------------------------------------------------
 vertex_program ssao_vp glsl glsles
 {
@@ -17,10 +17,8 @@ fragment_program ssao_fp glsl glsles
 	source ssao.frag
 	default_params
 	{
-        //param_named_auto ProjMatrix projection_matrix
         param_named_auto FarClipDistance far_clip_distance
-
-		param_named uGeom int 0
+        param_named_auto NearClipDistance near_clip_distance
 	}
 }
 
@@ -37,9 +35,20 @@ material SSAO
 
 			vertex_program_ref ssao_vp {}
 
-            fragment_program_ref ssao_fp {}
+            fragment_program_ref ssao_fp
+            {
+                param_named uDepthTex int 0
+                param_named uGeomTex int 1
+            }
 
-            texture_unit depth
+            texture_unit DepthTex
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit GeomTex
             {
                 texture black.dds
                 tex_coord_set 0

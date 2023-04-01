@@ -8,8 +8,8 @@ compositor MRT
 {
     technique
     {
-        // color + alpha; geometry + depth; speed + roughness/metallic; ambient + emissive
-        texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_RGBA PF_FLOAT16_GR PF_FLOAT16_RGB chain_scope
+        // color + alpha; depth; normals; speed; metallic + roughness; ambient + emissive
+        texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_R PF_FLOAT16_RGB PF_FLOAT16_GR PF_FLOAT16_GR PF_FLOAT16_RGB chain_scope
 
         target mrt
         {
@@ -58,6 +58,7 @@ compositor SSAO
                 quad_normals camera_far_corners_view_space
                 material SSAO
                 input 0 mrt 1
+                input 1 mrt 2
             }
         }
 
@@ -86,6 +87,39 @@ compositor SSAO
                 material SSAO_mod
                 input 0 rt
                 input 1 ssaoy
+            }
+        }
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+compositor SSR
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+
+        texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_FLOAT16_RGB
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                identifier 11
+                material SSR
+                input 0 mrt 1
+                input 1 mrt 2
+                input 2 mrt 4
+                input 3 rt
             }
         }
     }
@@ -141,7 +175,7 @@ compositor Ambient
             {
                 material Ambient
                 input 0 rt
-                input 1 mrt 3
+                input 1 mrt 5
             }
         }
     }
@@ -185,7 +219,7 @@ compositor Rays
         {
             pass render_quad
             {
-                identifier 11
+                identifier 12
                 material Rays
                 input 0 fbo
             }
@@ -1391,7 +1425,7 @@ compositor Blur
             {
                 material Blur
                 input 0 rt
-                input 1 mrt 2
+                input 1 mrt 3
             }
         }
     }

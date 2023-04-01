@@ -49,6 +49,7 @@ uniform float SunFade;
 uniform float ScatterFade;
 
 
+//----------------------------------------------------------------------------------------------------------------------
 float FresnelDielectric(const vec3 Incoming, const vec3 Normal, const float eta)
 {
     // compute fresnel reflectance without explicitly computing
@@ -69,6 +70,7 @@ float FresnelDielectric(const vec3 Incoming, const vec3 Normal, const float eta)
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
     bool aboveWater = CameraPosition.y > 0.0;
@@ -165,11 +167,13 @@ void main()
 
     FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
     float vDepth = vScreenPosition.z;
-    FragData[1] = vec4(lNormal, vDepth / FarClipDistance);
+    FragData[1].r = vDepth / FarClipDistance;
+    FragData[2].xyz = lNormal;
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
-    FragData[2].rg = velocity;
-    //FragData[3].rgb = ambient;
+    FragData[3].xy = velocity;
+    FragData[4].rg = vec2(1.0, 0.0);
+    // FragData[5].rgb = ambient;
 }

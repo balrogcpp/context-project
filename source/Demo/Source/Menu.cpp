@@ -366,6 +366,10 @@ void Menu::BeforeRender(float time) {
     GetComponent<CompositorManager>().SetCompositorEnabled("Rays", compositorFlags[4]);
   }
 
+  if (ImGui::Checkbox("SSR", &compositorFlags[5])) {
+    GetComponent<CompositorManager>().SetCompositorEnabled("SSR", compositorFlags[5]);
+  }
+
   ImGui::EndChild();
   ImGui::PopFont();
 

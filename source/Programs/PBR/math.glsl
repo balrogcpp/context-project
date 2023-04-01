@@ -53,12 +53,12 @@
 #define atan2 atan
 #define ddx dFdx
 #define ddy dFdy
-#define ddx_coarse ddx
-#define ddy_coarse ddy
-#define ddx_fine ddx
-#define ddy_fine ddy
+#define ddx_coarse dFdx
+#define ddy_coarse dFdy
+#define ddx_fine dFdx
+#define ddy_fine dFdy
 #ifdef GL_ES
-#   define mad(a,b,c) ((a)*(b)+(c))
+#   define mad(a, b, c) ((a) * (b) + (c))
 #else
 #   define mad fma
 #endif

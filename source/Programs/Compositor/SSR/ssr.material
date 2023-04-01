@@ -1,0 +1,68 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// SSR
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program ssr_fp glsl glsles
+{
+	source ssr.frag
+	default_params
+	{
+	    param_named_auto InvViewMatrix inverse_view_matrix
+        //param_named_auto ProjMatrix projection_matrix
+        //param_named_auto InvProjMatrix inverse_projection_matrix
+	}
+}
+
+
+material SSR
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref ssr_fp
+            {
+                param_named depthMap int 0
+                param_named normalMap int 1
+                param_named ssrValuesMap int 2
+                param_named colorMap int 3
+            }
+
+            texture_unit DepthTex
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit NormalTex
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit MetallicTex
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit ColorTex
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}

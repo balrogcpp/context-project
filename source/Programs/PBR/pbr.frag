@@ -143,6 +143,7 @@ uniform vec4 SurfaceShininessColour;
 uniform vec4 SurfaceEmissiveColour;
 uniform float SurfaceAlphaRejection;
 uniform float FarClipDistance;
+uniform float NearClipDistance;
 uniform float FrameTime;
 uniform float uTexScale;
 uniform float uTexLod;
@@ -478,11 +479,13 @@ void main()
     ambient += GetEmission(uv);
 
     FragData[0] = vec4(color, alpha);
-    FragData[1] = vec4(n, vDepth / FarClipDistance);
+    FragData[1].x = (vDepth - NearClipDistance) / FarClipDistance;
+    FragData[2].xyz = n;
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
-    FragData[2].rg = velocity;
-    FragData[3].rgb = ambient;
+    FragData[3].xy = velocity;
+    FragData[4].rg = vec2(metallic, 0.0);
+    FragData[5] = vec4(ambient, 0.0);
 }

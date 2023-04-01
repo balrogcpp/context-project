@@ -14,12 +14,17 @@ CompositorManager::CompositorManager()
     // oddMipsOnly = true;
   }
 }
+
 CompositorManager::~CompositorManager() {}
+
 void CompositorManager::OnUpdate(float time) {}
 
 class DeferredLogic final : public Ogre::CompositorLogic {
  public:
-  void compositorInstanceCreated(Ogre::CompositorInstance *newInstance) override { newInstance->addListener(GetComponentPtr<CompositorManager>()); }
+  void compositorInstanceCreated(Ogre::CompositorInstance *newInstance) override {
+    newInstance->addListener(GetComponentPtr<CompositorManager>());
+  }
+
   void compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) override {
     destroyedInstance->removeListener(GetComponentPtr<CompositorManager>());
   }
@@ -31,17 +36,20 @@ void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &ev
 
 class ReflTexListener : public Ogre::RenderTargetListener {
  public:
-  ReflTexListener(Ogre::Camera *camera) { ogreCamera = camera; }
+  ReflTexListener(Ogre::Camera *camera, Ogre::Plane plane) {
+    ogreCamera = camera;
+    ogrePlane = plane;
+  }
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-    const static Ogre::Plane plane = Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0);
-    ogreCamera->enableReflection(plane);
+    ogreCamera->enableReflection(ogrePlane);
   }
 
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->disableReflection(); }
 
  private:
   Ogre::Camera *ogreCamera = nullptr;
+  Ogre::Plane ogrePlane;
 };
 
 void CompositorManager::OnSetUp() {
@@ -58,6 +66,9 @@ void CompositorManager::OnSetUp() {
 
   // init compositor chain
   InitMRT(true);
+
+  // screen-space reflections
+  AddCompositor("SSR", false);
 
   // shadows before bloom
   AddCompositor("SSAO", false);
@@ -412,7 +423,14 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrixWithRSDepth());
     fp->setIgnoreMissingParams(false);
 
-  } else if (pass_id == 11) {
+  } else if (pass_id == 11) {  // SSR
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setIgnoreMissingParams(true);
+    fp->setNamedConstant("ProjMatrix", ogreCamera->getProjectionMatrixWithRSDepth());
+    fp->setNamedConstant("InvProjMatrix", ogreCamera->getProjectionMatrixWithRSDepth().inverse());
+    fp->setIgnoreMissingParams(false);
+
+  } else if (pass_id == 12) { // Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 

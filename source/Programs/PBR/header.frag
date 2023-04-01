@@ -31,7 +31,7 @@
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #ifdef USE_MRT
-out vec4 FragData[4];
+out vec4 FragData[6];
 #else // NO_MRT
 #define NO_MRT
 out vec4 FragColor;
@@ -60,7 +60,7 @@ precision lowp samplerCube;
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #ifdef USE_MRT
-out vec4 FragData[4];
+out vec4 FragData[6];
 #else // NO_MRT
 #define NO_MRT
 out vec4 FragColor;

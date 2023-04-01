@@ -62,5 +62,5 @@ void main()
     if (gamma <= uSunSize) color += uSunColor;
 
     FragData[0].rgb = color;
-    FragData[1] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[1].r = 1.0;
 }

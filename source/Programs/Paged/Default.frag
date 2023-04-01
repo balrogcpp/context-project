@@ -39,12 +39,10 @@ void main()
 #ifdef ALPHA_TEST
     if(color.a < 0.5 || oColour.a < 0.5) discard;
 #endif
-    //color *= saturate(oColour);
     color = SRGBtoLINEAR(color);
 #ifndef NO_MRT
     FragData[0] = color;
-    FragData[1] = vec4(0.0, 0.0, 0.0, oFogCoord / uFarClipDistance);
-    //FragData[2] = vec4(0.0);
+    FragData[1].x = oFogCoord / uFarClipDistance;
 #else // NO_MRT
 #ifdef USE_FOG
     color.rgb = ApplyFog(color.rgb, fogParams, fogColour.rgb, oFogCoord);

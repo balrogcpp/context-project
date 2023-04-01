@@ -31,7 +31,7 @@ in vec2 vUV0;
 void main()
 {
   vec3 color = texture2D(uSceneSampler, vUV0).rgb;
-  vec2 velocity = uScale * texture2D(uSpeedSampler, vUV0).rg;
+  vec2 velocity = uScale * texture2D(uSpeedSampler, vUV0).xy;
   float speed = length(velocity * PixelSize1);
   float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
   float invSamples = 1.0 / nSamples;
