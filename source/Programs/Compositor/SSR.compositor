@@ -1,0 +1,34 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// SSR
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor SSR
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+
+        texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_FLOAT16_RGB
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                identifier 11
+                material SSR
+                input 0 mrt 1
+                input 1 mrt 2
+                input 2 mrt 4
+                input 3 rt
+            }
+        }
+    }
+}

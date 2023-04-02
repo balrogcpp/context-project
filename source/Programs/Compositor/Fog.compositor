@@ -1,0 +1,29 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// FOG
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor Fog
+{
+    technique
+    {
+        texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_FLOAT16_RGB
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Fog
+                input 0 rt
+                input 1 mrt 1
+            }
+        }
+    }
+}

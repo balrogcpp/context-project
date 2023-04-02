@@ -1,0 +1,28 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// AMBIENT
+//----------------------------------------------------------------------------------------------------------------------
+compositor Ambient
+{
+    technique
+    {
+        texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_FLOAT16_RGB
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Ambient
+                input 0 rt
+                input 1 mrt 5
+            }
+        }
+    }
+}

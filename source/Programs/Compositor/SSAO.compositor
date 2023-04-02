@@ -1,0 +1,65 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// SSAO
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor SSAO
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+
+        texture_ref mrt MRT mrt
+        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
+        texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
+        texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
+        texture rt target_width target_height PF_FLOAT16_RGB
+
+
+        target rt
+        {
+            input previous
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                identifier 10
+                quad_normals camera_far_corners_view_space
+                material SSAO
+                input 0 mrt 1
+                input 1 mrt 2
+            }
+        }
+
+        target ssaox
+        {
+            pass render_quad
+            {
+                material SSAO_FilterX
+                input 0 ssao
+            }
+        }
+
+        target ssaoy
+        {
+            pass render_quad
+            {
+                material SSAO_FilterY
+                input 0 ssaox
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material SSAO_mod
+                input 0 rt
+                input 1 ssaoy
+            }
+        }
+    }
+}

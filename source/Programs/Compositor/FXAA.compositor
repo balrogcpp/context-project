@@ -1,0 +1,28 @@
+// created by Andrey Vasiliev
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// FXAA
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor FXAA
+{
+    technique
+    {
+        texture rt target_width target_height PF_FLOAT16_RGB
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material FXAA
+                input 0 rt
+            }
+        }
+    }
+}

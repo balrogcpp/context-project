@@ -1,0 +1,75 @@
+// created by Andrey Vasiliev
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// RAYS
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor Rays
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+
+        texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_FLOAT16_RGB
+        texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture fbx target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture fby target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+
+
+        target rt
+        {
+            input previous
+        }
+
+        target fbo
+        {
+            pass render_quad
+            {
+                material FBO
+                input 0 rt
+                input 1 mrt 1
+            }
+        }
+
+        target fbo1
+        {
+            pass render_quad
+            {
+                identifier 12
+                material Rays
+                input 0 fbo
+            }
+        }
+
+        target fbx
+        {
+            pass render_quad
+            {
+                material FilterX
+                input 0 fbo1
+            }
+        }
+
+        target fby
+        {
+            pass render_quad
+            {
+                material FilterY
+                input 0 fbx
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Rays_mod
+                input 0 rt
+                input 1 fbo1
+            }
+        }
+    }
+}
