@@ -22,18 +22,17 @@ in highp vec3 vPosition;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
 
-uniform sampler2D NormalTex;
-
+uniform sampler2D uNormapMap;
 uniform highp vec3 CameraPosition;
 uniform float FarClipDistance;
+uniform float NearClipDistance;
 uniform vec4 Time;
 uniform float FrameTime;
 uniform vec4 WorldSpaceLightPos0;
 uniform vec4 LightColor0;
-
-uniform vec2 bigWaves;
-uniform vec2 midWaves;
-uniform vec2 smallWaves;
+uniform vec2 BigWaves;
+uniform vec2 MidWaves;
+uniform vec2 SmallWaves;
 uniform float Visibility;
 uniform vec2 WindDirection;
 uniform float WindSpeed;
@@ -78,32 +77,32 @@ void main()
     float normalFade = 1 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
-    vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
+    vec3 normal0 = 2.0 * texture2D(uNormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
-    vec3 normal1 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
+    vec3 normal1 = 2.0 * texture2D(uNormapMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
 
     nCoord = vPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
-    vec3 normal2 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
+    vec3 normal2 = 2.0 * texture2D(uNormapMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
-    vec3 normal3 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
+    vec3 normal3 = 2.0 * texture2D(uNormapMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
 
     nCoord = vPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
-    vec3 normal4 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
+    vec3 normal4 = 2.0 * texture2D(uNormapMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
-    vec3 normal5 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
+    vec3 normal5 = 2.0 * texture2D(uNormapMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
 
-    vec3 normal = normalize(normal0 * bigWaves.x + normal1 * bigWaves.y +
-                            normal2 * midWaves.x + normal3 * midWaves.y +
-                            normal4 * smallWaves.x + normal5 * smallWaves.y);
+    vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y +
+                            normal2 * MidWaves.x + normal3 * MidWaves.y +
+                            normal4 * SmallWaves.x + normal5 * SmallWaves.y);
 
     vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space 
     vec3 vVec = normalize(CameraPosition - vPosition);
     vec3 lVec = WorldSpaceLightPos0.xyz;
 
     // normal for light scattering
-    vec3 lNormal = normalize(normal0 * bigWaves.x * 0.5 + normal1 * bigWaves.y * 0.5 +
-                            normal2 * midWaves.x * 0.1 + normal3 * midWaves.y * 0.1 +
-                            normal4 * smallWaves.x * 0.1 + normal5 * smallWaves.y * 0.1);
+    vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5 +
+                            normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1 +
+                            normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1);
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     vec3 lR = reflect(-lVec, lNormal);
@@ -167,7 +166,7 @@ void main()
 
     FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
     float vDepth = vScreenPosition.z;
-    FragData[1].r = vDepth / FarClipDistance;
+    FragData[1].r = (vDepth - NearClipDistance) / FarClipDistance;
     FragData[2].xyz = lNormal;
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);

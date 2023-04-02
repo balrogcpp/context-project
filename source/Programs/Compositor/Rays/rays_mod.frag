@@ -15,15 +15,15 @@
 
 in vec2 vUV0;
 
-uniform sampler2D uSampler;
-uniform sampler2D uFBO;
+uniform sampler2D uColorMap;
+uniform sampler2D uFboMap;
 
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(uSampler, vUV0).rgb;
-  vec3 rays = texture2D(uFBO, vUV0).rgb;
+  vec3 color = texture2D(uColorMap, vUV0).rgb;
+  vec3 rays = texture2D(uFboMap, vUV0).rgb;
   FragColor.rgb = SafeHDR(color + rays);
 }

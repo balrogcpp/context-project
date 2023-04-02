@@ -19,15 +19,15 @@ fragment_program Ocean_fs glsl glsles
     {
         param_named_auto CameraPosition camera_position
         param_named_auto FarClipDistance far_clip_distance
+        param_named_auto NearClipDistance near_clip_distance
         param_named_auto FrameTime frame_time
         param_named_auto Time time_0_x_packed 100
         param_named_auto WorldSpaceLightPos0 light_position 0
         param_named_auto LightColor0 light_diffuse_colour_power_scaled 0
 
-        param_named bigWaves float2 0.3 0.3
-        param_named midWaves float2 0.3 0.15
-        param_named smallWaves float2 0.15 0.1
-
+        param_named BigWaves float2 0.3 0.3
+        param_named MidWaves float2 0.3 0.15
+        param_named SmallWaves float2 0.15 0.1
         param_named Visibility float 28.0
         param_named WindDirection float2 0.5 -0.8
         param_named WindSpeed float 0.2
@@ -57,10 +57,10 @@ material Ocean
 
             fragment_program_ref Ocean_fs
             {
-                param_named NormalTex int 0
+                param_named uNormapMap int 0
             }
 
-            texture_unit NormalTex
+            texture_unit Normal
             {
                 texture WaterNormal1.dds
                 filtering bilinear

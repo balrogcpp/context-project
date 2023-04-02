@@ -1,17 +1,19 @@
 // created by Andrey Vasiliev
 
-vertex_program SkyBoxCustomVp glsl glsles
+vertex_program SkyBoxVp glsl glsles
 {
 	source sky.vert
+
     default_params
     {
         param_named_auto worldViewProj worldviewproj_matrix
     }
 }
 
-fragment_program SkyBoxCustomFp glsl glsles
+fragment_program SkyBoxFp glsl glsles
 {
 	source sky.frag
+
     default_params
     {
         param_named_auto uSunDirection light_direction 0
@@ -40,9 +42,9 @@ material SkyBox
 				texture $CubeMap cubic
 			}
 
-			vertex_program_ref SkyBoxCustomVp {}
+			vertex_program_ref SkyBoxVp {}
 
-			fragment_program_ref SkyBoxCustomFp {}
+			fragment_program_ref SkyBoxFp {}
 		}
 	}
 }

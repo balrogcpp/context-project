@@ -6,10 +6,12 @@
 fragment_program FXAA_fs glsl glsles
 {
     source fxaa.frag
+
     preprocessor_defines USE_FXAA
+
 	default_params
 	{
-        param_named uFXAAStrength float 4.0
+        param_named uScale float 4.0
 	}
 }
 
@@ -27,11 +29,12 @@ material FXAA
 
 			fragment_program_ref FXAA_fs
 			{
-                param_named uSampler int 0
-                param_named_auto TexelSize inverse_texture_size 0
+                param_named uColorMap int 0
+
+                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
-			texture_unit scene
+			texture_unit Color
             {
                 texture black.dds
                 tex_coord_set 0

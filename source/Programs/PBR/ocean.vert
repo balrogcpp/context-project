@@ -15,6 +15,8 @@
 #include "math.glsl"
 precision highp float;
 
+#include "ocean.glsl"
+
 in highp vec4 position;
 
 uniform highp mat4 MVPMatrix;

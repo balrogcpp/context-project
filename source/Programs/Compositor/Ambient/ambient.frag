@@ -13,14 +13,14 @@
 
 
 in vec2 vUV0;
-uniform sampler2D uSceneSampler;
-uniform sampler2D uAmbientSampler;
+uniform sampler2D uColorMap;
+uniform sampler2D uAmbientMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(uSceneSampler, vUV0).rgb;
-  vec3 ambient = texture2D(uAmbientSampler, vUV0).rgb;
+  vec3 color = texture2D(uColorMap, vUV0).rgb;
+  vec3 ambient = texture2D(uAmbientMap, vUV0).rgb;
   FragColor.rgb = color + ambient;
 }

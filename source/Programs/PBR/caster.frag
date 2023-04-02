@@ -12,7 +12,7 @@
 
 
 #ifdef SHADOWCASTER_ALPHA
-uniform sampler2D uAlbedoSampler;
+uniform sampler2D uAlbedoMap;
 uniform float SurfaceAlphaRejection;
 in vec2 vUV0;
 #endif
@@ -21,7 +21,7 @@ in vec2 vUV0;
 void main()
 {
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(uAlbedoSampler, vUV0.xy).a < SurfaceAlphaRejection) {
+    if (texture2D(uAlbedoMap, vUV0.xy).a < SurfaceAlphaRejection) {
         discard;
     }
 #endif

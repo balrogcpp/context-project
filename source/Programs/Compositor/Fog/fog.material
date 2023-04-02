@@ -1,18 +1,19 @@
 // created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
-//
+// FOG
 //----------------------------------------------------------------------------------------------------------------------
 
 fragment_program Fog_fs glsl glsles
 {
     source fog.frag
-    preprocessor_defines NONE
+
 	default_params
 	{
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance
+        param_named_auto NearClipDistance near_clip_distance
 	}
 }
 
@@ -30,18 +31,18 @@ material Fog
 
 			fragment_program_ref Fog_fs
 			{
-                param_named uSceneSampler int 0
-                param_named uSceneDepthSampler int 1
+                param_named uColorMap int 0
+                param_named uDepthMap int 1
 			}
 
-			texture_unit scene
+			texture_unit Color
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
-            texture_unit depth
+            texture_unit Depth
             {
                 texture black.dds
                 tex_coord_set 0

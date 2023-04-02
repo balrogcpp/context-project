@@ -16,6 +16,7 @@ shared_params PBR_Shared_frag
 abstract vertex_program PBR_I_vs glsl glsles
 {
 	source pbr.vert
+
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER
 
     default_params
@@ -35,6 +36,7 @@ vertex_program PBR_vs glsl glsles : PBR_I_vs {}
 abstract fragment_program PBR_I_fs glsl glsles
 {
 	source pbr.frag
+
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER
     
     default_params
@@ -47,7 +49,6 @@ abstract fragment_program PBR_I_fs glsl glsles
         param_named_auto LightAttenuationArray light_attenuation_array 8
         param_named_auto LightSpotParamsArray spotlight_params_array 8
         param_named_auto LightCastsShadowsArray light_casts_shadows_array 8
-
         param_named_auto LightCount light_count
         param_named_auto AmbientLightColour ambient_light_colour
         param_named_auto SurfaceAmbientColour surface_ambient_colour

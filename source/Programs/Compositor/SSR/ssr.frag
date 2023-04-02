@@ -16,10 +16,10 @@ precision highp float;
 
 in vec2 vUV0;
 
-uniform sampler2D depthMap;
-uniform sampler2D normalMap;
-uniform sampler2D ssrValuesMap;
-uniform sampler2D colorMap;
+uniform sampler2D uDepthMap;
+uniform sampler2D uNormalMap;
+uniform sampler2D uNormalMap2;
+uniform sampler2D uColorMap;
 
 uniform mat4 ProjMatrix;
 uniform mat4 InvProjMatrix;
@@ -35,7 +35,7 @@ uniform float NearClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetPosition(const vec2 uv)
 {
-    float depth = texture(depthMap, uv).x;
+    float depth = texture(uDepthMap, uv).x;
     float z = depth * 2.0 - 1.0;
     z = z * FarClipDistance + NearClipDistance;
 
@@ -135,19 +135,19 @@ float Fresnel(const vec3 direction, const vec3 normal)
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    float reflectionStrength = texture2D(ssrValuesMap, vUV0).r;
+    float reflectionStrength = texture2D(uNormalMap2, vUV0).r;
 
     if (reflectionStrength < F0)
     {
-        FragColor.rgb = texture2D(colorMap, vUV0).rgb;
+        FragColor.rgb = texture2D(uColorMap, vUV0).rgb;
         return;
     }
 
-    vec3 normal = texture2D(normalMap, vUV0).xyz;
+    vec3 normal = texture2D(uNormalMap, vUV0).xyz;
     vec3 viewPos = GetPosition(vUV0);
 
     vec3 worldPos = vec3(vec4(viewPos, 1.0) * InvViewMatrix);
-    vec3 jitt = hash(worldPos) * texture2D(ssrValuesMap, vUV0).g;
+    vec3 jitt = hash(worldPos) * texture2D(uNormalMap2, vUV0).g;
 
     // Reflection vector
     vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal)));
@@ -165,13 +165,13 @@ void main()
 
     float fresnel = Fresnel(reflected, normal);
 
-    vec3 color = texture2D(colorMap, coords.xy).rgb * error * fresnel;
+    vec3 color = texture2D(uColorMap, coords.xy).rgb * error * fresnel;
 
     if (coords.xy != vec2(-1.0))
     {
-        FragColor.rgb = mix(texture2D(colorMap, vUV0), vec4(color, 1.0), reflectionStrength).rgb;
+        FragColor.rgb = mix(texture2D(uColorMap, vUV0), vec4(color, 1.0), reflectionStrength).rgb;
         return;
     }
 
-    FragColor.rgb = mix(texture2D(colorMap, vUV0), vec4(vec3(0.0, 0.5, 0.0), 1.0), reflectionStrength).rgb;
+    FragColor.rgb = mix(texture2D(uColorMap, vUV0), vec4(vec3(0.0, 0.5, 0.0), 1.0), reflectionStrength).rgb;
 }

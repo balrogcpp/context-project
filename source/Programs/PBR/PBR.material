@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 // PBR
 //----------------------------------------------------------------------------------------------------------------------
-sampler ShadowSampler
+sampler ShadowMap
 {
     filtering bilinear
     tex_address_mode border
@@ -51,32 +51,32 @@ abstract material PBR
             texture_unit uShadowMap0
             {
                 content_type shadow
-                sampler_ref ShadowSampler            
+                sampler_ref ShadowMap            
             }
             texture_unit uShadowMap1
             {
                 content_type shadow
-                sampler_ref ShadowSampler            
+                sampler_ref ShadowMap            
             }
             texture_unit uShadowMap2
             {
                 content_type shadow
-                sampler_ref ShadowSampler            
+                sampler_ref ShadowMap            
             }
             texture_unit uShadowMap3
             {
                 content_type shadow
-                sampler_ref ShadowSampler            
+                sampler_ref ShadowMap            
             }
 
             vertex_program_ref PBR_vs {}
 
             fragment_program_ref PBR_fs
             {
-                param_named uAlbedoSampler      int 0
-                param_named uNormalSampler      int 1
-                param_named uORMSampler         int 2
-                param_named uEmissiveSampler    int 3
+                param_named uAlbedoMap      int 0
+                param_named uNormalMap      int 1
+                param_named uOrmMap         int 2
+                param_named uEmissiveMap    int 3
             }
         }
     }
@@ -119,12 +119,12 @@ abstract material IBL : PBR
 
             fragment_program_ref IBL_fs
             {
-                param_named uAlbedoSampler      int 0
-                param_named uNormalSampler      int 1
-                param_named uORMSampler         int 2
-                param_named uEmissiveSampler    int 3
-                param_named uDiffuseEnvSampler  int 4
-                param_named uSpecularEnvSampler int 5
+                param_named uAlbedoMap      int 0
+                param_named uNormalMap      int 1
+                param_named uOrmMap         int 2
+                param_named uEmissiveMap    int 3
+                param_named uDiffuseEnvMap  int 4
+                param_named uSpecularEnvMap int 5
                 param_named uBrdfLUT            int 6
             }
         }

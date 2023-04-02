@@ -48,13 +48,13 @@ vec3 FXAA(const sampler2D tex, const vec2 uv, const vec2 tsize, const float stre
 
 
 in vec2 vUV0;
-uniform sampler2D uSampler;
-uniform vec2 TexelSize;
-uniform float uFXAAStrength;
+uniform sampler2D uColorMap;
+uniform vec2 TexelSize0;
+uniform float uScale;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = FXAA(uSampler, vUV0, TexelSize, uFXAAStrength);
+  FragColor.rgb = FXAA(uColorMap, vUV0, TexelSize0, uScale);
 }

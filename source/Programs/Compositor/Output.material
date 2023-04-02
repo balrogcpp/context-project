@@ -6,7 +6,7 @@
 fragment_program Output_fs glsl glsles
 {
     source LINEARtoSRGB.frag
-    preprocessor_defines NONE
+
 	default_params
 	{
 		param_named uExposure float 1.0
@@ -27,10 +27,10 @@ material Output
 
 			fragment_program_ref Output_fs
 			{
-                param_named uSceneSampler int 0
+                param_named uColorMap int 0
 			}
 
-			texture_unit rt
+			texture_unit RT
             {
                 texture black.dds
                 tex_coord_set 0

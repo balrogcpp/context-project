@@ -28,34 +28,34 @@ material SSR
 
             fragment_program_ref ssr_fp
             {
-                param_named depthMap int 0
-                param_named normalMap int 1
-                param_named ssrValuesMap int 2
-                param_named colorMap int 3
+                param_named uDepthMap int 0
+                param_named uNormalMap int 1
+                param_named uNormalMap2 int 2
+                param_named uColorMap int 3
             }
 
-            texture_unit DepthTex
+            texture_unit Depth
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit NormalTex
+            texture_unit Normal
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit MetallicTex
+            texture_unit RM
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit ColorTex
+            texture_unit Color
             {
                 texture black.dds
                 tex_coord_set 0

@@ -2,6 +2,7 @@
 vertex_program Sprite_vp glsl glsles
 {
     source Sprite.vert
+
     default_params
     {
         param_named_auto worldViewProj worldviewproj_matrix
@@ -12,7 +13,9 @@ vertex_program Sprite_vp glsl glsles
 vertex_program SpriteFade_vp glsl glsles
 {
     source Sprite.vert
+
     preprocessor_defines FADE
+
     default_params
     {
         param_named_auto worldViewProj worldviewproj_matrix
@@ -24,7 +27,9 @@ vertex_program SpriteFade_vp glsl glsles
 fragment_program Default_AlphaTest glsl glsles
 {
     source Default.frag
+
     preprocessor_defines USE_FOG,ALPHA_TEST
+
     default_params
     {
         param_named_auto uFarClipDistance far_clip_distance
@@ -36,7 +41,9 @@ fragment_program Default_AlphaTest glsl glsles
 fragment_program Default_AlphaTest_NoFog glsl glsles
 {
     source Default.frag
+
     preprocessor_defines ALPHA_TEST
+
     default_params
     {
         param_named_auto uFarClipDistance far_clip_distance

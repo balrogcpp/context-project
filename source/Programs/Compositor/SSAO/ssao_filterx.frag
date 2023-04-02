@@ -28,12 +28,12 @@ float Gauss9HR(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
 
 in vec2 vUV0;
-uniform sampler2D uSampler;
-uniform vec2 TexelSize;
+uniform sampler2D uColorMap;
+uniform vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = Gauss9HR(uSampler, vUV0, TexelSize);
+  FragColor.rgb = Gauss9HR(uColorMap, vUV0, TexelSize0);
 }

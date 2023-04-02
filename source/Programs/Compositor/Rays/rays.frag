@@ -16,7 +16,7 @@
 
 in vec2 vUV0;
 
-uniform sampler2D uFBO;
+uniform sampler2D uFboMap;
 uniform float LightCount;
 uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
 uniform int uRayCount;
@@ -57,7 +57,7 @@ void main()
     if (int(LightCount) <= i) break;
 
     vec4 point = LightPositionViewSpace[i];
-    color += GodRays(uFBO, vUV0, point.xy, uRayCount, uDensity, uWeight * point.w, uDecay, uExposure);
+    color += GodRays(uFboMap, vUV0, point.xy, uRayCount, uDensity, uWeight * point.w, uDecay, uExposure);
   }
 
   FragColor.rgb = color;

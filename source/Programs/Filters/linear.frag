@@ -12,10 +12,10 @@
 #include "filters.glsl"
 
 in vec2 vUV0;
-uniform sampler2D uSampler;
+uniform sampler2D uRT;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = texture2D(uSampler, vUV0).rgb;
+  FragColor.rgb = texture2D(uRT, vUV0).rgb;
 }

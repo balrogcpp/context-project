@@ -7,11 +7,6 @@
 fragment_program Ambient_fs glsl glsles
 {
     source ambient.frag
-    preprocessor_defines NONE
-	default_params
-	{
-        //param_named_auto AmbientLightColour ambient_light_colour
-	}
 }
 
 material Ambient
@@ -28,18 +23,18 @@ material Ambient
 
 			fragment_program_ref Ambient_fs
 			{
-                param_named uSceneSampler int 0
-                param_named uAmbientSampler int 1
+                param_named uColorMap int 0
+                param_named uAmbientMap int 1
 			}
 
-			texture_unit scene
+			texture_unit Color
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
-            texture_unit ambient
+            texture_unit Ambient
             {
                 texture black.dds
                 tex_coord_set 0

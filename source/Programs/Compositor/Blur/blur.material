@@ -3,10 +3,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
+
 fragment_program Blur_fs glsl glsles
 {
     source blur.frag
+
     preprocessor_defines MAX_SAMPLES=5
+
 	default_params
 	{
         param_named uScale float 1.0
@@ -27,19 +30,19 @@ material Blur
 
 			fragment_program_ref Blur_fs
 			{
-                param_named uSceneSampler int 0
-                param_named uSpeedSampler int 1
-                param_named_auto PixelSize1 texture_size 1
+                param_named uColorMap int 0
+                param_named uVelocitySampler int 1
+                param_named_auto TexSize1 texture_size 1
 			}
 
-			texture_unit scene
+			texture_unit Color
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
-            texture_unit velocity
+            texture_unit Celocity
             {
                 texture black.dds
                 tex_coord_set 0

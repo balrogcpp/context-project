@@ -71,16 +71,16 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetIBLContribution(const sampler2D uBrdfLUT, const samplerCube uDiffuseEnvSampler, const samplerCube uSpecularEnvSampler, const vec3 diffuseColor, const vec3 specularColor, const float perceptualRoughness, const float NdotV, const vec3 n, const vec3 reflection)
+vec3 GetIBLContribution(const sampler2D uBrdfLUT, const samplerCube uDiffuseEnvMap, const samplerCube uSpecularEnvMap, const vec3 diffuseColor, const vec3 specularColor, const float perceptualRoughness, const float NdotV, const vec3 n, const vec3 reflection)
 {
   // retrieve a scale and bias to F0. See [1], Figure 3
   vec3 brdf = SRGBtoLINEAR(texture2D(uBrdfLUT, vec2(NdotV, 1.0 - perceptualRoughness))).rgb;
-  vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
+  vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvMap, n)).rgb;
 
 #ifdef USE_TEX_LOD
-  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, perceptualRoughness * 9.0)).rgb;
+  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvMap, reflection, perceptualRoughness * 9.0)).rgb;
 #else
-  vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
+  vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvMap, reflection)).rgb;
 #endif // USE_TEX_LOD
 
   vec3 diffuse = (diffuseLight * diffuseColor);
@@ -106,20 +106,20 @@ in mat3 vTBN;
 // samplers
 #ifdef HAS_BASECOLORMAP
 #define HAS_ALPHA
-uniform sampler2D uAlbedoSampler;
+uniform sampler2D uAlbedoMap;
 #endif // HAS_BASECOLORMAP
 #ifdef HAS_NORMALMAP
-uniform sampler2D uNormalSampler;
+uniform sampler2D uNormalMap;
 #endif // HAS_NORMALMAP
 #ifdef HAS_ORM
-uniform sampler2D uORMSampler;
+uniform sampler2D uOrmMap;
 #endif // HAS_ORM
 #ifdef HAS_EMISSIVEMAP
-uniform sampler2D uEmissiveSampler;
+uniform sampler2D uEmissiveMap;
 #endif // HAS_EMISSIVEMAP
 #ifdef USE_IBL
-uniform samplerCube uDiffuseEnvSampler;
-uniform samplerCube uSpecularEnvSampler;
+uniform samplerCube uDiffuseEnvMap;
+uniform samplerCube uSpecularEnvMap;
 uniform sampler2D uBrdfLUT;
 #endif // USE_IBL
 
@@ -284,7 +284,7 @@ highp vec3 GetNormal(const vec2 uv)
     highp vec3 n0 = cross(dFdx(vPosition), dFdy(vPosition));
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n1 = texture2D(uNormalSampler, uv, uTexLod).xyz;
+    highp vec3 n1 = texture2D(uNormalMap, uv, uTexLod).xyz;
     vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
     vec3 t = normalize(cross(n0 ,b));
     n1 = normalize(mat3(t, b, n0) * ((2.0 * n1 - 1.0)));
@@ -298,7 +298,7 @@ highp vec3 GetNormal(const vec2 uv)
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 #ifdef HAS_NORMALMAP
-    highp vec3 n = texture2D(uNormalSampler, uv, uTexLod).xyz;
+    highp vec3 n = texture2D(uNormalMap, uv, uTexLod).xyz;
     n = normalize(vTBN * ((2.0 * n - 1.0)));
     return n;
 #else
@@ -317,7 +317,7 @@ vec4 GetAlbedo(const vec2 uv)
     vec4 albedo = SurfaceDiffuseColour.rgba * vColor;
 
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(uAlbedoSampler, uv, uTexLod);
+    albedo *= texture2D(uAlbedoMap, uv, uTexLod);
 #endif
     return SRGBtoLINEAR(albedo);
 }
@@ -328,7 +328,7 @@ vec3 GetORM(const vec2 uv)
 {
     vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
 #ifdef HAS_ORM
-    ORM *= texture2D(uORMSampler, uv, uTexLod).rgb;
+    ORM *= texture2D(uOrmMap, uv, uTexLod).rgb;
 #endif
     return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0));
 }
@@ -338,7 +338,7 @@ vec3 GetORM(const vec2 uv)
 vec3 GetEmission(const vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveSampler, uv, uTexLod).rgb);
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(uEmissiveMap, uv, uTexLod).rgb);
 #else
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
@@ -355,7 +355,7 @@ void main()
 
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-    uv -= (v.xy * (uOffsetScale * texture2D(uNormalSampler, uv, uTexLod).a));
+    uv -= (v.xy * (uOffsetScale * texture2D(uNormalMap, uv, uTexLod).a));
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 
@@ -393,7 +393,6 @@ void main()
     highp vec3 n = GetNormal(uv);
     float NdotV = clamp(dot(n, v), 0.001, 1.0);
     vec3 color = vec3(0.0);
-
 
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -468,7 +467,7 @@ void main()
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     vec3 reflection = -normalize(reflect(v, n));
-    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(uBrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
+    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(uBrdfLUT, uDiffuseEnvMap, uSpecularEnvMap, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
 #else
     ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
 #endif // USE_IBL
