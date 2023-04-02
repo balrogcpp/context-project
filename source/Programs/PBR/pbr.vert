@@ -111,7 +111,7 @@ void main()
 
   vScreenPosition = gl_Position;
   vDepth = gl_Position.z;
-  vPrevScreenPosition = uStaticObj * uWorldViewProjPrev * ModelMatrix * vertex + uMovableObj * uWorldViewProjPrev * vertex;
+  vPrevScreenPosition = uMovableObj > 0.0 ? uWorldViewProjPrev * vertex : uWorldViewProjPrev * ModelMatrix * vertex;
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
