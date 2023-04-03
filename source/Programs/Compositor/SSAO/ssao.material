@@ -113,7 +113,7 @@ material SSAO_mod
 //----------------------------------------------------------------------------------------------------------------------
 fragment_program ssao_filtery_fs glsl glsles
 {
-	source gaussy.frag
+	source ssao_filtery.frag
 
     default_params
     {
@@ -124,7 +124,7 @@ fragment_program ssao_filtery_fs glsl glsles
 
 fragment_program ssao_filterx_fs glsl glsles
 {
-	source gaussx.frag
+	source ssao_filterx.frag
 
     default_params
     {

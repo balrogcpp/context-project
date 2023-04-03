@@ -35,5 +35,5 @@ uniform vec2 TexelSize0;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = Gauss9HR(uColorMap, vUV0, TexelSize0);
+  FragColor.rgb = vec3(Gauss9HR(uColorMap, vUV0, TexelSize0));
 }

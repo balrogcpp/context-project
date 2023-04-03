@@ -478,7 +478,7 @@ void main()
     ambient += GetEmission(uv);
 
     FragData[0] = vec4(color, alpha);
-    FragData[1].x = (vDepth - NearClipDistance) / FarClipDistance;
+    FragData[1].x = (vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     FragData[2].xyz = n;
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);

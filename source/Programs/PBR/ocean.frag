@@ -166,7 +166,7 @@ void main()
 
     FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
     float vDepth = vScreenPosition.z;
-    FragData[1].r = (vDepth - NearClipDistance) / FarClipDistance;
+    FragData[1].r = (vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     FragData[2].xyz = lNormal;
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
@@ -174,5 +174,4 @@ void main()
     vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
     FragData[3].xy = velocity;
     FragData[4].rg = vec2(fresnel, 0.0);
-    // FragData[5].rgb = ambient;
 }
