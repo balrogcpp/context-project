@@ -33,6 +33,16 @@ uniform float NearClipDistance;
 
 
 //----------------------------------------------------------------------------------------------------------------------
+float getDepth(const vec2 uv)
+{
+    float depth = texture(uDepthMap, uv).x;
+    depth = depth * FarClipDistance + NearClipDistance;
+
+    return depth;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 vec3 getPositionFromDepth(const vec2 uv, const float depth)
 {
     vec4 viewSpacePosition = InvProjMatrix * vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
@@ -56,8 +66,9 @@ vec3 getPosition(const vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 {
-    float depth = 0.0;
-    vec4 projectedCoord = vec4(0.0);
+    float depth;
+
+    vec4 projectedCoord;
 
     #define MAX_BIN_SEARCH_COUNT 10
 
@@ -85,7 +96,7 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec2 RayCast(vec3 dir, vec3 hitCoord, float dDepth)
+vec2 RayMarch(vec3 dir, vec3 hitCoord, float dDepth)
 {
     const float step = 0.05;
     dir *= step;
