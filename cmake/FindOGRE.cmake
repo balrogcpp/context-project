@@ -4,12 +4,14 @@ set(OGRE_SOURCE $ENV{OGRE_SOURCE})
 set(OGRE_BUILD $ENV{OGRE_BUILD})
 set(OGRE_DEPENDENCIES_DIR $ENV{OGRE_DEPENDENCIES_DIR})
 set(PROGRAMFILES $ENV{PROGRAMFILES})
+set(PROGRAMFILESX86 "$ENV{ProgramFiles\(x86\)}")
 
 # construct search paths from environmental hints and
 # OS specific guesses
 if (WIN32)
     set(OGRE_PREFIX_GUESSES
-            ${ENV_PROGRAMFILES}/OGRE
+            ${PROGRAMFILES}/OGRE
+            ${PROGRAMFILESX86}/OGRE
             C:/OgreSDK
             )
 elseif (UNIX)
