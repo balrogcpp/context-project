@@ -426,9 +426,8 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   } else if (pass_id == 11) {  // SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
-    Ogre::Matrix4 proj = ogreCamera->getProjectionMatrix();
-    fp->setNamedConstant("ProjMatrix", proj);
-    fp->setNamedConstant("InvProjMatrix", proj.inverse());
+    fp->setNamedConstant("ProjMatrix", ogreCamera->getProjectionMatrix());
+    fp->setNamedConstant("InvProjMatrix", ogreCamera->getProjectionMatrix().inverse());
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setIgnoreMissingParams(false);
 

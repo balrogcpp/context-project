@@ -166,7 +166,7 @@ void main()
         return;
     }
 
-    vec3 normal = vec3(vec4(texture2D(uNormalMap, vUV0).xyz, 1.0) * ViewMatrix);
+    vec3 normal = texture2D(uNormalMap, vUV0).xyz;
     vec3 viewPos = getPosition(vUV0);
 
     vec3 worldPos = vec3(vec4(viewPos, 1.0) * InvViewMatrix);
