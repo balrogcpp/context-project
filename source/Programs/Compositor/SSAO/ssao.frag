@@ -16,7 +16,6 @@ uniform sampler2D uDepthMap;
 uniform sampler2D uNormalMap;
 uniform mat4 ProjMatrix;
 uniform float FarClipDistance;
-uniform float NearClipDistance;
 
 in vec2 vUV0;
 in vec3 vRay;
