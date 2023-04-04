@@ -4,16 +4,6 @@
 // SSAO
 //----------------------------------------------------------------------------------------------------------------------
 
-vertex_program ssao_vp glsl glsles
-{
-	source ssao.vert
-
-	default_params
-	{
-		param_named_auto WorldViewProj worldviewproj_matrix
-	}
-}
-
 fragment_program ssao_fp glsl glsles
 {
 	source ssao.frag
@@ -35,7 +25,7 @@ material SSAO
             depth_check off
             polygon_mode_overrideable false
 
-			vertex_program_ref ssao_vp {}
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
             fragment_program_ref ssao_fp
             {

@@ -15,25 +15,31 @@
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mat4 ProjMatrix;
+uniform mat4 InvProjMatrix;
+uniform mat4 InvViewMatrix;
 uniform float FarClipDistance;
 
 in vec2 vUV0;
-in vec3 vRay;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float noise(const vec2 x)
+vec3 hash(vec3 a)
 {
-  float dt = dot(x, vec2(12.9898, 78.233));
-  float sn = mod(dt, 3.14159265359); //  M_PI
-  return fract(sin(sn) * 43758.5453);
+  a = fract(a * vec3(0.8));
+  a += dot(a, a.yxz + 19.19);
+  return fract((a.xxy + a.yxx) * a. zyx);
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ssaoNoise(const vec2 uv)
+vec3 getPositionFromDepth(const vec2 uv, const float depth)
 {
-  return vec3(noise(uv), noise(uv + vec2(0.1)), noise(uv + vec2(0.2)));
+  vec4 viewSpacePosition = InvProjMatrix * vec4(uv, depth, 1.0);
+
+  // Perspective division (?)
+  //viewSpacePosition /= viewSpacePosition.w;
+
+  return viewSpacePosition.xyz;
 }
 
 
@@ -63,12 +69,13 @@ void main()
   #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
 
   // random normal lookup from a texture and expand to [-1..1]
-  vec3 randN = ssaoNoise(vUV0);
   float depth = texture2D(DepthMap, vUV0).x;
 
   // IN.ray will be distorted slightly due to interpolation
   // it should be normalized here
-  vec3 viewPos = vRay * depth;
+  vec3 viewPos = getPositionFromDepth(vUV0, depth);
+  vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
+  vec3 randN = hash(worldPos);
 
   // By computing Z manually, we lose some accuracy under extreme angles
   // considering this is just for bias, this loss is acceptable
@@ -88,8 +95,8 @@ void main()
       //#define RADIUS 0.2125
       #define RADIUS 0.0525
 
-      vec4 nuv = ProjMatrix * vec4(viewPos.xyz + randomDir * RADIUS, 1.0);
-      nuv.xy /= nuv.w;
+      vec4 nuv = ProjMatrix * vec4(viewPos + randomDir * RADIUS, 1.0);
+      nuv /= nuv.w;
 
       // Compute occlusion based on the (scaled) Z difference
       float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);

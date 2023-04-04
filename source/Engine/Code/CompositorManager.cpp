@@ -421,13 +421,15 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
+    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
+    fp->setNamedConstant("InvViewMatrix", ogreCamera->getProjectionMatrix().inverse());
     fp->setIgnoreMissingParams(false);
 
   } else if (pass_id == 11) {  // SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
-    fp->setNamedConstant("ProjMatrix", ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("InvProjMatrix", ogreCamera->getProjectionMatrix().inverse());
+    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
+    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setIgnoreMissingParams(false);
 
