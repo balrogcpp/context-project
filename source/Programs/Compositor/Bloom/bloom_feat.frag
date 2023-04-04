@@ -90,19 +90,19 @@ vec3 HaloFeatures(const sampler2D tex, const vec2 _uv, const vec2 texel, const i
 
 in vec2 vUV0;
 
-uniform sampler2D uColorMap;
+uniform sampler2D ColorMap;
 uniform vec2 TexelSize0;
-uniform float uChromaticRadius;
-uniform int uFeaturesCount;
+uniform float ChromaticRadius;
+uniform int FeaturesCount;
 
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(uColorMap, vUV0).rgb;
-  color += GhostFeatures(uColorMap, vUV0, TexelSize0, uFeaturesCount, uChromaticRadius);
-  color += HaloFeatures(uColorMap, vUV0, TexelSize0, uFeaturesCount, uChromaticRadius);
+  vec3 color = texture2D(ColorMap, vUV0).rgb;
+  color += GhostFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
+  color += HaloFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
 
   FragColor.rgb = color;
 }

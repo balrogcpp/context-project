@@ -23,8 +23,8 @@ material Ambient
 
 			fragment_program_ref Ambient_fs
 			{
-                param_named uColorMap int 0
-                param_named uAmbientMap int 1
+                param_named ColorMap int 0
+                param_named AmbientMap int 1
 			}
 
 			texture_unit Color

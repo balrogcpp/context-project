@@ -57,7 +57,7 @@ material Ocean
 
             fragment_program_ref Ocean_fs
             {
-                param_named uNormapMap int 0
+                param_named NormapMap int 0
             }
 
             texture_unit Normal

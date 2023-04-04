@@ -10,8 +10,8 @@ fragment_program fbo_fs glsl glsles
 
     default_params
     {
-        param_named uColorMap int 0
-        param_named uDepthMap int 1
+        param_named ColorMap int 0
+        param_named DepthMap int 1
     }
 }
 
@@ -57,11 +57,11 @@ fragment_program rays_fs glsl glsles
 
     default_params
     {
-        param_named uRayCount int 100
-        param_named uDecay float 0.96815
-        param_named uExposure float 0.0034
-        param_named uDensity float 0.84
-        param_named uWeight float 5.65
+        param_named RayCount int 100
+        param_named Decay float 0.96815
+        param_named Exposure float 0.0034
+        param_named Density float 0.84
+        param_named Weight float 5.65
     }
 }
 
@@ -80,7 +80,7 @@ material Rays
 
             fragment_program_ref rays_fs
             {
-                param_named uFboMap int 0
+                param_named FboMap int 0
             }
 
             texture_unit FBO
@@ -104,8 +104,8 @@ fragment_program rays_mod_fs glsl glsles
 
     default_params
     {
-        param_named uColorMap int 0
-        param_named uFboMap int 1
+        param_named ColorMap int 0
+        param_named FboMap int 1
     }
 }
 

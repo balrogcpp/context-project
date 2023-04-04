@@ -313,8 +313,8 @@ material Add
 
 			fragment_program_ref add_fs
 			{
-                param_named uRT int 0
-                param_named uRT0 int 1
+                param_named RT int 0
+                param_named RT0 int 1
 			}
 
 			texture_unit RT

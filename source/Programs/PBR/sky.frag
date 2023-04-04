@@ -17,9 +17,9 @@
 #include "srgb.glsl"
 
 
-uniform vec3 uSunDirection;
-uniform float uSunSize;
-uniform vec3 uSunColor;
+uniform vec3 SunDirection;
+uniform float SunSize;
+uniform vec3 SunColor;
 uniform vec3 A;
 uniform vec3 B;
 uniform vec3 C;
@@ -30,7 +30,7 @@ uniform vec3 G;
 uniform vec3 H;
 uniform vec3 I;
 uniform vec3 Z;
-uniform samplerCube uCubeMap;
+uniform samplerCube CubeMap;
 
 
 in highp vec3 vPosition;
@@ -49,7 +49,7 @@ vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 void main()
 {
     highp vec3 V = normalize(vPosition);
-    highp vec3 N = normalize(-uSunDirection);
+    highp vec3 N = normalize(-SunDirection);
     highp float cos_theta = clamp(V.y, 0.0, 1.0);
     highp float cos_gamma = dot(V, N);
     highp float gamma = acos(cos_gamma);
@@ -59,7 +59,7 @@ void main()
     color = expose(color, 0.1);
     color = SRGBtoLINEAR(color);
 
-    if (gamma <= uSunSize) color += uSunColor;
+    if (gamma <= SunSize) color += SunColor;
 
     FragData[0].rgb = color;
     FragData[1].r = 1.0;

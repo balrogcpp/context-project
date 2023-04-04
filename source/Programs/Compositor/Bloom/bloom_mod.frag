@@ -13,8 +13,8 @@
 #include "math.glsl"
 
 
-//----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
+//----------------------------------------------------------------------------------------------------------------------
 vec3 Upscale3x3(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
   vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
@@ -36,19 +36,19 @@ vec3 Upscale3x3(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
 
 in vec2 vUV0;
-uniform sampler2D uRT;
-uniform sampler2D uRT0;
+uniform sampler2D RT;
+uniform sampler2D RT0;
 uniform vec2 TexelSize1;
-uniform float uMipCount;
+uniform float MipCount;
 
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 rt = texture2D(uRT, vUV0).rgb;
-  vec3 rt0 = Upscale3x3(uRT0, vUV0, TexelSize1);
-  float w = 1.0 / uMipCount;
+  vec3 rt = texture2D(RT, vUV0).rgb;
+  vec3 rt0 = Upscale3x3(RT0, vUV0, TexelSize1);
+  float w = 1.0 / MipCount;
 #ifdef GL_ES
   w *= 2.0;
 #endif

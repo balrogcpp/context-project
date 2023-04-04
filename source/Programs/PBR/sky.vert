@@ -14,7 +14,7 @@
 #include "header.vert"
 
 
-uniform highp mat4 worldViewProj;
+uniform highp mat4 WorldViewProj;
 
 
 in highp vec4 position;
@@ -30,5 +30,5 @@ void main()
 {
     vUV0 = uv0.xyz;
     vPosition = position.xyz;
-    gl_Position = worldViewProj * position;
+    gl_Position = WorldViewProj * position;
 }

@@ -39,8 +39,8 @@ material SSAO
 
             fragment_program_ref ssao_fp
             {
-                param_named uDepthMap int 0
-                param_named uNormalMap int 1
+                param_named DepthMap int 0
+                param_named NormalMap int 1
             }
 
             texture_unit DepthMap
@@ -84,8 +84,8 @@ material SSAO_mod
 
             fragment_program_ref SSAO_mod_fp
             {
-                param_named uColorMap int 0
-                param_named uSsaoMap int 1
+                param_named ColorMap int 0
+                param_named SsaoMap int 1
             }
 
             texture_unit Color
@@ -116,7 +116,7 @@ fragment_program ssao_filtery_fs glsl glsles
 
     default_params
     {
-        param_named uColorMap int 0
+        param_named ColorMap int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -127,7 +127,7 @@ fragment_program ssao_filterx_fs glsl glsles
 
     default_params
     {
-        param_named uColorMap int 0
+        param_named ColorMap int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }

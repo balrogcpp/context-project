@@ -14,8 +14,8 @@
 
 
 in vec2 vUV0;
-uniform sampler2D uColorMap;
-uniform sampler2D uDepthMap;
+uniform sampler2D ColorMap;
+uniform sampler2D DepthMap;
 uniform vec3 FogColour;
 uniform vec4 FogParams;
 uniform float FarClipDistance;
@@ -25,8 +25,8 @@ uniform float NearClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(uColorMap, vUV0).rgb;
-  float clampedDepth = texture2D(uDepthMap, vUV0).x;
+  vec3 color = texture2D(ColorMap, vUV0).rgb;
+  float clampedDepth = texture2D(DepthMap, vUV0).x;
   if (clampedDepth > 0.5)
   {
     FragColor.rgb = color;

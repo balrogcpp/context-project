@@ -31,8 +31,8 @@ material Fog
 
 			fragment_program_ref Fog_fs
 			{
-                param_named uColorMap int 0
-                param_named uDepthMap int 1
+                param_named ColorMap int 0
+                param_named DepthMap int 1
 			}
 
 			texture_unit Color

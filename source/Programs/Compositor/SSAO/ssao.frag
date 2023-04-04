@@ -12,8 +12,8 @@
 #include "header.frag"
 
 
-uniform sampler2D uDepthMap;
-uniform sampler2D uNormalMap;
+uniform sampler2D DepthMap;
+uniform sampler2D NormalMap;
 uniform mat4 ProjMatrix;
 uniform float FarClipDistance;
 
@@ -64,7 +64,7 @@ void main()
 
   // random normal lookup from a texture and expand to [-1..1]
   vec3 randN = ssaoNoise(vUV0);
-  float depth = texture2D(uDepthMap, vUV0).x;
+  float depth = texture2D(DepthMap, vUV0).x;
 
   // IN.ray will be distorted slightly due to interpolation
   // it should be normalized here
@@ -72,7 +72,7 @@ void main()
 
   // By computing Z manually, we lose some accuracy under extreme angles
   // considering this is just for bias, this loss is acceptable
-  vec3 viewNorm = texture2D(uNormalMap, vUV0).xyz;
+  vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
 
   // Accumulated occlusion factor
   float occ = 0.0;
@@ -92,7 +92,7 @@ void main()
       nuv.xy /= nuv.w;
 
       // Compute occlusion based on the (scaled) Z difference
-      float zd = clamp(FarClipDistance * (depth - texture2D(uDepthMap, nuv.xy).x), 0.0, 1.0);
+      float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);
       // This is a sample occlusion function, you can always play with
       // other ones, like 1.0 / (1.0 + zd * zd) and stuff
       occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);

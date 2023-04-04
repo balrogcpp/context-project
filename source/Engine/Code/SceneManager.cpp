@@ -356,15 +356,13 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
       rend->setUserAny(viewProj * MVP);
 
       if (value.has_value()) {
-        vp->setNamedConstant("uWorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
-        vp->setNamedConstant("uStaticObj", Ogre::Real(0.0));
-        vp->setNamedConstant("uMovableObj", Ogre::Real(1.0));
+        vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
+        vp->setNamedConstant("MovableObj", Ogre::Real(1.0));
       }
 
     } else {
-      vp->setNamedConstant("uWorldViewProjPrev", viewProjPrev);
-      vp->setNamedConstant("uStaticObj", Ogre::Real(1.0));
-      vp->setNamedConstant("uMovableObj", Ogre::Real(0.0));
+      vp->setNamedConstant("WorldViewProjPrev", viewProjPrev);
+      vp->setNamedConstant("MovableObj", Ogre::Real(0.0));
     }
   }
 
@@ -374,12 +372,11 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend)) {}
 
   else {
-    vp->setNamedConstant("uWorldViewProjPrev", viewProjPrev);
-    vp->setNamedConstant("uStaticObj", Ogre::Real(1.0));
-    vp->setNamedConstant("uMovableObj", Ogre::Real(0.0));
+    vp->setNamedConstant("WorldViewProjPrev", viewProjPrev);
+    vp->setNamedConstant("MovableObj", Ogre::Real(0.0));
   }
 
-  fp->setNamedConstant("uPssmSplitPoints", pssmPoints);
+  fp->setNamedConstant("PssmSplitPoints", pssmPoints);
 
   vp->setIgnoreMissingParams(false);
   fp->setIgnoreMissingParams(false);

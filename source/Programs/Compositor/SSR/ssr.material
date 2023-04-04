@@ -29,10 +29,10 @@ material SSR
 
             fragment_program_ref ssr_fp
             {
-                param_named uDepthMap int 0
-                param_named uNormalMap int 1
-                param_named uNormalMap2 int 2
-                param_named uColorMap int 3
+                param_named DepthMap int 0
+                param_named NormalMap int 1
+                param_named NormalMap2 int 2
+                param_named ColorMap int 3
             }
 
             texture_unit Depth

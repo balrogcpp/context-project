@@ -9,7 +9,7 @@ fragment_program Output_fs glsl glsles
 
 	default_params
 	{
-		param_named uExposure float 1.0
+		param_named Exposure float 1.0
 	}
 }
 
@@ -27,7 +27,7 @@ material Output
 
 			fragment_program_ref Output_fs
 			{
-                param_named uColorMap int 0
+                param_named ColorMap int 0
 			}
 
 			texture_unit RT

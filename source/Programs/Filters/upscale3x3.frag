@@ -12,11 +12,11 @@
 #include "filters.glsl"
 
 in vec2 vUV0;
-uniform sampler2D uRT;
+uniform sampler2D RT;
 uniform vec2 TexelSize0;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = Upscale3x3(uRT, vUV0, TexelSize0);
+  FragColor.rgb = Upscale3x3(RT, vUV0, TexelSize0);
 }

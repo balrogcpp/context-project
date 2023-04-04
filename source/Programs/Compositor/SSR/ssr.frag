@@ -16,10 +16,10 @@ precision highp float;
 
 in vec2 vUV0;
 
-uniform sampler2D uDepthMap;
-uniform sampler2D uNormalMap;
-uniform sampler2D uNormalMap2;
-uniform sampler2D uColorMap;
+uniform sampler2D DepthMap;
+uniform sampler2D NormalMap;
+uniform sampler2D NormalMap2;
+uniform sampler2D ColorMap;
 
 uniform mat4 ProjMatrix;
 uniform mat4 InvProjMatrix;
@@ -35,7 +35,7 @@ uniform float NearClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 float getDepth(const vec2 uv)
 {
-    float depth = texture(uDepthMap, uv).x;
+    float depth = texture(DepthMap, uv).x;
     depth = depth * FarClipDistance + NearClipDistance;
 
     return depth;
@@ -57,7 +57,7 @@ vec3 getPositionFromDepth(const vec2 uv, const float depth)
 //----------------------------------------------------------------------------------------------------------------------
 vec3 getPosition(const vec2 uv)
 {
-    float depth = texture(uDepthMap, uv).x;
+    float depth = texture(DepthMap, uv).x;
 
     return getPositionFromDepth(uv, depth);
 }
@@ -157,16 +157,16 @@ vec3 fresnelSchlick(const float cosTheta, const vec3 F)
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec2 ssr = texture2D(uNormalMap2, vUV0).rg;
+    vec2 ssr = texture2D(NormalMap2, vUV0).rg;
     float reflectionStrength = ssr.r;
 
     if (reflectionStrength < F0)
     {
-        FragColor.rgb = texture2D(uColorMap, vUV0).rgb;
+        FragColor.rgb = texture2D(ColorMap, vUV0).rgb;
         return;
     }
 
-    vec3 normal = texture2D(uNormalMap, vUV0).xyz;
+    vec3 normal = texture2D(NormalMap, vUV0).xyz;
     vec3 viewPos = getPosition(vUV0);
 
     vec3 worldPos = vec3(vec4(viewPos, 1.0) * InvViewMatrix);
@@ -189,14 +189,14 @@ void main()
 
     float fresnel = Fresnel(reflected, normal);
 
-    vec3 color = texture2D(uColorMap, coords.xy).rgb * error * fresnel;
+    vec3 color = texture2D(ColorMap, coords.xy).rgb * error * fresnel;
 
     if (coords.xy != vec2(-1.0))
     {
-        FragColor.rgb = mix(texture2D(uColorMap, vUV0), vec4(color, 1.0), reflectionStrength).rgb;
+        FragColor.rgb = mix(texture2D(ColorMap, vUV0), vec4(color, 1.0), reflectionStrength).rgb;
     }
     else
     {
-        FragColor.rgb = mix(texture2D(uColorMap, vUV0), vec4(vec3(0.0, 0.5, 0.0), 1.0), reflectionStrength).rgb;
+        FragColor.rgb = mix(texture2D(ColorMap, vUV0), vec4(vec3(0.0, 0.5, 0.0), 1.0), reflectionStrength).rgb;
     }
 }

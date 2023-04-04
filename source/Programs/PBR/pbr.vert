@@ -21,13 +21,12 @@
 // uniform block
 uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
-uniform highp mat4 uWorldViewProjPrev;
-uniform lowp float uStaticObj;
-uniform lowp float uMovableObj;
+uniform highp mat4 WorldViewProjPrev;
+uniform lowp float MovableObj;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
 uniform highp vec4 CameraPosition;
-uniform float uFadeRange;
+uniform float FadeRange;
 #endif // PAGED_GEOMETRY
 #ifdef SHADOWRECEIVER
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
@@ -111,7 +110,7 @@ void main()
 
   vScreenPosition = gl_Position;
   vDepth = gl_Position.z;
-  vPrevScreenPosition = uMovableObj > 0.0 ? uWorldViewProjPrev * vertex : uWorldViewProjPrev * ModelMatrix * vertex;
+  vPrevScreenPosition = MovableObj > 0.0 ? WorldViewProjPrev * vertex : WorldViewProjPrev * ModelMatrix * vertex;
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0

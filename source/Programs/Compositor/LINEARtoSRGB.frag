@@ -14,14 +14,14 @@
 
 
 in vec2 vUV0;
-uniform sampler2D uColorMap;
-uniform float uExposure;
+uniform sampler2D ColorMap;
+uniform float Exposure;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(uColorMap, vUV0).rgb;
-  color = expose(color, uExposure);
-  FragColor.rgb = LINEARtoSRGB(color, uExposure);
+  vec3 color = texture2D(ColorMap, vUV0).rgb;
+  color = expose(color, Exposure);
+  FragColor.rgb = LINEARtoSRGB(color, Exposure);
 }

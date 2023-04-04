@@ -11,7 +11,7 @@ fragment_program FXAA_fs glsl glsles
 
 	default_params
 	{
-        param_named uScale float 4.0
+        param_named Scale float 4.0
 	}
 }
 
@@ -29,7 +29,7 @@ material FXAA
 
 			fragment_program_ref FXAA_fs
 			{
-                param_named uColorMap int 0
+                param_named ColorMap int 0
 
                 param_named_auto TexelSize0 inverse_texture_size 0
 			}

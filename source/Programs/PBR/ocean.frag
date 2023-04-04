@@ -22,7 +22,7 @@ in highp vec3 vPosition;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
 
-uniform sampler2D uNormapMap;
+uniform sampler2D NormapMap;
 uniform highp vec3 CameraPosition;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
@@ -77,19 +77,19 @@ void main()
     float normalFade = 1 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
-    vec3 normal0 = 2.0 * texture2D(uNormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
+    vec3 normal0 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
-    vec3 normal1 = 2.0 * texture2D(uNormapMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
+    vec3 normal1 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
 
     nCoord = vPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
-    vec3 normal2 = 2.0 * texture2D(uNormapMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
+    vec3 normal2 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
-    vec3 normal3 = 2.0 * texture2D(uNormapMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
+    vec3 normal3 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
 
     nCoord = vPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
-    vec3 normal4 = 2.0 * texture2D(uNormapMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
+    vec3 normal4 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
-    vec3 normal5 = 2.0 * texture2D(uNormapMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
+    vec3 normal5 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
 
     vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y +
                             normal2 * MidWaves.x + normal3 * MidWaves.y +

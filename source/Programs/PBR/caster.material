@@ -20,7 +20,7 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
 
 	default_params
 	{
-	    param_named uAlbedoMap int 0
+	    param_named AlbedoMap int 0
 	    param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
 	}
 }
@@ -67,6 +67,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles
 fragment_program PSSM/shadow_caster_fs glsl glsles
 {
 	source caster.frag
+	
 	preprocessor_defines SHADOWCASTER
 }
 

@@ -6,7 +6,7 @@ fragment_program gauss_filtery_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -17,7 +17,7 @@ fragment_program gauss_filterx_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -28,7 +28,7 @@ fragment_program box_filter_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -39,7 +39,7 @@ fragment_program downscale4x4_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -50,7 +50,7 @@ fragment_program downscale2x2_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -61,7 +61,7 @@ fragment_program downscale_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
     }
 }
 
@@ -71,7 +71,7 @@ fragment_program upscale2x2_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -82,7 +82,7 @@ fragment_program upscale3x3_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
         param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
@@ -93,7 +93,7 @@ fragment_program upscale_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
     }
 }
 
@@ -103,6 +103,6 @@ fragment_program bypass_fs glsl glsles
 
     default_params
     {
-        param_named uRT int 0
+        param_named RT int 0
     }
 }

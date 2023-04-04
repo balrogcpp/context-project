@@ -22,15 +22,15 @@ vec3 Threshold(const vec3 color, const float threshold)
 
 
 in vec2 vUV0;
-uniform sampler2D uColorMap;
+uniform sampler2D ColorMap;
 uniform vec2 TexelSize0;
-uniform float uThreshhold;
+uniform float Threshhold;
 
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = Downscale13T(uColorMap, vUV0, TexelSize0);
-  FragColor.rgb = Threshold(color, uThreshhold);
+  vec3 color = Downscale13T(ColorMap, vUV0, TexelSize0);
+  FragColor.rgb = Threshold(color, Threshhold);
 }

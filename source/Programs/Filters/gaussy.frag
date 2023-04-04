@@ -14,12 +14,12 @@
 
 
 in vec2 vUV0;
-uniform sampler2D uRT;
+uniform sampler2D RT;
 uniform vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = Gauss9V(uRT, vUV0, TexelSize0);
+  FragColor.rgb = Gauss9V(RT, vUV0, TexelSize0);
 }
