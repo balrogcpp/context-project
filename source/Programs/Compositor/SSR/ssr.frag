@@ -34,10 +34,7 @@ uniform float NearClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 float getDepth(const vec2 uv)
 {
-  float depth = texture2D(DepthMap, uv).x;
-  depth = depth * FarClipDistance + NearClipDistance;
-
-  return depth;
+  return FarClipDistance * texture2D(DepthMap, uv).x + NearClipDistance;
 }
 
 
@@ -56,9 +53,7 @@ vec3 getPositionFromDepth(const vec2 uv, const float depth)
 //----------------------------------------------------------------------------------------------------------------------
 vec3 getPosition(const vec2 uv)
 {
-  float depth = texture2D(DepthMap, uv).x;
-
-  return getPositionFromDepth(uv, depth);
+  return getPositionFromDepth(uv, texture2D(DepthMap, uv).x);
 }
 
 
@@ -97,8 +92,8 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 //----------------------------------------------------------------------------------------------------------------------
 vec2 RayMarch(vec3 dir, vec3 hitCoord, float dDepth)
 {
-  const float step = 0.05;
-  dir *= step;
+  #define STEP 0.05
+  dir *= STEP;
 
   #define MAX_RAY_MARCH_COUNT 30
 
@@ -175,15 +170,16 @@ void main()
   vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal)));
 
   // Ray cast
+  #define MIN_RAY_STEP 0.2
+  #define LLIMITER 0.1
+
   vec3 hitPos = viewPos;
   float dDepth;
-  const float minRayStep = 0.2;
-  const float step = 0.05;
-  vec2 coords = RayMarch(jitt + reflected * max(minRayStep, -viewPos.z), hitPos, dDepth);
 
-  const float llimiter = 0.1;
+  vec2 coords = RayMarch(jitt + reflected * max(MIN_RAY_STEP, -viewPos.z), hitPos, dDepth);
+
   float L = length(getPosition(coords) - viewPos);
-  L = clamp(L * llimiter, 0.0, 1.0);
+  L = clamp(L * LLIMITER, 0.0, 1.0);
   float error = 1.0 - L;
 
   float fresnel = Fresnel(reflected, normal);
