@@ -166,7 +166,7 @@ void main()
 
     FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
     float vDepth = vScreenPosition.z;
-    FragData[1].r = (vDepth - NearClipDistance) / FarClipDistance;
+    FragData[1].r = (vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     FragData[2].xyz = lNormal;
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
