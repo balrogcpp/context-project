@@ -6,6 +6,7 @@
 fragment_program ssr_fp glsl glsles
 {
 	source ssr.frag
+
 	default_params
 	{
         param_named_auto FarClipDistance far_clip_distance
