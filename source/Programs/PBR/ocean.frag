@@ -15,7 +15,6 @@
 #include "header.frag"
 #include "math.glsl"
 #include "srgb.glsl"
-precision highp float;
 
 
 in highp vec3 vPosition;
@@ -74,7 +73,7 @@ void main()
 {
     bool aboveWater = CameraPosition.y > 0.0;
 
-    float normalFade = 1 - min(exp(-vScreenPosition.w / 40.0), 1.0);
+    float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
     vec3 normal0 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;

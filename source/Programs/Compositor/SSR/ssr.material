@@ -31,7 +31,7 @@ material SSR
             {
                 param_named DepthMap int 0
                 param_named NormalMap int 1
-                param_named NormalMap2 int 2
+                param_named GlossMap int 2
                 param_named ColorMap int 3
             }
 
@@ -49,7 +49,7 @@ material SSR
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit RM
+            texture_unit Gloss
             {
                 texture black.dds
                 tex_coord_set 0
