@@ -10,16 +10,13 @@
 
 
 #include "header.frag"
-#include "math.glsl"
 
 
 in vec2 vUV0;
-
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
 uniform sampler2D ColorMap;
-
 uniform mat4 ProjMatrix;
 uniform mat4 InvProjMatrix;
 uniform mat4 InvViewMatrix;
@@ -32,19 +29,13 @@ uniform float NearClipDistance;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float getDepth(const vec2 uv)
-{
-  return FarClipDistance * texture2D(DepthMap, uv).x + NearClipDistance;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
 vec3 getPositionFromDepth(const vec2 uv, const float depth)
 {
-  vec4 viewSpacePosition = InvProjMatrix * vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+  //vec4 viewSpacePosition = InvProjMatrix * vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+  vec4 viewSpacePosition = InvProjMatrix * vec4(uv, depth, 1.0);
 
   // Perspective division
-  viewSpacePosition /= viewSpacePosition.w;
+  //viewSpacePosition /= viewSpacePosition.w;
 
   return viewSpacePosition.xyz;
 }
@@ -54,6 +45,15 @@ vec3 getPositionFromDepth(const vec2 uv, const float depth)
 vec3 getPosition(const vec2 uv)
 {
   return getPositionFromDepth(uv, texture2D(DepthMap, uv).x);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+float getDepth(const vec2 uv)
+{
+  //return FarClipDistance * texture2D(DepthMap, uv).x + NearClipDistance;
+  return getPosition(uv).z;
+  //return texture2D(DepthMap, uv).x;
 }
 
 
@@ -70,7 +70,7 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
   {
     projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
     projectedCoord.xy /= projectedCoord.w;
-    projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+    //projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
     depth = getDepth(projectedCoord.xy);
 
@@ -83,7 +83,7 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 
   projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
   projectedCoord.xy /= projectedCoord.w;
-  projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+  //projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
   return vec2(projectedCoord.xy);
 }
@@ -103,7 +103,7 @@ vec2 RayMarch(vec3 dir, vec3 hitCoord, float dDepth)
 
     vec4 projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
     projectedCoord.xy /= projectedCoord.w;
-    projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+    //projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
     float depth = getDepth(projectedCoord.xy);
     dDepth = hitCoord.z - depth;
@@ -154,16 +154,17 @@ void main()
   vec2 ssr = texture2D(GlossMap, vUV0).rg;
   float reflectionStrength = ssr.r;
 
-  if (reflectionStrength < F0)
+  if (reflectionStrength < 0.04)
   {
     FragColor.rgb = texture2D(ColorMap, vUV0).rgb;
     return;
   }
 
   vec3 normal = texture2D(NormalMap, vUV0).xyz;
+  //vec3 normal = vec3(InvViewMatrix * vec4(texture2D(NormalMap, vUV0).xyz, 1.0));
   vec3 viewPos = getPosition(vUV0);
 
-  vec3 worldPos = vec3(vec4(viewPos, 1.0) * InvViewMatrix);
+  vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
   vec3 jitt = hash(worldPos) * ssr.g;
 
   // Reflection vector

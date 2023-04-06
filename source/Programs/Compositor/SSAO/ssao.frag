@@ -12,14 +12,13 @@
 #include "header.frag"
 
 
+in vec2 vUV0;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mat4 ProjMatrix;
 uniform mat4 InvProjMatrix;
 uniform mat4 InvViewMatrix;
 uniform float FarClipDistance;
-
-in vec2 vUV0;
 
 
 //----------------------------------------------------------------------------------------------------------------------

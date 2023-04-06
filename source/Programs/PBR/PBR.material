@@ -141,9 +141,9 @@ abstract material Paged : PBR
     {
         pass
         {
-            vertex_program_ref Paged_vs {}
+            vertex_program_ref PG_vs {}
 
-            fragment_program_ref Paged_fs {}
+            fragment_program_ref PG_fs {}
         }
     }
 }

@@ -105,9 +105,9 @@ fragment_program IBL_fs glsl glsles : PBR_I_fs
 //----------------------------------------------------------------------------------------------------------------------
 // PAGED_GEOMETRY
 //----------------------------------------------------------------------------------------------------------------------
-vertex_program Paged_vs glsl glsles : PBR_I_vs
+vertex_program PG_vs glsl glsles : PBR_I_vs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER,PAGED_GEOMETRY
 }
 
-fragment_program Paged_fs glsl glsles : PBR_I_fs {}
+fragment_program PG_fs glsl glsles : PBR_I_fs {}

@@ -24,7 +24,7 @@
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
 //----------------------------------------------------------------------------------------------------------------------
-vec3 Diffuse(const vec3 diffuseColor)
+mediump vec3 Diffuse(const vec3 diffuseColor)
 {
     return diffuseColor / M_PI;
 }
@@ -33,7 +33,7 @@ vec3 Diffuse(const vec3 diffuseColor)
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
 //----------------------------------------------------------------------------------------------------------------------
-vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const float VdotH)
+mediump vec3 SpecularReflection(const mediump vec3 reflectance0, const mediump vec3 reflectance90, const mediump float VdotH)
 {
     return reflectance0 + (reflectance90 - reflectance0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
 }
@@ -44,12 +44,12 @@ vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const
 // This implementation is based on [1] Equation 4, and we adopt their modifications to
 // alphaRoughness as input as originally proposed in [2].
 //----------------------------------------------------------------------------------------------------------------------
-float GeometricOcclusion(const float NdotL, const float NdotV, const float r)
+mediump float GeometricOcclusion(const mediump float NdotL, const mediump float NdotV, const mediump float r)
 {
-    float r2 = (r * r);
-    float r3 = (1.0 - r2);
-    float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
-    float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
+    mediump float r2 = (r * r);
+    mediump float r3 = (1.0 - r2);
+    mediump float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
+    mediump float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
     return attenuationL * attenuationV;
 }
 
@@ -67,31 +67,44 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
 
 
 #ifdef USE_IBL
+// https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
+//----------------------------------------------------------------------------------------------------------------------
+mediump vec3 envBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
+{
+    const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
+    const mediump vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
+    const mediump vec4 r = roughness * c0 + c1;
+    mediump float a004 = min(r.x * r.x, exp2( -9.28 * NdotV )) * r.x + r.y;
+    mediump vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
+    return specularColor * AB.x + AB.y;
+}
+
+
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetIBLContribution(const sampler2D BrdfLUT, const samplerCube DiffuseEnvMap, const samplerCube SpecularEnvMap, const vec3 diffuseColor, const vec3 specularColor, const float perceptualRoughness, const float NdotV, const vec3 n, const vec3 reflection)
+mediump vec3 GetIBLContribution(const sampler2D BrdfLUT, const samplerCube DiffuseEnvMap, const samplerCube SpecularEnvMap, const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
 {
-  // retrieve a scale and bias to F0. See [1], Figure 3
-  vec3 brdf = SRGBtoLINEAR(texture2D(BrdfLUT, vec2(NdotV, 1.0 - perceptualRoughness))).rgb;
-  vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n)).rgb;
+    // retrieve a scale and bias to F0. See [1], Figure 3
+    mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
+    mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n)).rgb;
 
 #ifdef USE_TEX_LOD
-  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0)).rgb;
+    mediump vec3 specularLight = SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0)).rgb;
 #else
-  vec3 specularLight = SRGBtoLINEAR(textureCube(SpecularEnvMap, reflection)).rgb;
+    mediump vec3 specularLight = SRGBtoLINEAR(textureCube(SpecularEnvMap, reflection)).rgb;
 #endif // USE_TEX_LOD
 
-  vec3 diffuse = (diffuseLight * diffuseColor);
-  vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
+    mediump vec3 diffuse = (diffuseLight * diffuseColor);
+    mediump vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
 
-  return diffuse + specular;
+    return diffuse + specular;
 }
 #endif // USE_IBL
 
 
-// ins
+// varyings
 in highp vec3 vPosition;
 in highp vec2 vUV0;
 in float vDepth;
@@ -100,10 +113,7 @@ in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
 in mat3 vTBN;
 
-
 // uniforms
-
-// samplers
 #ifdef HAS_BASECOLORMAP
 #define HAS_ALPHA
 uniform sampler2D AlbedoMap;
@@ -122,7 +132,6 @@ uniform samplerCube DiffuseEnvMap;
 uniform samplerCube SpecularEnvMap;
 uniform sampler2D BrdfLUT;
 #endif // USE_IBL
-
 
 // lights
 uniform highp vec3 CameraPosition;
@@ -151,7 +160,6 @@ uniform float TexLod;
 #define HAS_PARALLAXMAP
 uniform float OffsetScale;
 #endif // HAS_NORMALMAP
-
 
 // shadow receiver
 #ifdef SHADOWRECEIVER
@@ -259,7 +267,8 @@ float CalcPSSMDepthShadow(const vec4 PssmSplitPoints, const vec4 lightSpacePos0,
 float GetPSSMShadow(const int number)
 {
     //  special case, as only light #0 can be with pssm shadows
-    if (LightAttenuationArray[0].x > 10000.0) {
+    if (LightAttenuationArray[0].x > 10000.0)
+    {
         if (number == 0)
             return CalcPSSMDepthShadow(PssmSplitPoints, \
                                     vLightSpacePosArray[0], vLightSpacePosArray[1], vLightSpacePosArray[2], \
@@ -286,7 +295,7 @@ highp vec3 GetNormal(const vec2 uv)
 #ifdef HAS_NORMALMAP
     highp vec3 n1 = texture2D(NormalMap, uv, TexLod).xyz;
     vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(n0 ,b));
+    vec3 t = normalize(cross(n0, b));
     n1 = normalize(mat3(t, b, n0) * ((2.0 * n1 - 1.0)));
     return n1;
 #else
@@ -363,10 +372,8 @@ void main()
     float alpha = s.a;
 
 #ifdef HAS_ALPHA
-    if (SurfaceAlphaRejection > 0.0) {
-        if (alpha < SurfaceAlphaRejection) {
-            discard;
-        }
+    if (SurfaceAlphaRejection > 0.0 && alpha < SurfaceAlphaRejection) {
+        discard;
     }
 #endif
 
