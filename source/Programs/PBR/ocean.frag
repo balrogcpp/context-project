@@ -48,7 +48,7 @@ uniform float ScatterFade;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float FresnelDielectric(const vec3 Incoming, const vec3 Normal, const float eta)
+float fresnelDielectric(const vec3 Incoming, const vec3 Normal, const float eta)
 {
     // compute fresnel reflectance without explicitly computing
     // the refracted direction
@@ -112,7 +112,7 @@ void main()
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
-    float fresnel = FresnelDielectric(-vVec, nVec, ior);
+    float fresnel = fresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
     vec3 reflection = vec3(1.0);
@@ -152,13 +152,9 @@ void main()
 
     vec3 color = vec3(0.0);
 
-    if (aboveWater)
-    {
+    if (aboveWater) {
         color = mix(refraction, reflection, fresnel * 0.6);
-    }
-    // scatter and extinction between surface and camera
-    else
-    {
+    } else {
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }

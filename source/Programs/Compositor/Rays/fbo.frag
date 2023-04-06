@@ -19,12 +19,11 @@ uniform sampler2D ColorMap;
 uniform sampler2D DepthMap;
 
 
-
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(ColorMap, vUV0).rgb;
-  color /= (1.0 + luminance((color)));
-  float depth = texture2D(DepthMap, vUV0).x;
-  FragColor.rgb = bigger(depth, 0.5) * color;
+    vec3 color = texture2D(ColorMap, vUV0).rgb;
+    color /= (1.0 + luminance((color)));
+    float depth = texture2D(DepthMap, vUV0).x;
+    FragColor.rgb = bigger(depth, 0.5) * color;
 }

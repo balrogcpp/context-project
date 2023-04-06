@@ -35,4 +35,5 @@ vec3 ApplyFog(const vec3 color, const vec4 fog_params, const vec3 fog_color, con
     return mix(color, fog_color, fog_factor);
 }
 
+
 #endif // FOG_GLSL

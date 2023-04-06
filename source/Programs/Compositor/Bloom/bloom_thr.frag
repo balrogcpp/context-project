@@ -17,7 +17,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Threshold(const vec3 color, const float threshold)
 {
-  return max(color - vec3(threshold), vec3(0.0));
+    return max(color - vec3(threshold), vec3(0.0));
 }
 
 
@@ -27,10 +27,9 @@ uniform vec2 TexelSize0;
 uniform float Threshhold;
 
 
-
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = Downscale13T(ColorMap, vUV0, TexelSize0);
-  FragColor.rgb = Threshold(color, Threshhold);
+    vec3 color = Downscale13T(ColorMap, vUV0, TexelSize0);
+    FragColor.rgb = Threshold(color, Threshhold);
 }

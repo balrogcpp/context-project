@@ -25,14 +25,15 @@ uniform float NearClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(ColorMap, vUV0).rgb;
-  float clampedDepth = texture2D(DepthMap, vUV0).x;
-  if (clampedDepth > 0.5)
-  {
-    FragColor.rgb = color;
-    return;
-  }
-  float depth = clampedDepth * FarClipDistance + NearClipDistance;
-  vec3 fog = ApplyFog(color, FogParams, FogColour, depth);
-  FragColor.rgb = fog;
+    vec3 color = texture2D(ColorMap, vUV0).rgb;
+    float clampedDepth = texture2D(DepthMap, vUV0).x;
+
+    if (clampedDepth > 0.5) {
+        FragColor.rgb = color;
+        return;
+    }
+    
+    float depth = clampedDepth * FarClipDistance + NearClipDistance;
+    vec3 fog = ApplyFog(color, FogParams, FogColour, depth);
+    FragColor.rgb = fog;
 }

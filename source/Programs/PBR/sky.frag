@@ -59,7 +59,9 @@ void main()
     color = expose(color, 0.1);
     color = SRGBtoLINEAR(color);
 
-    if (gamma <= SunSize) color += SunColor;
+    if (gamma <= SunSize) {
+        color += SunColor;
+    }
 
     FragData[0].rgb = color;
     FragData[1].r = 1.0;

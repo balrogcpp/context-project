@@ -20,8 +20,8 @@ uniform sampler2D SsaoMap;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 color = texture2D(ColorMap, vUV0).rgb;
-  float ssao = texture2D(SsaoMap, vUV0).r;
-  color *= clamp(ssao, 0.0, 1.0);
-  FragColor.rgb = color;
+    vec3 color = texture2D(ColorMap, vUV0).rgb;
+    float ssao = texture2D(SsaoMap, vUV0).r;
+    color *= clamp(ssao, 0.0, 1.0);
+    FragColor.rgb = color;
 }
