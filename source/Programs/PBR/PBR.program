@@ -13,7 +13,7 @@ shared_params PBR_Shared_frag
 }
 
 
-abstract vertex_program PBR_I_vs glsl glsles
+abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
 
@@ -31,9 +31,9 @@ abstract vertex_program PBR_I_vs glsl glsles
     }
 }
 
-vertex_program PBR_vs glsl glsles : PBR_I_vs {}
+vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 
-abstract fragment_program PBR_I_fs glsl glsles
+abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
 
@@ -65,7 +65,7 @@ abstract fragment_program PBR_I_fs glsl glsles
     }
 }
 
-fragment_program PBR_fs glsl glsles : PBR_I_fs
+fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs
 {
     default_params
     {
@@ -84,7 +84,7 @@ fragment_program PBR_fs glsl glsles : PBR_I_fs
 //----------------------------------------------------------------------------------------------------------------------
 // IBL
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program IBL_fs glsl glsles : PBR_I_fs
+fragment_program IBL_fs glsl glsles hlsl : PBR_I_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER,USE_IBL
 
@@ -105,9 +105,9 @@ fragment_program IBL_fs glsl glsles : PBR_I_fs
 //----------------------------------------------------------------------------------------------------------------------
 // PAGED_GEOMETRY
 //----------------------------------------------------------------------------------------------------------------------
-vertex_program PG_vs glsl glsles : PBR_I_vs
+vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER,PAGED_GEOMETRY
 }
 
-fragment_program PG_fs glsl glsles : PBR_I_fs {}
+fragment_program PG_fs glsl glsles hlsl : PBR_I_fs {}

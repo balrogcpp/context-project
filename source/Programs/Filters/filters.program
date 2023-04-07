@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-fragment_program gauss_filtery_fs glsl glsles
+fragment_program gauss_filtery_fs glsl glsles hlsl
 {
 	source gaussy.frag
 
@@ -11,7 +11,7 @@ fragment_program gauss_filtery_fs glsl glsles
     }
 }
 
-fragment_program gauss_filterx_fs glsl glsles
+fragment_program gauss_filterx_fs glsl glsles hlsl
 {
 	source gaussx.frag
 
@@ -22,7 +22,7 @@ fragment_program gauss_filterx_fs glsl glsles
     }
 }
 
-fragment_program box_filter_fs glsl glsles
+fragment_program box_filter_fs glsl glsles hlsl
 {
 	source box.frag
 
@@ -33,7 +33,7 @@ fragment_program box_filter_fs glsl glsles
     }
 }
 
-fragment_program downscale4x4_fs glsl glsles
+fragment_program downscale4x4_fs glsl glsles hlsl
 {
 	source downscale4x4.frag
 
@@ -44,7 +44,7 @@ fragment_program downscale4x4_fs glsl glsles
     }
 }
 
-fragment_program downscale2x2_fs glsl glsles
+fragment_program downscale2x2_fs glsl glsles hlsl
 {
 	source downscale2x2.frag
 
@@ -55,7 +55,7 @@ fragment_program downscale2x2_fs glsl glsles
     }
 }
 
-fragment_program downscale_fs glsl glsles
+fragment_program downscale_fs glsl glsles hlsl
 {
 	source linear.frag
 
@@ -65,7 +65,7 @@ fragment_program downscale_fs glsl glsles
     }
 }
 
-fragment_program upscale2x2_fs glsl glsles
+fragment_program upscale2x2_fs glsl glsles hlsl
 {
 	source upscale2x2.frag
 
@@ -76,7 +76,7 @@ fragment_program upscale2x2_fs glsl glsles
     }
 }
 
-fragment_program upscale3x3_fs glsl glsles
+fragment_program upscale3x3_fs glsl glsles hlsl
 {
 	source upscale3x3.frag
 
@@ -87,7 +87,7 @@ fragment_program upscale3x3_fs glsl glsles
     }
 }
 
-fragment_program upscale_fs glsl glsles
+fragment_program upscale_fs glsl glsles hlsl
 {
 	source linear.frag
 
@@ -97,7 +97,7 @@ fragment_program upscale_fs glsl glsles
     }
 }
 
-fragment_program bypass_fs glsl glsles
+fragment_program bypass_fs glsl glsles hlsl
 {
 	source linear.frag
 

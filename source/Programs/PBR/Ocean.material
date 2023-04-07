@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program Ocean_vs glsl glsles
+vertex_program Ocean_vs glsl glsles hlsl
 {
     source ocean.vert
 
@@ -11,7 +11,7 @@ vertex_program Ocean_vs glsl glsles
     }
 }
 
-fragment_program Ocean_fs glsl glsles
+fragment_program Ocean_fs glsl glsles hlsl
 {
     source ocean.frag
 

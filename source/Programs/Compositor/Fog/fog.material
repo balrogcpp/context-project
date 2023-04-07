@@ -4,7 +4,7 @@
 // FOG
 //----------------------------------------------------------------------------------------------------------------------
 
-fragment_program Fog_fs glsl glsles
+fragment_program Fog_fs glsl glsles hlsl
 {
     source fog.frag
 

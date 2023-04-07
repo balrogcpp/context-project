@@ -294,7 +294,7 @@ material BoxFilter
 //----------------------------------------------------------------------------------------------------------------------
 // Cut bright parts of scene
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program add_fs glsl glsles
+fragment_program add_fs glsl glsles hlsl
 {
 	source add.frag
 }

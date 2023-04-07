@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
+vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 {
 	source caster.vert
 
@@ -12,7 +12,7 @@ vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
 	}
 }
 
-fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
+fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 {
 	source caster.frag
 
@@ -52,7 +52,7 @@ material PSSM/shadow_caster_alpha
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PSSM/shadow_caster_vs glsl glsles
+vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 {
 	source caster.vert
 
@@ -64,7 +64,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles
 	}
 }
 
-fragment_program PSSM/shadow_caster_fs glsl glsles
+fragment_program PSSM/shadow_caster_fs glsl glsles hlsl
 {
 	source caster.frag
 	

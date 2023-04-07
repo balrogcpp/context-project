@@ -4,7 +4,7 @@
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-fragment_program Blur_fs glsl glsles
+fragment_program Blur_fs glsl glsles hlsl
 {
     source blur.frag
 

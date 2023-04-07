@@ -4,7 +4,7 @@
 // SSAO
 //----------------------------------------------------------------------------------------------------------------------
 
-fragment_program ssao_fp glsl glsles
+fragment_program ssao_fp glsl glsles hlsl
 {
 	source ssao.frag
 
@@ -55,7 +55,7 @@ material SSAO
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program SSAO_mod_fp glsl glsles
+fragment_program SSAO_mod_fp glsl glsles hlsl
 {
 	source ssao_mod.frag
 }
@@ -100,7 +100,7 @@ material SSAO_mod
 //----------------------------------------------------------------------------------------------------------------------
 // Linear gaussian blur
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program ssao_filtery_fs glsl glsles
+fragment_program ssao_filtery_fs glsl glsles hlsl
 {
 	source ssao_filtery.frag
 
@@ -111,7 +111,7 @@ fragment_program ssao_filtery_fs glsl glsles
     }
 }
 
-fragment_program ssao_filterx_fs glsl glsles
+fragment_program ssao_filterx_fs glsl glsles hlsl
 {
 	source ssao_filterx.frag
 

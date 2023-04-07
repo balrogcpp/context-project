@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program Ogre/Compositor/StdQuad_vp glsl glsles
+vertex_program Ogre/Compositor/StdQuad_vp glsl glsles hlsl
 {
 	source StdQuad_vp.glsl
 

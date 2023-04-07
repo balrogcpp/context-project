@@ -4,7 +4,7 @@
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-fragment_program Ambient_fs glsl glsles
+fragment_program Ambient_fs glsl glsles hlsl
 {
     source ambient.frag
 }

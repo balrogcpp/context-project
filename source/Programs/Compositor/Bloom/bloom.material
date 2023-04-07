@@ -4,7 +4,7 @@
 // Cut bright parts of scene
 //----------------------------------------------------------------------------------------------------------------------
 
-fragment_program bloom_threshold_fs glsl glsles
+fragment_program bloom_threshold_fs glsl glsles hlsl
 {
 	source bloom_thr.frag
 
@@ -48,7 +48,7 @@ material Bloom_threshold
 //----------------------------------------------------------------------------------------------------------------------
 // Cut bright parts of scene
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program bloom_mod_fs glsl glsles
+fragment_program bloom_mod_fs glsl glsles hlsl
 {
 	source bloom_mod.frag
 
@@ -100,7 +100,7 @@ material Bloom_mod
 //----------------------------------------------------------------------------------------------------------------------
 // Cut bright parts of scene
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program bloom_feat_fs glsl glsles
+fragment_program bloom_feat_fs glsl glsles hlsl
 {
 	source bloom_feat.frag
 
