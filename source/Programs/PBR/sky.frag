@@ -17,6 +17,9 @@
 #include "srgb.glsl"
 
 
+in highp vec3 vPosition;
+in vec3 vUV0;
+
 uniform vec3 SunDirection;
 uniform float SunSize;
 uniform vec3 SunColor;
@@ -33,14 +36,10 @@ uniform vec3 Z;
 uniform samplerCube CubeMap;
 
 
-in highp vec3 vPosition;
-in vec3 vUV0;
-
-
 //----------------------------------------------------------------------------------------------------------------------
-vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
+highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos_gamma)
 {
-    vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5)));
+    highp vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5)));
     return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta)));
 }
 
@@ -53,7 +52,7 @@ void main()
     highp float cos_theta = clamp(V.y, 0.0, 1.0);
     highp float cos_gamma = dot(V, N);
     highp float gamma = acos(cos_gamma);
-    vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
+    mediump vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 
     color = XYZtoRGB(color);
     color = expose(color, 0.1);

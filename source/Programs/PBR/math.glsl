@@ -47,9 +47,8 @@
 #define float4x3 mat3x4
 #define float4x4 mat4x4
 #define matrix mat4x4
-//#define static
+#define static
 #define groupshared shared
-
 #define atan2 atan
 #define ddx dFdx
 #define ddy dFdy
@@ -78,6 +77,7 @@
 #define tex2D texture2D
 #define tex3D texture3D
 #define texCube textureCube
+
 
 float rcp(float x)
 {

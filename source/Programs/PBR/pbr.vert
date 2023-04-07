@@ -18,51 +18,48 @@
 #endif
 
 
-// uniform block
+in highp vec4 position;
+#ifdef HAS_NORMALS
+in mediump vec4 normal;
+#endif
+#ifdef HAS_TANGENTS
+in mediump vec4 tangent;
+#endif
+#ifdef HAS_VERTEXCOLOR
+in mediump vec4 colour;
+#endif
+#ifdef HAS_UV
+in mediump vec4 uv0;
+in mediump vec4 uv1;
+in mediump vec4 uv2;
+in mediump vec4 uv3;
+in mediump vec4 uv4;
+in mediump vec4 uv5;
+#endif //  HAS_UV
+
+out highp vec3 vPosition;
+out mediump vec2 vUV0;
+out mediump float vDepth;
+out mediump vec4 vColor;
+out mediump vec4 vScreenPosition;
+out mediump vec4 vPrevScreenPosition;
+out mediump mat3 vTBN;
+#ifdef SHADOWRECEIVER
+out mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+#endif
+
 uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
 uniform highp mat4 WorldViewProjPrev;
-uniform lowp float MovableObj;
+uniform mediump float MovableObj;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
 uniform highp vec4 CameraPosition;
-uniform float FadeRange;
+uniform mediump float FadeRange;
 #endif // PAGED_GEOMETRY
 #ifdef SHADOWRECEIVER
-uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
+uniform mediump mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif // SHADOWRECEIVER
-
-// in block
-in highp vec4 position;
-#ifdef HAS_NORMALS
-in vec4 normal;
-#endif
-#ifdef HAS_TANGENTS
-in vec4 tangent;
-#endif
-#ifdef HAS_VERTEXCOLOR
-in vec4 colour;
-#endif
-#ifdef HAS_UV
-in vec4 uv0;
-in vec4 uv1;
-in vec4 uv2;
-in vec4 uv3;
-in vec4 uv4;
-in vec4 uv5;
-#endif //  HAS_UV
-
-// out block
-out vec2 vUV0;
-out float vDepth;
-out highp vec3 vPosition;
-out vec4 vColor;
-out vec4 vScreenPosition;
-out vec4 vPrevScreenPosition;
-out mat3 vTBN;
-#ifdef SHADOWRECEIVER
-out vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -78,8 +75,8 @@ void main()
     vColor = vec4(1.0);
 #endif // HAS_VERTEXCOLOR
 
-    vec4 vertex = position;
-    vec4 model = ModelMatrix * vertex;
+    highp vec4 vertex = position;
+    highp vec4 model = ModelMatrix * vertex;
     vPosition = model.xyz / model.w;
 
 #ifdef PAGED_GEOMETRY
@@ -88,14 +85,14 @@ void main()
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-    vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
-    vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
-    vec3 b = cross(n, t) * tangent.w;
+    highp vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
+    highp vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
+    highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mat3(t, b, n);
 #else
-    vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
-    vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(n, b));
+    highp vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
+    highp vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
+    highp vec3 t = normalize(cross(n, b));
     vTBN = mat3(t, b, n);
 #endif // HAS_TANGENTS
 #else

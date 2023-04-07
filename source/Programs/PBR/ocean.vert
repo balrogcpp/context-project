@@ -13,24 +13,22 @@
 
 #include "header.vert"
 #include "math.glsl"
-precision highp float;
-
 #include "ocean.glsl"
 
+
 in highp vec4 position;
+out highp vec3 vPosition;
+out highp vec4 vScreenPosition;
+out highp vec4 vPrevScreenPosition;
 
 uniform highp mat4 MVPMatrix;
 uniform highp mat4 ModelMatrix;
 uniform highp mat4 WorldViewProjPrev;
 
-out highp vec3 vPosition;
-out vec4 vScreenPosition;
-out vec4 vPrevScreenPosition;
-
 
 void main()
 {
-    vec4 model = ModelMatrix * position;
+    highp vec4 model = ModelMatrix * position;
     vPosition = model.xyz / model.w;
 
     gl_Position = MVPMatrix * position;

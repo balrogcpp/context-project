@@ -12,16 +12,16 @@
 #include "header.frag"
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
 uniform sampler2D ColorMap;
-uniform mat4 ProjMatrix;
-uniform mat4 InvProjMatrix;
-uniform mat4 InvViewMatrix;
-uniform float FarClipDistance;
-uniform float NearClipDistance;
+uniform mediump mat4 ProjMatrix;
+uniform mediump mat4 InvProjMatrix;
+uniform mediump mat4 InvViewMatrix;
+uniform mediump float FarClipDistance;
+uniform mediump float NearClipDistance;
 
 
 // SSR based on tutorial by Imanol Fotia
@@ -31,13 +31,7 @@ uniform float NearClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 vec3 getPositionFromDepth(const vec2 uv, const float depth)
 {
-    //vec4 viewSpacePosition = InvProjMatrix * vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
-    vec4 viewSpacePosition = InvProjMatrix * vec4(uv, depth, 1.0);
-
-    // Perspective division
-    viewSpacePosition /= viewSpacePosition.w;
-
-    return viewSpacePosition.xyz;
+    return vec3(InvProjMatrix * vec4(uv, depth, 1.0));
 }
 
 
@@ -51,9 +45,7 @@ vec3 getPosition(const vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 float getDepth(const vec2 uv)
 {
-    //return FarClipDistance * texture2D(DepthMap, uv).x + NearClipDistance;
     return getPosition(uv).z;
-    //return texture2D(DepthMap, uv).x;
 }
 
 
@@ -92,6 +84,7 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 vec2 RayMarch(vec3 dir, vec3 hitCoord, float dDepth)
 {
     #define STEP 0.05
+
     dir *= STEP;
 
     #define MAX_RAY_MARCH_COUNT 30

@@ -8,14 +8,17 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
 #include "filters.glsl"
 
-in vec2 vUV0;
-uniform sampler2D RT;
+
+in mediump vec2 vUV0;
+uniform mediump sampler2D RT;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = texture2D(RT, vUV0).rgb;
+    FragColor.rgb = texture2D(RT, vUV0).rgb;
 }

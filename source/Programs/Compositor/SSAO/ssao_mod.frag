@@ -12,16 +12,16 @@
 #include "header.frag"
 
 
-in vec2 vUV0;
-uniform sampler2D ColorMap;
-uniform sampler2D SsaoMap;
+in mediump vec2 vUV0;
+uniform mediump sampler2D ColorMap;
+uniform mediump sampler2D SsaoMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec3 color = texture2D(ColorMap, vUV0).rgb;
-    float ssao = texture2D(SsaoMap, vUV0).r;
+    mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
+    mediump float ssao = texture2D(SsaoMap, vUV0).r;
     color *= clamp(ssao, 0.0, 1.0);
     FragColor.rgb = color;
 }

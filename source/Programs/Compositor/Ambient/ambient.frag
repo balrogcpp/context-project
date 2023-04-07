@@ -12,15 +12,15 @@
 #include "header.frag"
 
 
-in vec2 vUV0;
-uniform sampler2D ColorMap;
-uniform sampler2D AmbientMap;
+in mediump vec2 vUV0;
+uniform mediump sampler2D ColorMap;
+uniform mediump sampler2D AmbientMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec3 color = texture2D(ColorMap, vUV0).rgb;
-    vec3 ambient = texture2D(AmbientMap, vUV0).rgb;
+    mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
+    mediump vec3 ambient = texture2D(AmbientMap, vUV0).rgb;
     FragColor.rgb = color + ambient;
 }

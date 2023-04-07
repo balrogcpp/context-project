@@ -108,12 +108,6 @@ abstract material IBL : PBR
                 filtering bilinear
                 tex_address_mode clamp
             }
-            texture_unit IBL_LUT
-            {
-                texture $IBL_LUT
-                filtering none
-                tex_address_mode clamp
-            }
 
             vertex_program_ref PBR_vs {}
 
@@ -125,7 +119,6 @@ abstract material IBL : PBR
                 param_named EmissiveMap    int 3
                 param_named DiffuseEnvMap  int 4
                 param_named SpecularEnvMap int 5
-                param_named BrdfLUT            int 6
             }
         }
     }

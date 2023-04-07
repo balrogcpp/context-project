@@ -11,12 +11,14 @@
 #include "header.frag"
 #include "filters.glsl"
 
-in vec2 vUV0;
-uniform sampler2D RT;
-uniform vec2 TexelSize0;
+
+in mediump vec2 vUV0;
+uniform mediump sampler2D RT;
+uniform mediump vec2 TexelSize0;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = BoxFilter16(RT, vUV0, TexelSize0);
+    FragColor.rgb = BoxFilter16(RT, vUV0, TexelSize0);
 }

@@ -14,15 +14,11 @@
 #include "header.vert"
 
 
-uniform highp mat4 WorldViewProj;
-
-
 in highp vec4 position;
-in vec4 uv0;
-
-
+in mediump vec4 uv0;
 out highp vec3 vPosition;
-out vec3 vUV0; // direction vector representing a 3D texture coordinate
+out mediump vec3 vUV0; // direction vector representing a 3D texture coordinate
+uniform highp mat4 WorldViewProj;
 
 
 //----------------------------------------------------------------------------------------------------------------------

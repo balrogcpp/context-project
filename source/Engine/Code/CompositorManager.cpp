@@ -73,11 +73,11 @@ void CompositorManager::OnSetUp() {
   // ambient is always enabled
   AddCompositor("Ambient", true);
 
-  // screen-space reflections
-  AddCompositor("SSR", false);
-
   // fog is always enabled
   AddCompositor("Fog", true);
+
+  // screen-space reflections
+  AddCompositor("SSR", false);
 
   // init bloom mipmaps
   AddCompositor("Rays", false);

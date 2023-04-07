@@ -8,15 +8,18 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.frag"
 #include "filters.glsl"
 
-in vec2 vUV0;
-uniform sampler2D RT;
-uniform vec2 TexelSize0;
+
+in mediump vec2 vUV0;
+uniform mediump sampler2D RT;
+uniform mediump vec2 TexelSize0;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = Upscale3x3(RT, vUV0, TexelSize0);
+    FragColor.rgb = Upscale3x3(RT, vUV0, TexelSize0);
 }

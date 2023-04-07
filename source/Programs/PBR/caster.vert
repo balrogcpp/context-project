@@ -11,12 +11,12 @@
 #include "header.vert"
 
 
-in vec4 position;
+in highp vec4 position;
 #ifdef SHADOWCASTER_ALPHA
-in vec2 uv0;
-out vec2 vUV0;
+in highp vec2 uv0;
+out highp vec2 vUV0;
 #endif
-uniform mat4 MVPMatrix;
+uniform highp mat4 MVPMatrix;
 
 
 void main()

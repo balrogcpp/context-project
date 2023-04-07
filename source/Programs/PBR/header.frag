@@ -45,8 +45,8 @@ out vec4 FragColor;
 
 #else // GLSLES
 
-precision mediump float;
-precision lowp int;
+precision highp float;
+precision highp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
 #if __VERSION__ >= 300

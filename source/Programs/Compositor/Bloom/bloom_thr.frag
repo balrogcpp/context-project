@@ -15,21 +15,21 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 Threshold(const vec3 color, const float threshold)
+mediump vec3 Threshold(const mediump vec3 color, const mediump float threshold)
 {
     return max(color - vec3(threshold), vec3(0.0));
 }
 
 
-in vec2 vUV0;
-uniform sampler2D ColorMap;
-uniform vec2 TexelSize0;
-uniform float Threshhold;
+in mediump vec2 vUV0;
+uniform mediump sampler2D ColorMap;
+uniform mediump vec2 TexelSize0;
+uniform mediump float Threshhold;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec3 color = Downscale13T(ColorMap, vUV0, TexelSize0);
+    mediump vec3 color = Downscale13T(ColorMap, vUV0, TexelSize0);
     FragColor.rgb = Threshold(color, Threshhold);
 }

@@ -13,23 +13,23 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float Gauss9HR(const sampler2D tex, const vec2 uv, const vec2 tsize)
+mediump float Gauss9HR(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
-    float A = texture2D(tex, uv).r;
-    float B = texture2D(tex, uv + tsize * vec2(1.3846153846, 0.0)).r;
-    float C = texture2D(tex, uv - tsize * vec2(1.3846153846, 0.0)).r;
-    float D = texture2D(tex, uv + tsize * vec2(3.2307692308, 0.0)).r;
-    float E = texture2D(tex, uv - tsize * vec2(3.2307692308, 0.0)).r;
+    mediump float A = texture2D(tex, uv).r;
+    mediump float B = texture2D(tex, uv + tsize * vec2(1.3846153846, 0.0)).r;
+    mediump float C = texture2D(tex, uv - tsize * vec2(1.3846153846, 0.0)).r;
+    mediump float D = texture2D(tex, uv + tsize * vec2(3.2307692308, 0.0)).r;
+    mediump float E = texture2D(tex, uv - tsize * vec2(3.2307692308, 0.0)).r;
 
-    float color = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+    mediump float color = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
 
     return color;
 }
 
 
-in vec2 vUV0;
-uniform sampler2D RT;
-uniform vec2 TexelSize0;
+in mediump vec2 vUV0;
+uniform mediump sampler2D RT;
+uniform mediump vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------

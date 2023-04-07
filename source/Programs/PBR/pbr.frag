@@ -24,7 +24,7 @@
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Diffuse(const vec3 diffuseColor)
+mediump vec3 Diffuse(const mediump vec3 diffuseColor)
 {
     return diffuseColor / M_PI;
 }
@@ -73,7 +73,7 @@ mediump vec3 envBRDFApprox(const mediump vec3 specularColor, const mediump float
 {
     const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
     const mediump vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
-    const mediump vec4 r = roughness * c0 + c1;
+    mediump vec4 r = roughness * c0 + c1;
     mediump float a004 = min(r.x * r.x, exp2( -9.28 * NdotV )) * r.x + r.y;
     mediump vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
     return specularColor * AB.x + AB.y;
@@ -84,7 +84,7 @@ mediump vec3 envBRDFApprox(const mediump vec3 specularColor, const mediump float
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 GetIBLContribution(const sampler2D BrdfLUT, const samplerCube DiffuseEnvMap, const samplerCube SpecularEnvMap, const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
+mediump vec3 GetIBLContribution(const samplerCube DiffuseEnvMap, const samplerCube SpecularEnvMap, const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
@@ -107,11 +107,11 @@ mediump vec3 GetIBLContribution(const sampler2D BrdfLUT, const samplerCube Diffu
 // varyings
 in highp vec3 vPosition;
 in highp vec2 vUV0;
-in float vDepth;
-in vec4 vColor;
-in vec4 vScreenPosition;
-in vec4 vPrevScreenPosition;
-in mat3 vTBN;
+in mediump float vDepth;
+in mediump vec4 vColor;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
+in mediump mat3 vTBN;
 
 // uniforms
 #ifdef HAS_BASECOLORMAP
@@ -130,75 +130,74 @@ uniform sampler2D EmissiveMap;
 #ifdef USE_IBL
 uniform samplerCube DiffuseEnvMap;
 uniform samplerCube SpecularEnvMap;
-uniform sampler2D BrdfLUT;
 #endif // USE_IBL
 
 // lights
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
-uniform lowp float LightCount;
+uniform mediump float LightCount;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
-uniform vec4 LightDirectionArray[MAX_LIGHTS];
-uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
-uniform vec4 LightAttenuationArray[MAX_LIGHTS];
-uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
+uniform mediump vec4 LightDirectionArray[MAX_LIGHTS];
+uniform mediump vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
+uniform mediump vec4 LightAttenuationArray[MAX_LIGHTS];
+uniform mediump vec4 LightSpotParamsArray[MAX_LIGHTS];
 #endif // MAX_LIGHTS > 0
-uniform vec4 AmbientLightColour;
-uniform vec4 SurfaceAmbientColour;
-uniform vec4 SurfaceDiffuseColour;
-uniform vec4 SurfaceSpecularColour;
-uniform vec4 SurfaceShininessColour;
-uniform vec4 SurfaceEmissiveColour;
-uniform float SurfaceAlphaRejection;
-uniform float FarClipDistance;
-uniform float NearClipDistance;
-uniform float FrameTime;
-uniform float TexScale;
-uniform float TexLod;
+uniform mediump vec4 AmbientLightColour;
+uniform mediump vec4 SurfaceAmbientColour;
+uniform mediump vec4 SurfaceDiffuseColour;
+uniform mediump vec4 SurfaceSpecularColour;
+uniform mediump vec4 SurfaceShininessColour;
+uniform mediump vec4 SurfaceEmissiveColour;
+uniform mediump float SurfaceAlphaRejection;
+uniform mediump float FarClipDistance;
+uniform mediump float NearClipDistance;
+uniform mediump float FrameTime;
+uniform mediump float TexScale;
+uniform mediump float TexLod;
 #ifdef HAS_NORMALMAP
 #define HAS_PARALLAXMAP
-uniform float OffsetScale;
+uniform mediump float OffsetScale;
 #endif // HAS_NORMALMAP
 
 // shadow receiver
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-in vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-uniform lowp float LightCastsShadowsArray[MAX_LIGHTS];
+in mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
 uniform sampler2D ShadowMap0;
-uniform vec2 ShadowTexel0;
+uniform mediump vec2 ShadowTexel0;
 #if MAX_SHADOW_TEXTURES > 1
 uniform sampler2D ShadowMap1;
-uniform vec2 ShadowTexel1;
+uniform mediump vec2 ShadowTexel1;
 #endif
 #if MAX_SHADOW_TEXTURES > 2
 uniform sampler2D ShadowMap2;
-uniform vec2 ShadowTexel2;
+uniform mediump vec2 ShadowTexel2;
 #endif
 #if MAX_SHADOW_TEXTURES > 3
 uniform sampler2D ShadowMap3;
-uniform vec2 ShadowTexel3;
+uniform mediump vec2 ShadowTexel3;
 #endif
 #if MAX_SHADOW_TEXTURES > 4
 uniform sampler2D ShadowMap4;
-uniform vec2 ShadowTexel4;
+uniform mediump vec2 ShadowTexel4;
 #endif
 #if MAX_SHADOW_TEXTURES > 5
 uniform sampler2D ShadowMap5;
-uniform vec2 ShadowTexel5;
+uniform mediump vec2 ShadowTexel5;
 #endif
 #if MAX_SHADOW_TEXTURES > 6
 uniform sampler2D ShadowMap6;
-uniform vec2 ShadowTexel6;
+uniform mediump vec2 ShadowTexel6;
 #endif
 #if MAX_SHADOW_TEXTURES > 7
 uniform sampler2D ShadowMap7;
-uniform vec2 ShadowTexel7;
+uniform mediump vec2 ShadowTexel7;
 #endif
-uniform vec4 PssmSplitPoints;
-uniform float ShadowFilterSize;
-uniform int ShadowFilterIterations;
+uniform mediump vec4 PssmSplitPoints;
+uniform mediump float ShadowFilterSize;
+uniform mediump int ShadowFilterIterations;
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER
 
@@ -207,7 +206,7 @@ uniform int ShadowFilterIterations;
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------
-float GetShadow(const int counter)
+mediump float GetShadow(const mediump int counter)
 {
     if (vDepth >= PssmSplitPoints.w)
         return 1.0;
@@ -249,7 +248,7 @@ float GetShadow(const int counter)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(const vec4 PssmSplitPoints, const vec4 lightSpacePos0, const vec4 lightSpacePos1, const vec4 lightSpacePos2, const sampler2D ShadowMap0, const sampler2D ShadowMap1, const sampler2D ShadowMap2)
+mediump float CalcPSSMDepthShadow(const mediump vec4 PssmSplitPoints, const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, const mediump vec4 lightSpacePos2, const sampler2D ShadowMap0, const sampler2D ShadowMap1, const sampler2D ShadowMap2)
 {
     // calculate shadow
     if (vDepth <= PssmSplitPoints.x)
@@ -264,7 +263,7 @@ float CalcPSSMDepthShadow(const vec4 PssmSplitPoints, const vec4 lightSpacePos0,
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetPSSMShadow(const int number)
+mediump float GetPSSMShadow(const mediump int number)
 {
     //  special case, as only light #0 can be with pssm shadows
     if (LightAttenuationArray[0].x > 10000.0)
@@ -286,7 +285,7 @@ float GetPSSMShadow(const int number)
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-highp vec3 GetNormal(const vec2 uv)
+highp vec3 GetNormal(const mediump vec2 uv)
 {
 #ifndef HAS_NORMALS
 #ifndef HAS_TANGENTS
@@ -294,8 +293,8 @@ highp vec3 GetNormal(const vec2 uv)
 
 #ifdef HAS_NORMALMAP
     highp vec3 n1 = texture2D(NormalMap, uv, TexLod).xyz;
-    vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(n0, b));
+    highp vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
+    highp vec3 t = normalize(cross(n0, b));
     n1 = normalize(mat3(t, b, n0) * ((2.0 * n1 - 1.0)));
     return n1;
 #else
@@ -321,9 +320,9 @@ highp vec3 GetNormal(const vec2 uv)
 
 // Sampler helper functions
 //----------------------------------------------------------------------------------------------------------------------
-vec4 GetAlbedo(const vec2 uv)
+mediump vec4 GetAlbedo(const mediump vec2 uv)
 {
-    vec4 albedo = SurfaceDiffuseColour.rgba * vColor;
+    mediump vec4 albedo = SurfaceDiffuseColour.rgba * vColor;
 
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(AlbedoMap, uv, TexLod);
@@ -333,9 +332,9 @@ vec4 GetAlbedo(const vec2 uv)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetORM(const vec2 uv)
+mediump vec3 GetORM(const mediump vec2 uv)
 {
-    vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
+    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
 #ifdef HAS_ORM
     ORM *= texture2D(OrmMap, uv, TexLod).rgb;
 #endif
@@ -344,7 +343,7 @@ vec3 GetORM(const vec2 uv)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetEmission(const vec2 uv)
+mediump vec3 GetEmission(const mediump vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(EmissiveMap, uv, TexLod).rgb);
@@ -367,9 +366,9 @@ void main()
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 
-    vec4 s = GetAlbedo(uv);
-    vec3 albedo = s.rgb;
-    float alpha = s.a;
+    mediump vec4 s = GetAlbedo(uv);
+    mediump vec3 albedo = s.rgb;
+    mediump float alpha = s.a;
 
 #ifdef HAS_ALPHA
     if (SurfaceAlphaRejection > 0.0 && alpha < SurfaceAlphaRejection) {
@@ -377,28 +376,28 @@ void main()
     }
 #endif
 
-    vec3 ORM = GetORM(uv);
-    float occlusion = ORM.r;
-    float roughness = ORM.g;
-    float metallic = ORM.b;
+    mediump vec3 ORM = GetORM(uv);
+    mediump float occlusion = ORM.r;
+    mediump float roughness = ORM.g;
+    mediump float metallic = ORM.b;
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    vec3 diffuseColor = albedo * ((1.0 - F0) * (1.0 - metallic));
-    vec3 specularColor = mix(vec3(F0), albedo, metallic);
+    mediump vec3 diffuseColor = albedo * ((1.0 - F0) * (1.0 - metallic));
+    mediump vec3 specularColor = mix(vec3(F0), albedo, metallic);
 
     // Compute reflectance.
-    float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
+    mediump float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
 
     // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.
     // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.
-    vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
-    vec3 reflectance0 = specularColor.rgb;
+    mediump vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
+    mediump vec3 reflectance0 = specularColor.rgb;
 
     // Normal at surface point
     highp vec3 n = GetNormal(uv);
-    float NdotV = clamp(dot(n, v), 0.001, 1.0);
-    vec3 color = vec3(0.0);
+    mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
+    mediump vec3 color = vec3(0.0);
 
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -409,8 +408,8 @@ void main()
         highp float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
         // attenuation is property of spot and point light
-        float attenuation = 1.0;
-        vec4 vAttParams = LightAttenuationArray[i];
+        mediump float attenuation = 1.0;
+        mediump vec4 vAttParams = LightAttenuationArray[i];
         highp float range = vAttParams.x;
 
         if (range < HALF_MAX_MINUS1) {
@@ -418,40 +417,40 @@ void main()
             highp float fLightD = length(vLightViewH);
             highp float fLightD2 = fLightD * fLightD;
             highp vec3 vLightView = normalize(vLightViewH);
-            float attenuation_const = vAttParams.y;
-            float attenuation_linear = vAttParams.z;
-            float attenuation_quad = vAttParams.w;
+            mediump float attenuation_const = vAttParams.y;
+            mediump float attenuation_linear = vAttParams.z;
+            mediump float attenuation_quad = vAttParams.w;
 
             attenuation = biggerhp(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             // spotlight
-            vec3 vSpotParams = LightSpotParamsArray[i].xyz;
-            float outer_radius = vSpotParams.z;
+            mediump vec3 vSpotParams = LightSpotParamsArray[i].xyz;
+            mediump float outerRadius = vSpotParams.z;
 
-            if (outer_radius > 0.0) {
+            if (outerRadius > 0.0) {
                 float fallof = vSpotParams.x;
-                float inner_radius = vSpotParams.y;
+                float innerRadius = vSpotParams.y;
 
                 float rho = dot(l, vLightView);
-                float fSpotE = clamp((rho - inner_radius) / (fallof - inner_radius), 0.0, 1.0);
-                attenuation *= pow(fSpotE, outer_radius);
+                float fSpotE = clamp((rho - innerRadius) / (fallof - innerRadius), 0.0, 1.0);
+                attenuation *= pow(fSpotE, outerRadius);
             }
         }
 
-        float light = NdotL * attenuation;
+        mediump float light = NdotL * attenuation;
         highp float alphaRoughness = roughness * roughness;
         highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
-        float LdotH = clamp(dot(l, h), 0.0, 1.0);
-        float VdotH = clamp(dot(v, h), 0.0, 1.0);
+        mediump float LdotH = clamp(dot(l, h), 0.0, 1.0);
+        mediump float VdotH = clamp(dot(v, h), 0.0, 1.0);
 
         // Calculate the shading terms for the microfacet specular shading model
-        vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
-        vec3 diffuseContrib = (1.0 - F) * Diffuse(diffuseColor);
+        mediump vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
+        mediump vec3 diffuseContrib = (1.0 - F) * Diffuse(diffuseColor);
 
         // Calculation of analytical lighting contribution
-        float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
-        float D = MicrofacetDistribution(alphaRoughness, NdotH);
-        vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
+        mediump float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
+        mediump float D = MicrofacetDistribution(alphaRoughness, NdotH);
+        mediump vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
@@ -472,8 +471,8 @@ void main()
     vec3 ambient = vec3(0.0);
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
-    vec3 reflection = -normalize(reflect(v, n));
-    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(BrdfLUT, DiffuseEnvMap, SpecularEnvMap, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
+    mediump vec3 reflection = -normalize(reflect(v, n));
+    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(DiffuseEnvMap, SpecularEnvMap, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
 #else
     ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
 #endif // USE_IBL
@@ -487,9 +486,9 @@ void main()
     FragData[1].x = (vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     FragData[2].xyz = n;
 
-    vec2 a = (vScreenPosition.xz / vScreenPosition.w);
-    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-    vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
+    mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
+    mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
+    mediump vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
     FragData[3].xy = velocity;
     FragData[4].rg = vec2(metallic, 0.0);
     FragData[5].rgb = ambient;

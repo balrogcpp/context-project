@@ -16,22 +16,22 @@
 
 in vec2 vUV0;
 uniform sampler2D FboMap;
-uniform float LightCount;
-uniform vec4 LightPositionViewSpace[MAX_LIGHTS];
-uniform int RayCount;
-uniform float Decay;
-uniform float Density;
-uniform float Weight;
-uniform float Exposure;
+uniform mediump float LightCount;
+uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];
+uniform mediump int RayCount;
+uniform mediump float Decay;
+uniform mediump float Density;
+uniform mediump float Weight;
+uniform mediump float Exposure;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int counter, const float density, const float weight, const float decay, const float exposure)
+mediump vec3 GodRays(const sampler2D tex, const mediump vec2 uv, const mediump vec2 lightPos, const mediump int counter, const mediump float density, const mediump float weight, const mediump float decay, const mediump float exposure)
 {
-    vec3 color = vec3(0.0);
-    vec2 suv = uv.st;
-    float illuminationDecay = 1.0;
-    vec2 deltaTextCoord = (uv - lightPos) * (density / float(counter));
+    mediump vec3 color = vec3(0.0);
+    mediump vec2 suv = uv;
+    mediump float illuminationDecay = 1.0;
+    mediump vec2 deltaTextCoord = (uv - lightPos) * (density / float(counter));
     
     #define MAX_RAYS 100
 
@@ -50,12 +50,12 @@ vec3 GodRays(const sampler2D tex, const vec2 uv, const vec2 lightPos, const int 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec3 color = vec3(0.0);
+    mediump vec3 color = vec3(0.0);
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
-        vec4 point = LightPositionViewSpace[i];
+        mediump vec4 point = LightPositionViewSpace[i];
         color += GodRays(FboMap, vUV0, point.xy, RayCount, Density, Weight * point.w, Decay, Exposure);
     }
 
