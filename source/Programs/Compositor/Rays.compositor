@@ -38,7 +38,7 @@ compositor Rays
         {
             pass render_quad
             {
-                identifier 12
+                identifier 3
                 material Rays
                 input 0 fbo
             }

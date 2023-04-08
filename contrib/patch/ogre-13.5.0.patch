@@ -207,21 +207,6 @@ index 4ea04312e..8285ead87 100644
                      frust.getViewMatrix();
  
                  mSpotlightViewProjMatrixDirty[index] = false;
-diff --git a/OgreMain/src/OgreRectangle2D.cpp b/OgreMain/src/OgreRectangle2D.cpp
-index 6c208890a..08c68b783 100644
---- a/OgreMain/src/OgreRectangle2D.cpp
-+++ b/OgreMain/src/OgreRectangle2D.cpp
-@@ -47,8 +47,8 @@ namespace Ogre {
-     void Rectangle2D::_initRectangle2D(bool includeTextureCoords, Ogre::HardwareBuffer::Usage vBufUsage) 
-     {
-         // use identity projection and view matrices
--        mUseIdentityProjection = true;
--        mUseIdentityView = true;
-+        mUseIdentityProjection = false;
-+        mUseIdentityView = false;
- 
-         mBox.setInfinite(); // screenspace -> never culled
- 
 diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
 index 513fd3c1..c4d1f16c 100644
 --- a/OgreMain/src/OgreRoot.cpp

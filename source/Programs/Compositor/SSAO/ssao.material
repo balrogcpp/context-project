@@ -7,11 +7,6 @@
 fragment_program ssao_fp glsl glsles hlsl
 {
 	source ssao.frag
-
-	default_params
-	{
-        param_named_auto FarClipDistance far_clip_distance
-	}
 }
 
 
