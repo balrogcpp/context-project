@@ -18,7 +18,7 @@ abstract material PBR
 
     set $Albedo white.dds
     set $Normal normal.dds
-    set $ORM white.dds
+    set $ORM yellow.dds
     set $Emissive black.dds
 
     technique
@@ -26,7 +26,7 @@ abstract material PBR
         pass
         {
             diffuse 1 1 1
-            specular 1 1 1 1
+            specular 1 0 0 0 1
             ambient 1 1 1
             emissive 0 0 0
             alpha_rejection greater_equal 127

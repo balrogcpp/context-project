@@ -12,6 +12,7 @@ material FilterY
 		{
 		    cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -37,6 +38,7 @@ material FilterX
 		{
 		    cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -65,6 +67,7 @@ material Downscale4x4
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -90,6 +93,7 @@ material Downscale2x2
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -115,6 +119,7 @@ material Downscale
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -140,6 +145,7 @@ material Bypass
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -165,6 +171,7 @@ material Flip
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -193,6 +200,7 @@ material Upscale3x3
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -218,6 +226,7 @@ material Upscale2x2
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -243,6 +252,7 @@ material Upscale
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -272,6 +282,7 @@ material Linear
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -297,6 +308,7 @@ material BoxFilter
         {
             cull_hardware none
             depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
             vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -332,6 +344,7 @@ material Add
 		{
 		    cull_hardware none
 			depth_check off
+            depth_write off
             polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}

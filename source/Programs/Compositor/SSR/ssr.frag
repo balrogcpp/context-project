@@ -20,8 +20,6 @@ uniform sampler2D ColorMap;
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvProjMatrix;
 uniform mediump mat4 InvViewMatrix;
-uniform mediump float FarClipDistance;
-uniform mediump float NearClipDistance;
 
 
 // SSR based on tutorial by Imanol Fotia
@@ -61,7 +59,7 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
         projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
         projectedCoord.xy /= projectedCoord.w;
-        //projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+        projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
         depth = getDepth(projectedCoord.xy);
 
@@ -74,7 +72,7 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 
     projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
     projectedCoord.xy /= projectedCoord.w;
-    //projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+    projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
     return vec2(projectedCoord.xy);
 }
@@ -94,7 +92,7 @@ vec2 RayMarch(vec3 dir, vec3 hitCoord, float dDepth)
 
         vec4 projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
         projectedCoord.xy /= projectedCoord.w;
-        //projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+        projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
         float depth = getDepth(projectedCoord.xy);
         dDepth = hitCoord.z - depth;
@@ -143,7 +141,6 @@ void main()
     }
 
     vec3 normal = texture2D(NormalMap, vUV0).xyz;
-    //vec3 normal = vec3(InvViewMatrix * vec4(texture2D(NormalMap, vUV0).xyz, 1.0));
     vec3 viewPos = getPosition(vUV0);
 
     vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
@@ -159,7 +156,7 @@ void main()
     vec3 hitPos = viewPos;
     float dDepth;
 
-    vec2 coords = RayMarch(jitt + reflected * max(MIN_RAY_STEP, -viewPos.z), hitPos, dDepth);
+    vec2 coords = RayMarch(jitt + reflected, hitPos, dDepth);
 
     float L = length(getPosition(coords) - viewPos);
     L = clamp(L * LLIMITER, 0.0, 1.0);

@@ -3,9 +3,4 @@
 vertex_program Ogre/Compositor/StdQuad_vp glsl glsles hlsl
 {
 	source StdQuad_vp.glsl
-
-    default_params
-    {
-        param_named_auto worldViewProj worldviewproj_matrix
-    }
 }

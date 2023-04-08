@@ -3,12 +3,17 @@
 #ifndef HEADER_FRAG
 #define HEADER_FRAG
 
+
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
 #endif
 
 #ifndef MAX_SHADOW_TEXTURES
 #define MAX_SHADOW_TEXTURES 4
+#endif
+
+#ifndef MAX_MRT_TEXTURES
+#define MAX_MRT_TEXTURES 6
 #endif
 
 #ifdef GL_ES
@@ -31,7 +36,7 @@
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #ifdef USE_MRT
-out vec4 FragData[6];
+out vec4 FragData[MAX_MRT_TEXTURES];
 #else // NO_MRT
 #define NO_MRT
 out vec4 FragColor;
@@ -60,7 +65,7 @@ precision lowp samplerCube;
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #ifdef USE_MRT
-out vec4 FragData[6];
+out vec4 FragData[MAX_MRT_TEXTURES];
 #else // NO_MRT
 #define NO_MRT
 out vec4 FragColor;
@@ -72,5 +77,6 @@ out vec4 FragColor;
 #define FragColor gl_FragColor
 #endif // __VERSION__ >= 300
 #endif // GLSL_ES
+
 
 #endif //HEADER_FRAG
