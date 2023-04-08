@@ -11,17 +11,16 @@
 
 #include "header.vert"
 
-in vec4 vertex;
-uniform mat4 worldViewProj;
 
+in vec4 vertex;
 out vec2 vUV0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    gl_Position = worldViewProj * vertex;
+    gl_Position = vertex;
 
     vec2 inPos = sign(vertex.xy);
-    vUV0 = (vec2(inPos.x, -inPos.y) + 1.0) * 0.5;
+    vUV0 = (vec2(inPos.x, inPos.y) + 1.0) * 0.5;
 }

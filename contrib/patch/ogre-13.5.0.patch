@@ -168,6 +168,60 @@ index f2e2aefb..5e2f9cbd 100644
  #endif
              // std::isnan() has non-portable behaviour on MSVC
              // However NaN always fails this next test, no other number does.
+diff --git a/OgreMain/src/OgreAutoParamDataSource.cpp b/OgreMain/src/OgreAutoParamDataSource.cpp
+index 4ea04312e..8285ead87 100644
+--- a/OgreMain/src/OgreAutoParamDataSource.cpp
++++ b/OgreMain/src/OgreAutoParamDataSource.cpp
+@@ -340,7 +340,7 @@ namespace Ogre {
+             }
+             else
+             {
+-                mProjectionMatrix = mCurrentCamera->getProjectionMatrixWithRSDepth();
++                mProjectionMatrix = mCurrentCamera->getProjectionMatrix();
+             }
+             if (mCurrentRenderTarget && mCurrentRenderTarget->requiresTextureFlipping())
+             {
+@@ -674,14 +674,14 @@ namespace Ogre {
+                         mCurrentCamera->getDerivedPosition(), viewMatrix);
+                     mTextureViewProjMatrix[index] = 
+                         Matrix4::CLIPSPACE2DTOIMAGESPACE *
+-                        mCurrentTextureProjector[index]->getProjectionMatrixWithRSDepth() * 
++                        mCurrentTextureProjector[index]->getProjectionMatrix() *
+                         viewMatrix;
+                 }
+                 else
+                 {
+                     mTextureViewProjMatrix[index] = 
+                         Matrix4::CLIPSPACE2DTOIMAGESPACE *
+-                        mCurrentTextureProjector[index]->getProjectionMatrixWithRSDepth() * 
++                        mCurrentTextureProjector[index]->getProjectionMatrix() *
+                         mCurrentTextureProjector[index]->getViewMatrix();
+                 }
+                 mTextureViewProjMatrixDirty[index] = false;
+@@ -746,7 +746,7 @@ namespace Ogre {
+                 // since they are built into the frustum position
+                 mSpotlightViewProjMatrix[index] = 
+                     Matrix4::CLIPSPACE2DTOIMAGESPACE *
+-                    frust.getProjectionMatrixWithRSDepth() * 
++                    frust.getProjectionMatrix() *
+                     frust.getViewMatrix();
+ 
+                 mSpotlightViewProjMatrixDirty[index] = false;
+diff --git a/OgreMain/src/OgreRectangle2D.cpp b/OgreMain/src/OgreRectangle2D.cpp
+index 6c208890a..08c68b783 100644
+--- a/OgreMain/src/OgreRectangle2D.cpp
++++ b/OgreMain/src/OgreRectangle2D.cpp
+@@ -47,8 +47,8 @@ namespace Ogre {
+     void Rectangle2D::_initRectangle2D(bool includeTextureCoords, Ogre::HardwareBuffer::Usage vBufUsage) 
+     {
+         // use identity projection and view matrices
+-        mUseIdentityProjection = true;
+-        mUseIdentityView = true;
++        mUseIdentityProjection = false;
++        mUseIdentityView = false;
+ 
+         mBox.setInfinite(); // screenspace -> never culled
+ 
 diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
 index 513fd3c1..c4d1f16c 100644
 --- a/OgreMain/src/OgreRoot.cpp

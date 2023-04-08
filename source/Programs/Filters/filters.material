@@ -157,6 +157,31 @@ material Bypass
     }
 }
 
+material Flip
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref flip_fs {}
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 // Tent upsampling
 //----------------------------------------------------------------------------------------------------------------------

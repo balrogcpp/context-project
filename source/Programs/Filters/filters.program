@@ -106,3 +106,13 @@ fragment_program bypass_fs glsl glsles hlsl
         param_named RT int 0
     }
 }
+
+fragment_program flip_fs glsl glsles hlsl
+{
+	source flip.frag
+
+    default_params
+    {
+        param_named RT int 0
+    }
+}
