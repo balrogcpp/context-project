@@ -4,6 +4,14 @@
 #define MATH_GLSL
 
 
+#ifdef OGRE_GLSL
+#include "hlsl2.glsl"
+#endif
+#ifdef OGRE_HLSL
+#include "glsl2.hlsl"
+#endif
+
+
 #define HALF_MAX        65504.0 // (2 - 2^-10) * 2^15
 #define HALF_MAX_MINUS1 65472.0 // (2 - 2^-9) * 2^15
 #define HALF_EPSILON    1.0e-4
@@ -24,46 +32,6 @@
 #define F0 0.04
 
 
-float rcp(float x)
-{
-    return 1.0 / x;
-}
-
-vec2 rcp(vec2 x)
-{
-    return vec2(1.0) / x;
-}
-
-vec3 rcp(vec3 x)
-{
-    return vec3(1.0) / x;
-}
-
-vec4 rcp(vec4 x)
-{
-    return vec4(1.0) / x;
-}
-
-// https://community.khronos.org/t/saturate/53155
-float saturate(float x)
-{
-    return clamp(x, 0.0, 1.0);
-}
-
-vec2 saturate(vec2 x)
-{
-    return clamp(x, 0.0, 1.0);
-}
-
-vec3 saturate(vec3 x)
-{
-    return clamp(x, 0.0, 1.0);
-}
-
-vec4 saturate(vec4 x)
-{
-    return clamp(x, 0.0, 1.0);
-}
 
 // extra optimized functions
 float min3(float a, float b, float c)
@@ -97,7 +65,6 @@ float bigger(mediump float x, mediump float y)
     return saturate((x - y - HALF_EPSILON) * HALF_MAX);
 }
 
-// https://twitter.com/SebAaltonen/status/878250919879639040
 float biggerhp(highp float x)
 {
     return saturate((x - FLT_EPSILON) * FLT_MAX);

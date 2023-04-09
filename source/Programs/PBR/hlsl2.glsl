@@ -2,6 +2,7 @@
 
 #ifndef HLSL2_GLSL
 #define HLSL2_GLSL
+#ifdef OGRE_GLSL
 
 
 // some hlsl functions as macroses
@@ -59,4 +60,47 @@
 #define texCube textureCube
 
 
+
+float rcp(float x)
+{
+    return 1.0 / x;
+}
+
+vec2 rcp(vec2 x)
+{
+    return vec2(1.0) / x;
+}
+
+vec3 rcp(vec3 x)
+{
+    return vec3(1.0) / x;
+}
+
+vec4 rcp(vec4 x)
+{
+    return vec4(1.0) / x;
+}
+
+// https://community.khronos.org/t/saturate/53155
+float saturate(float x)
+{
+    return clamp(x, 0.0, 1.0);
+}
+
+vec2 saturate(vec2 x)
+{
+    return clamp(x, 0.0, 1.0);
+}
+
+vec3 saturate(vec3 x)
+{
+    return clamp(x, 0.0, 1.0);
+}
+
+vec4 saturate(vec4 x)
+{
+    return clamp(x, 0.0, 1.0);
+}
+
+#endif // OGRE_GLSL
 #endif // HLSL2_GLSL
