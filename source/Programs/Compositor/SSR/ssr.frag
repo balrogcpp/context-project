@@ -17,9 +17,10 @@ uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
 uniform sampler2D ColorMap;
-uniform mediump mat4 ProjMatrix;
-uniform mediump mat4 InvProjMatrix;
-uniform mediump mat4 InvViewMatrix;
+uniform highp mat4 ProjMatrix;
+uniform highp mat4 InvProjMatrix;
+uniform highp mat4 InvViewMatrix;
+uniform mediump float FarClipDistance;
 
 
 // SSR based on tutorial by Imanol Fotia
@@ -43,7 +44,7 @@ vec3 getPosition(const vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 float getDepth(const vec2 uv)
 {
-    return getPosition(uv).z;
+    return texture2D(DepthMap, uv).x;
 }
 
 
@@ -59,7 +60,6 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
         projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
         projectedCoord.xy /= projectedCoord.w;
-        projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
         depth = getDepth(projectedCoord.xy);
 
@@ -72,37 +72,41 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 
     projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
     projectedCoord.xy /= projectedCoord.w;
-    projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-    return vec2(projectedCoord.xy);
+    return projectedCoord.xy;
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec2 RayMarch(vec3 dir, vec3 hitCoord, float dDepth)
+vec2 RayCast(vec3 dir, vec3 hitCoord, float dDepth)
 {
     #define STEP 0.05
+    #define MAX_RAY_MARCH_COUNT 30
 
     dir *= STEP;
 
-    #define MAX_RAY_MARCH_COUNT 30
+    vec4 projectedCoord;
 
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         hitCoord += dir;
 
-        vec4 projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
+        projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
         projectedCoord.xy /= projectedCoord.w;
-        projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
         float depth = getDepth(projectedCoord.xy);
         dDepth = hitCoord.z - depth;
 
-        if ((dir.z - dDepth) < 1.2 && dDepth <= 0.0) {
+        // if (depth - (position.z - direction.z) < 1.2f)
+        // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
+        // We don't want to sample too far from the starting position.
+        // We're at least past the point where the ray intersects a surface.
+        // Now, determine the values at the precise location of intersection.
+        if (FarClipDistance * (dir.z - dDepth) < 1.2 && dDepth <= 0.0) {
             return BinarySearch(dir, hitCoord, dDepth);
         }
     }
 
-    return vec2(-1.0);
+    return projectedCoord.xy;
 }
 
 
@@ -156,7 +160,7 @@ void main()
     vec3 hitPos = viewPos;
     float dDepth;
 
-    vec2 coords = RayMarch(jitt + reflected, hitPos, dDepth);
+    vec2 coords = RayCast(reflected + jitt, hitPos, dDepth);
 
     float L = length(getPosition(coords) - viewPos);
     L = clamp(L * LLIMITER, 0.0, 1.0);
@@ -166,8 +170,5 @@ void main()
 
     vec3 color = texture2D(ColorMap, coords.xy).rgb * error * fresnel;
 
-    if (coords.xy != vec2(-1.0))
-        FragColor.rgb = mix(texture2D(ColorMap, vUV0), vec4(color, 1.0), reflectionStrength).rgb;
-    else
-        FragColor.rgb = mix(texture2D(ColorMap, vUV0), vec4(vec3(0.0, 0.5, 0.0), 1.0), reflectionStrength).rgb;
+    FragColor.rgb = mix(texture2D(ColorMap, vUV0).rgb, color, reflectionStrength);
 }
