@@ -50,8 +50,7 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *terra
 
   if (pass->hasFragmentProgram()) {
     const auto &fp = pass->getFragmentProgramParameters();
-
-    fp->setNamedConstant("uTexScale", uvScale);
+    fp->setNamedConstant("TexScale", uvScale);
   }
 
   if (isVertexCompressionSupported()) {

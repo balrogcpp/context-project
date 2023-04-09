@@ -9,7 +9,7 @@ compositor MRT
     technique
     {
         // color; depth; normals; speed; ssr; ambient
-        texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_R PF_R11G11B10_FLOAT PF_FLOAT16_GR PF_FLOAT16_GR PF_R11G11B10_FLOAT chain_scope
+        texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_R PF_R11G11B10_FLOAT PF_FLOAT16_GR PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT chain_scope
 
         target mrt
         {
@@ -32,6 +32,7 @@ compositor MRT
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
+
 compositor Output
 {
     technique
@@ -58,6 +59,7 @@ compositor Output
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
+
 compositor Paused
 {
     technique

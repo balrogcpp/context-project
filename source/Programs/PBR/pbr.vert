@@ -50,7 +50,7 @@ out mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
 uniform highp mat4 ModelMatrix;
-uniform highp mat4 ViewMatrix;
+uniform highp mat4 WorldViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform mediump float MovableObj;
@@ -103,7 +103,7 @@ void main()
                 vec3(0.0, 1.0, 0.0));
 #endif // HAS_NORMALS
 
-    highp vec4 view = ViewMatrix * model;
+    highp vec4 view = WorldViewMatrix * vertex;
     vViewPosition = view.xyz / view.w;
     gl_Position = WorldViewProjMatrix * vertex;
     vScreenPosition = gl_Position;
