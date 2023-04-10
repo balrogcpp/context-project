@@ -2,5 +2,5 @@
 
 vertex_program Ogre/Compositor/StdQuad_vp glsl glsles hlsl
 {
-	source StdQuad_vp.glsl
+	source StdQuad.vert
 }

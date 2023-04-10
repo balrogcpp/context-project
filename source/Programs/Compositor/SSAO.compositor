@@ -27,6 +27,7 @@ compositor SSAO
             pass render_quad
             {
                 identifier 1
+                quad_normals camera_far_corners_view_space
                 material SSAO
                 input 0 mrt 1
                 input 1 mrt 2

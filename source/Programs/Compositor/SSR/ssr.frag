@@ -12,14 +12,15 @@
 #include "header.frag"
 
 
-in mediump vec2 vUV0;
+in vec2 vUV0;
+in vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
 uniform sampler2D ColorMap;
-uniform highp mat4 ProjMatrix;
-uniform highp mat4 InvProjMatrix;
-uniform highp mat4 InvViewMatrix;
+uniform mediump mat4 ProjMatrix;
+uniform mediump mat4 InvProjMatrix;
+uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 
 
@@ -28,16 +29,9 @@ uniform mediump float FarClipDistance;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 getPositionFromDepth(const vec2 uv, const float depth)
-{
-    return vec3(InvProjMatrix * vec4(uv, depth, 1.0));
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
 vec3 getPosition(const vec2 uv)
 {
-    return getPositionFromDepth(uv, texture2D(DepthMap, uv).x);
+    return vRay * texture2D(DepthMap, vUV0).x;
 }
 
 
@@ -156,11 +150,12 @@ void main()
     // Ray cast
     #define MIN_RAY_STEP 0.2
     #define LLIMITER 0.1
+    #define JITT_SCALE 0.0
 
     vec3 hitPos = viewPos;
     float dDepth;
 
-    vec2 coords = RayCast(reflected + jitt, hitPos, dDepth);
+    vec2 coords = RayCast(reflected + jitt * JITT_SCALE, hitPos, dDepth);
 
     float L = length(getPosition(coords) - viewPos);
     L = clamp(L * LLIMITER, 0.0, 1.0);

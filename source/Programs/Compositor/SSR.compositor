@@ -23,6 +23,7 @@ compositor SSR
             pass render_quad
             {
                 identifier 2
+                quad_normals camera_far_corners_view_space
                 material SSR
                 input 0 mrt 1
                 input 1 mrt 2

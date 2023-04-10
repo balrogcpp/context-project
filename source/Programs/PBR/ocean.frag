@@ -15,7 +15,6 @@
 #include "header.frag"
 #include "math.glsl"
 #include "srgb.glsl"
-#include "hlsl2.glsl"
 
 
 in highp vec3 vModelPosition;
