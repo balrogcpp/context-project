@@ -12,9 +12,9 @@
 #include "srgb.glsl"
 
 
-in mediump vec2 vUV0;
-uniform mediump sampler2D RT;
-uniform mediump sampler2D RT0;
+in vec2 vUV0;
+uniform sampler2D RT;
+uniform sampler2D RT0;
 
 
 //----------------------------------------------------------------------------------------------------------------------

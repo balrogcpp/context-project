@@ -19,9 +19,9 @@
 #endif
 
 
-in mediump vec2 vUV0;
-uniform mediump sampler2D ColorMap;
-uniform mediump sampler2D VelocitySampler;
+in vec2 vUV0;
+uniform sampler2D ColorMap;
+uniform sampler2D VelocitySampler;
 uniform mediump vec2 TexSize1;
 uniform mediump float Scale;
 

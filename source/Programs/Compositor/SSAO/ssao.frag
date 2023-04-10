@@ -14,8 +14,8 @@
 
 in vec2 vUV0;
 in vec3 vRay;
-uniform mediump sampler2D DepthMap;
-uniform mediump sampler2D NormalMap;
+uniform sampler2D DepthMap;
+uniform sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvProjMatrix;
 uniform mediump mat4 InvViewMatrix;

@@ -20,21 +20,21 @@
 
 in highp vec4 position;
 #ifdef HAS_NORMALS
-in mediump vec4 normal;
+in vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-in mediump vec4 tangent;
+in vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
-in mediump vec4 colour;
+in vec4 colour;
 #endif
 #ifdef HAS_UV
-in mediump vec4 uv0;
-in mediump vec4 uv1;
-in mediump vec4 uv2;
-in mediump vec4 uv3;
-in mediump vec4 uv4;
-in mediump vec4 uv5;
+in vec4 uv0;
+in vec4 uv1;
+in vec4 uv2;
+in vec4 uv3;
+in vec4 uv4;
+in vec4 uv5;
 #endif //  HAS_UV
 
 out highp vec3 vModelPosition;

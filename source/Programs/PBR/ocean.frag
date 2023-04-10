@@ -19,8 +19,8 @@
 
 in highp vec3 vModelPosition;
 in highp vec3 vViewPosition;
-in highp vec4 vScreenPosition;
-in highp vec4 vPrevScreenPosition;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
 
 uniform sampler2D NormapMap;
 uniform highp vec3 CameraPosition;
@@ -160,12 +160,14 @@ void main()
     }
 
     FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
-    FragData[1].r = (vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    FragData[2].xyz = lNormal;
+    FragData[1].rg = vec2(fresnel, 0.0);
+    FragData[2].rgb = vec3(0.0);
+    FragData[3].x = (vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    FragData[4].xyz = lNormal;
+
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     mediump vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
-    FragData[3].xy = velocity;
-    FragData[4].rg = vec2(fresnel, 0.0);
+    FragData[5].xy = velocity;
 }

@@ -15,7 +15,7 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 SampleChromatic(const mediump sampler2D tex, const mediump vec2 uv, const mediump float radius)
+mediump vec3 SampleChromatic(const sampler2D tex, const mediump vec2 uv, const mediump float radius)
 {
     mediump vec2 offset = normalize(vec2(0.5) - uv) * radius;
 
@@ -40,7 +40,7 @@ mediump float WindowCubic(const mediump float x, const mediump float center, con
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 GhostFeatures(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
+mediump vec3 GhostFeatures(const sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
 {
     mediump vec2 nuv = vec2(1.0) - uv;
     mediump vec2 ghostVec = (vec2(0.5) - nuv) * 0.44;
@@ -64,7 +64,7 @@ mediump vec3 GhostFeatures(const mediump sampler2D tex, const mediump vec2 uv, c
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 HaloFeatures(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
+mediump vec3 HaloFeatures(const sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
 {
     mediump vec2 nuv = vec2(1.0) - uv;
     mediump vec2 haloVec = vec2(0.5) - nuv;
@@ -89,8 +89,8 @@ mediump vec3 HaloFeatures(const mediump sampler2D tex, const mediump vec2 uv, co
 }
 
 
-in mediump vec2 vUV0;
-uniform mediump sampler2D ColorMap;
+in vec2 vUV0;
+uniform sampler2D ColorMap;
 uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
 uniform mediump int FeaturesCount;

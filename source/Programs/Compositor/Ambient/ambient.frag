@@ -12,9 +12,9 @@
 #include "header.frag"
 
 
-in mediump vec2 vUV0;
-uniform mediump sampler2D ColorMap;
-uniform mediump sampler2D AmbientMap;
+in vec2 vUV0;
+uniform sampler2D ColorMap;
+uniform sampler2D AmbientMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float Gauss9VR(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump float Gauss9VR(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).r;
     mediump float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).r;
@@ -27,8 +27,8 @@ mediump float Gauss9VR(const mediump sampler2D tex, const mediump vec2 uv, const
 }
 
 
-in mediump vec2 vUV0;
-uniform mediump sampler2D RT;
+in vec2 vUV0;
+uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 
 

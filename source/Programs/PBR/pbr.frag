@@ -484,13 +484,13 @@ void main()
     ambient += GetEmission(uv);
 
     FragData[0] = vec4(color, alpha);
-    FragData[1].x = (vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    FragData[2].xyz = n;
+    FragData[1].rg = vec2(metallic, roughness);
+    FragData[2].rgb = ambient;
+    FragData[3].x = (vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    FragData[4].xyz = n;
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-    mediump vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
-    FragData[3].xy = velocity;
-    FragData[4].rg = vec2(metallic, roughness);
-    FragData[5].rgb = ambient;
+    mediump vec2 velocity = ((0.5 * 0.01666666666667) / FrameTime) * (b - a);
+    FragData[5].xy = velocity;
 }

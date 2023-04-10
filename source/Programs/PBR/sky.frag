@@ -62,6 +62,6 @@ void main()
         color += SunColor;
     }
 
-    FragData[0].rgb = color;
-    FragData[1].r = 1.0;
+    FragData[0] = vec4(color, 1.0);
+    FragData[3].x = 1.0;
 }

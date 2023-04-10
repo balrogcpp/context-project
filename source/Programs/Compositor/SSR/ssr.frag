@@ -26,31 +26,31 @@ uniform mediump float FarClipDistance;
 
 // SSR based on tutorial by Imanol Fotia
 // http://imanolfotia.com/blog/update/2017/03/11/ScreenSpaceReflections.html
+// https://gitlab.com/congard/algine/-/blob/v1.6-alpha/src/resources/shaders/ssr/fragment.glsl
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec2 BinarySearch(mediump vec3 dir, mediump vec3 hitCoord, mediump float dDepth)
+vec2 BinarySearch(mediump vec3 position, mediump vec3 direction, mediump float delta)
 {
     mediump float depth;
-
     mediump vec4 projectedCoord;
 
     #define MAX_BIN_SEARCH_COUNT 10
 
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
-        projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
+        projectedCoord = ProjMatrix * vec4(position, 1.0);
         projectedCoord.xy /= projectedCoord.w;
 
         depth = texture2D(DepthMap, projectedCoord.xy).x;
 
-        dDepth = hitCoord.z - depth;
+        delta = position.z - depth;
 
-        dir *= 0.5;
+        direction *= 0.5;
 
-        hitCoord += dDepth > 0.0 ? dir : -dir;
+        position += delta > 0.0 ? direction : -direction;
     }
 
-    projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
+    projectedCoord = ProjMatrix * vec4(position, 1.0);
     projectedCoord.xy /= projectedCoord.w;
 
     return projectedCoord.xy;
@@ -58,31 +58,31 @@ vec2 BinarySearch(mediump vec3 dir, mediump vec3 hitCoord, mediump float dDepth)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec2 RayCast(mediump vec3 dir, mediump vec3 hitCoord, mediump float dDepth)
+mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction, mediump float delta)
 {
     #define STEP 0.05
     #define MAX_RAY_MARCH_COUNT 30
 
-    dir *= STEP;
+    direction *= STEP;
 
     mediump vec4 projectedCoord;
 
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
-        hitCoord += dir;
+        position += direction;
 
-        projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
+        projectedCoord = ProjMatrix * vec4(position, 1.0);
         projectedCoord.xy /= projectedCoord.w;
 
         mediump float depth = texture2D(DepthMap, projectedCoord.xy).x;
-        dDepth = hitCoord.z - depth;
+        delta = position.z - depth;
 
         // if (depth - (position.z - direction.z) < 1.2f)
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
         // We don't want to sample too far from the starting position.
         // We're at least past the point where the ray intersects a surface.
         // Now, determine the values at the precise location of intersection.
-        if (FarClipDistance * (dir.z - dDepth) < 1.2 && dDepth <= 0.0) {
-            return BinarySearch(dir, hitCoord, dDepth);
+        if (FarClipDistance * (direction.z - delta) < 1.2 && delta <= 0.0) {
+            return BinarySearch(position, direction, delta);
         }
     }
 
@@ -138,17 +138,14 @@ void main()
     #define LLIMITER 0.1
     #define JITT_SCALE 0.0
 
-    mediump vec3 hitPos = viewPos;
-    mediump float dDepth;
-
-    mediump vec2 coords = RayCast(reflected + jitt * JITT_SCALE, hitPos, dDepth);
+    mediump vec3 position = viewPos;
+    mediump float delta = 0.0;
+    mediump vec2 coords = RayCast(position, reflected + jitt * JITT_SCALE, delta);
 
     mediump float L = length(vRay * texture2D(DepthMap, vUV0).x - viewPos);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;
-
     mediump float fresnel = Fresnel(reflected, normal);
-
     mediump vec3 color = texture2D(ColorMap, coords.xy).rgb * error * fresnel;
 
     FragColor.rgb = mix(texture2D(ColorMap, vUV0).rgb, color, reflectionStrength);

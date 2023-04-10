@@ -22,7 +22,7 @@ compositor Fog
             {
                 material Fog
                 input 0 rt
-                input 1 mrt 1
+                input 1 mrt 3
             }
         }
     }

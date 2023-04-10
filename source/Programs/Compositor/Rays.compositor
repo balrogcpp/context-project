@@ -30,7 +30,7 @@ compositor Rays
             {
                 material FBO
                 input 0 rt
-                input 1 mrt 1
+                input 1 mrt 3
             }
         }
 

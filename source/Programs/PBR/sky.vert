@@ -15,7 +15,7 @@
 
 
 in highp vec4 position;
-in mediump vec4 uv0;
+in highp vec4 uv0;
 out highp vec3 vPosition;
 out mediump vec3 vUV0; // direction vector representing a 3D texture coordinate
 uniform highp mat4 WorldViewProj;
