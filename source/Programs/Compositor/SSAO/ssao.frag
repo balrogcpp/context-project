@@ -12,7 +12,8 @@
 #include "header.frag"
 
 
-in mediump vec2 vUV0;
+in vec2 vUV0;
+in vec3 vRay;
 uniform mediump sampler2D DepthMap;
 uniform mediump sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;
@@ -27,20 +28,6 @@ mediump vec3 hash(mediump vec3 a)
     a = fract(a * vec3(0.8));
     a += dot(a, a.yxz + 19.19);
     return fract((a.xxy + a.yxx) * a. zyx);
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec3 getPositionFromDepth(const mediump vec2 uv, const mediump float depth)
-{
-    return vec3(InvProjMatrix * vec4(uv, depth, 1.0));
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump float getDepth(const mediump vec2 uv)
-{
-    return texture2D(DepthMap, uv).x;
 }
 
 
@@ -70,11 +57,11 @@ void main()
     #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
 
     // random normal lookup from a texture and expand to [-1..1]
-    mediump float depth = getDepth(vUV0);
+    mediump float depth = texture2D(DepthMap, vUV0).x;
 
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    mediump vec3 viewPos = getPositionFromDepth(vUV0, depth);
+    mediump vec3 viewPos = vRay * depth;
     mediump vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
     mediump vec3 randN = hash(worldPos);
 
@@ -100,7 +87,7 @@ void main()
         nuv /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float zd = clamp(FarClipDistance * (depth - getDepth(nuv.xy)), 0.0, 1.0);
+        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
         occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);

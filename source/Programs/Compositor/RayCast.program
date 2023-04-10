@@ -3,4 +3,9 @@
 vertex_program RayCast glsl glsles hlsl
 {
 	source RayCast.vert
+
+	default_params
+	{
+		param_named_auto WorldViewProj worldviewproj_matrix
+	}
 }

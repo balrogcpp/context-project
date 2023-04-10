@@ -29,25 +29,11 @@ uniform mediump float FarClipDistance;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 getPosition(const vec2 uv)
+vec2 BinarySearch(mediump vec3 dir, mediump vec3 hitCoord, mediump float dDepth)
 {
-    return vRay * texture2D(DepthMap, vUV0).x;
-}
+    mediump float depth;
 
-
-//----------------------------------------------------------------------------------------------------------------------
-float getDepth(const vec2 uv)
-{
-    return texture2D(DepthMap, uv).x;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
-{
-    float depth;
-
-    vec4 projectedCoord;
+    mediump vec4 projectedCoord;
 
     #define MAX_BIN_SEARCH_COUNT 10
 
@@ -55,7 +41,7 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
         projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
         projectedCoord.xy /= projectedCoord.w;
 
-        depth = getDepth(projectedCoord.xy);
+        depth = texture2D(DepthMap, projectedCoord.xy).x;
 
         dDepth = hitCoord.z - depth;
 
@@ -72,14 +58,14 @@ vec2 BinarySearch(vec3 dir, vec3 hitCoord, float dDepth)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec2 RayCast(vec3 dir, vec3 hitCoord, float dDepth)
+mediump vec2 RayCast(mediump vec3 dir, mediump vec3 hitCoord, mediump float dDepth)
 {
     #define STEP 0.05
     #define MAX_RAY_MARCH_COUNT 30
 
     dir *= STEP;
 
-    vec4 projectedCoord;
+    mediump vec4 projectedCoord;
 
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         hitCoord += dir;
@@ -87,7 +73,7 @@ vec2 RayCast(vec3 dir, vec3 hitCoord, float dDepth)
         projectedCoord = ProjMatrix * vec4(hitCoord, 1.0);
         projectedCoord.xy /= projectedCoord.w;
 
-        float depth = getDepth(projectedCoord.xy);
+        mediump float depth = texture2D(DepthMap, projectedCoord.xy).x;
         dDepth = hitCoord.z - depth;
 
         // if (depth - (position.z - direction.z) < 1.2f)
@@ -105,7 +91,7 @@ vec2 RayCast(vec3 dir, vec3 hitCoord, float dDepth)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 hash(vec3 a)
+mediump vec3 hash(mediump vec3 a)
 {
     a = fract(a * vec3(0.8));
     a += dot(a, a.yxz + 19.19);
@@ -130,40 +116,40 @@ float Fresnel(const vec3 direction, const vec3 normal)
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec2 ssr = texture2D(GlossMap, vUV0).rg;
-    float reflectionStrength = ssr.r;
+    mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
+    mediump float reflectionStrength = ssr.r;
 
     if (reflectionStrength < 0.04) {
         FragColor.rgb = texture2D(ColorMap, vUV0).rgb;
         return;
     }
 
-    vec3 normal = texture2D(NormalMap, vUV0).xyz;
-    vec3 viewPos = getPosition(vUV0);
+    mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
+    mediump vec3 viewPos = vRay * texture2D(DepthMap, vUV0).x;
 
-    vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
-    vec3 jitt = hash(worldPos) * ssr.g;
+    mediump vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
+    mediump vec3 jitt = hash(worldPos) * ssr.g;
 
     // Reflection vector
-    vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal)));
+    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal)));
 
     // Ray cast
     #define MIN_RAY_STEP 0.2
     #define LLIMITER 0.1
     #define JITT_SCALE 0.0
 
-    vec3 hitPos = viewPos;
-    float dDepth;
+    mediump vec3 hitPos = viewPos;
+    mediump float dDepth;
 
-    vec2 coords = RayCast(reflected + jitt * JITT_SCALE, hitPos, dDepth);
+    mediump vec2 coords = RayCast(reflected + jitt * JITT_SCALE, hitPos, dDepth);
 
-    float L = length(getPosition(coords) - viewPos);
+    mediump float L = length(vRay * texture2D(DepthMap, vUV0).x - viewPos);
     L = clamp(L * LLIMITER, 0.0, 1.0);
-    float error = 1.0 - L;
+    mediump float error = 1.0 - L;
 
-    float fresnel = Fresnel(reflected, normal);
+    mediump float fresnel = Fresnel(reflected, normal);
 
-    vec3 color = texture2D(ColorMap, coords.xy).rgb * error * fresnel;
+    mediump vec3 color = texture2D(ColorMap, coords.xy).rgb * error * fresnel;
 
     FragColor.rgb = mix(texture2D(ColorMap, vUV0).rgb, color, reflectionStrength);
 }

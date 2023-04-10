@@ -21,7 +21,7 @@ material SSAO
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+			vertex_program_ref RayCast {}
 
             fragment_program_ref ssao_fp
             {
