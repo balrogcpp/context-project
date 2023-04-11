@@ -91,23 +91,23 @@ mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction, mediump floa
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 hash(mediump vec3 a)
+mediump vec3 hash(const mediump vec3 a)
 {
-    a = fract(a * vec3(0.8));
-    a += dot(a, a.yxz + 19.19);
-    return fract((a.xxy + a.yxx) * a. zyx);
+    mediump vec3 b = fract(a * vec3(0.8));
+    b += dot(b, b.yxz + 19.19);
+    return fract((b.xxy + b.yxx) * b. zyx);
 }
 
 
 // source: https://www.standardabweichung.de/code/javascript/webgl-glsl-fresnel-schlick-approximation
 //----------------------------------------------------------------------------------------------------------------------
-float Fresnel(const vec3 direction, const vec3 normal)
+mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
 {
-    vec3 halfDirection = normalize(normal + direction);
+    mediump vec3 halfDirection = normalize(normal + direction);
 
-    float cosine = dot(halfDirection, direction);
-    float product = max(cosine, 0.0);
-    float factor = 1.0 - pow(product, 5.0);
+    mediump float cosine = dot(halfDirection, direction);
+    mediump float product = max(cosine, 0.0);
+    mediump float factor = 1.0 - pow(product, 5.0);
 
     return factor;
 }
