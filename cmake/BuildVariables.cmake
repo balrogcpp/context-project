@@ -45,6 +45,7 @@ insert_dependency_static(Vorbis)
 insert_dependency_static(SDL2)
 insert_dependency_static(pugixml)
 set(OGRE_STATIC 1)
+set(OGRE_IGNORE_ENV 1)
 insert_dependency_static(OGRE)
 
 
