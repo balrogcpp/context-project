@@ -1,10 +1,16 @@
-set(OGRE_HOME $ENV{OGRE_HOME})
-set(OGRE_SDK $ENV{OGRE_SDK})
-set(OGRE_SOURCE $ENV{OGRE_SOURCE})
-set(OGRE_BUILD $ENV{OGRE_BUILD})
-set(OGRE_DEPENDENCIES_DIR $ENV{OGRE_DEPENDENCIES_DIR})
-set(PROGRAMFILES $ENV{PROGRAMFILES})
-set(PROGRAMFILESX86 "$ENV{ProgramFiles\(x86\)}")
+# created by Andrey Vasiliev
+
+# read OGRE env values
+if (NOT OGRE_IGNORE_ENV)
+    set(OGRE_HOME $ENV{OGRE_HOME})
+    set(OGRE_SDK $ENV{OGRE_SDK})
+    set(OGRE_SOURCE $ENV{OGRE_SOURCE})
+    set(OGRE_BUILD $ENV{OGRE_BUILD})
+    set(OGRE_DEPENDENCIES_DIR $ENV{OGRE_DEPENDENCIES_DIR})
+    set(PROGRAMFILES $ENV{PROGRAMFILES})
+    set(PROGRAMFILESX86 "$ENV{ProgramFiles\(x86\)}")
+endif ()
+
 
 # construct search paths from environmental hints and
 # OS specific guesses
