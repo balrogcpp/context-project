@@ -16,6 +16,11 @@
 #define MAX_MRT_TEXTURES 6
 #endif
 
+#ifdef OGRE_GLSLES
+#define OGRE_GLSL
+#endif
+
+
 #ifdef GL_ES
 #if __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable

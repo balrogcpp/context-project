@@ -17,6 +17,10 @@
 #endif
 #endif
 
+#ifdef OGRE_GLSLES
+#define OGRE_GLSL
+#endif
+
 
 #ifndef GL_ES
 
