@@ -165,6 +165,12 @@ void InitOgreRenderSystemGLES2();
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
 void InitOgreRenderSystemGL();
 #endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_D3D11
+void InitOgreRenderSystemD3D11();
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_D3D9
+void InitOgreRenderSystemD3D9();
+#endif
 void InitEmbeddedResources();
 
 void VideoManager::LoadResources() {
@@ -390,6 +396,10 @@ void VideoManager::InitOgreRoot() {
   InitOgreRenderSystemGLES2();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
   InitOgreRenderSystemGL();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_D3D11)
+  InitOgreRenderSystemD3D11();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_D3D9)
+  InitOgreRenderSystemD3D();
 #endif  // DESKTOP
 #else   // !DESKTOP
   InitOgreRenderSystemGLES2();
