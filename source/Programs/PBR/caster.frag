@@ -8,7 +8,7 @@
 #define __VERSION__ 100
 #endif
 
-#include "header.frag"
+#include "header.glsl"
 
 
 #ifdef SHADOWCASTER_ALPHA
@@ -26,5 +26,5 @@ void main()
     }
 #endif
 
-    FragColor.r = gl_FragCoord.z;
+    FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
 }

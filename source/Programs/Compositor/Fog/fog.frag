@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "fog.glsl"
 
 
@@ -29,11 +29,11 @@ void main()
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
 
     if (clampedDepth > 0.5) {
-        FragColor.rgb = color;
+        FragColor = vec4(color, 1.0);
         return;
     }
     
     mediump float depth = clampedDepth * FarClipDistance + NearClipDistance;
     mediump vec3 fog = ApplyFog(color, FogParams, FogColour, depth);
-    FragColor.rgb = fog;
+    FragColor = vec4(fog, 1.0);
 }

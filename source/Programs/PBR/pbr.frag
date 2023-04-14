@@ -12,7 +12,7 @@
 
 
 #define USE_MRT
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 #ifdef SHADOWRECEIVER
@@ -339,7 +339,7 @@ mediump vec3 GetORM(const mediump vec2 uv)
 #ifdef HAS_ORM
     ORM *= texture2D(OrmMap, uv, TexLod).rgb;
 #endif
-    return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0));
+    return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0 , 1.0));
 }
 
 
@@ -398,7 +398,7 @@ void main()
     // Normal at surface point
     highp vec3 n = GetNormal(uv);
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
-    mediump vec3 color = vec3(0.0);
+    mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -469,7 +469,7 @@ void main()
     } //  lightning loop
 #endif //  MAX_LIGHTS > 0
 
-    vec3 ambient = vec3(0.0);
+    vec3 ambient = vec3(0.0, 0.0, 0.0);
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     mediump vec3 reflection = -normalize(reflect(v, n));
@@ -484,13 +484,13 @@ void main()
     ambient += GetEmission(uv);
 
     FragData[0] = vec4(color, alpha);
-    FragData[1].rg = vec2(metallic, roughness);
-    FragData[2].rgb = ambient;
-    FragData[3].x = (vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    FragData[4].xyz = n;
+    FragData[1] = vec4(metallic, roughness, 0.0, 1.0);
+    FragData[2] = vec4(ambient, 1.0);
+    FragData[3] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[4] = vec4(n, 1.0);
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     mediump vec2 velocity = ((0.5 * 0.01666666666667) / FrameTime) * (b - a);
-    FragData[5].xy = velocity;
+    FragData[5] = vec4(velocity, 0.0, 1.0);
 }

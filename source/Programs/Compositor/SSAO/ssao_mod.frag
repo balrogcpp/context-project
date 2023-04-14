@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 
 
 in vec2 vUV0;
@@ -23,5 +23,5 @@ void main()
     mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
     mediump float ssao = texture2D(SsaoMap, vUV0).r;
     color *= clamp(ssao, 0.0, 1.0);
-    FragColor.rgb = color;
+    FragColor = vec4(color, 1.0);
 }

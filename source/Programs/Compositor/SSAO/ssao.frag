@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 
 
 in vec2 vUV0;
@@ -25,7 +25,7 @@ uniform mediump float FarClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 hash(const mediump vec3 a)
 {
-    mediump vec3 b = fract(a * vec3(0.8));
+    mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b. zyx);
 }
@@ -97,5 +97,5 @@ void main()
     occ /= float(NUM_BASE_SAMPLES);
 
     // amplify and saturate if necessary
-    FragColor.r = occ;
+    FragColor = vec4(occ, 0.0, 0.0, 1.0);
 }

@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 
@@ -28,7 +28,7 @@ uniform mediump float Exposure;
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GodRays(const sampler2D tex, const mediump vec2 uv, const mediump vec2 lightPos, const mediump int counter, const mediump float density, const mediump float weight, const mediump float decay, const mediump float exposure)
 {
-    mediump vec3 color = vec3(0.0);
+    mediump vec3 color = vec3(0.0, 0.0, 0.0);
     mediump vec2 suv = uv;
     mediump float illuminationDecay = 1.0;
     mediump vec2 deltaTextCoord = (uv - lightPos) * (density / float(counter));
@@ -50,7 +50,7 @@ mediump vec3 GodRays(const sampler2D tex, const mediump vec2 uv, const mediump v
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = vec3(0.0);
+    mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
@@ -59,5 +59,5 @@ void main()
         color += GodRays(FboMap, vUV0, point.xy, RayCount, Density, Weight * point.w, Decay, Exposure);
     }
 
-    FragColor.rgb = color;
+    FragColor = vec4(color, 1.0);
 }

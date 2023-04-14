@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -56,5 +56,5 @@ uniform float Scale;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor.rgb = FXAA(ColorMap, vUV0, TexelSize0, Scale);
+    FragColor = vec4(FXAA(ColorMap, vUV0, TexelSize0, Scale), 1.0);
 }

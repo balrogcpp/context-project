@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 
@@ -43,5 +43,5 @@ void main()
     }
 
     color *= invSamples;
-    FragColor.rgb = color;
+    FragColor = vec4(color, 1.0);
 }

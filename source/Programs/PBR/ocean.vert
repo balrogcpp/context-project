@@ -11,7 +11,7 @@
 #endif
 
 
-#include "header.vert"
+#include "header.glsl"
 #include "math.glsl"
 #include "ocean.glsl"
 

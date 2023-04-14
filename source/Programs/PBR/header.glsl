@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-#ifndef HEADER_FRAG
-#define HEADER_FRAG
+#ifndef HEADER_VERT
+#define HEADER_VERT
 
 
 #ifndef MAX_LIGHTS
@@ -21,15 +21,57 @@
 #endif
 
 
-#ifdef GL_ES
+#ifdef OGRE_GLSLES
 #if __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
 #endif
 #endif
 
 
-#ifndef GL_ES
+#ifdef OGRE_GLSL
+#include "hlsl2.glsl"
+#endif
+#ifdef OGRE_HLSL
+#include "glsl2.hlsl"
+#endif
 
+
+// Vertex shader
+#ifdef OGRE_VERTEX_SHADER
+#ifdef OGRE_GLSL
+
+#ifndef GL_ES
+#if __VERSION__ >= 150
+#define attribute in
+#define varying out
+#else // __VERSION__ < 150
+#define in attribute
+#define out varying
+#endif // __VERSION__ > 150
+
+#else // #ifdef GL_ES
+precision highp float;
+precision highp int;
+precision lowp sampler2D;
+precision lowp samplerCube;
+#if __VERSION__ >= 300
+#define attribute in
+#define varying out
+#else // __VERSION__ < 300
+#define in attribute
+#define out varying
+#endif // __VERSION__ >= 300
+#endif // GLSL_ES
+
+#endif // OGRE_GLSL
+#endif // OGRE_VERTEX_SHADER
+
+
+// Fragment shader
+#ifdef OGRE_FRAGMENT_SHADER
+#ifdef OGRE_GLSL
+
+#ifndef GL_ES
 #if __VERSION__ >= 150
 #define varying in
 #define texture1D texture
@@ -53,8 +95,7 @@ out vec4 FragColor;
 #define FragColor gl_FragColor
 #endif // __VERSION__ >= 150
 
-#else // GLSLES
-
+#else // #ifdef GL_ES
 precision highp float;
 precision highp int;
 precision lowp sampler2D;
@@ -83,5 +124,7 @@ out vec4 FragColor;
 #endif // __VERSION__ >= 300
 #endif // GLSL_ES
 
+#endif // OGRE_GLSL
+#endif // OGRE_FRAGMENT_SHADER
 
-#endif //HEADER_FRAG
+#endif //HEADER_VERT

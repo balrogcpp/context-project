@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 
 
@@ -23,5 +23,5 @@ void main()
 {
     mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
     mediump vec3 rays = texture2D(FboMap, vUV0).rgb;
-    FragColor.rgb = SafeHDR(color + rays);
+    FragColor = vec4(SafeHDR(color + rays), 1.0);
 }

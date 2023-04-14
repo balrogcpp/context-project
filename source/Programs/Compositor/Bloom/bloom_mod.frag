@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 
 
@@ -52,5 +52,5 @@ void main()
     w *= 2.0;
 #endif
 
-    FragColor.rgb = SafeHDR(rt + rt0 * w);
+    FragColor = vec4(SafeHDR(rt + rt0 * w), 1.0);
 }

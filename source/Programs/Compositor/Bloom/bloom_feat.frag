@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 
@@ -17,7 +17,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 SampleChromatic(const sampler2D tex, const mediump vec2 uv, const mediump float radius)
 {
-    mediump vec2 offset = normalize(vec2(0.5) - uv) * radius;
+    mediump vec2 offset = normalize(vec2(0.5, 0.5) - uv) * radius;
 
     mediump vec3 color = vec3(
         texture2D(tex, uv + offset).r,
@@ -42,9 +42,9 @@ mediump float WindowCubic(const mediump float x, const mediump float center, con
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GhostFeatures(const sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
 {
-    mediump vec2 nuv = vec2(1.0) - uv;
-    mediump vec2 ghostVec = (vec2(0.5) - nuv) * 0.44;
-    mediump vec3 color = vec3(0.0);
+    mediump vec2 nuv = vec2(1.0, 1.0) - uv;
+    mediump vec2 ghostVec = (vec2(0.5, 0.5) - nuv) * 0.44;
+    mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
     #define MAX_GHOST_COUNT 24
 
@@ -53,7 +53,7 @@ mediump vec3 GhostFeatures(const sampler2D tex, const mediump vec2 uv, const med
         if (counter <= i) break;
 
         mediump vec2 suv = fract(nuv + ghostVec * float(i));
-        mediump float d = distance(suv, vec2(0.5));
+        mediump float d = distance(suv, vec2(0.5, 0.5));
         mediump float w = pow(1.0 - d, 5.0) / float(counter);
         mediump vec3 s = SampleChromatic(tex, suv, radius);
         color += s * w;
@@ -66,8 +66,8 @@ mediump vec3 GhostFeatures(const sampler2D tex, const mediump vec2 uv, const med
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 HaloFeatures(const sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
 {
-    mediump vec2 nuv = vec2(1.0) - uv;
-    mediump vec2 haloVec = vec2(0.5) - nuv;
+    mediump vec2 nuv = vec2(1.0, 1.0) - uv;
+    mediump vec2 haloVec = vec2(0.5, 0.5) - nuv;
 
     #define RADIUS 0.45
 
@@ -77,7 +77,7 @@ mediump vec3 HaloFeatures(const sampler2D tex, const mediump vec2 uv, const medi
     haloVec = normalize(haloVec);
     haloVec.x /= ratio;
     mediump vec2 wuv = (nuv - vec2(0.5, 0.0)) / vec2(ratio, 1.0) + vec2(0.5, 0.0);
-    mediump float d = distance(wuv, vec2(0.5));
+    mediump float d = distance(wuv, vec2(0.5, 0.5));
     mediump float w = pow(1.0 - d, 5.0);
     haloVec *= RADIUS;
 
@@ -103,5 +103,5 @@ void main()
     color += GhostFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
     color += HaloFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
 
-    FragColor.rgb = color;
+    FragColor = vec4(color, 1.0);
 }

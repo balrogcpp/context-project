@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 
 
 in vec2 vUV0;
@@ -93,7 +93,7 @@ mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction, mediump floa
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 hash(const mediump vec3 a)
 {
-    mediump vec3 b = fract(a * vec3(0.8));
+    mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b. zyx);
 }
@@ -120,7 +120,7 @@ void main()
     mediump float reflectionStrength = ssr.r;
 
     if (reflectionStrength < 0.04) {
-        FragColor.rgb = texture2D(ColorMap, vUV0).rgb;
+        FragColor = vec4(texture2D(ColorMap, vUV0).rgb, 1.0);
         return;
     }
 
@@ -148,5 +148,5 @@ void main()
     mediump float fresnel = Fresnel(reflected, normal);
     mediump vec3 color = texture2D(ColorMap, coords.xy).rgb * error * fresnel;
 
-    FragColor.rgb = mix(texture2D(ColorMap, vUV0).rgb, color, reflectionStrength);
+    FragColor = vec4(mix(texture2D(ColorMap, vUV0).rgb, color, reflectionStrength), 1.0);
 }

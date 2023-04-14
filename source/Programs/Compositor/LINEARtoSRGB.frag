@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "srgb.glsl"
 
 
@@ -23,5 +23,5 @@ void main()
 {
     vec3 color = texture2D(ColorMap, vUV0).rgb;
     color = expose(color, Exposure);
-    FragColor.rgb = LINEARtoSRGB(color, Exposure);
+    FragColor = vec4(LINEARtoSRGB(color, Exposure), 1.0);
 }

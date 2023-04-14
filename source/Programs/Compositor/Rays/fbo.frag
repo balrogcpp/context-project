@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 
@@ -25,5 +25,5 @@ void main()
     mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
     color /= (1.0 + luminance((color)));
     mediump float depth = texture2D(DepthMap, vUV0).x;
-    FragColor.rgb = bigger(depth, 0.5) * color;
+    FragColor = vec4(bigger(depth, 0.5) * color, 1.0);
 }

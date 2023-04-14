@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 #include "srgb.glsl"
 #include "filters.glsl"
 
@@ -17,7 +17,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Threshold(const mediump vec3 color, const mediump float threshold)
 {
-    return max(color - vec3(threshold), vec3(0.0));
+    return max(color - vec3(threshold), vec3(0.0, 0.0, 0.0));
 }
 
 
@@ -31,5 +31,5 @@ uniform mediump float Threshhold;
 void main()
 {
     mediump vec3 color = Downscale13T(ColorMap, vUV0, TexelSize0);
-    FragColor.rgb = Threshold(color, Threshhold);
+    FragColor = vec4(Threshold(color, Threshhold), 1.0);
 }

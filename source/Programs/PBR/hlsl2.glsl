@@ -44,7 +44,7 @@
 #endif
 #define lerp mix
 #define fmod modf
-#define mul(a, b) ((a)*(b))
+#define mul(a, b) ((a) * (b))
 #define frac fract
 #define atan2 atan
 #define rsqrt inversesqrt
@@ -55,10 +55,12 @@
 #define firstbithigh findMSB
 #define firstbitlow findLSB
 #define reversebits bitfieldReverse
+#define Texture2D sampler2D
+#define Texture3D sampler3D
+#define TextureCube samplerCube
 #define tex2D texture2D
 #define tex3D texture3D
 #define texCube textureCube
-
 
 
 float rcp(float x)
@@ -68,12 +70,12 @@ float rcp(float x)
 
 vec2 rcp(vec2 x)
 {
-    return vec2(1.0) / x;
+    return vec2(1.0, 1.0) / x;
 }
 
 vec3 rcp(vec3 x)
 {
-    return vec3(1.0) / x;
+    return vec3(1.0, 1.0 , 1.0) / x;
 }
 
 vec4 rcp(vec4 x)

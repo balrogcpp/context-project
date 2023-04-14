@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.vert"
+#include "header.glsl"
 
 
 in vec4 vertex;

@@ -10,7 +10,7 @@
 #endif
 #endif
 
-#include "header.vert"
+#include "header.glsl"
 
 uniform mat4 worldViewProj;
 #ifdef FADE

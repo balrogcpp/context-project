@@ -8,7 +8,7 @@
 #define __VERSION__ 100
 #endif
 
-#include "header.frag"
+#include "header.glsl"
 #include "srgb.glsl"
 
 
@@ -23,5 +23,5 @@ void main()
     mediump vec3 rt = texture2D(RT, vUV0).rgb;
     mediump vec3 rt0 = texture2D(RT0, vUV0).rgb;
 
-    FragColor.rgb = rt + rt0;
+    FragColor = vec4(rt + rt0, 1.0);
 }

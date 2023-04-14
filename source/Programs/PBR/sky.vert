@@ -11,7 +11,7 @@
 #endif
 
 
-#include "header.vert"
+#include "header.glsl"
 
 
 in highp vec4 position;

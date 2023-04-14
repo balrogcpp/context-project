@@ -11,7 +11,7 @@
 #endif
 
 #define USE_MRT
-#include "header.frag"
+#include "header.glsl"
 
 #include "srgb.glsl"
 #ifdef NO_MRT
@@ -43,7 +43,7 @@ void main()
     color = SRGBtoLINEAR(color);
 #ifndef NO_MRT
     FragData[0] = color;
-    FragData[1].x = (oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    FragData[1] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
 #else // NO_MRT
 #ifdef USE_FOG
     color.rgb = ApplyFog(color.rgb, fogParams, fogColour.rgb, oFogCoord);

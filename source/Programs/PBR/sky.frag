@@ -12,7 +12,7 @@
 
 
 #define USE_MRT
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 
@@ -39,7 +39,7 @@ uniform samplerCube CubeMap;
 //----------------------------------------------------------------------------------------------------------------------
 highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos_gamma)
 {
-    highp vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5)));
+    highp vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5, 1.5, 1.5)));
     return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta)));
 }
 
@@ -63,5 +63,5 @@ void main()
     }
 
     FragData[0] = vec4(color, 1.0);
-    FragData[3].x = 1.0;
+    FragData[3] = vec4(1.0, 0.0, 0.0, 1.0);
 }

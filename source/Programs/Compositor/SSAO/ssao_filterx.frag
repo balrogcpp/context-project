@@ -9,7 +9,7 @@
 #endif
 
 
-#include "header.frag"
+#include "header.glsl"
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,5 +35,6 @@ uniform mediump vec2 TexelSize0;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor.rgb = vec3(Gauss9HR(RT, vUV0, TexelSize0));
+    float a = Gauss9HR(RT, vUV0, TexelSize0);
+    FragColor = vec4(a, 0.0, 0.0, 1.0);
 }

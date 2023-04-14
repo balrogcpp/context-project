@@ -12,7 +12,7 @@
 
 
 #define USE_MRT
-#include "header.frag"
+#include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 
@@ -115,7 +115,7 @@ void main()
     mediump float fresnel = fresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = vec3(1.0);
+    vec3 reflection = vec3(1.0, 1.0 , 1.0);
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
@@ -130,7 +130,7 @@ void main()
     // depth of potential refracted fragment
     highp float surfaceDepth = vScreenPosition.w;
 
-    highp vec3 refraction = vec3(0.0);
+    highp vec3 refraction = vec3(0.0, 0.0, 0.0);
 
     highp float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  
@@ -150,7 +150,7 @@ void main()
 
     refraction = mix(refraction, scatterColor, lightScatter);
 
-    mediump vec3 color = vec3(0.0);
+    mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
     if (aboveWater) {
         color = mix(refraction, reflection, fresnel * 0.6);
@@ -160,14 +160,14 @@ void main()
     }
 
     FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
-    FragData[1].rg = vec2(fresnel, 0.0);
-    FragData[2].rgb = vec3(0.0);
-    FragData[3].x = (vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    FragData[4].xyz = lNormal;
+    FragData[1] = vec4(fresnel, 0.0, 0.0, 1.0);
+    FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[3] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[4] = vec4(lNormal, 1.0);
 
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     mediump vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
-    FragData[5].xy = velocity;
+    FragData[5] = vec4(velocity, 0.0, 1.0);
 }
