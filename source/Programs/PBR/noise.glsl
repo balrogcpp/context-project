@@ -36,7 +36,7 @@ highp float RandomHp(const highp vec2 x)
 mediump float BetterRandom(const mediump vec2 x)
 {
     mediump float dt = dot(x, vec2(12.9898, 78.233));
-    mediump float sn = mod(dt, 3.14159265359); //  M_PI
+    mediump float sn = mod(dt, 3.14159265359); // M_PI
     return fract(sin(sn) * 43758.5453);
 }
 
@@ -44,14 +44,14 @@ mediump float BetterRandom(const mediump vec2 x)
 highp float BetterRandomHp(const highp vec2 x)
 {
     highp float dt = dot(x, vec2(12.9898, 78.233));
-    highp float sn = mod(dt, 3.14159265359); //  M_PI
+    highp float sn = mod(dt, 3.14159265359); // M_PI
     return fract(sin(sn) * 43758.5453);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float InterleavedGradientNoise(const vec2 position_screen)
+mediump float InterleavedGradientNoise(const mediump vec2 position_screen)
 {
-    vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    mediump vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
     return fract(magic.z * fract(dot(position_screen, magic.xy)));
 }
 
@@ -71,14 +71,13 @@ mediump vec2 VogelDiskSample(const mediump float sampleIndex, const mediump floa
     mediump float theta = sampleIndex * GoldenAngle + phi;
     mediump float sine = sin(theta);
     mediump float cosine = cos(theta);
-
     return vec2(r * cosine, r * sine);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Interleaved gradient function from Jimenez 2014
 // http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare
-const mediump GradientNoise(const mediump vec2 xy, const mediump vec2 params)
+mediump float GradientNoise(const mediump vec2 xy, const mediump vec2 params)
 {
     mediump vec2 uv = floor(xy * params.xy);
     mediump float f = dot(vec2(0.06711056, 0.00583715), uv);

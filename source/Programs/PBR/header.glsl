@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-#ifndef HEADER_VERT
-#define HEADER_VERT
+#ifndef HEADER_GLSL
+#define HEADER_GLSL
 
 
 #ifndef MAX_LIGHTS
@@ -20,13 +20,11 @@
 #define OGRE_GLSL
 #endif
 
-
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
 #endif
 #endif
-
 
 #ifdef OGRE_GLSL
 #include "hlsl2.glsl"
@@ -88,7 +86,7 @@ out vec4 FragData[MAX_MRT_TEXTURES];
 #define NO_MRT
 out vec4 FragColor;
 #endif // ! NO_MRT
-#else  // __VERSION__ < 150
+#else  // #if __VERSION__ < 150
 #define in varying
 #define out varying
 #define FragData gl_FragData
@@ -127,4 +125,5 @@ out vec4 FragColor;
 #endif // OGRE_GLSL
 #endif // OGRE_FRAGMENT_SHADER
 
-#endif //HEADER_VERT
+
+#endif // HEADER_GLSL
