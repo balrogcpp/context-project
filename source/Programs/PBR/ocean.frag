@@ -62,9 +62,9 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
         mediump float B = (c * (g + c) - 1.0) / (c * (g - c) + 1.0);
         
         return 0.5 * A * A * (1.0 + B * B);
-    }
-
-    return 1.0; // TIR (no refracted component)
+    } else {
+        return 1.0; // TIR (no refracted component)
+    }    
 }
 
 
@@ -164,7 +164,6 @@ void main()
     FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[3] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[4] = vec4(lNormal, 1.0);
-
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);

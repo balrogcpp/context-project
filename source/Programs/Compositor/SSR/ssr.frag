@@ -38,7 +38,7 @@ vec2 BinarySearch(mediump vec3 position, mediump vec3 direction, mediump float d
     #define MAX_BIN_SEARCH_COUNT 10
 
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
-        projectedCoord = ProjMatrix * vec4(position, 1.0);
+        projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
         projectedCoord.xy /= projectedCoord.w;
 
         depth = texture2D(DepthMap, projectedCoord.xy).x;
@@ -50,7 +50,7 @@ vec2 BinarySearch(mediump vec3 position, mediump vec3 direction, mediump float d
         position += delta > 0.0 ? direction : -direction;
     }
 
-    projectedCoord = ProjMatrix * vec4(position, 1.0);
+    projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
     projectedCoord.xy /= projectedCoord.w;
 
     return projectedCoord.xy;
@@ -70,7 +70,7 @@ mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction, mediump floa
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         position += direction;
 
-        projectedCoord = ProjMatrix * vec4(position, 1.0);
+        projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
         projectedCoord.xy /= projectedCoord.w;
 
         mediump float depth = texture2D(DepthMap, projectedCoord.xy).x;
@@ -127,7 +127,7 @@ void main()
     mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
     mediump vec3 viewPos = vRay * texture2D(DepthMap, vUV0).x;
 
-    mediump vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
+    mediump vec3 worldPos = mul(InvViewMatrix, vec4(viewPos, 1.0)).xyz;
     mediump vec3 jitt = hash(worldPos) * ssr.g;
 
     // Reflection vector

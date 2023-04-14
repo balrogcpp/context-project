@@ -25,5 +25,5 @@ void main()
     vUV0.xy = uv0.xy;
 #endif
 
-   gl_Position = MVPMatrix * position;
+   gl_Position = mul(MVPMatrix, position);
 }

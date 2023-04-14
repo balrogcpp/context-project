@@ -17,7 +17,6 @@ in vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;
-uniform mediump mat4 InvProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 
@@ -62,7 +61,7 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     mediump vec3 viewPos = vRay * depth;
-    mediump vec3 worldPos = vec3(InvViewMatrix * vec4(viewPos, 1.0));
+    mediump vec3 worldPos = mul(InvViewMatrix, vec4(viewPos, 1.0)).xyz;
     mediump vec3 randN = hash(worldPos);
 
     // By computing Z manually, we lose some accuracy under extreme angles
@@ -83,7 +82,7 @@ void main()
         //#define RADIUS 0.2125
         #define RADIUS 0.0525
 
-        mediump vec4 nuv = ProjMatrix * vec4(viewPos + randomDir * RADIUS, 1.0);
+        mediump vec4 nuv = mul(ProjMatrix, vec4(viewPos + randomDir * RADIUS, 1.0));
         nuv /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference

@@ -155,7 +155,6 @@ uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
 uniform mediump float FrameTime;
 uniform mediump float TexScale;
-uniform mediump float TexLod;
 #ifdef HAS_NORMALMAP
 #define HAS_PARALLAXMAP
 uniform mediump float OffsetScale;
@@ -293,7 +292,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
     highp vec3 n0 = cross(dFdx(vModelPosition), dFdy(vModelPosition));
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n1 = texture2D(NormalMap, uv, TexLod).xyz;
+    highp vec3 n1 = texture2D(NormalMap, uv).xyz;
     highp vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n0, b));
     n1 = normalize(mat3(t, b, n0) * ((2.0 * n1 - 1.0)));
@@ -307,8 +306,8 @@ highp vec3 GetNormal(const mediump vec2 uv)
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 #ifdef HAS_NORMALMAP
-    highp vec3 n = texture2D(NormalMap, uv, TexLod).xyz;
-    n = normalize(vTBN * ((2.0 * n - 1.0)));
+    highp vec3 n = texture2D(NormalMap, uv).xyz;
+    n = normalize(mul(vTBN, ((2.0 * n - 1.0))));
     return n;
 #else
     highp vec3 n = vTBN[2].xyz;
@@ -326,7 +325,7 @@ mediump vec4 GetAlbedo(const mediump vec2 uv)
     mediump vec4 albedo = SurfaceDiffuseColour.rgba * vColor;
 
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(AlbedoMap, uv, TexLod);
+    albedo *= texture2D(AlbedoMap, uv);
 #endif
     return SRGBtoLINEAR(albedo);
 }
@@ -337,7 +336,7 @@ mediump vec3 GetORM(const mediump vec2 uv)
 {
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
 #ifdef HAS_ORM
-    ORM *= texture2D(OrmMap, uv, TexLod).rgb;
+    ORM *= texture2D(OrmMap, uv).rgb;
 #endif
     return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0 , 1.0));
 }
@@ -347,7 +346,7 @@ mediump vec3 GetORM(const mediump vec2 uv)
 mediump vec3 GetEmission(const mediump vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(EmissiveMap, uv, TexLod).rgb);
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(EmissiveMap, uv).rgb);
 #else
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
@@ -363,7 +362,7 @@ void main()
 
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-    uv -= (v.xy * (OffsetScale * texture2D(NormalMap, uv, TexLod).a));
+    uv -= (v.xy * (OffsetScale * texture2D(NormalMap, uv).a));
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 

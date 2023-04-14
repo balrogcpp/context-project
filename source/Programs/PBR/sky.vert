@@ -26,5 +26,5 @@ void main()
 {
     vUV0 = uv0.xyz;
     vPosition = position.xyz;
-    gl_Position = WorldViewProj * position;
+    gl_Position = mul(WorldViewProj, position);
 }

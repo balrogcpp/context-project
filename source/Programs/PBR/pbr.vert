@@ -78,7 +78,7 @@ void main()
 #endif // HAS_VERTEXCOLOR
 
     highp vec4 vertex = position;
-    highp vec4 model = ModelMatrix * vertex;
+    highp vec4 model = mul(ModelMatrix, vertex);
     vModelPosition = model.xyz / model.w;
 
 #ifdef PAGED_GEOMETRY
@@ -87,34 +87,35 @@ void main()
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-    highp vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
-    highp vec3 t = normalize(vec3(ModelMatrix * vec4(tangent.xyz, 0.0)));
+    highp vec3 n = normalize(vec3(mul(ModelMatrix, vec4(normal.xyz, 0.0))));
+    highp vec3 t = normalize(vec3(mul(ModelMatrix, vec4(tangent.xyz, 0.0))));
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mat3(t, b, n);
 #else
-    highp vec3 n = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
+    highp vec3 n = normalize(vec3(mul(ModelMatrix, vec4(normal.xyz, 0.0))));
     highp vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n, b));
     vTBN = mat3(t, b, n);
 #endif // HAS_TANGENTS
 #else
-    vTBN = mat3(vec3(1.0, 0.0, 0.0),
-                normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0))),
-                vec3(0.0, 1.0, 0.0));
+    highp vec3 n = vec3(0.0, 1.0, 0.0));
+    highp vec3 b = normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)));
+    highp vec3 t = vec3(1.0, 0.0, 0.0);
+    vTBN = mat3(t, b, n);
 #endif // HAS_NORMALS
 
-    highp vec4 view = WorldViewMatrix * vertex;
+    highp vec4 view = mul(WorldViewMatrix, vertex);
     vViewPosition = view.xyz / view.w;
-    gl_Position = WorldViewProjMatrix * vertex;
+    gl_Position = mul(WorldViewProjMatrix, vertex);
     vScreenPosition = gl_Position;
     vDepth = gl_Position.z;
-    vPrevScreenPosition = MovableObj > 0.0 ? WorldViewProjPrev * vertex : WorldViewProjPrev * ModelMatrix * vertex;
+    vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, vertex) : mul(WorldViewProjPrev, mul(ModelMatrix, vertex));
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex in light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
-        vLightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * vertex;
+        vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], vertex);
     }
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER

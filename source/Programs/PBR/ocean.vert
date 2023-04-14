@@ -30,13 +30,13 @@ uniform highp mat4 WorldViewProjPrev;
 
 void main()
 {
-    highp vec4 model = ModelMatrix * position;
+    highp vec4 model = mul(ModelMatrix, position);
     vModelPosition = model.xyz / model.w;
-    highp vec4 view = WorldViewMatrix * position;
+    highp vec4 view = mul(WorldViewMatrix, position);
     vViewPosition = view.xyz / view.w;
 
-    gl_Position = WorldViewProjMatrix * position;
+    gl_Position = mul(WorldViewProjMatrix, position);
 
     vScreenPosition = gl_Position;
-    vPrevScreenPosition = WorldViewProjPrev * position;
+    vPrevScreenPosition = mul(WorldViewProjPrev, position);
 }
