@@ -9,7 +9,7 @@ compositor FXAA
 {
     technique
     {
-        texture rt target_width target_height PF_FLOAT16_RGB
+        texture rt target_width target_height PF_R11G11B10_FLOAT
 
         target rt
         {

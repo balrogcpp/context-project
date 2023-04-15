@@ -14,7 +14,7 @@ compositor SSAO
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
         texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
         texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
-        texture rt target_width target_height PF_FLOAT16_RGB
+        texture rt target_width target_height PF_R11G11B10_FLOAT
 
 
         target rt
