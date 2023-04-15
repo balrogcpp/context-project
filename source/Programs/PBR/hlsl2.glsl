@@ -5,7 +5,7 @@
 #ifdef OGRE_GLSL
 
 
-// some hlsl functions as macroses
+// some hlsl functions as macros
 #define float4 vec4
 #define float3 vec3
 #define float2 vec2
