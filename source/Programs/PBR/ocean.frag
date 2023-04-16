@@ -159,8 +159,8 @@ void main()
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }
 
-    FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 1.0);
-    FragData[1] = vec4(fresnel, 0.0, 0.0, 1.0);
+    FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 0.5);
+    FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
     FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[3] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[4] = vec4(lNormal, 1.0);

@@ -26,13 +26,6 @@
 #endif
 #endif
 
-#ifdef OGRE_GLSL
-#include "hlsl2.glsl"
-#endif
-#ifdef OGRE_HLSL
-#include "glsl2.hlsl"
-#endif
-
 
 // Vertex shader
 #ifdef OGRE_VERTEX_SHADER
@@ -124,6 +117,14 @@ out vec4 FragColor;
 
 #endif // OGRE_GLSL
 #endif // OGRE_FRAGMENT_SHADER
+
+
+#ifdef OGRE_GLSL
+#include "hlsl2.glsl"
+#endif
+#ifdef OGRE_HLSL
+#include "glsl2.hlsl"
+#endif
 
 
 #endif // HEADER_GLSL

@@ -58,3 +58,5 @@
 inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
 inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
 inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
+inline bool RenderSystemIsD3D9() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "Direct3D9 Rendering Subsystem"; };
+inline bool RenderSystemIsD3D11() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "Direct3D11 Rendering Subsystem"; };

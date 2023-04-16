@@ -32,7 +32,6 @@
 #define F0 0.04
 
 
-
 // extra optimized functions
 float min3(float a, float b, float c)
 {

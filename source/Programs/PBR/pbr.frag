@@ -483,7 +483,7 @@ void main()
     ambient += GetEmission(uv);
 
     FragData[0] = vec4(color, alpha);
-    FragData[1] = vec4(metallic, roughness, 0.0, 1.0);
+    FragData[1] = vec4(metallic, roughness, alpha, 1.0);
     FragData[2] = vec4(ambient, 1.0);
     FragData[3] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[4] = vec4(n, 1.0);
