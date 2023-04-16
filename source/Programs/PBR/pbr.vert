@@ -90,18 +90,18 @@ void main()
     highp vec3 n = normalize(vec3(mul(ModelMatrix, vec4(normal.xyz, 0.0))));
     highp vec3 t = normalize(vec3(mul(ModelMatrix, vec4(tangent.xyz, 0.0))));
     highp vec3 b = cross(n, t) * tangent.w;
-    vTBN = mat3(t, b, n);
+    vTBN = mtxFromCols3x3(t, b, n);
 #else
     highp vec3 n = normalize(vec3(mul(ModelMatrix, vec4(normal.xyz, 0.0))));
     highp vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n, b));
-    vTBN = mat3(t, b, n);
+    vTBN = mtxFromCols3x3(t, b, n);
 #endif // HAS_TANGENTS
 #else
     highp vec3 n = vec3(0.0, 1.0, 0.0));
     highp vec3 b = normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)));
     highp vec3 t = vec3(1.0, 0.0, 0.0);
-    vTBN = mat3(t, b, n);
+    vTBN = mtxFromCols3x3(t, b, n);
 #endif // HAS_NORMALS
 
     highp vec4 view = mul(WorldViewMatrix, vertex);

@@ -62,5 +62,15 @@
 #define texCube textureCube
 
 
+// from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/OgreUnifiedShader.h
+#define vec2_splat vec2
+#define vec3_splat vec3
+#define vec4_splat vec4
+#define mtxFromRows3x3(a, b, c)    ( transpose(mat3(a, b, c)) )
+#define mtxFromRows4x4(a, b, c, d) ( transpose(mat4(a, b, c, d)) )
+#define mtxFromCols3x3(a, b, c)    ( mat3(a, b, c) )
+#define mtxFromCols4x4(a, b, c, d) ( mat4(a, b, c, d) )
+
+
 #endif // OGRE_GLSL
 #endif // HLSL2_GLSL
