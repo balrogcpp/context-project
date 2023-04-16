@@ -18,23 +18,23 @@
 #endif
 
 
-in highp vec4 position;
+in highp vec4 vertex;
 #ifdef HAS_NORMALS
-in vec4 normal;
+in highp vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-in vec4 tangent;
+in highp vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
-in vec4 colour;
+in mediump vec4 colour;
 #endif
 #ifdef HAS_UV
-in vec4 uv0;
-in vec4 uv1;
-in vec4 uv2;
-in vec4 uv3;
-in vec4 uv4;
-in vec4 uv5;
+in mediump vec4 uv0;
+in mediump vec4 uv1;
+in mediump vec4 uv2;
+in mediump vec4 uv3;
+in mediump vec4 uv4;
+in mediump vec4 uv5;
 #endif //  HAS_UV
 
 out highp vec3 vModelPosition;
@@ -53,14 +53,14 @@ uniform highp mat4 ModelMatrix;
 uniform highp mat4 WorldViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
-uniform mediump float MovableObj;
+uniform highp float MovableObj;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
 uniform highp vec4 CameraPosition;
-uniform mediump float FadeRange;
+uniform highp float FadeRange;
 #endif // PAGED_GEOMETRY
 #ifdef SHADOWRECEIVER
-uniform mediump mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
+uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif // SHADOWRECEIVER
 
 
@@ -77,12 +77,12 @@ void main()
     vColor = vec4(1.0);
 #endif // HAS_VERTEXCOLOR
 
-    highp vec4 vertex = position;
-    highp vec4 model = mul(ModelMatrix, vertex);
+    highp vec4 position = vertex;
+    highp vec4 model = mul(ModelMatrix, position);
     vModelPosition = model.xyz / model.w;
 
 #ifdef PAGED_GEOMETRY
-     vertex +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(vertex, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(vertex, Time.x, uv1, uv2);
+     position +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
 #endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS
@@ -104,18 +104,18 @@ void main()
     vTBN = mtxFromCols3x3(t, b, n);
 #endif // HAS_NORMALS
 
-    highp vec4 view = mul(WorldViewMatrix, vertex);
+    highp vec4 view = mul(WorldViewMatrix, position);
     vViewPosition = view.xyz / view.w;
-    gl_Position = mul(WorldViewProjMatrix, vertex);
+    gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
     vDepth = gl_Position.z;
-    vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, vertex) : mul(WorldViewProjPrev, mul(ModelMatrix, vertex));
+    vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(ModelMatrix, position));
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex in light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
-        vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], vertex);
+        vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], position);
     }
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER

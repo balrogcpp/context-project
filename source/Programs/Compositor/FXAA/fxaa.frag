@@ -47,7 +47,7 @@ vec3 FXAA(const sampler2D tex, const vec2 uv, const vec2 tsize, const float stre
 }
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D ColorMap;
 uniform vec2 TexelSize0;
 uniform float Scale;

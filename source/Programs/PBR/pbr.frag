@@ -107,7 +107,7 @@ mediump vec3 GetIBLContribution(const samplerCube DiffuseEnvMap, const samplerCu
 // varyings
 in highp vec3 vModelPosition;
 in highp vec3 vViewPosition;
-in highp vec2 vUV0;
+in mediump vec2 vUV0;
 in mediump float vDepth;
 in mediump vec4 vColor;
 in mediump vec4 vScreenPosition;

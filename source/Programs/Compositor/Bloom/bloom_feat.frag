@@ -89,7 +89,7 @@ mediump vec3 HaloFeatures(const sampler2D tex, const mediump vec2 uv, const medi
 }
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D ColorMap;
 uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;

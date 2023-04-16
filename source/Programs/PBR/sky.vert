@@ -14,10 +14,12 @@
 #include "header.glsl"
 
 
-in highp vec4 position;
-in highp vec4 uv0;
+in highp vec4 vertex;
+in mediump vec4 uv0;
+
 out highp vec3 vPosition;
 out mediump vec3 vUV0; // direction vector representing a 3D texture coordinate
+
 uniform highp mat4 WorldViewProj;
 
 
@@ -25,6 +27,6 @@ uniform highp mat4 WorldViewProj;
 void main()
 {
     vUV0 = uv0.xyz;
-    vPosition = position.xyz;
-    gl_Position = mul(WorldViewProj, position);
+    vPosition = vertex.xyz;
+    gl_Position = mul(WorldViewProj, vertex);
 }

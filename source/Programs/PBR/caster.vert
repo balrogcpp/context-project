@@ -11,7 +11,7 @@
 #include "header.glsl"
 
 
-in highp vec4 position;
+in highp vec4 vertex;
 #ifdef SHADOWCASTER_ALPHA
 in highp vec2 uv0;
 out highp vec2 vUV0;
@@ -25,5 +25,5 @@ void main()
     vUV0.xy = uv0.xy;
 #endif
 
-   gl_Position = mul(MVPMatrix, position);
+   gl_Position = mul(MVPMatrix, vertex);
 }

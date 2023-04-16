@@ -35,7 +35,7 @@ mediump vec3 Upscale3x3(const sampler2D tex, const mediump vec2 uv, const medium
 }
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D RT0;
 uniform mediump vec2 TexelSize1;

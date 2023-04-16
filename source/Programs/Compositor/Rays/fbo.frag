@@ -14,7 +14,7 @@
 #include "srgb.glsl"
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D ColorMap;
 uniform sampler2D DepthMap;
 

@@ -18,7 +18,7 @@
 
 
 in highp vec3 vPosition;
-in vec3 vUV0;
+in mediump vec3 vUV0;
 
 uniform vec3 SunDirection;
 uniform float SunSize;

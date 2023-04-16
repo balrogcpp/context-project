@@ -14,7 +14,7 @@
 #include "srgb.glsl"
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D FboMap;
 uniform mediump float LightCount;
 uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];

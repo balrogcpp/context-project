@@ -47,7 +47,7 @@ mediump vec3 Threshold(const mediump vec3 color, const mediump float threshold)
 }
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D ColorMap;
 uniform mediump vec2 TexelSize0;
 uniform mediump float Threshhold;

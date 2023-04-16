@@ -27,7 +27,7 @@ mediump float Gauss9HR(const sampler2D tex, const mediump vec2 uv, const mediump
 }
 
 
-in vec2 vUV0;
+in mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 
