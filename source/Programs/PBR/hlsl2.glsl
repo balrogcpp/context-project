@@ -30,7 +30,6 @@
 #define matrix mat4x4
 #define static
 #define groupshared shared
-#define atan2 atan
 #define ddx dFdx
 #define ddy dFdy
 #define ddx_coarse dFdx
@@ -42,8 +41,6 @@
 #else
 #   define mad fma
 #endif
-#define lerp mix
-#define fmod modf
 #define mul(a, b) ((a) * (b))
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define rcp(x) (1.0 / x)
