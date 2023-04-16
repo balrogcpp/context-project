@@ -70,6 +70,8 @@
 #define mtxFromRows4x4(a, b, c, d) ( transpose(mat4(a, b, c, d)) )
 #define mtxFromCols3x3(a, b, c)    ( mat3(a, b, c) )
 #define mtxFromCols4x4(a, b, c, d) ( mat4(a, b, c, d) )
+#define mtx3x3(a1, a2, a3, a4, a5, a6, a7, a8, a9) ( mat3(a1, a2, a3, a4, a5, a6, a7, a8, a9) )
+#define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) )
 
 
 #endif // OGRE_GLSL

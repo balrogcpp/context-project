@@ -58,7 +58,7 @@
 
 
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/OgreUnifiedShader.h
-// #define mod(_a, _b)   ( _a - _b * floor(_a / _b) )
+// #define mod(a, b)   ( a - b * floor(a / b) )
 #define vec2_splat(x) ( vec2(x, x) )
 #define vec3_splat(x) ( vec3(x, x, x) )
 #define vec4_splat(x) ( vec4(x, x, x, x) )
@@ -66,6 +66,8 @@
 #define mtxFromRows4x4(a, b, c, d) ( transpose(mat4(a, b, c, d)) )
 #define mtxFromCols3x3(a, b, c)    ( mat3(a, b, c) )
 #define mtxFromCols4x4(a, b, c, d) ( mat4(a, b, c, d) )
+#define mtx3x3(a1, a2, a3, a4, a5, a6, a7, a8, a9) ( transpose(mat3(a1, a2, a3, a4, a5, a6, a7, a8, a9)) )
+#define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( transpose(mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)) )
 
 
 #endif // OGRE_HLSL

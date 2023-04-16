@@ -295,7 +295,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
     highp vec3 n1 = texture2D(NormalMap, uv).xyz;
     highp vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n0, b));
-    n1 = normalize(mat3(t, b, n0) * ((2.0 * n1 - 1.0)));
+    n1 = normalize(mtxFromCols3x3(t, b, n0) * ((2.0 * n1 - 1.0)));
     return n1;
 #else
     return n0;
