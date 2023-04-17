@@ -25,15 +25,60 @@ out mediump vec4 vPrevScreenPosition;
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
+uniform highp vec4 CameraPosition;
+uniform highp vec4 Time;
 
+uniform mediump float bumpScale;
+uniform mediump vec2 textureScale;
+uniform mediump vec2 bumpSpeed;
+uniform mediump float waveFreq;
+uniform mediump float waveAmp;
+
+
+// wave functions
+struct Wave {
+    float freq;  // 2*PI / wavelength
+    float amp;   // amplitude
+    float phase; // speed * 2*PI / wavelength
+    vec2 dir;
+};
 
 void main()
 {
-    highp vec4 world = mul(WorldMatrix, vertex);
-    vWorldPosition = world.xyz / world.w;
+    #define NWAVES 2
 
-    gl_Position = mul(WorldViewProjMatrix, vertex);
+    Wave wave[NWAVES];
+
+    wave[0] = Wave( waveFreq, waveAmp, 0.5, vec2(-1.0, 0.0) );
+    wave[1] = Wave( 3.0 * waveFreq, 0.33 * waveAmp, 1.7, vec2(-0.7, 0.7) );
+
+    highp vec4 position = vertex;
+
+    // sum waves
+    float ddx = 0.0, ddy = 0.0;
+    float deriv;
+    float angle;
+
+    // wave synthesis using two sine waves at different frequencies and phase shift
+    for(int i = 0; i < NWAVES; ++i) {
+        angle = dot(wave[i].dir, position.xz) * wave[i].freq + Time.x * wave[i].phase;
+        position.y += wave[i].amp * sin( angle );
+        // calculate derivate of wave function
+        deriv = wave[i].freq * wave[i].amp * cos(angle);
+        ddx -= deriv * wave[i].dir.x;
+        ddy -= deriv * wave[i].dir.y;
+    }
+
+    // compute the 3x3 transform from tangent space to object space
+    // compute tangent basis
+//    vec3 T = normalize(vec3(1.0, ddy, 0.0)) * bumpScale;
+//    vec3 B = normalize(vec3(0.0, ddx, 1.0)) * bumpScale;
+//    vec3 N = normalize(vec3(ddx, 1.0, ddy));
+
+    highp vec4 world = mul(WorldMatrix, position);
+    vWorldPosition = world.xyz / world.w;
+    gl_Position = mul(WorldViewProjMatrix, position);
 
     vScreenPosition = gl_Position;
-    vPrevScreenPosition = mul(WorldViewProjPrev, vertex);
+    vPrevScreenPosition = mul(WorldViewProjPrev, position);
 }

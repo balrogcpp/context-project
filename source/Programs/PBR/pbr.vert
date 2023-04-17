@@ -76,8 +76,6 @@ void main()
 #endif // HAS_VERTEXCOLOR
 
     highp vec4 position = vertex;
-    highp vec4 world = mul(WorldMatrix, position);
-    vWorldPosition = world.xyz / world.w;
 
 #ifdef PAGED_GEOMETRY
      position +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
@@ -101,6 +99,9 @@ void main()
     highp vec3 t = vec3(1.0, 0.0, 0.0);
     vTBN = mtxFromCols3x3(t, b, n);
 #endif // HAS_NORMALS
+
+    highp vec4 world = mul(WorldMatrix, position);
+    vWorldPosition = world.xyz / world.w;
 
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
