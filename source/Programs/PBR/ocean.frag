@@ -70,8 +70,6 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    bool aboveWater = CameraPosition.y > 0.0;
-
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
@@ -110,7 +108,7 @@ void main()
     mediump vec3 scatterColor = mix(ScatterColor * vec3(1.0, 0.4, 0.0), ScatterColor, SunTransmittance);
 
     // fresnel term
-    mediump float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
+    mediump float ior = (CameraPosition.y > 0.0) ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
     mediump float fresnel = fresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
@@ -134,7 +132,7 @@ void main()
     highp float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  
     mediump vec3 waterSunColor = vec3(0.0, 1.0, 0.85) * waterSunGradient;
-    waterSunColor *= aboveWater ? 0.25 : 0.5;
+    waterSunColor *= (CameraPosition.y > 0.0) ? 0.25 : 0.5;
 
     mediump float waterGradient = dot(vVec, vec3(0.0, -1.0, 0.0));
     waterGradient = clamp((waterGradient * 0.5 + 0.5), 0.2, 1.0);
@@ -142,7 +140,7 @@ void main()
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-    mediump float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
+    mediump float fog = (CameraPosition.y > 0.0) ? 1.0 : surfaceDepth / Visibility;
 
     mediump float darkness = Visibility * 2.0;
     darkness = saturate((CameraPosition.y + darkness) / darkness);
@@ -151,7 +149,7 @@ void main()
 
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
-    if (aboveWater) {
+    if ((CameraPosition.y > 0.0)) {
         color = mix(refraction, reflection, fresnel * 0.6);
     } else {
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);

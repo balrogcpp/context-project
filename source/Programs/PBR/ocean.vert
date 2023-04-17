@@ -26,8 +26,8 @@ uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp vec4 CameraPosition;
-uniform highp vec4 Time;
 
+uniform mediump vec4 Time;
 uniform mediump float bumpScale;
 uniform mediump vec2 textureScale;
 uniform mediump vec2 bumpSpeed;

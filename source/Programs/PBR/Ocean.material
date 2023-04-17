@@ -8,7 +8,7 @@ vertex_program Ocean_vs glsl glsles hlsl
     {
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        param_named_auto CameraPosition camera_position_object_space
+        param_named_auto CameraPosition camera_position
         param_named_auto Time time_0_x_packed 100
 
         param_named bumpScale float 0.2
