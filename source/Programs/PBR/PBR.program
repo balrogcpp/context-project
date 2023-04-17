@@ -23,8 +23,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
     {
         shared_params_ref PBR_Shared_vert
 
-        param_named_auto ModelMatrix world_matrix
-        param_named_auto WorldViewMatrix worldview_matrix
+        param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
         param_named_auto Time time_0_x_packed 100

@@ -17,23 +17,20 @@
 
 
 in highp vec4 vertex;
-out highp vec3 vModelPosition;
-out highp vec3 vViewPosition;
+
+out highp vec3 vWorldPosition;
 out mediump vec4 vScreenPosition;
 out mediump vec4 vPrevScreenPosition;
 
-uniform highp mat4 ModelMatrix;
-uniform highp mat4 WorldViewMatrix;
+uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 
 
 void main()
 {
-    highp vec4 model = mul(ModelMatrix, vertex);
-    vModelPosition = model.xyz / model.w;
-    highp vec4 view = mul(WorldViewMatrix, vertex);
-    vViewPosition = view.xyz / view.w;
+    highp vec4 world = mul(WorldMatrix, vertex);
+    vWorldPosition = world.xyz / world.w;
 
     gl_Position = mul(WorldViewProjMatrix, vertex);
 

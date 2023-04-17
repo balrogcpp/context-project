@@ -105,8 +105,7 @@ mediump vec3 GetIBLContribution(const samplerCube DiffuseEnvMap, const samplerCu
 
 
 // varyings
-in highp vec3 vModelPosition;
-in highp vec3 vViewPosition;
+in highp vec3 vWorldPosition;
 in mediump vec2 vUV0;
 in mediump float vDepth;
 in mediump vec4 vColor;
@@ -289,7 +288,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
 {
 #ifndef HAS_NORMALS
 #ifndef HAS_TANGENTS
-    highp vec3 n0 = cross(dFdx(vModelPosition), dFdy(vModelPosition));
+    highp vec3 n0 = cross(dFdx(vWorldPosition), dFdy(vWorldPosition));
 
 #ifdef HAS_NORMALMAP
     highp vec3 n1 = texture2D(NormalMap, uv).xyz;
@@ -356,7 +355,7 @@ mediump vec3 GetEmission(const mediump vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    highp vec3 v = normalize(CameraPosition - vModelPosition);
+    highp vec3 v = normalize(CameraPosition - vWorldPosition);
     highp vec2 uv = vUV0.xy;
     uv *= (1.0 + TexScale);
 
@@ -413,7 +412,7 @@ void main()
         highp float range = vAttParams.x;
 
         if (range < HALF_MAX_MINUS1) {
-            highp vec3 vLightViewH = LightPositionArray[i].xyz - vModelPosition;
+            highp vec3 vLightViewH = LightPositionArray[i].xyz - vWorldPosition;
             highp float fLightD = length(vLightViewH);
             highp float fLightD2 = fLightD * fLightD;
             highp vec3 vLightView = normalize(vLightViewH);

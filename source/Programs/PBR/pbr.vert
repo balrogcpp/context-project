@@ -37,8 +37,7 @@ in mediump vec4 uv4;
 in mediump vec4 uv5;
 #endif //  HAS_UV
 
-out highp vec3 vModelPosition;
-out highp vec3 vViewPosition;
+out highp vec3 vWorldPosition;
 out mediump vec2 vUV0;
 out mediump float vDepth;
 out mediump vec4 vColor;
@@ -49,8 +48,7 @@ out mediump mat3 vTBN;
 out mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
-uniform highp mat4 ModelMatrix;
-uniform highp mat4 WorldViewMatrix;
+uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp float MovableObj;
@@ -78,8 +76,8 @@ void main()
 #endif // HAS_VERTEXCOLOR
 
     highp vec4 position = vertex;
-    highp vec4 model = mul(ModelMatrix, position);
-    vModelPosition = model.xyz / model.w;
+    highp vec4 world = mul(WorldMatrix, position);
+    vWorldPosition = world.xyz / world.w;
 
 #ifdef PAGED_GEOMETRY
      position +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
@@ -87,29 +85,27 @@ void main()
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-    highp vec3 n = normalize(vec3(mul(ModelMatrix, vec4(normal.xyz, 0.0))));
-    highp vec3 t = normalize(vec3(mul(ModelMatrix, vec4(tangent.xyz, 0.0))));
+    highp vec3 n = normalize(vec3(mul(WorldMatrix, vec4(normal.xyz, 0.0))));
+    highp vec3 t = normalize(vec3(mul(WorldMatrix, vec4(tangent.xyz, 0.0))));
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
 #else
-    highp vec3 n = normalize(vec3(mul(ModelMatrix, vec4(normal.xyz, 0.0))));
+    highp vec3 n = normalize(vec3(mul(WorldMatrix, vec4(normal.xyz, 0.0))));
     highp vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n, b));
     vTBN = mtxFromCols3x3(t, b, n);
 #endif // HAS_TANGENTS
 #else
-    highp vec3 n = vec3(0.0, 1.0, 0.0));
+    highp vec3 n = vec3(0.0, 1.0, 0.0);
     highp vec3 b = normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)));
     highp vec3 t = vec3(1.0, 0.0, 0.0);
     vTBN = mtxFromCols3x3(t, b, n);
 #endif // HAS_NORMALS
 
-    highp vec4 view = mul(WorldViewMatrix, position);
-    vViewPosition = view.xyz / view.w;
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
     vDepth = gl_Position.z;
-    vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(ModelMatrix, position));
+    vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0

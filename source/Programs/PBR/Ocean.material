@@ -6,8 +6,7 @@ vertex_program Ocean_vs glsl glsles hlsl
 
     default_params
     {
-        param_named_auto ModelMatrix world_matrix
-        param_named_auto WorldViewMatrix worldview_matrix
+        param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
     }
 }
