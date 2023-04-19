@@ -2,19 +2,19 @@
 
 vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 {
-	source caster.vert
+	source pssm.vert
 
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 
 	default_params
 	{
-		param_named_auto MVPMatrix worldviewproj_matrix
+		param_named_auto WorldViewProjMatrix worldviewproj_matrix
 	}
 }
 
 fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 {
-	source caster.frag
+	source pssm.frag
 
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 
