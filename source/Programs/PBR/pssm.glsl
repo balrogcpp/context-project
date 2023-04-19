@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-#ifndef RECEIVER_GLSL
-#define RECEIVER_GLSL
+#ifndef PSSM_GLSL
+#define PSSM_GLSL
 
 
 #include "math.glsl"
@@ -103,4 +103,4 @@ mediump float CalcDepthShadow(const mediump sampler2D shadowMap, mediump vec4 li
 }
 
 
-#endif //RECEIVER_GLSL
+#endif // PSSM_GLSL

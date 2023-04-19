@@ -16,7 +16,8 @@
 #include "math.glsl"
 #include "srgb.glsl"
 #ifdef SHADOWRECEIVER
-#include "receiver.glsl"
+#include "pssm.glsl"
+#include "dpsm.glsl"
 #endif
 
 
