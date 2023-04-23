@@ -1877,12 +1877,12 @@ bool SliderScalar(const char *label, ImGuiDataType data_type, void *p_data, cons
   if (!temp_input_is_active) {
     const bool input_requested_by_tabbing = temp_input_allowed && (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_FocusedByTabbing) != 0;
     const bool clicked = (hovered && g.IO.MouseClicked[0]);
-    if (input_requested_by_tabbing || clicked || g.NavActivateId == id || g.NavActivateInputId == id) {
+    if (input_requested_by_tabbing || clicked || g.NavActivateId == id) {
       SetActiveID(id, window);
       SetFocusID(id, window);
       FocusWindow(window);
       g.ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
-      if (temp_input_allowed && (input_requested_by_tabbing || (clicked && g.IO.KeyCtrl) || g.NavActivateInputId == id)) temp_input_is_active = true;
+      if (temp_input_allowed && (input_requested_by_tabbing || (clicked && g.IO.KeyCtrl))) temp_input_is_active = true;
     }
   }
 

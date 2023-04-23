@@ -172,7 +172,7 @@ externalproject_add(Target_Bullet
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Bullet
         GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-        GIT_TAG 3.24
+        GIT_TAG 3.25
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -213,7 +213,7 @@ externalproject_add(Target_Bullet
         -DINSTALL_LIBS=ON
         -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON
         -DUSE_MSVC_SSE2=ON
-        -DUSE_MSVC_AVX=ON
+        -DUSE_MSVC_AVX=OFF
         -DUSE_MSVC_FAST_FLOATINGPOINT=ON
         -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=OFF
         TEST_AFTER_INSTALL ON
@@ -230,7 +230,7 @@ externalproject_add(Target_OpenAL
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenAL
         GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-        GIT_TAG 1.22.2
+        GIT_TAG 1.23.1
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -562,7 +562,7 @@ externalproject_add(Target_PNG
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_PNG
         GIT_REPOSITORY https://github.com/glennrp/libpng.git
-        GIT_TAG v1.6.38
+        GIT_TAG v1.6.39
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -600,7 +600,7 @@ externalproject_add(Target_FreeType
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_FreeType
         GIT_REPOSITORY https://github.com/freetype/freetype.git
-        GIT_TAG VER-2-12-1
+        GIT_TAG VER-2-13-0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -647,7 +647,7 @@ externalproject_add(Target_rapidjson
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_rapidjson
         GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-        GIT_TAG 27c3a8dc0e2c9218fe94986d249a12b5ed838f1d
+        GIT_TAG 949c771b03de448bdedea80c44a4a5f65284bfeb
         GIT_SHALLOW false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -784,7 +784,7 @@ externalproject_add(Target_imgui
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.89.3 # same version as used by OGRE
+        GIT_TAG v1.89.5 # same version as used by OGRE
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1118,7 +1118,7 @@ externalproject_add(Target_filesystem
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_filesystem
         GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-        GIT_TAG v1.5.12
+        GIT_TAG v1.5.14
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1193,7 +1193,7 @@ externalproject_add(Target_GoogleBenchmark
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleBenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.7.0
+        GIT_TAG v1.7.1
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1334,7 +1334,7 @@ externalproject_add(Target_asio
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
         GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-        GIT_TAG asio-1-24-0
+        GIT_TAG asio-1-27-0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
