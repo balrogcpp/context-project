@@ -19,6 +19,7 @@
 in highp vec4 vertex;
 
 out highp vec3 vWorldPosition;
+out mediump mat3 vTBN;
 out mediump vec4 vScreenPosition;
 out mediump vec4 vPrevScreenPosition;
 
@@ -55,9 +56,10 @@ void main()
     highp vec4 position = vertex;
 
     // sum waves
-    float ddx = 0.0, ddy = 0.0;
-    float deriv;
-    float angle;
+    highp float ddx = 0.0;
+    highp float ddy = 0.0;
+    highp float deriv;
+    highp float angle;
 
     // wave synthesis using two sine waves at different frequencies and phase shift
     for(int i = 0; i < NWAVES; ++i) {
@@ -71,9 +73,10 @@ void main()
 
     // compute the 3x3 transform from tangent space to object space
     // compute tangent basis
-//    vec3 T = normalize(vec3(1.0, ddy, 0.0)) * bumpScale;
-//    vec3 B = normalize(vec3(0.0, ddx, 1.0)) * bumpScale;
-//    vec3 N = normalize(vec3(ddx, 1.0, ddy));
+    highp vec3 t = normalize(vec3(1.0, ddy, 0.0)) * bumpScale;
+    highp vec3 b = normalize(vec3(0.0, ddx, 1.0)) * bumpScale;
+    highp vec3 n = normalize(vec3(ddx, 1.0, ddy));
+    vTBN = mtxFromCols3x3(t, b, n);
 
     highp vec4 world = mul(WorldMatrix, position);
     vWorldPosition = world.xyz / world.w;

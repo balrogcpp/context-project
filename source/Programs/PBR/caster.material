@@ -64,7 +64,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto MVPMatrix worldviewproj_matrix
+		param_named_auto WorldViewProjMatrix worldviewproj_matrix
 	}
 }
 
@@ -106,7 +106,7 @@ vertex_program DPSM/shadow_caster_alpha_vs glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto WorldViewProjMatrix worldview_matrix
+		param_named_auto WorldViewMatrix worldview_matrix
 	}
 }
 
@@ -159,7 +159,7 @@ vertex_program DPSM/shadow_caster_vs glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto MVPMatrix worldview_matrix
+		param_named_auto WorldViewMatrix worldview_matrix
 	}
 }
 

@@ -16,7 +16,7 @@ in highp vec4 vertex;
 in highp vec2 uv0;
 out highp vec2 vUV0;
 #endif
-uniform highp mat4 WorldViewProjMatrix;
+uniform highp mat4 WorldViewMatrix;
 
 
 void main()
@@ -25,5 +25,5 @@ void main()
     vUV0.xy = uv0.xy;
 #endif
 
-   gl_Position = mul(WorldViewProjMatrix, vertex);
+   gl_Position = mul(WorldViewMatrix, vertex);
 }

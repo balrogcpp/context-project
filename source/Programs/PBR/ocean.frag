@@ -18,6 +18,7 @@
 
 
 in highp vec3 vWorldPosition;
+in mediump mat3 vTBN;
 in mediump vec4 vScreenPosition;
 in mediump vec4 vPrevScreenPosition;
 
@@ -70,7 +71,7 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    bool aboveWater = CameraPosition.y > 0.0;
+    bool aboveWater = CameraPosition.y > vWorldPosition.y;
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
@@ -92,6 +93,7 @@ void main()
                             normal2 * MidWaves.x + normal3 * MidWaves.y +
                             normal4 * SmallWaves.x + normal5 * SmallWaves.y);
 
+
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space 
     highp vec3 vVec = normalize(CameraPosition - vWorldPosition);
     highp vec3 lVec = WorldSpaceLightPos0.xyz;
@@ -101,6 +103,7 @@ void main()
                             normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1 +
                             normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1);
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
+    lNormal = normalize(vTBN * lNormal);
 
     highp vec3 lR = reflect(-lVec, lNormal);
 
