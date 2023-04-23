@@ -1,5 +1,9 @@
 // created by Andrey Vasiliev
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PSSM + alpha
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 {
 	source pssm.vert
@@ -54,7 +58,7 @@ material PSSM/shadow_caster_alpha
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 {
-	source caster.vert
+	source pssm.vert
 
 	preprocessor_defines SHADOWCASTER
 
@@ -66,7 +70,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 
 fragment_program PSSM/shadow_caster_fs glsl glsles hlsl
 {
-	source caster.frag
+	source pssm.frag
 	
 	preprocessor_defines SHADOWCASTER
 }
@@ -85,6 +89,101 @@ material PSSM/shadow_caster
 			vertex_program_ref PSSM/shadow_caster_vs {}
 
 			fragment_program_ref PSSM/shadow_caster_fs {}
+		}
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// DPSM + alpha
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+vertex_program DPSM/shadow_caster_alpha_vs glsl glsles hlsl
+{
+	source dpsm.vert
+
+	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
+
+	default_params
+	{
+		param_named_auto WorldViewProjMatrix worldview_matrix
+	}
+}
+
+fragment_program DPSM/shadow_caster_alpha_fs glsl glsles hlsl
+{
+	source dpsm.frag
+
+	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
+
+	default_params
+	{
+	    param_named AlbedoMap int 0
+	    param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
+	}
+}
+
+
+material DPSM/shadow_caster_alpha
+{
+	receive_shadows off
+
+	technique
+	{
+		pass
+		{
+			lighting off
+			polygon_mode_overrideable off
+		    alpha_rejection greater_equal 127
+
+			vertex_program_ref DPSM/shadow_caster_alpha_vs {}
+
+			fragment_program_ref DPSM/shadow_caster_alpha_fs {}
+
+            texture_unit Albedo
+            {
+                texture white.dds
+                tex_address_mode clamp
+				filtering bilinear
+            }
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program DPSM/shadow_caster_vs glsl glsles hlsl
+{
+	source dpsm.vert
+
+	preprocessor_defines SHADOWCASTER
+
+	default_params
+	{
+		param_named_auto MVPMatrix worldview_matrix
+	}
+}
+
+fragment_program DPSM/shadow_caster_fs glsl glsles hlsl
+{
+	source dpsm.frag
+
+	preprocessor_defines SHADOWCASTER
+}
+
+material DPSM/shadow_caster
+{
+	receive_shadows off
+
+	technique
+	{
+		pass
+		{
+			lighting off
+			polygon_mode_overrideable off
+
+			vertex_program_ref DPSM/shadow_caster_vs {}
+
+			fragment_program_ref DPSM/shadow_caster_fs {}
 		}
 	}
 }

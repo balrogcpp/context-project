@@ -200,7 +200,6 @@ uniform mediump int ShadowFilterIterations;
 
 #ifdef SHADOWRECEIVER
 #include "pssm.glsl"
-#include "dpsm.glsl"
 #endif
 
 
@@ -321,6 +320,12 @@ void main()
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
+#ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
+    mediump int texCounter = 0;
+#endif // MAX_SHADOW_TEXTURES > 0
+#endif // SHADOWRECEIVER
+
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
@@ -350,11 +355,11 @@ void main()
             mediump float outerRadius = vSpotParams.z;
 
             if (outerRadius > 0.0) {
-                float fallof = vSpotParams.x;
-                float innerRadius = vSpotParams.y;
+                mediump float fallof = vSpotParams.x;
+                mediump float innerRadius = vSpotParams.y;
 
-                float rho = dot(l, vLightView);
-                float fSpotE = clamp((rho - innerRadius) / (fallof - innerRadius), 0.0, 1.0);
+                mediump float rho = dot(l, vLightView);
+                mediump float fSpotE = clamp((rho - innerRadius) / (fallof - innerRadius), 0.0, 1.0);
                 attenuation *= pow(fSpotE, outerRadius);
             }
         }
@@ -376,13 +381,9 @@ void main()
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-            if (LightCastsShadowsArray[i] > 0.0) {
-#if MAX_SHADOW_TEXTURES > 2
-                light *= GetPSSMShadow(i);
-#else
-                light *= GetShadow(i);
-#endif //  MAX_SHADOW_TEXTURES > 2
-            }
+        if (LightCastsShadowsArray[i] > 0.0) {
+            light *= GetShadow(i, texCounter);
+        }
 #endif //  MAX_SHADOW_TEXTURES > 0
 #endif //  SHADOWRECEIVER
 

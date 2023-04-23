@@ -530,10 +530,6 @@ void DotSceneLoaderB::processLight(pugi::xml_node& XMLNode, SceneNode* pParent)
     // Process userDataReference (?)
     if (auto pElement = XMLNode.child("userData"))
         processUserData(pElement, pLight->getUserObjectBindings());
-
-    // Process light shadow properties
-    if (mSceneMgr->getShadowTechnique() != SHADOWTYPE_NONE) 
-        processLightShadowProperties(pLight);
 }
 
 void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -778,7 +774,7 @@ void DotSceneLoaderB::processTrackTarget(pugi::xml_node& XMLNode, SceneNode* pPa
 }
 
 void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
-{ 
+{
     // Process attributes
     String name = getAttrib(XMLNode, "name");
 
@@ -1032,39 +1028,6 @@ void DotSceneLoaderB::processLightAttenuation(pugi::xml_node& XMLNode, Light* pL
 
     // Setup the light attenuation
     pLight->setAttenuation(range, constant, linear, quadratic);
-}
-
-void DotSceneLoaderB::processLightShadowProperties(Light* pLight)
-{
-    auto shadowTexConfig = mSceneMgr->getShadowTextureConfigList()[0];
-
-    if (pLight->getType() == Light::LT_POINT)
-    {
-        pLight->setCastShadows(false);
-    }
-    else if (pLight->getType() == Light::LT_SPOTLIGHT)
-    {
-        static ShadowCameraSetupPtr cameraSetup = LiSPSMShadowCameraSetup::create();
-
-        pLight->setCustomShadowCameraSetup(cameraSetup);
-
-//        int texCount = mSceneMgr->getShadowTextureConfigList().size();
-//        mSceneMgr->setShadowTextureCount(texCount + 1);
-//        shadowTexConfig.height *= pow(2.0, -floor(texCount / 3.0));
-//        shadowTexConfig.width *= pow(2.0, -floor(texCount / 3.0));
-//        mSceneMgr->setShadowTextureConfig(texCount, shadowTexConfig);
-    }
-    else if (pLight->getType() == Light::LT_DIRECTIONAL)
-    {
-//        int perLight = mSceneMgr->getShadowTextureCountPerLightType(Light::LT_DIRECTIONAL);
-//        int texCount = mSceneMgr->getShadowTextureConfigList().size();
-//        mSceneMgr->setShadowTextureCount(texCount + perLight);
-//
-//        for (int i = 0; i < perLight; i++)
-//        {
-//            mSceneMgr->setShadowTextureConfig(texCount - 1 + i, shadowTexConfig);
-//        }
-    }
 }
 
 void DotSceneLoaderB::processUserData(pugi::xml_node& XMLNode, UserObjectBindings& userData)

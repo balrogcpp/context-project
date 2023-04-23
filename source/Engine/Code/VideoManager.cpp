@@ -257,7 +257,14 @@ VideoManager::VideoManager()
       shadowFarDistance(400.0),
       shadowTexSize(512),
       gamepadSupport(false),
-      keyboardSupport(false) {}
+      keyboardSupport(false)
+{
+#ifdef DESKTOP
+#if OGRE_CPU == OGRE_CPU_X86
+  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3), "SSE3 support required");
+#endif
+#endif
+}
 
 VideoManager::~VideoManager() {
   if (imguiOverlay) {
@@ -440,6 +447,8 @@ void VideoManager::MakeWindow() {
   mainWindow = &windowList[0];
   ogreCamera = ogreSceneManager->createCamera("Default");
   mainWindow->Create("Demo0", ogreCamera, 0, 1270, 720, 0);
+  ogreCamera->setNearClipDistance(0.001);
+  ogreCamera->setFarClipDistance(10000.0);
   ogreViewport = mainWindow->ogreViewport;
   InputSequencer::GetInstance().RegWindowListener(mainWindow);
 }
@@ -464,6 +473,46 @@ void VideoManager::InitOgreOverlay() {
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 #endif
 }
+
+class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
+ public:
+  DPSMCameraSetup() {}
+  virtual ~DPSMCameraSetup() {}
+
+  static Ogre::ShadowCameraSetupPtr create() { return std::make_shared<DPSMCameraSetup>(); }
+
+  /// Default shadow camera setup
+  void getShadowCamera(const Ogre::SceneManager *sm, const Ogre::Camera *cam, const Ogre::Viewport *vp, const Ogre::Light *light,
+                       Ogre::Camera *texCam, size_t iteration) const override {
+    const auto &oldCaster = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
+    const auto &dpsmCaster = Ogre::MaterialManager::getSingleton().getByName("DPSM/shadow_caster_alpha");
+
+    if (iteration == 0) {
+      if (light->getType() != Ogre::Light::LT_POINT)
+        const_cast<Ogre::SceneManager *>(sm)->setShadowTextureCasterMaterial(oldCaster);
+      else
+        const_cast<Ogre::SceneManager *>(sm)->setShadowTextureCasterMaterial(dpsmCaster);
+    }
+
+    if (light->getType() == Ogre::Light::LT_POINT)
+      Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+    else if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
+      Ogre::PSSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+    else if (light->getType() == Ogre::Light::LT_SPOTLIGHT)
+      Ogre::LiSPSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+    else
+      Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+
+    if (light->getType() == Ogre::Light::LT_POINT) {
+      auto *_cam = const_cast<Ogre::Camera *>(cam);
+      _cam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+      if (iteration == 0)
+        _cam->getParentSceneNode()->setDirection(Ogre::Vector3::UNIT_Y);
+      else
+        _cam->getParentSceneNode()->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
+    }
+  }
+};
 
 void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
@@ -492,14 +541,14 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
     ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
 
     // pssm stuff
-    pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
-    pssmSetup->calculateSplitPoints(pssmSplitCount, 0.001, ogreSceneManager->getShadowFarDistance());
+    pssmSetup = make_shared<DPSMCameraSetup>();
+    pssmSetup->calculateSplitPoints(pssmSplitCount, ogreCamera->getNearClipDistance(), ogreSceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
     pssmSetup->setSplitPadding(0.0);
     for (int i = 0; i < pssmSplitCount; i++) {
@@ -524,7 +573,7 @@ void VideoManager::EnableShadows(bool enable) {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
     ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
 
   } else {
