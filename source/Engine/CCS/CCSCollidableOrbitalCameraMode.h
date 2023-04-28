@@ -24,8 +24,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ------------------------------------------------------- */
 
-#ifndef _OrbitalCameraMode_H_
-#define _OrbitalCameraMode_H_
+#ifndef _CollidableOrbitalCameraMode_H_
+#define _CollidableOrbitalCameraMode_H_
 
 #include "CCSPrerequisites.h"
 
@@ -42,25 +42,6 @@ namespace CCS
 class DllExport CollidableOrbitalCameraMode : public OrbitalCameraMode
 {
  public:
-
-//  OrbitalCameraMode(CameraControlSystem* cam, Ogre::Real initialZoom = 1
-//      , Ogre::Radian initialHorizontalRotation = Ogre::Radian(0), Ogre::Radian initialVerticalRotation = Ogre::Radian(0)
-//      , bool resetToInitialPosition = true, Ogre::Real collisionmargin = 0.1f)
-//      : ChaseFreeYawAxisCameraMode(cam, Ogre::Vector3::ZERO, Ogre::Quaternion::IDENTITY, collisionmargin)
-//      , mZoomFactor(1)
-//      , mRotationFactor(0.13)
-//      , mInitialRotHorizontal(initialHorizontalRotation)
-//      , mInitialRotVertical(initialVerticalRotation)
-//      , mInitialZoom(initialZoom)
-//      , mZoom(initialZoom)
-//      , mRotHorizontal(0)
-//      , mRotVertical(0)
-//      , mZoomDisplacement(0)
-//      , mResetToInitialPosition(resetToInitialPosition)
-//  {
-//    this->setCameraTightness(1);
-//  };
-
   CollidableOrbitalCameraMode(CameraControlSystem* cam, Ogre::Real initialZoom = 1
       , Ogre::Radian initialHorizontalRotation = Ogre::Radian(0), Ogre::Radian initialVerticalRotation = Ogre::Radian(0)
       , bool resetToInitialPosition = true, Ogre::Real collisionmargin = 0.1f)
