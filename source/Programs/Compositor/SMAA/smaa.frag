@@ -13,6 +13,11 @@
 #include "math.glsl"
 
 
+#define FXAA_REDUCE_MIN 0.0078125 // 1/128
+#define FXAA_REDUCE_MUL 0.125 // 1.0/8.0
+#define FXAA_SPAN_MAX 8.0
+
+
 in mediump vec2 vUV0;
 uniform sampler2D ColorMap;
 uniform vec2 TexelSize0;
@@ -22,10 +27,6 @@ uniform float Scale;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    #define FXAA_REDUCE_MIN 0.0078125 // 1/128
-    #define FXAA_REDUCE_MUL 0.125 // 1.0/8.0
-    #define FXAA_SPAN_MAX 8.0
-
     mediump vec3 rgbNW = texture2D(ColorMap, vUV0 + (vec2(-1.0, -1.0)) * TexelSize0).xyz;
     mediump vec3 rgbNE = texture2D(ColorMap, vUV0 + (vec2(1.0, -1.0)) * TexelSize0).xyz;
     mediump vec3 rgbSW = texture2D(ColorMap, vUV0 + (vec2(-1.0, 1.0)) * TexelSize0).xyz;
@@ -44,7 +45,7 @@ void main()
     dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
     mediump float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * FXAA_REDUCE_MUL),FXAA_REDUCE_MIN);
     mediump float rcpDirMin = 1.0/(min(abs(dir.x), abs(dir.y)) + dirReduce);
-    dir = min(vec2(FXAA_SPAN_MAX,  FXAA_SPAN_MAX), max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),dir * rcpDirMin)) * TexelSize0;
+    dir = min(vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX), max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),dir * rcpDirMin)) * TexelSize0;
     mediump vec3 rgbA = 0.5 * (texture2D(ColorMap, vUV0 + dir * (1.0/3.0 - 0.5)).xyz + texture2D(ColorMap, vUV0 + dir * (2.0/3.0 - 0.5)).xyz);
     mediump vec3 rgbB = rgbA * 0.5 + 0.25 * (texture2D(ColorMap,  vUV0 + dir * -0.5).xyz + texture2D(ColorMap,  vUV0 + dir * 0.5).xyz);
     mediump float lumaB = dot(rgbB, luma);

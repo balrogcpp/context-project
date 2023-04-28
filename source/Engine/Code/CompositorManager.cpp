@@ -85,8 +85,9 @@ void CompositorManager::OnSetUp() {
 
   // extra compositors
   AddCompositor("Blur", false);
-  AddCompositor("FXAA", false);
   AddCompositor("Output", true);
+  AddCompositor("FXAA", false);
+  //AddCompositor("SMAA", false);
 
   AddCompositor("Paused", false);
 

@@ -299,40 +299,4 @@ mediump vec4 Downscale13LUM(const mediump sampler2D tex, const mediump vec2 uv, 
     return c1 + c2 + c3 + c4 + c5;
 }
 
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec3 FXAA(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize, const mediump float strength)
-{
-    #define reducemul 0.125 // 1/8
-    #define reducemin 0.0078125 // 1/128
-    #define gray vec3(0.299, 0.587, 0.114)
-
-    mediump vec3 basecol = texture2D(tex, uv).rgb;
-    mediump vec3 baseNW = texture2D(tex, uv - tsize).rgb;
-    mediump vec3 baseNE = texture2D(tex, uv + vec2(tsize.x, -tsize.y)).rgb;
-    mediump vec3 baseSW = texture2D(tex, uv + vec2(-tsize.x, tsize.y)).rgb;
-    mediump vec3 baseSE = texture2D(tex, uv + tsize).rgb;
-    mediump float monocol = dot(basecol, gray);
-    mediump float monoNW = dot(baseNW, gray);
-    mediump float monoNE = dot(baseNE, gray);
-    mediump float monoSW = dot(baseSW, gray);
-    mediump float monoSE = dot(baseSE, gray);
-    mediump float monomin = min(monocol, min(min(monoNW, monoNE), min(monoSW, monoSE)));
-    mediump float monomax = max(monocol, max(max(monoNW, monoNE), max(monoSW, monoSE)));
-    mediump vec2 dir = vec2(-((monoNW + monoNE) - (monoSW + monoSE)), ((monoNW + monoSW) - (monoNE + monoSE)));
-    mediump float dirreduce = max((monoNW + monoNE + monoSW + monoSE) * reducemul * 0.25, reducemin);
-    mediump float dirmin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirreduce);
-    dir = min(vec2(strength), max(vec2(-strength), dir * dirmin)) * tsize;
-
-    mediump vec3 resultA = 0.5 * (texture2D(tex, uv + dir * -0.166667).rgb + texture2D(tex, uv + dir * 0.166667).rgb);
-    mediump vec3 resultB = resultA * 0.5 + 0.25 * (texture2D(tex, uv + dir * -0.5).rgb + texture2D(tex, uv + dir * 0.5).rgb);
-    mediump float monoB = dot(resultB, gray);
-
-    if(monoB < monomin || monoB > monomax)
-        return resultA;
-    else
-        return resultB;
-}
-
 #endif // FILTERS_GLSL
