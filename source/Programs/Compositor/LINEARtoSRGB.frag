@@ -22,6 +22,6 @@ uniform float Exposure;
 void main()
 {
     mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
-    color = expose(color, Exposure);
+    //color = expose(color, Exposure);
     FragColor = vec4(LINEARtoSRGB(color, Exposure), 1.0);
 }

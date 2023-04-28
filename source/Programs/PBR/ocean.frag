@@ -71,7 +71,7 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    bool aboveWater = CameraPosition.y > vWorldPosition.y;
+    const bool aboveWater = true;
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
@@ -103,7 +103,7 @@ void main()
                             normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1 +
                             normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1);
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
-    lNormal = normalize(vTBN * lNormal);
+    //lNormal = normalize(vTBN * lNormal);
 
     highp vec3 lR = reflect(-lVec, lNormal);
 

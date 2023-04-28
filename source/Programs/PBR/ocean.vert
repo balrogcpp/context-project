@@ -13,7 +13,6 @@
 
 #include "header.glsl"
 #include "math.glsl"
-#include "ocean.glsl"
 
 
 in highp vec4 vertex;
@@ -58,18 +57,18 @@ void main()
     // sum waves
     highp float ddx = 0.0;
     highp float ddy = 0.0;
-    highp float deriv;
-    highp float angle;
+    highp float deriv = 0.0;
+    highp float angle = 0.0;
 
     // wave synthesis using two sine waves at different frequencies and phase shift
-    for(int i = 0; i < NWAVES; ++i) {
-        angle = dot(wave[i].dir, position.xz) * wave[i].freq + Time.x * wave[i].phase;
-        position.y += wave[i].amp * sin( angle );
-        // calculate derivate of wave function
-        deriv = wave[i].freq * wave[i].amp * cos(angle);
-        ddx -= deriv * wave[i].dir.x;
-        ddy -= deriv * wave[i].dir.y;
-    }
+//    for(int i = 0; i < NWAVES; ++i) {
+//        angle = dot(wave[i].dir, position.xz) * wave[i].freq + Time.x * wave[i].phase;
+//        position.y += wave[i].amp * sin( angle );
+//        // calculate derivate of wave function
+//        deriv = wave[i].freq * wave[i].amp * cos(angle);
+//        ddx -= deriv * wave[i].dir.x;
+//        ddy -= deriv * wave[i].dir.y;
+//    }
 
     // compute the 3x3 transform from tangent space to object space
     // compute tangent basis
