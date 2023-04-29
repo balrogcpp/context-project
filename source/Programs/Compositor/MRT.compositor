@@ -64,9 +64,9 @@ compositor Paused
 {
     technique
     {
-        texture rt target_width target_height PF_BYTE_RGB
-        texture rtx target_width target_height PF_BYTE_RGB
-        texture rty target_width target_height PF_BYTE_RGB
+        texture rt target_width target_height PF_R11G11B10_FLOAT
+        texture rtx target_width target_height PF_R11G11B10_FLOAT
+        texture rty target_width target_height PF_R11G11B10_FLOAT
 
         target rt
         {

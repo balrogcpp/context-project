@@ -22,7 +22,7 @@ compositor CubeMap
 {
     technique
     {
-        texture cube 128 128 PF_BYTE_RGB cubic
+        texture cube 128 128 PF_R11G11B10_FLOAT cubic
 
         target cube 0 : CubeFace {}
         target cube 1 : CubeFace {}

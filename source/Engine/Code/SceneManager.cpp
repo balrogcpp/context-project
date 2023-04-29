@@ -117,7 +117,7 @@ void SceneManager::OnUpdate(float time) {
   }
 
   viewProjPrev = viewProj;
-  viewProj = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
+  viewProj = ogreCamera->getProjectionMatrix() * ogreCamera->getViewMatrix();
 
   if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
     auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
@@ -214,39 +214,61 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       const auto &old = it->getMaterial();
       const auto &mat = old->clone(std::to_string(generator++));
 
-      if (0) {
-        auto *pass = mat->getTechnique(0)->getPass(0);
-        auto &vp = pass->getVertexProgram();
-        auto &fp = pass->getFragmentProgram();
+      auto *pass = mat->getTechnique(0)->getPass(0);
+      auto &vp = pass->getVertexProgram();
+      auto &fp = pass->getFragmentProgram();
+      auto &vc = pass->getVertexProgramParameters();
+      auto &fc = pass->getFragmentProgramParameters();
+      std::string vpDefines = vp->getParameter("preprocessor_defines");
+      std::string fpDefines = fp->getParameter("preprocessor_defines");
 
-        std::string vpDefines = vp->getParameter("preprocessor_defines");
-        std::string fpDefines = fp->getParameter("preprocessor_defines");
+      // GLSLES2 on mobile breaks IBL when >4 shadow textures
+      if (RenderSystemIsGLES2()) {
+        int counter = 0;
+        for (auto &it : pass->getTextureUnitStates()) {
+          if (it->getContentType() == Ogre::TextureUnitState::ContentType::CONTENT_SHADOW && (counter++ > 3 || ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE)) {
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(it));
+          }
+        }
+      }
+
+      // this optimisation not working, rebinding of all samplers in shader on fly is hard to implement
+      if (false) {
+        std::array<int, 16> indexes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
         if (auto *tex = pass->getTextureUnitState("Albedo")) {
-          if (tex->getTextureName() == "white.dds") {
+          if (tex->getContentType() == Ogre::TextureUnitState::ContentType::CONTENT_NAMED && tex->getTextureDimensions().first == 1 &&
+              tex->getTextureDimensions().second == 1) {
             auto i = fpDefines.find("HAS_BASECOLORMAP");
             if (i != std::string::npos) fpDefines[i] = 'X';
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
           }
         }
 
         if (auto *tex = pass->getTextureUnitState("Normal")) {
-          if (tex->getTextureName() == "normal.dds") {
+          if (tex->getContentType() == Ogre::TextureUnitState::ContentType::CONTENT_NAMED && tex->getTextureDimensions().first == 1 &&
+              tex->getTextureDimensions().second == 1) {
             auto i = fpDefines.find("HAS_NORMALMAP");
             if (i != std::string::npos) fpDefines[i] = 'X';
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
           }
         }
 
         if (auto *tex = pass->getTextureUnitState("ORM")) {
-          if (tex->getTextureName() == "white.dds") {
+          if (tex->getContentType() == Ogre::TextureUnitState::ContentType::CONTENT_NAMED && tex->getTextureDimensions().first == 1 &&
+              tex->getTextureDimensions().second == 1) {
             auto i = fpDefines.find("HAS_ORM");
             if (i != std::string::npos) fpDefines[i] = 'X';
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
           }
         }
 
         if (auto *tex = pass->getTextureUnitState("Emissive")) {
-          if (tex->getTextureName() == "black.dds") {
+          if (tex->getContentType() == Ogre::TextureUnitState::ContentType::CONTENT_NAMED && tex->getTextureDimensions().first == 1 &&
+              tex->getTextureDimensions().second == 1) {
             auto i = fpDefines.find("HAS_EMISSIVEMAP");
             if (i != std::string::npos) fpDefines[i] = 'X';
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
           }
         }
 

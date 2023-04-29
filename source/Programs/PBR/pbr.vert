@@ -35,6 +35,8 @@ in mediump vec4 uv2;
 in mediump vec4 uv3;
 in mediump vec4 uv4;
 in mediump vec4 uv5;
+in mediump vec4 uv6;
+in mediump vec4 uv7;
 #endif //  HAS_UV
 
 out highp vec3 vWorldPosition;

@@ -10,12 +10,6 @@ vertex_program Ocean_vs glsl glsles hlsl
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
         param_named_auto CameraPosition camera_position
         param_named_auto Time time_0_x_packed 100
-
-        param_named bumpScale float 0.2
-        param_named textureScale float2 25 26
-        param_named bumpSpeed float2 0.015 0.005
-        param_named waveFreq float 0.028
-        param_named waveAmp float 1.8
     }
 }
 

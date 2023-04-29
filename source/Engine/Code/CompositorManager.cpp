@@ -52,6 +52,38 @@ class ReflTexListener : public Ogre::RenderTargetListener {
   Ogre::Plane ogrePlane;
 };
 
+
+class PausedTexListener : public Ogre::RenderTargetListener {
+ public:
+  PausedTexListener(Ogre::Camera *camera) {
+    ogreCamera = camera;
+  }
+
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+    if (!lockCamera) {
+      ogreCamera->getParentSceneNode()->setPosition(pos);
+      ogreCamera->getParentSceneNode()->setOrientation(rot);
+    }
+  }
+
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+    if (!lockCamera) {
+      pos = ogreCamera->getDerivedPosition();
+      rot = ogreCamera->getDerivedOrientation();
+      ogreCamera->getParentSceneNode()->setPosition(0.0, -50000.0, 0.0);
+      ogreCamera->getParentSceneNode()->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Z);
+      lockCamera = true;
+    }
+  }
+
+ private:
+  Ogre::Camera *ogreCamera = nullptr;
+  bool lockCamera = false;
+  Ogre::Vector3 pos = Ogre::Vector3::ZERO;
+  Ogre::Quaternion rot = Ogre::Quaternion::IDENTITY;
+};
+
+
 void CompositorManager::OnSetUp() {
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
@@ -156,6 +188,9 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
   ASSERTION(compositor, "[CompositorManager] Failed to add MRT compoitor");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+
+  // patch
+  if (enable && name == "Paused") compositorChain->getCompositor("Paused")->getRenderTarget("rt")->addListener(new PausedTexListener(ogreCamera));
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {
@@ -422,6 +457,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
+    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setIgnoreMissingParams(false);
@@ -442,6 +478,8 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
     fp->setNamedConstant("LightCount", lightList.size() > 0 ? static_cast<Ogre::Real>(1.0) : static_cast<Ogre::Real>(0.0));
     fp->setIgnoreMissingParams(false);
+
+  }else if (pass_id == 99) {  // max number
   }
 }
 

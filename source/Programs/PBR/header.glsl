@@ -196,4 +196,6 @@ out vec4 FragColor;
 #endif // !defined(OGRE_HLSL) && !defined(OGRE_CG)
 
 
+#include "math.glsl"
+
 #endif // HEADER_GLSL

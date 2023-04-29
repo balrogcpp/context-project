@@ -7,22 +7,22 @@ compositor Fresnel
 {
     technique
     {
-        texture reflection 512 512 PF_BYTE_RGB
-        texture refraction 512 512 PF_BYTE_RGB
+        texture reflection 512 512 PF_R11G11B10_FLOAT
+        texture refraction 512 512 PF_R11G11B10_FLOAT
 
         target reflection
         {
             visibility_mask 0x00F // SURFACE objects
-            pass clear { colour_value 0.1 0.2 0.8 0 }
+            pass clear { colour_value 0.1 0.2 0.8 1.0 }
             input previous
         }
 
-        // target refraction
-        // {
-        //     visibility_mask 0x0F0 // SUBMERGED objects
-        //     pass clear { colour_value 0 0 0 0 }
-        //     input previous
-        // }
+        target refraction
+        {
+            visibility_mask 0x0F0 // SUBMERGED objects
+            pass clear { colour_value 0.0 0.0 0.0 1.0 }
+            input previous
+        }
 
         target_output
         {

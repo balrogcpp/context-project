@@ -32,10 +32,10 @@ uniform mediump float FarClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 vec2 BinarySearch(mediump vec3 position, mediump vec3 direction, mediump float delta)
 {
+    #define MAX_BIN_SEARCH_COUNT 10
+
     mediump float depth;
     mediump vec4 projectedCoord;
-
-    #define MAX_BIN_SEARCH_COUNT 10
 
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
         projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
