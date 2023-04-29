@@ -13,8 +13,8 @@
 
 #define USE_MRT
 #include "header.glsl"
-#include "math.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
 
 
 in highp vec3 vPosition;

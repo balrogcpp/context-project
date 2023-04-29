@@ -7,12 +7,9 @@ fragment_program FXAA_fs glsl glsles hlsl
 {
     source fxaa.frag
 
-    preprocessor_defines USE_FXAA
+    preprocessor_defines FXAA_PRESET=3
 
-	default_params
-	{
-        param_named Scale float 4.0
-	}
+	default_params {}
 }
 
 material FXAA

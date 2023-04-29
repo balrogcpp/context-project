@@ -10,8 +10,8 @@
 
 
 #include "header.glsl"
-#include "math.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
 
 
 in mediump vec2 vUV0;

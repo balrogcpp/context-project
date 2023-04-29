@@ -10,8 +10,8 @@
 
 
 #include "header.glsl"
-#include "math.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -32,6 +32,7 @@ mediump vec3 SampleChromatic(const sampler2D tex, const mediump vec2 uv, const m
 
 // https://john-chapman.github.io/2017/11/05/pseudo-lens-flare.html
 // Cubic window; map [0, radius] in [1, 0] as a cubic falloff from center.
+//----------------------------------------------------------------------------------------------------------------------
 mediump float WindowCubic(const mediump float x, const mediump float center, const mediump float radius)
 {
     mediump float y = min(abs(x - center) / radius, 1.0);
