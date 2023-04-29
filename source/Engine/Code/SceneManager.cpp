@@ -215,12 +215,10 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       const auto &mat = old->clone(std::to_string(generator++));
 
       auto *pass = mat->getTechnique(0)->getPass(0);
-      auto &vp = pass->getVertexProgram();
-      auto &fp = pass->getFragmentProgram();
-      auto &vc = pass->getVertexProgramParameters();
-      auto &fc = pass->getFragmentProgramParameters();
-      std::string vpDefines = vp->getParameter("preprocessor_defines");
-      std::string fpDefines = fp->getParameter("preprocessor_defines");
+      const auto &vp = pass->getVertexProgramParameters();
+      const auto &fp = pass->getFragmentProgramParameters();
+      std::string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
+      std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
 
       // GLSLES2 on mobile breaks IBL when >4 shadow textures
       if (RenderSystemIsGLES2()) {
@@ -272,10 +270,10 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
           }
         }
 
-        vp->setParameter("preprocessor_defines", vpDefines);
-        fp->setParameter("preprocessor_defines", fpDefines);
-        vp->reload();
-        fp->reload();
+        pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
+        pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
+        pass->getVertexProgram()->reload();
+        pass->getFragmentProgram()->reload();
       }
 
       it->setMaterial(mat);
