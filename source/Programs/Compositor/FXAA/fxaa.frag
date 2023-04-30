@@ -21,8 +21,8 @@ uniform vec2 TexelSize0;
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
-    #define FXAA_REDUCE_MIN (1.0/16.0)
-    #define FXAA_REDUCE_MUL (1.0/8.0)
+    #define FXAA_REDUCE_MIN 0.0078125 // 1/128
+    #define FXAA_REDUCE_MUL 0.125 // 1.0/8.0
     #define FXAA_SPAN_MAX 8.0
 
     mediump vec3 rgbNW = texture2D(tex, uv + vec2(-1.0, -1.0) * tsize).xyz;
@@ -31,7 +31,6 @@ mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const medi
     mediump vec3 rgbSE = texture2D(tex, uv + vec2( 1.0,  1.0) * tsize).xyz;
     mediump vec3 rgbM  = texture2D(tex, uv                           ).xyz;
 
-//    const mediump vec3 luma = vec3(0.299, 0.587, 0.114);
     const mediump vec3 luma = vec3(0.2126, 0.7152, 0.0722);
     mediump float lumaNW = dot(rgbNW, luma);
     mediump float lumaNE = dot(rgbNE, luma);

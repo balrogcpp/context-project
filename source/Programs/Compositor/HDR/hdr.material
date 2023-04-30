@@ -1,0 +1,178 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program HDR_fs glsl glsles hlsl
+{
+    source hdr.frag
+}
+
+material HDR
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+			vertex_program_ref StdQuad_vp {}
+
+			fragment_program_ref HDR_fs
+			{
+                param_named ColorMap int 0
+                param_named Lum int 1
+			}
+
+			texture_unit RT
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+			texture_unit Lum
+            {
+                texture grey.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+		}
+	}
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// Tent downsampling
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program hdr_start_fs glsl glsles hlsl
+{
+	source hdr_start.frag
+
+    default_params
+    {
+        param_named_auto ViewportSize viewport_size
+    }
+}
+
+fragment_program hdr_downslace4x4_fs glsl glsles hlsl
+{
+	source hdr_downslace4x4.frag
+}
+
+fragment_program hdr_end_fs glsl glsles hlsl
+{
+	source hdr_end.frag
+
+    default_params
+    {
+        param_named Exposure float3 138.5833 5.0 10.0
+        param_named_auto timeSinceLast frame_time 1
+    }
+}
+
+
+material HdrStart
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+            vertex_program_ref StdQuad_vp
+            {
+                param_named RT int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
+
+            fragment_program_ref hdr_start_fs
+            {
+                param_named ColorMap int 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+
+material HdrDownscale4x4
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+            vertex_program_ref StdQuad_vp
+            {
+                param_named RT int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
+
+            fragment_program_ref hdr_downslace4x4_fs {}
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+
+material HdrEnd
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+            vertex_program_ref StdQuad_vp
+            {
+                param_named RT int 0
+                param_named OldLum int 1
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
+
+            fragment_program_ref hdr_end_fs {}
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit OldLum
+            {
+                texture grey.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}

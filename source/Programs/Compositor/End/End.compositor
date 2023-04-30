@@ -1,0 +1,27 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor End
+{
+    technique
+    {
+        texture rt target_width target_height PF_R11G11B10_FLOAT
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material End
+                input 0 rt
+            }
+        }
+    }
+}

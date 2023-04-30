@@ -1,0 +1,37 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor Copy
+{
+    technique
+    {
+        texture_ref rt_ MRT rt
+        texture rt target_width target_height PF_R11G11B10_FLOAT
+
+        target rt
+        {
+            input previous
+        }
+
+        target rt_
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 rt
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 rt
+            }
+        }
+    }
+}

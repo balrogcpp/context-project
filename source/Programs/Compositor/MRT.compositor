@@ -10,6 +10,7 @@ compositor MRT
     {
         // 0 color; 1 gloss; 2 ambient; 3 depth; 4 normals; 5 velocity; 
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R11G11B10_FLOAT PF_FLOAT16_GR chain_scope
+        texture rt target_width target_height  PF_R11G11B10_FLOAT chain_scope
 
         target mrt
         {
@@ -17,39 +18,17 @@ compositor MRT
             pass render_scene {}
         }
 
-        target_output
-        {
-            pass render_quad
-            {
-                material Bypass
-                input 0 mrt 0
-            }
-        }
-    }
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
-
-compositor Output
-{
-    technique
-    {
-        texture rt target_width target_height PF_R11G11B10_FLOAT
-
         target rt
         {
-            input previous
+            pass clear {}
         }
 
         target_output
         {
             pass render_quad
             {
-                material Output
-                input 0 rt
+                material Copy
+                input 0 mrt 0
             }
         }
     }
@@ -98,7 +77,7 @@ compositor Paused
         {
             pass render_quad
             {
-                material Bypass
+                material Copy
                 input 0 rty
             }
         }

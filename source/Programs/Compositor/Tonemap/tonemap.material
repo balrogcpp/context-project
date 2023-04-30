@@ -3,12 +3,12 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program SMAA_fs glsl glsles hlsl
+fragment_program tonemap_fs glsl glsles hlsl
 {
-    source smaa.frag
+    source tonemap.frag
 }
 
-material SMAA
+material Tonemap
 {
 	technique
 	{
@@ -21,18 +21,17 @@ material SMAA
 
 			vertex_program_ref StdQuad_vp {}
 
-			fragment_program_ref SMAA_fs
+			fragment_program_ref tonemap_fs
 			{
                 param_named ColorMap int 0
-                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
-			texture_unit Color
+			texture_unit RT
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
 		}
 	}

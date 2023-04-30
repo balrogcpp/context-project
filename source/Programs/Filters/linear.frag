@@ -20,5 +20,6 @@ uniform sampler2D RT;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor.rgba = texture2D(RT, vUV0);
+    highp vec4 color = texture2D(RT, vUV0);
+    FragColor = color;
 }

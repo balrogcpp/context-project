@@ -10,18 +10,19 @@
 
 
 #include "header.glsl"
+#include "srgb.glsl"
+#include "tonemap.glsl"
 
 
 in mediump vec2 vUV0;
 uniform sampler2D ColorMap;
-uniform sampler2D SsaoMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
     mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
-    mediump float ssao = texture2D(SsaoMap, vUV0).r;
-    color *= ssao;
-    FragColor = vec4(color, 1.0);
+    //color = uncharted2(color);
+    color = expose(color, 1.0);
+    FragColor = vec4(LINEARtoSRGB(color), 1.0);
 }

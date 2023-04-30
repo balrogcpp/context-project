@@ -31,30 +31,50 @@ mediump vec3 hash(const mediump vec3 a)
 
 
 //----------------------------------------------------------------------------------------------------------------------
+mediump float iter(const mediump vec3 dir, const mediump vec3 randN, const mediump vec3 viewNorm, const mediump vec3 viewPos, const mediump float depth)
+{
+    // Reflected direction to move in for the sphere
+    // (based on random samples and a random texture sample)
+    // bias the random direction away from the normal
+    // this tends to minimize self occlusion
+//    mediump vec3 randomDir = reflect(dir, randN) + viewNorm;
+    mediump vec3 randomDir = dir + viewNorm;
+
+    // Move new view-space position back into texture space
+    //#define RADIUS 0.2125
+    #define RADIUS 0.0525
+
+    mediump vec4 nuv = mul(ProjMatrix, vec4(viewPos + randomDir * RADIUS, 1.0));
+    nuv /= nuv.w;
+
+    // Compute occlusion based on the (scaled) Z difference
+    mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);
+    // This is a sample occlusion function, you can always play with
+    // other ones, like 1.0 / (1.0 + zd * zd) and stuff
+    return clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);
+}
+
+
+//    #define MAX_RAND_SAMPLES 14
+
+//mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES];
+//RAND_SAMPLES[0] = vec3(1.0, 0.0, 0.0);
+//RAND_SAMPLES[1] = vec3(-1.0, 0.0, 0.0);
+//RAND_SAMPLES[2] = vec3(0.0, 1.0, 0.0);
+//RAND_SAMPLES[3] = vec3(0.0, -1.0, 0.0);
+//RAND_SAMPLES[4] = vec3(0.0, 0.0, 1.0);
+//RAND_SAMPLES[5] = vec3(0.0, 0.0, -1.0);
+//RAND_SAMPLES[6] = normalize(vec3(1.0, 1.0, 1.0));
+//RAND_SAMPLES[7] = normalize(vec3(-1.0, 1.0, 1.0));
+//RAND_SAMPLES[8] = normalize(vec3(1.0, -1.0, 1.0));
+//RAND_SAMPLES[9] = normalize(vec3(1.0, 1.0, -1.0));
+//RAND_SAMPLES[10] = normalize(vec3(-1.0, -1.0, 1.0));
+//RAND_SAMPLES[11] = normalize(vec3(-1.0, 1.0, -1.0));
+//RAND_SAMPLES[12] = normalize(vec3(1.0, -1.0, -1.0));
+//RAND_SAMPLES[13] = normalize(vec3(-1.0, -1.0, -1.0));
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    #define MAX_RAND_SAMPLES 14
-
-    mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES];
-    RAND_SAMPLES[0] = vec3(1.0, 0.0, 0.0);
-    RAND_SAMPLES[1] = vec3(-1.0, 0.0, 0.0);
-    RAND_SAMPLES[2] = vec3(0.0, 1.0, 0.0);
-    RAND_SAMPLES[3] = vec3(0.0, -1.0, 0.0);
-    RAND_SAMPLES[4] = vec3(0.0, 0.0, 1.0);
-    RAND_SAMPLES[5] = vec3(0.0, 0.0, -1.0);
-    RAND_SAMPLES[6] = normalize(vec3(1.0, 1.0, 1.0));
-    RAND_SAMPLES[7] = normalize(vec3(-1.0, 1.0, 1.0));
-    RAND_SAMPLES[8] = normalize(vec3(1.0, -1.0, 1.0));
-    RAND_SAMPLES[9] = normalize(vec3(1.0, 1.0, -1.0));
-    RAND_SAMPLES[10] = normalize(vec3(-1.0, -1.0, 1.0));
-    RAND_SAMPLES[11] = normalize(vec3(-1.0, 1.0, -1.0));
-    RAND_SAMPLES[12] = normalize(vec3(1.0, -1.0, -1.0));
-    RAND_SAMPLES[13] = normalize(vec3(-1.0, -1.0, -1.0));
-
-
-    // constant expression != const int :(
-    #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
-
     // random normal lookup from a texture and expand to [-1..1]
     mediump float depth = texture2D(DepthMap, vUV0).x;
 
@@ -68,33 +88,28 @@ void main()
     // considering this is just for bias, this loss is acceptable
     mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
 
+    mediump float A = iter(vec3(1.0, 0.0, 0.0), randN, viewNorm, viewPos, depth);
+    mediump float B = iter(vec3(-1.0, 0.0, 0.0), randN, viewNorm, viewPos, depth);
+    mediump float C = iter(vec3(0.0, 1.0, 0.0), randN, viewNorm, viewPos, depth);
+    mediump float D = iter(vec3(0.0, -1.0, 0.0), randN, viewNorm, viewPos, depth);
+    mediump float E = iter(vec3(0.0, 0.0, 1.0), randN, viewNorm, viewPos, depth);
+    mediump float F = iter(vec3(0.0, 0.0, -1.0), randN, viewNorm, viewPos, depth);
+    mediump float G = iter(normalize(vec3(1.0, 1.0, 1.0)), randN, viewNorm, viewPos, depth);
+    mediump float H = iter(normalize(vec3(-1.0, 1.0, 1.0)), randN, viewNorm, viewPos, depth);
+    mediump float I = iter(normalize(vec3(1.0, -1.0, 1.0)), randN, viewNorm, viewPos, depth);
+    mediump float J = iter(normalize(vec3(1.0, 1.0, -1.0)), randN, viewNorm, viewPos, depth);
+    mediump float K = iter(normalize(vec3(-1.0, -1.0, 1.0)), randN, viewNorm, viewPos, depth);
+    mediump float L = iter(normalize(vec3(-1.0, 1.0, -1.0)), randN, viewNorm, viewPos, depth);
+    mediump float M = iter(normalize(vec3(1.0, -1.0, -1.0)), randN, viewNorm, viewPos, depth);
+    mediump float N = iter(normalize(vec3(-1.0, -1.0, -1.0)), randN, viewNorm, viewPos, depth);
+
     // Accumulated occlusion factor
-    mediump float occ = 0.0;
-
-    for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
-        // Reflected direction to move in for the sphere
-        // (based on random samples and a random texture sample)
-        // bias the random direction away from the normal
-        // this tends to minimize self occlusion
-        mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm;
-
-        // Move new view-space position back into texture space
-        //#define RADIUS 0.2125
-        #define RADIUS 0.0525
-
-        mediump vec4 nuv = mul(ProjMatrix, vec4(viewPos + randomDir * RADIUS, 1.0));
-        nuv /= nuv.w;
-
-        // Compute occlusion based on the (scaled) Z difference
-        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);
-        // This is a sample occlusion function, you can always play with
-        // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);
-    }
-
-    // normalise
-    occ /= float(NUM_BASE_SAMPLES);
+    mediump float occ = (A + B + C + D) * 0.07142857142857142857;
+    occ += (E + F + G + H) * 0.07142857142857142857;
+    occ += (I + J + K + L) * 0.07142857142857142857;
+    occ += (M + N) * 0.07142857142857142857;
 
     // amplify and saturate if necessary
-    FragColor = vec4(occ, 0.0, 0.0, 1.0);
+    occ = clamp(occ, 0.0, 1.0);
+    FragColor = vec4(occ, occ, occ, 1.0);
 }

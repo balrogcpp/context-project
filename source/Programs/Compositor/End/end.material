@@ -3,17 +3,12 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Output_fs glsl glsles hlsl
+fragment_program End_fs glsl glsles hlsl
 {
-    source LINEARtoSRGB.frag
-
-	default_params
-	{
-		param_named Exposure float 1.0
-	}
+    source end.frag
 }
 
-material Output
+material End
 {
 	technique
 	{
@@ -24,9 +19,9 @@ material Output
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+			vertex_program_ref StdQuad_vp {}
 
-			fragment_program_ref Output_fs
+			fragment_program_ref End_fs
 			{
                 param_named ColorMap int 0
 			}

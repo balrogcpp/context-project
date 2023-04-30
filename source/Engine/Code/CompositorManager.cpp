@@ -111,14 +111,19 @@ void CompositorManager::OnSetUp() {
   // screen-space reflections
   AddCompositor("SSR", false);
 
+  // to save pre-tonemap/hdr copy for some compositors
+  AddCompositor("Copy", false);
+
   // init bloom mipmaps
+  AddCompositor("HDR", false);
   AddCompositor("Rays", false);
   InitMipChain(false);
 
   // extra compositors
   AddCompositor("Blur", false);
   AddCompositor("FXAA", false);
-  AddCompositor("Output", true);
+  AddCompositor("Tonemap", false);
+  AddCompositor("End", true);
 
   AddCompositor("Paused", false);
 
@@ -207,7 +212,7 @@ void CompositorManager::SetCompositorScale(const std::string &name, float scale)
   size_t index = compositorChain->getCompositorPosition(name);
 }
 
-void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
+void CompositorManager::EnableCompositor(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 
@@ -226,6 +231,7 @@ void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
       }
     }
 
+    EnableCompositor("Copy", enable);
     compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "End", enable);
   }
 }
@@ -298,6 +304,9 @@ void CompositorManager::InitNoMRT(bool enable) {
 void CompositorManager::InitMipChain(bool enable) {
   auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR);
   ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
+
+  //
+  EnableCompositor("Copy", enable);
 
   // check textures
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, enable);

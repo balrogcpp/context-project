@@ -67,7 +67,7 @@ material SSAO_mod
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+			vertex_program_ref StdQuad_vp {}
 
             fragment_program_ref SSAO_mod_fp
             {
@@ -130,7 +130,7 @@ material SSAO_FilterY
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+			vertex_program_ref StdQuad_vp {}
 
 			fragment_program_ref ssao_filtery_fs {}
 
@@ -156,7 +156,7 @@ material SSAO_FilterX
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+			vertex_program_ref StdQuad_vp {}
 
 			fragment_program_ref ssao_filterx_fs {}
 

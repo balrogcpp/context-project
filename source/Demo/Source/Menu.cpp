@@ -26,9 +26,9 @@ void Menu::OnSetUp() {
   int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
   GetComponent<CompositorManager>().SetFixedViewportSize(x / 1.5, y / 1.5);
-  // GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
-  GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
-  GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", true);
+  // GetComponent<CompositorManager>().EnableCompositor("Bloom", true);
+  GetComponent<CompositorManager>().EnableCompositor("Blur", true);
+  GetComponent<CompositorManager>().EnableCompositor("SSAO", true);
 #else
   int x = GetComponent<VideoManager>().GetWindow().GetSizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetSizeY();
@@ -138,7 +138,7 @@ void Menu::BeforeRender(float time) {
     GetComponent<SystemLocator>().SetSleep(false);
     GetComponent<SceneManager>().SetSleep(false);
     if (GetComponent<CompositorManager>().IsCompositorEnabled("Paused")) {
-      GetComponent<CompositorManager>().SetCompositorEnabled("Paused", false);
+      GetComponent<CompositorManager>().EnableCompositor("Paused", false);
     }
     return;
   } else {
@@ -146,7 +146,7 @@ void Menu::BeforeRender(float time) {
     GetComponent<SystemLocator>().SetSleep(true);
     GetComponent<SceneManager>().SetSleep(true);
     if (!GetComponent<CompositorManager>().IsCompositorEnabled("Paused")) {
-      GetComponent<CompositorManager>().SetCompositorEnabled("Paused", true);
+      GetComponent<CompositorManager>().EnableCompositor("Paused", true);
     }
   }
 
@@ -347,27 +347,27 @@ void Menu::BeforeRender(float time) {
 
   static bool compositorFlags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   if (ImGui::Checkbox("Bloom", &compositorFlags[0])) {
-    GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", compositorFlags[0]);
+    GetComponent<CompositorManager>().EnableCompositor("Bloom", compositorFlags[0]);
   }
 
   if (ImGui::Checkbox("Blur", &compositorFlags[1])) {
-    GetComponent<CompositorManager>().SetCompositorEnabled("Blur", compositorFlags[1]);
+    GetComponent<CompositorManager>().EnableCompositor("Blur", compositorFlags[1]);
   }
 
   if (ImGui::Checkbox("SSAO", &compositorFlags[2])) {
-    GetComponent<CompositorManager>().SetCompositorEnabled("SSAO", compositorFlags[2]);
+    GetComponent<CompositorManager>().EnableCompositor("SSAO", compositorFlags[2]);
   }
 
   if (ImGui::Checkbox("FXAA", &compositorFlags[3])) {
-    GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", compositorFlags[3]);
+    GetComponent<CompositorManager>().EnableCompositor("FXAA", compositorFlags[3]);
   }
 
   if (ImGui::Checkbox("Rays", &compositorFlags[4])) {
-    GetComponent<CompositorManager>().SetCompositorEnabled("Rays", compositorFlags[4]);
+    GetComponent<CompositorManager>().EnableCompositor("Rays", compositorFlags[4]);
   }
 
   if (ImGui::Checkbox("SSR", &compositorFlags[5])) {
-    GetComponent<CompositorManager>().SetCompositorEnabled("SSR", compositorFlags[5]);
+    GetComponent<CompositorManager>().EnableCompositor("SSR", compositorFlags[5]);
   }
 
   ImGui::EndChild();

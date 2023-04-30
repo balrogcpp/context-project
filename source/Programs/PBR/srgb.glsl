@@ -6,35 +6,12 @@
 
 #define MANUAL_SRGB
 
-//#define SRGB_HDR
 #ifdef GL_ES
   #define SRGB_VERY_FAST_APPROXIMATION
 #else
   #define SRGB_FAST_APPROXIMATION
 #endif
 
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec4 SRGBtoLINEAR(const mediump vec4 srgbIn)
-{
-#ifdef MANUAL_SRGB
-
-#if defined(SRGB_FAST_APPROXIMATION)
-  mediump vec3 linOut = pow(srgbIn.rgb, vec3(2.2, 2.2, 2.2));
-#elif defined(SRGB_VERY_FAST_APPROXIMATION)
-  mediump vec3 linOut = srgbIn.rgb * srgbIn.rgb;
-#else
-  mediump vec3 bLess = step(vec3(0.04045, 0.04045, 0.04045), srgbIn.rgb);
-  mediump vec3 linOut = mix(srgbIn.rgb / vec3(12.92, 12.92, 12.92), pow((srgbIn.rgb + vec3(0.055, 0.055, 0.055)) / vec3(1.055, 1.055, 1.055), vec3(2.4, 2.4, 2.4)), bLess);
-#endif //SRGB_FAST_APPROXIMATION
-
-  return vec4(linOut,srgbIn.a);
-
-#else //MANUAL_SRGB
-  return srgbIn;
-#endif //MANUAL_SRGB
-}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -56,67 +33,6 @@ mediump vec3 SRGBtoLINEAR(const mediump vec3 srgbIn)
 #else //MANUAL_SRGB
   return srgbIn;
 #endif //MANUAL_SRGB
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec4 LINEARtoSRGB(const mediump vec4 linIn, const mediump float exposure)
-{
-#ifdef MANUAL_SRGB
-
-#ifdef SRGB_HDR
-  mediump vec4 srgbOut = expose(linIn, exposure);
-#else
-  mediump vec4 srgbOut = linIn;
-#endif
-
-#if defined(SRGB_FAST_APPROXIMATION)
-  return vec4(pow(srgbOut.rgb, vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2)), linIn.a);
-#elif defined(SRGB_VERY_FAST_APPROXIMATION)
-  return vec4(sqrt(srgbOut.rgb), linIn.a);
-#endif
-
-  return srgbOut;
-#endif //  MANUAL_SRGB
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec3 LINEARtoSRGB(const mediump vec3 linIn, const mediump float exposure)
-{
-#ifdef MANUAL_SRGB
-
-#ifdef SRGB_HDR
-  mediump vec3 srgbOut = expose(linIn, exposure);
-#else
-  mediump vec3 srgbOut = linIn;
-#endif
-
-#if defined(SRGB_FAST_APPROXIMATION)
-  return pow(srgbOut, vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
-#elif defined(SRGB_VERY_FAST_APPROXIMATION)
-  return sqrt(srgbOut);
-#endif
-  
-  return srgbOut;
-#endif //  MANUAL_SRGB
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec4 LINEARtoSRGB(const mediump vec4 linIn)
-{
-#ifdef MANUAL_SRGB
-
-#if defined(SRGB_FAST_APPROXIMATION)
-  return vec4(pow(linIn.rgb, vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2)), linIn.a);
-#elif defined(SRGB_VERY_FAST_APPROXIMATION)
-  return vec4(sqrt(linIn.rgb), linIn.a);
-#endif
-
-#else
-  return linIn;
-#endif //  MANUAL_SRGB
 }
 
 

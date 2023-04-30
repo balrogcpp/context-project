@@ -40,7 +40,7 @@ void main()
 #ifdef ALPHA_TEST
     if(color.a < 0.5 || oColour.a < 0.5) discard;
 #endif
-    color = SRGBtoLINEAR(color);
+    color.rgb = SRGBtoLINEAR(color.rgb);
 #ifndef NO_MRT
     FragData[0] = color;
     FragData[1] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
@@ -48,6 +48,6 @@ void main()
 #ifdef USE_FOG
     color.rgb = ApplyFog(color.rgb, fogParams, fogColour.rgb, oFogCoord);
 #endif // USE_FOG
-    FragColor = LINEARtoSRGB(color, 1.0);
+    FragColor = vec4(LINEARtoSRGB(color.rgb), color.a);
 #endif // ! NO_MRT
 }

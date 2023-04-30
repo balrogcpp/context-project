@@ -174,14 +174,14 @@ mediump vec4 Gauss13H(const mediump sampler2D tex, const mediump vec2 uv, const 
 mediump vec4 Upscale3x3(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0));
-    mediump vec4 B = texture2D(tex, uv + tsize * vec2(0.0, -1.0));
-    mediump vec4 C = texture2D(tex, uv + tsize * vec2(1.0, -1.0));
-    mediump vec4 D = texture2D(tex, uv + tsize * vec2(-1.0, 0.0));
-    mediump vec4 E = texture2D(tex, uv + tsize                  );
-    mediump vec4 F = texture2D(tex, uv + tsize * vec2(1.0, 0.0));
-    mediump vec4 G = texture2D(tex, uv + tsize * vec2(-1.0, 1.0));
-    mediump vec4 H = texture2D(tex, uv + tsize * vec2(0.0,  1.0));
-    mediump vec4 I = texture2D(tex, uv + tsize * vec2(1.0, 1.0));
+    mediump vec4 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0));
+    mediump vec4 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0));
+    mediump vec4 D = texture2D(tex, uv + tsize * vec2(-1.0,  0.0));
+    mediump vec4 E = texture2D(tex, uv + tsize                   );
+    mediump vec4 F = texture2D(tex, uv + tsize * vec2( 1.0,  0.0));
+    mediump vec4 G = texture2D(tex, uv + tsize * vec2(-1.0,  1.0));
+    mediump vec4 H = texture2D(tex, uv + tsize * vec2( 0.0,  1.0));
+    mediump vec4 I = texture2D(tex, uv + tsize * vec2( 1.0,  1.0));
 
     mediump vec4 color = E * 0.25;
     color += (B + D + F + H) * 0.125;
@@ -195,9 +195,9 @@ mediump vec4 Upscale3x3(const mediump sampler2D tex, const mediump vec2 uv, cons
 mediump vec4 Upscale2x2(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5)));
-    mediump vec4 B = texture2D(tex, uv + (tsize * vec2(-0.5, 0.5)));
-    mediump vec4 C = texture2D(tex, uv + (tsize * vec2(-0.5, 0.5)));
-    mediump vec4 D = texture2D(tex, uv + (tsize * vec2(0.5, -0.5)));
+    mediump vec4 B = texture2D(tex, uv + (tsize * vec2(-0.5,  0.5)));
+    mediump vec4 C = texture2D(tex, uv + (tsize * vec2( 0.5, -0.5)));
+    mediump vec4 D = texture2D(tex, uv + (tsize * vec2( 0.5,  0.5)));
 
     mediump vec4 color = (A + B + C + D) * 0.25; // 1/4
 
@@ -209,9 +209,9 @@ mediump vec4 Upscale2x2(const mediump sampler2D tex, const mediump vec2 uv, cons
 mediump vec4 Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5)));
-    mediump vec4 B = texture2D(tex, uv + (tsize * vec2(-0.5, 0.5)));
-    mediump vec4 C = texture2D(tex, uv + (tsize * vec2(-0.5, 0.5)));
-    mediump vec4 D = texture2D(tex, uv + (tsize * vec2(0.5, -0.5)));
+    mediump vec4 B = texture2D(tex, uv + (tsize * vec2(-0.5,  0.5)));
+    mediump vec4 C = texture2D(tex, uv + (tsize * vec2( 0.5, -0.5)));
+    mediump vec4 D = texture2D(tex, uv + (tsize * vec2( 0.5,  0.5)));
 
     mediump vec4 color = (A + B + C + D) * 0.25; // 1/4
 
@@ -246,58 +246,5 @@ mediump vec4 Downscale4x4(const mediump sampler2D tex, const mediump vec2 uv, co
     return color;
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec4 Downscale13T(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
-{
-    mediump vec4 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0));
-    mediump vec4 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0));
-    mediump vec4 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0));
-    mediump vec4 D = texture2D(tex, uv + tsize * vec2(-0.5, -0.5));
-    mediump vec4 E = texture2D(tex, uv + tsize * vec2( 0.5, -0.5));
-    mediump vec4 F = texture2D(tex, uv + tsize * vec2(-1.0,  0.0));
-    mediump vec4 G = texture2D(tex, uv                           );
-    mediump vec4 H = texture2D(tex, uv + tsize * vec2( 1.0,  0.0));
-    mediump vec4 I = texture2D(tex, uv + tsize * vec2(-0.5,  0.5));
-    mediump vec4 J = texture2D(tex, uv + tsize * vec2( 0.5,  0.5));
-    mediump vec4 K = texture2D(tex, uv + tsize * vec2(-1.0,  1.0));
-    mediump vec4 L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0));
-    mediump vec4 M = texture2D(tex, uv + tsize * vec2( 1.0,  1.0));
-
-    mediump vec4 c1 = (D + E + I + J); c1 /= (1.0 + luminance(LINEARtoSRGB(c1.xyz))); c1 *= 0.125;
-    mediump vec4 c2 = (A + B + G + F); c2 /= (1.0 + luminance(LINEARtoSRGB(c2.xyz))); c2 *= 0.03125;
-    mediump vec4 c3 = (B + C + H + G); c3 /= (1.0 + luminance(LINEARtoSRGB(c3.xyz))); c3 *= 0.03125;
-    mediump vec4 c4 = (F + G + L + K); c4 /= (1.0 + luminance(LINEARtoSRGB(c4.xyz))); c4 *= 0.03125;
-    mediump vec4 c5 = (G + H + M + L); c5 /= (1.0 + luminance(LINEARtoSRGB(c5.xyz))); c5 *= 0.03125;
-
-    return c1 + c2 + c3 + c4 + c5;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec4 Downscale13LUM(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
-{
-    mediump vec4 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0));
-    mediump vec4 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0));
-    mediump vec4 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0));
-    mediump vec4 D = texture2D(tex, uv + tsize * vec2(-0.5, -0.5));
-    mediump vec4 E = texture2D(tex, uv + tsize * vec2( 0.5, -0.5));
-    mediump vec4 F = texture2D(tex, uv + tsize * vec2(-1.0,  0.0));
-    mediump vec4 G = texture2D(tex, uv                           );
-    mediump vec4 H = texture2D(tex, uv + tsize * vec2( 1.0,  0.0));
-    mediump vec4 I = texture2D(tex, uv + tsize * vec2(-0.5,  0.5));
-    mediump vec4 J = texture2D(tex, uv + tsize * vec2( 0.5,  0.5));
-    mediump vec4 K = texture2D(tex, uv + tsize * vec2(-1.0,  1.0));
-    mediump vec4 L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0));
-    mediump vec4 M = texture2D(tex, uv + tsize * vec2( 1.0,  1.0));
-
-    mediump vec4 c1 = (D + E + I + J); c1 /= (1.0 + luminance(c1.xyz)); c1 *= 0.125;
-    mediump vec4 c2 = (A + B + G + F); c2 /= (1.0 + luminance(c2.xyz)); c2 *= 0.03125;
-    mediump vec4 c3 = (B + C + H + G); c3 /= (1.0 + luminance(c3.xyz)); c3 *= 0.03125;
-    mediump vec4 c4 = (F + G + L + K); c4 /= (1.0 + luminance(c4.xyz)); c4 *= 0.03125;
-    mediump vec4 c5 = (G + H + M + L); c5 /= (1.0 + luminance(c5.xyz)); c5 *= 0.03125;
-
-    return c1 + c2 + c3 + c4 + c5;
-}
 
 #endif // FILTERS_GLSL

@@ -25,32 +25,60 @@ mediump float luminance2(const mediump vec3 color)
 // https://alienryderflex.com/hsp.html
 mediump float luminance3(const mediump vec3 color)
 {
-    return sqrt(dot(color * color, vec3(0.299, 0.587, 0.114)));
+    return sqrt(dot(color * color, vec3(0.2126, 0.7152, 0.0722)));
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump float luminance4(const mediump vec3 color)
+{
+    return sqrt(dot(color * color, vec3(0.2126, 0.7152, 0.0722)));
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 expose(const mediump vec3 color, const mediump float exposure)
 {
-    return vec3(1.0, 1.0, 1.0) - exp(-color.rgb * exposure);
+    return vec3(1.0, 1.0, 1.0) - exp(-color * exposure);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump float expose(const mediump float color, const mediump float exposure)
+{
+    return 1.0 - exp(-color * exposure);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump vec3 expose2(const mediump vec3 color, const mediump vec3 exposure)
+{
+    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump float expose2(const mediump float color, const mediump vec3 exposure)
+{
+    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 tonemap(const mediump vec3 inColour, const mediump float lum)
 {
-    #define MIDDLE_GREY 0.72
-    #define FUDGE 0.001
-    #define L_WHITE 1.5
+    const mediump float middle_grey = 0.72;
+    const mediump float fudge = 0.001;
+    const mediump float L_white = 1.5;
 
     // From Reinhard et al
     // "Photographic Tone Reproduction for Digital Images"
 
     // Initial luminence scaling (equation 2)
-    mediump vec3 color = inColour * (MIDDLE_GREY / (FUDGE + lum));
+    mediump vec3 color = inColour * (middle_grey / (fudge + lum));
 
     // Control white out (equation 4 nom)
-    color *= (1.0 + color / L_WHITE);
+    color *= (1.0 + color / L_white);
 
     // Final mapping (equation 4 denom)
     color /= (1.0 + color);
@@ -204,6 +232,7 @@ mediump float uncharted2(const mediump float color) {
 
     mediump float curr = uncharted2Tonemap(exposureBias * color);
     mediump float whiteScale = 1.0 / uncharted2Tonemap(W);
+
     return curr * whiteScale;
 }
 

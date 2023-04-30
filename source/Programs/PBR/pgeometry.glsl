@@ -5,6 +5,7 @@
 
 #include "noise.glsl"
 
+
 // Apply grass waving animation to vertex
 //----------------------------------------------------------------------------------------------------------------------
 highp vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
@@ -26,11 +27,11 @@ highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec
     highp float factorY = params1.w;
 
     return vec4(
-    sin(time + params2.z) * heightCoeff2 * factorX,
-    sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY,
-    0.0,
-    0.0
-    );
+        sin(time + params2.z) * heightCoeff2 * factorX,
+        sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY,
+        0.0,
+        0.0
+        );
 }
 
 #endif // PGEOMETRY_GLSL

@@ -85,12 +85,12 @@ mediump vec3 GetIBLContribution(const samplerCube DiffuseEnvMap, const samplerCu
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
-    mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n)).rgb;
+    mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n).rgb);
 
 #ifdef USE_TEX_LOD
-    mediump vec3 specularLight = SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0)).rgb;
+    mediump vec3 specularLight = SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb);
 #else
-    mediump vec3 specularLight = SRGBtoLINEAR(textureCube(SpecularEnvMap, reflection)).rgb;
+    mediump vec3 specularLight = SRGBtoLINEAR(textureCube(SpecularEnvMap, reflection).rgb);
 #endif // USE_TEX_LOD
 
     mediump vec3 diffuse = (diffuseLight * diffuseColor);
@@ -243,12 +243,12 @@ highp vec3 GetNormal(const mediump vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec4 GetAlbedo(const mediump vec2 uv)
 {
-    mediump vec4 albedo = SurfaceDiffuseColour.rgba * vColor;
+    mediump vec4 albedo = SurfaceDiffuseColour * vColor;
 
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(AlbedoMap, uv);
 #endif
-    return SRGBtoLINEAR(albedo);
+    return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
 
@@ -267,7 +267,7 @@ mediump vec3 GetORM(const mediump vec2 uv)
 mediump vec3 GetEmission(const mediump vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb + texture2D(EmissiveMap, uv).rgb);
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(texture2D(EmissiveMap, uv).rgb);
 #else
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif

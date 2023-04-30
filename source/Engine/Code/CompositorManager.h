@@ -15,7 +15,7 @@ class CompositorManager : public System<CompositorManager>,
   virtual ~CompositorManager();
 
   void AddCompositor(const std::string& name, bool enable, int position = -1);
-  void SetCompositorEnabled(const std::string& name, bool enable);
+  void EnableCompositor(const std::string& name, bool enable);
 
   void SetFixedViewportSize(int x, int y);
   void SetFixedViewport(bool fixed);

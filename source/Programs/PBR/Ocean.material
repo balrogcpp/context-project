@@ -30,19 +30,19 @@ fragment_program Ocean_fs glsl glsles hlsl
         param_named BigWaves float2 0.3 0.3
         param_named MidWaves float2 0.3 0.15
         param_named SmallWaves float2 0.15 0.1
-        param_named Visibility float 28.0
+        //param_named Visibility float 28.0
         param_named WindDirection float2 0.5 -0.8
         param_named WindSpeed float 0.2
         param_named WaveScale float 1.0
         param_named ScatterAmount float 3.5
         param_named ScatterColor float3 0.0 1.0 0.95
-        param_named ReflDistortionAmount float 0.04
-        param_named RefrDistortionAmount float 0.03
-        param_named AberrationAmount float 0.002
-        param_named WaterExtinction float3 0.45 0.55 0.68
+        //param_named ReflDistortionAmount float 0.04
+        //param_named RefrDistortionAmount float 0.03
+        //param_named AberrationAmount float 0.002
+        //param_named WaterExtinction float3 0.45 0.55 0.68
         param_named SunTransmittance float3 1.0 0.0 1.0
         param_named SunFade float 0.5
-        param_named ScatterFade float 0.25
+        //param_named ScatterFade float 0.25
     }
 }
 

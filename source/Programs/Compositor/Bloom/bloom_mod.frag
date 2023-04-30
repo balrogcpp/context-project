@@ -10,7 +10,6 @@
 
 
 #include "header.glsl"
-#include "math.glsl"
 
 
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57

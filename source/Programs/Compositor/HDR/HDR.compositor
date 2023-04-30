@@ -1,0 +1,100 @@
+// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// HDR
+//----------------------------------------------------------------------------------------------------------------------
+
+compositor HDR
+{
+    technique
+    {
+        texture rt target_width target_height PF_R11G11B10_FLOAT chain_scope
+        texture rt1 1024 1024 PF_FLOAT16_R chain_scope
+        texture rt2 256 256 PF_FLOAT16_R chain_scope
+        texture rt3 64 64 PF_FLOAT16_R chain_scope
+        texture rt4 16 16 PF_FLOAT16_R chain_scope
+        texture rt5 4 4 PF_FLOAT16_R chain_scope
+        texture lum 1 1 PF_FLOAT16_R chain_scope
+        texture old 1 1 PF_FLOAT16_R chain_scope
+
+
+        target rt
+        {
+            input previous
+        }
+
+        target rt1
+        {
+            pass render_quad
+            {
+                material HdrStart
+                input 0 rt
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material HdrDownscale4x4
+                input 0 rt1
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material HdrDownscale4x4
+                input 0 rt2
+            }
+        }
+
+        target rt4
+        {
+            pass render_quad
+            {
+                material HdrDownscale4x4
+                input 0 rt3
+            }
+        }
+
+        target rt5
+        {
+            pass render_quad
+            {
+                material HdrDownscale4x4
+                input 0 rt4
+            }
+        }
+
+        target lum
+        {
+            pass render_quad
+            {
+                material HdrEnd
+                input 0 rt5
+                input 1 old
+            }
+        }
+
+        target old
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 lum
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material HDR
+                input 0 rt
+                input 1 lum
+            }
+        }
+    }
+}

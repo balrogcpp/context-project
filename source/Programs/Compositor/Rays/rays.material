@@ -7,12 +7,6 @@
 fragment_program fbo_fs glsl glsles hlsl
 {
 	source fbo.frag
-
-    default_params
-    {
-        param_named ColorMap int 0
-        param_named DepthMap int 1
-    }
 }
 
 material FBO
@@ -26,9 +20,13 @@ material FBO
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+			vertex_program_ref StdQuad_vp {}
 
-			fragment_program_ref fbo_fs {}
+			fragment_program_ref fbo_fs
+			{
+                param_named ColorMap int 0
+                param_named DepthMap int 1
+            }
 
 			texture_unit Color
             {
@@ -78,7 +76,7 @@ material Rays
             depth_write off
             polygon_mode_overrideable false
 
-            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+            vertex_program_ref StdQuad_vp {}
 
             fragment_program_ref rays_fs
             {
@@ -123,7 +121,7 @@ material Rays_mod
             depth_write off
             polygon_mode_overrideable false
 
-            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+            vertex_program_ref StdQuad_vp {}
 
             fragment_program_ref rays_mod_fs {}
 
