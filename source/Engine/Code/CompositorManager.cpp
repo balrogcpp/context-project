@@ -459,7 +459,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 0) {  // mrt render
 
-  } else if (pass_id == 99) { //
+  } else if (pass_id == 100) { //
+
+  } else if (pass_id == 99) {
 
   }
 }

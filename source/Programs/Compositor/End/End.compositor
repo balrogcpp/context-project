@@ -8,6 +8,8 @@ compositor End
 {
     technique
     {
+        compositor_logic DeferredLogic
+
         texture rt target_width target_height PF_R11G11B10_FLOAT
 
         target rt
@@ -19,6 +21,7 @@ compositor End
         {
             pass render_quad
             {
+                identifier 99
                 material End
                 input 0 rt
             }
