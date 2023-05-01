@@ -35,7 +35,7 @@ void Menu::OnSetUp() {
 #endif
   float dpi = GetComponent<VideoManager>().GetWindow().GetDisplayDPI();
 
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
   // ImGuiB::SetupImGuiStyle_Unreal();
   ImGuiB::SetupImGuiStyle_SpectrumDark();
@@ -66,7 +66,7 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
     return;
   }
 
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
   float diag0 = 100000.0;
   float diag = min(x, y);
@@ -102,7 +102,7 @@ void Menu::OnSizeChanged(int x, int y, uint32_t id) {
 }
 
 void Menu::BeforeRender(float time) {
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
   static auto *viewport = ImGui::GetMainViewport();
   static VideoManager &manager = GetComponent<VideoManager>();

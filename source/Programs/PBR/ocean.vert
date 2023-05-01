@@ -25,7 +25,6 @@ out mediump vec4 vPrevScreenPosition;
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
-uniform highp vec4 CameraPosition;
 uniform mediump vec4 Time;
 
 void main()

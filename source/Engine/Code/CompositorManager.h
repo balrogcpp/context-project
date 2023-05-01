@@ -68,7 +68,6 @@ class CompositorManager : public System<CompositorManager>,
   int forceSizeX, forceSizeY;
   std::queue<std::pair<std::string, bool>> compositorList;
   bool prevSleep = false;
-  bool refresh = false;
 
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;

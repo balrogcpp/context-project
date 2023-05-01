@@ -737,7 +737,7 @@ void VideoManager::ShowOverlay(bool show) {
 }
 
 void VideoManager::RebuildOverlayFontAtlas() {
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   unsigned char *pixels;
   int width, height;
 
@@ -749,7 +749,7 @@ void VideoManager::RebuildOverlayFontAtlas() {
     std::string texName = tex->getName();
     Ogre::TextureManager::getSingleton().unload(texName, Ogre::RGN_INTERNAL);
     Ogre::TextureManager::getSingleton().remove(texName, Ogre::RGN_INTERNAL);
-    tex.reset();  // to be sure memory is freed
+    tex.reset();
     tex = Ogre::TextureManager::getSingleton().createManual(texName, Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 0, Ogre::PF_BYTE_RGBA);
     tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
   }
@@ -759,7 +759,7 @@ ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, co
                                      const ImWchar *ranges) {
   typedef std::vector<ImWchar> CodePointRange;
   std::vector<CodePointRange> mCodePointRanges;
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
 
   Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName(name, group);
   ASSERTION(font, "font does not exist");
@@ -791,13 +791,13 @@ ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, co
 }
 
 void VideoManager::EnableGamepadNav(bool enable) {
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableGamepad;
   gamepadSupport = enable;
 }
 
 void VideoManager::EnableKeyboardNav(bool enable) {
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
   keyboardSupport = enable;
 }

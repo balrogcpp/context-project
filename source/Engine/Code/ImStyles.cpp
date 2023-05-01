@@ -1287,7 +1287,7 @@ static const ImU64 IM_U64_MAX = (2ULL * 9223372036854775807LL + 1);
 #endif
 
 void SetupImGuiStyle_NeverBlue() {
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   ImVec4 *colors = ImGui::GetStyle().Colors;
   float time = io.DeltaTime * 12.f * AnimationSpeed;
   int alpha = 255 * ImGui::GetStyle().Alpha;
@@ -1313,7 +1313,7 @@ void SetupImGuiStyle_NeverBlue() {
 }
 
 void SetupImGuiStyle_NeverDark() {
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   ImVec4 *colors = ImGui::GetStyle().Colors;
   float time = io.DeltaTime * 12.f * AnimationSpeed;
   int alpha = 255 * ImGui::GetStyle().Alpha;
@@ -1339,7 +1339,7 @@ void SetupImGuiStyle_NeverDark() {
 }
 
 void SetupImGuiStyle_NeverLight() {
-  static ImGuiIO &io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   ImVec4 *colors = ImGui::GetStyle().Colors;
   float time = io.DeltaTime * 12.f * AnimationSpeed;
   int alpha = 255 * ImGui::GetStyle().Alpha;

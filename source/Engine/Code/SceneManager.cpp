@@ -221,7 +221,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
 
       // GLSLES2 on mobile breaks IBL when >4 shadow textures
-      if (RenderSystemIsGLES2()) {
+      if (RenderSystemIsGLES2() && false) {
         int counter = 0;
         for (auto &it : pass->getTextureUnitStates()) {
           if (it->getContentType() == Ogre::TextureUnitState::ContentType::CONTENT_SHADOW && (counter++ > 3 || ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE)) {
