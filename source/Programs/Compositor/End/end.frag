@@ -22,8 +22,6 @@ uniform sampler2D ColorMap;
 void main()
 {
     mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
-    //color = uncharted2(color);
-    //color  = (color - 0.5) * 1.25 + 0.5 + 0.11;
-    color = expose(color, 1.0);
+    //color = expose(color, 1.0);
     FragColor = vec4(LINEARtoSRGB(color), 1.0);
 }

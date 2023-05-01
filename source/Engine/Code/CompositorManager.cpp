@@ -86,14 +86,14 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Copy", false);
 
   // init bloom mipmaps
-  AddCompositor("HDR", false);
+  AddCompositor("HDR", true);
   AddCompositor("Rays", false);
   InitMipChain(false);
+  AddCompositor("Tonemap", true);
 
   // extra compositors
-  AddCompositor("Blur", false);
   AddCompositor("FXAA", false);
-  AddCompositor("Tonemap", false);
+  AddCompositor("Blur", false);
   AddCompositor("End", true);
 
   AddCompositor("Paused", false);

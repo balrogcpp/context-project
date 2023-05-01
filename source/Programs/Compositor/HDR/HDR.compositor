@@ -8,7 +8,7 @@ compositor HDR
 {
     technique
     {
-        texture rt target_width target_height PF_R11G11B10_FLOAT chain_scope
+        texture rt0 target_width target_height PF_R11G11B10_FLOAT chain_scope
         texture rt1 1024 1024 PF_FLOAT16_R chain_scope
         texture rt2 256 256 PF_FLOAT16_R chain_scope
         texture rt3 64 64 PF_FLOAT16_R chain_scope
@@ -18,7 +18,7 @@ compositor HDR
         texture old 1 1 PF_FLOAT16_R chain_scope
 
 
-        target rt
+        target rt0
         {
             input previous
         }
@@ -28,7 +28,7 @@ compositor HDR
             pass render_quad
             {
                 material HdrStart
-                input 0 rt
+                input 0 rt0
             }
         }
 
@@ -92,8 +92,30 @@ compositor HDR
             pass render_quad
             {
                 material HDR
-                input 0 rt
+                input 0 rt0
                 input 1 lum
+            }
+        }
+    }
+}
+
+compositor Tonemap
+{
+    technique
+    {
+        texture rt target_width target_height PF_R11G11B10_FLOAT
+
+        target rt
+        {
+            input previous
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Tonemap
+                input 0 rt
             }
         }
     }

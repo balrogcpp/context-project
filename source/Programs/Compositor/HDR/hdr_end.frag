@@ -41,13 +41,11 @@ mediump float Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, c
 void main()
 {
     mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);
-    newLum = expose2(newLum, Exposure);
-//    newLum = expose(newLum, 1.0);
+    newLum = expose(newLum, Exposure.x);
 
     mediump float oldLum = texture2D(OldLum, vec2(0.0, 0.0)).r;
 
-    mediump float lum = newLum;
-    //mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
+    mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 
     FragColor = vec4(lum, lum, lum, 1.0);
 }

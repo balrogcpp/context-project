@@ -21,5 +21,5 @@ uniform mediump vec2 TexelSize0;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor = Gauss9V(RT, vUV0, TexelSize0);
+    FragColor = vec4(Gauss9V(RT, vUV0, TexelSize0), 1.0);
 }

@@ -20,5 +20,5 @@ uniform mediump vec2 TexelSize0;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor = Downscale4x4(RT, vUV0, TexelSize0);
+    FragColor = vec4(Downscale4x4(RT, vUV0, TexelSize0), 1.0);
 }

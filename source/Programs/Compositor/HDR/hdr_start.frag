@@ -15,9 +15,8 @@
 
 in mediump vec2 vUV0;
 uniform sampler2D RT;
-uniform mediump vec2 TexSize0;
-uniform mediump vec2 TexelSize0;
-uniform mediump vec2 ViewportSize;
+uniform mediump vec4 TexSize0;
+uniform mediump vec4 ViewportSize;
 
 //const vec2 c_offsets[16] = vec2[16]
 //(
@@ -65,8 +64,8 @@ void main()
     //We would need 64x64 samples, but we only sample 4x4, therefore we sample one
     //pixel and skip 15, then repeat. We perform:
     //(ViewportResolution / TargetResolution) / 4
-    mediump vec2 ratio = (TexelSize0 * ViewportSize) * 0.25;
-    mediump float lum = Downscale4x4(RT, vUV0, TexelSize0 * ratio);
+    mediump vec2 ratio = (TexSize0.xy * ViewportSize.zw) * 0.25;
+    mediump float lum = Downscale4x4(RT, vUV0, TexSize0.zw * ratio);
 
     FragColor = vec4(lum, lum, lum, 1.0);
 }

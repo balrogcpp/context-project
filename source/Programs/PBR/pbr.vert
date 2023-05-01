@@ -56,7 +56,7 @@ uniform highp mat4 WorldViewProjPrev;
 uniform highp float MovableObj;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
-uniform highp vec4 CameraPosition;
+uniform highp vec3 CameraPosition;
 uniform highp float FadeRange;
 #endif // PAGED_GEOMETRY
 #ifdef SHADOWRECEIVER
