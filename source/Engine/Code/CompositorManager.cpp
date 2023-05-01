@@ -19,11 +19,16 @@ CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
 
+void CompositorManager::SetSleep(bool sleep) {
+  prevSleep = _sleep;
+  _sleep = sleep;
+
+  EnableCompositor("Paused", sleep);
+}
+
 class DeferredLogic final : public Ogre::CompositorLogic {
  public:
-  void compositorInstanceCreated(Ogre::CompositorInstance *newInstance) override {
-    newInstance->addListener(GetComponentPtr<CompositorManager>());
-  }
+  void compositorInstanceCreated(Ogre::CompositorInstance *newInstance) override { newInstance->addListener(GetComponentPtr<CompositorManager>()); }
 
   void compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) override {
     destroyedInstance->removeListener(GetComponentPtr<CompositorManager>());
@@ -41,9 +46,7 @@ class ReflTexListener : public Ogre::RenderTargetListener {
     ogrePlane = plane;
   }
 
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-    ogreCamera->enableReflection(ogrePlane);
-  }
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->enableReflection(ogrePlane); }
 
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->disableReflection(); }
 
@@ -51,38 +54,6 @@ class ReflTexListener : public Ogre::RenderTargetListener {
   Ogre::Camera *ogreCamera = nullptr;
   Ogre::Plane ogrePlane;
 };
-
-
-class PausedTexListener : public Ogre::RenderTargetListener {
- public:
-  PausedTexListener(Ogre::Camera *camera) {
-    ogreCamera = camera;
-  }
-
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-    if (!lockCamera) {
-      ogreCamera->getParentSceneNode()->setPosition(pos);
-      ogreCamera->getParentSceneNode()->setOrientation(rot);
-    }
-  }
-
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-    if (!lockCamera) {
-      pos = ogreCamera->getDerivedPosition();
-      rot = ogreCamera->getDerivedOrientation();
-      ogreCamera->getParentSceneNode()->setPosition(0.0, -50000.0, 0.0);
-      ogreCamera->getParentSceneNode()->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Z);
-      lockCamera = true;
-    }
-  }
-
- private:
-  Ogre::Camera *ogreCamera = nullptr;
-  bool lockCamera = false;
-  Ogre::Vector3 pos = Ogre::Vector3::ZERO;
-  Ogre::Quaternion rot = Ogre::Quaternion::IDENTITY;
-};
-
 
 void CompositorManager::OnSetUp() {
   // init fields
@@ -190,11 +161,8 @@ void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
 
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
-  ASSERTION(compositor, "[CompositorManager] Failed to add MRT compoitor");
+  ASSERTION(compositor, "[CompositorManager] Failed to add MRT compositor");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
-
-  // patch
-  if (enable && name == "Paused") compositorChain->getCompositor("Paused")->getRenderTarget("rt")->addListener(new PausedTexListener(ogreCamera));
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {
@@ -332,9 +300,11 @@ void CompositorManager::RemoveAllCompositors() { compositorChain->removeAllCompo
 
 void CompositorManager::DisableRendering() {
   compositorChain->getCompositor(0)->getTechnique()->getTargetPass(0)->getPass(1)->setType(Ogre::CompositionPass::PT_CLEAR);
+  compositorChain->_markDirty();
 }
 void CompositorManager::EnableRendering() {
   compositorChain->getCompositor(0)->getTechnique()->getTargetPass(0)->getPass(1)->setType(Ogre::CompositionPass::PT_RENDERSCENE);
+  compositorChain->_markDirty();
 }
 
 Ogre::Camera *CompositorManager::GetOgreCamera() { return ogreCamera; }
@@ -470,7 +440,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setIgnoreMissingParams(false);
 
-  } else if (pass_id == 3) { // Rays
+  } else if (pass_id == 3) {  // Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
@@ -487,7 +457,10 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("LightCount", lightList.size() > 0 ? static_cast<Ogre::Real>(1.0) : static_cast<Ogre::Real>(0.0));
     fp->setIgnoreMissingParams(false);
 
-  }else if (pass_id == 99) {  // max number
+  } else if (pass_id == 0) {  // mrt render
+
+  } else if (pass_id == 99) { //
+
   }
 }
 

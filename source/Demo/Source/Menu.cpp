@@ -136,18 +136,10 @@ void Menu::BeforeRender(float time) {
   if (!showMenu) {
     window.SetMouseRelativeMode(true);
     GetComponent<SystemLocator>().SetSleep(false);
-    GetComponent<SceneManager>().SetSleep(false);
-    if (GetComponent<CompositorManager>().IsCompositorEnabled("Paused")) {
-      GetComponent<CompositorManager>().EnableCompositor("Paused", false);
-    }
     return;
   } else {
     window.SetMouseRelativeMode(false);
     GetComponent<SystemLocator>().SetSleep(true);
-    GetComponent<SceneManager>().SetSleep(true);
-    if (!GetComponent<CompositorManager>().IsCompositorEnabled("Paused")) {
-      GetComponent<CompositorManager>().EnableCompositor("Paused", true);
-    }
   }
 
   ImGui::SetNextWindowPos({border * vx, border * vy});

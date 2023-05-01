@@ -12,8 +12,8 @@ class SystemI {
   virtual void OnSetUp() = 0;
   virtual void OnUpdate(float time) = 0;
   virtual void OnClean() = 0;
-  void SetSleep(bool sleep) { _sleep = sleep; }
-  bool IsSleeping() { return _sleep; }
+  virtual void SetSleep(bool sleep) { _sleep = sleep; }
+  virtual bool IsSleeping() { return _sleep; }
 
  protected:
   bool _sleep = false;

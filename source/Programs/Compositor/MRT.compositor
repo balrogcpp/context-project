@@ -8,6 +8,8 @@ compositor MRT
 {
     technique
     {
+        compositor_logic DeferredLogic
+
         // 0 color; 1 gloss; 2 ambient; 3 depth; 4 normals; 5 velocity; 
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R11G11B10_FLOAT PF_FLOAT16_GR chain_scope
         texture rt target_width target_height  PF_R11G11B10_FLOAT chain_scope
@@ -15,7 +17,7 @@ compositor MRT
         target mrt
         {
             pass clear {}
-            pass render_scene {}
+            pass render_scene { identifier 0 }
         }
 
         target rt
@@ -43,12 +45,15 @@ compositor Paused
 {
     technique
     {
+        compositor_logic DeferredLogic
+
         texture rt target_width target_height PF_R11G11B10_FLOAT
         texture rtx target_width target_height PF_R11G11B10_FLOAT
         texture rty target_width target_height PF_R11G11B10_FLOAT
 
         target rt
         {
+            identifier 99
             only_initial on
             input previous
         }

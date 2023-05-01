@@ -93,11 +93,12 @@ bool SystemLocator::frameRenderingQueued(const Ogre::FrameEvent &evt) {
       it->OnUpdate(evt.timeSinceLastFrame);
     }
   }
+
   return true;
 }
 
 void SystemLocator::OnSetUp() {
-  for (auto it : componentList) { 
+  for (auto it : componentList) {
     it->OnSetUp();
   }
 }
@@ -105,6 +106,14 @@ void SystemLocator::OnSetUp() {
 void SystemLocator::OnClean() {
   for (vector<SystemI *>::reverse_iterator it = componentList.rbegin(); it != componentList.rend(); ++it) {
     (*it)->OnClean();
+  }
+}
+
+void SystemLocator::SetSleep(bool sleep) {
+  _sleep = sleep;
+
+  for (vector<SystemI *>::reverse_iterator it = componentList.rbegin(); it != componentList.rend(); ++it) {
+    (*it)->SetSleep(sleep);
   }
 }
 

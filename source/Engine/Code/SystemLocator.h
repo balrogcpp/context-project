@@ -31,6 +31,7 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void OnSetUp() override;
   void OnUpdate(float time) override {}
   void OnClean() override;
+  void SetSleep(bool sleep) override;
 
   /// Frame control
   void EnableFpsLock(bool enable);
