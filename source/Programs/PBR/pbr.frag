@@ -16,6 +16,11 @@
 #include "math.glsl"
 #include "srgb.glsl"
 
+#ifdef OGRE_GLSL
+#extension GL_ARB_bindless_texture : enable
+layout (bindless_sampler) uniform;
+#endif
+
 
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog

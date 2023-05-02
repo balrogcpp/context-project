@@ -80,9 +80,9 @@ compositor HDR
 
         target old
         {
+            only_initial on
             pass render_quad
             {
-                only_initial on
                 material Copy
                 input 0 lum
             }

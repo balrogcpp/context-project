@@ -17,7 +17,10 @@ compositor MRT
         target mrt
         {
             pass clear {}
-            pass render_scene { identifier 0 }
+            pass render_scene
+            {
+                identifier 0
+            }
         }
 
         target rt
@@ -53,7 +56,6 @@ compositor Paused
 
         target rt
         {
-            identifier 1000
             only_initial on
             input previous
         }
@@ -82,6 +84,7 @@ compositor Paused
         {
             pass render_quad
             {
+                identifier 1000
                 material Copy
                 input 0 rty
             }
