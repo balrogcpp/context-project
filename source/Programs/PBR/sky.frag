@@ -59,10 +59,10 @@ void main()
     color = SRGBtoLINEAR(color);
 
     if (gamma <= SunSize) {
-        color += SunColor;
+        color = SunColor;
     }
 
-    FragData[0] = vec4(color, 1.0);
+    FragData[0] = vec4(SafeHDR(color), 1.0);
     FragData[1] = vec4(0.0, 0.0, 1.0, 1.0);
     FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[3] = vec4(1.0, 0.0, 0.0, 1.0);

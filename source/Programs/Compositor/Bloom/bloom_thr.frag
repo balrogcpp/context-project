@@ -31,11 +31,24 @@ mediump vec3 Downscale13T(const mediump sampler2D tex, const mediump vec2 uv, co
     mediump vec3 L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).rgb;
     mediump vec3 M = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).rgb;
 
-    mediump vec3 c1 = (D + E + I + J); c1 /= (1.0 + luminance(LINEARtoSRGB(c1))); c1 *= 0.125;
-    mediump vec3 c2 = (A + B + G + F); c2 /= (1.0 + luminance(LINEARtoSRGB(c2))); c2 *= 0.03125;
-    mediump vec3 c3 = (B + C + H + G); c3 /= (1.0 + luminance(LINEARtoSRGB(c3))); c3 *= 0.03125;
-    mediump vec3 c4 = (F + G + L + K); c4 /= (1.0 + luminance(LINEARtoSRGB(c4))); c4 *= 0.03125;
-    mediump vec3 c5 = (G + H + M + L); c5 /= (1.0 + luminance(LINEARtoSRGB(c5))); c5 *= 0.03125;
+//    mediump vec3 c1 = (D + E + I + J); c1 *= 0.125;
+//    mediump vec3 c2 = (A + B + G + F); c2 *= 0.03125;
+//    mediump vec3 c3 = (B + C + H + G); c3 *= 0.03125;
+//    mediump vec3 c4 = (F + G + L + K); c4 *= 0.03125;
+//    mediump vec3 c5 = (G + H + M + L); c5 *= 0.03125;
+
+//    mediump vec3 c1 = (D + E + I + J); c1 /= (1.0 + luminance(LINEARtoSRGB(c1))); c1 *= 0.125;
+//    mediump vec3 c2 = (A + B + G + F); c2 /= (1.0 + luminance(LINEARtoSRGB(c2))); c2 *= 0.03125;
+//    mediump vec3 c3 = (B + C + H + G); c3 /= (1.0 + luminance(LINEARtoSRGB(c3))); c3 *= 0.03125;
+//    mediump vec3 c4 = (F + G + L + K); c4 /= (1.0 + luminance(LINEARtoSRGB(c4))); c4 *= 0.03125;
+//    mediump vec3 c5 = (G + H + M + L); c5 /= (1.0 + luminance(LINEARtoSRGB(c5))); c5 *= 0.03125;
+
+    mediump vec3 c1 = (D + E + I + J); c1 /= (1.0 + luminance((c1))); c1 *= 0.125;
+    mediump vec3 c2 = (A + B + G + F); c2 /= (1.0 + luminance((c2))); c2 *= 0.03125;
+    mediump vec3 c3 = (B + C + H + G); c3 /= (1.0 + luminance((c3))); c3 *= 0.03125;
+    mediump vec3 c4 = (F + G + L + K); c4 /= (1.0 + luminance((c4))); c4 *= 0.03125;
+    mediump vec3 c5 = (G + H + M + L); c5 /= (1.0 + luminance((c5))); c5 *= 0.03125;
+
 
     return c1 + c2 + c3 + c4 + c5;
 }
