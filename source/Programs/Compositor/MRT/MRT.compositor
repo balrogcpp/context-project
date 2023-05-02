@@ -11,8 +11,8 @@ compositor MRT
         compositor_logic DeferredLogic
 
         // 0 color; 1 gloss; 2 ambient; 3 depth; 4 normals; 5 velocity; 
-        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R11G11B10_FLOAT PF_FLOAT16_GR chain_scope
-        texture rt target_width target_height  PF_R11G11B10_FLOAT chain_scope
+        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R11G11B10_FLOAT PF_FLOAT16_GR chain_scope no_fsaa
+        texture rt target_width target_height  PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
 
         target mrt
         {
@@ -47,13 +47,13 @@ compositor Paused
     {
         compositor_logic DeferredLogic
 
-        texture rt target_width target_height PF_R11G11B10_FLOAT
-        texture rtx target_width target_height PF_R11G11B10_FLOAT
-        texture rty target_width target_height PF_R11G11B10_FLOAT
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rtx target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rty target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt
         {
-            identifier 100
+            identifier 1000
             only_initial on
             input previous
         }

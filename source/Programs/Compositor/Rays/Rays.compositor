@@ -12,11 +12,11 @@ compositor Rays
         compositor_logic DeferredLogic
 
         texture_ref mrt MRT mrt
-        texture rt target_width target_height PF_R11G11B10_FLOAT
-        texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
-        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
-        texture fbx target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
-        texture fby target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture fbx target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture fby target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
 
         target rt

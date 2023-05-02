@@ -11,10 +11,10 @@ compositor SSAO
         compositor_logic DeferredLogic
 
         texture_ref mrt MRT mrt
-        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
-        texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
-        texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
-        texture rt target_width target_height PF_R11G11B10_FLOAT
+        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
 
         target rt

@@ -10,7 +10,7 @@ compositor End
     {
         compositor_logic DeferredLogic
 
-        texture rt target_width target_height PF_R11G11B10_FLOAT
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt
         {
@@ -21,7 +21,7 @@ compositor End
         {
             pass render_quad
             {
-                identifier 99
+                identifier 999
                 material End
                 input 0 rt
             }

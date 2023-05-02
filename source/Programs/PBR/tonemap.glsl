@@ -198,6 +198,13 @@ mediump vec3 uncharted2Tonemap(mediump vec3 x) {
     const mediump float E = 0.02;
     const mediump float F = 0.30;
     const mediump float W = 11.2;
+//    const float A = 0.22;
+//    const float B = 0.3;
+//    const float C = 0.10;
+//    const float D = 0.20;
+//    const float E = 0.01;
+//    const float F = 0.30;
+//    const float W = 11.2;
 
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
@@ -205,11 +212,10 @@ mediump vec3 uncharted2Tonemap(mediump vec3 x) {
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 uncharted2(const mediump vec3 color) {
     const mediump float W = 11.2;
-    const mediump float exposureBias = 2.0;
+    const mediump float exposureBias = 1.0;
 
     mediump vec3 curr = uncharted2Tonemap(exposureBias * color);
-    mediump vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W, W, W));
-    return curr * whiteScale;
+    return curr / uncharted2Tonemap(vec3(W, W, W));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -221,6 +227,13 @@ mediump float uncharted2Tonemap(const mediump float x) {
     const mediump float E = 0.02;
     const mediump float F = 0.30;
     const mediump float W = 11.2;
+//    const float A = 0.22;
+//    const float B = 0.3;
+//    const float C = 0.10;
+//    const float D = 0.20;
+//    const float E = 0.01;
+//    const float F = 0.30;
+//    const float W = 11.2;
 
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }

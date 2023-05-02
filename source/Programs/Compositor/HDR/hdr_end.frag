@@ -9,8 +9,8 @@
 #endif
 
 #include "header.glsl"
-#include "tonemap.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
 
 
 in mediump vec2 vUV0;
@@ -41,7 +41,7 @@ mediump float Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, c
 void main()
 {
     mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);
-    newLum = expose(newLum, Exposure.x);
+    newLum = expose2(newLum, Exposure);
 
     mediump float oldLum = texture2D(OldLum, vec2(0.0, 0.0)).r;
 

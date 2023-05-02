@@ -8,14 +8,14 @@ compositor HDR
 {
     technique
     {
-        texture rt0 target_width target_height PF_R11G11B10_FLOAT chain_scope
-        texture rt1 1024 1024 PF_FLOAT16_R chain_scope
-        texture rt2 256 256 PF_FLOAT16_R chain_scope
-        texture rt3 64 64 PF_FLOAT16_R chain_scope
-        texture rt4 16 16 PF_FLOAT16_R chain_scope
-        texture rt5 4 4 PF_FLOAT16_R chain_scope
-        texture lum 1 1 PF_FLOAT16_R chain_scope
-        texture old 1 1 PF_FLOAT16_R chain_scope
+        texture rt0 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt1 1024 1024 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt2 256 256 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt3 64 64 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt4 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt5 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture old 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
 
 
         target rt0
@@ -82,6 +82,16 @@ compositor HDR
         {
             pass render_quad
             {
+                only_initial on
+                material Copy
+                input 0 lum
+            }
+        }
+
+        target old
+        {
+            pass render_quad
+            {
                 material Copy
                 input 0 lum
             }
@@ -103,7 +113,7 @@ compositor Tonemap
 {
     technique
     {
-        texture rt target_width target_height PF_R11G11B10_FLOAT
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt
         {

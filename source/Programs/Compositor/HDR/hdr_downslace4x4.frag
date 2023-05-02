@@ -9,8 +9,8 @@
 #endif
 
 #include "header.glsl"
-#include "tonemap.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
 
 
 in mediump vec2 vUV0;
