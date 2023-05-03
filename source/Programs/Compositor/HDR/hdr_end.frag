@@ -31,9 +31,9 @@ mediump float Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, c
     mediump float C = texture2D(tex, uv + (tsize * vec2( 1.0, -1.0))).r;
     mediump float D = texture2D(tex, uv + (tsize * vec2( 1.0,  1.0))).r;
 
-    mediump float color = (A + B + C + D) * 0.25; // 1/4
+    mediump float c1 = (A + B + C + D) * 0.25; // 1/4
 
-    return color;
+    return c1;
 }
 
 

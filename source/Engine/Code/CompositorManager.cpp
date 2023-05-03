@@ -82,17 +82,19 @@ void CompositorManager::OnSetUp() {
   // screen-space reflections
   AddCompositor("SSR", false);
 
+  AddCompositor("Rays", false);
+
   // to save pre-tonemap/hdr copy for some compositors
   AddCompositor("Copy", false);
 
   // init bloom mipmaps
   AddCompositor("HDR", true);
-  AddCompositor("Rays", false);
   InitMipChain(false);
-  AddCompositor("Tonemap", true);
 
   // extra compositors
   AddCompositor("FXAA", false);
+  AddCompositor("Tonemap", true);
+
   AddCompositor("Blur", false);
   AddCompositor("End", true);
 
@@ -275,6 +277,10 @@ void CompositorManager::InitMipChain(bool enable) {
 
   //
   EnableCompositor("Copy", enable);
+  if (enable) {
+    EnableCompositor("HDR", true);
+    EnableCompositor("Tonemap", true);
+  }
 
   // check textures
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, enable);

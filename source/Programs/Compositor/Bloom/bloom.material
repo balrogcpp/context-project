@@ -10,7 +10,7 @@ fragment_program bloom_threshold_fs glsl glsles hlsl
 
     default_params
     {
-        param_named Threshhold float 0.5
+        param_named Threshold float2 3.0 0.5
     }
 }
 
@@ -30,16 +30,24 @@ material Bloom_threshold
 			fragment_program_ref bloom_threshold_fs
 			{
                 param_named ColorMap int 0
+                param_named Lum int 1
 
                 param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
-			texture_unit Color
+			texture_unit RT
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
+            }
+			texture_unit Lum
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
             }
 		}
 	}
@@ -110,9 +118,6 @@ fragment_program bloom_feat_fs glsl glsles hlsl
     {
         param_named ChromaticRadius float 0.005
         param_named FeaturesCount int 5
-
-        param_named ColorMap int 0
-        param_named_auto TexelSize0 inverse_texture_size 0
     }
 }
 
@@ -130,7 +135,11 @@ material Bloom_feat
 
             vertex_program_ref StdQuad_vp {}
 
-            fragment_program_ref bloom_feat_fs {}
+            fragment_program_ref bloom_feat_fs
+            {
+                param_named ColorMap int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
 
             texture_unit RT
             {

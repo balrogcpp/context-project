@@ -51,7 +51,7 @@ material SSR
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit Color
+            texture_unit RT
             {
                 texture black.dds
                 tex_coord_set 0

@@ -75,7 +75,7 @@ material SSAO_mod
                 param_named SsaoMap int 1
             }
 
-            texture_unit Color
+            texture_unit RT
             {
                 texture black.dds
                 tex_coord_set 0

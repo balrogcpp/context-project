@@ -25,7 +25,7 @@ mediump vec3 SampleChromatic(const sampler2D tex, const mediump vec2 uv, const m
         texture2D(tex, uv - offset).b
     );
 
-    color /= (1.0 + luminance(LINEARtoSRGB(color)));
+    //color /= (1.0 + luminance(LINEARtoSRGB(color)));
     return color;
 }
 
@@ -101,8 +101,9 @@ uniform mediump int FeaturesCount;
 void main()
 {
     mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
-    color += GhostFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
-    color += HaloFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
+
+    color += GhostFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
+    color += HaloFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
 
     FragColor = vec4(color, 1.0);
 }

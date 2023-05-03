@@ -16,6 +16,9 @@
 #include "math.glsl"
 #include "srgb.glsl"
 
+
+// this fix problem with shadow array
+// https://community.khronos.org/t/array-of-sampler2d-texture-bindless-problem/107313/3
 #ifdef OGRE_GLSL
 #extension GL_ARB_bindless_texture : enable
 layout (bindless_sampler) uniform;
