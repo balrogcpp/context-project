@@ -15,7 +15,7 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Downscale13T(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale13(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;
@@ -59,7 +59,7 @@ uniform mediump vec2 Threshold;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = Downscale13T(ColorMap, vUV0, TexelSize0);
+    mediump vec3 color = Downscale13(ColorMap, vUV0, TexelSize0);
     mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
 
     color *= lum;

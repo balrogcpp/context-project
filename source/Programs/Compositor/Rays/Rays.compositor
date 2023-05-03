@@ -12,11 +12,12 @@ compositor Rays
         compositor_logic DeferredLogic
 
         texture_ref mrt MRT mrt
+        texture_ref rt_ MRT rt
         texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fbx target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fby target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture fb0x target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture fb0y target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
 
         target rt
@@ -29,7 +30,7 @@ compositor Rays
             pass render_quad
             {
                 material FBO
-                input 0 rt
+                input 0 rt_
                 input 1 mrt 3
             }
         }
@@ -44,7 +45,7 @@ compositor Rays
             }
         }
 
-        target fbx
+        target fb0x
         {
             pass render_quad
             {
@@ -53,12 +54,12 @@ compositor Rays
             }
         }
 
-        target fby
+        target fb0y
         {
             pass render_quad
             {
                 material FilterY
-                input 0 fbx
+                input 0 fb0x
             }
         }
 
@@ -68,7 +69,7 @@ compositor Rays
             {
                 material Rays_mod
                 input 0 rt
-                input 1 fbo1
+                input 1 fb0y
             }
         }
     }

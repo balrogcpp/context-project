@@ -82,10 +82,9 @@ void CompositorManager::OnSetUp() {
   // screen-space reflections
   AddCompositor("SSR", false);
 
-  AddCompositor("Rays", false);
-
   // to save pre-tonemap/hdr copy for some compositors
-  AddCompositor("Copy", false);
+  AddCompositor("Copy", true);
+  AddCompositor("Rays", false);
 
   // init bloom mipmaps
   AddCompositor("HDR", true);
