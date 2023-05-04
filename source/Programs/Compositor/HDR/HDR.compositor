@@ -15,7 +15,7 @@ compositor HDR
         texture rt4 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt5 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        texture old 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture old 1 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
 
 
         target rt0
@@ -75,16 +75,6 @@ compositor HDR
                 material HdrEnd
                 input 0 rt5
                 input 1 old
-            }
-        }
-
-        target old
-        {
-            only_initial on
-            pass render_quad
-            {
-                material Copy
-                input 0 lum
             }
         }
 
