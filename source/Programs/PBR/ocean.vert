@@ -16,17 +16,17 @@
 
 
 in highp vec4 vertex;
-
 out highp vec3 vWorldPosition;
 out mediump mat3 vTBN;
 out mediump vec4 vScreenPosition;
 out mediump vec4 vPrevScreenPosition;
-
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform mediump vec4 Time;
 
+
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
     highp vec4 position = vertex;

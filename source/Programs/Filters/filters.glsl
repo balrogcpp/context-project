@@ -16,21 +16,7 @@ mediump vec3 Linear(const mediump sampler2D tex, const mediump vec2 uv, const me
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 BoxFilter4(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
-{
-    mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).xyz;
-    mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).xyz;
-    mediump vec3 C = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).xyz;
-    mediump vec3 D = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).xyz;
-
-    mediump vec3 color = (A + B + C + D) * 0.25;
-
-    return color;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec3 BoxFilter9(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale3x3(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).xyz;
     mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).xyz;
@@ -51,24 +37,24 @@ mediump vec3 BoxFilter9(const mediump sampler2D tex, const mediump vec2 uv, cons
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 BoxFilter16(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale4x4(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).xyz;
     mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).xyz;
-    mediump vec3 C = texture2D(tex, uv + (tsize * vec2(-2.0, 0.0))).xyz;
-    mediump vec3 D = texture2D(tex, uv + (tsize * vec2(-2.0, 1.0))).xyz;
+    mediump vec3 C = texture2D(tex, uv + (tsize * vec2(-2.0,  0.0))).xyz;
+    mediump vec3 D = texture2D(tex, uv + (tsize * vec2(-2.0,  1.0))).xyz;
     mediump vec3 E = texture2D(tex, uv + (tsize * vec2(-1.0, -2.0))).xyz;
     mediump vec3 F = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).xyz;
-    mediump vec3 G = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).xyz;
-    mediump vec3 H = texture2D(tex, uv + (tsize * vec2(-1.0, 1.0))).xyz;
-    mediump vec3 I = texture2D(tex, uv + (tsize * vec2(0.0, -2.0))).xyz;
-    mediump vec3 J = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).xyz;
-    mediump vec3 K = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).xyz;
-    mediump vec3 L = texture2D(tex, uv + (tsize * vec2(0.0, 1.0))).xyz;
-    mediump vec3 M = texture2D(tex, uv + (tsize * vec2(1.0, -2.0))).xyz;
-    mediump vec3 N = texture2D(tex, uv + (tsize * vec2(1.0, -1.0))).xyz;
-    mediump vec3 O = texture2D(tex, uv + (tsize * vec2(1.0, 0.0))).xyz;
-    mediump vec3 P = texture2D(tex, uv + (tsize * vec2(1.0, 1.0))).xyz;
+    mediump vec3 G = texture2D(tex, uv + (tsize * vec2(-1.0,  0.0))).xyz;
+    mediump vec3 H = texture2D(tex, uv + (tsize * vec2(-1.0,  1.0))).xyz;
+    mediump vec3 I = texture2D(tex, uv + (tsize * vec2( 0.0, -2.0))).xyz;
+    mediump vec3 J = texture2D(tex, uv + (tsize * vec2( 0.0, -1.0))).xyz;
+    mediump vec3 K = texture2D(tex, uv + (tsize * vec2( 0.0,  0.0))).xyz;
+    mediump vec3 L = texture2D(tex, uv + (tsize * vec2( 0.0,  1.0))).xyz;
+    mediump vec3 M = texture2D(tex, uv + (tsize * vec2( 1.0, -2.0))).xyz;
+    mediump vec3 N = texture2D(tex, uv + (tsize * vec2( 1.0, -1.0))).xyz;
+    mediump vec3 O = texture2D(tex, uv + (tsize * vec2( 1.0,  0.0))).xyz;
+    mediump vec3 P = texture2D(tex, uv + (tsize * vec2( 1.0,  1.0))).xyz;
 
     mediump vec3 c1 = (A + B + C + D) * 0.0625;
     mediump vec3 c2 = (E + F + G + H) * 0.0625;
@@ -171,7 +157,7 @@ mediump vec3 Gauss13H(const mediump sampler2D tex, const mediump vec2 uv, const 
 
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
-mediump vec3 Upscale3x3(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Upscale9(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;
@@ -192,20 +178,6 @@ mediump vec3 Upscale3x3(const mediump sampler2D tex, const mediump vec2 uv, cons
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Upscale2x2(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
-{
-    mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5))).xyz;
-    mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-0.5,  0.5))).xyz;
-    mediump vec3 C = texture2D(tex, uv + (tsize * vec2( 0.5, -0.5))).xyz;
-    mediump vec3 D = texture2D(tex, uv + (tsize * vec2( 0.5,  0.5))).xyz;
-
-    mediump vec3 c1 = (A + B + C + D) * 0.25; // 1/4
-
-    return c1;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5))).xyz;
@@ -221,7 +193,7 @@ mediump vec3 Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, co
 
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
-mediump vec3 Downscale4x4(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale13(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;

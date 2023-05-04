@@ -65,5 +65,34 @@ mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const medi
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor = vec4(Fxaa(ColorMap, vUV0, TexelSize0), 1.0);
+    vec3 c1 = vec3(0.0, 0.0, 0.0);
+
+    accumValue  = loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 0).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 1).xyz;
+
+#if MSAA_NUM_SUBSAMPLES > 2
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 2).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 3).xyz;
+#endif
+
+#if MSAA_NUM_SUBSAMPLES > 4
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 4).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 5).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 6).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 7).xyz;
+#endif
+
+#if MSAA_NUM_SUBSAMPLES > 8
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 8).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 9).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 10).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 11).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 12).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 13).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 14).xyz;
+    accumValue += loadWithToneMapAndWeight( oldInvLum, rt0, vUV0, 15).xyz;
+#endif
+
+//    fragColour.xyz	= tonemapInvert(oldInvLum, accumValue.xyz);
+//    fragColour.w	= accumValue.w;
 }

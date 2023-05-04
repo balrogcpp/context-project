@@ -8,6 +8,7 @@
 #define __VERSION__ 100
 #endif
 
+
 #include "header.glsl"
 #include "filters.glsl"
 
@@ -20,5 +21,5 @@ uniform mediump vec2 TexelSize0;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor = vec4(BoxFilter16(RT, vUV0, TexelSize0), 1.0);
+    FragColor = vec4(Upscale9(RT, vUV0, TexelSize0), 1.0);
 }

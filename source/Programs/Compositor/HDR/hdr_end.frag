@@ -22,7 +22,7 @@ uniform mediump float timeSinceLast;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-//  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
+//  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale03_SumLumEnd_ps.glsl
 //----------------------------------------------------------------------------------------------------------------------
 mediump float Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -31,7 +31,7 @@ mediump float Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, c
     mediump float C = texture2D(tex, uv + (tsize * vec2( 1.0, -1.0))).r;
     mediump float D = texture2D(tex, uv + (tsize * vec2( 1.0,  1.0))).r;
 
-    mediump float c1 = (A + B + C + D) * 0.25; // 1/4
+    mediump float c1 = (A + B + C + D) * 0.25;
 
     return c1;
 }
@@ -45,8 +45,7 @@ void main()
 
     mediump float oldLum = texture2D(OldLum, vec2(0.0, 0.0)).r;
 
-    //mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
-    mediump float lum = newLum;
+    mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 
     FragColor = vec4(lum, lum, lum, 1.0);
 }

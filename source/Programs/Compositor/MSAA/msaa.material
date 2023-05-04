@@ -3,12 +3,12 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program tonemap_fs glsl glsles hlsl
+fragment_program msaa_fs glsl glsles hlsl
 {
-    source tonemap.frag
+    source msaa.frag
 }
 
-material Tonemap
+material MSAA
 {
 	technique
 	{
@@ -21,9 +21,10 @@ material Tonemap
 
 			vertex_program_ref StdQuad_vp {}
 
-			fragment_program_ref tonemap_fs
+			fragment_program_ref msaa_fs
 			{
                 param_named ColorMap int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
 			texture_unit RT
@@ -31,7 +32,7 @@ material Tonemap
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
 		}
 	}

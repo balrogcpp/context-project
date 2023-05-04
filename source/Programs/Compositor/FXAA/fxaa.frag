@@ -22,8 +22,8 @@ uniform vec2 TexelSize0;
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
-    #define FXAA_REDUCE_MIN 0.0078125 // 1/128
-    #define FXAA_REDUCE_MUL 0.125 // 1.0/8.0
+    #define FXAA_REDUCE_MIN 0.0078125
+    #define FXAA_REDUCE_MUL 0.125
     #define FXAA_SPAN_MAX 8.0
 
     mediump vec3 rgbNW = texture2D(tex, uv + vec2(-1.0, -1.0) * tsize).xyz;
@@ -55,9 +55,9 @@ mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const medi
     mediump float lumaB = dot(rgbB, luma);
 
     if((lumaB < lumaMin) || (lumaB > lumaMax)) {
-        return rgbA;
+        return SafeHDR(rgbA);
     } else {
-        return rgbB;
+        return SafeHDR(rgbB);
     }
 }
 
@@ -65,5 +65,5 @@ mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const medi
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor = vec4(SafeHDR(Fxaa(ColorMap, vUV0, TexelSize0)), 1.0);
+    FragColor = vec4(Fxaa(ColorMap, vUV0, TexelSize0), 1.0);
 }

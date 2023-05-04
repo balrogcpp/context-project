@@ -21,7 +21,6 @@ in highp vec3 vWorldPosition;
 in mediump mat3 vTBN;
 in mediump vec4 vScreenPosition;
 in mediump vec4 vPrevScreenPosition;
-
 uniform sampler2D NormapMap;
 uniform highp vec3 CameraPosition;
 uniform mediump float FarClipDistance;

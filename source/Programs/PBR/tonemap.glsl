@@ -116,14 +116,14 @@ mediump float aces(const mediump float x) {
 mediump vec3 filmic(const mediump vec3 x) {
     mediump vec3 X = max(vec3(0.0, 0.0, 0.0), x - 0.004);
     mediump vec3 result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
-    return pow(result, vec3(2.2, 2.2, 2.2));
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump float filmic(const mediump float x) {
     mediump float X = max(0.0, x - 0.004);
     mediump float result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
-    return pow(result, 2.2);
+    return result;
 }
 
 
@@ -198,13 +198,13 @@ mediump vec3 uncharted2Tonemap(mediump vec3 x) {
 //    const mediump float E = 0.02;
 //    const mediump float F = 0.30;
 //    const mediump float W = 11.2;
-    const float A = 0.22;
-    const float B = 0.3;
-    const float C = 0.10;
-    const float D = 0.20;
-    const float E = 0.01;
-    const float F = 0.30;
-    const float W = 11.2;
+    const mediump float A = 0.22;
+    const mediump float B = 0.3;
+    const mediump float C = 0.10;
+    const mediump float D = 0.20;
+    const mediump float E = 0.01;
+    const mediump float F = 0.30;
+    const mediump float W = 11.2;
 
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
@@ -227,13 +227,13 @@ mediump float uncharted2Tonemap(const mediump float x) {
 //    const mediump float E = 0.02;
 //    const mediump float F = 0.30;
 //    const mediump float W = 11.2;
-    const float A = 0.22;
-    const float B = 0.3;
-    const float C = 0.10;
-    const float D = 0.20;
-    const float E = 0.01;
-    const float F = 0.30;
-    const float W = 11.2;
+    const mediump float A = 0.22;
+    const mediump float B = 0.3;
+    const mediump float C = 0.10;
+    const mediump float D = 0.20;
+    const mediump float E = 0.01;
+    const mediump float F = 0.30;
+    const mediump float W = 11.2;
 
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }

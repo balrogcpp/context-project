@@ -55,7 +55,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt1
             }
         }
@@ -64,7 +64,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt2
             }
         }
@@ -73,7 +73,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt3
             }
         }
@@ -82,7 +82,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt4
             }
         }
@@ -91,7 +91,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt5
             }
         }
@@ -100,7 +100,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt6
             }
         }
@@ -109,7 +109,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt7
             }
         }
@@ -118,7 +118,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt8
             }
         }
@@ -127,7 +127,7 @@ compositor Bloom
         {
             pass render_quad
             {
-                material Downscale4x4
+                material Downscale13
                 input 0 rt9
             }
         }
@@ -182,7 +182,7 @@ compositor BloomIt1 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -208,7 +208,7 @@ compositor BloomIt2 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -217,7 +217,7 @@ compositor BloomIt2 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -243,7 +243,7 @@ compositor BloomIt3 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -252,7 +252,7 @@ compositor BloomIt3 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -261,7 +261,7 @@ compositor BloomIt3 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -287,7 +287,7 @@ compositor BloomIt4 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -296,7 +296,7 @@ compositor BloomIt4 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -305,7 +305,7 @@ compositor BloomIt4 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -314,7 +314,7 @@ compositor BloomIt4 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -340,7 +340,7 @@ compositor BloomIt5 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -349,7 +349,7 @@ compositor BloomIt5 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -358,7 +358,7 @@ compositor BloomIt5 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -367,7 +367,7 @@ compositor BloomIt5 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -376,7 +376,7 @@ compositor BloomIt5 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -402,7 +402,7 @@ compositor BloomIt6 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -411,7 +411,7 @@ compositor BloomIt6 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -420,7 +420,7 @@ compositor BloomIt6 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -429,7 +429,7 @@ compositor BloomIt6 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -438,7 +438,7 @@ compositor BloomIt6 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -464,7 +464,7 @@ compositor BloomIt7 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt7
             }
         }
@@ -473,7 +473,7 @@ compositor BloomIt7 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -482,7 +482,7 @@ compositor BloomIt7 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -491,7 +491,7 @@ compositor BloomIt7 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -500,7 +500,7 @@ compositor BloomIt7 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -509,7 +509,7 @@ compositor BloomIt7 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -535,7 +535,7 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt8
             }
         }
@@ -544,7 +544,7 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt7
             }
         }
@@ -553,7 +553,7 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -562,7 +562,7 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -571,7 +571,7 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -580,7 +580,7 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -589,7 +589,7 @@ compositor BloomIt8 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -616,7 +616,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt9
             }
         }
@@ -625,7 +625,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt8
             }
         }
@@ -634,7 +634,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt7
             }
         }
@@ -643,7 +643,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -652,7 +652,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -661,7 +661,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -670,7 +670,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -679,7 +679,7 @@ compositor BloomIt9 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -705,7 +705,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt10
             }
         }
@@ -714,7 +714,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt9
             }
         }
@@ -723,7 +723,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt8
             }
         }
@@ -732,7 +732,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt7
             }
         }
@@ -741,7 +741,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -750,7 +750,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -759,7 +759,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -768,7 +768,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -777,7 +777,7 @@ compositor BloomIt10 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -803,7 +803,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt11
             }
         }
@@ -812,7 +812,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt10
             }
         }
@@ -821,7 +821,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt9
             }
         }
@@ -830,7 +830,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt8
             }
         }
@@ -839,7 +839,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt7
             }
         }
@@ -848,7 +848,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -857,7 +857,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -866,7 +866,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -875,7 +875,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -884,7 +884,7 @@ compositor BloomIt11 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -910,7 +910,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt12
             }
         }
@@ -919,7 +919,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt11
             }
         }
@@ -928,7 +928,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt10
             }
         }
@@ -937,7 +937,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt9
             }
         }
@@ -946,7 +946,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt8
             }
         }
@@ -955,7 +955,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt7
             }
         }
@@ -964,7 +964,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -973,7 +973,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -982,7 +982,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -991,7 +991,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -1000,7 +1000,7 @@ compositor BloomIt12 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
@@ -1026,7 +1026,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt13
             }
         }
@@ -1035,7 +1035,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt11
             }
         }
@@ -1044,7 +1044,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt10
             }
         }
@@ -1053,7 +1053,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt9
             }
         }
@@ -1062,7 +1062,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt8
             }
         }
@@ -1071,7 +1071,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt7
             }
         }
@@ -1080,7 +1080,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt6
             }
         }
@@ -1089,7 +1089,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt5
             }
         }
@@ -1098,7 +1098,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt4
             }
         }
@@ -1107,7 +1107,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt3
             }
         }
@@ -1116,7 +1116,7 @@ compositor BloomIt13 : BloomIt
         {
             pass render_quad
             {
-                material Upscale3x3
+                material Upscale9
                 input 0 rt2
             }
         }
