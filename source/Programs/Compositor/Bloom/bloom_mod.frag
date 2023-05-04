@@ -17,8 +17,8 @@
 mediump vec3 Upscale3x3(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
-    mediump vec3 B = texture2D(tex, uv + tsize * vec2(0.0,  -1.0)).rgb;
-    mediump vec3 C = texture2D(tex, uv + tsize * vec2(1.0,  -1.0)).rgb;
+    mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;
+    mediump vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).rgb;
     mediump vec3 D = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).rgb;
     mediump vec3 E = texture2D(tex, uv + tsize                   ).rgb;
     mediump vec3 F = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).rgb;
