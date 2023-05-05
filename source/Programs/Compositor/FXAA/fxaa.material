@@ -23,7 +23,7 @@ material FXAA
 
 			fragment_program_ref FXAA_fs
 			{
-                param_named ColorMap int 0
+                param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
@@ -32,7 +32,7 @@ material FXAA
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
 		}
 	}

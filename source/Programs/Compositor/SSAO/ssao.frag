@@ -1,4 +1,5 @@
 // created by Andrey Vasiliev
+// based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
 
 #ifndef GL_ES
 #version 150
@@ -37,7 +38,7 @@ mediump float iter(const mediump vec3 dir, const mediump vec3 randN, const mediu
     // (based on random samples and a random texture sample)
     // bias the random direction away from the normal
     // this tends to minimize self occlusion
-//    mediump vec3 randomDir = reflect(dir, randN) + viewNorm;
+    //mediump vec3 randomDir = reflect(dir, randN) + viewNorm;
     mediump vec3 randomDir = dir + viewNorm;
 
     // Move new view-space position back into texture space
@@ -55,23 +56,22 @@ mediump float iter(const mediump vec3 dir, const mediump vec3 randN, const mediu
 }
 
 
-//    #define MAX_RAND_SAMPLES 14
-
-//mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES];
-//RAND_SAMPLES[0] = vec3(1.0, 0.0, 0.0);
-//RAND_SAMPLES[1] = vec3(-1.0, 0.0, 0.0);
-//RAND_SAMPLES[2] = vec3(0.0, 1.0, 0.0);
-//RAND_SAMPLES[3] = vec3(0.0, -1.0, 0.0);
-//RAND_SAMPLES[4] = vec3(0.0, 0.0, 1.0);
-//RAND_SAMPLES[5] = vec3(0.0, 0.0, -1.0);
-//RAND_SAMPLES[6] = normalize(vec3(1.0, 1.0, 1.0));
-//RAND_SAMPLES[7] = normalize(vec3(-1.0, 1.0, 1.0));
-//RAND_SAMPLES[8] = normalize(vec3(1.0, -1.0, 1.0));
-//RAND_SAMPLES[9] = normalize(vec3(1.0, 1.0, -1.0));
-//RAND_SAMPLES[10] = normalize(vec3(-1.0, -1.0, 1.0));
-//RAND_SAMPLES[11] = normalize(vec3(-1.0, 1.0, -1.0));
-//RAND_SAMPLES[12] = normalize(vec3(1.0, -1.0, -1.0));
-//RAND_SAMPLES[13] = normalize(vec3(-1.0, -1.0, -1.0));
+// #define MAX_RAND_SAMPLES 14
+// mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES];
+// RAND_SAMPLES[0] = vec3(1.0, 0.0, 0.0);
+// RAND_SAMPLES[1] = vec3(-1.0, 0.0, 0.0);
+// RAND_SAMPLES[2] = vec3(0.0, 1.0, 0.0);
+// RAND_SAMPLES[3] = vec3(0.0, -1.0, 0.0);
+// RAND_SAMPLES[4] = vec3(0.0, 0.0, 1.0);
+// RAND_SAMPLES[5] = vec3(0.0, 0.0, -1.0);
+// RAND_SAMPLES[6] = normalize(vec3(1.0, 1.0, 1.0));
+// RAND_SAMPLES[7] = normalize(vec3(-1.0, 1.0, 1.0));
+// RAND_SAMPLES[8] = normalize(vec3(1.0, -1.0, 1.0));
+// RAND_SAMPLES[9] = normalize(vec3(1.0, 1.0, -1.0));
+// RAND_SAMPLES[10] = normalize(vec3(-1.0, -1.0, 1.0));
+// RAND_SAMPLES[11] = normalize(vec3(-1.0, 1.0, -1.0));
+// RAND_SAMPLES[12] = normalize(vec3(1.0, -1.0, -1.0));
+// RAND_SAMPLES[13] = normalize(vec3(-1.0, -1.0, -1.0));
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
@@ -81,8 +81,9 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     mediump vec3 viewPos = vRay * depth;
-    mediump vec3 worldPos = mul(InvViewMatrix, vec4(viewPos, 1.0)).xyz;
-    mediump vec3 randN = hash(worldPos);
+    //mediump vec3 worldPos = mul(InvViewMatrix, vec4(viewPos, 1.0)).xyz;
+    //mediump vec3 randN = hash(worldPos);
+    const mediump vec3 randN = vec3(0.0, 0.0, 0.0);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
@@ -104,10 +105,11 @@ void main()
     mediump float N = iter(normalize(vec3(-1.0, -1.0, -1.0)), randN, viewNorm, viewPos, depth);
 
     // Accumulated occlusion factor
-    mediump float occ = (A + B + C + D) * 0.07142857142857142857;
-    occ += (E + F + G + H) * 0.07142857142857142857;
-    occ += (I + J + K + L) * 0.07142857142857142857;
-    occ += (M + N) * 0.07142857142857142857;
+    mediump float c1 = (A + B + C + D) * 0.07142857142857142857;
+    mediump float c2 = (E + F + G + H) * 0.07142857142857142857;
+    mediump float c3 = (I + J + K + L) * 0.07142857142857142857;
+    mediump float c4 = (M + N) * 0.07142857142857142857;
+    mediump float occ = c1 + c2 + c3 + c4;
 
     // amplify and saturate if necessary
     occ = clamp(occ, 0.0, 1.0);

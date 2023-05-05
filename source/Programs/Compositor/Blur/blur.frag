@@ -20,7 +20,7 @@
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
+uniform sampler2D RT;
 uniform sampler2D VelocitySampler;
 uniform mediump vec2 TexSize1;
 uniform mediump float Scale;
@@ -29,7 +29,7 @@ uniform mediump float Scale;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
+    mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec2 velocity = Scale * texture2D(VelocitySampler, vUV0).xy;
     mediump float speed = length(velocity * TexSize1);
     mediump float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
@@ -39,7 +39,7 @@ void main()
         if (int(nSamples) <= i) break;
 
         vec2 offset = (float(i) * invSamples - 0.5) * velocity;
-        color += texture2D(ColorMap, vUV0 + offset).rgb;
+        color += texture2D(RT, vUV0 + offset).rgb;
     }
 
     color *= invSamples;

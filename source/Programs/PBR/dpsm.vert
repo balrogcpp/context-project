@@ -14,11 +14,9 @@
 in highp vec4 vertex;
 #ifdef SHADOWCASTER_ALPHA
 in highp vec2 uv0;
-out highp vec2 vUV0;
+out mediump vec2 vUV0;
 #endif
 uniform highp mat4 WorldViewMatrix;
-uniform highp float NearClipDistance;
-uniform highp float FarClipDistance;
 
 
 void main()
@@ -33,6 +31,6 @@ void main()
     gl_Position.z = gl_Position.z + 1.0;
     gl_Position.x = gl_Position.x / gl_Position.z;
     gl_Position.y = gl_Position.y / gl_Position.z;
-    gl_Position.z = (L - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    gl_Position.z = L;
     gl_Position.w = 1.0;
 }

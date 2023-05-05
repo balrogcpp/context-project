@@ -29,14 +29,14 @@ in highp vec4 tangent;
 in mediump vec4 colour;
 #endif
 #ifdef HAS_UV
-in mediump vec4 uv0;
-in mediump vec4 uv1;
-in mediump vec4 uv2;
-in mediump vec4 uv3;
-in mediump vec4 uv4;
-in mediump vec4 uv5;
-in mediump vec4 uv6;
-in mediump vec4 uv7;
+in highp vec4 uv0;
+in highp vec4 uv1;
+in highp vec4 uv2;
+in highp vec4 uv3;
+in highp vec4 uv4;
+in highp vec4 uv5;
+in highp vec4 uv6;
+in highp vec4 uv7;
 #endif //  HAS_UV
 
 out highp vec3 vWorldPosition;

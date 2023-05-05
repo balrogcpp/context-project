@@ -14,8 +14,8 @@
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
-uniform vec2 TexelSize0;
+uniform sampler2D RT;
+uniform mediump vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -65,5 +65,5 @@ mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const medi
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor = vec4(Fxaa(ColorMap, vUV0, TexelSize0), 1.0);
+    FragColor = vec4(Fxaa(RT, vUV0, TexelSize0), 1.0);
 }

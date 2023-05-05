@@ -17,7 +17,7 @@ in mediump vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
-uniform sampler2D ColorMap;
+uniform sampler2D RT;
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvProjMatrix;
 uniform mediump mat4 InvViewMatrix;
@@ -120,7 +120,7 @@ void main()
     mediump float reflectionStrength = ssr.r;
 
     if (reflectionStrength < 0.04) {
-        FragColor = vec4(texture2D(ColorMap, vUV0).rgb, 1.0);
+        FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
         return;
     }
 
@@ -146,7 +146,7 @@ void main()
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;
     mediump float fresnel = Fresnel(reflected, normal);
-    mediump vec3 color = texture2D(ColorMap, coords.xy).rgb * error * fresnel;
+    mediump vec3 color = texture2D(RT, coords.xy).rgb * error * fresnel;
 
-    FragColor = vec4(mix(texture2D(ColorMap, vUV0).rgb, color, reflectionStrength), 1.0);
+    FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, reflectionStrength), 1.0);
 }

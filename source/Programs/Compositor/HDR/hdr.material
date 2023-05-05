@@ -198,7 +198,7 @@ material Tonemap
 
 			fragment_program_ref tonemap_fs
 			{
-                param_named ColorMap int 0
+                param_named RT int 0
 			}
 
 			texture_unit RT

@@ -14,7 +14,7 @@
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
+uniform sampler2D RT;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ mediump float uncharted2(const mediump float color) {
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
+    mediump vec3 color = texture2D(RT, vUV0).rgb;
     color = uncharted2(color);
     color  = (color - 0.5) * 1.25 + 0.5 + 0.11;
 

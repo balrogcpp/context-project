@@ -14,14 +14,14 @@
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
+uniform sampler2D RT;
 uniform sampler2D FboMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
+    mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec3 rays = texture2D(FboMap, vUV0).rgb;
     FragColor = vec4(SafeHDR(color + rays), 1.0);
 }

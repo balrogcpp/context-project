@@ -31,7 +31,7 @@ material Blur
 
 			fragment_program_ref Blur_fs
 			{
-                param_named ColorMap int 0
+                param_named RT int 0
                 param_named VelocitySampler int 1
                 param_named_auto TexSize1 texture_size 1
 			}

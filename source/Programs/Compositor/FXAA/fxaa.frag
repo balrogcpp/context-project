@@ -15,8 +15,8 @@
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
-uniform vec2 TexelSize0;
+uniform sampler2D RT;
+uniform mediump vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -32,7 +32,8 @@ mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const medi
     mediump vec3 rgbSE = texture2D(tex, uv + vec2( 1.0,  1.0) * tsize).xyz;
     mediump vec3 rgbM  = texture2D(tex, uv                           ).xyz;
 
-    const mediump vec3 luma = vec3(0.2126, 0.7152, 0.0722);
+    //const mediump vec3 luma = vec3(0.2126, 0.7152, 0.0722);
+    const mediump vec3 luma = vec3(0.299, 0.587, 0.114);
     mediump float lumaNW = dot(rgbNW, luma);
     mediump float lumaNE = dot(rgbNE, luma);
     mediump float lumaSW = dot(rgbSW, luma);
@@ -65,5 +66,5 @@ mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const medi
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    FragColor = vec4(Fxaa(ColorMap, vUV0, TexelSize0), 1.0);
+    FragColor = vec4(Fxaa(RT, vUV0, TexelSize0), 1.0);
 }

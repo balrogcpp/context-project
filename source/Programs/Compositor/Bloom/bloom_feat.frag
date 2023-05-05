@@ -91,7 +91,7 @@ mediump vec3 HaloFeatures(const sampler2D tex, const mediump vec2 uv, const medi
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
+uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
 uniform mediump int FeaturesCount;
@@ -100,10 +100,10 @@ uniform mediump int FeaturesCount;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
+    mediump vec3 color = texture2D(RT, vUV0).rgb;
 
-    color += GhostFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
-    color += HaloFeatures(ColorMap, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
+    color += GhostFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
+    color += HaloFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
 
     FragColor = vec4(color, 1.0);
 }

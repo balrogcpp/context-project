@@ -71,7 +71,7 @@ material SSAO_mod
 
             fragment_program_ref SSAO_mod_fp
             {
-                param_named ColorMap int 0
+                param_named RT int 0
                 param_named SsaoMap int 1
             }
 

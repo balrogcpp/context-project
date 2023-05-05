@@ -82,8 +82,6 @@ fragment_program DPSM/shadow_caster_alpha_fs glsl glsles hlsl
 	{
 	    param_named AlbedoMap int 0
 	    param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
-        param_named_auto FarClipDistance far_clip_distance
-        param_named_auto NearClipDistance near_clip_distance
 	}
 }
 

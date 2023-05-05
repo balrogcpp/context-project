@@ -27,7 +27,7 @@ material SSR
                 param_named DepthMap int 0
                 param_named NormalMap int 1
                 param_named GlossMap int 2
-                param_named ColorMap int 3
+                param_named RT int 3
             }
 
             texture_unit Depth

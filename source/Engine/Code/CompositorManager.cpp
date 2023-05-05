@@ -94,11 +94,9 @@ void CompositorManager::OnSetUp() {
   // init mipmaps
   InitMipChain(false);
 
-  // extra compositors
-  AddCompositor("FXAA", false);
-
   // tonemap us part of HDR, always on
   AddCompositor("Tonemap", true);
+  AddCompositor("FXAA", false);
 
   AddCompositor("Blur", false);
   AddCompositor("End", true);
@@ -442,20 +440,22 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 1 || pass_id == 2) {  // 1 = SSAO, 2 = SSR
+  if (pass_id == 1) {  // 1 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
-    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
-    fp->setIgnoreMissingParams(false);
 
-  } else if (pass_id == 3) {  // Rays
+  }  else if (pass_id == 2) { // 2 = SSR
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
+    //fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
+    //fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
+    fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
+
+  } else if (pass_id == 3) { // 3 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
-    fp->setIgnoreMissingParams(true);
     static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
     int directionals = 0; // count directional light
     for (int i = 0; i < lightList.size(); i++) {
@@ -471,7 +471,6 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     }
     fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
     fp->setNamedConstant("LightCount", directionals > 0 ? static_cast<Ogre::Real>(1.0) : static_cast<Ogre::Real>(0.0));
-    fp->setIgnoreMissingParams(false);
 
   } else if (pass_id == 0) {  // mrt render
 

@@ -29,7 +29,7 @@ material Bloom_threshold
 
 			fragment_program_ref bloom_threshold_fs
 			{
-                param_named ColorMap int 0
+                param_named RT int 0
                 param_named Lum int 1
 
                 param_named_auto TexelSize0 inverse_texture_size 0
@@ -137,7 +137,7 @@ material Bloom_feat
 
             fragment_program_ref bloom_feat_fs
             {
-                param_named ColorMap int 0
+                param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
             }
 

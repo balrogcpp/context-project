@@ -23,7 +23,7 @@ material SMAA
 
 			fragment_program_ref SMAA_fs
 			{
-                param_named ColorMap int 0
+                param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
 			}
 

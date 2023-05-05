@@ -50,7 +50,7 @@ mediump vec3 Pass(const mediump vec3 color, const mediump vec2 threshold)
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
+uniform sampler2D RT;
 uniform sampler2D Lum;
 uniform mediump vec2 TexelSize0;
 uniform mediump vec2 Threshold;
@@ -59,7 +59,7 @@ uniform mediump vec2 Threshold;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = Downscale13(ColorMap, vUV0, TexelSize0);
+    mediump vec3 color = Downscale13(RT, vUV0, TexelSize0);
     mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
 
     color *= lum;

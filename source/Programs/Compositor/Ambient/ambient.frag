@@ -13,14 +13,14 @@
 
 
 in mediump vec2 vUV0;
-uniform sampler2D ColorMap;
+uniform sampler2D RT;
 uniform sampler2D AmbientMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump vec3 color = texture2D(ColorMap, vUV0).rgb;
+    mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec3 ambient = texture2D(AmbientMap, vUV0).rgb;
     FragColor = vec4(color + ambient, 1.0);
 }
