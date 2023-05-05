@@ -182,6 +182,8 @@ public:
 
 	static float getRangeRandom(float start, float end);
 
+	void EnableNormals(bool enable) { hasNormals = enable; }
+    bool HasNormals() { return hasNormals; }
 
 private:
 	friend class GrassLayer;
@@ -202,6 +204,7 @@ private:
 	PagedGeometry *geom;
 	Ogre::uint8 renderQueue;
 	float densityFactor;
+    bool hasNormals;
 
 	// random table
 	RandomTable *rTable;
@@ -558,7 +561,7 @@ private:
 	MapFilter colorMapFilter;
 
 	//Grass shader properties
-	bool animate, blend, lighting, shaderNeedsUpdate;
+        bool animate, blend, lighting, shaderNeedsUpdate;
 	Ogre::Real animMag, animSpeed, animFreq;
 
 	//Current frame of animation for this layer
