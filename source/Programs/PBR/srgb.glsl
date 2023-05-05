@@ -42,7 +42,7 @@ mediump vec3 LINEARtoSRGB(const mediump vec3 linIn)
 #ifdef MANUAL_SRGB
 
 #if defined(SRGB_FAST_APPROXIMATION)
-  return pow(linIn, vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
+  return pow(linIn, vec3(0.45454545454545454545, 0.45454545454545454545, 0.45454545454545454545));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
   return sqrt(linIn);
 #endif

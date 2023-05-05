@@ -4,6 +4,10 @@
 #ifndef GL_ES
 #version 330 core
 #define __VERSION__ 330
+// this fix problem with shadow array
+// https://community.khronos.org/t/array-of-sampler2d-texture-bindless-problem/107313/3
+#extension GL_ARB_bindless_texture : enable
+layout (bindless_sampler) uniform;
 #else
 #version 300 es
 #define __VERSION__ 300
@@ -15,14 +19,6 @@
 #include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
-
-
-// this fix problem with shadow array
-// https://community.khronos.org/t/array-of-sampler2d-texture-bindless-problem/107313/3
-#ifdef OGRE_GLSL
-#extension GL_ARB_bindless_texture : enable
-layout (bindless_sampler) uniform;
-#endif
 
 
 // Basic Lambertian diffuse
