@@ -24,7 +24,7 @@
 
 
 varying mediump vec2 vUV0;
-varying mediump vec4 offset[3];
+varying mediump mat4 offset;
 uniform sampler2D rt_input;  //Must not be sRGB
 #if SMAA_PREDICATION
 	uniform sampler2D depthTex;

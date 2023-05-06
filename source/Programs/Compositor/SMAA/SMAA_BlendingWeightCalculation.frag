@@ -19,7 +19,7 @@
 
 varying mediump vec2 vUV0;
 varying mediump vec2 pixcoord0;
-varying mediump vec4 offset[3];
+varying mediump mat4 offset;
 uniform sampler2D edgeTex;
 uniform sampler2D areaTex;
 uniform sampler2D searchTex;

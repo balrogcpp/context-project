@@ -653,7 +653,7 @@ constexpr sampler PointSampler = sampler( coord::normalized,
  * Gathers current pixel, and the top-left neighbors.
  */
 SMAA_INLINE mediump vec3 SMAAGatherNeighbours(const mediump vec2 texcoord,
-                                        const mediump vec4 offset[3],
+                                        const mediump mat4 offset,
                                         SMAATexture2D(tex)
                                         SMAA_EXTRA_PARAM_ARG_DECL) {
     #ifdef SMAAGather
@@ -670,7 +670,7 @@ SMAA_INLINE mediump vec3 SMAAGatherNeighbours(const mediump vec2 texcoord,
  * Adjusts the threshold by means of predication.
  */
 SMAA_INLINE mediump vec2 SMAACalculatePredicatedThreshold(const mediump vec2 texcoord,
-                                                    const mediump vec4 offset[3],
+                                                    const mediump mat4 offset,
                                                     SMAATexture2D(predicationTex)
                                                     SMAA_EXTRA_PARAM_ARG_DECL) {
     mediump vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(predicationTex)
@@ -709,7 +709,7 @@ SMAA_INLINE void SMAAMovc(bool4 cond, SMAA_INOUT( mediump vec4, variable ), medi
  * Edge Detection Vertex Shader
  */
 SMAA_INLINE void SMAAEdgeDetectionVS(const mediump vec2 texcoord,
-                                     out mediump vec4 offset[3]
+                                     out mediump mat4 offset
                                      SMAA_EXTRA_PARAM_ARG_DECL) {
     offset[0] = mad(SMAA_RT_METRICS.xyxy, vec4(-1.0, 0.0, 0.0, -1.0), texcoord.xyxy);
     offset[1] = mad(SMAA_RT_METRICS.xyxy, vec4( 1.0, 0.0, 0.0,  1.0), texcoord.xyxy);
@@ -721,7 +721,7 @@ SMAA_INLINE void SMAAEdgeDetectionVS(const mediump vec2 texcoord,
  */
 SMAA_INLINE void SMAABlendingWeightCalculationVS(const mediump vec2 texcoord,
                                                  SMAA_OUT( mediump vec2, pixcoord ),
-                                                 out mediump vec4 offset[3]
+                                                 out mediump mat4 offset
                                                  SMAA_EXTRA_PARAM_ARG_DECL) {
     pixcoord = texcoord * SMAA_RT_METRICS.zw;
 
@@ -756,7 +756,7 @@ SMAA_INLINE void SMAANeighborhoodBlendingVS(const mediump vec2 texcoord,
  * thus 'colorTex' should be a non-sRGB texture.
  */
 SMAA_INLINE mediump vec2 SMAALumaEdgeDetectionPS(const mediump vec2 texcoord,
-                                           const mediump vec4 offset[3],
+                                           const mediump mat4 offset,
                                            SMAATexture2D(colorTex)
                                            #if SMAA_PREDICATION
                                            , SMAATexture2D(predicationTex)
@@ -817,7 +817,7 @@ SMAA_INLINE mediump vec2 SMAALumaEdgeDetectionPS(const mediump vec2 texcoord,
  * thus 'colorTex' should be a non-sRGB texture.
  */
 SMAA_INLINE mediump vec2 SMAAColorEdgeDetectionPS(const mediump vec2 texcoord,
-                                            const mediump vec4 offset[3],
+                                            const mediump mat4 offset,
                                             SMAATexture2D(colorTex)
                                             #if SMAA_PREDICATION
                                             , SMAATexture2D(predicationTex)
@@ -886,7 +886,7 @@ SMAA_INLINE mediump vec2 SMAAColorEdgeDetectionPS(const mediump vec2 texcoord,
  * Depth Edge Detection
  */
 SMAA_INLINE mediump vec2 SMAADepthEdgeDetectionPS(const mediump vec2 texcoord,
-                                            const mediump vec4 offset[3],
+                                            const mediump mat4 offset,
                                             SMAATexture2D(depthTex)
                                             SMAA_EXTRA_PARAM_ARG_DECL ) {
     mediump vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(depthTex)
@@ -1230,7 +1230,7 @@ SMAA_INLINE void SMAADetectVerticalCornerPattern(SMAATexture2D(edgesTex), SMAA_I
 
 SMAA_INLINE mediump vec4 SMAABlendingWeightCalculationPS(const mediump vec2 texcoord,
                                                    const mediump vec2 pixcoord,
-                                                   const mediump vec4 offset[3],
+                                                   const mediump mat4 offset,
                                                    SMAATexture2D(edgesTex),
                                                    SMAATexture2D(areaTex),
                                                    SMAATexture2D(searchTex),

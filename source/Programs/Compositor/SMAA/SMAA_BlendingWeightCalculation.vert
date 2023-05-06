@@ -22,7 +22,7 @@ attribute highp vec2 uv0;
 uniform highp mat4 worldViewProj;
 varying mediump vec2 vUV0;
 varying mediump vec2 pixcoord0;
-varying mediump vec4 offset[3];
+varying mediump mat4 offset;
 
 
 void main()
