@@ -84,6 +84,7 @@ void CompositorManager::OnSetUp() {
 
   // to save pre-tonemap/hdr copy for some compositors
   AddCompositor("Copy", false);
+  AddCompositor("FXAA", true);
 
   // calculate scene luminance and apply, always on
   AddCompositor("HDR", true);
@@ -94,9 +95,8 @@ void CompositorManager::OnSetUp() {
   // init mipmaps
   InitMipChain(false);
 
-  // tonemap us part of HDR, always on
+  // tonemap is part of HDR, always on
   AddCompositor("Tonemap", true);
-  AddCompositor("FXAA", false);
 
   AddCompositor("Blur", false);
   AddCompositor("End", true);
