@@ -18,7 +18,7 @@
 	#define SMAA_PREDICATION 1
 #endif
 
-#include "SMAA.hlsl"
+#include "SMAA.glsl"
 
 
 in vec2 vUV0;

@@ -12,7 +12,7 @@
 #define SMAA_INCLUDE_VS 1
 #define SMAA_INCLUDE_PS 0
 
-#include "SMAA.hlsl"
+#include "SMAA.glsl"
 
 
 in vec4 vertex;

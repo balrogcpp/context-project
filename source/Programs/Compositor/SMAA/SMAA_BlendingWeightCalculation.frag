@@ -12,7 +12,7 @@
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 
-#include "SMAA.hlsl"
+#include "SMAA.glsl"
 
 
 in vec2 vUV0;

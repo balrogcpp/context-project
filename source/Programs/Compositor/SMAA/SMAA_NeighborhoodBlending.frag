@@ -13,7 +13,7 @@
 #define SMAA_INCLUDE_PS 1
 #define SMAA_REPROJECTION 0
 
-#include "SMAA.hlsl"
+#include "SMAA.glsl"
 
 
 in vec2 vUV0;
