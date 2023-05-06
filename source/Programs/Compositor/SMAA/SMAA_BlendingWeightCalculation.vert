@@ -17,9 +17,9 @@
 #include "SMAA.glsl"
 
 
-attribute highp vec4 vertex;
-attribute highp vec2 uv0;
-uniform highp mat4 worldViewProj;
+attribute mediump vec4 vertex;
+attribute mediump vec2 uv0;
+uniform mediump mat4 worldViewProj;
 varying mediump vec2 vUV0;
 varying mediump vec2 pixcoord0;
 varying mediump mat4 offset;
