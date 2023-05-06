@@ -1,3 +1,5 @@
+// created by Andrey Vasiliev
+
 #if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
@@ -15,12 +17,12 @@
 #include "SMAA.glsl"
 
 
-in vec4 vertex;
-in vec2 uv0;
-uniform mat4 worldViewProj;
-out vec2 vUV0;
-out vec2 pixcoord0;
-out vec4 offset[3];
+attribute highp vec4 vertex;
+attribute highp vec2 uv0;
+uniform highp mat4 worldViewProj;
+varying mediump vec2 vUV0;
+varying mediump vec2 pixcoord0;
+varying mediump vec4 offset[3];
 
 
 void main()

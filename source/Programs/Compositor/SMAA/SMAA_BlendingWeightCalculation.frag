@@ -1,3 +1,5 @@
+// created by Andrey Vasiliev
+
 #if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
@@ -15,9 +17,9 @@
 #include "SMAA.glsl"
 
 
-in vec2 vUV0;
-in vec2 pixcoord0;
-in vec4 offset[3];
+varying mediump vec2 vUV0;
+varying mediump vec2 pixcoord0;
+varying mediump vec4 offset[3];
 uniform sampler2D edgeTex;
 uniform sampler2D areaTex;
 uniform sampler2D searchTex;

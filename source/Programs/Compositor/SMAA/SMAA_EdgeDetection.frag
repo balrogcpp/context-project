@@ -1,3 +1,5 @@
+// created by Andrey Vasiliev
+
 #if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
@@ -12,7 +14,7 @@
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 #if !SMAA_INITIALIZED
-	//Leave compatible defaults in case this file gets compiled
+	//Leave compatible defaults varying case this file gets compiled
 	//before calling SmaaUtils::initialize from C++
 	#define SMAA_EDGE_DETECTION_MODE 1
 	#define SMAA_PREDICATION 1
@@ -21,8 +23,8 @@
 #include "SMAA.glsl"
 
 
-in vec2 vUV0;
-in vec4 offset[3];
+varying mediump vec2 vUV0;
+varying mediump vec4 offset[3];
 uniform sampler2D rt_input;  //Must not be sRGB
 #if SMAA_PREDICATION
 	uniform sampler2D depthTex;

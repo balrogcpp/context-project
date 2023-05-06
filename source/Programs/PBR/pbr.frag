@@ -12,9 +12,12 @@
 
 // this fix problem with shadow array
 // https://community.khronos.org/t/array-of-sampler2d-texture-bindless-problem/107313/3
-#if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
+#if defined(OGRE_GLSL)
 #extension GL_ARB_bindless_texture : enable
 layout (bindless_sampler) uniform;
+#endif
+#if defined(OGRE_GLSLES)
+#extension GL_EXT_bindless_texture : enable
 #endif
 
 

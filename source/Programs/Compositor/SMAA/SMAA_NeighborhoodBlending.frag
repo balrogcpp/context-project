@@ -1,3 +1,5 @@
+// created by Andrey Vasiliev
+
 #if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
@@ -16,8 +18,8 @@
 #include "SMAA.glsl"
 
 
-in vec2 vUV0;
-in vec4 offset;
+varying mediump vec2 vUV0;
+varying mediump vec4 offset;
 uniform sampler2D rt_input; //Can be sRGB
 uniform sampler2D blendTex;
 #if SMAA_REPROJECTION
