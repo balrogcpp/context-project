@@ -26,7 +26,6 @@ material FilterY
 			texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -56,7 +55,6 @@ material FilterX
 			texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -89,7 +87,6 @@ material Downscale4x4
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -119,7 +116,6 @@ material Downscale2x2
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -149,7 +145,6 @@ material Copy
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
@@ -178,7 +173,6 @@ material Flip
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
@@ -211,7 +205,6 @@ material Upscale9
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -245,7 +238,6 @@ material Downscale13
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -278,7 +270,6 @@ material Linear
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }

@@ -52,7 +52,6 @@ material HdrStart
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -82,7 +81,6 @@ material HdrDownsample
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -113,14 +111,12 @@ material HdrEnd
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
             texture_unit OldLum
             {
                 texture grey.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
@@ -159,14 +155,12 @@ material HDR
 			texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
 			texture_unit Lum
             {
                 texture grey.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
             }
@@ -204,7 +198,6 @@ material Tonemap
 			texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }

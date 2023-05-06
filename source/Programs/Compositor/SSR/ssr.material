@@ -33,28 +33,24 @@ material SSR
             texture_unit Depth
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
             texture_unit Normal
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
             texture_unit Gloss
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }

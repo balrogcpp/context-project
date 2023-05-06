@@ -1,14 +1,28 @@
-// created by Andrey Vasiliev
-
-//----------------------------------------------------------------------------------------------------------------------
 //
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program SMAA_fs glsl glsles hlsl
+//	SMAA/EdgeDetection
+//
+vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 {
-    source smaa.frag
+	source SMAA_EdgeDetection_vs.glsl
+
+	default_params
+	{
+		param_named_auto worldViewProj	worldviewproj_matrix
+		param_named_auto viewportSize	viewport_size
+	}
 }
 
-material SMAA
+fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
+{
+	source SMAA_EdgeDetection_ps.glsl
+
+	default_params
+	{
+		param_named_auto viewportSize	viewport_size
+	}
+}
+
+material SMAA/EdgeDetection
 {
 	technique
 	{
@@ -19,21 +33,164 @@ material SMAA
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref StdQuad_vp {}
+			vertex_program_ref SMAA/EdgeDetection_vs {}
 
-			fragment_program_ref SMAA_fs
+			fragment_program_ref SMAA/EdgeDetection_ps
 			{
-                param_named RT int 0
-                param_named_auto TexelSize0 inverse_texture_size 0
+				param_named rt_input	int 0
+				param_named depthTex	int 1
 			}
 
-			texture_unit RT
-            {
+			texture_unit rt_input
+			{
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering none
-            }
+			}
+
+			texture_unit depthTex
+			{
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+			}
+		}
+	}
+}
+
+//
+//	SMAA/BlendingWeightCalculation
+//
+vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
+{
+	source SMAA_BlendingWeightCalculation_vs.glsl
+
+	default_params
+	{
+		param_named_auto worldViewProj	worldviewproj_matrix
+		param_named_auto viewportSize	viewport_size
+	}
+}
+
+fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles hlsl
+{
+	source SMAA_BlendingWeightCalculation_ps.glsl
+
+	default_params
+	{
+		param_named_auto viewportSize	viewport_size
+	}
+}
+
+material SMAA/BlendingWeightCalculation
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+			vertex_program_ref SMAA/BlendingWeightCalculation_vs {}
+
+			fragment_program_ref SMAA/BlendingWeightCalculation_ps
+			{
+				param_named edgeTex		int 0
+				param_named areaTex		int 1
+				param_named searchTex	int 2
+			}
+
+			texture_unit edgeTex
+			{
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+			}
+
+			texture_unit areaTex
+			{
+				texture AreaTexDX10.dds
+				filtering bilinear
+				tex_address_mode clamp
+			}
+
+			texture_unit searchTex
+			{
+				texture SearchTex.dds
+				filtering bilinear
+				tex_address_mode clamp
+			}
+		}
+	}
+}
+
+
+//
+//	SMAA/NeighborhoodBlending
+//
+vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
+{
+	source SMAA_NeighborhoodBlending_vs.glsl
+
+	default_params
+	{
+		param_named_auto worldViewProj	worldviewproj_matrix
+		param_named_auto viewportSize	viewport_size
+	}
+}
+
+fragment_program SMAA/NeighborhoodBlending_ps glsl glsles hlsl
+{
+	source SMAA_NeighborhoodBlending_ps.glsl
+
+	default_params
+	{
+		param_named_auto viewportSize	viewport_size
+	}
+}
+
+material SMAA/NeighborhoodBlending
+{
+	technique
+	{
+		pass
+		{
+			depth_check off
+			depth_write off
+
+			cull_hardware none
+
+			vertex_program_ref SMAA/NeighborhoodBlending_vs {}
+
+			fragment_program_ref SMAA/NeighborhoodBlending_ps
+			{
+				param_named rt_input		int 0
+				param_named blendTex		int 1
+				param_named velocityTex		int 2
+			}
+
+			texture_unit rt_input
+			{
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+			}
+
+			texture_unit blendTex
+			{
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+			}
+
+			texture_unit velocityTex
+			{
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+			}
 		}
 	}
 }

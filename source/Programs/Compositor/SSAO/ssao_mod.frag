@@ -23,5 +23,6 @@ void main()
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump float ssao = texture2D(SsaoMap, vUV0).r;
     color *= ssao;
+    
     FragColor = vec4(color, 1.0);
 }

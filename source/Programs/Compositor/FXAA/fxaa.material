@@ -30,7 +30,6 @@ material FXAA
 			texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }

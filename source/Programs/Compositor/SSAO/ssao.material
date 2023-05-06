@@ -32,14 +32,12 @@ material SSAO
             texture_unit DepthMap
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
             texture_unit NormalMap
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -78,14 +76,12 @@ material SSAO_mod
             texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
             texture_unit SSAO
             {
                 texture white.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -137,7 +133,6 @@ material SSAO_FilterY
 			texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }
@@ -163,7 +158,6 @@ material SSAO_FilterX
 			texture_unit RT
             {
                 texture black.dds
-                tex_coord_set 0
                 tex_address_mode clamp
                 filtering bilinear
             }

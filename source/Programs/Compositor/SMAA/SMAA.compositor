@@ -1,28 +1,49 @@
 // created by Andrey Vasiliev
 
-
 //----------------------------------------------------------------------------------------------------------------------
 // SMAA
 //----------------------------------------------------------------------------------------------------------------------
 
 compositor SMAA
 {
-    technique
-    {
-        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+	technique
+	{
+		texture_ref mrt MRT mrt
+		texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+		texture edges target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+		texture blend target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt
         {
             input previous
         }
 
-        target_output
-        {
-            pass render_quad
-            {
-                material SMAA
-                input 0 rt
-            }
-        }
-    }
+		target edges
+		{
+			pass render_quad
+			{
+				material SMAA/EdgeDetection
+				input 0 rt
+			}
+		}
+
+		target blend
+		{		
+			pass render_quad
+			{
+				material SMAA/BlendingWeightCalculation
+				input 0 edges
+			}
+		}
+
+		target_output
+		{
+			pass render_quad
+			{
+				material SMAA/NeighborhoodBlending
+				input 0 rt
+				input 1 blend
+			}
+		}
+	}
 }

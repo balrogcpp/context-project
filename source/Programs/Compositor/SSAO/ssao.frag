@@ -18,7 +18,7 @@ in mediump vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;
-uniform mediump mat4 InvViewMatrix;
+//uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 
 
@@ -32,12 +32,13 @@ mediump vec3 hash(const mediump vec3 a)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float iter(const mediump vec3 dir, const mediump vec3 randN, const mediump vec3 viewNorm, const mediump vec3 viewPos, const mediump float depth)
+mediump float iter(const mediump vec3 dir, const mediump vec3 viewNorm, const mediump vec3 viewPos, const mediump float depth)
 {
     // Reflected direction to move in for the sphere
     // (based on random samples and a random texture sample)
     // bias the random direction away from the normal
     // this tends to minimize self occlusion
+
     //mediump vec3 randomDir = reflect(dir, randN) + viewNorm;
     mediump vec3 randomDir = dir + viewNorm;
 
@@ -56,22 +57,6 @@ mediump float iter(const mediump vec3 dir, const mediump vec3 randN, const mediu
 }
 
 
-// #define MAX_RAND_SAMPLES 14
-// mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES];
-// RAND_SAMPLES[0] = vec3(1.0, 0.0, 0.0);
-// RAND_SAMPLES[1] = vec3(-1.0, 0.0, 0.0);
-// RAND_SAMPLES[2] = vec3(0.0, 1.0, 0.0);
-// RAND_SAMPLES[3] = vec3(0.0, -1.0, 0.0);
-// RAND_SAMPLES[4] = vec3(0.0, 0.0, 1.0);
-// RAND_SAMPLES[5] = vec3(0.0, 0.0, -1.0);
-// RAND_SAMPLES[6] = normalize(vec3(1.0, 1.0, 1.0));
-// RAND_SAMPLES[7] = normalize(vec3(-1.0, 1.0, 1.0));
-// RAND_SAMPLES[8] = normalize(vec3(1.0, -1.0, 1.0));
-// RAND_SAMPLES[9] = normalize(vec3(1.0, 1.0, -1.0));
-// RAND_SAMPLES[10] = normalize(vec3(-1.0, -1.0, 1.0));
-// RAND_SAMPLES[11] = normalize(vec3(-1.0, 1.0, -1.0));
-// RAND_SAMPLES[12] = normalize(vec3(1.0, -1.0, -1.0));
-// RAND_SAMPLES[13] = normalize(vec3(-1.0, -1.0, -1.0));
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
@@ -83,26 +68,25 @@ void main()
     mediump vec3 viewPos = vRay * depth;
     //mediump vec3 worldPos = mul(InvViewMatrix, vec4(viewPos, 1.0)).xyz;
     //mediump vec3 randN = hash(worldPos);
-    const mediump vec3 randN = vec3(0.0, 0.0, 0.0);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
     mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
 
-    mediump float A = iter(vec3(1.0, 0.0, 0.0), randN, viewNorm, viewPos, depth);
-    mediump float B = iter(vec3(-1.0, 0.0, 0.0), randN, viewNorm, viewPos, depth);
-    mediump float C = iter(vec3(0.0, 1.0, 0.0), randN, viewNorm, viewPos, depth);
-    mediump float D = iter(vec3(0.0, -1.0, 0.0), randN, viewNorm, viewPos, depth);
-    mediump float E = iter(vec3(0.0, 0.0, 1.0), randN, viewNorm, viewPos, depth);
-    mediump float F = iter(vec3(0.0, 0.0, -1.0), randN, viewNorm, viewPos, depth);
-    mediump float G = iter(normalize(vec3(1.0, 1.0, 1.0)), randN, viewNorm, viewPos, depth);
-    mediump float H = iter(normalize(vec3(-1.0, 1.0, 1.0)), randN, viewNorm, viewPos, depth);
-    mediump float I = iter(normalize(vec3(1.0, -1.0, 1.0)), randN, viewNorm, viewPos, depth);
-    mediump float J = iter(normalize(vec3(1.0, 1.0, -1.0)), randN, viewNorm, viewPos, depth);
-    mediump float K = iter(normalize(vec3(-1.0, -1.0, 1.0)), randN, viewNorm, viewPos, depth);
-    mediump float L = iter(normalize(vec3(-1.0, 1.0, -1.0)), randN, viewNorm, viewPos, depth);
-    mediump float M = iter(normalize(vec3(1.0, -1.0, -1.0)), randN, viewNorm, viewPos, depth);
-    mediump float N = iter(normalize(vec3(-1.0, -1.0, -1.0)), randN, viewNorm, viewPos, depth);
+    mediump float A = iter(vec3(1.0, 0.0, 0.0), viewNorm, viewPos, depth);
+    mediump float B = iter(vec3(-1.0, 0.0, 0.0), viewNorm, viewPos, depth);
+    mediump float C = iter(vec3(0.0, 1.0, 0.0), viewNorm, viewPos, depth);
+    mediump float D = iter(vec3(0.0, -1.0, 0.0), viewNorm, viewPos, depth);
+    mediump float E = iter(vec3(0.0, 0.0, 1.0), viewNorm, viewPos, depth);
+    mediump float F = iter(vec3(0.0, 0.0, -1.0), viewNorm, viewPos, depth);
+    mediump float G = iter(normalize(vec3(1.0, 1.0, 1.0)), viewNorm, viewPos, depth);
+    mediump float H = iter(normalize(vec3(-1.0, 1.0, 1.0)), viewNorm, viewPos, depth);
+    mediump float I = iter(normalize(vec3(1.0, -1.0, 1.0)), viewNorm, viewPos, depth);
+    mediump float J = iter(normalize(vec3(1.0, 1.0, -1.0)), viewNorm, viewPos, depth);
+    mediump float K = iter(normalize(vec3(-1.0, -1.0, 1.0)), viewNorm, viewPos, depth);
+    mediump float L = iter(normalize(vec3(-1.0, 1.0, -1.0)), viewNorm, viewPos, depth);
+    mediump float M = iter(normalize(vec3(1.0, -1.0, -1.0)), viewNorm, viewPos, depth);
+    mediump float N = iter(normalize(vec3(-1.0, -1.0, -1.0)), viewNorm, viewPos, depth);
 
     // Accumulated occlusion factor
     mediump float c1 = (A + B + C + D) * 0.07142857142857142857;
