@@ -15,7 +15,7 @@
 #include "SMAA.hlsl"
 
 
-in vec2 uv0;
+in vec2 vUV0;
 in vec4 offset;
 uniform sampler2D rt_input; //Can be sRGB
 uniform sampler2D blendTex;
@@ -27,10 +27,10 @@ uniform sampler2D blendTex;
 void main()
 {
 #if SMAA_REPROJECTION
-	FragColor = SMAANeighborhoodBlendingPS( inPs.uv0, inPs.offset,
+	FragColor = SMAANeighborhoodBlendingPS( vUV0, offset,
 											   rt_input, blendTex, velocityTex );
 #else
-	FragColor = SMAANeighborhoodBlendingPS( inPs.uv0, inPs.offset,
+	FragColor = SMAANeighborhoodBlendingPS( vUV0, offset,
 											   rt_input, blendTex );
 #endif
 }

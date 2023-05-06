@@ -15,7 +15,7 @@
 #include "SMAA.hlsl"
 
 
-in vec2 uv0;
+in vec2 vUV0;
 in vec2 pixcoord0;
 in vec4 offset[3];
 uniform sampler2D edgeTex;
@@ -25,7 +25,7 @@ uniform sampler2D searchTex;
 
 void main()
 {
-	FragColor = SMAABlendingWeightCalculationPS( inPs.uv0, inPs.pixcoord0, inPs.offset,
+	FragColor = SMAABlendingWeightCalculationPS( vUV0, pixcoord0, offset,
 													edgeTex, areaTex, searchTex,
 													vec4( 0, 0, 0, 0 ) );
 }

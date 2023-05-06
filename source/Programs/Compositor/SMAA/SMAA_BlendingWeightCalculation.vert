@@ -18,7 +18,7 @@
 in vec4 vertex;
 in vec2 uv0;
 uniform mat4 worldViewProj;
-out vec2 uv0;
+out vec2 vUV0;
 out vec2 pixcoord0;
 out vec4 offset[3];
 
@@ -26,6 +26,6 @@ out vec4 offset[3];
 void main()
 {
 	gl_Position = worldViewProj * vertex;
-	outVs.uv0 = uv0.xy;
-	SMAABlendingWeightCalculationVS( uv0.xy, outVs.pixcoord0, outVs.offset );
+	vUV0 = uv0.xy;
+	SMAABlendingWeightCalculationVS( uv0.xy, pixcoord0, offset );
 }

@@ -15,7 +15,7 @@
 #include "SMAA.hlsl"
 
 
-in vec2 uv0;
+in vec2 vUV0;
 in vec4 offset[3];
 uniform sampler2D rt_input;  //Must not be sRGB
 #if SMAA_PREDICATION
@@ -27,15 +27,15 @@ void main()
 {
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2
 	#if SMAA_PREDICATION
-		FragColor = vec4(SMAAColorEdgeDetectionPS( inPs.uv0, inPs.offset, rt_input, depthTex ), 0.0, 1.0);
+		FragColor = vec4(SMAAColorEdgeDetectionPS( vUV0, offset, rt_input, depthTex ), 0.0, 1.0);
 	#else
-		FragColor = vec4(SMAAColorEdgeDetectionPS( inPs.uv0, inPs.offset, rt_input ), 0.0, 1.0);
+		FragColor = vec4(SMAAColorEdgeDetectionPS( vUV0, offset, rt_input ), 0.0, 1.0);
 	#endif
 #else
 	#if SMAA_PREDICATION
-		FragColor = vec4(SMAALumaEdgeDetectionPS( inPs.uv0, inPs.offset, rt_input, depthTex ), 0.0, 1.0);
+		FragColor = vec4(SMAALumaEdgeDetectionPS( vUV0, offset, rt_input, depthTex ), 0.0, 1.0);
 	#else
-		FragColor = vec4(SMAALumaEdgeDetectionPS( inPs.uv0, inPs.offset, rt_input ), 0.0, 1.0);
+		FragColor = vec4(SMAALumaEdgeDetectionPS( vUV0, offset, rt_input ), 0.0, 1.0);
 	#endif
 #endif
 }
