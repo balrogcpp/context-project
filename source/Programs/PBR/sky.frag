@@ -23,16 +23,7 @@ in mediump vec3 vUV0;
 uniform vec3 SunDirection;
 uniform float SunSize;
 uniform vec3 SunColor;
-uniform vec3 A;
-uniform vec3 B;
-uniform vec3 C;
-uniform vec3 D;
-uniform vec3 E;
-uniform vec3 F;
-uniform vec3 G;
-uniform vec3 H;
-uniform vec3 I;
-uniform vec3 Z;
+uniform highp vec3 A, B, C, D, E, F, G, H, I, Z;
 uniform samplerCube CubeMap;
 
 
