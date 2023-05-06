@@ -84,15 +84,51 @@ mediump vec3 envBRDFApprox(const mediump vec3 specularColor, const mediump float
 }
 
 
+mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const mediump vec3 n) {
+    return max(
+        iblSH[0]
+#if SPHERICAL_HARMONICS_BANDS >= 2
+        + iblSH[1] * (n.y)
+        + iblSH[2] * (n.z)
+        + iblSH[3] * (n.x)
+#endif
+#if SPHERICAL_HARMONICS_BANDS >= 3
+        + iblSH[4] * (n.y * n.x)
+        + iblSH[5] * (n.y * n.z)
+        + iblSH[6] * (3.0 * n.z * n.z - 1.0)
+        + iblSH[7] * (n.z * n.x)
+        + iblSH[8] * (n.x * n.x - n.y * n.y)
+#endif
+        , 0.0);
+}
+
+
+vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const vec3 n) {
+    // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
+    return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
+}
+
+
+vec3 diffuseIrradiance(const mediump vec3 iblSH[9], const samplerCube SpecularEnvMap, const vec3 n) {
+    if (iblSH[0].x == 65504.0) {
+        return Irradiance_RoughnessOne(SpecularEnvMap, n);
+    } else {
+        return Irradiance_SphericalHarmonics(iblSH, n);
+    }
+}
+
+
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 GetIBLContribution(const samplerCube DiffuseEnvMap, const samplerCube SpecularEnvMap, const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
+mediump vec3 GetIBL(const samplerCube SpecularEnvMap, const mediump vec3 iblSH[9], const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
+    //mediump vec3 brdf = SRGBtoLINEAR(texture2D(brdfLUT, vec2(NdotV, 1.0 - perceptualRoughness)).rgb);
     mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
-    mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n).rgb);
+    //mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n).rgb);
+    mediump vec3 diffuseLight = diffuseIrradiance(iblSH, SpecularEnvMap, reflection);
 
 #ifdef USE_TEX_LOD
     mediump vec3 specularLight = SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb);
@@ -132,8 +168,8 @@ uniform sampler2D OrmMap;
 uniform sampler2D EmissiveMap;
 #endif // HAS_EMISSIVEMAP
 #ifdef USE_IBL
-uniform samplerCube DiffuseEnvMap;
 uniform samplerCube SpecularEnvMap;
+uniform mediump vec3 iblSH[9];
 #endif // USE_IBL
 
 // lights
@@ -402,9 +438,11 @@ void main()
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     mediump vec3 reflection = -normalize(reflect(v, n));
-    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBLContribution(DiffuseEnvMap, SpecularEnvMap, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
+    //ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBL(DiffuseEnvMap, SpecularEnvMap, brdfLUT, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
+    ambient += GetIBL(SpecularEnvMap, iblSH, diffuseColor, specularColor, roughness, NdotV, n, reflection);
+    //ambient += (SurfaceAmbientColour.rgb * (GetIBL(DiffuseEnvMap, SpecularEnvMap, brdfLUT, diffuseColor, specularColor, roughness, NdotV, n, reflection)));
 #else
-    ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
+    ambient += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
 #endif // USE_IBL
 
 // Apply optional PBR terms for additional (optional) shading

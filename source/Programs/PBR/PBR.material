@@ -106,21 +106,42 @@ abstract material PBR
 //----------------------------------------------------------------------------------------------------------------------
 // IBL
 //----------------------------------------------------------------------------------------------------------------------
-abstract material IBL : PBR
+abstract material IBL
 {
-    set $IBL_Diffuse white.dds
-    set $IBL_Specular black.dds
-    set $IBL_LUT brdfLUT.dds
+    transparency_casts_shadows on
+    receive_shadows on
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM yellow.dds
+    set $Emissive black.dds
+    set $IBL_Specular specular.dds
 
     technique
     {
         pass
         {
-            texture_unit IBL_Diffuse
+            diffuse 1 1 1
+            specular 1 0 0 0 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
             {
-                texture $IBL_Diffuse cubic
-                filtering bilinear
-                tex_address_mode clamp
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
             }
             texture_unit IBL_Specular
             {
@@ -129,7 +150,48 @@ abstract material IBL : PBR
                 tex_address_mode clamp
             }
 
-            vertex_program_ref PBR_vs {}
+            texture_unit ShadowMap0
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap4
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap5
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap6
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap7
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+
+            vertex_program_ref IBL_vs {}
 
             fragment_program_ref IBL_fs
             {
@@ -137,8 +199,7 @@ abstract material IBL : PBR
                 param_named NormalMap      int 1
                 param_named OrmMap         int 2
                 param_named EmissiveMap    int 3
-                param_named DiffuseEnvMap  int 4
-                param_named SpecularEnvMap int 5
+                param_named SpecularEnvMap int 4
             }
         }
     }
