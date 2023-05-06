@@ -772,7 +772,7 @@ SMAA_INLINE mediump vec2 SMAALumaEdgeDetectionPS(const mediump vec2 texcoord,
     #endif
 
     // Calculate lumas:
-    mediump vec3 weights = vec3(0.2126, 0.7152, 0.0722);
+    const mediump vec3 weights = vec3(0.2126, 0.7152, 0.0722);
     mediump float L = dot(SMAASamplePoint(colorTex, texcoord).rgb, weights);
 
     mediump float Lleft = dot(SMAASamplePoint(colorTex, offset[0].xy).rgb, weights);
