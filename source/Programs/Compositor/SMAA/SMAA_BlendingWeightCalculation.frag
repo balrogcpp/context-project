@@ -25,7 +25,7 @@ uniform sampler2D searchTex;
 
 void main()
 {
-	FragColor = SMAABlendingWeightCalculationPS( vUV0, pixcoord0, offset,
+	FragColor = SMAABlendingWeightCalculationPS(vUV0, pixcoord0, offset,
 													edgeTex, areaTex, searchTex,
-													vec4( 0, 0, 0, 0 ) );
+													vec4(0.0, 0.0, 0.0, 0.0));
 }

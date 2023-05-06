@@ -11,6 +11,12 @@
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
+#if !SMAA_INITIALIZED
+	//Leave compatible defaults in case this file gets compiled
+	//before calling SmaaUtils::initialize from C++
+	#define SMAA_EDGE_DETECTION_MODE 1
+	#define SMAA_PREDICATION 1
+#endif
 
 #include "SMAA.hlsl"
 

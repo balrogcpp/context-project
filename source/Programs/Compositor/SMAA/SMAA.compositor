@@ -20,15 +20,20 @@ compositor SMAA
 
 		target edges
 		{
+			pass clear {}
+			
 			pass render_quad
 			{
 				material SMAA/EdgeDetection
 				input 0 rt
+				input 1 mrt 3
 			}
 		}
 
 		target blend
 		{		
+			pass clear {}
+
 			pass render_quad
 			{
 				material SMAA/BlendingWeightCalculation
@@ -37,12 +42,13 @@ compositor SMAA
 		}
 
 		target_output
-		{
+		{	
 			pass render_quad
 			{
 				material SMAA/NeighborhoodBlending
 				input 0 rt
 				input 1 blend
+				input 2 mrt 5
 			}
 		}
 	}
