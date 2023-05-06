@@ -84,8 +84,8 @@ void CompositorManager::OnSetUp() {
 
   // to save pre-tonemap/hdr copy for some compositors
   AddCompositor("Copy", false);
-  AddCompositor("FXAA", true);
-  AddCompositor("SMAA", false);
+  AddCompositor("FXAA", RenderSystemIsGLES2());
+  AddCompositor("SMAA", !RenderSystemIsGLES2());
 
   // calculate scene luminance and apply, always on
   AddCompositor("HDR", true);
