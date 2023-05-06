@@ -3,7 +3,7 @@
 //
 vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 {
-	source SMAA_EdgeDetection_vs.glsl
+	source SMAA_EdgeDetection.vert
 
 	default_params
 	{
@@ -14,7 +14,7 @@ vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 
 fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
 {
-	source SMAA_EdgeDetection_ps.glsl
+	source SMAA_EdgeDetection.frag
 
 	default_params
 	{
@@ -63,7 +63,7 @@ material SMAA/EdgeDetection
 //
 vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 {
-	source SMAA_BlendingWeightCalculation_vs.glsl
+	source SMAA_BlendingWeightCalculation.vert
 
 	default_params
 	{
@@ -74,7 +74,7 @@ vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 
 fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles hlsl
 {
-	source SMAA_BlendingWeightCalculation_ps.glsl
+	source SMAA_BlendingWeightCalculation.frag
 
 	default_params
 	{
@@ -132,7 +132,7 @@ material SMAA/BlendingWeightCalculation
 //
 vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 {
-	source SMAA_NeighborhoodBlending_vs.glsl
+	source SMAA_NeighborhoodBlending.vert
 
 	default_params
 	{
@@ -143,7 +143,7 @@ vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 
 fragment_program SMAA/NeighborhoodBlending_ps glsl glsles hlsl
 {
-	source SMAA_NeighborhoodBlending_ps.glsl
+	source SMAA_NeighborhoodBlending.frag
 
 	default_params
 	{
