@@ -1,10 +1,10 @@
 // created by Andrey Vasiliev
 
 #ifndef __VERSION__
-#ifndef GL_ES
+#if defined(OGRE_GLSL)
 #version 330 core
 #define __VERSION__ 330
-#else
+#elif defined(OGRE_GLSLES)
 #version 300 es
 #define __VERSION__ 300
 #endif

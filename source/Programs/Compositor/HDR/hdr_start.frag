@@ -1,9 +1,9 @@
 // created by Andrey Vasiliev
 
-#ifndef GL_ES
+#if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
-#else
+#elif defined(OGRE_GLSLES)
 #version 100
 #define __VERSION__ 100
 #endif
@@ -27,7 +27,7 @@ uniform mediump vec4 ViewportSize;
 //vec2( 2, 2 ), vec2( 3, 2 ), vec2( 2, 3 ), vec2( 3, 3 )
 //);
 //  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale01_SumLumStart_ps.glsl5
-mediump float Downscale4x4(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump float Downscale4x4(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = luminance(texture2D(tex, uv                         ).rgb) + 0.0001;
     mediump float B = luminance(texture2D(tex, uv + tsize * vec2(1.0, 0.0)).rgb) + 0.0001;

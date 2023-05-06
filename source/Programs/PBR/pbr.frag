@@ -1,17 +1,20 @@
 // created by Andrey Vasiliev
 
 #ifndef __VERSION__
-#ifndef GL_ES
+#if defined(OGRE_GLSL)
 #version 330 core
 #define __VERSION__ 330
-// this fix problem with shadow array
-// https://community.khronos.org/t/array-of-sampler2d-texture-bindless-problem/107313/3
-#extension GL_ARB_bindless_texture : enable
-layout (bindless_sampler) uniform;
-#else
+#elif defined(OGRE_GLSLES)
 #version 300 es
 #define __VERSION__ 300
 #endif
+#endif
+
+// this fix problem with shadow array
+// https://community.khronos.org/t/array-of-sampler2d-texture-bindless-problem/107313/3
+#if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
+#extension GL_ARB_bindless_texture : enable
+layout (bindless_sampler) uniform;
 #endif
 
 

@@ -1,9 +1,9 @@
 // created by Andrey Vasiliev
 
-#ifndef GL_ES
+#if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
-#else
+#elif defined(OGRE_GLSLES)
 #version 100
 #define __VERSION__ 100
 #endif
@@ -15,7 +15,7 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Downscale13(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale13(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;

@@ -1,9 +1,9 @@
 // created by Andrey Vasiliev
 
-#ifndef GL_ES
+#if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
-#else
+#elif defined(OGRE_GLSLES)
 #version 100
 #define __VERSION__ 100
 #endif
@@ -32,7 +32,7 @@ uniform mediump vec2 TexelSize0;
 
 // https://github.com/mattdesl/glsl-fxaa/blob/master/fxaa.glsl
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 FastFxaa(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 FastFxaa(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 rgbNW = texture2D(tex, uv + vec2(-1.0, -1.0) * tsize).xyz;
     mediump vec3 rgbNE = texture2D(tex, uv + vec2( 1.0, -1.0) * tsize).xyz;

@@ -1,9 +1,9 @@
 // created by Andrey Vasiliev
 
-#ifndef GL_ES
+#if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
-#else
+#elif defined(OGRE_GLSLES)
 #version 100
 #define __VERSION__ 100
 #endif
@@ -19,7 +19,7 @@ uniform mediump vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Fxaa(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Fxaa(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     #define FXAA_REDUCE_MIN 0.0625
     #define FXAA_REDUCE_MUL 0.125

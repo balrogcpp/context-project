@@ -1,9 +1,9 @@
 // created by Andrey Vasiliev
 
-#ifndef GL_ES
+#if defined(OGRE_GLSL)
 #version 150
 #define __VERSION__ 150
-#else
+#elif defined(OGRE_GLSLES)
 #version 100
 #define __VERSION__ 100
 #endif
