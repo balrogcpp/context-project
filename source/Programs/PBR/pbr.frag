@@ -25,6 +25,7 @@ layout (bindless_sampler) uniform;
 #include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
+#define SPHERICAL_HARMONICS_BANDS 3
 
 
 // Basic Lambertian diffuse
@@ -220,7 +221,7 @@ uniform mediump int ShadowFilterIterations;
 #ifdef USE_IBL
 //----------------------------------------------------------------------------------------------------------------------
 vec3 diffuseIrradiance(const vec3 n) {
-    if (iblSH[0].x == 65504.0) {
+    if (iblSH[0].x >= HALF_MAX_MINUS1) {
         SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
@@ -442,21 +443,19 @@ void main()
     } //  lightning loop
 #endif //  MAX_LIGHTS > 0
 
-    vec3 ambient = vec3(0.0, 0.0, 0.0);
+    mediump vec3 emission = GetEmission(uv);
+
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     mediump vec3 reflection = -normalize(reflect(v, n));
-    //ambient += occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb + GetIBL(DiffuseEnvMap, SpecularEnvMap, brdfLUT, diffuseColor, specularColor, roughness, NdotV, n, reflection) * albedo));
-    ambient += GetIBL(diffuseColor, specularColor, roughness, NdotV, n, reflection);
-    //ambient += (SurfaceAmbientColour.rgb * (GetIBL(DiffuseEnvMap, SpecularEnvMap, brdfLUT, diffuseColor, specularColor, roughness, NdotV, n, reflection)));
+    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, reflection)));
 #else
-    ambient += (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
+    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
 #endif // USE_IBL
 
 // Apply optional PBR terms for additional (optional) shading
     color *= occlusion;
-
-    ambient += GetEmission(uv);
+    ambient += emission;
 
     FragData[0] = vec4(color, alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);

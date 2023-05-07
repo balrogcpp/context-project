@@ -14,7 +14,7 @@ shared_params PBR_Shared_frag
 
 shared_params IBL_Shared_frag
 {
-    shared_param_named iblSH float3 [9] 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0 65504.0
+    shared_param_named iblSH float3 [9] 1.0 1.0 1.0 0.0 0.0 0.0 0.0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 }
 
 abstract vertex_program PBR_I_vs glsl glsles hlsl
@@ -29,7 +29,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
 
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
+        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
         param_named_auto Time time_0_x_packed 100
         param_named_auto CameraPosition camera_position
     }
@@ -107,19 +107,19 @@ fragment_program IBL_fs glsl glsles hlsl : PBR_I_fs
         param_named ShadowMap0 int 5
         param_named ShadowMap1 int 6
         param_named ShadowMap2 int 7
-        param_named ShadowMap3 int 8
-        param_named uShadowMap4 int 9
-        param_named uShadowMap5 int 10
-        param_named uShadowMap6 int 11
-        param_named uShadowMap7 int 12
+        // param_named ShadowMap3 int 8
+        // param_named uShadowMap4 int 9
+        // param_named uShadowMap5 int 10
+        // param_named uShadowMap6 int 11
+        // param_named uShadowMap7 int 12
         param_named_auto ShadowTexel0 inverse_texture_size 5
         param_named_auto ShadowTexel1 inverse_texture_size 6
         param_named_auto ShadowTexel2 inverse_texture_size 7
-        param_named_auto ShadowTexel3 inverse_texture_size 8
-        param_named_auto ShadowTexel4 inverse_texture_size 9
-        param_named_auto ShadowTexel5 inverse_texture_size 10
-        param_named_auto ShadowTexel6 inverse_texture_size 11
-        param_named_auto ShadowTexel7 inverse_texture_size 12
+        // param_named_auto ShadowTexel3 inverse_texture_size 8
+        // param_named_auto ShadowTexel4 inverse_texture_size 9
+        // param_named_auto ShadowTexel5 inverse_texture_size 10
+        // param_named_auto ShadowTexel6 inverse_texture_size 11
+        // param_named_auto ShadowTexel7 inverse_texture_size 12
     }
 }
 
