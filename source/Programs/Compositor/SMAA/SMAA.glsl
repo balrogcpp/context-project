@@ -709,7 +709,7 @@ SMAA_INLINE void SMAAMovc(const bvec4 cond, SMAA_INOUT( mediump vec4, variable )
  * Edge Detection Vertex Shader
  */
 SMAA_INLINE void SMAAEdgeDetectionVS(const mediump vec2 texcoord,
-                                     out mediump mat4 offset
+                                     SMAA_OUT( mediump mat4, offset )
                                      SMAA_EXTRA_PARAM_ARG_DECL) {
     offset[0] = mad(SMAA_RT_METRICS.xyxy, vec4(-1.0, 0.0, 0.0, -1.0), texcoord.xyxy);
     offset[1] = mad(SMAA_RT_METRICS.xyxy, vec4( 1.0, 0.0, 0.0,  1.0), texcoord.xyxy);
@@ -721,7 +721,7 @@ SMAA_INLINE void SMAAEdgeDetectionVS(const mediump vec2 texcoord,
  */
 SMAA_INLINE void SMAABlendingWeightCalculationVS(const mediump vec2 texcoord,
                                                  SMAA_OUT( mediump vec2, pixcoord ),
-                                                 out mediump mat4 offset
+                                                 SMAA_OUT( mediump mat4, offset )
                                                  SMAA_EXTRA_PARAM_ARG_DECL) {
     pixcoord = texcoord * SMAA_RT_METRICS.zw;
 
