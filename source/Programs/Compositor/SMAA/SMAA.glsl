@@ -545,7 +545,7 @@
 // Porting Functions
 
 #if defined(SMAA_HLSL_3)
-#define SMAATexture2D(tex) const sampler2D tex
+#define SMAATexture2D(tex) sampler2D tex
 #define SMAATexturePass2D(tex) tex
 #define SMAASampleLevelZero(tex, coord) tex2Dlod(tex, float4(coord, 0.0, 0.0))
 #define SMAASampleLevelZeroPoint(tex, coord) tex2Dlod(tex, float4(coord, 0.0, 0.0))
@@ -578,14 +578,14 @@ SamplerState PointSampler { Filter = MIN_MAG_MIP_POINT; AddressU = Clamp; Addres
 #define SMAA_OUT(type, varname) out type varname
 #endif
 #if defined(SMAA_GLSL_3) || defined(SMAA_GLSL_4)
-#define SMAATexture2D(tex) const sampler2D tex
+#define SMAATexture2D(tex) sampler2D tex
 #define SMAATexturePass2D(tex) tex
-#define SMAASampleLevelZero(tex, coord) texture2DLod(tex, coord, 0.0)
-#define SMAASampleLevelZeroPoint(tex, coord) texture2DLod(tex, coord, 0.0)
-#define SMAASampleLevelZeroOffset(tex, coord, offset) texture2DLod(tex, coord + offset * SMAA_RT_METRICS.xy, 0.0)
-#define SMAASample(tex, coord) texture2D(tex, coord)
-#define SMAASamplePoint(tex, coord) toSRGB( texture2D(tex, coord) )
-#define SMAASampleOffset(tex, coord, offset) texture2D(tex, coord, offset)
+#define SMAASampleLevelZero(tex, coord) textureLod(tex, coord, 0.0)
+#define SMAASampleLevelZeroPoint(tex, coord) textureLod(tex, coord, 0.0)
+#define SMAASampleLevelZeroOffset(tex, coord, offset) textureLod(tex, coord + offset * SMAA_RT_METRICS.xy, 0.0)
+#define SMAASample(tex, coord) texture(tex, coord)
+#define SMAASamplePoint(tex, coord) toSRGB( texture(tex, coord) )
+#define SMAASampleOffset(tex, coord, offset) texture(tex, coord, offset)
 #define SMAA_FLATTEN
 #define SMAA_BRANCH
 #define lerp(a, b, t) mix(a, b, t)

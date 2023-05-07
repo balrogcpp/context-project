@@ -18,9 +18,9 @@
 uniform sampler2D texMap;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
-in vec4 oUV;
-in vec4 oColour;
-in float oFogCoord;
+varying vec4 oUV;
+varying vec4 oColour;
+varying float oFogCoord;
 
 
 void main()

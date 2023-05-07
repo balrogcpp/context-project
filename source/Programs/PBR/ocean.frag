@@ -17,10 +17,10 @@
 #include "srgb.glsl"
 
 
-in highp vec3 vWorldPosition;
-in mediump mat3 vTBN;
-in mediump vec4 vScreenPosition;
-in mediump vec4 vPrevScreenPosition;
+varying highp vec3 vWorldPosition;
+varying mediump mat3 vTBN;
+varying mediump vec4 vScreenPosition;
+varying mediump vec4 vPrevScreenPosition;
 uniform sampler2D NormapMap;
 uniform highp vec3 CameraPosition;
 uniform mediump float FarClipDistance;

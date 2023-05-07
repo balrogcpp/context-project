@@ -168,7 +168,7 @@ material SMAA/NeighborhoodBlending
 			{
 				param_named rt_input		int 0
 				param_named blendTex		int 1
-				param_named velocityTex		int 2
+				//param_named velocityTex		int 2
 			}
 
 			texture_unit rt_input

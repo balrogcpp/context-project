@@ -15,11 +15,11 @@
 #include "math.glsl"
 
 
-in highp vec4 vertex;
-out highp vec3 vWorldPosition;
-out mediump mat3 vTBN;
-out mediump vec4 vScreenPosition;
-out mediump vec4 vPrevScreenPosition;
+attribute highp vec4 vertex;
+varying highp vec3 vWorldPosition;
+varying mediump mat3 vTBN;
+varying mediump vec4 vScreenPosition;
+varying mediump vec4 vPrevScreenPosition;
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;

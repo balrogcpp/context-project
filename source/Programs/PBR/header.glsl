@@ -36,8 +36,6 @@
 #define attribute in
 #define varying out
 #else // __VERSION__ < 150
-#define in attribute
-#define out varying
 #endif // __VERSION__ > 150
 
 #else // #ifdef GL_ES
@@ -49,8 +47,6 @@ precision lowp samplerCube;
 #define attribute in
 #define varying out
 #else // __VERSION__ < 300
-#define in attribute
-#define out varying
 #endif // __VERSION__ >= 300
 #endif // GLSL_ES
 
@@ -80,8 +76,6 @@ out vec4 FragData[MAX_MRT_TEXTURES];
 out vec4 FragColor;
 #endif // ! NO_MRT
 #else  // #if __VERSION__ < 150
-#define in varying
-#define out varying
 #define FragData gl_FragData
 #define FragColor gl_FragColor
 #endif // __VERSION__ >= 150
@@ -108,8 +102,6 @@ out vec4 FragData[MAX_MRT_TEXTURES];
 out vec4 FragColor;
 #endif // !NO_MRT
 #else // __VERSION__ < 300
-#define in varying
-#define out varying
 #define FragData gl_FragData
 #define FragColor gl_FragColor
 #endif // __VERSION__ >= 300

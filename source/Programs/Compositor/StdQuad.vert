@@ -12,8 +12,8 @@
 #include "header.glsl"
 
 
-in highp vec4 vertex;
-out mediump vec2 vUV0;
+attribute highp vec4 vertex;
+varying mediump vec2 vUV0;
 uniform highp mat4 WorldViewProj;
 
 

@@ -18,36 +18,36 @@
 #endif
 
 
-in highp vec4 vertex;
+attribute highp vec4 vertex;
 #ifdef HAS_NORMALS
-in highp vec4 normal;
+attribute highp vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-in highp vec4 tangent;
+attribute highp vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
-in mediump vec4 colour;
+attribute mediump vec4 colour;
 #endif
 #ifdef HAS_UV
-in highp vec4 uv0;
-in highp vec4 uv1;
-in highp vec4 uv2;
-in highp vec4 uv3;
-in highp vec4 uv4;
-in highp vec4 uv5;
-in highp vec4 uv6;
-in highp vec4 uv7;
+attribute highp vec4 uv0;
+attribute highp vec4 uv1;
+attribute highp vec4 uv2;
+attribute highp vec4 uv3;
+attribute highp vec4 uv4;
+attribute highp vec4 uv5;
+attribute highp vec4 uv6;
+attribute highp vec4 uv7;
 #endif //  HAS_UV
 
-out highp vec3 vWorldPosition;
-out mediump vec2 vUV0;
-out mediump float vDepth;
-out mediump vec4 vColor;
-out mediump vec4 vScreenPosition;
-out mediump vec4 vPrevScreenPosition;
-out mediump mat3 vTBN;
+varying highp vec3 vWorldPosition;
+varying mediump vec2 vUV0;
+varying mediump float vDepth;
+varying mediump vec4 vColor;
+varying mediump vec4 vScreenPosition;
+varying mediump vec4 vPrevScreenPosition;
+varying mediump mat3 vTBN;
 #ifdef SHADOWRECEIVER
-out mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+varying mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
 uniform highp mat4 WorldMatrix;
@@ -112,7 +112,7 @@ void main()
 
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-    // Calculate the position of vertex in light space
+    // Calculate the position of vertex attribute light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
         vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], position);
     }

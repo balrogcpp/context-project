@@ -518,7 +518,7 @@ void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
   shadowEnabled = true;
 #else
-  shadowEnabled = false;
+  shadowEnabled = true;
 #endif
   if (shadowEnabled) {
 #ifdef DESKTOP

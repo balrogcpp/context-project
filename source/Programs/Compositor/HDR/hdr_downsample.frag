@@ -13,7 +13,7 @@
 #include "tonemap.glsl"
 
 
-in mediump vec2 vUV0;
+varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 

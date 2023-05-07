@@ -13,8 +13,8 @@
 #include "header.glsl"
 
 
-in mediump vec2 vUV0;
-in mediump vec3 vRay;
+varying mediump vec2 vUV0;
+varying mediump vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;

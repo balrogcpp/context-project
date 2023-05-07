@@ -14,11 +14,11 @@
 #include "header.glsl"
 
 
-in highp vec4 vertex;
-in mediump vec4 uv0;
+attribute highp vec4 vertex;
+attribute mediump vec4 uv0;
 
-out highp vec3 vPosition;
-out mediump vec3 vUV0; // direction vector representing a 3D texture coordinate
+varying highp vec3 vPosition;
+varying mediump vec3 vUV0; // direction vector representing a 3D texture coordinate
 
 uniform highp mat4 WorldViewProj;
 

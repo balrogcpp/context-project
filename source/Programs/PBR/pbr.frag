@@ -106,13 +106,13 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 
 
 // varyings
-in highp vec3 vWorldPosition;
-in mediump vec2 vUV0;
-in mediump float vDepth;
-in mediump vec4 vColor;
-in mediump vec4 vScreenPosition;
-in mediump vec4 vPrevScreenPosition;
-in mediump mat3 vTBN;
+varying highp vec3 vWorldPosition;
+varying mediump vec2 vUV0;
+varying mediump float vDepth;
+varying mediump vec4 vColor;
+varying mediump vec4 vScreenPosition;
+varying mediump vec4 vPrevScreenPosition;
+varying mediump mat3 vTBN;
 
 // uniforms
 #ifdef HAS_BASECOLORMAP
@@ -163,7 +163,7 @@ uniform mediump float OffsetScale;
 // shadow receiver
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-in mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+varying mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
 uniform sampler2D ShadowMap0;
 uniform mediump vec2 ShadowTexel0;

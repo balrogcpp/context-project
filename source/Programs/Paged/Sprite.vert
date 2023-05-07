@@ -22,14 +22,14 @@ uniform float uScroll;
 uniform float vScroll;
 uniform vec4  preRotatedQuad[4];
 
-in vec4 vertex;
-in vec4 normal;
-in vec4 colour;
-in vec4 uv0;
+attribute vec4 vertex;
+attribute vec4 normal;
+attribute vec4 colour;
+attribute vec4 uv0;
 
-out vec4 oUV;
-out vec4 oColour;
-out float oFogCoord;
+varying vec4 oUV;
+varying vec4 oColour;
+varying float oFogCoord;
 
 void main()
 {

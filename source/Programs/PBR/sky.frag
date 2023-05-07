@@ -17,8 +17,8 @@
 #include "tonemap.glsl"
 
 
-in highp vec3 vPosition;
-in mediump vec3 vUV0;
+varying highp vec3 vPosition;
+varying mediump vec3 vUV0;
 
 uniform vec3 SunDirection;
 uniform float SunSize;

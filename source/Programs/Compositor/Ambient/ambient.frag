@@ -12,7 +12,7 @@
 #include "header.glsl"
 
 
-in mediump vec2 vUV0;
+varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D AmbientMap;
 

@@ -12,10 +12,10 @@
 #include "header.glsl"
 
 
-in highp vec4 vertex;
-in highp vec4 normal;
-out mediump vec2 vUV0;
-out mediump vec3 vRay;
+attribute highp vec4 vertex;
+attribute highp vec4 normal;
+varying mediump vec2 vUV0;
+varying mediump vec3 vRay;
 uniform highp mat4 WorldViewProj;
 
 

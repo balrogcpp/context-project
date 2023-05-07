@@ -14,7 +14,7 @@
 #include "tonemap.glsl"
 
 
-in mediump vec2 vUV0;
+varying mediump vec2 vUV0;
 uniform sampler2D FboMap;
 uniform mediump float LightCount;
 uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];

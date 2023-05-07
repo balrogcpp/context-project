@@ -19,7 +19,7 @@
 #endif
 
 
-in mediump vec2 vUV0;
+varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D VelocitySampler;
 uniform mediump vec2 TexSize1;
