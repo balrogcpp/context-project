@@ -40,14 +40,14 @@ attribute highp vec4 uv7;
 #endif //  HAS_UV
 
 varying highp vec3 vWorldPosition;
-varying mediump vec2 vUV0;
-varying mediump float vDepth;
+varying highp float vDepth;
+varying highp mat3 vTBN;
+varying highp vec2 vUV0;
 varying mediump vec4 vColor;
 varying mediump vec4 vScreenPosition;
 varying mediump vec4 vPrevScreenPosition;
-varying mediump mat3 vTBN;
 #ifdef SHADOWRECEIVER
-varying mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
 uniform highp mat4 WorldMatrix;

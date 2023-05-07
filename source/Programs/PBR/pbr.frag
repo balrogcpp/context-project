@@ -111,12 +111,12 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 
 // varyings
 varying highp vec3 vWorldPosition;
-varying mediump vec2 vUV0;
-varying mediump float vDepth;
+varying highp float vDepth;
+varying highp mat3 vTBN;
+varying highp vec2 vUV0;
 varying mediump vec4 vColor;
 varying mediump vec4 vScreenPosition;
 varying mediump vec4 vPrevScreenPosition;
-varying mediump mat3 vTBN;
 
 // uniforms
 #ifdef HAS_BASECOLORMAP
@@ -155,8 +155,8 @@ uniform mediump vec4 SurfaceSpecularColour;
 uniform mediump vec4 SurfaceShininessColour;
 uniform mediump vec4 SurfaceEmissiveColour;
 uniform mediump float SurfaceAlphaRejection;
-uniform mediump float FarClipDistance;
-uniform mediump float NearClipDistance;
+uniform highp float FarClipDistance;
+uniform highp float NearClipDistance;
 uniform mediump float FrameTime;
 uniform mediump float TexScale;
 #ifdef HAS_NORMALMAP
@@ -167,7 +167,7 @@ uniform mediump float OffsetScale;
 // shadow receiver
 #ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
-varying mediump vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
 uniform sampler2D ShadowMap0;
 uniform mediump vec2 ShadowTexel0;
@@ -450,7 +450,7 @@ void main()
     color *= occlusion;
     ambient += emission;
 
-    FragData[0] = vec4(color, alpha);
+    FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
     FragData[2] = vec4(ambient, 1.0);
     FragData[3] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
