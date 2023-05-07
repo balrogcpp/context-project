@@ -14,7 +14,11 @@
 #include "header.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
+#ifndef GL_ES
+#define SPHERICAL_HARMONICS_BANDS 8
+#else
 #define SPHERICAL_HARMONICS_BANDS 3
+#endif
 
 
 // Basic Lambertian diffuse
@@ -209,7 +213,7 @@ uniform mediump int ShadowFilterIterations;
 
 #ifdef USE_IBL
 //----------------------------------------------------------------------------------------------------------------------
-vec3 diffuseIrradiance(const vec3 n) {
+vec3 diffuseIrradiance(const mediump vec3 n) {
     if (iblSH[0].x >= HALF_MAX_MINUS1) {
         return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
     } else {

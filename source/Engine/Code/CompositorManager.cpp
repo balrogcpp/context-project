@@ -83,7 +83,8 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
 
   // to save pre-tonemap/hdr copy for some compositors
-  AddCompositor("Copy", false);
+  AddCompositor("Copy", true);
+
   if (RenderSystemIsGLES2()) {
     AddCompositor("FXAA", true); // SMAA not working at glsles
   } else {
