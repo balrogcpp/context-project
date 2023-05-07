@@ -10,17 +10,6 @@
 #endif
 #endif
 
-// this fix problem with shadow array
-// https://community.khronos.org/t/array-of-sampler2d-texture-bindless-problem/107313/3
-#if defined(OGRE_GLSL)
-#extension GL_ARB_bindless_texture : enable
-layout (bindless_sampler) uniform;
-#endif
-#if defined(OGRE_GLSLES)
-#extension GL_EXT_bindless_texture : enable
-#endif
-
-
 #define USE_MRT
 #include "header.glsl"
 #include "math.glsl"
@@ -222,7 +211,7 @@ uniform mediump int ShadowFilterIterations;
 //----------------------------------------------------------------------------------------------------------------------
 vec3 diffuseIrradiance(const vec3 n) {
     if (iblSH[0].x >= HALF_MAX_MINUS1) {
-        SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
+        return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
     }
