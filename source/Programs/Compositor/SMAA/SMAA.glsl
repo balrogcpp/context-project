@@ -683,21 +683,21 @@ SMAA_INLINE mediump vec2 SMAACalculatePredicatedThreshold(const mediump vec2 tex
 /**
  * Conditional move:
  */
-SMAA_INLINE void SMAAMovc(bool2 cond, SMAA_INOUT( mediump vec2, variable ), mediump vec2 value) {
+SMAA_INLINE void SMAAMovc(const bvec2 cond, SMAA_INOUT( mediump vec2, variable ), const mediump vec2 value) {
     SMAA_FLATTEN if (cond.x) variable.x = value.x;
     SMAA_FLATTEN if (cond.y) variable.y = value.y;
 }
 
-SMAA_INLINE void SMAAMovc(bool4 cond, SMAA_INOUT( mediump vec4, variable ), mediump vec4 value) {
-#if SMAA_NO_RVALUE_REFERENCE
+SMAA_INLINE void SMAAMovc(const bvec4 cond, SMAA_INOUT( mediump vec4, variable ), const mediump vec4 value) {
+// #if SMAA_NO_RVALUE_REFERENCE
     SMAA_FLATTEN if (cond.x) variable.x = value.x;
     SMAA_FLATTEN if (cond.y) variable.y = value.y;
     SMAA_FLATTEN if (cond.z) variable.z = value.z;
     SMAA_FLATTEN if (cond.w) variable.w = value.w;
-#else
-    SMAAMovc(cond.xy, variable.xy, value.xy);
-    SMAAMovc(cond.zw, variable.zw, value.zw);
-#endif
+// #else
+//     SMAAMovc(cond.xy, variable.xy, value.xy);
+//     SMAAMovc(cond.zw, variable.zw, value.zw);
+// #endif
 }
 
 
@@ -1029,7 +1029,7 @@ SMAA_INLINE mediump vec2 SMAACalculateDiagWeights(SMAATexture2D(edgesTex), SMAAT
         mediump vec2 cc = mad(vec2(2.0, 2.0), c.xz, c.yw);
 
         // Remove the crossing edge if we didn't found the end of the line:
-        SMAAMovc(bool2(step(0.9, d.zw)), cc, vec2(0.0, 0.0));
+        SMAAMovc(bvec2(step(0.9, d.zw)), cc, vec2(0.0, 0.0));
 
         // Fetch the areas for this line:
         weights += SMAAAreaDiag(SMAATexturePass2D(areaTex), d.xy, cc, subsampleIndices.z);
@@ -1054,7 +1054,7 @@ SMAA_INLINE mediump vec2 SMAACalculateDiagWeights(SMAATexture2D(edgesTex), SMAAT
         mediump vec2 cc = mad(vec2(2.0, 2.0), c.xz, c.yw);
 
         // Remove the crossing edge if we didn't found the end of the line:
-        SMAAMovc(bool2(step(0.9, d.zw)), cc, vec2(0.0, 0.0));
+        SMAAMovc(bvec2(step(0.9, d.zw)), cc, vec2(0.0, 0.0));
 
         // Fetch the areas for this line:
         weights += SMAAAreaDiag(SMAATexturePass2D(areaTex), d.xy, cc, subsampleIndices.w).gr;
@@ -1382,8 +1382,8 @@ SMAA_INLINE mediump vec4 SMAANeighborhoodBlendingPS(const mediump vec2 texcoord,
         // Calculate the blending offsets:
         mediump vec4 blendingOffset = vec4(0.0, a.y, 0.0, a.w);
         mediump vec2 blendingWeight = a.yw;
-        SMAAMovc(bool4(h, h, h, h), blendingOffset, vec4(a.x, 0.0, a.z, 0.0));
-        SMAAMovc(bool2(h, h), blendingWeight, a.xz);
+        SMAAMovc(bvec4(h, h, h, h), blendingOffset, vec4(a.x, 0.0, a.z, 0.0));
+        SMAAMovc(bvec2(h, h), blendingWeight, a.xz);
         blendingWeight /= dot(blendingWeight, vec2(1.0, 1.0));
 
         // Calculate the texture coordinates:
