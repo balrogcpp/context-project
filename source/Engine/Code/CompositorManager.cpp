@@ -86,7 +86,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Copy", false);
 
   if (RenderSystemIsGLES2()) {
-    AddCompositor("FXAA", true); // SMAA not working at glsles
+    AddCompositor("FXAA", true); // SMAA not working with glsles
   } else {
     AddCompositor("SMAA", true);
     AddCompositor("FXAA", false);
@@ -96,10 +96,10 @@ void CompositorManager::OnSetUp() {
   AddCompositor("HDR", true);
 
   //
-  AddCompositor("Rays", false);
+  //AddCompositor("Rays", false);
 
   // init mipmaps
-  InitMipChain(false);
+  //InitMipChain(false);
 
   // tonemap is part of HDR, always on
   //AddCompositor("Tonemap", true);
