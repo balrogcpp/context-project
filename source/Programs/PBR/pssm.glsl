@@ -68,23 +68,39 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float FetchTerraShadow(const sampler2D shadowMap, mediump vec2 uv, const mediump vec2 filterSize, const mediump int iterations)
+mediump float FetchTerraShadow2(const sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)
 {
-  mediump float shadow = 1.0;
+  mediump float shadow = 0.0;
+  mediump vec2 filterSize = 2.0 * tsize;
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 
-  #define MAX_SAMPLES 32
+  #define MAX_SAMPLES 4
+  #define NUM_SAMPLES 4.0
 
   for (int i = 0; i < MAX_SAMPLES; ++i) {
-    if (iterations <= i) break;
-
-    mediump vec2 offset = VogelDiskSample(float(i), float(iterations), float(gradientNoise)) * filterSize;
+    mediump vec2 offset = VogelDiskSample(float(i), NUM_SAMPLES, gradientNoise) * filterSize;
 
     uv += offset;
-    shadow -= texture2D(shadowMap, uv.xy).x * (1.0 / float(iterations));
+    shadow += texture2D(shadowMap, uv.xy).x;
   }
 
+  shadow *= (1.0 / NUM_SAMPLES);
+
   return shadow;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump float FetchTerraShadow(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+{
+    mediump float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
+    mediump float B = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).r;
+    mediump float C = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
+    mediump float D = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
+
+    mediump float c1 = (A + B + C + D) * 0.25;
+
+    return c1;
 }
 
 
@@ -94,7 +110,7 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   lightSpace /= lightSpace.w;
   lightSpace.z = lightSpace.z * 0.5 + 0.5;
 
-  mediump float shadow = 1.0;
+  mediump float shadow = 0.0;
   mediump float currentDepth = lightSpace.z + HALF_EPSILON * (1.0 - F0);
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
@@ -107,15 +123,17 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   for (int i = 0; i < MAX_SAMPLES; ++i) {
     if (iterations <= i) break;
 
-    mediump vec2 offset = VogelDiskSample(float(i), float(iterations), float(gradientNoise)) * filterSize;
+    mediump vec2 offset = VogelDiskSample(float(i), float(iterations), gradientNoise) * filterSize;
 #ifdef PENUMBRA
     offset *= penumbra;
 #endif
 
     lightSpace.xy += offset;
     mediump float depth = texture2D(shadowMap, lightSpace.xy).x;
-    shadow -= bigger(currentDepth, depth) * (1.0 / float(iterations));
+    shadow += bigger(depth, currentDepth);
   }
+
+  shadow *= (1.0 / iterations);
 
   return shadow;
 }

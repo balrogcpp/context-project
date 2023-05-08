@@ -462,7 +462,7 @@ void main()
 #ifdef TERRA_LIGHTMAP
         if (i == 0) {
             if (LightCastsShadowsArray[i] > 0.0) {
-                light *= texture2D(TerraLightMap, vUV0.xy).r;
+                light *= FetchTerraShadow2(TerraLightMap, vUV0.xy, InvTerraLightMapSize);
             }
         }
 #endif
