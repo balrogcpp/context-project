@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(12), oddMipsOnly(false) {
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(8), oddMipsOnly(false) {
   if (RenderSystemIsGLES2()) {
     mipChain /= 2.0;
     // oddMipsOnly = true;
@@ -99,10 +99,10 @@ void CompositorManager::OnSetUp() {
   //AddCompositor("Rays", false);
 
   // init mipmaps
-  //InitMipChain(false);
+  InitMipChain(false);
 
   // tonemap is part of HDR, always on
-  //AddCompositor("Tonemap", true);
+  AddCompositor("Tonemap", true);
 
   AddCompositor("Blur", false);
   AddCompositor("End", true);

@@ -18,7 +18,7 @@
 #define SMAA_INCLUDE_PS 1
 #define SMAA_REPROJECTION 0
 
-#include "SMAA.glsl"
+#include "smaa.glsl"
 
 
 varying mediump vec2 vUV0;

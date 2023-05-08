@@ -23,7 +23,7 @@
 	#define SMAA_PREDICATION 1
 #endif
 
-#include "SMAA.glsl"
+#include "smaa.glsl"
 
 
 varying mediump vec2 vUV0;

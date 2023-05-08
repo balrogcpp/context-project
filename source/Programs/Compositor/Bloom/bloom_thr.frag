@@ -40,19 +40,11 @@ mediump vec3 Downscale13(const sampler2D tex, const mediump vec2 uv, const mediu
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Pass(const mediump vec3 color, const mediump vec2 threshold)
-{
-    mediump vec3 w = clamp((color - threshold.x) * threshold.y, 0.0, 1.0);
-    return (color * (w * (w * (3.0 - 2.0 * w)))) * 0.0625;
-}
-
-
 varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D Lum;
 uniform mediump vec2 TexelSize0;
-uniform mediump vec2 Threshold;
+uniform mediump vec2 BrightThreshold;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -63,5 +55,8 @@ void main()
 
     color *= lum;
 
-    FragColor = vec4(Pass(color, Threshold), 1.0);
+	mediump vec3 w = clamp((color - BrightThreshold.xxx) * BrightThreshold.yyy, 0.0, 1.0);
+	color *= w * w * (3.0 - 2.0 * w);
+    
+    FragColor = vec4(color, 1.0);
 }

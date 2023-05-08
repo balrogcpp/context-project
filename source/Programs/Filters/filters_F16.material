@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-abstract material Filter
+abstract material Filter_F16
 {
 	technique
 	{
@@ -23,13 +23,13 @@ abstract material Filter
 	}
 }
 
-material FilterY : Filter
+material FilterY_F16 : Filter_F16
 {
 	technique
 	{
 		pass
 		{
-			fragment_program_ref gaussy
+			fragment_program_ref gaussy_F16
 			{
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
@@ -38,13 +38,13 @@ material FilterY : Filter
 	}
 }
 
-material FilterX : Filter
+material FilterX_F16 : Filter_F16
 {
 	technique
 	{
 		pass
 		{
-			fragment_program_ref gaussx
+			fragment_program_ref gaussx_F16
             {
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
@@ -53,13 +53,13 @@ material FilterX : Filter
 	}
 }
 
-material Downscale4x4 : Filter
+material Downscale4x4_F16 : Filter_F16
 {
     technique
     {
         pass
         {
-            fragment_program_ref downscale4x4
+            fragment_program_ref downscale4x4_F16
             {
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
@@ -68,13 +68,13 @@ material Downscale4x4 : Filter
     }
 }
 
-material Downscale2x2 : Filter
+material Downscale2x2_F16 : Filter_F16
 {
     technique
     {
         pass
         {
-            fragment_program_ref downscale2x2
+            fragment_program_ref downscale2x2_F16
             {
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
@@ -83,42 +83,13 @@ material Downscale2x2 : Filter
     }
 }
 
-
-material Copy : Filter
+material Upscale9_F16 : Filter_F16
 {
     technique
     {
         pass
         {
-            fragment_program_ref copy
-            {
-                param_named RT int 0
-            }
-        }
-    }
-}
-
-material Flip : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref flip
-            {
-                param_named RT int 0
-            }
-        }
-    }
-}
-
-material Upscale9 : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref upscale9
+            fragment_program_ref upscale9_F16
             {
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
@@ -127,32 +98,16 @@ material Upscale9 : Filter
     }
 }
 
-material Downscale13 : Filter
+material Downscale13_F16 : Filter_F16
 {
     technique
     {
         pass
         {
-            vertex_program_ref StdQuad_vp {}
-
-            fragment_program_ref downscale13
+            fragment_program_ref downscale13_F16
             {
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0
-            }
-        }
-    }
-}
-
-material Linear : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref linear
-            {
-                param_named RT int 0
             }
         }
     }

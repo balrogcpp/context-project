@@ -17,7 +17,7 @@
 #define SMAA_INCLUDE_VS 1
 #define SMAA_INCLUDE_PS 0
 
-#include "SMAA.glsl"
+#include "smaa.glsl"
 
 
 attribute mediump vec4 vertex;

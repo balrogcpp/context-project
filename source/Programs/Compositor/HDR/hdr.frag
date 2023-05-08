@@ -28,10 +28,9 @@ void main()
     mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
 
     color *= lum;
-    //color += bloom;
 
-    color = uncharted2(color);
-    color = (color - 0.5) * 1.25 + 0.5 + 0.11;
+    //color = uncharted2(color);
+    //color = (color - 0.5) * 1.25 + 0.5 + 0.11;
 
     FragColor = vec4(SafeHDR(color), 1.0);
 }

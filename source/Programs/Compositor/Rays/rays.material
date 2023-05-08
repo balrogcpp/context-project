@@ -1,28 +1,23 @@
 // created by Andrey Vasiliev
 
+import Base from base.material
+
 
 //----------------------------------------------------------------------------------------------------------------------
 // Fill FBO
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program fbo_fs glsl glsles hlsl
+fragment_program fbo glsl glsles hlsl
 {
 	source fbo.frag
 }
 
-material FBO
+material FBO : Base
 {
 	technique
 	{
 		pass
 		{
-		    cull_hardware none
-			depth_check off
-            depth_write off
-            polygon_mode_overrideable false
-
-			vertex_program_ref StdQuad_vp {}
-
-			fragment_program_ref fbo_fs
+            fragment_program_ref fbo
 			{
                 param_named RT int 0
                 param_named DepthMap int 1
@@ -50,7 +45,7 @@ material FBO
 //----------------------------------------------------------------------------------------------------------------------
 // Rays
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program rays_fs glsl glsles hlsl
+fragment_program rays glsl glsles hlsl
 {
 	source rays.frag
 
@@ -65,20 +60,13 @@ fragment_program rays_fs glsl glsles hlsl
 }
 
 
-material Rays
+material Rays : Base
 {
     technique
     {
         pass
         {
-            cull_hardware none
-            depth_check off
-            depth_write off
-            polygon_mode_overrideable false
-
-            vertex_program_ref StdQuad_vp {}
-
-            fragment_program_ref rays_fs
+            fragment_program_ref rays
             {
                 param_named FboMap int 0
             }
@@ -97,7 +85,7 @@ material Rays
 //----------------------------------------------------------------------------------------------------------------------
 // Rays_mod
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program rays_mod_fs glsl glsles hlsl
+fragment_program rays_mod glsl glsles hlsl
 {
 	source rays_mod.frag
 
@@ -109,20 +97,13 @@ fragment_program rays_mod_fs glsl glsles hlsl
 }
 
 
-material Rays_mod
+material Rays_mod : Base
 {
     technique
     {
         pass
         {
-            cull_hardware none
-            depth_check off
-            depth_write off
-            polygon_mode_overrideable false
-
-            vertex_program_ref StdQuad_vp {}
-
-            fragment_program_ref rays_mod_fs {}
+            fragment_program_ref rays_mod {}
 
             texture_unit RT
             {

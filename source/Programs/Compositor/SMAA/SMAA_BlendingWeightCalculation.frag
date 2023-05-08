@@ -17,7 +17,7 @@
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 
-#include "SMAA.glsl"
+#include "smaa.glsl"
 
 
 varying mediump vec2 vUV0;

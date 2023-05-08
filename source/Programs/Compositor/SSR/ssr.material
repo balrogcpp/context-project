@@ -1,5 +1,7 @@
 // created by Andrey Vasiliev
 
+import Base from base.material
+
 //----------------------------------------------------------------------------------------------------------------------
 // SSR
 //----------------------------------------------------------------------------------------------------------------------
@@ -9,7 +11,7 @@ fragment_program ssr_fp glsl glsles hlsl
 }
 
 
-material SSR
+material SSR : Base
 {
     technique
     {

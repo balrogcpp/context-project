@@ -2,7 +2,7 @@
 
 vertex_program RayCast glsl glsles hlsl
 {
-	source RayCast.vert
+	source raycast.vert
 
 	default_params
 	{

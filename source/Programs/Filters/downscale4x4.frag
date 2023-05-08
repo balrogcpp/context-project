@@ -9,7 +9,7 @@
 #endif
 
 #include "header.glsl"
-#include "filters.glsl"
+#include "filters_RGB16.glsl"
 
 
 varying mediump vec2 vUV0;

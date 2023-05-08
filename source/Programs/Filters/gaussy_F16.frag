@@ -10,16 +10,16 @@
 
 
 #include "header.glsl"
-#include "filters_RGB16.glsl"
+#include "filters_F16.glsl"
 
 
 varying mediump vec2 vUV0;
 uniform sampler2D RT;
+uniform mediump vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    vec2 uv = vec2(vUV0.s, 1.0 - vUV0.t);
-    FragColor = vec4(texture2D(RT, uv).rgb, 1.0);
+    FragColor = vec4(Gauss9V(RT, vUV0, TexelSize0), 0.0, 0.0, 1.0);
 }

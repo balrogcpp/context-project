@@ -47,9 +47,6 @@ void main()
     mediump vec3 rt = texture2D(RT, vUV0).rgb;
     mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize1);
     mediump float w = 1.0 / float(MipCount);
-#ifdef GL_ES
-    w *= 2.0;
-#endif
 
     FragColor = vec4(SafeHDR(rt + rt0 * w), 1.0);
 }

@@ -15,30 +15,12 @@ compositor HDR
         texture rt3 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt4 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        texture old 1 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-
-        texture box0 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture box1 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture box2 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture box3 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture box4 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture box5 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-
-
+        texture lum1 1 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
 
         target rt
         {
             input previous
         }
-
-        // target rt0
-        // {
-        //     pass render_quad
-        //     {
-        //         material HdrStart
-        //         input 0 rt
-        //     }
-        // }
 
         target rt1
         {
@@ -53,7 +35,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material HdrDownsample
+                material Downscale2x2_F16
                 input 0 rt1
             }
         }
@@ -62,7 +44,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material HdrDownsample
+                material Downscale2x2_F16
                 input 0 rt2
             }
         }
@@ -71,7 +53,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material HdrDownsample
+                material Downscale2x2_F16
                 input 0 rt3
             }
         }
@@ -82,89 +64,16 @@ compositor HDR
             {
                 material HdrEnd
                 input 0 rt4
-                input 1 old
+                input 1 lum1
             }
         }
 
-        target old
+        target lum1
         {
             pass render_quad
             {
                 material Copy
                 input 0 lum
-            }
-        }
-
-        target box0
-        {
-            pass render_quad
-            {
-                material BrightStart
-                input 0 rt
-                input 1 lum
-            }
-        }
-
-        target box1
-        {
-            pass render_quad
-            {
-                material BoxH
-                input 0 box0
-            }
-        }
-
-        target box2
-        {
-            pass render_quad
-            {
-                material BoxV
-                input 0 box1
-            }
-        }
-
-        target box3
-        {
-            pass render_quad
-            {
-                material BoxH
-                input 0 box2
-            }
-        }
-
-        target box4
-        {
-            pass render_quad
-            {
-                material BoxV
-                input 0 box3
-            }
-        }
-
-        target box5
-        {
-            pass render_quad
-            {
-                material BoxH
-                input 0 box4
-            }
-        }
-
-        target box5
-        {
-            pass render_quad
-            {
-                material BoxH
-                input 0 box5
-            }
-        }
-
-        target box5
-        {
-            pass render_quad
-            {
-                material BoxH
-                input 0 box5
             }
         }
 
@@ -175,7 +84,6 @@ compositor HDR
                 material HDR
                 input 0 rt
                 input 1 lum
-                input 2 box5
             }
         }
     }
