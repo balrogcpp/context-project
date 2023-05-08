@@ -38,13 +38,15 @@ attribute highp vec4 uv0;
 #else
 attribute highp float uv0;
 #endif // VERTEX_COMPRESSION
+#ifdef PAGED_GEOMETRY
 attribute highp vec4 uv1;
 attribute highp vec4 uv2;
-attribute highp vec4 uv3;
-attribute highp vec4 uv4;
-attribute highp vec4 uv5;
-attribute highp vec4 uv6;
-attribute highp vec4 uv7;
+#endif // PAGED_GEOMETRY
+// attribute highp vec4 uv3;
+// attribute highp vec4 uv4;
+// attribute highp vec4 uv5;
+// attribute highp vec4 uv6;
+// attribute highp vec4 uv7;
 #endif //  HAS_UV
 
 varying highp vec3 vWorldPosition;
