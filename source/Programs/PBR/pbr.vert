@@ -56,7 +56,7 @@ varying highp vec2 vUV0;
 varying mediump vec4 vColor;
 varying mediump vec4 vScreenPosition;
 varying mediump vec4 vPrevScreenPosition;
-#ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
 varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
@@ -69,9 +69,9 @@ uniform highp vec4 Time;
 uniform highp vec3 CameraPosition;
 uniform highp float FadeRange;
 #endif // PAGED_GEOMETRY
-#ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
-#endif // SHADOWRECEIVER
+#endif
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -121,12 +121,10 @@ void main()
     vDepth = gl_Position.z;
     vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
 
-#ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
         vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], position);
     }
 #endif // MAX_SHADOW_TEXTURES > 0
-#endif // SHADOWRECEIVER
 }

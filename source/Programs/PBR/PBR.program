@@ -21,7 +21,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
 
-    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR
 
     default_params
     {
@@ -41,7 +41,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
 
-    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL
     
     default_params
     {
@@ -98,12 +98,12 @@ fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs
 //----------------------------------------------------------------------------------------------------------------------
 vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER,PAGED_GEOMETRY
+    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY
 }
 
 fragment_program PG_fs glsl glsles hlsl : PBR_I_fs 
 {
-    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
 
     default_params
     {
@@ -128,12 +128,12 @@ fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
 
 vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER,PAGED_GEOMETRY
+    preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY
 }
 
 fragment_program PG0_fs glsl glsles hlsl : PG_fs 
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER
+    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
 }
 
 
@@ -142,12 +142,12 @@ fragment_program PG0_fs glsl glsles hlsl : PG_fs
 //----------------------------------------------------------------------------------------------------------------------
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,SHADOWRECEIVER,VERTEX_COMPRESSION
+    preprocessor_defines HAS_UV,VERTEX_COMPRESSION
 }
 
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs 
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,SHADOWRECEIVER,TERRA_NORMALMAP,TERRA_LIGHTMAP
+    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
 
      default_params
     {

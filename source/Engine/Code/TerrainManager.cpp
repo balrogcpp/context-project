@@ -8,36 +8,30 @@
 
 using namespace std;
 
-
 namespace Ogre {
 
 class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
  private:
   class SM2Profile : public Ogre::TerrainMaterialGenerator::Profile {
    public:
-    SM2Profile(TerrainMaterialGenerator *parent, const Ogre::String &name, const Ogre::String &desc)
-        : Profile(parent, name, desc), enableLightmap(true), terrainMaxLayers(3) {}
+    SM2Profile(TerrainMaterialGenerator *parent, const Ogre::String &name, const Ogre::String &desc) : Profile(parent, name, desc) {}
     ~SM2Profile() {}
 
     Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return terrainMaxLayers; }
     void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
     void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
-    bool isVertexCompressionSupported() const override { return true; }
+    bool isVertexCompressionSupported() const override { return enableVertexCompression; }
     void setLightmapEnabled(bool enabled) override { enableLightmap = enabled; }
-    bool isLightmapEnabled() { return enableLightmap; }
-    bool isNormalmapEnabled() { return true; }
-    bool isCompositeMapEnabled() { return false; }
 
     void requestOptions(Ogre::Terrain *terrain) override {
       terrain->_setMorphRequired(true);
-      terrain->_setNormalMapRequired(isNormalmapEnabled());
-      terrain->_setLightMapRequired(isLightmapEnabled(), true);
-      terrain->_setCompositeMapRequired(isCompositeMapEnabled());
+      terrain->_setNormalMapRequired(enableNormalmap);
+      terrain->_setLightMapRequired(enableLightmap, true);
+      terrain->_setCompositeMapRequired(enableCompositeMap);
     }
 
     Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) override {
-      std::string materialName = "ImplTERRA";
- 
+      const std::string materialName = "ImplTERRA";
       static unsigned long long generator = 0;
       std::string newName = materialName + std::to_string(generator++);
 
@@ -63,11 +57,11 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
         }
       }
 
-      if (texState && SM2Profile::isNormalmapEnabled()) {
+      if (texState && enableNormalmap) {
         texState->setTexture(terrain->getTerrainNormalMap());
       }
 
-      if (texState2 && SM2Profile::isLightmapEnabled()) {
+      if (texState2 && enableLightmap) {
         texState2->setTexture(terrain->getLightmap());
       }
 
@@ -75,17 +69,19 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     }
 
     Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) override {
-      std::string materialName = "TerrainCustom";
-      static unsigned long long generator = 0;
-      std::string newName = materialName + "Composite" + std::to_string(generator++);
-
-      return Ogre::MaterialManager::getSingleton().getByName(materialName)->clone(newName);
+//      std::string materialName = "TerrainCustom";
+//      static unsigned long long generator = 0;
+//      std::string newName = materialName + "Composite" + std::to_string(generator++);
+//
+//      return Ogre::MaterialManager::getSingleton().getByName(materialName)->clone(newName);
     }
 
    protected:
-    bool enableLightmap;
-    bool enableCompositeMap;
-    int8_t terrainMaxLayers;
+    bool enableLightmap = true;
+    const bool enableNormalmap = true;
+    const bool enableCompositeMap = false;
+    const bool enableVertexCompression = true;
+    const int8_t terrainMaxLayers = 1;
   };
 
  public:
@@ -95,8 +91,7 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
   }
   virtual ~TerrainMaterialGeneratorB() {}
 };
-} // namespace Ogre
-
+}  // namespace Ogre
 
 namespace gge {
 TerrainManager::TerrainManager() {}
@@ -126,7 +121,7 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setCompositeMapDistance(500.0);
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
-  terrainGlobalOptions->setLightMapSize(512);
+  terrainGlobalOptions->setLightMapSize(256);
   terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
 }
 

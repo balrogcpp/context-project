@@ -170,7 +170,6 @@ uniform mediump float OffsetScale;
 #endif // HAS_NORMALMAP
 
 // shadow receiver
-#ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
 varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
@@ -208,10 +207,9 @@ uniform mediump vec4 PssmSplitPoints;
 uniform mediump float ShadowFilterSize;
 uniform mediump int ShadowFilterIterations;
 #endif // MAX_SHADOW_TEXTURES > 0
-#endif // SHADOWRECEIVER
 
 
-#ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
 #endif
 
@@ -393,11 +391,9 @@ void main()
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
-#ifdef SHADOWRECEIVER
 #if MAX_SHADOW_TEXTURES > 0
     mediump int texCounter = 0;
 #endif // MAX_SHADOW_TEXTURES > 0
-#endif // SHADOWRECEIVER
 
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -452,13 +448,19 @@ void main()
         mediump float D = MicrofacetDistribution(alphaRoughness, NdotH);
         mediump vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
 
-#ifdef SHADOWRECEIVER
+#ifdef TERRA_LIGHTMAP
+        if (i == 0) {
+            if (LightCastsShadowsArray[i] > 0.0) {
+                light *= texture2D(TerraLightMap, vUV0.xy).r;
+            }
+        }
+#endif
+
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] > 0.0) {
             light *= GetShadow(i, texCounter);
         }
 #endif //  MAX_SHADOW_TEXTURES > 0
-#endif //  SHADOWRECEIVER
 
         color += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
     } //  lightning loop

@@ -2,7 +2,6 @@
 
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
-#ifdef SHADOWRECEIVER
 
 #include "math.glsl"
 //#define PENUMBRA
@@ -150,6 +149,13 @@ mediump float GetShadow(const mediump int light, mediump int tex)
                                     ShadowMap3, ShadowMap4, ShadowMap5, \
                                     ShadowTexel3, ShadowTexel4, ShadowTexel5);
 #endif
+#if MAX_SHADOW_TEXTURES > 8
+        else if (light == 2)
+            shadow = CalcPSSMShadow(PssmSplitPoints, \
+                                    vLightSpacePosArray[6], vLightSpacePosArray[7], vLightSpacePosArray[8], \
+                                    ShadowMap6, ShadowMap7, ShadowMap8, \
+                                    ShadowTexel6, ShadowTexel7, ShadowTexel8);
+#endif
         tex += 3;
     }
     else if (LightSpotParamsArray[light].z > 0.0) {
@@ -181,6 +187,10 @@ mediump float GetShadow(const mediump int light, mediump int tex)
 #if MAX_SHADOW_TEXTURES > 7
         else if (tex == 6)
             shadow = CalcDPSMShadow(vLightSpacePosArray[6], vLightSpacePosArray[7], ShadowMap6, ShadowMap7, ShadowTexel6, ShadowTexel7);
+#endif
+#if MAX_SHADOW_TEXTURES > 8
+        else if (tex == 7)
+            shadow = CalcDPSMShadow(vLightSpacePosArray[7], vLightSpacePosArray[8], ShadowMap7, ShadowMap8, ShadowTexel6, ShadowTexel7);
 #endif
         tex += 2;
     } else {
@@ -217,6 +227,10 @@ mediump float GetShadow(const mediump int light, mediump int tex)
         else if (tex == 7)
             shadow = CalcDepthShadow(ShadowMap7, vLightSpacePosArray[7], ShadowTexel7 * ShadowFilterSize, ShadowFilterIterations);
 #endif
+#if MAX_SHADOW_TEXTURES > 8
+        else if (tex == 8)
+            shadow = CalcDepthShadow(ShadowMap8, vLightSpacePosArray[8], ShadowTexel8 * ShadowFilterSize, ShadowFilterIterations);
+#endif
         tex += 1;
     }
 
@@ -225,5 +239,4 @@ mediump float GetShadow(const mediump int light, mediump int tex)
 
 
 #endif // MAX_SHADOW_TEXTURES > 0
-#endif // SHADOWRECEIVER
 #endif // PSSM_GLSL

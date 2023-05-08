@@ -219,7 +219,7 @@ abstract material TERRA : PBR
             }
             texture_unit TerraNormal
             {
-                texture $Normal
+                texture normal.dds
                 filtering bilinear
                 tex_address_mode clamp
             }
