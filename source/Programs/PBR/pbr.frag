@@ -67,7 +67,6 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
 }
 
 
-#ifdef USE_IBL
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 envBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
@@ -106,7 +105,6 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
     return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
 }
-#endif // USE_IBL
 
 
 // varyings
@@ -133,8 +131,8 @@ uniform sampler2D EmissiveMap;
 #endif // HAS_EMISSIVEMAP
 #ifdef USE_IBL
 uniform samplerCube SpecularEnvMap;
-uniform mediump vec3 iblSH[9];
 #endif // USE_IBL
+uniform mediump vec3 iblSH[9];
 #ifdef TERRA_NORMALMAP
 uniform sampler2D TerraNormalMap;
 #endif
@@ -217,13 +215,24 @@ uniform mediump int ShadowFilterIterations;
 
 #ifdef USE_IBL
 //----------------------------------------------------------------------------------------------------------------------
-vec3 diffuseIrradiance(const mediump vec3 n) {
+mediump vec3 diffuseIrradiance(const mediump vec3 n)
+{
     if (iblSH[0].x >= HALF_MAX_MINUS1) {
         return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
     }
 }
+
+mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump float perceptualRoughness)
+{
+#ifdef USE_TEX_LOD
+    return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb);
+#else
+    return SRGBtoLINEAR(textureCube(SpecularEnvMap, reflection).rgb);
+#endif
+}
+#endif // USE_IBL
 
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
@@ -236,20 +245,22 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
     //mediump vec3 brdf = SRGBtoLINEAR(texture2D(brdfLUT, vec2(NdotV, 1.0 - perceptualRoughness)).rgb);
     mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
     //mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n).rgb);
-    mediump vec3 diffuseLight = diffuseIrradiance(reflection);
 
-#ifdef USE_TEX_LOD
-    mediump vec3 specularLight = SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb);
+#ifdef USE_IBL
+    mediump vec3 diffuseLight = diffuseIrradiance(reflection);
+    mediump vec3 specularLight = GetIblSpeculaColor(reflection, perceptualRoughness);
 #else
-    mediump vec3 specularLight = SRGBtoLINEAR(textureCube(SpecularEnvMap, reflection).rgb);
-#endif // USE_TEX_LOD
+    mediump vec3 diffuseLight = Irradiance_SphericalHarmonics(iblSH, reflection);
+    //mediump vec3 specularLight = AmbientLightColour.rgb;
+    mediump vec3 specularLight = vec3(1.0, 1.0, 1.0);
+    //mediump vec3 specularLight = vec3(0.0, 0.0, 0.0);
+#endif
 
     mediump vec3 diffuse = (diffuseLight * diffuseColor);
     mediump vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
 
     return diffuse + specular;
 }
-#endif // USE_IBL
 
 
 // Find the normal for this fragment, pulling either from a predefined normal map
@@ -475,7 +486,9 @@ void main()
     mediump vec3 reflection = -normalize(reflect(v, n));
     mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, reflection)));
 #else
-    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
+    //mediump vec3 reflection = -normalize(reflect(v, n));
+    // mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
+    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, reflection)));
 #endif // USE_IBL
 
 // Apply optional PBR terms for additional (optional) shading
