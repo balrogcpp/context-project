@@ -168,46 +168,7 @@ uniform mediump float TexScale;
 uniform mediump float OffsetScale;
 #endif // HAS_NORMALMAP
 
-// shadow receiver
-#if MAX_SHADOW_TEXTURES > 0
-varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
-uniform sampler2D ShadowMap0;
-uniform mediump vec2 ShadowTexel0;
-#if MAX_SHADOW_TEXTURES > 1
-uniform sampler2D ShadowMap1;
-uniform mediump vec2 ShadowTexel1;
-#endif
-#if MAX_SHADOW_TEXTURES > 2
-uniform sampler2D ShadowMap2;
-uniform mediump vec2 ShadowTexel2;
-#endif
-#if MAX_SHADOW_TEXTURES > 3
-uniform sampler2D ShadowMap3;
-uniform mediump vec2 ShadowTexel3;
-#endif
-#if MAX_SHADOW_TEXTURES > 4
-uniform sampler2D ShadowMap4;
-uniform mediump vec2 ShadowTexel4;
-#endif
-#if MAX_SHADOW_TEXTURES > 5
-uniform sampler2D ShadowMap5;
-uniform mediump vec2 ShadowTexel5;
-#endif
-#if MAX_SHADOW_TEXTURES > 6
-uniform sampler2D ShadowMap6;
-uniform mediump vec2 ShadowTexel6;
-#endif
-#if MAX_SHADOW_TEXTURES > 7
-uniform sampler2D ShadowMap7;
-uniform mediump vec2 ShadowTexel7;
-#endif
-uniform mediump vec4 PssmSplitPoints;
-uniform mediump float ShadowFilterSize;
-uniform mediump int ShadowFilterIterations;
-#endif // MAX_SHADOW_TEXTURES > 0
-
-
+// // shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
 #endif
