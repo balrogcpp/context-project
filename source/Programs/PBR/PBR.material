@@ -105,6 +105,22 @@ abstract material PBR
                 param_named OrmMap         int 2
                 param_named EmissiveMap    int 3
                 param_named SpecularEnvMap int 4
+                param_named ShadowMap0 int 5
+                param_named ShadowMap1 int 6
+                param_named ShadowMap2 int 7
+                param_named ShadowMap3 int 8
+                param_named ShadowMap4 int 9
+                param_named ShadowMap5 int 10
+                param_named ShadowMap6 int 11
+                param_named ShadowMap7 int 12
+                param_named_auto ShadowTexel0 inverse_texture_size 5
+                param_named_auto ShadowTexel1 inverse_texture_size 6
+                param_named_auto ShadowTexel2 inverse_texture_size 7
+                param_named_auto ShadowTexel3 inverse_texture_size 8
+                param_named_auto ShadowTexel4 inverse_texture_size 9
+                param_named_auto ShadowTexel5 inverse_texture_size 10
+                param_named_auto ShadowTexel6 inverse_texture_size 11
+                param_named_auto ShadowTexel7 inverse_texture_size 12
             }
         }
     }
@@ -114,12 +130,25 @@ abstract material PBR
 //----------------------------------------------------------------------------------------------------------------------
 // PAGED_GEOMETRY
 //----------------------------------------------------------------------------------------------------------------------
-abstract material PG : PBR
+abstract material PG
 {
+    transparency_casts_shadows on
+    receive_shadows on
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM yellow.dds
+
     technique
     {
         pass
         {
+            diffuse 1 1 1
+            specular 1 0 0 0 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
             texture_unit Albedo
             {
                 texture $Albedo
@@ -181,6 +210,22 @@ abstract material PG : PBR
                 param_named AlbedoMap      int 0
                 param_named NormalMap      int 1
                 param_named OrmMap         int 2
+                param_named ShadowMap0 int 3
+                param_named ShadowMap1 int 4
+                param_named ShadowMap2 int 5
+                param_named ShadowMap3 int 6
+                param_named ShadowMap4 int 7
+                param_named ShadowMap5 int 8
+                param_named ShadowMap6 int 9
+                param_named ShadowMap7 int 10
+                param_named_auto ShadowTexel0 inverse_texture_size 3
+                param_named_auto ShadowTexel1 inverse_texture_size 4
+                param_named_auto ShadowTexel2 inverse_texture_size 5
+                param_named_auto ShadowTexel3 inverse_texture_size 6
+                param_named_auto ShadowTexel4 inverse_texture_size 7
+                param_named_auto ShadowTexel5 inverse_texture_size 8
+                param_named_auto ShadowTexel6 inverse_texture_size 9
+                param_named_auto ShadowTexel7 inverse_texture_size 10
             }
         }
     }
@@ -203,12 +248,22 @@ abstract material PG0 : PG
 }
 
 
-abstract material TERRA : PBR
+abstract material TERRA
 {
+    receive_shadows on
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+
     technique
     {
         pass
         {
+            diffuse 1 1 1
+            specular 1 0 0 0 1
+            ambient 1 1 1
+            emissive 0 0 0
+
             texture_unit Albedo
             {
                 texture $Albedo
@@ -279,6 +334,23 @@ abstract material TERRA : PBR
                 param_named NormalMap      int 1
                 param_named TerraNormalMap int 2
                 param_named TerraLightMap  int 3
+                param_named_auto InvTerraLightMapSize inverse_texture_size 3
+                param_named ShadowMap0 int 4
+                param_named ShadowMap1 int 5
+                param_named ShadowMap2 int 6
+                param_named ShadowMap3 int 7
+                param_named ShadowMap4 int 8
+                param_named ShadowMap5 int 9
+                param_named ShadowMap6 int 10
+                param_named ShadowMap7 int 11
+                param_named_auto ShadowTexel0 inverse_texture_size 4
+                param_named_auto ShadowTexel1 inverse_texture_size 5
+                param_named_auto ShadowTexel2 inverse_texture_size 6
+                param_named_auto ShadowTexel3 inverse_texture_size 7
+                param_named_auto ShadowTexel4 inverse_texture_size 8
+                param_named_auto ShadowTexel5 inverse_texture_size 9
+                param_named_auto ShadowTexel6 inverse_texture_size 10
+                param_named_auto ShadowTexel7 inverse_texture_size 11
             }
         }
     }

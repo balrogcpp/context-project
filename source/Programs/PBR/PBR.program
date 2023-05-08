@@ -7,8 +7,8 @@ shared_params PBR_Shared_vert {}
 
 shared_params PSSM_Shared_frag
 {
-    shared_param_named ShadowFilterSize float 4
-    shared_param_named ShadowFilterIterations int 8
+    shared_param_named ShadowFilterSize float 2
+    shared_param_named ShadowFilterIterations int 16
     shared_param_named PssmSplitPoints float4 6.7367 18.4907 400.0 400.0
 }
 
@@ -41,7 +41,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
 
-    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL
+    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL
     
     default_params
     {
@@ -69,28 +69,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
     }
 }
 
-fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs
-{
-    default_params
-    {
-        param_named ShadowMap0 int 5
-        param_named ShadowMap1 int 6
-        param_named ShadowMap2 int 7
-        param_named ShadowMap3 int 8
-        param_named ShadowMap4 int 9
-        param_named ShadowMap5 int 10
-        param_named ShadowMap6 int 11
-        param_named ShadowMap7 int 12
-        param_named_auto ShadowTexel0 inverse_texture_size 5
-        param_named_auto ShadowTexel1 inverse_texture_size 6
-        param_named_auto ShadowTexel2 inverse_texture_size 7
-        param_named_auto ShadowTexel3 inverse_texture_size 8
-        param_named_auto ShadowTexel4 inverse_texture_size 9
-        param_named_auto ShadowTexel5 inverse_texture_size 10
-        param_named_auto ShadowTexel6 inverse_texture_size 11
-        param_named_auto ShadowTexel7 inverse_texture_size 12
-    }
-}
+fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -103,27 +82,7 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program PG_fs glsl glsles hlsl : PBR_I_fs 
 {
-    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
-
-    default_params
-    {
-        param_named ShadowMap0 int 3
-        param_named ShadowMap1 int 4
-        param_named ShadowMap2 int 5
-        param_named ShadowMap3 int 6
-        param_named ShadowMap4 int 7
-        param_named ShadowMap5 int 8
-        param_named ShadowMap6 int 9
-        param_named ShadowMap7 int 10
-        param_named_auto ShadowTexel0 inverse_texture_size 3
-        param_named_auto ShadowTexel1 inverse_texture_size 4
-        param_named_auto ShadowTexel2 inverse_texture_size 5
-        param_named_auto ShadowTexel3 inverse_texture_size 6
-        param_named_auto ShadowTexel4 inverse_texture_size 7
-        param_named_auto ShadowTexel5 inverse_texture_size 8
-        param_named_auto ShadowTexel6 inverse_texture_size 9
-        param_named_auto ShadowTexel7 inverse_texture_size 10
-    }
+    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
 }
 
 vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
@@ -148,24 +107,4 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs 
 {
     preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
-
-     default_params
-    {
-        param_named ShadowMap0 int 4
-        param_named ShadowMap1 int 5
-        param_named ShadowMap2 int 6
-        param_named ShadowMap3 int 7
-        param_named ShadowMap4 int 8
-        param_named ShadowMap5 int 9
-        param_named ShadowMap6 int 10
-        param_named ShadowMap7 int 11
-        param_named_auto ShadowTexel0 inverse_texture_size 4
-        param_named_auto ShadowTexel1 inverse_texture_size 5
-        param_named_auto ShadowTexel2 inverse_texture_size 6
-        param_named_auto ShadowTexel3 inverse_texture_size 7
-        param_named_auto ShadowTexel4 inverse_texture_size 8
-        param_named_auto ShadowTexel5 inverse_texture_size 9
-        param_named_auto ShadowTexel6 inverse_texture_size 10
-        param_named_auto ShadowTexel7 inverse_texture_size 11
-    }
 }

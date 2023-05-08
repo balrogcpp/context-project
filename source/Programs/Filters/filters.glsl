@@ -9,14 +9,14 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Linear(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Linear(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     return texture2D(tex, uv).xyz;
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Downscale3x3(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale3x3(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).xyz;
     mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).xyz;
@@ -37,7 +37,7 @@ mediump vec3 Downscale3x3(const mediump sampler2D tex, const mediump vec2 uv, co
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Downscale4x4(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale4x4(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).xyz;
     mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).xyz;
@@ -66,7 +66,7 @@ mediump vec3 Downscale4x4(const mediump sampler2D tex, const mediump vec2 uv, co
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Gauss5V(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Gauss5V(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3333333333333333)).xyz;
@@ -79,7 +79,7 @@ mediump vec3 Gauss5V(const mediump sampler2D tex, const mediump vec2 uv, const m
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Gauss5H(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Gauss5H(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2(1.3333333333333333, 0.0)).xyz;
@@ -92,7 +92,7 @@ mediump vec3 Gauss5H(const mediump sampler2D tex, const mediump vec2 uv, const m
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Gauss9V(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Gauss9V(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).xyz;
@@ -107,7 +107,7 @@ mediump vec3 Gauss9V(const mediump sampler2D tex, const mediump vec2 uv, const m
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Gauss9H(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Gauss9H(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2(1.3846153846, 0.0)).xyz;
@@ -122,7 +122,7 @@ mediump vec3 Gauss9H(const mediump sampler2D tex, const mediump vec2 uv, const m
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Gauss13V(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Gauss13V(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.411764705882353)).xyz;
@@ -139,7 +139,7 @@ mediump vec3 Gauss13V(const mediump sampler2D tex, const mediump vec2 uv, const 
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Gauss13H(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Gauss13H(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2(1.411764705882353, 0.0)).xyz;
@@ -157,7 +157,7 @@ mediump vec3 Gauss13H(const mediump sampler2D tex, const mediump vec2 uv, const 
 
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
-mediump vec3 Upscale9(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Upscale9(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;
@@ -178,7 +178,7 @@ mediump vec3 Upscale9(const mediump sampler2D tex, const mediump vec2 uv, const 
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale2x2(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5))).xyz;
     mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-0.5,  0.5))).xyz;
@@ -193,7 +193,7 @@ mediump vec3 Downscale2x2(const mediump sampler2D tex, const mediump vec2 uv, co
 
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
-mediump vec3 Downscale13(const mediump sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 Downscale13(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
     mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;

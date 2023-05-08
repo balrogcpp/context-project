@@ -140,6 +140,7 @@ uniform sampler2D TerraNormalMap;
 #endif
 #ifdef TERRA_LIGHTMAP
 uniform sampler2D TerraLightMap;
+uniform vec2 InvTerraLightMapSize;
 #endif
 
 // lights
@@ -254,6 +255,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
+#define HAS_NORMALS
 highp vec3 GetNormal(const mediump vec2 uv)
 {
 #ifdef TERRA_NORMALMAP

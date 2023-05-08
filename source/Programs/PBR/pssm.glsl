@@ -42,7 +42,7 @@ mediump float AvgBlockersDepthToPenumbra(const mediump float lightSize, const me
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float Penumbra(const mediump sampler2D shadowMap, const mediump vec2 shadowMapUV, const mediump float gradientNoise, const mediump float z_shadowMapView, const mediump float penumbraFilterMaxSize, const mediump int iterations)
+mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV, const mediump float gradientNoise, const mediump float z_shadowMapView, const mediump float penumbraFilterMaxSize, const mediump int iterations)
 {
   mediump float avgBlockersDepth = 0.0;
   mediump float blockersCount = HALF_EPSILON;
@@ -68,18 +68,37 @@ mediump float Penumbra(const mediump sampler2D shadowMap, const mediump vec2 sha
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float CalcDepthShadow(const mediump sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 filterSize, const mediump int iterations)
+mediump float FetchTerraShadow(const sampler2D shadowMap, mediump vec2 uv, const mediump vec2 filterSize, const mediump int iterations)
+{
+  mediump float shadow = 1.0;
+  mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+
+  #define MAX_SAMPLES 32
+
+  for (int i = 0; i < MAX_SAMPLES; ++i) {
+    if (iterations <= i) break;
+
+    mediump vec2 offset = VogelDiskSample(float(i), float(iterations), float(gradientNoise)) * filterSize;
+
+    uv += offset;
+    shadow -= texture2D(shadowMap, uv.xy).x * (1.0 / float(iterations));
+  }
+
+  return shadow;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 filterSize, const mediump int iterations)
 {
   lightSpace /= lightSpace.w;
   lightSpace.z = lightSpace.z * 0.5 + 0.5;
 
   mediump float shadow = 1.0;
   mediump float currentDepth = lightSpace.z + HALF_EPSILON * (1.0 - F0);
-
-  #define MAX_PENUMBRA_FILTER 0.05
-
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
+  #define MAX_PENUMBRA_FILTER 0.05
   mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, currentDepth, MAX_PENUMBRA_FILTER, iterations);
 #endif
 

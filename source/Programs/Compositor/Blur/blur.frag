@@ -43,5 +43,6 @@ void main()
     }
 
     color *= invSamples;
-    FragColor = vec4(color, 1.0);
+
+    FragColor = vec4(SafeHDR(color), 1.0);
 }

@@ -33,10 +33,10 @@ uniform sampler2D blendTex;
 void main()
 {
 #if SMAA_REPROJECTION
-	FragColor = SMAANeighborhoodBlendingPS( vUV0, offset,
-											   rt_input, blendTex, velocityTex );
+	FragColor = SafeHDR(SMAANeighborhoodBlendingPS( vUV0, offset,
+											   rt_input, blendTex, velocityTex ));
 #else
-	FragColor = SMAANeighborhoodBlendingPS( vUV0, offset,
-											   rt_input, blendTex );
+	FragColor = SafeHDR(SMAANeighborhoodBlendingPS( vUV0, offset,
+											   rt_input, blendTex ));
 #endif
 }
