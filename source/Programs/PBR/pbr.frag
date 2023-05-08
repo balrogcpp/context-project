@@ -135,6 +135,12 @@ uniform sampler2D EmissiveMap;
 uniform samplerCube SpecularEnvMap;
 uniform mediump vec3 iblSH[9];
 #endif // USE_IBL
+#ifdef TERRA_NORMALMAP
+uniform sampler2D TerraNormalMap;
+#endif
+#ifdef TERRA_LIGHTMAP
+uniform sampler2D TerraLightMap;
+#endif
 
 // lights
 uniform highp vec3 CameraPosition;
@@ -252,6 +258,26 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 //----------------------------------------------------------------------------------------------------------------------
 highp vec3 GetNormal(const mediump vec2 uv)
 {
+#ifdef TERRA_NORMALMAP
+    highp vec3 t = vec3(1.0, 0.0, 0.0);
+    highp vec3 ng = texture2D(TerraNormalMap, vUV0.xy).xyz * 2.0 - 1.0;
+    highp vec3 b = normalize(cross(ng, t));
+    t = normalize(cross(ng ,b));
+    highp mat3 tbn = mtxFromCols3x3(t, b, ng);
+
+#ifdef HAS_NORMALMAP
+    highp vec3 n = texture2D(NormalMap, uv).xyz;
+    n = normalize(mul(tbn, (2.0 * n - 1.0)));
+    return n;
+#else
+    highp vec3 n = tbn[2].xyz;
+    return ng;
+#endif // HAS_NORMALMAP
+
+#endif // TERRA_NORMALMAP
+
+
+#ifndef TERRA_NORMALMAP
 #ifndef HAS_NORMALS
     highp vec3 n0 = cross(dFdx(vWorldPosition), dFdy(vWorldPosition));
 
@@ -259,7 +285,8 @@ highp vec3 GetNormal(const mediump vec2 uv)
     highp vec3 n1 = texture2D(NormalMap, uv).xyz;
     highp vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n0, b));
-    n1 = normalize(mtxFromCols3x3(t, b, n0) * ((2.0 * n1 - 1.0)));
+    highp mat3 tbn = mtxFromCols3x3(t, b, n0);
+    n1 = normalize(mul(tbn, (2.0 * n1 - 1.0)));
     return n1;
 #else
     return n0;
@@ -276,6 +303,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
     return n;
 #endif // HAS_NORMALMAP
 #endif // HAS_NORMALS
+#endif // TERRA_NORMALMAP
 }
 
 
@@ -288,6 +316,7 @@ mediump vec4 GetAlbedo(const mediump vec2 uv)
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(AlbedoMap, uv);
 #endif
+
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
@@ -296,6 +325,7 @@ mediump vec4 GetAlbedo(const mediump vec2 uv)
 mediump vec3 GetORM(const mediump vec2 uv)
 {
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
+
 #ifdef HAS_ORM
     ORM *= texture2D(OrmMap, uv).rgb;
 #endif

@@ -217,6 +217,18 @@ abstract material TERRA : PBR
             {
                 texture $Normal
             }
+            texture_unit TerraNormal
+            {
+                texture $Normal
+                filtering bilinear
+                tex_address_mode clamp
+            }
+            texture_unit TerraLight
+            {
+                texture white.dds
+                filtering bilinear
+                tex_address_mode clamp
+            }
 
             texture_unit ShadowMap0
             {
@@ -265,6 +277,8 @@ abstract material TERRA : PBR
             {
                 param_named AlbedoMap      int 0
                 param_named NormalMap      int 1
+                param_named TerraNormalMap int 2
+                param_named TerraLightMap  int 3
             }
         }
     }
