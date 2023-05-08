@@ -120,7 +120,6 @@ varying mediump vec4 vPrevScreenPosition;
 
 // uniforms
 #ifdef HAS_BASECOLORMAP
-#define HAS_ALPHA
 uniform sampler2D AlbedoMap;
 #endif // HAS_BASECOLORMAP
 #ifdef HAS_NORMALMAP
@@ -330,12 +329,15 @@ void main()
 
     mediump vec4 s = GetAlbedo(uv);
     mediump vec3 albedo = s.rgb;
-    mediump float alpha = s.a;
 
 #ifdef HAS_ALPHA
+    mediump float alpha = s.a;
+
     if (SurfaceAlphaRejection > 0.0 && alpha < SurfaceAlphaRejection) {
         discard;
     }
+#else
+    const mediump float alpha = 1.0;
 #endif
 
     mediump vec3 ORM = GetORM(uv);
