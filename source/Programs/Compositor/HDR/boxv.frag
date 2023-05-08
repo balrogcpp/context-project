@@ -23,12 +23,12 @@ void main()
 {
 	mediump vec2 uv = vUV0.xy;
 
-	uv.x -= TexelSize0.x * (float(NUM_SAMPLES - 1) * 0.5);
+	uv.y -= TexelSize0.y * (float(NUM_SAMPLES - 1) * 0.5);
 	mediump vec3 sum = texture(RT, uv).rgb;
 
 	for(mediump int i = 1; i < NUM_SAMPLES; ++i)
 	{
-		uv.x += TexelSize0.x;
+		uv.y += TexelSize0.y;
 		sum += texture2D(RT, uv).rgb;
 	}
 

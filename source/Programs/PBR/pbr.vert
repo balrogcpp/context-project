@@ -107,9 +107,9 @@ void main()
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
 #else
-    highp vec3 n = vec3(0.0, 1.0, 0.0);
-    highp vec3 b = normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)));
-    highp vec3 t = vec3(1.0, 0.0, 0.0);
+    const highp vec3 n = vec3(0.0, 1.0, 0.0);
+    const highp vec3 t = vec3(1.0, 0.0, 0.0);
+    const highp vec3 b = cross(n, t);
     vTBN = mtxFromCols3x3(t, b, n);
 #endif // HAS_NORMALS
 

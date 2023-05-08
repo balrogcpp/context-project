@@ -9,7 +9,6 @@
 #endif
 
 #include "header.glsl"
-#include "srgb.glsl"
 #include "tonemap.glsl"
 
 

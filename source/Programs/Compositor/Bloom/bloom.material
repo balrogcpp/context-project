@@ -117,7 +117,6 @@ fragment_program bloom_feat_fs glsl glsles hlsl
     default_params
     {
         param_named ChromaticRadius float 0.005
-        param_named FeaturesCount int 5
     }
 }
 

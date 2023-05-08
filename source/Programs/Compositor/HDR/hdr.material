@@ -216,10 +216,10 @@ material BrightStart
 
             vertex_program_ref StdQuad_vp {}
 
-            fragment_program_ref hdr_end_fs 
+            fragment_program_ref bright_start 
             {
                 param_named RT int 0
-                param_named OldLum int 1
+                param_named Lum int 1
                 param_named_auto TexelSize0 inverse_texture_size 0
             }
 
@@ -229,7 +229,7 @@ material BrightStart
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit OldLum
+            texture_unit Lum
             {
                 texture grey.dds
                 tex_address_mode clamp
