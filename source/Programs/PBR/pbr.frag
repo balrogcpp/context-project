@@ -251,7 +251,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
     mediump vec3 specularLight = GetIblSpeculaColor(reflection, perceptualRoughness);
 #else
     mediump vec3 diffuseLight = Irradiance_SphericalHarmonics(iblSH, reflection);
-    mediump vec3 specularLight = vec3(1.0, 1.0, 1.0);
+    mediump vec3 specularLight = diffuseLight;
 #endif
 
     mediump vec3 diffuse = (diffuseLight * diffuseColor);
