@@ -121,8 +121,9 @@ void TerrainManager::OnSetUp() {
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
 
   terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
+  terrainGlobalOptions->setMaxPixelError(8);
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-  terrainGlobalOptions->setCompositeMapDistance(1000);
+  terrainGlobalOptions->setCompositeMapDistance(500.0);
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
   terrainGlobalOptions->setLightMapSize(512);
