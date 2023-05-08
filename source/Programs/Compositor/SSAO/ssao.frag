@@ -97,5 +97,5 @@ void main()
 
     // amplify and saturate if necessary
     occ = clamp(occ, 0.0, 1.0);
-    FragColor = vec4(occ, occ, occ, 1.0);
+    FragColor = vec4(occ, 0.0, 0.0, 1.0);
 }

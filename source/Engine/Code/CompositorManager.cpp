@@ -102,7 +102,7 @@ void CompositorManager::OnSetUp() {
   InitMipChain(false);
 
   // tonemap is part of HDR, always on
-  AddCompositor("Tonemap", true);
+  //AddCompositor("Tonemap", true);
 
   AddCompositor("Blur", false);
   AddCompositor("End", true);

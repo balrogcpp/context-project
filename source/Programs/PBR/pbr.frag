@@ -299,6 +299,7 @@ mediump vec3 GetORM(const mediump vec2 uv)
 #ifdef HAS_ORM
     ORM *= texture2D(OrmMap, uv).rgb;
 #endif
+
     return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0 , 1.0));
 }
 

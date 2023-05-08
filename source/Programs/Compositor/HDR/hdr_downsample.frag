@@ -10,7 +10,6 @@
 
 #include "header.glsl"
 #include "srgb.glsl"
-#include "tonemap.glsl"
 
 
 varying mediump vec2 vUV0;
@@ -38,5 +37,5 @@ mediump float Downscale2x2(const sampler2D tex, const mediump vec2 uv, const med
 void main()
 {
     mediump float lum = Downscale2x2(RT, vUV0, TexelSize0);
-    FragColor = vec4(lum, lum, lum, 1.0);
+    FragColor = vec4(lum, 0.0, 0.0, 1.0);
 }

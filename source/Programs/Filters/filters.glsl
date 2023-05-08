@@ -5,7 +5,6 @@
 
 
 #include "srgb.glsl"
-#include "tonemap.glsl"
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -185,7 +184,7 @@ mediump vec3 Downscale2x2(const sampler2D tex, const mediump vec2 uv, const medi
     mediump vec3 C = texture2D(tex, uv + (tsize * vec2( 0.5, -0.5))).xyz;
     mediump vec3 D = texture2D(tex, uv + (tsize * vec2( 0.5,  0.5))).xyz;
 
-    mediump vec3 c1 = (A + B + C + D) * 0.25; // 1/4
+    mediump vec3 c1 = (A + B + C + D) * 0.25;
 
     return c1;
 }

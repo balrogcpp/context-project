@@ -66,5 +66,5 @@ void main()
     mediump vec2 ratio = (TexSize0.xy * ViewportSize.zw) * 0.25;
     mediump float lum = Downscale4x4(RT, vUV0, TexSize0.zw * ratio);
 
-    FragColor = vec4(lum, lum, lum, 1.0);
+    FragColor = vec4(lum, 0.0, 0.0, 1.0);
 }

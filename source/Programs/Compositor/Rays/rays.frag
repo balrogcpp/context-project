@@ -11,7 +11,6 @@
 
 #include "header.glsl"
 #include "srgb.glsl"
-#include "tonemap.glsl"
 
 
 varying mediump vec2 vUV0;
@@ -43,7 +42,7 @@ mediump vec3 GodRays(const sampler2D tex, const mediump vec2 uv, const mediump v
         illuminationDecay *= decay;
     }
 
-    return expose(color, exposure);
+    return color;
 }
 
 

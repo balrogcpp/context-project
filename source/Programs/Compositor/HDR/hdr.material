@@ -18,13 +18,36 @@ fragment_program hdr_downsample_fs glsl glsles hlsl
 	source hdr_downsample.frag
 }
 
+fragment_program boxv glsl glsles hlsl
+{
+	source boxv.frag
+}
+
+fragment_program boxh glsl glsles hlsl
+{
+	source boxh.frag
+}
+
+fragment_program bright_start glsl glsles hlsl
+{
+	source bright_start.frag
+
+    default_params
+    {
+        param_named BrightThreshold float2 3.0 0.5
+    }
+}
+
+
+
+
 fragment_program hdr_end_fs glsl glsles hlsl
 {
 	source hdr_end.frag
 
     default_params
     {
-        param_named Exposure float3 500.5833 5.0 10.0
+        param_named Exposure float3 553.5833 5.0 10.0
         param_named_auto timeSinceLast frame_time 1
     }
 }
@@ -43,7 +66,7 @@ material HdrStart
 
             vertex_program_ref StdQuad_vp {}
 
-            fragment_program_ref hdr_start_fs
+            fragment_program_ref bright_start
             {
                 param_named RT int 0
                 param_named_auto TexSize0 packed_texture_size 0
@@ -87,6 +110,9 @@ material HdrDownsample
         }
     }
 }
+
+
+
 
 material HdrEnd
 {
@@ -150,6 +176,7 @@ material HDR
 			{
                 param_named RT int 0
                 param_named Lum int 1
+                param_named Bloom int 2
 			}
 
 			texture_unit RT
@@ -160,7 +187,13 @@ material HDR
             }
 			texture_unit Lum
             {
-                texture grey.dds
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit Bloom
+            {
+                texture black.dds
                 tex_address_mode clamp
                 filtering none
             }
@@ -168,6 +201,103 @@ material HDR
 	}
 }
 
+
+
+material BrightStart
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+            vertex_program_ref StdQuad_vp {}
+
+            fragment_program_ref hdr_end_fs 
+            {
+                param_named RT int 0
+                param_named OldLum int 1
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit OldLum
+            {
+                texture grey.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
+
+material BoxV
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+            vertex_program_ref StdQuad_vp {}
+
+            fragment_program_ref boxv
+            {
+                param_named RT int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+
+
+material BoxH
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+            vertex_program_ref StdQuad_vp {}
+
+            fragment_program_ref boxh
+            {
+                param_named RT int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 // Tonemap

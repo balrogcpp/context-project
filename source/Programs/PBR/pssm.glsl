@@ -57,10 +57,8 @@ mediump float InterleavedGradientNoise(const mediump vec2 position_screen)
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec2 VogelDiskSample(const mediump float sampleIndex, const mediump float samplesCount, const mediump float phi)
 {
-    #define GOLDEN_ANGLE 2.4
-
     mediump float r = sqrt((sampleIndex + 0.5) / samplesCount);
-    mediump float theta = sampleIndex * GOLDEN_ANGLE + phi;
+    mediump float theta = sampleIndex * 2.4 + phi;
     return vec2(r * cos(theta), r * sin(theta));
 }
 
@@ -157,9 +155,8 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, currentDepth, MAX_PENUMBRA_FILTER, iterations);
 #endif
 
-  #define MAX_SAMPLES 32
-
-  for (int i = 0; i < MAX_SAMPLES; ++i) {
+  #define MAX_PSSM_SAMPLES 32
+  for (int i = 0; i < MAX_PSSM_SAMPLES; ++i) {
     if (iterations <= i) break;
 
     mediump vec2 offset = VogelDiskSample(float(i), float(iterations), gradientNoise) * filterSize;
@@ -172,7 +169,7 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
     shadow += bigger(depth, currentDepth);
   }
 
-  shadow *= (1.0 / iterations);
+  shadow *= (1.0 / float(iterations));
 
   return shadow;
 }

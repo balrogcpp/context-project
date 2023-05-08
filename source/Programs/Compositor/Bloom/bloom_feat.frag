@@ -11,7 +11,6 @@
 
 #include "header.glsl"
 #include "srgb.glsl"
-#include "tonemap.glsl"
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -25,7 +24,6 @@ mediump vec3 SampleChromatic(const sampler2D tex, const mediump vec2 uv, const m
         texture2D(tex, uv - offset).b
     );
 
-    //color /= (1.0 + luminance(LINEARtoSRGB(color)));
     return color;
 }
 
@@ -50,7 +48,7 @@ mediump vec3 GhostFeatures(const sampler2D tex, const mediump vec2 uv, const med
     #define MAX_GHOST_COUNT 24
 
     // ghosts
-    for (int i = 0; i < MAX_GHOST_COUNT; ++i) {
+    for (mediump int i = 0; i < MAX_GHOST_COUNT; ++i) {
         if (counter <= i) break;
 
         mediump vec2 suv = fract(nuv + ghostVec * float(i));
@@ -102,7 +100,7 @@ void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
 
-    color += GhostFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
+    //color += GhostFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
     color += HaloFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
 
     FragColor = vec4(color, 1.0);
