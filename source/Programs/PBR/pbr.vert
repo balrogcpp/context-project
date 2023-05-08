@@ -18,18 +18,26 @@
 #endif
 
 
+#ifndef VERTEX_COMPRESSION
 attribute highp vec4 vertex;
+#else
+attribute highp vec2 vertex;
+uniform highp mat4 posIndexToObjectSpace;
+uniform highp float baseUVScale;
+#endif // VERTEX_COMPRESSION
 #ifdef HAS_NORMALS
 attribute highp vec4 normal;
-#endif
-#ifdef HAS_TANGENTS
 attribute highp vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
 attribute mediump vec4 colour;
 #endif
 #ifdef HAS_UV
+#ifndef VERTEX_COMPRESSION
 attribute highp vec4 uv0;
+#else
+attribute highp float uv0;
+#endif // VERTEX_COMPRESSION
 attribute highp vec4 uv1;
 attribute highp vec4 uv2;
 attribute highp vec4 uv3;
@@ -67,34 +75,35 @@ uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-#ifdef HAS_UV
-    vUV0.xy = uv0.xy;
-#endif // HAS_UV
-
 #ifdef HAS_VERTEXCOLOR
-    vColor = max3(colour.rgb) > 0.0 ? colour.rgba : vec4(1.0);
+    vColor = max3(colour.rgb) > 0.0 ? colour.rgba : vec4(1.0, 1.0, 1.0, 1.0);
 #else
-    vColor = vec4(1.0);
+    vColor = vec4(1.0, 1.0, 1.0, 1.0);
 #endif // HAS_VERTEXCOLOR
 
+#ifndef VERTEX_COMPRESSION
     highp vec4 position = vertex;
+    highp vec2 uv = uv0.xy;
+#else
+    highp vec4 position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
+    highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
+#endif
+
+#ifdef HAS_UV 
+    vUV0.xy = uv.xy;
+#else
+    vUV0.xy = vec2(0.0, 0.0);
+#endif // HAS_UV
 
 #ifdef PAGED_GEOMETRY
      position +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
 #endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
     highp vec3 n = normalize(vec3(mul(WorldMatrix, vec4(normal.xyz, 0.0))));
     highp vec3 t = normalize(vec3(mul(WorldMatrix, vec4(tangent.xyz, 0.0))));
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
-#else
-    highp vec3 n = normalize(vec3(mul(WorldMatrix, vec4(normal.xyz, 0.0))));
-    highp vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
-    highp vec3 t = normalize(cross(n, b));
-    vTBN = mtxFromCols3x3(t, b, n);
-#endif // HAS_TANGENTS
 #else
     highp vec3 n = vec3(0.0, 1.0, 0.0);
     highp vec3 b = normalize(cross(vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)));

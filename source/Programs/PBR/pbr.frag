@@ -254,7 +254,6 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 highp vec3 GetNormal(const mediump vec2 uv)
 {
 #ifndef HAS_NORMALS
-#ifndef HAS_TANGENTS
     highp vec3 n0 = cross(dFdx(vWorldPosition), dFdy(vWorldPosition));
 
 #ifdef HAS_NORMALMAP
@@ -266,11 +265,9 @@ highp vec3 GetNormal(const mediump vec2 uv)
 #else
     return n0;
 #endif // HAS_NORMALMAP
-#endif // !HAS_TANGENTS
 #endif // !HAS_NORMALS
 
 #ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
 #ifdef HAS_NORMALMAP
     highp vec3 n = texture2D(NormalMap, uv).xyz;
     n = normalize(mul(vTBN, ((2.0 * n - 1.0))));
@@ -279,7 +276,6 @@ highp vec3 GetNormal(const mediump vec2 uv)
     highp vec3 n = vTBN[2].xyz;
     return n;
 #endif // HAS_NORMALMAP
-#endif // HAS_TANGENTS
 #endif // HAS_NORMALS
 }
 

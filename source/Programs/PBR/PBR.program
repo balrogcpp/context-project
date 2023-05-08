@@ -21,7 +21,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
 
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER
 
     default_params
     {
@@ -41,7 +41,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
 
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,SHADOWRECEIVER
     
     default_params
     {
@@ -98,7 +98,94 @@ fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs
 //----------------------------------------------------------------------------------------------------------------------
 vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER,PAGED_GEOMETRY
+    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER,PAGED_GEOMETRY
 }
 
-fragment_program PG_fs glsl glsles hlsl : PBR_I_fs {}
+fragment_program PG_fs glsl glsles hlsl : PBR_I_fs 
+{
+    preprocessor_defines HAS_NORMALS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER
+
+    default_params
+    {
+        param_named ShadowMap0 int 3
+        param_named ShadowMap1 int 4
+        param_named ShadowMap2 int 5
+        param_named ShadowMap3 int 6
+        param_named ShadowMap4 int 7
+        param_named ShadowMap5 int 8
+        param_named ShadowMap6 int 9
+        param_named ShadowMap7 int 10
+        param_named_auto ShadowTexel0 inverse_texture_size 3
+        param_named_auto ShadowTexel1 inverse_texture_size 4
+        param_named_auto ShadowTexel2 inverse_texture_size 5
+        param_named_auto ShadowTexel3 inverse_texture_size 6
+        param_named_auto ShadowTexel4 inverse_texture_size 7
+        param_named_auto ShadowTexel5 inverse_texture_size 8
+        param_named_auto ShadowTexel6 inverse_texture_size 9
+        param_named_auto ShadowTexel7 inverse_texture_size 10
+    }
+}
+
+vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
+{
+    preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,SHADOWRECEIVER,PAGED_GEOMETRY
+}
+
+fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs 
+{
+    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_ORM,SHADOWRECEIVER
+
+    default_params
+    {
+        param_named ShadowMap0 int 3
+        param_named ShadowMap1 int 4
+        param_named ShadowMap2 int 5
+        param_named ShadowMap3 int 6
+        param_named ShadowMap4 int 7
+        param_named ShadowMap5 int 8
+        param_named ShadowMap6 int 9
+        param_named ShadowMap7 int 10
+        param_named_auto ShadowTexel0 inverse_texture_size 3
+        param_named_auto ShadowTexel1 inverse_texture_size 4
+        param_named_auto ShadowTexel2 inverse_texture_size 5
+        param_named_auto ShadowTexel3 inverse_texture_size 6
+        param_named_auto ShadowTexel4 inverse_texture_size 7
+        param_named_auto ShadowTexel5 inverse_texture_size 8
+        param_named_auto ShadowTexel6 inverse_texture_size 9
+        param_named_auto ShadowTexel7 inverse_texture_size 10
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// TERRA
+//----------------------------------------------------------------------------------------------------------------------
+vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
+{
+    preprocessor_defines HAS_UV,SHADOWRECEIVER,VERTEX_COMPRESSION
+}
+
+fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs 
+{
+    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,SHADOWRECEIVER,TERRA
+
+     default_params
+    {
+        param_named ShadowMap0 int 2
+        param_named ShadowMap1 int 3
+        param_named ShadowMap2 int 4
+        param_named ShadowMap3 int 5
+        param_named ShadowMap4 int 6
+        param_named ShadowMap5 int 7
+        param_named ShadowMap6 int 8
+        param_named ShadowMap7 int 9
+        param_named_auto ShadowTexel0 inverse_texture_size 2
+        param_named_auto ShadowTexel1 inverse_texture_size 3
+        param_named_auto ShadowTexel2 inverse_texture_size 4
+        param_named_auto ShadowTexel3 inverse_texture_size 5
+        param_named_auto ShadowTexel4 inverse_texture_size 6
+        param_named_auto ShadowTexel5 inverse_texture_size 7
+        param_named_auto ShadowTexel6 inverse_texture_size 8
+        param_named_auto ShadowTexel7 inverse_texture_size 9
+    }
+}

@@ -114,22 +114,168 @@ abstract material PBR
 //----------------------------------------------------------------------------------------------------------------------
 // PAGED_GEOMETRY
 //----------------------------------------------------------------------------------------------------------------------
-abstract material Paged : PBR
+abstract material PG : PBR
 {
     technique
     {
         pass
         {
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+
+            texture_unit ShadowMap0
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap4
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap5
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap6
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap7
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+
             vertex_program_ref PG_vs {}
 
-            fragment_program_ref PG_fs {}
+            fragment_program_ref PG_fs 
+            {
+                param_named AlbedoMap      int 0
+                param_named NormalMap      int 1
+                param_named OrmMap         int 2
+            }
         }
     }
 }
+
+
+abstract material PG0 : PG
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PG0_vs {}
+
+            fragment_program_ref PG0_fs {}
+        }
+    }
+}
+
+
+abstract material TERRA : PBR
+{
+    technique
+    {
+        pass
+        {
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+
+            texture_unit ShadowMap0
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
+                sampler_ref ShadowMap            
+            }
+            texture_unit ShadowMap4
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap5
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap6
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap7
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+
+            vertex_program_ref TERRA_vs {}
+
+            fragment_program_ref TERRA_fs 
+            {
+                param_named AlbedoMap      int 0
+                param_named NormalMap      int 1
+            }
+        }
+    }
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
 // IMPL for abstract materials
 //----------------------------------------------------------------------------------------------------------------------
 material ImplPBR : PBR {}
-material ImplPaged : Paged {}
+material ImplPG : PG {}
+material ImplPG0 : PG0 {}
+material ImplTERRA : TERRA {}

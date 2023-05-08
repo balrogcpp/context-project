@@ -1,45 +1,39 @@
 // created by Andrey Vasiliev
 
-import Paged from PBR.material
+import PG from PBR.material
+import PG0 from PBR.material
 
-material GrassCustom : Paged
+material GrassCustom : PG0
 {
     set $Albedo Grass_A.dds
-    technique
-    {
-        pass
-        {
-            cull_hardware none
-        }
-    }
 }
 
-material 3D-Diggers/fir01 : Paged
+material 3D-Diggers/fir01 : PG
 {
     set $Albedo fir01.dds
 }
 
-material 3D-Diggers/fir02 : Paged
+material 3D-Diggers/fir02 : PG
 {
     set $Albedo fir02.dds
 }
 
-material 3D-Diggers/farn01 : Paged
+material 3D-Diggers/farn01 : PG
 {
     set $Albedo farn01.dds
 }
 
-material 3D-Diggers/farn02 : Paged
+material 3D-Diggers/farn02 : PG
 {
     set $Albedo farn01.dds
 }
 
-material 3D-Diggers/plant1 : Paged
+material 3D-Diggers/plant1 : PG
 {
     set $Albedo plant1.dds
 }
 
-material 3D-Diggers/plant2 : Paged
+material 3D-Diggers/plant2 : PG
 {
     set $Albedo plant2.dds
 }

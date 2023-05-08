@@ -63,7 +63,7 @@ GrassLoader::GrassLoader(PagedGeometry *geom)
 	windTimer.reset();
 	lastTime = 0;
 	autoEdgeBuildEnabled=false;
-    hasNormals = true;
+    hasNormals = false;
 }
 
 GrassLoader::~GrassLoader()

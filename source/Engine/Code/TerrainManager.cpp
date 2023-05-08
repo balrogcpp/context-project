@@ -22,7 +22,7 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return terrainMaxLayers; }
     void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
     void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
-    bool isVertexCompressionSupported() const override { return false; }
+    bool isVertexCompressionSupported() const override { return true; }
     void setLightmapEnabled(bool enabled) override { enableLightmap = enabled; }
     bool isLightmapEnabled() { return enableLightmap; }
     void setNormalmapEnabled(bool enabled) { enableNormalmap = enabled; }
@@ -38,12 +38,8 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     }
 
     Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) override {
-      std::string materialName = "ImplPBR";
-
-      if (isVertexCompressionSupported()) {
-        materialName += "_vc";
-      }
-
+      std::string materialName = "ImplTERRA";
+ 
       static unsigned long long generator = 0;
       std::string newName = materialName + std::to_string(generator++);
 
@@ -131,7 +127,7 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
   terrainGlobalOptions->setCompositeMapDistance(1000);
   terrainGlobalOptions->setCastsDynamicShadows(false);
-  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(false);
+  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
   terrainGlobalOptions->setLightMapSize(256);
   terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
 }
