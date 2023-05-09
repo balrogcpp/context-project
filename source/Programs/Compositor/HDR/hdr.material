@@ -93,7 +93,6 @@ material HDR : Base
 			{
                 param_named RT int 0
                 param_named Lum int 1
-                param_named Bloom int 2
 			}
 
 			texture_unit RT

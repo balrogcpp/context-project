@@ -47,11 +47,6 @@ material BrightStart : Base
 fragment_program brightMod glsl glsles hlsl
 {
 	source brightMod.frag
-
-    default_params
-    {
-        param_named MipCount float 10
-    }
 }
 
 material BrightMod : Base
@@ -64,7 +59,6 @@ material BrightMod : Base
 			{
                 param_named RT int 0
                 param_named RT0 int 1
-
                 param_named_auto TexelSize1 inverse_texture_size 1
 			}
 

@@ -447,8 +447,8 @@ void VideoManager::MakeWindow() {
   mainWindow = &windowList[0];
   ogreCamera = ogreSceneManager->createCamera("Default");
   mainWindow->Create("Demo0", ogreCamera, 0, 1270, 720, 0);
-  ogreCamera->setNearClipDistance(0.001);
-  ogreCamera->setFarClipDistance(10000.0);
+  ogreCamera->setNearClipDistance(0.1);
+  ogreCamera->setFarClipDistance(1000.0);
   ogreViewport = mainWindow->ogreViewport;
   InputSequencer::GetInstance().RegWindowListener(mainWindow);
 }
@@ -528,7 +528,7 @@ void VideoManager::InitOgreSceneManager() {
 #endif
     shadowFarDistance = 400;
 #ifdef DESKTOP
-    shadowTexSize = 1024;
+    shadowTexSize = 2048;
 #else
     shadowTexSize = 512;
 #endif
@@ -548,15 +548,15 @@ void VideoManager::InitOgreSceneManager() {
 
     // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();
-    pssmSetup->calculateSplitPoints(pssmSplitCount, ogreCamera->getNearClipDistance(), ogreSceneManager->getShadowFarDistance());
-    pssmSplitPointList = pssmSetup->getSplitPoints();
-    pssmSetup->setSplitPadding(0.0);
+    pssmSetup->calculateSplitPoints(pssmSplitCount, 0.001, ogreSceneManager->getShadowFarDistance());
+    pssmSetup->setSplitPadding(1.0);
     for (int i = 0; i < pssmSplitCount; i++) {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     }
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
     auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);
     auto *subRenderState = static_cast<Ogre::RTShader::IntegratedPSSM3 *>(schemRenderState->getSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3));
+    pssmSplitPointList = pssmSetup->getSplitPoints();
     subRenderState->setSplitPoints(pssmSplitPointList);
 
   } else {

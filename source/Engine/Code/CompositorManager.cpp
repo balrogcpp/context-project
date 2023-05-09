@@ -94,19 +94,10 @@ void CompositorManager::OnSetUp() {
 
   // calculate scene luminance and apply, always on
   AddCompositor("HDR", true);
-
-  //
-  AddCompositor("Rays", false);
-
-  // init mipmaps
   InitMipChain(false);
-
-  // tonemap is part of HDR, always on
   AddCompositor("Tonemap", true);
-
   AddCompositor("Blur", false);
   AddCompositor("End", true);
-
   AddCompositor("Paused", false);
 
   // reg as viewport listener

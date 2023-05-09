@@ -20,8 +20,8 @@ material FBO : Base
             fragment_program_ref fbo
 			{
                 param_named RT int 0
-                param_named DepthMap int 1
-
+                param_named Lum int 0
+                param_named DepthMap int 2
                 param_named_auto TexelSize0 inverse_texture_size 0
             }
 
@@ -30,6 +30,12 @@ material FBO : Base
                 texture black.dds
                 tex_address_mode clamp
                 filtering bilinear
+            }
+            texture_unit Lum
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
             }
             texture_unit Depth
             {
@@ -42,9 +48,6 @@ material FBO : Base
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-// Rays
-//----------------------------------------------------------------------------------------------------------------------
 fragment_program rays glsl glsles hlsl
 {
 	source rays.frag
@@ -83,12 +86,9 @@ material Rays : Base
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
-// Rays_mod
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program rays_mod glsl glsles hlsl
+fragment_program raysMod glsl glsles hlsl
 {
-	source rays_mod.frag
+	source raysMod.frag
 
     default_params
     {
@@ -98,13 +98,13 @@ fragment_program rays_mod glsl glsles hlsl
 }
 
 
-material Rays_mod : Base
+material RaysMod : Base
 {
     technique
     {
         pass
         {
-            fragment_program_ref rays_mod {}
+            fragment_program_ref raysMod {}
 
             texture_unit RT
             {

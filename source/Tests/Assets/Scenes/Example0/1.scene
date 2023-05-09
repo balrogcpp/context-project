@@ -34,7 +34,7 @@
     </nodes>
     <environment>
         <colourAmbient r="60" g="60" b="60"/>
-        <skyBox active="true" material="SkyBox" distance="500"/>w
+        <skyBox active="true" material="SkyBox" distance="500"/>
         <fog mode="exp" density="0.001">
             <colour r="155" g="171" b="187"/>
         </fog>

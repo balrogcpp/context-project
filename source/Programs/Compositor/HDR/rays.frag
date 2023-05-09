@@ -41,6 +41,8 @@ mediump vec3 GodRays(const sampler2D tex, const mediump vec2 uv, const mediump v
         illuminationDecay *= decay;
     }
 
+    color *= exposure;
+
     return color;
 }
 
@@ -54,8 +56,9 @@ void main()
         if (int(LightCount) <= i) break;
 
         mediump vec4 point = LightPositionViewSpace[i];
-        color += GodRays(FBO, vUV0, point.xy, RayCount, Density, Weight * point.w, Decay, Exposure);
+        float w = Weight * point.w;
+        color += GodRays(FBO, vUV0, point.xy, RayCount, Density, w, Decay, Exposure);
     }
 
-    FragColor = vec4(color, 1.0);
+    FragColor = vec4(SafeHDR(color), 1.0);
 }
