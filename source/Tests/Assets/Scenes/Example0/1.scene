@@ -4,13 +4,13 @@
         <node name="Sun">
 			<position x="40.659888" y="-20.704975" z="-30.950829"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
-            <light name="Sun" powerScale="5" type="directional" castShadows="true"/>
+            <light name="Sun" powerScale="2" type="directional" castShadows="true"/>
         </node>
         <node name="Camera">
             <position x="0" y="2" z="0"/>
             <direction x="0.0" y="0.0" z="-1"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
-            <camera fov="90" name="Default" projectionType="perspective">
+            <camera fov="60" name="Default" projectionType="perspective">
                 <clipping far="1000.0" near="0.001"/>
             </camera>
         </node>
@@ -25,18 +25,24 @@
                 </userData>
             </entity>
         </node>
+<!--        <node name="Plane">-->
+<!--            <plane name="Plane0" material="Plane" width="100" height="100" distance="0.0" castsShadows="false"/>-->
+<!--        </node>-->
         <node name="Plane2">
-            <plane name="Plane2" material="Ocean" width="500" height="500" distance="-3.0"/>
+            <plane name="Plane2" material="Ocean" width="500" height="500" distance="-2.0"/>
         </node>
     </nodes>
     <environment>
         <colourAmbient r="60" g="60" b="60"/>
-        <skyBox active="true" material="SkyBox" distance="500"/>
-        <fog mode="exp" density="0.005">
+        <skyBox active="true" material="SkyBox" distance="500"/>w
+        <fog mode="exp" density="0.001">
             <colour r="155" g="171" b="187"/>
         </fog>
     </environment>
     <terrainGroupLegacy>
-        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" density="0.4" density_map="terrain2.png" trees="fir05_30.mesh"/>
+        <terrain x="0" y="0" file="terrain.cfg"/>
     </terrainGroupLegacy>
+<!--    <terrainGroupLegacy>-->
+<!--        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" density="0.4" density_map="terrain2.png" trees="fir05_30.mesh"/>-->
+<!--    </terrainGroupLegacy>-->
 </scene>

@@ -329,12 +329,12 @@ void main()
 #endif
 
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
+#ifdef TERRA_NORMALMAP
+    ORM.g *= spec;
+    ORM.b = 0.0;
+#endif
 #ifdef HAS_ORM
     ORM *= texture2D(OrmMap, uv).rgb;
-#endif
-#ifdef TERRA_NORMALMAP
-    ORM.g *= 1.0;
-    ORM.b *= spec;
 #endif
 
     ORM = clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
