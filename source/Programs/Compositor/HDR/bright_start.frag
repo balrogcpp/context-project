@@ -9,7 +9,6 @@
 #endif
 
 #include "header.glsl"
-#include "srgb.glsl"
 
 
 varying mediump vec2 vUV0;

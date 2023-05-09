@@ -12,8 +12,6 @@
 
 #define USE_MRT
 #include "header.glsl"
-#include "math.glsl"
-#include "srgb.glsl"
 #ifndef GL_ES
 #define SPHERICAL_HARMONICS_BANDS 8
 #else

@@ -96,7 +96,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("HDR", true);
 
   //
-  //AddCompositor("Rays", false);
+  AddCompositor("Rays", false);
 
   // init mipmaps
   InitMipChain(false);

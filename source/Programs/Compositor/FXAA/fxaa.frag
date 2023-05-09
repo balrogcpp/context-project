@@ -10,8 +10,6 @@
 
 
 #include "header.glsl"
-#include "srgb.glsl"
-#include "tonemap.glsl"
 
 
 varying mediump vec2 vUV0;

@@ -189,5 +189,9 @@ out vec4 FragColor;
 
 
 #include "math.glsl"
+#ifdef OGRE_FRAGMENT_SHADER
+#include "srgb.glsl"
+#include "tonemap.glsl"
+#endif
 
 #endif // HEADER_GLSL

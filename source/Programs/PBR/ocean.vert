@@ -12,7 +12,6 @@
 
 
 #include "header.glsl"
-#include "math.glsl"
 
 
 attribute highp vec4 vertex;

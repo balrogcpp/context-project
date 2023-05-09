@@ -12,7 +12,6 @@
 
 #define USE_MRT
 #include "header.glsl"
-#include "srgb.glsl"
 
 
 uniform sampler2D texMap;

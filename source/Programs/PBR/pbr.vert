@@ -12,7 +12,6 @@
 
 
 #include "header.glsl"
-#include "math.glsl"
 #ifdef PAGED_GEOMETRY
 #include "pgeometry.glsl"
 #endif

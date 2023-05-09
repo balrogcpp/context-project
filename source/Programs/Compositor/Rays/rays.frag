@@ -10,11 +10,10 @@
 
 
 #include "header.glsl"
-#include "srgb.glsl"
 
 
 varying mediump vec2 vUV0;
-uniform sampler2D FboMap;
+uniform sampler2D FBO;
 uniform mediump float LightCount;
 uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];
 uniform mediump int RayCount;
@@ -55,7 +54,7 @@ void main()
         if (int(LightCount) <= i) break;
 
         mediump vec4 point = LightPositionViewSpace[i];
-        color += GodRays(FboMap, vUV0, point.xy, RayCount, Density, Weight * point.w, Decay, Exposure);
+        color += GodRays(FBO, vUV0, point.xy, RayCount, Density, Weight * point.w, Decay, Exposure);
     }
 
     FragColor = vec4(color, 1.0);

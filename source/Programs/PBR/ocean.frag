@@ -13,8 +13,6 @@
 
 #define USE_MRT
 #include "header.glsl"
-#include "math.glsl"
-#include "srgb.glsl"
 
 
 varying highp vec3 vWorldPosition;

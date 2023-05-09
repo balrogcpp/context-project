@@ -13,8 +13,6 @@
 
 #define USE_MRT
 #include "header.glsl"
-#include "srgb.glsl"
-#include "tonemap.glsl"
 
 
 varying highp vec3 vPosition;

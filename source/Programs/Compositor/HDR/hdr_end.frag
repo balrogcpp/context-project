@@ -9,8 +9,7 @@
 #endif
 
 #include "header.glsl"
-#include "srgb.glsl"
-#include "tonemap.glsl"
+#include "filters_F16.glsl"
 
 
 varying mediump vec2 vUV0;
@@ -19,22 +18,6 @@ uniform sampler2D OldLum;
 uniform mediump vec2 TexelSize0;
 uniform mediump vec3 Exposure;
 uniform mediump float timeSinceLast;
-
-
-//----------------------------------------------------------------------------------------------------------------------
-//  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale03_SumLumEnd_ps.glsl
-//----------------------------------------------------------------------------------------------------------------------
-mediump float Downscale2x2(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
-{
-    mediump float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
-    mediump float B = texture2D(tex, uv + (tsize * vec2(-1.0,  1.0))).r;
-    mediump float C = texture2D(tex, uv + (tsize * vec2( 1.0, -1.0))).r;
-    mediump float D = texture2D(tex, uv + (tsize * vec2( 1.0,  1.0))).r;
-
-    mediump float c1 = (A + B + C + D) * 0.25;
-
-    return c1;
-}
 
 
 //----------------------------------------------------------------------------------------------------------------------

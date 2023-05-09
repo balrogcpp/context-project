@@ -10,8 +10,6 @@
 
 
 #include "header.glsl"
-#include "math.glsl"
-#include "srgb.glsl"
 
 
 #ifndef MAX_SAMPLES
