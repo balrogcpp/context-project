@@ -1,5 +1,5 @@
 #ifndef SMAA_RT_METRICS
-	#define SMAA_RT_METRICS viewportSize.zwxy
+	#define SMAA_RT_METRICS ViewportSize.zwxy
 #endif
 
 #if !SMAA_INITIALIZED
@@ -9,9 +9,6 @@
 	#define SMAA_GLSL_3 1
 #endif
 
-uniform vec4 viewportSize;
-
-#include "srgb.glsl"
 
 vec4 toSRGB( vec4 x )
 {
@@ -24,11 +21,3 @@ vec4 fromSRGB( vec4 x )
 	//return vec4(SRGBtoLINEAR(x.rgb), x.a);
 	return x;
 }
-
-#ifdef out
-#undef out
-#endif
-
-#ifdef in
-#undef in
-#endif

@@ -1,4 +1,4 @@
-import PBR from PBR.material
+import PBR from pbr.material
 
 material DamagedHelmet : PBR
 {

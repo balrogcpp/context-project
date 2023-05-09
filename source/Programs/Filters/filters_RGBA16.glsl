@@ -191,6 +191,20 @@ mediump vec4 Downscale2x2(const sampler2D tex, const mediump vec2 uv, const medi
 
 
 //----------------------------------------------------------------------------------------------------------------------
+mediump vec4 Downscale2x2_05(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+{
+    mediump vec4 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5)));
+    mediump vec4 B = texture2D(tex, uv + (tsize * vec2(-0.5,  0.5)));
+    mediump vec4 C = texture2D(tex, uv + (tsize * vec2( 0.5, -0.5)));
+    mediump vec4 D = texture2D(tex, uv + (tsize * vec2( 0.5,  0.5)));
+
+    mediump vec4 c1 = (A + B + C + D) * 0.25;
+
+    return c1;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 mediump vec4 Downscale13(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {

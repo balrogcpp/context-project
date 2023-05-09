@@ -11,13 +11,10 @@
 #endif
 
 
-
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 1
 #define SMAA_INCLUDE_PS 0
-
-#include "smaa.glsl"
 
 
 attribute mediump vec4 vertex;
@@ -25,6 +22,8 @@ attribute mediump vec2 uv0;
 uniform mediump mat4 worldViewProj;
 varying mediump vec2 vUV0;
 varying mediump vec4 offset;
+uniform vec4 ViewportSize;
+#include "smaa.glsl"
 
 
 void main()

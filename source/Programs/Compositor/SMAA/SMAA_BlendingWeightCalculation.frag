@@ -11,13 +11,10 @@
 #endif
 
 
-
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
-
-#include "smaa.glsl"
 
 
 varying mediump vec2 vUV0;
@@ -26,6 +23,8 @@ varying mediump mat4 offset;
 uniform sampler2D edgeTex;
 uniform sampler2D areaTex;
 uniform sampler2D searchTex;
+uniform vec4 ViewportSize;
+#include "smaa.glsl"
 
 
 void main()

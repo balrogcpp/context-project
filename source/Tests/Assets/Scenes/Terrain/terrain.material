@@ -1,0 +1,7 @@
+import TERRA from pbr.material
+
+material TerrainCustom : TERRA
+{
+    //set $Albedo Rock20_diffspec.dds
+    //set $Normal Rock20_normheight.dds
+}

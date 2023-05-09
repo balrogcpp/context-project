@@ -8,18 +8,13 @@ vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 	default_params
 	{
 		param_named_auto worldViewProj	worldviewproj_matrix
-		param_named_auto viewportSize	viewport_size
+		param_named_auto ViewportSize	viewport_size
 	}
 }
 
 fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
 {
 	source SMAA_EdgeDetection.frag
-
-	default_params
-	{
-		param_named_auto viewportSize	viewport_size
-	}
 }
 
 material SMAA/EdgeDetection
@@ -68,7 +63,7 @@ vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 	default_params
 	{
 		param_named_auto worldViewProj	worldviewproj_matrix
-		param_named_auto viewportSize	viewport_size
+		param_named_auto ViewportSize	viewport_size
 	}
 }
 
@@ -78,7 +73,7 @@ fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto viewportSize	viewport_size
+		param_named_auto ViewportSize	viewport_size
 	}
 }
 
@@ -137,7 +132,7 @@ vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 	default_params
 	{
 		param_named_auto worldViewProj	worldviewproj_matrix
-		param_named_auto viewportSize	viewport_size
+		param_named_auto ViewportSize	viewport_size
 	}
 }
 
@@ -147,7 +142,7 @@ fragment_program SMAA/NeighborhoodBlending_ps glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto viewportSize	viewport_size
+		param_named_auto ViewportSize	viewport_size
 	}
 }
 
@@ -168,7 +163,7 @@ material SMAA/NeighborhoodBlending
 			{
 				param_named rt_input		int 0
 				param_named blendTex		int 1
-				//param_named velocityTex		int 2
+				param_named velocityTex		int 2
 			}
 
 			texture_unit rt_input

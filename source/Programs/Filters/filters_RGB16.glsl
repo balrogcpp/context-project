@@ -179,6 +179,20 @@ mediump vec3 Upscale9(const sampler2D tex, const mediump vec2 uv, const mediump 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Downscale2x2(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
+    mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).xyz;
+    mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-1.0,  1.0))).xyz;
+    mediump vec3 C = texture2D(tex, uv + (tsize * vec2( 1.0, -1.0))).xyz;
+    mediump vec3 D = texture2D(tex, uv + (tsize * vec2( 1.0,  1.0))).xyz;
+
+    mediump vec3 c1 = (A + B + C + D) * 0.25;
+
+    return c1;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump vec3 Downscale2x2_05(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+{
     mediump vec3 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5))).xyz;
     mediump vec3 B = texture2D(tex, uv + (tsize * vec2(-0.5,  0.5))).xyz;
     mediump vec3 C = texture2D(tex, uv + (tsize * vec2( 0.5, -0.5))).xyz;

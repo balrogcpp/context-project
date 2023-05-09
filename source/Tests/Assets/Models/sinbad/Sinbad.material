@@ -1,5 +1,5 @@
-import PBR from PBR.material
-import PBR from PBR.material
+import PBR from pbr.material
+import PBR from pbr.material
 
 
 material Sinbad/Body : PBR

@@ -31,7 +31,7 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     }
 
     Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) override {
-      const std::string materialName = "ImplTERRA";
+      const std::string materialName = "TerrainCustom";
       static unsigned long long generator = 0;
       std::string newName = materialName + std::to_string(generator++);
 

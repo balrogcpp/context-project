@@ -11,19 +11,14 @@
 #endif
 
 
-
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 #if !SMAA_INITIALIZED
-	//Leave compatible defaults varying case this file gets compiled
-	//before calling SmaaUtils::initialize from C++
 	#define SMAA_EDGE_DETECTION_MODE 1
 	#define SMAA_PREDICATION 1
 #endif
-
-#include "smaa.glsl"
 
 
 varying mediump vec2 vUV0;
@@ -32,6 +27,8 @@ uniform sampler2D rt_input;  //Must not be sRGB
 #if SMAA_PREDICATION
 	uniform sampler2D depthTex;
 #endif
+uniform vec4 ViewportSize;
+#include "smaa.glsl"
 
 
 void main()

@@ -125,5 +125,5 @@ void main()
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
         vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], position);
     }
-#endif // MAX_SHADOW_TEXTURES > 0
+#endif
 }

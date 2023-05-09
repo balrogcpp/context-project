@@ -40,6 +40,7 @@ void Menu::OnSetUp() {
   // ImGuiB::SetupImGuiStyle_Unreal();
   ImGuiB::SetupImGuiStyle_SpectrumDark();
 
+//  GetComponent<SceneManager>().LoadFromFile("throne_room.scene");
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
 
@@ -352,6 +353,10 @@ void Menu::BeforeRender(float time) {
 
   if (ImGui::Checkbox("FXAA", &compositorFlags[3])) {
     GetComponent<CompositorManager>().EnableCompositor("FXAA", compositorFlags[3]);
+  }
+
+  if (ImGui::Checkbox("SMAA", &compositorFlags[6])) {
+    GetComponent<CompositorManager>().EnableCompositor("SMAA", compositorFlags[6]);
   }
 
   if (ImGui::Checkbox("Rays", &compositorFlags[4])) {

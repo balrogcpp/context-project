@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-import PG from PBR.material
-import PG0 from PBR.material
+import PG from pbr.material
+import PG0 from pbr.material
 
 material GrassCustom : PG0
 {

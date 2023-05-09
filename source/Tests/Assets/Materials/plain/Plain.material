@@ -1,10 +1,7 @@
-import PBR from PBR.material
+import PBR from pbr.material
 
 material Plane : PBR
 {
-    //set $Albedo dungeon-stone1-albedo2.png
-    //set $Normal dungeon-stone1-normal.png
-    //set $ORM dungeon-stone1-orm.png
     technique {
         pass {
             diffuse 1 0.753 0.796

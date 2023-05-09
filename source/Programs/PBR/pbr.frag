@@ -12,6 +12,7 @@
 
 #define USE_MRT
 #include "header.glsl"
+#define HAS_NORMALS
 #ifndef GL_ES
 #define SPHERICAL_HARMONICS_BANDS 8
 #else
@@ -223,7 +224,6 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-#define HAS_NORMALS
 highp vec3 GetNormal(const mediump vec2 uv)
 {
 #ifdef TERRA_NORMALMAP
@@ -290,19 +290,6 @@ mediump vec4 GetAlbedo(const mediump vec2 uv)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 GetORM(const mediump vec2 uv)
-{
-    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
-
-#ifdef HAS_ORM
-    ORM *= texture2D(OrmMap, uv).rgb;
-#endif
-
-    return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0 , 1.0));
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GetEmission(const mediump vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
@@ -331,18 +318,31 @@ void main()
 
 #ifdef HAS_ALPHA
     mediump float alpha = s.a;
+    const mediump float spec = 1.0;
 
     if (SurfaceAlphaRejection > 0.0 && alpha < SurfaceAlphaRejection) {
         discard;
     }
 #else
     const mediump float alpha = 1.0;
+    mediump float spec = s.a;
 #endif
 
-    mediump vec3 ORM = GetORM(uv);
+    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
+#ifdef HAS_ORM
+    ORM *= texture2D(OrmMap, uv).rgb;
+#endif
+#ifdef TERRA_NORMALMAP
+    ORM.g *= 1.0;
+    ORM.b *= spec;
+#endif
+
+    ORM = clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
+
     mediump float occlusion = ORM.r;
     mediump float roughness = ORM.g;
     mediump float metallic = ORM.b;
+
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -364,7 +364,7 @@ void main()
 
 #if MAX_SHADOW_TEXTURES > 0
     mediump int texCounter = 0;
-#endif // MAX_SHADOW_TEXTURES > 0
+#endif
 
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -421,9 +421,7 @@ void main()
 
 #ifdef TERRA_LIGHTMAP
         if (i == 0) {
-            if (LightCastsShadowsArray[i] > 0.0) {
-                light *= FetchTerraShadow2(TerraLightMap, vUV0.xy, InvTerraLightMapSize);
-            }
+            light *= FetchTerraShadow2(TerraLightMap, vUV0.xy, InvTerraLightMapSize);
         }
 #endif
 
@@ -431,7 +429,7 @@ void main()
         if (LightCastsShadowsArray[i] > 0.0) {
             light *= GetShadow(i, texCounter);
         }
-#endif //  MAX_SHADOW_TEXTURES > 0
+#endif
 
         color += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
     } //  lightning loop

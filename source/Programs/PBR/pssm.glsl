@@ -37,6 +37,10 @@ uniform mediump vec2 ShadowTexel6;
 uniform sampler2D ShadowMap7;
 uniform mediump vec2 ShadowTexel7;
 #endif
+#if MAX_SHADOW_TEXTURES > 8
+uniform sampler2D ShadowMap8;
+uniform mediump vec2 ShadowTexel8;
+#endif
 uniform mediump vec4 PssmSplitPoints;
 uniform mediump float ShadowFilterSize;
 uniform mediump int ShadowFilterIterations;

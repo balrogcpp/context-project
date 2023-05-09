@@ -1,4 +1,4 @@
-import Paged from PBR.material
+import Paged from pbr.material
 
 material leaf08png : Paged
 {

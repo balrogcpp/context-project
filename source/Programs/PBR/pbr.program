@@ -26,7 +26,6 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
     default_params
     {
         shared_params_ref PBR_Shared_vert
-
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
@@ -107,4 +106,9 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs 
 {
     preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
+
+    default_params
+    {
+        param_named OffsetScale float 0.01
+    }
 }

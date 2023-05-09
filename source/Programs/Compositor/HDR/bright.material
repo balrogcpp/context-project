@@ -5,10 +5,9 @@ import Base from base.material
 //----------------------------------------------------------------------------------------------------------------------
 // Cut bright parts of scene
 //----------------------------------------------------------------------------------------------------------------------
-
-fragment_program bloom_threshold glsl glsles hlsl
+fragment_program brightStart glsl glsles hlsl
 {
-	source bloom_thr.frag
+	source brightStart.frag
 
     default_params
     {
@@ -16,17 +15,16 @@ fragment_program bloom_threshold glsl glsles hlsl
     }
 }
 
-material Bloom_threshold : Base
+material BrightStart : Base
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref bloom_threshold
+            fragment_program_ref brightStart
 			{
                 param_named RT int 0
                 param_named Lum int 1
-
                 param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
@@ -46,13 +44,9 @@ material Bloom_threshold : Base
 	}
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-// Cut bright parts of scene
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program bloom_mod glsl glsles hlsl
+fragment_program brightMod glsl glsles hlsl
 {
-	source bloom_mod.frag
+	source brightMod.frag
 
     default_params
     {
@@ -60,13 +54,13 @@ fragment_program bloom_mod glsl glsles hlsl
     }
 }
 
-material Bloom_mod : Base
+material BrightMod : Base
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref bloom_mod
+            fragment_program_ref brightMod
 			{
                 param_named RT int 0
                 param_named RT0 int 1
@@ -90,13 +84,9 @@ material Bloom_mod : Base
 	}
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-// Cut bright parts of scene
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program bloom_feat glsl glsles hlsl
+fragment_program brightFeat glsl glsles hlsl
 {
-	source bloom_feat.frag
+	source brightFeat.frag
 
     default_params
     {
@@ -104,14 +94,13 @@ fragment_program bloom_feat glsl glsles hlsl
     }
 }
 
-
-material Bloom_feat : Base
+material BrightFeat : Base
 {
     technique
     {
         pass
         {
-            fragment_program_ref bloom_feat
+            fragment_program_ref brightFeat
             {
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0

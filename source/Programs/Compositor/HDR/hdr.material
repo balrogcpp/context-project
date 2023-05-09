@@ -5,9 +5,9 @@ import Base from base.material
 //----------------------------------------------------------------------------------------------------------------------
 // Tent downsampling
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program hdr_start glsl glsles hlsl
+fragment_program lumStart glsl glsles hlsl
 {
-	source hdr_start.frag
+	source lumStart.frag
 
     default_params
     {
@@ -15,9 +15,9 @@ fragment_program hdr_start glsl glsles hlsl
     }
 }
 
-fragment_program hdr_end glsl glsles hlsl
+fragment_program lumEnd glsl glsles hlsl
 {
-	source hdr_end.frag
+	source lumEnd.frag
 
     default_params
     {
@@ -33,7 +33,7 @@ material HdrStart : Base
     {
         pass
         {
-            fragment_program_ref hdr_start
+            fragment_program_ref lumStart
             {
                 param_named RT int 0
                 param_named_auto TexSize0 packed_texture_size 0
@@ -55,7 +55,7 @@ material HdrEnd : Base
     {
         pass
         {
-            fragment_program_ref hdr_end
+            fragment_program_ref lumEnd
             {
                 param_named RT int 0
                 param_named OldLum int 1
