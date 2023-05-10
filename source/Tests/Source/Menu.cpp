@@ -355,12 +355,8 @@ void Menu::BeforeRender(float time) {
     GetComponent<CompositorManager>().EnableCompositor("FXAA", compositorFlags[3]);
   }
 
-  if (ImGui::Checkbox("SMAA", &compositorFlags[6])) {
+  if (ImGui::Checkbox("SMAA", &compositorFlags[4])) {
     GetComponent<CompositorManager>().EnableCompositor("SMAA", compositorFlags[6]);
-  }
-
-  if (ImGui::Checkbox("Rays", &compositorFlags[4])) {
-    GetComponent<CompositorManager>().EnableCompositor("Rays", compositorFlags[4]);
   }
 
   if (ImGui::Checkbox("SSR", &compositorFlags[5])) {
