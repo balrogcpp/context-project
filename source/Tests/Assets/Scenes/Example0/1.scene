@@ -11,7 +11,7 @@
             <direction x="0.0" y="0.0" z="-1"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
             <camera fov="60" name="Default" projectionType="perspective">
-                <clipping far="1000.0" near="0.001"/>
+                <clipping far="500.0" near="0.1"/>
             </camera>
         </node>
         <node name="Helmet">
@@ -34,7 +34,7 @@
     </nodes>
     <environment>
         <colourAmbient r="60" g="60" b="60"/>
-        <skyBox active="true" material="SkyBox" distance="500"/>
+        <skyBox active="true" material="SkyBox" distance="300"/>
         <fog mode="exp" density="0.001">
             <colour r="155" g="171" b="187"/>
         </fog>

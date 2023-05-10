@@ -20,14 +20,14 @@ abstract material PBR
     set $Normal normal.dds
     set $ORM yellow.dds
     set $Emissive black.dds
-    set $IBL specular.dds
+    //set $IBL specular.dds
 
     technique
     {
         pass
         {
             diffuse 1 1 1
-            specular 1 0 0 0 1
+            specular 1 1 1 1 1
             ambient 1 1 1
             emissive 0 0 0
             alpha_rejection greater_equal 127
@@ -146,7 +146,7 @@ abstract material PG
         pass
         {
             diffuse 1 1 1
-            specular 1 0 0 0 1
+            specular 1 1 1 1 1
             ambient 1 1 1
             emissive 0 0 0
             alpha_rejection greater_equal 127
@@ -264,7 +264,7 @@ abstract material TERRA
         pass
         {
             diffuse 1 1 1
-            specular 1 0 0 0 1
+            specular 1 1 1 1 1
             ambient 1 1 1
             emissive 0 0 0
 

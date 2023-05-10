@@ -40,6 +40,7 @@ void Menu::OnSetUp() {
   // ImGuiB::SetupImGuiStyle_Unreal();
   ImGuiB::SetupImGuiStyle_SpectrumDark();
 
+//  GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
 //  GetComponent<SceneManager>().LoadFromFile("throne_room.scene");
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
