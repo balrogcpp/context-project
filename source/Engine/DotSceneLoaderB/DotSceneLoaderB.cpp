@@ -114,10 +114,6 @@ Quaternion parseQuaternion(const pugi::xml_node& XMLNode, Quaternion defaultValu
         orientation.z = StringConverter::parseReal(XMLNode.attribute("z").value());
     }
 
-    Vector3 direction = orientation.zAxis();
-    direction = Vector3(direction.x, direction.z, -direction.y).normalisedCopy();
-    orientation = direction.getRotationTo(Ogre::Vector3::UNIT_Z, Ogre::Vector3::ZERO);
-
     return orientation;
 }
 
@@ -506,7 +502,7 @@ void DotSceneLoaderB::processLight(pugi::xml_node& XMLNode, SceneNode* pParent)
         pLight->setType(Light::LT_POINT);
 
     pLight->setVisible(getAttribBool(XMLNode, "visible", true));
-    pLight->setCastShadows(getAttribBool(XMLNode, "castShadows", true));
+    pLight->setCastShadows(getAttribBool(XMLNode, "castShadows", false));
     pLight->setPowerScale(getAttribReal(XMLNode, "powerScale", 1.0));
 
     // Process colourDiffuse (?)

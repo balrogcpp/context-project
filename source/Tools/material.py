@@ -450,7 +450,7 @@ TEXTURE_ADDRESS_MODE = {
 }
 
 MISSING_MATERIAL = '''
-material _missing_material_
+material _missing_material_ : PBR
 {
     receive_shadows off
     technique
@@ -873,12 +873,8 @@ def gather_metallic_roughness_factor(mat_wrapper):
 
     logger.debug("Getting Metallic roughness texture of material: '%s'" % material.name)
 
-    separate_name = None
-    #image_texture = None
-    node_image = None
     rfactor = 1.0
     mfactor = 1.0
-
 
     for input_name in ['Roughness', 'Metallic']:
         logger.debug(" + Processing input: '%s'" % input_name)
@@ -909,32 +905,5 @@ def gather_metallic_roughness_factor(mat_wrapper):
                 if (input_name == 'Metallic'):
                     mfactor = separate_node.inputs[1].default_value   
                 separate_node = separate_node.inputs[0].links[0].from_node
-            # return None
-
-        # Check that both inputs are connected to the same 'SEPARATE_COLOR' node (node names are unique)
-        # if separate_name == None:
-        #     separate_name = separate_node.name
-        # elif separate_name != separate_node.name:
-        #     logger.warn("Connected node '%s', '%s' is different between 'Roughness' and 'Metallic' inputs" % (separate_node.name, separate_name))
-            # return None
-
-        # Check that 'Roughness' is connected to 'Green' output and 'Metallic' is connected to 'Blue' output
-        # if input_name == 'Roughness' and input.links[0].from_socket.name not in ['Green', 'G']:
-        #     logger.warn("'Roughness' input connected to '%s', wrong output of node: '%s'" % (input.links[0].from_socket.name, separate_node.name))
-            # return None
-        # elif input_name == 'Metallic' and input.links[0].from_socket.name not in ['Blue', 'B']:
-        #     logger.warn("'Metallic' input connected to '%s', wrong output of node: '%s'" % (input.links[0].from_socket.name, separate_node.name))
-            # return None
-
-        # Check that input is connected to a node
-        # if len(separate_node.inputs[0].links) == 0:
-        #     logger.warn("node '%s' has no input texture" % separate_node.name)
-            # return None
-
-        # Get the image texture
-        # node_image = separate_node.inputs[0].links[0].from_node
-        # if node_image.type != 'TEX_IMAGE':
-        #     logger.warn("Node connected to '%s' has type '%s', not type 'TEX_IMAGE'" % (separate_node.name, node_image.type))
-        #     return None
 
     return rfactor, mfactor
