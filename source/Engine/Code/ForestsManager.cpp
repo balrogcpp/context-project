@@ -16,8 +16,8 @@ void ForestsManager::OnSetUp() {
   ASSERTION(ogreRoot, "[ForestsManager] ogreRoot is not initialised");
   ogreSceneManager = ogreRoot->getSceneManager("Default");
   ASSERTION(ogreSceneManager, "[ForestsManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Default"), "[ForestsManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Default");
+  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[ForestsManager] ogreCamera is not initialised");
+  ogreCamera = ogreSceneManager->getCamera("Camera");
 }
 
 void ForestsManager::RegPagedGeometry(Forests::PagedGeometry *pagedGeometry) {

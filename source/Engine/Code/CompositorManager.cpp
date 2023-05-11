@@ -62,7 +62,7 @@ void CompositorManager::OnSetUp() {
   ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
   ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   ASSERTION(ogreSceneManager, "[CompositorManager] ogreSceneManager not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Default");
+  ogreCamera = ogreSceneManager->getCamera("Camera");
   ASSERTION(ogreCamera, "[CompositorManager] ogreCamera not initialised");
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);

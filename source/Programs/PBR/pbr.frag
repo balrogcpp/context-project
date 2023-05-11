@@ -320,20 +320,20 @@ void main()
     mediump float alpha = s.a;
     const mediump float spec = 1.0;
 
-    if (SurfaceAlphaRejection > 0.0 && alpha < SurfaceAlphaRejection) {
+    if (alpha < SurfaceAlphaRejection) {
         discard;
     }
 #else
     const mediump float alpha = 1.0;
-    mediump float spec = s.a;
-#endif
-
-    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceShininessColour.r);
-
-#ifdef TERRA_NORMALMAP
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
-    spec = 0.75 * pow(spec, 0.2);
+    //mediump float spec = (SurfaceShininessColour.r > 0.0) 0.75 * pow(s.a, 0.2) : s.a;
+    mediump float spec = 0.75 * pow(s.a, 0.2);
+#endif
+
+    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+
+#ifdef TERRA_NORMALMAP
     ORM.g *= spec;
     ORM.b = 0.0;
 #endif

@@ -98,8 +98,8 @@ void SceneManager::OnSetUp() {
   ASSERTION(ogreRoot, "[SceneManager] ogreRoot is not initialised");
   ogreSceneManager = ogreRoot->getSceneManager("Default");
   ASSERTION(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Default");
+  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[SceneManager] ogreCamera is not initialised");
+  ogreCamera = ogreSceneManager->getCamera("Camera");
 
   ogreSceneManager->addRenderObjectListener(this);
 }
@@ -152,8 +152,8 @@ void SceneManager::LoadFromFile(const std::string &filename) {
     ScanNode(static_cast<Ogre::SceneNode *>(it));
   }
 
-  if (!sinbad && ogreSceneManager->hasCamera("Default")) {
-    sinbad = make_unique<SinbadCharacterController>(ogreSceneManager->getCamera("Default"));
+  if (!sinbad && ogreSceneManager->hasCamera("Camera")) {
+    sinbad = make_unique<SinbadCharacterController>(ogreSceneManager->getCamera("Camera"));
     InputSequencer::GetInstance().RegDeviceListener(sinbad.get());
   }
 

@@ -414,8 +414,8 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
         terrainGroup->setOrigin(Vector3::ZERO);
     }
 
-    OgreAssert(mSceneMgr->hasCamera("Default"), "[DotSceneLoaderB] No default camera found");
-    auto* defaultCamera = mSceneMgr->getCamera("Default");
+    OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
+    auto* defaultCamera = mSceneMgr->getCamera("Camera");
     unsigned long long generator = 0;
 
     for (auto &pPageElement : XMLNode.children("terrain"))
@@ -463,8 +463,8 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
     }
     terrainGroup->loadAllTerrains(true);
 
-    OgreAssert(mSceneMgr->hasCamera("Default"), "[DotSceneLoaderB] No default camera found");
-    auto* defaultCamera = mSceneMgr->getCamera("Default");
+    OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
+    auto* defaultCamera = mSceneMgr->getCamera("Camera");
     unsigned long long generator = 0;
 
     for (auto& pPageElement : XMLNode.children("terrain"))

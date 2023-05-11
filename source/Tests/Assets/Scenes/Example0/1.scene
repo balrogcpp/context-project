@@ -10,7 +10,7 @@
             <position x="0" y="2" z="0"/>
             <direction x="0.0" y="0.0" z="-1"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
-            <camera fov="60" name="Default" projectionType="perspective">
+            <camera fov="60" name="Camera" projectionType="perspective">
                 <clipping far="500.0" near="0.1"/>
             </camera>
         </node>
@@ -29,7 +29,7 @@
 <!--            <plane name="Plane0" material="Plane" width="100" height="100" distance="0.0" castsShadows="false"/>-->
 <!--        </node>-->
         <node name="Plane2">
-            <plane name="Plane2" material="Ocean" width="500" height="500" distance="-2.0"/>
+            <plane name="Plane2" material="Ocean" width="500" height="500" distance="-3.0"/>
         </node>
     </nodes>
     <environment>

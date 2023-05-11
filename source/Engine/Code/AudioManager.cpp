@@ -21,8 +21,8 @@ void AudioManager::OnSetUp() {
   ASSERTION(ogreRoot, "[AudioManager] ogreRoot is not initialised");
   ogreSceneManager = ogreRoot->getSceneManager("Default");
   ASSERTION(ogreSceneManager, "[AudioManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Default"), "[AudioManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Default");
+  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[AudioManager] ogreCamera is not initialised");
+  ogreCamera = ogreSceneManager->getCamera("Camera");
 
   audioRoot = make_unique<OgreOggSound::Root>();
   audioRoot->initialise();

@@ -53,8 +53,8 @@ void SkyManager::OnSetUp() {
   ASSERTION(ogreRoot, "[SceneManager] ogreRoot is not initialised");
   ogreSceneManager = ogreRoot->getSceneManager("Default");
   ASSERTION(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Default");
+  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[SceneManager] ogreCamera is not initialised");
+  ogreCamera = ogreSceneManager->getCamera("Camera");
 }
 
 void SkyManager::OnUpdate(float time) {

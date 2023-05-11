@@ -445,7 +445,7 @@ void VideoManager::InitOgreRoot() {
 void VideoManager::MakeWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
-  ogreCamera = ogreSceneManager->createCamera("Default");
+  ogreCamera = ogreSceneManager->createCamera("Camera");
   mainWindow->Create("Demo0", ogreCamera, 0, 1270, 720, 0);
   ogreCamera->setNearClipDistance(0.1);
   ogreCamera->setFarClipDistance(1000.0);
