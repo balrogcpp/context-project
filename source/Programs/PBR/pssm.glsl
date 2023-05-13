@@ -85,7 +85,7 @@ mediump float AvgBlockersDepthToPenumbra(const mediump float lightSize, const me
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV, const mediump float gradientNoise, const mediump float z_shadowMapView)
+mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV, const mediump vec2 filterSize, const mediump float gradientNoise, const mediump float z_shadowMapView)
 {
   mediump float avgBlockersDepth = 0.0;
   mediump float blockersCount = HALF_EPSILON;
@@ -95,16 +95,15 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV
   for (int i = 0; i < MAX_SAMPLES; ++i) {
     if (int(ShadowFilterIterations) <= i) break;
 
-    mediump vec2 sampleUV = VogelDiskSample(float(i), ShadowFilterIterations, gradientNoise);
-    sampleUV = shadowMapUV + MaxPenumbraFilter * sampleUV;
-    mediump float sampleDepth = texture2D(shadowMap, sampleUV).x;
+    mediump vec2 offsetUV = VogelDiskSample(float(i), ShadowFilterIterations, gradientNoise) * MaxPenumbraFilter * filterSize;
+    mediump float sampleDepth = texture2D(shadowMap, shadowMapUV + offsetUV).x;
 
     mediump float depthTest = clamp((z_shadowMapView - sampleDepth), 0.0, 1.0);
     avgBlockersDepth += depthTest * sampleDepth;
     blockersCount += depthTest;
   }
 
-  return AvgBlockersDepthToPenumbra(10000.0, z_shadowMapView, avgBlockersDepth / blockersCount);
+  return AvgBlockersDepthToPenumbra(1000.0, z_shadowMapView, avgBlockersDepth / blockersCount);
 }
 
 
@@ -152,7 +151,7 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   mediump float currentDepth = lightSpace.z - HALF_EPSILON - HALF_EPSILON;
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
-  mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, currentDepth);
+  mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, filterSize, gradientNoise, currentDepth);
 #endif
 
   #define MAX_PSSM_SAMPLES 32
@@ -184,9 +183,9 @@ mediump float CalcPSSMShadow (const mediump vec4 lightSpacePos0, const mediump v
     if (vDepth <= PssmSplitPoints.x)
         return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize);
     else if (vDepth <= PssmSplitPoints.y)
-        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * ShadowFilterSize * 0.5);
+        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * ShadowFilterSize);
     else if (vDepth <= PssmSplitPoints.z)
-        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * ShadowFilterSize * 0.5);
+        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * ShadowFilterSize);
     else
         return 0.2;
 }
