@@ -155,7 +155,7 @@ uniform mediump vec4 AmbientLightColour;
 uniform mediump vec4 SurfaceAmbientColour;
 uniform mediump vec4 SurfaceDiffuseColour;
 uniform mediump vec4 SurfaceSpecularColour;
-uniform mediump vec4 SurfaceShininessColour;
+uniform mediump float SurfaceShininessColour;
 uniform mediump vec4 SurfaceEmissiveColour;
 uniform mediump float SurfaceAlphaRejection;
 uniform highp float FarClipDistance;
@@ -234,7 +234,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
     highp mat3 tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = texture2D(NormalMap, uv).xyz;
+    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
     n = normalize(mul(tbn, (2.0 * n - 1.0)));
     return n;
 #else
@@ -250,7 +250,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
     highp vec3 n0 = cross(dFdx(vWorldPosition), dFdy(vWorldPosition));
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n1 = texture2D(NormalMap, uv).xyz;
+    highp vec3 n1 = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
     highp vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n0, b));
     highp mat3 tbn = mtxFromCols3x3(t, b, n0);
@@ -263,7 +263,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
 
 #ifdef HAS_NORMALS
 #ifdef HAS_NORMALMAP
-    highp vec3 n = texture2D(NormalMap, uv).xyz;
+    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
     n = normalize(mul(vTBN, ((2.0 * n - 1.0))));
     return n;
 #else
@@ -293,7 +293,7 @@ mediump vec4 GetAlbedo(const mediump vec2 uv)
 mediump vec3 GetEmission(const mediump vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(texture2D(EmissiveMap, uv).rgb);
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(SurfaceSpecularColour.b * texture2D(EmissiveMap, uv).rgb);
 #else
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
@@ -327,8 +327,7 @@ void main()
     const mediump float alpha = 1.0;
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
-    //mediump float spec = (SurfaceShininessColour.r > 0.0) 0.75 * pow(s.a, 0.2) : s.a;
-    mediump float spec = 0.75 * pow(s.a, 0.2);
+    mediump float spec = 1.0 - 0.25 * pow(s.a, 0.2);
 #endif
 
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
@@ -442,20 +441,14 @@ void main()
     mediump vec3 emission = GetEmission(uv);
 
 // Calculate lighting contribution from image based lighting source (IBL)
-#ifdef USE_IBL
     mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, -normalize(reflect(v, n)))));
-#else
-    // mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * albedo));
-    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, -normalize(reflect(v, n)))));
-#endif // USE_IBL
 
 // Apply optional PBR terms for additional (optional) shading
     color *= occlusion;
-    ambient += emission;
 
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
-    FragData[2] = vec4(ambient, 1.0);
+    FragData[2] = vec4(SafeHDR(ambient + emission), 1.0);
     FragData[3] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[4] = vec4(n, 1.0);
 

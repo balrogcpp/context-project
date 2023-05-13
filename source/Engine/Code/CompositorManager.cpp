@@ -70,11 +70,11 @@ void CompositorManager::OnSetUp() {
   // init compositor chain
   InitMRT(true);
 
-  // shadows before bloom
-  AddCompositor("SSAO", false);
-
   // ambient is always enabled
   AddCompositor("Ambient", true);
+
+  // shadows before bloom
+  AddCompositor("SSAO", false);
 
   // fog is always enabled
   AddCompositor("Fog", true);

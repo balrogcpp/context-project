@@ -152,7 +152,7 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   lightSpace.z = lightSpace.z * 0.5 + 0.5;
 
   mediump float shadow = 0.0;
-  mediump float currentDepth = lightSpace.z + HALF_EPSILON * (1.0 - F0);
+  mediump float currentDepth = lightSpace.z - HALF_EPSILON;
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
   #define MAX_PENUMBRA_FILTER 0.05
