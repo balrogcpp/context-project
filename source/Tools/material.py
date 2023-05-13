@@ -183,8 +183,8 @@ class OgreMaterialGenerator(object):
         with self.w.embed():
             # Texture wrappers
             textures = {}
-            rfactor = 1.0
-            mfactor = 1.0
+            # [r,g,b,a, rfactor, mfactor, efactor, nfactor, afactor]
+            result = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
             mat_wrapper = node_shader_utils.PrincipledBSDFWrapper(mat)
             for tex_key in self.TEXTURE_KEYS:
                 texture = getattr(mat_wrapper, tex_key, None)
@@ -192,7 +192,7 @@ class OgreMaterialGenerator(object):
                 # https://docs.blender.org/manual/en/2.80/addons/io_scene_gltf2.html#metallic-and-roughness
                 if tex_key == 'roughness_texture': # or roughness_texture metallic_texture
                     texture = gather_metallic_roughness_texture(mat_wrapper)
-                    rfactor, mfactor = gather_metallic_roughness_factor(mat_wrapper)
+                    result = gather_metallic_roughness_factor(mat_wrapper)
                 if texture and texture.image:
                     textures[tex_key] = texture
                     # adds image to the list for later copy
@@ -219,8 +219,8 @@ class OgreMaterialGenerator(object):
                 self.w.iword('diffuse').round(color[0]*bf).round(color[1]*bf).round(color[2]*bf).round(alpha).nl()
                 self.w.iword('specular').round(sc[0]).round(sc[1]).round(sc[2]).round(alpha).round(si, 3).nl()
             else:
-                self.w.iword('diffuse').round(color[0]).round(color[1]).round(color[2]).round(alpha).nl()
-                self.w.iword('specular').real(rfactor).real(mfactor).real(1.0).real(1.0).real(1.0).nl()
+                self.w.iword('diffuse').round(result[0]).round(result[1]).round(result[2]).round(result[3] * result[8]).nl()
+                self.w.iword('specular').real(result[4]).real(result[5]).real(result[6]).real(result[7]).real(1.0).nl()
                 #self.w.iword('specular').round(mat_wrapper.roughness).round(mat_wrapper.metallic).real(0).real(0).real(0).nl()
                 #self.generate_rtshader_system(textures)
 
@@ -875,26 +875,40 @@ def gather_metallic_roughness_factor(mat_wrapper):
 
     rfactor = 1.0
     mfactor = 1.0
+    efactor = 1.0
+    nfactor = 1.0
+    afactor = 1.0
+    r = 1.0
+    g = 1.0
+    b = 1.0
+    a = 1.0
 
-    for input_name in ['Roughness', 'Metallic']:
+    for input_name in ['Roughness', 'Metallic', 'Normal', 'Alpha', 'Base Color']:
         logger.debug(" + Processing input: '%s'" % input_name)
 
         if material.use_nodes == False:
             logger.warn("Material: '%s' does not use nodes" % material.name)
-            return rfactor, mfactor
+            return rfactor, mfactor, efactor, nfactor, afactor
 
         if 'Principled BSDF' not in  material.node_tree.nodes:
             logger.warn("Material: '%s' does not have a 'Principled BSDF' node" % material.name)
-            return rfactor, mfactor
+            return rfactor, mfactor, efactor, nfactor, afactor
 
         input = material.node_tree.nodes['Principled BSDF'].inputs[input_name]
+        efactor = material.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value
 
         # Check that input is connected to a node
         if len(input.links) > 0:
             separate_node = input.links[0].from_node
         else:
             logger.warn("%s input is not connected" % input_name)
-            return rfactor, mfactor
+            if (input_name == 'Base Color'):
+                r = input.default_value[0]
+                g = input.default_value[1]
+                b = input.default_value[2]
+                a = input.default_value[3]
+            continue
+            # return rfactor, mfactor, efactor, nfactor, afactor
 
         # Check that connected node is of type 'SEPARATE_COLOR'
         if separate_node.type not in ['SEPARATE_COLOR', 'SEPRGB']:
@@ -902,8 +916,11 @@ def gather_metallic_roughness_factor(mat_wrapper):
             if (len(separate_node.inputs[0].links) > 0):
                 if (input_name == 'Roughness'):
                     rfactor = separate_node.inputs[1].default_value   
-                if (input_name == 'Metallic'):
-                    mfactor = separate_node.inputs[1].default_value   
-                separate_node = separate_node.inputs[0].links[0].from_node
+                elif (input_name == 'Metallic'):
+                    mfactor = separate_node.inputs[1].default_value
+                elif (input_name == 'Alpha'):
+                    afactor = separate_node.inputs[1].default_value   
+                elif (input_name == 'Normal'):
+                    nfactor = separate_node.inputs[0].default_value   
 
-    return rfactor, mfactor
+    return [r,g,b,a, rfactor, mfactor, efactor, nfactor, afactor]
