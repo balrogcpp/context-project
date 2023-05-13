@@ -14,6 +14,8 @@ compositor SSAO
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssaox1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssaoy1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
 
@@ -52,13 +54,33 @@ compositor SSAO
             }
         }
 
+        target ssaox1
+        {
+            pass render_quad
+            {
+                material FilterX_F16
+                input 0 ssaoy
+            }
+        }
+
+        target ssaoy1
+        {
+            pass render_quad
+            {
+                material FilterY_F16
+                input 0 ssaox1
+            }
+        }
+
         target_output
         {
             pass render_quad
             {
                 material SSAO_mod
                 input 0 rt
-                input 1 ssaoy
+                input 1 mrt 2
+                //input 2 mrt 2
+                input 3 ssaoy1
             }
         }
     }

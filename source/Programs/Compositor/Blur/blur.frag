@@ -21,14 +21,13 @@ varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D VelocitySampler;
 uniform mediump vec2 TexSize1;
-uniform mediump float Scale;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump vec2 velocity = Scale * texture2D(VelocitySampler, vUV0).xy;
+    mediump vec2 velocity = texture2D(VelocitySampler, vUV0).xy;
     mediump float speed = length(velocity * TexSize1);
     mediump float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
     mediump float invSamples = 1.0 / nSamples;

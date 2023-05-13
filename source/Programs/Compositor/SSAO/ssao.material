@@ -65,14 +65,30 @@ material SSAO_mod : Base
             fragment_program_ref SSAO_mod_fp
             {
                 param_named RT int 0
-                param_named SsaoMap int 1
+                param_named AmbientMap int 1
+                param_named EmissionMap int 2
+                param_named SsaoMap int 3
+                param_named_auto TexelSize3 inverse_texture_size 3
+                param_named_auto ShadowColor shadow_colour
             }
 
             texture_unit RT
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
+            }
+            texture_unit Ambient
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit Emission
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
             }
             texture_unit SSAO
             {

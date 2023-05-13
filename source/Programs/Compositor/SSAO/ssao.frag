@@ -50,7 +50,7 @@ mediump float iter(const mediump vec3 dir, const mediump vec3 viewNorm, const me
     nuv /= nuv.w;
 
     // Compute occlusion based on the (scaled) Z difference
-    mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);
+    mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x - HALF_EPSILON - HALF_EPSILON), 0.0, 1.0);
     // This is a sample occlusion function, you can always play with
     // other ones, like 1.0 / (1.0 + zd * zd) and stuff
     return clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);
@@ -67,7 +67,7 @@ void main()
     // it should be normalized here
     mediump vec3 viewPos = vRay * depth;
     //mediump vec3 worldPos = mul(InvViewMatrix, vec4(viewPos, 1.0)).xyz;
-    //mediump vec3 randN = hash(worldPos);
+    //mediump vec3 randN = hash(viewPos);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable

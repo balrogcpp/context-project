@@ -65,10 +65,10 @@ void CompositorManager::OnSetUp() {
   InitMRT(true);
 
   // ambient is always enabled
-  AddCompositor("Ambient", true);
+  //AddCompositor("Ambient", true);
 
   // shadows before bloom
-  AddCompositor("SSAO", false);
+  AddCompositor("SSAO", true);
 
   // fog is always enabled
   AddCompositor("Fog", true);

@@ -7,6 +7,7 @@ shared_params PBR_Shared_vert {}
 
 shared_params PSSM_Shared_frag
 {
+    shared_param_named OffsetScale float 0
     shared_param_named ShadowFilterSize float 5
     shared_param_named ShadowFilterIterations int 8
     //shared_param_named PssmSplitPoints float4 6.7367 18.4907 400.0 400.0
@@ -105,7 +106,7 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs 
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
+    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
 
     default_params
     {

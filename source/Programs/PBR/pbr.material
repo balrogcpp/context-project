@@ -58,22 +58,22 @@ abstract material PBR
             texture_unit ShadowMap0
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap1
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap2
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap3
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap4
             {
@@ -143,6 +143,8 @@ abstract material PG
 
     technique
     {
+        shadow_caster_material PSSM/shadow_caster_alpha
+
         pass
         {
             diffuse 1 1 1
@@ -167,22 +169,22 @@ abstract material PG
             texture_unit ShadowMap0
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap1
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap2
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap3
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap4
             {
@@ -240,6 +242,8 @@ abstract material PG0 : PG
 {
     technique
     {
+        shadow_caster_material PSSM/shadow_caster_alpha
+
         pass
         {
             cull_hardware none
@@ -292,22 +296,22 @@ abstract material TERRA
             texture_unit ShadowMap0
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap1
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap2
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap3
             {
                 content_type shadow
-                sampler_ref ShadowMap            
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap4
             {

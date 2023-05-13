@@ -252,8 +252,8 @@ void Menu::BeforeRender(float time) {
     }
   }
 
-  const unsigned short texSizeList[] = {128, 256, 512, 1024, 2048, 4096};
-  const char *texSizeListStr = " 128\0 256\0 512\0 1024\0 2048\0 4096\0";
+  const unsigned short texSizeList[] = {128, 256, 512, 1024, 2048, 4096, 8192};
+  const char *texSizeListStr = " 128\0 256\0 512\0 1024\0 2048\0 4096\0 8192\0";
   if (ImGui::Combo("Shadow tex size", &combos[2], texSizeListStr)) {
     manager.SetShadowTexSize(texSizeList[combos[2]]);
   }

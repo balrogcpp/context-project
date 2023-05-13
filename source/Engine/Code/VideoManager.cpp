@@ -510,7 +510,7 @@ void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
   shadowEnabled = true;
 #else
-  shadowEnabled = true;
+  shadowEnabled = false;
 #endif
   if (shadowEnabled) {
 #ifdef DESKTOP
@@ -527,7 +527,7 @@ void VideoManager::InitOgreSceneManager() {
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    ogreSceneManager->setShadowColour(Ogre::ColourValue::Black);
+    ogreSceneManager->setShadowColour(Ogre::ColourValue::White * 0.3);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);

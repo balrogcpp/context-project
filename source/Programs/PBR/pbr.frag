@@ -164,8 +164,9 @@ uniform highp float NearClipDistance;
 uniform mediump float FrameTime;
 uniform mediump float TexScale;
 #ifdef HAS_NORMALMAP
-#define HAS_PARALLAXMAP
+#ifdef HAS_PARALLAXMAP
 uniform mediump float OffsetScale;
+#endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 
 // // shadow receiver
