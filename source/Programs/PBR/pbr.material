@@ -20,7 +20,7 @@ abstract material PBR
     set $Normal normal.dds
     set $ORM yellow.dds
     set $Emissive black.dds
-    set $IBL studio_garden.jpg
+    set $IBL specular.dds
 
     technique
     {

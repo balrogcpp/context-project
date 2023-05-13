@@ -14,6 +14,7 @@
 #include "header.glsl"
 #define HAS_NORMALS
 #ifndef GL_ES
+#define USE_TEX_LOD
 #define SPHERICAL_HARMONICS_BANDS 8
 #else
 #define SPHERICAL_HARMONICS_BANDS 3
@@ -102,7 +103,7 @@ mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const me
 //
 vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec3 n) {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
-    return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
+    return textureCubeLod(SpecularEnvMap, n, 9.0).rgb;
 }
 
 
@@ -187,9 +188,9 @@ mediump vec3 diffuseIrradiance(const mediump vec3 n)
 mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump float perceptualRoughness)
 {
 #ifdef USE_TEX_LOD
-    return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb);
+    return textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb;
 #else
-    return SRGBtoLINEAR(textureCube(SpecularEnvMap, reflection).rgb);
+    return textureCube(SpecularEnvMap, reflection).rgb;
 #endif
 }
 #endif // USE_IBL
