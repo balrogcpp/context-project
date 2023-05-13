@@ -7,9 +7,9 @@ shared_params PBR_Shared_vert {}
 
 shared_params PSSM_Shared_frag
 {
-    shared_param_named ShadowFilterSize float 2
-    shared_param_named ShadowFilterIterations int 16
-    shared_param_named PssmSplitPoints float4 6.7367 18.4907 400.0 400.0
+    shared_param_named ShadowFilterSize float 5
+    shared_param_named ShadowFilterIterations int 8
+    //shared_param_named PssmSplitPoints float4 6.7367 18.4907 400.0 400.0
 }
 
 shared_params IBL_Shared_frag

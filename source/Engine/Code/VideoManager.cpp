@@ -526,7 +526,7 @@ void VideoManager::InitOgreSceneManager() {
 #else
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
 #endif
-    shadowFarDistance = 400;
+    shadowFarDistance = 100;
 #ifdef DESKTOP
     shadowTexSize = 2048;
 #else
@@ -547,8 +547,8 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
 
     // pssm stuff
-    pssmSetup = make_shared<DPSMCameraSetup>();
-    pssmSetup->calculateSplitPoints(pssmSplitCount, 0.001, ogreSceneManager->getShadowFarDistance());
+    pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
+    pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
     pssmSetup->setSplitPadding(1.0);
     for (int i = 0; i < pssmSplitCount; i++) {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));

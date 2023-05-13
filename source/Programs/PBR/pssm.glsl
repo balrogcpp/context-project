@@ -152,7 +152,7 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   lightSpace.z = lightSpace.z * 0.5 + 0.5;
 
   mediump float shadow = 0.0;
-  mediump float currentDepth = lightSpace.z - HALF_EPSILON;
+  mediump float currentDepth = lightSpace.z - HALF_EPSILON - HALF_EPSILON;
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
   #define MAX_PENUMBRA_FILTER 0.05
@@ -187,7 +187,7 @@ mediump float CalcPSSMShadow (const mediump vec4 PssmSplitPoints, \
 {
     // calculate shadow
     if (vDepth <= PssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize * 1.5, ShadowFilterIterations * 2);
     else if (vDepth <= PssmSplitPoints.y)
         return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * ShadowFilterSize, ShadowFilterIterations);
     else if (vDepth <= PssmSplitPoints.z)
