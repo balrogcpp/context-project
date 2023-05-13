@@ -256,9 +256,8 @@ VideoManager::VideoManager()
       pssmSplitCount(3),
       shadowFarDistance(400.0),
       shadowTexSize(512),
-      gamepadSupport(false),
-      keyboardSupport(false)
-{
+      gamepadSupport(true),
+      keyboardSupport(true) {
 #ifdef DESKTOP
 #if OGRE_CPU == OGRE_CPU_X86
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3), "SSE3 support required");
@@ -484,32 +483,25 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
   /// Default shadow camera setup
   void getShadowCamera(const Ogre::SceneManager *sm, const Ogre::Camera *cam, const Ogre::Viewport *vp, const Ogre::Light *light,
                        Ogre::Camera *texCam, size_t iteration) const override {
-    const auto &oldCaster = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
-    const auto &dpsmCaster = Ogre::MaterialManager::getSingleton().getByName("DPSM/shadow_caster_alpha");
-
-    if (iteration == 0) {
-      if (light->getType() != Ogre::Light::LT_POINT)
-        const_cast<Ogre::SceneManager *>(sm)->setShadowTextureCasterMaterial(oldCaster);
-      else
-        const_cast<Ogre::SceneManager *>(sm)->setShadowTextureCasterMaterial(dpsmCaster);
-    }
-
-    if (light->getType() == Ogre::Light::LT_POINT)
-      Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
-    else if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
-      Ogre::PSSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
-    else if (light->getType() == Ogre::Light::LT_SPOTLIGHT)
-      Ogre::LiSPSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
-    else
-      Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+    const auto &pssmCaster = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+    const auto &dpsmCaster = Ogre::MaterialManager::getSingleton().getByName("DPSM/shadow_caster");
 
     if (light->getType() == Ogre::Light::LT_POINT) {
-      auto *_cam = const_cast<Ogre::Camera *>(cam);
-      _cam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
       if (iteration == 0)
-        _cam->getParentSceneNode()->setDirection(Ogre::Vector3::UNIT_Y);
-      else
-        _cam->getParentSceneNode()->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
+        texCam->getParentSceneNode()->setDirection(Ogre::Vector3::UNIT_Y);
+      else if (iteration == 1)
+        texCam->getParentSceneNode()->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
+
+      Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+
+    } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
+      Ogre::PSSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+
+    } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT) {
+      Ogre::LiSPSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+
+    } else {
+      Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
     }
   }
 };
@@ -542,16 +534,16 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
-    auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
+    auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
     ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
 
     // pssm stuff
-    pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
+    pssmSetup = make_shared<DPSMCameraSetup>();
     pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
-    pssmSetup->setSplitPadding(1.0);
+    pssmSetup->setSplitPadding(1.1);
     for (int i = 0; i < pssmSplitCount; i++) {
-      pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
+      pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.3 * i));
     }
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
     auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);

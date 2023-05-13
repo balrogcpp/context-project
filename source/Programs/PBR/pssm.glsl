@@ -187,13 +187,13 @@ mediump float CalcPSSMShadow (const mediump vec4 PssmSplitPoints, \
 {
     // calculate shadow
     if (vDepth <= PssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize * 1.5, ShadowFilterIterations * 2);
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize, ShadowFilterIterations);
     else if (vDepth <= PssmSplitPoints.y)
-        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * ShadowFilterSize * 0.5, ShadowFilterIterations);
     else if (vDepth <= PssmSplitPoints.z)
-        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * ShadowFilterSize * 0.5, ShadowFilterIterations);
     else
-        return 1.0;
+        return 0.2;
 }
 
 

@@ -82,9 +82,6 @@ void CompositorManager::OnSetUp() {
   // screen-space reflections
   AddCompositor("SSR", false);
 
-  // to save pre-tonemap/hdr copy for some compositors
-  AddCompositor("Copy", false);
-
   if (RenderSystemIsGLES2()) {
     AddCompositor("FXAA", true); // SMAA not working with glsles
   } else {
@@ -201,7 +198,6 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
       }
     }
 
-    EnableCompositor("Copy", enable);
     compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "End", enable);
   }
 }
@@ -276,7 +272,6 @@ void CompositorManager::InitMipChain(bool enable) {
   ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
 
   //
-  EnableCompositor("Copy", enable);
   if (enable) {
     EnableCompositor("HDR", true);
     EnableCompositor("Tonemap", true);
