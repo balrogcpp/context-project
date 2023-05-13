@@ -8,7 +8,7 @@ compositor HDR
 {
     technique
     {
-        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
         texture rt0 1024 1024 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt1 256 256 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt2 64 64 PF_FLOAT16_R no_fsaa depth_pool 0

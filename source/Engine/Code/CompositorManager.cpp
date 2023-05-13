@@ -8,19 +8,13 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChain(8), oddMipsOnly(false) {
-  if (RenderSystemIsGLES2()) {
-    mipChain /= 2.0;
-    // oddMipsOnly = true;
-  }
-}
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChainSize(12), mipMask{5, 7} {}
 
 CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
 
 void CompositorManager::SetSleep(bool sleep) {
-  prevSleep = _sleep;
   _sleep = sleep;
 
   EnableCompositor("Paused", sleep);
@@ -83,7 +77,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
 
   if (RenderSystemIsGLES2()) {
-    AddCompositor("FXAA", true); // SMAA not working with glsles
+    AddCompositor("FXAA", true);  // SMAA not working with glsles
   } else {
     AddCompositor("SMAA", true);
     AddCompositor("FXAA", false);
@@ -184,18 +178,8 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 
   if (name == BLOOM_COMPOSITOR) {
-    for (int i = 0; i < mipChain; i++) {
-      string newName = BLOOM_COMPOSITOR + "It" + to_string(i);
-      ASSERTION(compositorChain->getCompositorPosition(newName) != Ogre::CompositorChain::NPOS,
-                "[CompositorManager] Failed to find Bloom compositor");
-
-      if (!oddMipsOnly) {
-        compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
-      } else if (i % 2 == 1) {
-        compositorManager->setCompositorEnabled(ogreViewport, newName, enable);
-      } else {
-        compositorManager->setCompositorEnabled(ogreViewport, newName, false);
-      }
+    for (int i : mipMask) {
+      compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
     }
 
     compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "End", enable);
@@ -255,40 +239,32 @@ void CompositorManager::InitMRT(bool enable) {
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 }
 
-void CompositorManager::InitNoMRT(bool enable) {
-  auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, "NoMRT", 0);
-  ASSERTION(mrtCompositor, "[CompositorManager] Failed to add MRT compositor");
-
-  // check textures
-  auto *tech = mrtCompositor->getTechnique();
-
-  ASSERTION(tech->getTextureDefinition("rt"), "[CompositorManager] rt texture failed to create");
-
-  compositorManager->setCompositorEnabled(ogreViewport, "NoMRT", enable);
-}
-
 void CompositorManager::InitMipChain(bool enable) {
   auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR);
   ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
 
   //
-  if (enable) {
-    EnableCompositor("HDR", true);
-    EnableCompositor("Tonemap", true);
-  }
+  EnableCompositor("HDR", true);
 
   // check textures
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, enable);
 
-  for (int i = 0; i < mipChain; i++) {
+  for (int i = 0; i < mipChainSize; i++) {
     string name = BLOOM_COMPOSITOR + "It" + to_string(i);
     auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name);
     ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compositor");
-    compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+    compositorManager->setCompositorEnabled(ogreViewport, name, false);
+  }
+
+  for (int i : mipMask) {
+    compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
   }
 
   AddCompositor(BLOOM_COMPOSITOR + "End", enable);
 }
+
+void CompositorManager::SetMipMask(std::vector<int> mipMask) { this->mipMask = mipMask; }
+const std::vector<int> &CompositorManager::GetMipMask() { return mipMask; }
 
 void CompositorManager::CacheCompositorChain() {
   // remove compositors that have to be changed
@@ -437,19 +413,19 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
 
-  }  else if (pass_id == 2) { // 2 = SSR
+  } else if (pass_id == 2) {  // 2 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    //fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
-    //fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
+    // fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
+    // fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
 
-  } else if (pass_id == 3) { // 3 = Rays
+  } else if (pass_id == 3) {  // 3 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
 
     static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
-    int directionals = 0; // count directional light
+    int directionals = 0;  // count directional light
     for (int i = 0; i < lightList.size(); i++) {
       Ogre::Light *l = lightList[i];
       if (l->getType() == Ogre::Light::LT_DIRECTIONAL) {
@@ -466,10 +442,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 0) {  // mrt render
 
-  } else if (pass_id == 100) { // paused
+  } else if (pass_id == 100) {  // paused
 
-  } else if (pass_id == 99) { // end render
-
+  } else if (pass_id == 99) {  // end render
   }
 }
 
