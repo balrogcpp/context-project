@@ -85,7 +85,7 @@ void CompositorManager::OnSetUp() {
 
   // calculate scene luminance and apply, always on
   AddCompositor("HDR", true);
-  InitMipChain(false);
+  InitMipChain(true);
   AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
   AddCompositor("End", true);

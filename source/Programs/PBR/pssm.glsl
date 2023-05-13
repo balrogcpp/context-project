@@ -2,6 +2,7 @@
 
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
+#define PENUMBRA
 
 // shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
@@ -43,11 +44,11 @@ uniform mediump vec2 ShadowTexel8;
 #endif
 uniform mediump vec4 PssmSplitPoints;
 uniform mediump float ShadowFilterSize;
-uniform mediump int ShadowFilterIterations;
+uniform mediump float ShadowFilterIterations;
+uniform mediump float MaxPenumbraFilter;
 #endif // MAX_SHADOW_TEXTURES > 0
 
 #include "math.glsl"
-//#define PENUMBRA
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -67,13 +68,13 @@ mediump vec2 VogelDiskSample(const mediump float sampleIndex, const mediump floa
 }
 
 
-#ifdef PENUMBRA
 //----------------------------------------------------------------------------------------------------------------------
 mediump float AvgBlockersDepthToPenumbra(const mediump float z_shadowMapView, const mediump float avgBlockersDepth)
 {
   mediump float penumbra = (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
   return clamp(80.0 * penumbra * penumbra, 0.0, 1.0);
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump float AvgBlockersDepthToPenumbra(const mediump float lightSize, const mediump float z_shadowMapView, const mediump float avgBlockersDepth)
@@ -82,8 +83,9 @@ mediump float AvgBlockersDepthToPenumbra(const mediump float lightSize, const me
   return clamp(penumbra * penumbra, 0.0, 1.0);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
-mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV, const mediump float gradientNoise, const mediump float z_shadowMapView, const mediump float penumbraFilterMaxSize, const mediump int iterations)
+mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV, const mediump float gradientNoise, const mediump float z_shadowMapView)
 {
   mediump float avgBlockersDepth = 0.0;
   mediump float blockersCount = HALF_EPSILON;
@@ -91,10 +93,10 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV
   #define MAX_SAMPLES 32
 
   for (int i = 0; i < MAX_SAMPLES; ++i) {
-    if (iterations <= i) break;
+    if (int(ShadowFilterIterations) <= i) break;
 
-    mediump vec2 sampleUV = VogelDiskSample(float(i), float(iterations), float(gradientNoise));
-    sampleUV = shadowMapUV + penumbraFilterMaxSize * sampleUV;
+    mediump vec2 sampleUV = VogelDiskSample(float(i), ShadowFilterIterations, gradientNoise);
+    sampleUV = shadowMapUV + MaxPenumbraFilter * sampleUV;
     mediump float sampleDepth = texture2D(shadowMap, sampleUV).x;
 
     mediump float depthTest = clamp((z_shadowMapView - sampleDepth), 0.0, 1.0);
@@ -105,8 +107,6 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV
   return AvgBlockersDepthToPenumbra(10000.0, z_shadowMapView, avgBlockersDepth / blockersCount);
 }
 
-#endif // PENUMBRA
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump float FetchTerraShadow2(const sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)
@@ -115,17 +115,14 @@ mediump float FetchTerraShadow2(const sampler2D shadowMap, mediump vec2 uv, cons
   mediump vec2 filterSize = 2.0 * tsize;
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 
-  #define MAX_SAMPLES 4
-  #define NUM_SAMPLES 4.0
-
-  for (int i = 0; i < MAX_SAMPLES; ++i) {
-    mediump vec2 offset = VogelDiskSample(float(i), NUM_SAMPLES, gradientNoise) * filterSize;
+  for (int i = 0; i < 4; ++i) {
+    mediump vec2 offset = VogelDiskSample(float(i), 4.0, gradientNoise) * filterSize;
 
     uv += offset;
     shadow += texture2D(shadowMap, uv.xy).x;
   }
 
-  shadow *= (1.0 / NUM_SAMPLES);
+  shadow *= (1.0 / 4.0);
 
   return shadow;
 }
@@ -146,7 +143,7 @@ mediump float FetchTerraShadow(const sampler2D tex, const mediump vec2 uv, const
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 filterSize, const mediump int iterations)
+mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 filterSize)
 {
   lightSpace /= lightSpace.w;
   lightSpace.z = lightSpace.z * 0.5 + 0.5;
@@ -155,15 +152,14 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   mediump float currentDepth = lightSpace.z - HALF_EPSILON - HALF_EPSILON;
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
-  #define MAX_PENUMBRA_FILTER 0.05
-  mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, currentDepth, MAX_PENUMBRA_FILTER, iterations);
+  mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, gradientNoise, currentDepth);
 #endif
 
   #define MAX_PSSM_SAMPLES 32
   for (int i = 0; i < MAX_PSSM_SAMPLES; ++i) {
-    if (iterations <= i) break;
+    if (int(ShadowFilterIterations) <= i) break;
 
-    mediump vec2 offset = VogelDiskSample(float(i), float(iterations), gradientNoise) * filterSize;
+    mediump vec2 offset = VogelDiskSample(float(i), ShadowFilterIterations, gradientNoise) * filterSize;
 #ifdef PENUMBRA
     offset *= penumbra;
 #endif
@@ -173,25 +169,24 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
     shadow += bigger(depth, currentDepth);
   }
 
-  shadow *= (1.0 / float(iterations));
+  shadow *= (1.0 / ShadowFilterIterations);
 
   return shadow;
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float CalcPSSMShadow (const mediump vec4 PssmSplitPoints, \
-                                    const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, const mediump vec4 lightSpacePos2, \
-                                    const sampler2D shadowMap0, const sampler2D shadowMap1, const sampler2D shadowMap2, \
-                                    const mediump vec2 texelSize0, const mediump vec2 texelSize1, const mediump vec2 texelSize2)
+mediump float CalcPSSMShadow (const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, const mediump vec4 lightSpacePos2, \
+                              const sampler2D shadowMap0, const sampler2D shadowMap1, const sampler2D shadowMap2, \
+                              const mediump vec2 texelSize0, const mediump vec2 texelSize1, const mediump vec2 texelSize2)
 {
     // calculate shadow
     if (vDepth <= PssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize, ShadowFilterIterations);
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize);
     else if (vDepth <= PssmSplitPoints.y)
-        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * ShadowFilterSize * 0.5, ShadowFilterIterations);
+        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * ShadowFilterSize * 0.5);
     else if (vDepth <= PssmSplitPoints.z)
-        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * ShadowFilterSize * 0.5, ShadowFilterIterations);
+        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * ShadowFilterSize * 0.5);
     else
         return 0.2;
 }
@@ -202,7 +197,7 @@ mediump float CalcDPSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
                                     const sampler2D shadowMap0, const sampler2D shadowMap1, \
                                     const mediump vec2 texelSize0, const mediump vec2 texelSize1)
 {
-    return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize, ShadowFilterIterations);
+    return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize);
 }
 
 #if MAX_SHADOW_TEXTURES > 0
@@ -214,22 +209,19 @@ mediump float GetShadow(const mediump int light, mediump int tex)
     if (LightAttenuationArray[light].x > HALF_MAX_MINUS1) {
 #if MAX_SHADOW_TEXTURES > 2
         if (light == 0)
-            shadow = CalcPSSMShadow(PssmSplitPoints, \
-                                    vLightSpacePosArray[0], vLightSpacePosArray[1], vLightSpacePosArray[2], \
+            shadow = CalcPSSMShadow(vLightSpacePosArray[0], vLightSpacePosArray[1], vLightSpacePosArray[2], \
                                     ShadowMap0, ShadowMap1, ShadowMap2, \
                                     ShadowTexel0, ShadowTexel1, ShadowTexel2);
 #endif
 #if MAX_SHADOW_TEXTURES > 5
         else if (light == 1)
-            shadow = CalcPSSMShadow(PssmSplitPoints, \
-                                    vLightSpacePosArray[3], vLightSpacePosArray[4], vLightSpacePosArray[5], \
+            shadow = CalcPSSMShadow(vLightSpacePosArray[3], vLightSpacePosArray[4], vLightSpacePosArray[5], \
                                     ShadowMap3, ShadowMap4, ShadowMap5, \
                                     ShadowTexel3, ShadowTexel4, ShadowTexel5);
 #endif
 #if MAX_SHADOW_TEXTURES > 8
         else if (light == 2)
-            shadow = CalcPSSMShadow(PssmSplitPoints, \
-                                    vLightSpacePosArray[6], vLightSpacePosArray[7], vLightSpacePosArray[8], \
+            shadow = CalcPSSMShadow(vLightSpacePosArray[6], vLightSpacePosArray[7], vLightSpacePosArray[8], \
                                     ShadowMap6, ShadowMap7, ShadowMap8, \
                                     ShadowTexel6, ShadowTexel7, ShadowTexel8);
 #endif
@@ -274,39 +266,39 @@ mediump float GetShadow(const mediump int light, mediump int tex)
 
 #if MAX_SHADOW_TEXTURES > 0
         if (tex == 0)
-            shadow = CalcDepthShadow(ShadowMap0, vLightSpacePosArray[0], ShadowTexel0 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap0, vLightSpacePosArray[0], ShadowTexel0 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 1
         else if (tex == 1)
-            shadow = CalcDepthShadow(ShadowMap1, vLightSpacePosArray[1], ShadowTexel1 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap1, vLightSpacePosArray[1], ShadowTexel1 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 2
         else if (tex == 2)
-            shadow = CalcDepthShadow(ShadowMap2, vLightSpacePosArray[2], ShadowTexel2 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap2, vLightSpacePosArray[2], ShadowTexel2 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 3
         else if (tex == 3)
-            shadow = CalcDepthShadow(ShadowMap3, vLightSpacePosArray[3], ShadowTexel3 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap3, vLightSpacePosArray[3], ShadowTexel3 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 4
         else if (tex == 4)
-            shadow = CalcDepthShadow(ShadowMap4, vLightSpacePosArray[4], ShadowTexel4 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap4, vLightSpacePosArray[4], ShadowTexel4 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 5
         else if (tex == 5)
-            shadow = CalcDepthShadow(ShadowMap5, vLightSpacePosArray[5], ShadowTexel5 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap5, vLightSpacePosArray[5], ShadowTexel5 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 6
         else if (tex == 6)
-            shadow = CalcDepthShadow(ShadowMap6, vLightSpacePosArray[6], ShadowTexel6 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap6, vLightSpacePosArray[6], ShadowTexel6 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 7
         else if (tex == 7)
-            shadow = CalcDepthShadow(ShadowMap7, vLightSpacePosArray[7], ShadowTexel7 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap7, vLightSpacePosArray[7], ShadowTexel7 * ShadowFilterSize);
 #endif
 #if MAX_SHADOW_TEXTURES > 8
         else if (tex == 8)
-            shadow = CalcDepthShadow(ShadowMap8, vLightSpacePosArray[8], ShadowTexel8 * ShadowFilterSize, ShadowFilterIterations);
+            shadow = CalcDepthShadow(ShadowMap8, vLightSpacePosArray[8], ShadowTexel8 * ShadowFilterSize);
 #endif
         tex += 1;
     }
