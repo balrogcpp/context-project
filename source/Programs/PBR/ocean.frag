@@ -13,6 +13,7 @@
 
 #define USE_MRT
 #include "header.glsl"
+#include "fog.glsl"
 
 
 varying highp vec3 vWorldPosition;
@@ -21,6 +22,8 @@ varying mediump vec4 vScreenPosition;
 varying mediump vec4 vPrevScreenPosition;
 uniform sampler2D NormapMap;
 uniform highp vec3 CameraPosition;
+uniform mediump vec4 FogColour;
+uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
 uniform mediump vec4 Time;
@@ -157,7 +160,10 @@ void main()
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }
 
-    FragData[0] = vec4(vec3(color + (LightColor0.xyz * specular)), 0.5);
+    color += (LightColor0.xyz * specular);
+    color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
+
+    FragData[0] = vec4(color, 0.5);
     FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
     FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(lNormal, 1.0);

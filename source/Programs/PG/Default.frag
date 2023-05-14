@@ -12,9 +12,12 @@
 
 #define USE_MRT
 #include "header.glsl"
+#include "fog.glsl"
 
 
 uniform sampler2D texMap;
+uniform mediump vec4 FogColour;
+uniform mediump vec4 FogParams;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 varying vec4 oUV;
@@ -32,6 +35,7 @@ void main()
     }
 #endif
 
+    color.rgb = ApplyFog(color.rgb, FogParams, FogColour.rgb, oFogCoord);
     color.rgb = SRGBtoLINEAR(color.rgb);
     FragData[0] = color;
     FragData[1] = vec4(0.0, 0.0, 1.0, 1.0);

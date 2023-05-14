@@ -40,9 +40,10 @@ void Menu::OnSetUp() {
   // ImGuiB::SetupImGuiStyle_Unreal();
   ImGuiB::SetupImGuiStyle_SpectrumDark();
 
-//  GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
+//  GetComponent<SceneManager>().LoadFromFile("bath.scene");
+  GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
 //  GetComponent<SceneManager>().LoadFromFile("throne_room.scene");
-  GetComponent<SceneManager>().LoadFromFile("1.scene");
+//  GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
 
   float diag0 = 100000.0;
