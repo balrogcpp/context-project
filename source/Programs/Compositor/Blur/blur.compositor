@@ -22,7 +22,7 @@ compositor Blur
             {
                 material Blur
                 input 0 rt
-                input 1 mrt 5
+                input 1 mrt 4
             }
         }
     }

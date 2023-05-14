@@ -21,7 +21,7 @@ compositor Ambient
             {
                 material Ambient
                 input 0 rt
-                input 1 mrt 2
+                //input 1 mrt 5
             }
         }
     }

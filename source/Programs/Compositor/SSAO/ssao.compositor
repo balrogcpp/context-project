@@ -29,8 +29,8 @@ compositor SSAO
                 identifier 1
                 quad_normals camera_far_corners_view_space
                 material SSAO
-                input 0 mrt 3
-                input 1 mrt 4
+                input 0 mrt 2
+                input 1 mrt 3
             }
         }
 

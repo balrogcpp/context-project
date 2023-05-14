@@ -55,7 +55,7 @@ compositor Bloom
         //         material FBO
         //         input 0 rt
         //         input 1 lum
-        //         input 2 mrt 3
+        //         input 2 mrt 2
         //     }
         // }
 
