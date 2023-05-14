@@ -7,6 +7,7 @@
 // shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
 varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+uniform mediump vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
 uniform sampler2D ShadowMap0;
 uniform mediump vec2 ShadowTexel0;
@@ -86,6 +87,13 @@ mediump float AvgBlockersDepthToPenumbra(const mediump float lightSize, const me
 
 
 //----------------------------------------------------------------------------------------------------------------------
+mediump float map_01(const mediump float x)
+{
+    return x * 100.0;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV, const mediump vec2 filterSize, const mediump float gradientNoise, const mediump float z_shadowMapView)
 {
   mediump float avgBlockersDepth = 0.0;
@@ -98,6 +106,7 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV
 
     mediump vec2 offsetUV = VogelDiskSample(float(i), ShadowFilterIterations, gradientNoise) * MaxPenumbraFilter * filterSize;
     mediump float sampleDepth = texture2D(shadowMap, shadowMapUV + offsetUV).x;
+    sampleDepth = map_01(sampleDepth);
 
     mediump float depthTest = clamp((z_shadowMapView - sampleDepth), 0.0, 1.0);
     avgBlockersDepth += depthTest * sampleDepth;
@@ -109,7 +118,7 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float FetchTerraShadow2(const sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)
+mediump float FetchTerraShadow(const sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)
 {
   mediump float shadow = 0.0;
   mediump vec2 filterSize = 2.0 * tsize;
@@ -122,23 +131,9 @@ mediump float FetchTerraShadow2(const sampler2D shadowMap, mediump vec2 uv, cons
     shadow += texture2D(shadowMap, uv.xy).x;
   }
 
-  shadow *= (1.0 / 4.0);
+  shadow *= 0.25;
 
   return shadow;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-mediump float FetchTerraShadow(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
-{
-    mediump float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).r;
-    mediump float B = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).r;
-    mediump float C = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).r;
-    mediump float D = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).r;
-
-    mediump float c1 = (A + B + C + D) * 0.25;
-
-    return c1;
 }
 
 
@@ -153,19 +148,19 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
   mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 #ifdef PENUMBRA
   mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, filterSize, gradientNoise, currentDepth);
+#else
+  const mediump float penumbra = 1.0;
 #endif
 
   #define MAX_PSSM_SAMPLES 32
   for (int i = 0; i < MAX_PSSM_SAMPLES; ++i) {
     if (int(ShadowFilterIterations) <= i) break;
 
-    mediump vec2 offset = VogelDiskSample(float(i), ShadowFilterIterations, gradientNoise) * filterSize;
-#ifdef PENUMBRA
-    offset *= penumbra;
-#endif
+    mediump vec2 offset = VogelDiskSample(float(i), ShadowFilterIterations, gradientNoise) * filterSize * penumbra;
 
     lightSpace.xy += offset;
     mediump float depth = texture2D(shadowMap, lightSpace.xy).x;
+    depth = map_01(depth);
     shadow += bigger(depth, currentDepth);
   }
 
@@ -194,11 +189,12 @@ mediump float CalcPSSMShadow (const mediump vec4 lightSpacePos0, const mediump v
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump float CalcDPSMShadow(const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, \
-                                    const sampler2D shadowMap0, const sampler2D shadowMap1, \
-                                    const mediump vec2 texelSize0, const mediump vec2 texelSize1)
+                             const sampler2D shadowMap0, const sampler2D shadowMap1, \
+                             const mediump vec2 texelSize0, const mediump vec2 texelSize1)
 {
     return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * ShadowFilterSize);
 }
+
 
 #if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------

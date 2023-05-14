@@ -509,25 +509,18 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
   shadowEnabled = true;
+  shadowTexSize = 2048;
 #else
   shadowEnabled = false;
+  shadowTexSize = 512;
 #endif
   if (shadowEnabled) {
-#ifdef DESKTOP
-    Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_DEPTH16;
-#else
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
-#endif
     shadowFarDistance = 100;
-#ifdef DESKTOP
-    shadowTexSize = 2048;
-#else
-    shadowTexSize = 512;
-#endif
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    ogreSceneManager->setShadowColour(Ogre::ColourValue::White * 0.3);
+    ogreSceneManager->setShadowColour(Ogre::ColourValue::White * 0.5);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);

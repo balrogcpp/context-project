@@ -426,14 +426,13 @@ void main()
 
 #ifdef TERRA_LIGHTMAP
         if (i == 0) {
-            light *= FetchTerraShadow2(TerraLightMap, vUV0.xy, InvTerraLightMapSize);
+            light *= FetchTerraShadow(TerraLightMap, vUV0.xy, InvTerraLightMapSize);
         }
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] > 0.0) {
-            mediump float shadow = GetShadow(i, texCounter);
-            light *= clamp(shadow, 0.0, 1.0);
+            light *= GetShadow(i, texCounter);
         }
 #endif
 
