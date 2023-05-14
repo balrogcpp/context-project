@@ -9,7 +9,7 @@ shared_params PSSM_Shared_frag
 {
     shared_param_named OffsetScale float 0
     shared_param_named ShadowFilterSize float 2
-    shared_param_named MaxPenumbraFilter float 2
+    shared_param_named MaxPenumbraFilter float 4
     shared_param_named ShadowFilterIterations float 8
     //shared_param_named PssmSplitPoints float4 6.7367 18.4907 400.0 400.0
 }
@@ -56,6 +56,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto LightCastsShadowsArray light_casts_shadows_array 8
         param_named_auto LightCount light_count
         param_named_auto AmbientLightColour ambient_light_colour
+        param_named_auto ShadowColour shadow_colour
         param_named_auto SurfaceAmbientColour surface_ambient_colour
         param_named_auto SurfaceDiffuseColour surface_diffuse_colour
         param_named_auto SurfaceSpecularColour surface_specular_colour

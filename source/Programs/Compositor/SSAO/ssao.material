@@ -69,7 +69,7 @@ material SSAO_mod : Base
                 param_named EmissionMap int 2
                 param_named SsaoMap int 3
                 param_named_auto TexelSize3 inverse_texture_size 3
-                param_named_auto ShadowColor shadow_colour
+                param_named_auto ShadowColour shadow_colour
             }
 
             texture_unit RT

@@ -46,6 +46,7 @@ uniform mediump vec4 PssmSplitPoints;
 uniform mediump float ShadowFilterSize;
 uniform mediump float ShadowFilterIterations;
 uniform mediump float MaxPenumbraFilter;
+uniform mediump vec4 ShadowColour;
 #endif // MAX_SHADOW_TEXTURES > 0
 
 #include "math.glsl"

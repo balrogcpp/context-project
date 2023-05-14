@@ -432,7 +432,8 @@ void main()
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] > 0.0) {
-            light *= GetShadow(i, texCounter);
+            mediump float shadow = GetShadow(i, texCounter);
+            light *= clamp(shadow, 0.0, 1.0);
         }
 #endif
 
