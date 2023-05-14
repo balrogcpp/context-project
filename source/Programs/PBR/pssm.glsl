@@ -47,6 +47,7 @@ uniform mediump vec4 PssmSplitPoints;
 uniform mediump float ShadowFilterSize;
 uniform mediump float ShadowFilterIterations;
 uniform mediump float MaxPenumbraFilter;
+uniform mediump float PenumbraLightSize;
 uniform mediump vec4 ShadowColour;
 #endif // MAX_SHADOW_TEXTURES > 0
 
@@ -113,7 +114,7 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 shadowMapUV
     blockersCount += depthTest;
   }
 
-  return AvgBlockersDepthToPenumbra(1000.0, z_shadowMapView, avgBlockersDepth / blockersCount);
+  return AvgBlockersDepthToPenumbra(PenumbraLightSize, z_shadowMapView, avgBlockersDepth / blockersCount);
 }
 
 

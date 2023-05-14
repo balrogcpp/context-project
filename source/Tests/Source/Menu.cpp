@@ -26,9 +26,7 @@ void Menu::OnSetUp() {
   int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
   GetComponent<CompositorManager>().SetFixedViewportSize(x / 1.5, y / 1.5);
-  // GetComponent<CompositorManager>().EnableCompositor("Bloom", true);
   GetComponent<CompositorManager>().EnableCompositor("Blur", true);
-  GetComponent<CompositorManager>().EnableCompositor("SSAO", true);
 #else
   int x = GetComponent<VideoManager>().GetWindow().GetSizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetSizeY();
@@ -41,9 +39,9 @@ void Menu::OnSetUp() {
   ImGuiB::SetupImGuiStyle_SpectrumDark();
 
 //  GetComponent<SceneManager>().LoadFromFile("bath.scene");
-  GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
+  //GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
 //  GetComponent<SceneManager>().LoadFromFile("throne_room.scene");
-//  GetComponent<SceneManager>().LoadFromFile("1.scene");
+  GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
 
   float diag0 = 100000.0;
