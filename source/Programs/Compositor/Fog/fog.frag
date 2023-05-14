@@ -16,7 +16,7 @@
 varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D DepthMap;
-uniform mediump vec3 FogColour;
+uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
@@ -33,7 +33,7 @@ void main()
         return;
     }
     
-    mediump float depth = clampedDepth * FarClipDistance + NearClipDistance;
-    mediump vec3 fog = ApplyFog(color, FogParams, FogColour, depth);
+    mediump float depth = clampedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    mediump vec3 fog = ApplyFog(color, FogParams, FogColour.rgb, depth);
     FragColor = vec4(fog, 1.0);
 }

@@ -58,9 +58,7 @@ compositor SSAO
             {
                 material SSAO_mod
                 input 0 rt
-                input 1 mrt 2
-                //input 2 mrt 2
-                input 3 ssaoy
+                input 1 ssaoy
             }
         }
     }

@@ -15,10 +15,8 @@
 
 varying mediump vec2 vUV0;
 uniform sampler2D RT;
-uniform sampler2D AmbientMap;
-uniform sampler2D EmissionMap;
 uniform sampler2D SsaoMap;
-uniform vec2 TexelSize3;
+uniform vec2 TexelSize1;
 uniform vec4 ShadowColour;
 
 
@@ -26,11 +24,9 @@ uniform vec4 ShadowColour;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump vec3 ambient = texture2D(AmbientMap, vUV0).rgb;
-    mediump vec3 emission = texture2D(EmissionMap, vUV0).rgb;
-    mediump float ssao = Upscale9(SsaoMap, vUV0, TexelSize3);
+    mediump float ssao = Upscale9(SsaoMap, vUV0, TexelSize1);
 
-    color += clamp(ssao + ShadowColour.rgb, 0.0, 1.0) * ambient + emission;
+    color *= clamp(ssao + ShadowColour.rgb, 0.0, 1.0);
 
     FragColor = vec4(SafeHDR(color), 1.0);
 }

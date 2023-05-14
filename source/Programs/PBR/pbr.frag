@@ -159,6 +159,8 @@ uniform mediump vec4 SurfaceSpecularColour;
 uniform mediump float SurfaceShininessColour;
 uniform mediump vec4 SurfaceEmissiveColour;
 uniform mediump float SurfaceAlphaRejection;
+uniform mediump vec4 FogColour;
+uniform mediump vec4 FogParams;
 uniform highp float FarClipDistance;
 uniform highp float NearClipDistance;
 uniform mediump float FrameTime;
@@ -169,6 +171,8 @@ uniform mediump float OffsetScale;
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 
+// fog function
+#include "fog.glsl"
 // // shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
@@ -446,7 +450,11 @@ void main()
     mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, -normalize(reflect(v, n)))));
 
 // Apply optional PBR terms for additional (optional) shading
+    color += ambient;
     color *= occlusion;
+    color += emission;
+
+    color = ApplyFog(color, FogParams, FogColour.rgb, vDepth);
 
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);

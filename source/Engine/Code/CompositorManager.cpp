@@ -71,7 +71,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSAO", true);
 
   // fog is always enabled
-  AddCompositor("Fog", true);
+  //AddCompositor("Fog", true);
 
   // screen-space reflections
   AddCompositor("SSR", false);
