@@ -69,11 +69,11 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     }
 
     Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) override {
-//      std::string materialName = "TerrainCustom";
-//      static unsigned long long generator = 0;
-//      std::string newName = materialName + "Composite" + std::to_string(generator++);
-//
-//      return Ogre::MaterialManager::getSingleton().getByName(materialName)->clone(newName);
+      std::string materialName = "TerrainCustom";
+      static unsigned long long generator = 0;
+      std::string newName = materialName + "Comp" + std::to_string(generator++);
+
+      return Ogre::MaterialManager::getSingleton().getByName(materialName)->clone(newName);
     }
 
    protected:
