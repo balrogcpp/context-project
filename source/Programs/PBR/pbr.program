@@ -43,7 +43,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
 
-    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL
+    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_IBL
     
     default_params
     {

@@ -129,9 +129,9 @@ uniform sampler2D OrmMap;
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D EmissiveMap;
 #endif // HAS_EMISSIVEMAP
-#ifdef USE_IBL
+#ifdef HAS_IBL
 uniform samplerCube SpecularEnvMap;
-#endif // USE_IBL
+#endif // HAS_IBL
 uniform mediump vec3 iblSH[9];
 #ifdef TERRA_NORMALMAP
 uniform sampler2D TerraNormalMap;
@@ -179,7 +179,7 @@ uniform mediump float OffsetScale;
 #endif
 
 
-#ifdef USE_IBL
+#ifdef HAS_IBL
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 diffuseIrradiance(const mediump vec3 n)
 {
@@ -198,7 +198,7 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
     return textureCube(SpecularEnvMap, reflection).rgb;
 #endif
 }
-#endif // USE_IBL
+#endif // HAS_IBL
 
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
@@ -212,7 +212,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
     mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
     //mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n).rgb);
 
-#ifdef USE_IBL
+#ifdef HAS_IBL
     mediump vec3 diffuseLight = diffuseIrradiance(reflection);
     mediump vec3 specularLight = GetIblSpeculaColor(reflection, perceptualRoughness);
 #else
