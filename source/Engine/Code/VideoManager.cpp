@@ -520,7 +520,7 @@ void VideoManager::InitOgreSceneManager() {
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    ogreSceneManager->setShadowColour(Ogre::ColourValue::White * 0.5);
+    ogreSceneManager->setShadowColour(Ogre::ColourValue::White * 0.2);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);

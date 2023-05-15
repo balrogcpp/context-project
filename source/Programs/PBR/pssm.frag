@@ -18,20 +18,21 @@ varying mediump vec2 vUV0;
 #endif
 
 
-//
-mediump float map_01(const mediump float x, const mediump float v0, const mediump float v1)
+//----------------------------------------------------------------------------------------------------------------------
+mediump float map_0(const mediump float x, const mediump float v0, const mediump float v1)
 {
     return (x - v0) / (v1 - v0);
 }
 
 
-mediump float map_02(const mediump float x, const mediump float v0, const mediump float v1)
+//----------------------------------------------------------------------------------------------------------------------
+mediump float map_1(const mediump float x, const mediump float v0, const mediump float v1)
 {
     return x * (v1 - v0) + v0;
 }
 
 
-//
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
 #ifdef SHADOWCASTER_ALPHA
@@ -40,5 +41,5 @@ void main()
     }
 #endif
 
-    FragColor = vec4(map_01(gl_FragCoord.z, 0.0, 100.0), 0.0, 0.0, 1.0);
+    FragColor = vec4(map_0(gl_FragCoord.z, 0.0, 100.0), 0.0, 0.0, 1.0);
 }

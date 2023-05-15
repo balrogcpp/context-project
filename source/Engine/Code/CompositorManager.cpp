@@ -65,7 +65,7 @@ void CompositorManager::OnSetUp() {
   InitMRT(true);
 
   // shadows before bloom
-  AddCompositor("SSAO", true);
+  AddCompositor("SSAO", false);
 
   // screen-space reflections
   AddCompositor("SSR", false);
@@ -78,7 +78,7 @@ void CompositorManager::OnSetUp() {
   }
 
   AddCompositor("HDR", true);
-  InitMipChain(true);
+  InitMipChain(false);
   AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
   AddCompositor("End", true);
@@ -402,7 +402,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   if (pass_id == 1) {  // 1 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
+//    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
 
   } else if (pass_id == 2) {  // 2 = SSR

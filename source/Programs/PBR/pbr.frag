@@ -458,8 +458,8 @@ void main()
 
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
-    FragData[3] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[4] = vec4(n, 1.0);
+    FragData[2] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[3] = vec4(n, 1.0);
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
