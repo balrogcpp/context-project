@@ -44,8 +44,8 @@ mediump float iter(const mediump vec3 dir, const mediump vec3 viewNorm, const me
    mediump vec3 randomDir = reflect(dir, randN) + viewNorm;
 
     // Move new view-space position back into texture space
-    #define RADIUS 0.2125
-//    #define RADIUS 0.0525
+    // #define RADIUS 0.2125
+    #define RADIUS 0.0525
 
     mediump vec4 nuv = mul(ProjMatrix, vec4(viewPos + randomDir * RADIUS, 1.0));
     nuv /= nuv.w;
