@@ -9,12 +9,17 @@ vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 	{
 		param_named_auto worldViewProj	worldviewproj_matrix
 		param_named_auto ViewportSize	viewport_size
+		param_named_auto FarClipDistance far_clip_distance
 	}
 }
 
 fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
 {
 	source SMAA_EdgeDetection.frag
+    default_params
+    {
+        param_named_auto FarClipDistance far_clip_distance
+    }
 }
 
 material SMAA/EdgeDetection

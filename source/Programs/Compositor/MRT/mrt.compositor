@@ -9,9 +9,9 @@ compositor MRT
     technique
     {
         compositor_logic DeferredLogic
-
         // 0 color; 1 gloss; 2 depth; 3 normals; 4 velocity; 
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R11G11B10_FLOAT PF_R8G8_SNORM no_fsaa chain_scope
+        texture rt  target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
 
         target mrt
         {
@@ -22,7 +22,7 @@ compositor MRT
             }
         }
 
-        target_output
+        target rt
         {
             pass render_quad
             {
@@ -43,8 +43,7 @@ compositor Paused
     technique
     {
         compositor_logic DeferredLogic
-
-        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture_ref rt MRT rt
         texture rtx target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rty target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
@@ -74,7 +73,7 @@ compositor Paused
             }
         }
 
-        target_output
+        target rt
         {
             pass render_quad
             {

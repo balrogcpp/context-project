@@ -674,7 +674,7 @@ SMAA_INLINE mediump vec2 SMAACalculatePredicatedThreshold(const mediump vec2 tex
                                                     SMAATexture2D(predicationTex)
                                                     SMAA_EXTRA_PARAM_ARG_DECL) {
     mediump vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(predicationTex)
-                                             SMAA_EXTRA_PARAM_ARG);
+                                             SMAA_EXTRA_PARAM_ARG) * FarClipDistance;
     mediump vec2 delta = abs(neighbours.xx - neighbours.yz);
     mediump vec2 edges = step(SMAA_PREDICATION_THRESHOLD, delta);
     return SMAA_PREDICATION_SCALE * SMAA_THRESHOLD * (1.0 - SMAA_PREDICATION_STRENGTH * edges);
@@ -890,7 +890,7 @@ SMAA_INLINE mediump vec2 SMAADepthEdgeDetectionPS(const mediump vec2 texcoord,
                                             SMAATexture2D(depthTex)
                                             SMAA_EXTRA_PARAM_ARG_DECL ) {
     mediump vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(depthTex)
-                                             SMAA_EXTRA_PARAM_ARG);
+                                             SMAA_EXTRA_PARAM_ARG) * FarClipDistance;
     mediump vec2 delta = abs(neighbours.xx - vec2(neighbours.y, neighbours.z));
     mediump vec2 edges = step(SMAA_DEPTH_THRESHOLD, delta);
 

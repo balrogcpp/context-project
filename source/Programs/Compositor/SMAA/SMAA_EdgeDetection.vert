@@ -22,7 +22,8 @@ attribute mediump vec2 uv0;
 uniform mediump mat4 worldViewProj;
 varying mediump vec2 vUV0;
 varying mediump mat4 offset;
-uniform vec4 ViewportSize;
+uniform mediump vec4 ViewportSize;
+uniform mediump float FarClipDistance;
 #include "smaa.glsl"
 
 

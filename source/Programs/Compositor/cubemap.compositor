@@ -31,7 +31,7 @@ compositor CubeMap
         target cube 4 : CubeFace {}
         target cube 5 : CubeFace {}
 
-        target_output
+        target rt
         {
             input previous
         }

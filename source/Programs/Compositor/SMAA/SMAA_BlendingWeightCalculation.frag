@@ -23,7 +23,8 @@ varying mediump mat4 offset;
 uniform sampler2D edgeTex;
 uniform sampler2D areaTex;
 uniform sampler2D searchTex;
-uniform vec4 ViewportSize;
+uniform mediump vec4 ViewportSize;
+uniform mediump float FarClipDistance;
 #include "smaa.glsl"
 
 

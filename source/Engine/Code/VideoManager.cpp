@@ -534,7 +534,7 @@ void VideoManager::InitOgreSceneManager() {
     // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();
     pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
-    pssmSetup->setSplitPadding(1.1);
+    pssmSetup->setSplitPadding(1.0);
     for (int i = 0; i < pssmSplitCount; i++) {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.3 * i));
     }

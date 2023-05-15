@@ -17,7 +17,7 @@
 #define SMAA_INCLUDE_PS 1
 #if !SMAA_INITIALIZED
 	#define SMAA_EDGE_DETECTION_MODE 1
-	#define SMAA_PREDICATION 1
+	#define SMAA_PREDICATION 0
 #endif
 
 
@@ -27,7 +27,8 @@ uniform sampler2D rt_input;  //Must not be sRGB
 #if SMAA_PREDICATION
 	uniform sampler2D depthTex;
 #endif
-uniform vec4 ViewportSize;
+uniform mediump vec4 ViewportSize;
+uniform mediump float FarClipDistance;
 #include "smaa.glsl"
 
 

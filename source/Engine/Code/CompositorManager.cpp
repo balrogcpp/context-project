@@ -17,7 +17,7 @@ void CompositorManager::OnUpdate(float time) {}
 void CompositorManager::SetSleep(bool sleep) {
   _sleep = sleep;
 
-  EnableCompositor("Paused", sleep);
+//  EnableCompositor("Paused", sleep);
 }
 
 class DeferredLogic final : public Ogre::CompositorLogic {
@@ -64,32 +64,25 @@ void CompositorManager::OnSetUp() {
   // init compositor chain
   InitMRT(true);
 
-  // ambient is always enabled
-  //AddCompositor("Ambient", true);
-
   // shadows before bloom
   AddCompositor("SSAO", true);
-
-  // fog is always enabled
-  //AddCompositor("Fog", true);
 
   // screen-space reflections
   AddCompositor("SSR", false);
 
   if (RenderSystemIsGLES2()) {
-    AddCompositor("FXAA", true);  // SMAA not working with glsles
+    AddCompositor("FXAA", false);
   } else {
-    AddCompositor("SMAA", true);
+    AddCompositor("SMAA", false);
     AddCompositor("FXAA", false);
   }
 
-  // calculate scene luminance and apply, always on
   AddCompositor("HDR", true);
   InitMipChain(true);
   AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
   AddCompositor("End", true);
-  AddCompositor("Paused", false);
+//  AddCompositor("Paused", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);
@@ -181,8 +174,6 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
     for (int i : mipMask) {
       compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
     }
-
-    compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "End", enable);
   }
 }
 
@@ -244,7 +235,9 @@ void CompositorManager::InitMipChain(bool enable) {
   ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
 
   //
-  EnableCompositor("HDR", true);
+  if (enable) {
+    EnableCompositor("HDR", true);
+  }
 
   // check textures
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, enable);
@@ -259,8 +252,6 @@ void CompositorManager::InitMipChain(bool enable) {
   for (int i : mipMask) {
     compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
   }
-
-  AddCompositor(BLOOM_COMPOSITOR + "End", enable);
 }
 
 void CompositorManager::SetMipMask(std::vector<int> mipMask) { this->mipMask = mipMask; }

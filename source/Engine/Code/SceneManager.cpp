@@ -236,46 +236,34 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
 
       // this optimisation not working, rebinding of shader programs on fly is hard to implement
       if (false) {
-        const size_t MAX_TEXTURE_NUMBER = 16;
-        std::array<std::string, MAX_TEXTURE_NUMBER> textures = {
-            "AlbedoMap",  "NormalMap",  "OrmMap",     "EmissiveMap", "SpecularEnvMap", "ShadowMap0", "ShadowMap1", "ShadowMap2",
-            "ShadowMap3", "ShadowMap4", "ShadowMap5", "ShadowMap6",  "ShadowMap7",     "ShadowMap8", "",           ""};
-        std::array<std::string, MAX_TEXTURE_NUMBER> sizes = {"",
-                                                             "",
-                                                             "",
-                                                             "",
-                                                             "",
-                                                             "ShadowTexel0",
-                                                             "ShadowTexel1",
-                                                             "ShadowTexel2",
-                                                             "ShadowTexel3",
-                                                             "ShadowTexel4",
-                                                             "ShadowTexel5",
-                                                             "ShadowTexel6",
-                                                             "ShadowTexel7",
-                                                             "ShadowTexel8",
-                                                             "",
-                                                             ""};
-        std::array<int, MAX_TEXTURE_NUMBER> indexes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, -1, -1};
+        const size_t MAX_TEXTURE_NUMBER = 14;
+        std::array<std::string, MAX_TEXTURE_NUMBER> textures = {"AlbedoMap",  "NormalMap",  "OrmMap",     "EmissiveMap", "SpecularEnvMap",
+                                                                "ShadowMap0", "ShadowMap1", "ShadowMap2", "ShadowMap3",  "ShadowMap4",
+                                                                "ShadowMap5", "ShadowMap6", "ShadowMap7", "ShadowMap8"};
+        std::array<std::string, MAX_TEXTURE_NUMBER> sizes = {"ShadowTexel0", "ShadowTexel1", "ShadowTexel2", "ShadowTexel3", "ShadowTexel4",
+                                                             "ShadowTexel5", "ShadowTexel6", "ShadowTexel7", "ShadowTexel8"};
+        std::array<int, MAX_TEXTURE_NUMBER> indexes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
-        //        if (auto *tex = pass->getTextureUnitState("Albedo")) {
-        //          if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-        //            auto i = fpDefines.find("HAS_BASECOLORMAP");
-        //            if (i != string::npos) {
-        //              fpDefines[i] = 'X';
-        //              pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-        //              indexes[0] = -1;
-        //              dirty = true;
-        //            }
-        //          }
-        //        }
+        if (auto *tex = pass->getTextureUnitState("Albedo")) {
+          if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+            auto i = fpDefines.find("HAS_BASECOLORMAP");
+            if (i != string::npos) {
+              fpDefines[i] = 'X';
+              indexes[0] = -1;
+              dirty = true;
+            }
+          }
+        }
 
         if (auto *tex = pass->getTextureUnitState("Normal")) {
           if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
             auto i = fpDefines.find("HAS_NORMALMAP");
             if (i != string::npos) {
               fpDefines[i] = 'X';
-              pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
               indexes[1] = -1;
               dirty = true;
             }
@@ -284,10 +272,11 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
 
         if (auto *tex = pass->getTextureUnitState("ORM")) {
           if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
             auto i = fpDefines.find("HAS_ORM");
             if (i != string::npos) {
               fpDefines[i] = 'X';
-              pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
               indexes[2] = -1;
               dirty = true;
             }
@@ -296,11 +285,25 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
 
         if (auto *tex = pass->getTextureUnitState("Emissive")) {
           if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
             auto i = fpDefines.find("HAS_EMISSIVEMAP");
             if (i != string::npos) {
               fpDefines[i] = 'X';
-              pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
               indexes[3] = -1;
+              dirty = true;
+            }
+          }
+        }
+
+        if (auto *tex = pass->getTextureUnitState("IBL")) {
+          if (RenderSystemIsGL3()) {
+            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+            auto i = fpDefines.find("HAS_IBL");
+            if (i != string::npos) {
+              fpDefines[i] = 'X';
+              indexes[4] = -1;
               dirty = true;
             }
           }
@@ -325,6 +328,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
         pass->getFragmentProgram()->reload();
       }
 
+      mat->reload();
       it->setMaterial(mat);
     }
   }
