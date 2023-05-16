@@ -70,5 +70,45 @@
 #define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( transpose(mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)) )
 
 
+// semantics as aliases for attribute locations
+#ifdef OGRE_VERTEX_SHADER
+#if !defined(OGRE_HLSL) && !defined(OGRE_CG)
+#define POSITION    0
+#define BLENDWEIGHT 1
+#define NORMAL      2
+#define COLOR0      3
+#define COLOR1      4
+#define COLOR COLOR0
+#define FOG         5
+#define BLENDINDICES 7
+#define TEXCOORD0   8
+#define TEXCOORD1   9
+#define TEXCOORD2  10
+#define TEXCOORD3  11
+#define TEXCOORD4  12
+#define TEXCOORD5  13
+#define TEXCOORD6  14
+#define TEXCOORD7  15
+#define TANGENT    14
+#endif
+#endif
+
+
+#define OGRE_UNIFORMS_BEGIN
+#define OGRE_UNIFORMS_END
+
+#define MAIN_PARAMETERS void main(
+
+#ifdef OGRE_VERTEX_SHADER
+#define MAIN_DECLARATION out float4 gl_Position : POSITION)
+#endif
+#ifdef OGRE_FRAGMENT_SHADER
+#define MAIN_DECLARATION in float4 gl_FragCoord : POSITION, out float4 FragColor : COLOR)
+#endif
+
+#define IN(decl, sem) in decl : sem,
+#define OUT(decl, sem) out decl : sem,
+
+
 #endif // OGRE_HLSL
 #endif // HLSL2_GLSL

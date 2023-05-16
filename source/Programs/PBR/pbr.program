@@ -31,9 +31,9 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
         shared_params_ref PBR_Shared_vert
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
+        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 9
         param_named_auto Time time_0_x_packed 100
-        param_named_auto CameraPosition camera_position
+        //param_named_auto CameraPosition camera_position
     }
 }
 
@@ -55,23 +55,23 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto LightAttenuationArray light_attenuation_array 8
         param_named_auto LightSpotParamsArray spotlight_params_array 8
         param_named_auto LightCastsShadowsArray light_casts_shadows_array 8
-        param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 8
+        //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 9
         param_named_auto LightCount light_count
         param_named_auto AmbientLightColour ambient_light_colour
         param_named_auto ShadowColour shadow_colour
         param_named_auto SurfaceAmbientColour surface_ambient_colour
         param_named_auto SurfaceDiffuseColour surface_diffuse_colour
         param_named_auto SurfaceSpecularColour surface_specular_colour
-        param_named_auto SurfaceShininessColour surface_shininess
+        //param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
         param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
-        param_named_auto CameraPosition camera_position
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto FrameTime frame_time
-        param_named_auto Time time_0_x_packed 100
+        param_named_auto CameraPosition camera_position
+        //param_named_auto Time time_0_x_packed 100
     }
 }
 

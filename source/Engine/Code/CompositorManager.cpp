@@ -61,28 +61,16 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
-  // init compositor chain
   InitMRT(true);
-
-  // shadows before bloom
   AddCompositor("SSAO", false);
-
-  // screen-space reflections
   AddCompositor("SSR", false);
-
-  if (RenderSystemIsGLES2()) {
-    AddCompositor("FXAA", false);
-  } else {
-    AddCompositor("SMAA", false);
-    AddCompositor("FXAA", false);
-  }
-
+  AddCompositor("FXAA", false);
+  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("HDR", true);
   InitMipChain(false);
   AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
   AddCompositor("End", true);
-//  AddCompositor("Paused", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);

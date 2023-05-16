@@ -520,7 +520,7 @@ void VideoManager::InitOgreSceneManager() {
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    ogreSceneManager->setShadowColour(Ogre::ColourValue::White * 0.2);
+    ogreSceneManager->setShadowColour(Ogre::ColourValue::Black);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
@@ -529,7 +529,7 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
-    ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
+    ogreSceneManager->setShadowTextureCount(9);
 
     // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();

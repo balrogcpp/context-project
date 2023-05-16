@@ -99,6 +99,47 @@ mat4 transpose(mat4 m)
 #define mtx3x3(a1, a2, a3, a4, a5, a6, a7, a8, a9) ( mat3(a1, a2, a3, a4, a5, a6, a7, a8, a9) )
 #define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) )
 
+#define OGRE_UNIFORMS_BEGIN
+#define OGRE_UNIFORMS_END
+
+#if __VERSION__ > 120 || defined(OGRE_GLSLANG)
+
+#if defined(OGRE_GLSLANG) || (__VERSION__ > 150 && defined(OGRE_VERTEX_SHADER)) || __VERSION__ >= 410
+#define IN(decl, loc) layout(location = loc) in decl;
+#else
+#define IN(decl, loc) in decl;
+#endif
+
+#if defined(OGRE_GLSLANG) || (__VERSION__ > 150 && defined(OGRE_FRAGMENT_SHADER)) || __VERSION__ >= 410
+#define OUT(decl, loc) layout(location = loc) out decl;
+#else
+#define OUT(decl, loc) out decl;
+#endif
+
+#else
+
+#ifdef OGRE_VERTEX_SHADER
+#define IN(decl, loc) attribute decl;
+#define OUT(decl, loc) varying decl;
+#else
+#define IN(decl, loc) varying decl;
+#define OUT(decl, loc) out decl;
+#endif
+
+#endif
+
+#if __VERSION__ >= 420
+#define _UNIFORM_BINDING(b) layout(binding = b) uniform
+#else
+#define _UNIFORM_BINDING(b) uniform
+#endif
+
+#define SAMPLER1D(name, reg) _UNIFORM_BINDING(reg) sampler1D name
+#define SAMPLER2D(name, reg) _UNIFORM_BINDING(reg) sampler2D name
+#define SAMPLER3D(name, reg) _UNIFORM_BINDING(reg) sampler3D name
+#define SAMPLER2DARRAY(name, reg) _UNIFORM_BINDING(reg) sampler2DArray name
+#define SAMPLERCUBE(name, reg) _UNIFORM_BINDING(reg) samplerCube name
+#define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2D name
 
 #endif // OGRE_GLSL
 #endif // HLSL2_GLSL
