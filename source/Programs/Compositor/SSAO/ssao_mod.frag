@@ -26,7 +26,7 @@ void main()
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump float ssao = Upscale9(SsaoMap, vUV0, TexelSize1);
 
-    color *= clamp(ssao + ShadowColour.rgb, 0.0, 1.0);
+    color *= clamp(ssao + ShadowColour.g, 0.0, 1.0);
 
     FragColor = vec4(SafeHDR(color), 1.0);
 }

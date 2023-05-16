@@ -436,11 +436,11 @@ void main()
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] > 0.0) {
-            light *= GetShadow(i, texCounter);
+            light *= clamp(GetShadow(i, texCounter) + ShadowColour.r, 0.0, 1.0);
         }
 #endif
 
-        color += light * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib));
+        color += LightDiffuseScaledColourArray[i].xyz * (light * (diffuseContrib + specContrib));
     } //  lightning loop
 #endif //  MAX_LIGHTS > 0
 
