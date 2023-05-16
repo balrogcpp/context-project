@@ -62,14 +62,10 @@ out vec4 FragColor;
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 #include "hlsl2.glsl"
 #endif
-
-
 #ifdef OGRE_HLSL
 #include "glsl2.hlsl"
 #include "HLSL_SM4Support.hlsl"
 #endif
-
-
 #include "math.glsl"
 #ifdef OGRE_FRAGMENT_SHADER
 #include "srgb.glsl"
