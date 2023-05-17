@@ -24,7 +24,7 @@ uniform vec4 ShadowColour;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump float ssao = Upscale9(SsaoMap, vUV0, TexelSize1);
+    mediump float ssao = texture2D(SsaoMap, vUV0).r;
 
     color *= clamp(ssao + ShadowColour.g, 0.0, 1.0);
 
