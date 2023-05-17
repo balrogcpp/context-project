@@ -16,21 +16,11 @@
 
 varying mediump vec2 vUV0;
 uniform sampler2D RT;
-uniform sampler2D OldLum;
 uniform mediump vec2 TexelSize0;
-uniform mediump vec3 Exposure;
-uniform mediump float timeSinceLast;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);
-    newLum = expose2(newLum, Exposure);
-
-    mediump float oldLum = texture2D(OldLum, vec2(0.0, 0.0)).r;
-
-    mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
-
-    FragColor = vec4(lum, 0.0, 0.0, 1.0);
+    FragColor = vec4(Downscale2x2_05(RT, vUV0, TexelSize0), 0.0, 0.0, 1.0);
 }

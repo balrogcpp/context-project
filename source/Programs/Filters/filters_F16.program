@@ -20,6 +20,11 @@ fragment_program downscale2x2_F16 glsl glsles hlsl
 	source downscale2x2_F16.frag
 }
 
+fragment_program downscale2x2_FP16_05 glsl glsles hlsl
+{
+	source downscale2x2_FP16_05.frag
+}
+
 fragment_program downscale13_F16 glsl glsles hlsl
 {
 	source downscale13_F16.frag

@@ -83,6 +83,21 @@ material Downscale2x2_F16 : Filter_F16
     }
 }
 
+material Downscale2x2_FP16_05 : Filter_F16
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref downscale2x2_FP16_05
+            {
+                param_named RT int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+            }
+        }
+    }
+}
+
 material Upscale9_F16 : Filter_F16
 {
     technique

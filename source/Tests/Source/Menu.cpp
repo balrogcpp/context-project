@@ -39,9 +39,9 @@ void Menu::OnSetUp() {
   ImGuiB::SetupImGuiStyle_SpectrumDark();
 
 //  GetComponent<SceneManager>().LoadFromFile("bath.scene");
-  //GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
+  GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
 //  GetComponent<SceneManager>().LoadFromFile("throne_room.scene");
-  GetComponent<SceneManager>().LoadFromFile("1.scene");
+//  GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
 
   float diag0 = 100000.0;
@@ -356,7 +356,7 @@ void Menu::BeforeRender(float time) {
   }
 
   if (ImGui::Checkbox("SMAA", &compositorFlags[4])) {
-    GetComponent<CompositorManager>().EnableCompositor("SMAA", compositorFlags[6]);
+    GetComponent<CompositorManager>().EnableCompositor("SMAA", compositorFlags[4]);
   }
 
   if (ImGui::Checkbox("SSR", &compositorFlags[5])) {

@@ -11,9 +11,19 @@ compositor SSAO
         compositor_logic DeferredLogic
         texture_ref mrt MRT mrt
         texture_ref rt MRT rt
-        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssao  target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+
+        target depth
+        {
+            pass render_quad
+            {
+                material Downscale2x2
+                input 0 mrt 2
+            }
+        }
 
         target ssao
         {
@@ -22,7 +32,7 @@ compositor SSAO
                 identifier 1
                 quad_normals camera_far_corners_view_space
                 material SSAO
-                input 0 mrt 2
+                input 0 depth
                 input 1 mrt 3
             }
         }
