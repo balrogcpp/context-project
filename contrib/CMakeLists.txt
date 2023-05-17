@@ -1545,13 +1545,15 @@ externalproject_add(Target_QT5
 
 
 # list of dependency targets
-add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E touch ${DEPS_SOURCE_LOCATION}/contrib_ready)
+add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E true)
 if (NOT EMSCRIPTEN)
     add_dependencies(Contrib Target_SDL2)
     add_dependencies(Contrib Target_OpenAL)
 endif ()
 add_dependencies(Contrib Target_GoogleTest)
 add_dependencies(Contrib Target_pugixml)
+add_dependencies(Contrib Target_json)
+add_dependencies(Contrib Target_filesystem)
 add_dependencies(Contrib Target_beast)
 add_dependencies(Contrib Target_Lua)
 add_dependencies(Contrib Target_sol2)
