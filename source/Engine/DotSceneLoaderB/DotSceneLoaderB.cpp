@@ -877,17 +877,17 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     Real distance = getAttribReal(XMLNode, "distance");
     Real width = getAttribReal(XMLNode, "width");
     Real height = getAttribReal(XMLNode, "height");
-    int xSegments = getAttribInt(XMLNode, "xSegments", std::ceil(width/10));
-    int ySegments = getAttribInt(XMLNode, "ySegments", std::ceil(height/10));
-    int numTexCoordSets = getAttribInt(XMLNode, "numTexCoordSets", 1);
+    int xSegments = getAttribInt(XMLNode, "xSegments", std::ceil(width/10.0));
+    int ySegments = getAttribInt(XMLNode, "ySegments", std::ceil(height/10.0));
+    int numTexCoordSets = getAttribInt(XMLNode, "numTexCoordSets", 1.0);
     Real uTile = getAttribReal(XMLNode, "uTile", xSegments);
     Real vTile = getAttribReal(XMLNode, "vTile", ySegments);
     String material = getAttrib(XMLNode, "material");
     bool hasNormals = getAttribBool(XMLNode, "hasNormals", true);
-    Vector3 normal = parseVector3(XMLNode.child("normal"), {0, 1, 0});
-    Vector3 up = parseVector3(XMLNode.child("upVector"), {0, 0, 1});
+    Vector3 normal = parseVector3(XMLNode.child("normal"), Ogre::Vector3::UNIT_Y);
+    Vector3 up = parseVector3(XMLNode.child("upVector"), Ogre::Vector3::UNIT_Z);
     Ogre::uint32 flags = getAttribUInt(XMLNode, "flags", 0xFFFFFFFF);
-    bool castShadows = getAttribBool(XMLNode, "castShadows", true);
+    bool castShadows = getAttribBool(XMLNode, "castShadows", false);
 
     Plane plane(normal, distance);
     MeshPtr res =
