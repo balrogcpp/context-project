@@ -48,7 +48,7 @@ abstract material PBR
             {
                 texture $Emissive
             }
-            texture_unit IBL_Specular
+            texture_unit IBL
             {
                 texture $IBL cubic
                 filtering bilinear
@@ -113,7 +113,6 @@ abstract material PBR
                 param_named ShadowMap5 int 10
                 param_named ShadowMap6 int 11
                 param_named ShadowMap7 int 12
-                param_named ShadowMap8 int 13
                 param_named_auto ShadowTexel0 inverse_texture_size 5
                 param_named_auto ShadowTexel1 inverse_texture_size 6
                 param_named_auto ShadowTexel2 inverse_texture_size 7
@@ -122,7 +121,6 @@ abstract material PBR
                 param_named_auto ShadowTexel5 inverse_texture_size 10
                 param_named_auto ShadowTexel6 inverse_texture_size 11
                 param_named_auto ShadowTexel7 inverse_texture_size 12
-                param_named_auto ShadowTexel8 inverse_texture_size 13
             }
         }
     }

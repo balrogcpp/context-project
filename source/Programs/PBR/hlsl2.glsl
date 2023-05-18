@@ -2,7 +2,7 @@
 
 #ifndef HLSL2_GLSL
 #define HLSL2_GLSL
-#ifdef OGRE_GLSL
+#if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 
 
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/GLSL_GL3Support.glsl

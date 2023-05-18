@@ -5,13 +5,8 @@
 
 
 #define MANUAL_SRGB
-
-#ifdef GL_ES
-  #define SRGB_VERY_FAST_APPROXIMATION
-#else
-  #define SRGB_FAST_APPROXIMATION
-#endif
-
+// #define SRGB_FAST_APPROXIMATION
+#define SRGB_VERY_FAST_APPROXIMATION
 
 
 //----------------------------------------------------------------------------------------------------------------------
