@@ -29,7 +29,11 @@
 #define FLT_MAX         3.402823466e+38 // Maximum representable floating-point number
 
 #define M_PI PI
-#define F0 0.04
+#ifdef OGRE_GLSLES
+#define F0 0.089
+#else
+#define F0 0.045
+#endif
 
 
 // extra optimized functions

@@ -122,7 +122,7 @@ void SceneManager::OnUpdate(float time) {
     auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
     pssmPoints.w = ogreSceneManager->getShadowFarDistance();
-    for (unsigned int j = 0; j < 3; j++) {
+    for (unsigned int j = 0; j < 4; j++) {
       pssmPoints[j] = splitPointList[j + 1];
     }
   } else {

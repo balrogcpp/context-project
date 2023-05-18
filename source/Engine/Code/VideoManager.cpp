@@ -516,7 +516,11 @@ void VideoManager::InitOgreSceneManager() {
 #endif
   if (shadowEnabled) {
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
-    shadowFarDistance = 100;
+    shadowFarDistance = 99;
+
+    // pssm stuff
+    pssmSetup = make_shared<DPSMCameraSetup>();
+    pssmSplitCount = 1;
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
@@ -524,19 +528,18 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
-    ogreSceneManager->setShadowTextureCount(9);
+    ogreSceneManager->setShadowTextureCount(8);
 
-    // pssm stuff
-    pssmSetup = make_shared<DPSMCameraSetup>();
+    // pssm stuf
     pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
-    pssmSetup->setSplitPadding(1.0);
+    pssmSetup->setSplitPadding(0.5);
     for (int i = 0; i < pssmSplitCount; i++) {
-      pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.3 * i));
+      pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     }
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
     auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);

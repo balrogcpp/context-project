@@ -9,7 +9,7 @@
 #endif
 
 #ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 9
+#define MAX_SHADOW_TEXTURES 8
 #endif
 
 #ifndef MAX_MRT_TEXTURES

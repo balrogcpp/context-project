@@ -31,12 +31,20 @@ mediump vec3 Diffuse(const mediump vec3 diffuseColor)
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------
+mediump float pow5(const mediump float x)
+{
+    mediump float x2 = x * x;
+    return x2 * x2 * x;
+}
+
+
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 SpecularReflection(const mediump vec3 reflectance0, const mediump vec3 reflectance90, const mediump float VdotH)
 {
-    return reflectance0 + (reflectance90 - reflectance0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
+    return reflectance0 + (reflectance90 - reflectance0) * pow5(1.0 - VdotH);
 }
 
 
@@ -111,6 +119,7 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 varying highp vec3 vWorldPosition;
 varying highp float vDepth;
 varying highp mat3 vTBN;
+varying highp vec3 oNormal;
 varying highp vec2 vUV0;
 varying mediump vec4 vColor;
 varying mediump vec4 vScreenPosition;
@@ -173,7 +182,7 @@ uniform mediump float OffsetScale;
 
 // fog function
 #include "fog.glsl"
-// // shadow receiver
+// shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
 #endif
@@ -459,7 +468,8 @@ void main()
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
     FragData[2] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[3] = vec4(n, 1.0);
+    FragData[3] = vec4(oNormal, 1.0);
+//    FragData[3] = vec4(n, 1.0);
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);

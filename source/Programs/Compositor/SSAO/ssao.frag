@@ -19,6 +19,8 @@ varying mediump vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;
+uniform mediump mat4 InvViewMatrix;
+uniform mediump mat4 InvProjMatrix;
 uniform mediump float FarClipDistance;
 
 
@@ -67,6 +69,8 @@ void main()
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
     mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
+    //mediump vec4 viewNorm = mul(InvViewMatrix, vec4(texture2D(NormalMap, vUV0).xyz, 0.0));
+    //viewNorm *= viewNorm.w;
 
     // Accumulated occlusion factor
     mediump float occ = 0.0;
@@ -76,17 +80,17 @@ void main()
         // (based on random samples and a random texture sample)
         // bias the random direction away from the normal
         // this tends to minimize self occlusion
-        mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm;
+        mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm.xyz;
 
         // Move new view-space position back into texture space
-        #define RADIUS 0.2125
-        //#define RADIUS 0.0525
+        //#define RADIUS 0.2125
+        #define RADIUS 0.0525
 
         mediump vec4 nuv = mul(ProjMatrix, vec4(viewPos + randomDir * RADIUS, 1.0));
         nuv /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x - 2.0 * HALF_EPSILON), 0.0, 1.0);
+        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
         occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);

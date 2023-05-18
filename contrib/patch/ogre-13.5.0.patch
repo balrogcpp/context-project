@@ -238,6 +238,23 @@ index 513fd3c1..c4d1f16c 100644
          PluginLibList::iterator i;
  
          for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
+diff --git a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp b/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
+index 560ac60b0..539c2e820 100644
+--- a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
++++ b/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
+@@ -50,9 +50,9 @@ namespace Ogre
+     //---------------------------------------------------------------------
+     void PSSMShadowCameraSetup::calculateSplitPoints(uint splitCount, Real nearDist, Real farDist, Real lambda)
+     {
+-        if (splitCount < 2)
+-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Cannot specify less than 2 splits", 
+-            "PSSMShadowCameraSetup::calculateSplitPoints");
++        //if (splitCount < 2)
++            //OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Cannot specify less than 2 splits",
++            //"PSSMShadowCameraSetup::calculateSplitPoints");
+ 
+         mSplitPoints.resize(splitCount + 1);
+         mOptimalAdjustFactors.resize(splitCount);
 diff --git a/OgreMain/src/OgreShadowRenderer.cpp b/OgreMain/src/OgreShadowRenderer.cpp
 index b0a8bc99..02367b7d 100644
 --- a/OgreMain/src/OgreShadowRenderer.cpp

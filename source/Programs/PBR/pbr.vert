@@ -10,7 +10,6 @@
 #endif
 #endif
 
-
 #include "header.glsl"
 #ifdef PAGED_GEOMETRY
 #include "pgeometry.glsl"
@@ -51,6 +50,7 @@ attribute highp vec4 uv2;
 varying highp vec3 vWorldPosition;
 varying highp float vDepth;
 varying highp mat3 vTBN;
+varying highp vec3 oNormal;
 varying highp vec2 vUV0;
 varying mediump vec4 vColor;
 varying mediump vec4 vScreenPosition;
@@ -60,6 +60,7 @@ varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
 uniform highp mat4 WorldMatrix;
+uniform highp mat4 WorldViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp float MovableObj;
@@ -83,10 +84,10 @@ void main()
 #endif // HAS_VERTEXCOLOR
 
 #ifndef VERTEX_COMPRESSION
-    highp vec4 position = vertex;
+    highp vec4 position = vertex.xyzw;
     highp vec2 uv = uv0.xy;
 #else
-    highp vec4 position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
+    highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0, 1.0);
     highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
@@ -101,15 +102,17 @@ void main()
 #endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS
-    highp vec3 n = normalize(vec3(mul(WorldMatrix, vec4(normal.xyz, 0.0))));
-    highp vec3 t = normalize(vec3(mul(WorldMatrix, vec4(tangent.xyz, 0.0))));
+    highp vec3 n = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+    highp vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
+    oNormal = normalize(mul(WorldViewMatrix, vec4(normal.xyz, 0.0)).xyz);
 #else
     const highp vec3 n = vec3(0.0, 1.0, 0.0);
     const highp vec3 t = vec3(1.0, 0.0, 0.0);
     const highp vec3 b = cross(n, t);
     vTBN = mtxFromCols3x3(t, b, n);
+    oNormal = n;
 #endif // HAS_NORMALS
 
     highp vec4 world = mul(WorldMatrix, position);
@@ -117,7 +120,7 @@ void main()
 
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
-    vDepth = gl_Position.z;
+    vDepth = length(mul(WorldViewMatrix, position));
     vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
 
 #if MAX_SHADOW_TEXTURES > 0
