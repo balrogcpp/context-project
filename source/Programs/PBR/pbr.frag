@@ -342,7 +342,7 @@ void main()
     const mediump float alpha = 1.0;
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
-    mediump float spec = 0.75 * pow(s.a, 0.2);
+    mediump float spec = 1.0 - 0.25 * pow(s.a, 0.2);
 #endif
 
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
