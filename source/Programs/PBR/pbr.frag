@@ -217,9 +217,7 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
 mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
-    //mediump vec3 brdf = SRGBtoLINEAR(texture2D(brdfLUT, vec2(NdotV, 1.0 - perceptualRoughness)).rgb);
     mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
-    //mediump vec3 diffuseLight = SRGBtoLINEAR(textureCube(DiffuseEnvMap, n).rgb);
 
 #ifdef HAS_IBL
     mediump vec3 diffuseLight = diffuseIrradiance(reflection);

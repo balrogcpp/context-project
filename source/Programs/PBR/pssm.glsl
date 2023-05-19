@@ -4,7 +4,7 @@
 #define PSSM_GLSL
 
 #ifndef PSSM_SPLIT_COUNT
-    #define PSSM_SPLIT_COUNT 1
+    #define PSSM_SPLIT_COUNT 2
 #endif
 #ifndef PSSM_FILTER_RADIUS
     #define PSSM_FILTER_RADIUS 16
@@ -249,7 +249,7 @@ mediump float CalcDPSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
 
 #if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------
-mediump float GetShadow(const mediump int light, mediump int tex)
+mediump float GetShadow(const mediump int light, inout mediump int tex)
 {
     mediump float shadow = 1.0;
 

@@ -520,7 +520,7 @@ void VideoManager::InitOgreSceneManager() {
 
     // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();
-    pssmSplitCount = 1;
+    pssmSplitCount = 2;
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
@@ -538,9 +538,9 @@ void VideoManager::InitOgreSceneManager() {
     Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigIterator().getNext();
     ogreSceneManager->setShadowTextureConfig(0, texConfig);
     ogreSceneManager->setShadowTextureConfig(1, texConfig);
-    ogreSceneManager->setShadowTextureConfig(2, texConfig);
     texConfig.height *= 0.5;
     texConfig.width *= 0.5;
+    ogreSceneManager->setShadowTextureConfig(2, texConfig);
     ogreSceneManager->setShadowTextureConfig(3, texConfig);
     ogreSceneManager->setShadowTextureConfig(4, texConfig);
     ogreSceneManager->setShadowTextureConfig(5, texConfig);
