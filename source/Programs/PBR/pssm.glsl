@@ -106,7 +106,7 @@ mediump float map_01(const mediump float x)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 lightSpace, const mediump vec2 tsize, const mediump float gradientNoise, const mediump float z_shadowMapView)
+mediump float Penumbra(sampler2D shadowMap, const mediump vec2 lightSpace, const mediump vec2 tsize, const mediump float gradientNoise, const mediump float z_shadowMapView)
 {
     mediump float avgBlockersDepth = 0.0;
     mediump float blockersCount = 0.0;
@@ -125,7 +125,7 @@ mediump float Penumbra(const sampler2D shadowMap, const mediump vec2 lightSpace,
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float FetchTerraShadow(const sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)
+mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float shadow = 0.0;
     mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
@@ -144,7 +144,7 @@ mediump float FetchTerraShadow(const sampler2D shadowMap, mediump vec2 uv, const
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 tsize)
+mediump float CalcDepthShadow(sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 tsize)
 {
   lightSpace /= lightSpace.w;
   lightSpace.z = lightSpace.z * 0.5 + 0.5;
@@ -174,7 +174,7 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
 
 //----------------------------------------------------------------------------------------------------------------------
 #if PSSM_SPLIT_COUNT == 1
-mediump float CalcPSSMShadow(const sampler2D shadowMap0, const mediump vec4 lightSpacePos0, const mediump vec2 texelSize0)
+mediump float CalcPSSMShadow(sampler2D shadowMap0, const mediump vec4 lightSpacePos0, const mediump vec2 texelSize0)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
         return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * PSSM_FILTER_RADIUS0);
@@ -187,7 +187,7 @@ mediump float CalcPSSMShadow(const sampler2D shadowMap0, const mediump vec4 ligh
 //----------------------------------------------------------------------------------------------------------------------
 #if PSSM_SPLIT_COUNT == 2
 mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, \
-                             const sampler2D shadowMap0, const sampler2D shadowMap1, \
+                             sampler2D shadowMap0, sampler2D shadowMap1, \
                              const mediump vec2 texelSize0, const mediump vec2 texelSize1)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
@@ -203,7 +203,7 @@ mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
 //----------------------------------------------------------------------------------------------------------------------
 #if PSSM_SPLIT_COUNT == 3
 mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, const mediump vec4 lightSpacePos2, \
-                             const sampler2D shadowMap0, const sampler2D shadowMap1, const sampler2D shadowMap2, \
+                             sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, \
                              const mediump vec2 texelSize0, const mediump vec2 texelSize1, const mediump vec2 texelSize2)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
@@ -221,7 +221,7 @@ mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
 //----------------------------------------------------------------------------------------------------------------------
 #if PSSM_SPLIT_COUNT == 4
 mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, const mediump vec4 lightSpacePos2, const mediump vec4 lightSpacePos3, \
-                             const sampler2D shadowMap0, const sampler2D shadowMap1, const sampler2D shadowMap2, const sampler2D shadowMap3, \
+                             sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, sampler2D shadowMap3, \
                              const mediump vec2 texelSize0, const mediump vec2 texelSize1, const mediump vec2 texelSize2, const mediump vec2 texelSize3)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
@@ -240,7 +240,7 @@ mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump float CalcDPSMShadow(const mediump vec4 lightSpacePos0, const mediump vec4 lightSpacePos1, \
-                             const sampler2D shadowMap0, const sampler2D shadowMap1, \
+                             sampler2D shadowMap0, sampler2D shadowMap1, \
                              const mediump vec2 texelSize0, const mediump vec2 texelSize1)
 {
     return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0);

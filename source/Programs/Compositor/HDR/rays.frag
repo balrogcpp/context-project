@@ -25,7 +25,7 @@ uniform mediump float Exposure;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 GodRays(const sampler2D tex, const mediump vec2 uv, const mediump vec2 lightPos, const mediump int counter, const mediump float density, const mediump float weight, const mediump float decay, const mediump float exposure)
+mediump vec3 GodRays(sampler2D tex, const mediump vec2 uv, const mediump vec2 lightPos, const mediump int counter, const mediump float density, const mediump float weight, const mediump float decay, const mediump float exposure)
 {
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
     mediump vec2 suv = uv;

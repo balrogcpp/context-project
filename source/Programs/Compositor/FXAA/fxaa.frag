@@ -31,7 +31,7 @@ uniform mediump vec2 TexelSize0;
 
 // https://github.com/mattdesl/glsl-fxaa/blob/master/fxaa.glsl
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 FastFxaa(const sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+mediump vec3 FastFxaa(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 rgbNW = texture2D(tex, uv + vec2(-1.0, -1.0) * tsize).xyz;
     mediump vec3 rgbNE = texture2D(tex, uv + vec2( 1.0, -1.0) * tsize).xyz;
@@ -151,7 +151,7 @@ mediump vec3 FxaaLerp3(const mediump vec3 a, const mediump vec3 b, const mediump
     return (vec3(-amountOfA, -amountOfA, -amountOfA) * b) + ((a * vec3(amountOfA, amountOfA, amountOfA)) + b);
 }
 
-vec4 FxaaTexOff(const sampler2D tex, const mediump vec2 pos, const mediump vec2 off, const mediump vec2 rcpFrame) {
+vec4 FxaaTexOff(sampler2D tex, const mediump vec2 pos, const mediump vec2 off, const mediump vec2 rcpFrame) {
     mediump float x = pos.x + off.x * rcpFrame.x;
     mediump float y = pos.y + off.y * rcpFrame.y;
     return texture2D(tex, vec2(x, y));
@@ -160,7 +160,7 @@ vec4 FxaaTexOff(const sampler2D tex, const mediump vec2 pos, const mediump vec2 
 // pos is the output of FxaaVertexShader interpolated across screen.
 // xy -> actual texture position {0.0 to 1.0}
 // rcpFrame should be a uniform equal to  {1.0/frameWidth, 1.0/frameHeight}
-mediump vec3 FxaaPixelShader(const mediump vec2 pos, const sampler2D tex, const mediump vec2 rcpFrame)
+mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const mediump vec2 rcpFrame)
 {
     mediump vec3 rgbN = FxaaTexOff(tex, pos.xy, vec2( 0.0, -1.0), rcpFrame).xyz;
     mediump vec3 rgbW = FxaaTexOff(tex, pos.xy, vec2(-1.0,  0.0), rcpFrame).xyz;
