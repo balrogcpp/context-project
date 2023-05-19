@@ -1,0 +1,414 @@
+2023-05-13 01:28:13 [ INFO] * Target path: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery
+2023-05-13 01:28:13 [ INFO] * Target file name: metallic_showroom_gallery.scene
+2023-05-13 01:28:13 [DEBUG] * Target file name (no ext): metallic_showroom_gallery
+2023-05-13 01:28:13 [ INFO] * Blender version: 3.3.6 (release; Linux)
+2023-05-13 01:28:13 [DEBUG]  + Binary Path: /snap/blender/3554/blender
+2023-05-13 01:28:13 [DEBUG]  + Build Date: 2023-04-18 00:03:55
+2023-05-13 01:28:13 [DEBUG]  + Build Hash: 948f8298b982
+2023-05-13 01:28:13 [DEBUG]  + Build Branch: master
+2023-05-13 01:28:13 [DEBUG]  + Build Platform: Linux
+2023-05-13 01:28:13 [ INFO] * Processing Scene: metallic_showroom_gallery, path: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery
+2023-05-13 01:28:13 [DEBUG] ABABA Sketchfab_model
+2023-05-13 01:28:13 [DEBUG] ABABA Collada visual scene group
+2023-05-13 01:28:13 [DEBUG] ABABA Material2
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.001
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.002
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.003
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.004
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.005
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.006
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.007
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.008
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.009
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.010
+2023-05-13 01:28:13 [DEBUG] ABABA Material2.011
+2023-05-13 01:28:13 [DEBUG] ABABA SketchUp
+2023-05-13 01:28:13 [DEBUG] ABABA skp_camera_Last_Saved_SketchUp_View
+2023-05-13 01:28:13 [DEBUG] ABABA ID1
+2023-05-13 01:28:13 [DEBUG] ABABA Sun
+2023-05-13 01:28:13 [DEBUG] ABABA Sun.001
+2023-05-13 01:28:13 [DEBUG] ABABA Sun.002
+2023-05-13 01:28:13 [DEBUG] ABABA Cube
+2023-05-13 01:28:13 [ INFO] * Processing Materials
+2023-05-13 01:28:13 [DEBUG] Getting Metallic roughness texture of material: 'Metal02.001'
+2023-05-13 01:28:13 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:13 [WARNING] Connected node 'Math.001' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:13 [WARNING] 'Roughness' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:13 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:13 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:13 [WARNING] 'Metallic' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:13 [DEBUG] Getting Metallic roughness texture of material: 'Metal02.001'
+2023-05-13 01:28:13 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:13 [WARNING] Connected node 'Math.001' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:13 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:13 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:13 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:13 [WARNING] Connected node 'Normal Map' has type 'NORMAL_MAP', not 'SEPARATE_COLOR'
+2023-05-13 01:28:13 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:13 [WARNING] Alpha input is not connected
+2023-05-13 01:28:13 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:13 [WARNING] Connected node 'Image Texture' has type 'TEX_IMAGE', not 'SEPARATE_COLOR'
+2023-05-13 01:28:13 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal02_baseColor.png)
+2023-05-13 01:28:14 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal03_metallicRoughness.png)
+2023-05-13 01:28:14 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal02_normal.png)
+2023-05-13 01:28:14 [DEBUG] Getting Metallic roughness texture of material: 'Metal04.001'
+2023-05-13 01:28:14 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:14 [WARNING] Connected node 'Math.001' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:14 [WARNING] 'Roughness' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:14 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:14 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:14 [WARNING] 'Metallic' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:14 [DEBUG] Getting Metallic roughness texture of material: 'Metal04.001'
+2023-05-13 01:28:14 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:14 [WARNING] Connected node 'Math.001' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:14 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:14 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:14 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:14 [WARNING] Connected node 'Normal Map' has type 'NORMAL_MAP', not 'SEPARATE_COLOR'
+2023-05-13 01:28:14 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:14 [WARNING] Alpha input is not connected
+2023-05-13 01:28:14 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:14 [WARNING] Connected node 'Image Texture' has type 'TEX_IMAGE', not 'SEPARATE_COLOR'
+2023-05-13 01:28:14 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal04_baseColor.png)
+2023-05-13 01:28:15 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal03_metallicRoughness.png)
+2023-05-13 01:28:15 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal02_normal.png)
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'Note.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Roughness input is not connected
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'Note.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Roughness input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:15 [WARNING] Metallic input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:15 [WARNING] Normal input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:15 [WARNING] Alpha input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:15 [WARNING] Connected node 'Image Texture.001' has type 'TEX_IMAGE', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Note_baseColor.png)
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'WindowFrames.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Roughness input is not connected
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'WindowFrames.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Roughness input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:15 [WARNING] Metallic input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:15 [WARNING] Normal input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:15 [WARNING] Alpha input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:15 [WARNING] Base Color input is not connected
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'Metal03.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Connected node 'Math.001' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [WARNING] 'Roughness' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:15 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [WARNING] 'Metallic' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'Metal03.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Connected node 'Math.001' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:15 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:15 [WARNING] Normal input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:15 [WARNING] Alpha input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:15 [WARNING] Connected node 'Mix' has type 'MIX_RGB', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal03_metallicRoughness.png)
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'Metal01.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [WARNING] 'Roughness' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:15 [DEBUG] Getting Metallic roughness texture of material: 'Metal01.001'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:15 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:15 [WARNING] Connected node 'Normal Map' has type 'NORMAL_MAP', not 'SEPARATE_COLOR'
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:15 [WARNING] Alpha input is not connected
+2023-05-13 01:28:15 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:15 [WARNING] Connected node 'Image Texture' has type 'TEX_IMAGE', not 'SEPARATE_COLOR'
+2023-05-13 01:28:16 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal01_baseColor.png)
+2023-05-13 01:28:16 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal03_metallicRoughness.png)
+2023-05-13 01:28:16 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal02_normal.png)
+2023-05-13 01:28:16 [DEBUG] Getting Metallic roughness texture of material: 'Floor.001'
+2023-05-13 01:28:16 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:16 [WARNING] Roughness input is not connected
+2023-05-13 01:28:16 [DEBUG] Getting Metallic roughness texture of material: 'Floor.001'
+2023-05-13 01:28:16 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:16 [WARNING] Roughness input is not connected
+2023-05-13 01:28:16 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:16 [WARNING] Metallic input is not connected
+2023-05-13 01:28:16 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:16 [WARNING] Connected node 'Normal Map' has type 'NORMAL_MAP', not 'SEPARATE_COLOR'
+2023-05-13 01:28:16 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:16 [WARNING] Alpha input is not connected
+2023-05-13 01:28:16 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:16 [WARNING] Base Color input is not connected
+2023-05-13 01:28:17 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Floor_normal.png)
+2023-05-13 01:28:17 [DEBUG] Getting Metallic roughness texture of material: 'Tiles.001'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:17 [WARNING] Roughness input is not connected
+2023-05-13 01:28:17 [DEBUG] Getting Metallic roughness texture of material: 'Tiles.001'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:17 [WARNING] Roughness input is not connected
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:17 [WARNING] Metallic input is not connected
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:17 [WARNING] Connected node 'Normal Map' has type 'NORMAL_MAP', not 'SEPARATE_COLOR'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:17 [WARNING] Alpha input is not connected
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:17 [WARNING] Base Color input is not connected
+2023-05-13 01:28:17 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Tiles_normal.png)
+2023-05-13 01:28:17 [DEBUG] Getting Metallic roughness texture of material: 'Welcome_Sign.001'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:17 [WARNING] Roughness input is not connected
+2023-05-13 01:28:17 [DEBUG] Getting Metallic roughness texture of material: 'Welcome_Sign.001'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:17 [WARNING] Roughness input is not connected
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:17 [WARNING] Metallic input is not connected
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:17 [WARNING] Normal input is not connected
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:17 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:17 [WARNING] Connected node 'Mix' has type 'MIX_RGB', not 'SEPARATE_COLOR'
+2023-05-13 01:28:17 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Welcome_Sign_baseColor.png)
+2023-05-13 01:28:17 [DEBUG] Getting Metallic roughness texture of material: 'Metal05.001'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:17 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:17 [WARNING] 'Roughness' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:17 [DEBUG] Getting Metallic roughness texture of material: 'Metal05.001'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:17 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:17 [WARNING] Connected node 'Normal Map' has type 'NORMAL_MAP', not 'SEPARATE_COLOR'
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:17 [WARNING] Alpha input is not connected
+2023-05-13 01:28:17 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:17 [WARNING] Connected node 'Image Texture' has type 'TEX_IMAGE', not 'SEPARATE_COLOR'
+2023-05-13 01:28:17 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal05_baseColor.png)
+2023-05-13 01:28:18 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal03_metallicRoughness.png)
+2023-05-13 01:28:18 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal02_normal.png)
+2023-05-13 01:28:18 [DEBUG] Getting Metallic roughness texture of material: 'Metal01'
+2023-05-13 01:28:18 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:18 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:18 [WARNING] 'Roughness' input connected to 'Value', wrong output of node: 'Separate Color'
+2023-05-13 01:28:18 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:18 [DEBUG] Getting Metallic roughness texture of material: 'Metal01'
+2023-05-13 01:28:18 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:18 [WARNING] Connected node 'Math' has type 'MATH', not 'SEPARATE_COLOR'
+2023-05-13 01:28:18 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:18 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:18 [WARNING] Connected node 'Normal Map' has type 'NORMAL_MAP', not 'SEPARATE_COLOR'
+2023-05-13 01:28:18 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:18 [WARNING] Alpha input is not connected
+2023-05-13 01:28:18 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:18 [WARNING] Connected node 'Image Texture' has type 'TEX_IMAGE', not 'SEPARATE_COLOR'
+2023-05-13 01:28:18 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal01_baseColor.png)
+2023-05-13 01:28:19 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal03_metallicRoughness.png)
+2023-05-13 01:28:19 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Metal02_normal.png)
+2023-05-13 01:28:19 [DEBUG] Getting Metallic roughness texture of material: 'edge_color000255.001'
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:19 [WARNING] Roughness input is not connected
+2023-05-13 01:28:19 [DEBUG] Getting Metallic roughness texture of material: 'edge_color000255.001'
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:19 [WARNING] Roughness input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:19 [WARNING] Metallic input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:19 [WARNING] Normal input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:19 [WARNING] Alpha input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:19 [WARNING] Base Color input is not connected
+2023-05-13 01:28:19 [DEBUG] Getting Metallic roughness texture of material: 'Light.001'
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:19 [WARNING] Roughness input is not connected
+2023-05-13 01:28:19 [DEBUG] Getting Metallic roughness texture of material: 'Light.001'
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 01:28:19 [WARNING] Roughness input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 01:28:19 [WARNING] Metallic input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 01:28:19 [WARNING] Normal input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 01:28:19 [WARNING] Alpha input is not connected
+2023-05-13 01:28:19 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 01:28:19 [WARNING] Base Color input is not connected
+2023-05-13 01:28:19 [ INFO] * Exporting root node: Sketchfab_model 
+2023-05-13 01:28:19 [ INFO] * Generating: Material2.012.mesh.xml
+2023-05-13 01:28:19 [ INFO]   - Vertices: 9976
+2023-05-13 01:28:19 [ INFO]   - Loop triangles: 6762
+2023-05-13 01:28:19 [ INFO] * Writing shared geometry
+2023-05-13 01:28:19 [WARNING] No UV Maps were created for this object: <Material2>, tangents won't be exported.
+2023-05-13 01:28:19 [DEBUG] * Mesh has custom normals
+2023-05-13 01:28:23 [ INFO] - Done at 4.33 seconds
+2023-05-13 01:28:23 [ INFO] * Writing submeshes
+2023-05-13 01:28:24 [ INFO] - Done at 4.40 seconds
+2023-05-13 01:28:24 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:28:24 [ INFO] - Created Material2.012.mesh.xml at 4.40 seconds
+2023-05-13 01:28:24 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.012.mesh.xml
+2023-05-13 01:28:24 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.012.mesh.xml
+2023-05-13 01:28:24 [ INFO] - Created Material2.012.mesh in total time 4.63 seconds
+2023-05-13 01:28:24 [ INFO] * Generating: Material2.014.mesh.xml
+2023-05-13 01:28:24 [ INFO]   - Vertices: 21050
+2023-05-13 01:28:24 [ INFO]   - Loop triangles: 15220
+2023-05-13 01:28:24 [ INFO] * Writing shared geometry
+2023-05-13 01:28:24 [DEBUG] * Mesh has custom normals
+2023-05-13 01:28:34 [ INFO] - Done at 10.00 seconds
+2023-05-13 01:28:34 [ INFO] * Writing submeshes
+2023-05-13 01:28:34 [ INFO] - Done at 10.15 seconds
+2023-05-13 01:28:34 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:28:34 [ INFO] - Created Material2.014.mesh.xml at 10.16 seconds
+2023-05-13 01:28:34 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.014.mesh.xml
+2023-05-13 01:28:34 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.014.mesh.xml
+2023-05-13 01:28:34 [ INFO] - Created Material2.014.mesh in total time 10.60 seconds
+2023-05-13 01:28:34 [ INFO] * Generating: Material2.015.mesh.xml
+2023-05-13 01:28:34 [ INFO]   - Vertices: 17796
+2023-05-13 01:28:34 [ INFO]   - Loop triangles: 12208
+2023-05-13 01:28:34 [ INFO] * Writing shared geometry
+2023-05-13 01:28:34 [DEBUG] * Mesh has custom normals
+2023-05-13 01:28:43 [ INFO] - Done at 8.17 seconds
+2023-05-13 01:28:43 [ INFO] * Writing submeshes
+2023-05-13 01:28:43 [ INFO] - Done at 8.30 seconds
+2023-05-13 01:28:43 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:28:43 [ INFO] - Created Material2.015.mesh.xml at 8.30 seconds
+2023-05-13 01:28:43 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.015.mesh.xml
+2023-05-13 01:28:43 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.015.mesh.xml
+2023-05-13 01:28:43 [ INFO] - Created Material2.015.mesh in total time 8.64 seconds
+2023-05-13 01:28:43 [ INFO] * Generating: Material2.016.mesh.xml
+2023-05-13 01:28:43 [ INFO]   - Vertices: 11554
+2023-05-13 01:28:43 [ INFO]   - Loop triangles: 7920
+2023-05-13 01:28:43 [ INFO] * Writing shared geometry
+2023-05-13 01:28:43 [DEBUG] * Mesh has custom normals
+2023-05-13 01:28:48 [ INFO] - Done at 5.34 seconds
+2023-05-13 01:28:48 [ INFO] * Writing submeshes
+2023-05-13 01:28:48 [ INFO] - Done at 5.42 seconds
+2023-05-13 01:28:48 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:28:48 [ INFO] - Created Material2.016.mesh.xml at 5.42 seconds
+2023-05-13 01:28:49 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.016.mesh.xml
+2023-05-13 01:28:49 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.016.mesh.xml
+2023-05-13 01:28:49 [ INFO] - Created Material2.016.mesh in total time 5.70 seconds
+2023-05-13 01:28:49 [ INFO] * Generating: Material2.017.mesh.xml
+2023-05-13 01:28:49 [ INFO]   - Vertices: 3968
+2023-05-13 01:28:49 [ INFO]   - Loop triangles: 3888
+2023-05-13 01:28:49 [ INFO] * Writing shared geometry
+2023-05-13 01:28:49 [DEBUG] * Mesh has custom normals
+2023-05-13 01:28:51 [ INFO] - Done at 2.53 seconds
+2023-05-13 01:28:51 [ INFO] * Writing submeshes
+2023-05-13 01:28:51 [ INFO] - Done at 2.56 seconds
+2023-05-13 01:28:51 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:28:51 [ INFO] - Created Material2.017.mesh.xml at 2.57 seconds
+2023-05-13 01:28:51 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.017.mesh.xml
+2023-05-13 01:28:51 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.017.mesh.xml
+2023-05-13 01:28:51 [ INFO] - Created Material2.017.mesh in total time 2.77 seconds
+2023-05-13 01:28:51 [ INFO] * Generating: Material2.018.mesh.xml
+2023-05-13 01:28:51 [ INFO]   - Vertices: 21880
+2023-05-13 01:28:51 [ INFO]   - Loop triangles: 14705
+2023-05-13 01:28:51 [ INFO] * Writing shared geometry
+2023-05-13 01:28:51 [DEBUG] * Mesh has custom normals
+2023-05-13 01:29:01 [ INFO] - Done at 9.80 seconds
+2023-05-13 01:29:01 [ INFO] * Writing submeshes
+2023-05-13 01:29:01 [ INFO] - Done at 9.99 seconds
+2023-05-13 01:29:01 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:29:01 [ INFO] - Created Material2.018.mesh.xml at 10.00 seconds
+2023-05-13 01:29:02 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.018.mesh.xml
+2023-05-13 01:29:02 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.018.mesh.xml
+2023-05-13 01:29:02 [ INFO] - Created Material2.018.mesh in total time 10.43 seconds
+2023-05-13 01:29:02 [ INFO] * Generating: Material2.019.mesh.xml
+2023-05-13 01:29:02 [ INFO]   - Vertices: 966
+2023-05-13 01:29:02 [ INFO]   - Loop triangles: 960
+2023-05-13 01:29:02 [ INFO] * Writing shared geometry
+2023-05-13 01:29:02 [DEBUG] * Mesh has custom normals
+2023-05-13 01:29:03 [ INFO] - Done at 0.80 seconds
+2023-05-13 01:29:03 [ INFO] * Writing submeshes
+2023-05-13 01:29:03 [ INFO] - Done at 0.82 seconds
+2023-05-13 01:29:03 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:29:03 [ INFO] - Created Material2.019.mesh.xml at 0.82 seconds
+2023-05-13 01:29:03 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.019.mesh.xml
+2023-05-13 01:29:03 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.019.mesh.xml
+2023-05-13 01:29:03 [ INFO] - Created Material2.019.mesh in total time 1.01 seconds
+2023-05-13 01:29:03 [ INFO] * Generating: Material2.020.mesh.xml
+2023-05-13 01:29:03 [ INFO]   - Vertices: 32
+2023-05-13 01:29:03 [ INFO]   - Loop triangles: 16
+2023-05-13 01:29:03 [ INFO] * Writing shared geometry
+2023-05-13 01:29:03 [WARNING] No UV Maps were created for this object: <Material2.008>, tangents won't be exported.
+2023-05-13 01:29:03 [DEBUG] * Mesh has custom normals
+2023-05-13 01:29:03 [ INFO] - Done at 0.01 seconds
+2023-05-13 01:29:03 [ INFO] * Writing submeshes
+2023-05-13 01:29:03 [ INFO] - Done at 0.01 seconds
+2023-05-13 01:29:03 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:29:03 [ INFO] - Created Material2.020.mesh.xml at 0.01 seconds
+2023-05-13 01:29:03 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.020.mesh.xml
+2023-05-13 01:29:03 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.020.mesh.xml
+2023-05-13 01:29:03 [ INFO] - Created Material2.020.mesh in total time 0.18 seconds
+2023-05-13 01:29:03 [ INFO] * Generating: Material2.021.mesh.xml
+2023-05-13 01:29:03 [ INFO]   - Vertices: 16
+2023-05-13 01:29:03 [ INFO]   - Loop triangles: 8
+2023-05-13 01:29:03 [ INFO] * Writing shared geometry
+2023-05-13 01:29:03 [DEBUG] * Mesh has custom normals
+2023-05-13 01:29:03 [ INFO] - Done at 0.01 seconds
+2023-05-13 01:29:03 [ INFO] * Writing submeshes
+2023-05-13 01:29:03 [ INFO] - Done at 0.01 seconds
+2023-05-13 01:29:03 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:29:03 [ INFO] - Created Material2.021.mesh.xml at 0.01 seconds
+2023-05-13 01:29:03 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.021.mesh.xml
+2023-05-13 01:29:03 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.021.mesh.xml
+2023-05-13 01:29:03 [ INFO] - Created Material2.021.mesh in total time 0.16 seconds
+2023-05-13 01:29:03 [ INFO] * Generating: Material2.022.mesh.xml
+2023-05-13 01:29:03 [ INFO]   - Vertices: 48
+2023-05-13 01:29:03 [ INFO]   - Loop triangles: 24
+2023-05-13 01:29:03 [ INFO] * Writing shared geometry
+2023-05-13 01:29:03 [DEBUG] * Mesh has custom normals
+2023-05-13 01:29:03 [ INFO] - Done at 0.03 seconds
+2023-05-13 01:29:03 [ INFO] * Writing submeshes
+2023-05-13 01:29:03 [ INFO] - Done at 0.03 seconds
+2023-05-13 01:29:03 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:29:03 [ INFO] - Created Material2.022.mesh.xml at 0.03 seconds
+2023-05-13 01:29:03 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.022.mesh.xml
+2023-05-13 01:29:03 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.022.mesh.xml
+2023-05-13 01:29:03 [ INFO] - Created Material2.022.mesh in total time 0.18 seconds
+2023-05-13 01:29:03 [ INFO] * Generating: Material2.023.mesh.xml
+2023-05-13 01:29:03 [ INFO]   - Vertices: 34128
+2023-05-13 01:29:03 [ INFO]   - Loop triangles: 45072
+2023-05-13 01:29:03 [ INFO] * Writing shared geometry
+2023-05-13 01:29:04 [DEBUG] * Mesh has custom normals
+2023-05-13 01:29:34 [ INFO] - Done at 30.12 seconds
+2023-05-13 01:29:34 [ INFO] * Writing submeshes
+2023-05-13 01:29:34 [ INFO] - Done at 30.58 seconds
+2023-05-13 01:29:34 [DEBUG] Removing temporary object: Material2.012
+2023-05-13 01:29:34 [ INFO] - Created Material2.023.mesh.xml at 30.60 seconds
+2023-05-13 01:29:35 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.023.mesh.xml
+2023-05-13 01:29:35 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Material2.023.mesh.xml
+2023-05-13 01:29:35 [ INFO] - Created Material2.023.mesh in total time 31.34 seconds
+2023-05-13 01:29:35 [ INFO] * Exporting root node: Sun 
+2023-05-13 01:29:35 [ INFO] * Exporting root node: Sun.001 
+2023-05-13 01:29:35 [ INFO] * Exporting root node: Sun.002 
+2023-05-13 01:29:35 [ INFO] * Exporting root node: Cube 
+2023-05-13 01:29:35 [ INFO] * Generating: Cube.mesh.xml
+2023-05-13 01:29:35 [ INFO]   - Vertices: 8
+2023-05-13 01:29:35 [ INFO]   - Loop triangles: 12
+2023-05-13 01:29:35 [ INFO] * Writing shared geometry
+2023-05-13 01:29:35 [DEBUG] * Mesh has NO custom normals
+2023-05-13 01:29:35 [ INFO] - Done at 0.01 seconds
+2023-05-13 01:29:35 [ INFO] * Writing submeshes
+2023-05-13 01:29:35 [ INFO] - Done at 0.01 seconds
+2023-05-13 01:29:35 [DEBUG] Removing temporary object: Cube.001
+2023-05-13 01:29:35 [ INFO] - Created Cube.mesh.xml at 0.01 seconds
+2023-05-13 01:29:35 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Cube.mesh.xml
+2023-05-13 01:29:35 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/Cube.mesh.xml
+2023-05-13 01:29:35 [ INFO] - Created Cube.mesh in total time 0.16 seconds
+2023-05-13 01:29:35 [ INFO] - Exported Ogre Scene: /home/andrey/source/engine/source/Tests/Assets/Scenes/metallic_showroom_gallery/metallic_showroom_gallery.scene 
+2023-05-13 01:29:35 [ INFO] - Done at 81.98 seconds

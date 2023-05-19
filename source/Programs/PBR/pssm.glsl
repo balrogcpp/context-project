@@ -4,19 +4,23 @@
 #define PSSM_GLSL
 
 #ifndef PSSM_SPLIT_COUNT
-    #define PSSM_SPLIT_COUNT 2
+    #define PSSM_SPLIT_COUNT 1
 #endif
 #ifndef PSSM_FILTER_RADIUS
-    #define PSSM_FILTER_RADIUS 12
+    #define PSSM_FILTER_RADIUS 16
+    #define PSSM_FILTER_RADIUS0 1.0
+    #define PSSM_FILTER_RADIUS1 0.3
+    #define PSSM_FILTER_RADIUS2 0.2
+    #define PSSM_FILTER_RADIUS3 0.1
 #endif
 #ifndef PSSM_FILTER_SIZE
     #define PSSM_FILTER_SIZE 16
 #endif
 #ifndef PENUMBRA_FILTER_RADIUS
-    #define PENUMBRA_FILTER_RADIUS 4
+    #define PENUMBRA_FILTER_RADIUS 16
 #endif
 #ifndef PENUMBRA_FILTER_SIZE
-    #define PENUMBRA_FILTER_SIZE 4
+    #define PENUMBRA_FILTER_SIZE 16
 #endif
 #ifndef PENUMBRA_LIGHT_SIZE
     #define PENUMBRA_LIGHT_SIZE 50.0
@@ -173,7 +177,7 @@ mediump float CalcDepthShadow(const sampler2D shadowMap, mediump vec4 lightSpace
 mediump float CalcPSSMShadow(const sampler2D shadowMap0, const mediump vec4 lightSpacePos0, const mediump vec2 texelSize0)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0);
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * PSSM_FILTER_RADIUS0);
     else
         return 1.0;
 }
@@ -187,9 +191,9 @@ mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
                              const mediump vec2 texelSize0, const mediump vec2 texelSize1)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0);
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * PSSM_FILTER_RADIUS0);
     else if (vScreenPosition.z <= PssmSplitPoints.y)
-        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * 0.3);
+        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * PSSM_FILTER_RADIUS1);
     else
         return 1.0;
 }
@@ -203,11 +207,11 @@ mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
                              const mediump vec2 texelSize0, const mediump vec2 texelSize1, const mediump vec2 texelSize2)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0);
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * PSSM_FILTER_RADIUS0);
     else if (vScreenPosition.z <= PssmSplitPoints.y)
-        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * 0.3);
+        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * PSSM_FILTER_RADIUS1);
     else if (vScreenPosition.z <= PssmSplitPoints.z)
-        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * 0.2);
+        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * PSSM_FILTER_RADIUS2);
     else
         return 1.0;
 }
@@ -221,13 +225,13 @@ mediump float CalcPSSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
                              const mediump vec2 texelSize0, const mediump vec2 texelSize1, const mediump vec2 texelSize2, const mediump vec2 texelSize3)
 {
     if (vScreenPosition.z <= PssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0);
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, texelSize0 * PSSM_FILTER_RADIUS0);
     else if (vScreenPosition.z <= PssmSplitPoints.y)
-        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * 0.3);
+        return CalcDepthShadow(shadowMap1, lightSpacePos1, texelSize1 * PSSM_FILTER_RADIUS1);
     else if (vScreenPosition.z <= PssmSplitPoints.z)
-        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * 0.2);
+        return CalcDepthShadow(shadowMap2, lightSpacePos2, texelSize2 * PSSM_FILTER_RADIUS2);
     else if (vScreenPosition.z <= PssmSplitPoints.w)
-        return CalcDepthShadow(shadowMap3, lightSpacePos3, texelSize3 * 0.1);
+        return CalcDepthShadow(shadowMap3, lightSpacePos3, texelSize3 * PSSM_FILTER_RADIUS3);
     else
         return 1.0;
 }

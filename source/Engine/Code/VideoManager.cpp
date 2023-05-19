@@ -509,7 +509,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
   shadowEnabled = true;
-  shadowTexSize = 1024;
+  shadowTexSize = 2048;
 #else
   shadowEnabled = false;
   shadowTexSize = 512;
@@ -520,7 +520,7 @@ void VideoManager::InitOgreSceneManager() {
 
     // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();
-    pssmSplitCount = 2;
+    pssmSplitCount = 1;
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
@@ -537,10 +537,10 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCount(8);
     Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigIterator().getNext();
     ogreSceneManager->setShadowTextureConfig(0, texConfig);
-    texConfig.height *= 0.5;
-    texConfig.width *= 0.5;
     ogreSceneManager->setShadowTextureConfig(1, texConfig);
     ogreSceneManager->setShadowTextureConfig(2, texConfig);
+    texConfig.height *= 0.5;
+    texConfig.width *= 0.5;
     ogreSceneManager->setShadowTextureConfig(3, texConfig);
     ogreSceneManager->setShadowTextureConfig(4, texConfig);
     ogreSceneManager->setShadowTextureConfig(5, texConfig);
@@ -549,11 +549,11 @@ void VideoManager::InitOgreSceneManager() {
  
 
     // pssm stuf
-    pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
     pssmSetup->setSplitPadding(0.5);
     for (int i = 0; i < pssmSplitCount; i++) {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     }
+    pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
     auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);
     auto *subRenderState = static_cast<Ogre::RTShader::IntegratedPSSM3 *>(schemRenderState->getSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3));

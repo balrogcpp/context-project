@@ -4,7 +4,7 @@
 #define MATH_GLSL
 
 
-#ifdef OGRE_GLSL
+#if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 #include "hlsl2.glsl"
 #endif
 #ifdef OGRE_HLSL

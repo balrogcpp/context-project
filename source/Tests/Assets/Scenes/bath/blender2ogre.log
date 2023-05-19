@@ -1,0 +1,107 @@
+2023-05-13 05:19:32 [ INFO] * Target path: /home/andrey/source/engine/source/Tests/Assets/Scenes/bath
+2023-05-13 05:19:32 [ INFO] * Target file name: bath.scene
+2023-05-13 05:19:32 [DEBUG] * Target file name (no ext): bath
+2023-05-13 05:19:32 [ INFO] * Blender version: 3.3.6 (release; Linux)
+2023-05-13 05:19:32 [DEBUG]  + Binary Path: /snap/blender/3554/blender
+2023-05-13 05:19:32 [DEBUG]  + Build Date: 2023-04-18 00:03:55
+2023-05-13 05:19:32 [DEBUG]  + Build Hash: 948f8298b982
+2023-05-13 05:19:32 [DEBUG]  + Build Branch: master
+2023-05-13 05:19:32 [DEBUG]  + Build Platform: Linux
+2023-05-13 05:19:32 [ INFO] * Processing Scene: bath, path: /home/andrey/source/engine/source/Tests/Assets/Scenes/bath
+2023-05-13 05:19:32 [DEBUG] ABABA Sketchfab_model
+2023-05-13 05:19:32 [DEBUG] ABABA Bathhouse.fbx
+2023-05-13 05:19:32 [DEBUG] ABABA RootNode
+2023-05-13 05:19:32 [DEBUG] ABABA Bathhouse
+2023-05-13 05:19:32 [DEBUG] ABABA Bathhouse_Bathhouse_0
+2023-05-13 05:19:32 [DEBUG] ABABA Bathhouse_Bathhouse_0.001
+2023-05-13 05:19:32 [DEBUG] ABABA Bathhouse_Bathhouse_0.002
+2023-05-13 05:19:32 [DEBUG] ABABA Bathhouse_Water_0
+2023-05-13 05:19:32 [DEBUG] ABABA Light
+2023-05-13 05:19:32 [DEBUG] ABABA Camera
+2023-05-13 05:19:32 [ INFO] * Processing Materials
+2023-05-13 05:19:32 [DEBUG] Getting Metallic roughness texture of material: 'Bathhouse'
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 05:19:32 [WARNING] Roughness input is not connected
+2023-05-13 05:19:32 [DEBUG] Getting Metallic roughness texture of material: 'Bathhouse'
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 05:19:32 [WARNING] Roughness input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 05:19:32 [WARNING] Metallic input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 05:19:32 [WARNING] Normal input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 05:19:32 [WARNING] Alpha input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 05:19:32 [WARNING] Connected node 'Image Texture.001' has type 'TEX_IMAGE', not 'SEPARATE_COLOR'
+2023-05-13 05:19:32 [ INFO] Writing texture: (/home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_baseColor.png)
+2023-05-13 05:19:32 [DEBUG] Getting Metallic roughness texture of material: 'Water'
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 05:19:32 [WARNING] Roughness input is not connected
+2023-05-13 05:19:32 [DEBUG] Getting Metallic roughness texture of material: 'Water'
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Roughness'
+2023-05-13 05:19:32 [WARNING] Roughness input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Metallic'
+2023-05-13 05:19:32 [WARNING] Metallic input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Normal'
+2023-05-13 05:19:32 [WARNING] Normal input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Alpha'
+2023-05-13 05:19:32 [WARNING] Alpha input is not connected
+2023-05-13 05:19:32 [DEBUG]  + Processing input: 'Base Color'
+2023-05-13 05:19:32 [WARNING] Base Color input is not connected
+2023-05-13 05:19:32 [ INFO] * Exporting root node: Sketchfab_model 
+2023-05-13 05:19:32 [ INFO] * Generating: Bathhouse_Bathhouse_0.mesh.xml
+2023-05-13 05:19:32 [ INFO]   - Vertices: 65532
+2023-05-13 05:19:32 [ INFO]   - Loop triangles: 55481
+2023-05-13 05:19:32 [ INFO] * Writing shared geometry
+2023-05-13 05:19:32 [DEBUG] * Mesh has custom normals
+2023-05-13 05:20:06 [ INFO] - Done at 34.09 seconds
+2023-05-13 05:20:06 [ INFO] * Writing submeshes
+2023-05-13 05:20:07 [ INFO] - Done at 34.60 seconds
+2023-05-13 05:20:07 [DEBUG] Removing temporary object: Bathhouse_Bathhouse_0.003
+2023-05-13 05:20:07 [ INFO] - Created Bathhouse_Bathhouse_0.mesh.xml at 34.61 seconds
+2023-05-13 05:20:07 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Bathhouse_0.mesh.xml
+2023-05-13 05:20:08 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Bathhouse_0.mesh.xml
+2023-05-13 05:20:08 [ INFO] - Created Bathhouse_Bathhouse_0.mesh in total time 35.77 seconds
+2023-05-13 05:20:08 [ INFO] * Generating: Bathhouse_Bathhouse_0.001.mesh.xml
+2023-05-13 05:20:08 [ INFO]   - Vertices: 65532
+2023-05-13 05:20:08 [ INFO]   - Loop triangles: 77653
+2023-05-13 05:20:08 [ INFO] * Writing shared geometry
+2023-05-13 05:20:08 [DEBUG] * Mesh has custom normals
+2023-05-13 05:20:52 [ INFO] - Done at 44.54 seconds
+2023-05-13 05:20:52 [ INFO] * Writing submeshes
+2023-05-13 05:20:53 [ INFO] - Done at 45.29 seconds
+2023-05-13 05:20:53 [DEBUG] Removing temporary object: Bathhouse_Bathhouse_0.003
+2023-05-13 05:20:53 [ INFO] - Created Bathhouse_Bathhouse_0.001.mesh.xml at 45.31 seconds
+2023-05-13 05:20:54 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Bathhouse_0.001.mesh.xml
+2023-05-13 05:20:54 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Bathhouse_0.001.mesh.xml
+2023-05-13 05:20:54 [ INFO] - Created Bathhouse_Bathhouse_0.001.mesh in total time 46.49 seconds
+2023-05-13 05:20:54 [ INFO] * Generating: Bathhouse_Bathhouse_0.002.mesh.xml
+2023-05-13 05:20:54 [ INFO]   - Vertices: 27154
+2023-05-13 05:20:54 [ INFO]   - Loop triangles: 24744
+2023-05-13 05:20:54 [ INFO] * Writing shared geometry
+2023-05-13 05:20:54 [DEBUG] * Mesh has custom normals
+2023-05-13 05:21:10 [ INFO] - Done at 15.32 seconds
+2023-05-13 05:21:10 [ INFO] * Writing submeshes
+2023-05-13 05:21:10 [ INFO] - Done at 15.55 seconds
+2023-05-13 05:21:10 [DEBUG] Removing temporary object: Bathhouse_Bathhouse_0.003
+2023-05-13 05:21:10 [ INFO] - Created Bathhouse_Bathhouse_0.002.mesh.xml at 15.56 seconds
+2023-05-13 05:21:10 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Bathhouse_0.002.mesh.xml
+2023-05-13 05:21:11 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Bathhouse_0.002.mesh.xml
+2023-05-13 05:21:11 [ INFO] - Created Bathhouse_Bathhouse_0.002.mesh in total time 16.09 seconds
+2023-05-13 05:21:11 [ INFO] * Generating: Bathhouse_Water_0.mesh.xml
+2023-05-13 05:21:11 [ INFO]   - Vertices: 34
+2023-05-13 05:21:11 [ INFO]   - Loop triangles: 32
+2023-05-13 05:21:11 [ INFO] * Writing shared geometry
+2023-05-13 05:21:11 [DEBUG] * Mesh has custom normals
+2023-05-13 05:21:11 [ INFO] - Done at 0.02 seconds
+2023-05-13 05:21:11 [ INFO] * Writing submeshes
+2023-05-13 05:21:11 [ INFO] - Done at 0.02 seconds
+2023-05-13 05:21:11 [DEBUG] Removing temporary object: Bathhouse_Water_0.001
+2023-05-13 05:21:11 [ INFO] - Created Bathhouse_Water_0.mesh.xml at 0.02 seconds
+2023-05-13 05:21:11 [DEBUG] ogre.XMLConverter -q -byte -log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/OgreXMLConverter.log /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Water_0.mesh.xml
+2023-05-13 05:21:11 [ INFO] Removing generated xml file after conversion: /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/Bathhouse_Water_0.mesh.xml
+2023-05-13 05:21:11 [ INFO] - Created Bathhouse_Water_0.mesh in total time 0.17 seconds
+2023-05-13 05:21:11 [ INFO] * Exporting root node: Light 
+2023-05-13 05:21:11 [ INFO] * Exporting root node: Camera 
+2023-05-13 05:21:11 [ INFO] - Exported Ogre Scene: /home/andrey/source/engine/source/Tests/Assets/Scenes/bath/bath.scene 
+2023-05-13 05:21:11 [ INFO] - Done at 98.88 seconds
