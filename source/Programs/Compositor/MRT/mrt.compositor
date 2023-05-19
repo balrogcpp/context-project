@@ -73,7 +73,7 @@ compositor Paused
             }
         }
 
-        target rt
+        target_output
         {
             pass render_quad
             {

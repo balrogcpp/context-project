@@ -397,7 +397,9 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
 
   const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
-  
+  vp->setIgnoreMissingParams(true);
+  fp->setIgnoreMissingParams(true);
+
   // apply for entities, skip grass
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
     auto *entity = subentity->getParent();
@@ -430,6 +432,9 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   }
 
   fp->setNamedConstant("PssmSplitPoints", pssmPoints);
+
+  vp->setIgnoreMissingParams(false);
+  fp->setIgnoreMissingParams(false);
 }
 
 }  // namespace gge

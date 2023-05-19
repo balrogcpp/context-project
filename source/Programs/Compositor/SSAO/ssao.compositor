@@ -41,7 +41,7 @@ compositor SSAO
         {
             pass render_quad
             {
-                material FilterX_F16
+                material SSAOX
                 input 0 ssao
             }
         }
@@ -50,7 +50,7 @@ compositor SSAO
         {
             pass render_quad
             {
-                material FilterY_F16
+                material SSAOY
                 input 0 ssaox
             }
         }

@@ -41,13 +41,9 @@ material SSAO : Base
     }
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program SSAO_mod_fp glsl glsles hlsl
+fragment_program ssaoMod glsl glsles hlsl
 {
-	source ssao_mod.frag
+	source ssaoMod.frag
 }
 
 material SSAO_mod : Base
@@ -56,7 +52,7 @@ material SSAO_mod : Base
     {
         pass
         {
-            fragment_program_ref SSAO_mod_fp
+            fragment_program_ref ssaoMod
             {
                 param_named RT int 0
                 param_named SsaoMap int 1
@@ -67,11 +63,64 @@ material SSAO_mod : Base
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
             texture_unit SSAO
             {
                 texture white.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+
+fragment_program ssaox glsl glsles hlsl
+{
+	source ssaox.frag
+}
+
+fragment_program ssaoy glsl glsles hlsl
+{
+	source ssaoy.frag
+}
+
+material SSAOX : Base
+{
+    technique
+    {
+        pass
+        {
+			fragment_program_ref ssaox
+			{
+                param_named RT int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+			}
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+material SSAOY : Base
+{
+    technique
+    {
+        pass
+        {
+			fragment_program_ref ssaoy
+			{
+                param_named RT int 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+			}
+
+            texture_unit RT
+            {
+                texture black.dds
                 tex_address_mode clamp
                 filtering bilinear
             }

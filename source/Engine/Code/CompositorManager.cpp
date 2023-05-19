@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChainSize(12), mipMask{5, 7} {}
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChainSize(8), mipMask{5} {}
 
 CompositorManager::~CompositorManager() {}
 
@@ -17,7 +17,7 @@ void CompositorManager::OnUpdate(float time) {}
 void CompositorManager::SetSleep(bool sleep) {
   _sleep = sleep;
 
-//  EnableCompositor("Paused", sleep);
+  EnableCompositor("Paused", sleep);
 }
 
 class DeferredLogic final : public Ogre::CompositorLogic {
@@ -71,6 +71,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
   AddCompositor("End", true);
+  AddCompositor("Paused", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);
