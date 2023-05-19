@@ -25,8 +25,6 @@ uniform sampler2D blendTex;
 #if SMAA_REPROJECTION
 	uniform sampler2D velocityTex;
 #endif
-uniform mediump vec4 ViewportSize;
-uniform mediump float FarClipDistance;
 #include "smaa.glsl"
 
 

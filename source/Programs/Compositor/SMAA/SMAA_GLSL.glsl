@@ -21,3 +21,6 @@ vec4 fromSRGB( vec4 x )
 	//return vec4(SRGBtoLINEAR(x.rgb), x.a);
 	return x;
 }
+
+uniform mediump vec4 ViewportSize;
+uniform mediump float FarClipDistance;

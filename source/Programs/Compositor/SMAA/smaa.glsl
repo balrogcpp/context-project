@@ -598,15 +598,6 @@ SamplerState PointSampler { Filter = MIN_MAG_MIP_POINT; AddressU = Clamp; Addres
 #endif
 #define SMAA_INOUT(type, varname) inout type varname
 #define SMAA_OUT(type, varname) out type varname
-#define float2 vec2
-#define float3 vec3
-#define float4 vec4
-#define int2 ivec2
-#define int3 ivec3
-#define int4 ivec4
-#define bool2 bvec2
-#define bool3 bvec3
-#define bool4 bvec4
 #endif
 #if defined(SMAA_METAL)
 constexpr sampler LinearSampler = sampler( coord::normalized,
@@ -674,7 +665,7 @@ SMAA_INLINE mediump vec2 SMAACalculatePredicatedThreshold(const mediump vec2 tex
                                                     SMAATexture2D(predicationTex)
                                                     SMAA_EXTRA_PARAM_ARG_DECL) {
     mediump vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(predicationTex)
-                                             SMAA_EXTRA_PARAM_ARG) * FarClipDistance;
+                                             SMAA_EXTRA_PARAM_ARG);
     mediump vec2 delta = abs(neighbours.xx - neighbours.yz);
     mediump vec2 edges = step(SMAA_PREDICATION_THRESHOLD, delta);
     return SMAA_PREDICATION_SCALE * SMAA_THRESHOLD * (1.0 - SMAA_PREDICATION_STRENGTH * edges);
@@ -689,15 +680,15 @@ SMAA_INLINE void SMAAMovc(const bvec2 cond, SMAA_INOUT( mediump vec2, variable )
 }
 
 SMAA_INLINE void SMAAMovc(const bvec4 cond, SMAA_INOUT( mediump vec4, variable ), const mediump vec4 value) {
-// #if SMAA_NO_RVALUE_REFERENCE
+#if SMAA_NO_RVALUE_REFERENCE
     SMAA_FLATTEN if (cond.x) variable.x = value.x;
     SMAA_FLATTEN if (cond.y) variable.y = value.y;
     SMAA_FLATTEN if (cond.z) variable.z = value.z;
     SMAA_FLATTEN if (cond.w) variable.w = value.w;
-// #else
-//     SMAAMovc(cond.xy, variable.xy, value.xy);
-//     SMAAMovc(cond.zw, variable.zw, value.zw);
-// #endif
+#else
+    SMAAMovc(cond.xy, variable.xy, value.xy);
+    SMAAMovc(cond.zw, variable.zw, value.zw);
+#endif
 }
 
 
@@ -890,7 +881,7 @@ SMAA_INLINE mediump vec2 SMAADepthEdgeDetectionPS(const mediump vec2 texcoord,
                                             SMAATexture2D(depthTex)
                                             SMAA_EXTRA_PARAM_ARG_DECL ) {
     mediump vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(depthTex)
-                                             SMAA_EXTRA_PARAM_ARG) * FarClipDistance;
+                                             SMAA_EXTRA_PARAM_ARG);
     mediump vec2 delta = abs(neighbours.xx - vec2(neighbours.y, neighbours.z));
     mediump vec2 edges = step(SMAA_DEPTH_THRESHOLD, delta);
 
@@ -963,7 +954,7 @@ SMAA_INLINE mediump vec2 SMAASearchDiag2(SMAATexture2D(edgesTex), const mediump 
 
         // Non-optimized version:
         // e.g = SMAASampleLevelZero(edgesTex, coord.xy).g;
-        // e.r = SMAASampleLevelZeroOffset(edgesTex, coord.xy, vec2(1.0, 0.0)).r;
+        // e.r = SMAASampleLevelZeroOffset(edgesTex, coord.xy, ivec2(1, 0)).r;
 
         coord.w = dot(e, vec2(0.5, 0.5));
     }
@@ -1013,20 +1004,20 @@ SMAA_INLINE mediump vec2 SMAACalculateDiagWeights(SMAATexture2D(edgesTex), SMAAT
         // Fetch the crossing edges:
         mediump vec4 coords = mad(vec4(-d.x + 0.25, d.x, d.y, -d.y - 0.25), SMAA_RT_METRICS.xyxy, texcoord.xyxy);
         mediump vec4 c;
-        c.xy = SMAASampleLevelZeroOffset(edgesTex, coords.xy, vec2(-1.0,  0.0)).rg;
-        c.zw = SMAASampleLevelZeroOffset(edgesTex, coords.zw, vec2( 1.0,  0.0)).rg;
+        c.xy = SMAASampleLevelZeroOffset(edgesTex, coords.xy, ivec2(-1,  0)).rg;
+        c.zw = SMAASampleLevelZeroOffset(edgesTex, coords.zw, ivec2( 1,  0)).rg;
         c.yxwz = SMAADecodeDiagBilinearAccess(c.xyzw);
 
         // Non-optimized version:
         // mediump vec4 coords = mad(vec4(-d.x, d.x, d.y, -d.y), SMAA_RT_METRICS.xyxy, texcoord.xyxy);
         // mediump vec4 c;
-        // c.x = SMAASampleLevelZeroOffset(edgesTex, coords.xy, vec2(-1.0,  0.0)).g;
-        // c.y = SMAASampleLevelZeroOffset(edgesTex, coords.xy, vec2( 0.0,  0.0)).r;
-        // c.z = SMAASampleLevelZeroOffset(edgesTex, coords.zw, vec2( 1.0,  0.0)).g;
-        // c.w = SMAASampleLevelZeroOffset(edgesTex, coords.zw, vec2( 1.0, -1.0)).r;
+        // c.x = SMAASampleLevelZeroOffset(edgesTex, coords.xy, ivec2(-1,  0)).g;
+        // c.y = SMAASampleLevelZeroOffset(edgesTex, coords.xy, ivec2( 0,  0)).r;
+        // c.z = SMAASampleLevelZeroOffset(edgesTex, coords.zw, ivec2( 1,  0)).g;
+        // c.w = SMAASampleLevelZeroOffset(edgesTex, coords.zw, ivec2( 1, -1)).r;
 
         // Merge crossing edges at each side into a single value:
-        mediump vec2 cc = mad(vec2(2.0, 2.0), c.xz, c.yw);
+        mediump vec2 cc = mad(mediump vec2(2.0, 2.0), c.xz, c.yw);
 
         // Remove the crossing edge if we didn't found the end of the line:
         SMAAMovc(bvec2(step(0.9, d.zw)), cc, vec2(0.0, 0.0));
@@ -1037,7 +1028,7 @@ SMAA_INLINE mediump vec2 SMAACalculateDiagWeights(SMAATexture2D(edgesTex), SMAAT
 
     // Search for the line ends:
     d.xz = SMAASearchDiag2(SMAATexturePass2D(edgesTex), texcoord, vec2(-1.0, -1.0), end SMAA_EXTRA_PARAM_ARG);
-    if (SMAASampleLevelZeroOffset(edgesTex, texcoord, vec2(1.0, 0.0)).r > 0.0) {
+    if (SMAASampleLevelZeroOffset(edgesTex, texcoord, ivec2(1, 0)).r > 0.0) {
         d.yw = SMAASearchDiag2(SMAATexturePass2D(edgesTex), texcoord, vec2(1.0, 1.0), end SMAA_EXTRA_PARAM_ARG);
         d.y += float(end.y > 0.9);
     } else
@@ -1048,9 +1039,9 @@ SMAA_INLINE mediump vec2 SMAACalculateDiagWeights(SMAATexture2D(edgesTex), SMAAT
         // Fetch the crossing edges:
         mediump vec4 coords = mad(vec4(-d.x, -d.x, d.y, d.y), SMAA_RT_METRICS.xyxy, texcoord.xyxy);
         mediump vec4 c;
-        c.x  = SMAASampleLevelZeroOffset(edgesTex, coords.xy, vec2(-1.0,  0.0)).g;
-        c.y  = SMAASampleLevelZeroOffset(edgesTex, coords.xy, vec2( 0.0, -1.0)).r;
-        c.zw = SMAASampleLevelZeroOffset(edgesTex, coords.zw, vec2( 1.0,  0.0)).gr;
+        c.x  = SMAASampleLevelZeroOffset(edgesTex, coords.xy, ivec2(-1,  0)).g;
+        c.y  = SMAASampleLevelZeroOffset(edgesTex, coords.xy, ivec2( 0, -1)).r;
+        c.zw = SMAASampleLevelZeroOffset(edgesTex, coords.zw, ivec2( 1,  0)).gr;
         mediump vec2 cc = mad(vec2(2.0, 2.0), c.xz, c.yw);
 
         // Remove the crossing edge if we didn't found the end of the line:
@@ -1096,7 +1087,7 @@ SMAA_INLINE mediump float SMAASearchLength(SMAATexture2D(searchTex), const mediu
  * Horizontal/vertical search functions for the 2nd pass.
  */
 SMAA_INLINE mediump float SMAASearchXLeft(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                  mediump vec2 texcoord, mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                  mediump vec2 texcoord, const mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
     /**
      * @PSEUDO_GATHER4
      * This texcoord has been offset by (-0.25, -0.125) in the vertex shader to
@@ -1129,7 +1120,7 @@ SMAA_INLINE mediump float SMAASearchXLeft(SMAATexture2D(edgesTex), SMAATexture2D
 }
 
 SMAA_INLINE mediump float SMAASearchXRight(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                   mediump vec2 texcoord, mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                   mediump vec2 texcoord, const mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
     mediump vec2 e = vec2(0.0, 1.0);
     while (texcoord.x < end &&
            e.g > 0.8281 && // Is there some edge not activated?
@@ -1142,7 +1133,7 @@ SMAA_INLINE mediump float SMAASearchXRight(SMAATexture2D(edgesTex), SMAATexture2
 }
 
 SMAA_INLINE mediump float SMAASearchYUp(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                mediump vec2 texcoord, mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                mediump vec2 texcoord, const mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
     mediump vec2 e = vec2(1.0, 0.0);
     while (texcoord.y > end &&
            e.r > 0.8281 && // Is there some edge not activated?
@@ -1150,12 +1141,12 @@ SMAA_INLINE mediump float SMAASearchYUp(SMAATexture2D(edgesTex), SMAATexture2D(s
         e = SMAASampleLevelZero(edgesTex, texcoord).rg;
         texcoord = mad(-vec2(0.0, 2.0), SMAA_RT_METRICS.xy, texcoord);
     }
-    mediump float offset = mad(-(255.0 / 127.0), SMAASearchLength(SMAATexturePass2D(searchTex), e.gr, 0.0), 3.25);
+    float offset = mad(-(255.0 / 127.0), SMAASearchLength(SMAATexturePass2D(searchTex), e.gr, 0.0), 3.25);
     return mad(SMAA_RT_METRICS.y, offset, texcoord.y);
 }
 
 SMAA_INLINE mediump float SMAASearchYDown(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                  mediump vec2 texcoord, mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                  mediump vec2 texcoord, const mediump float end SMAA_EXTRA_PARAM_ARG_DECL) {
     mediump vec2 e = vec2(1.0, 0.0);
     while (texcoord.y < end &&
            e.r > 0.8281 && // Is there some edge not activated?
@@ -1197,11 +1188,11 @@ SMAA_INLINE void SMAADetectHorizontalCornerPattern(SMAATexture2D(edgesTex),
 
     rounding /= leftRight.x + leftRight.y; // Reduce blending for pixels in the center of a line.
 
-    mediump vec2 factor = vec2(1.0, 1.0);
-    factor.x -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, vec2(0.0,  1.0)).r;
-    factor.x -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, vec2(1.0,  1.0)).r;
-    factor.y -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, vec2(0.0, -2.0)).r;
-    factor.y -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, vec2(1.0, -2.0)).r;
+    mediump vec2 factor = mediump vec2(1.0, 1.0);
+    factor.x -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, ivec2(0,  1)).r;
+    factor.x -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, ivec2(1,  1)).r;
+    factor.y -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, ivec2(0, -2)).r;
+    factor.y -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, ivec2(1, -2)).r;
 
     weights *= saturate(factor);
     #endif
@@ -1215,11 +1206,11 @@ SMAA_INLINE void SMAADetectVerticalCornerPattern(SMAATexture2D(edgesTex), SMAA_I
 
     rounding /= leftRight.x + leftRight.y;
 
-    mediump vec2 factor = vec2(1.0, 1.0);
-    factor.x -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, vec2( 1.0, 0.0)).g;
-    factor.x -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, vec2( 1.0, 1.0)).g;
-    factor.y -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, vec2(-2.0, 0.0)).g;
-    factor.y -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, vec2(-2.0, 1.0)).g;
+    mediump vec2 factor = mediump vec2(1.0, 1.0);
+    factor.x -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, ivec2( 1, 0)).g;
+    factor.x -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, ivec2( 1, 1)).g;
+    factor.y -= rounding.x * SMAASampleLevelZeroOffset(edgesTex, texcoord.xy, ivec2(-2, 0)).g;
+    factor.y -= rounding.y * SMAASampleLevelZeroOffset(edgesTex, texcoord.zw, ivec2(-2, 1)).g;
 
     weights *= saturate(factor);
     #endif
@@ -1279,7 +1270,7 @@ SMAA_INLINE mediump vec4 SMAABlendingWeightCalculationPS(const mediump vec2 texc
         mediump vec2 sqrt_d = sqrt(d);
 
         // Fetch the right crossing edges:
-        mediump float e2 = SMAASampleLevelZeroOffset(edgesTex, coords.zy, vec2(1.0, 0.0)).r;
+        mediump float e2 = SMAASampleLevelZeroOffset(edgesTex, coords.zy, ivec2(1, 0)).r;
 
         // Ok, we know how this pattern looks like, now it is time for getting
         // the actual area:
@@ -1326,7 +1317,7 @@ SMAA_INLINE mediump vec4 SMAABlendingWeightCalculationPS(const mediump vec2 texc
         mediump vec2 sqrt_d = sqrt(d);
 
         // Fetch the bottom crossing edges:
-        mediump float e2 = SMAASampleLevelZeroOffset(edgesTex, coords.xz, vec2(0.0, 1.0)).g;
+        float e2 = SMAASampleLevelZeroOffset(edgesTex, coords.xz, ivec2(0, 1)).g;
 
         // Get the area for this direction:
         weights.ba = SMAAArea(SMAATexturePass2D(areaTex), sqrt_d, e1, e2, subsampleIndices.x);
@@ -1349,7 +1340,7 @@ SMAA_INLINE mediump vec4 SMAABlendingWeightCalculationPS(const mediump vec2 texc
 // Neighborhood Blending Pixel Shader (Third Pass)
 
 SMAA_INLINE mediump vec4 SMAANeighborhoodBlendingPS(const mediump vec2 texcoord,
-                                              mediump vec4 offset,
+                                              const mediump vec4 offset,
                                               SMAATexture2D(colorTex),
                                               SMAATexture2D(blendTex)
                                               #if SMAA_REPROJECTION
@@ -1447,13 +1438,13 @@ SMAA_INLINE mediump vec4 SMAAResolvePS(const mediump vec2 texcoord,
 // Separate Multisamples Pixel Shader (Optional Pass)
 
 #ifdef SMAALoad
-SMAA_INLINE void SMAASeparatePS(mediump vec4 position,
+SMAA_INLINE void SMAASeparatePS(const mediump vec4 position,
                                 const mediump vec2 texcoord,
                                 SMAA_OUT( mediump vec4, target0 ),
                                 SMAA_OUT( mediump vec4, target1 ),
                                 SMAATexture2DMS2(colorTexMS)
                                 SMAA_EXTRA_PARAM_ARG_DECL) {
-    int2 pos = int2(position.xy);
+    mediump ivec2 pos = ivec2(position.xy);
     target0 = SMAALoad(colorTexMS, pos, 0);
     target1 = SMAALoad(colorTexMS, pos, 1);
 }

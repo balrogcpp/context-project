@@ -27,8 +27,6 @@ uniform sampler2D rt_input;  //Must not be sRGB
 #if SMAA_PREDICATION
 	uniform sampler2D depthTex;
 #endif
-uniform mediump vec4 ViewportSize;
-uniform mediump float FarClipDistance;
 #include "smaa.glsl"
 
 
