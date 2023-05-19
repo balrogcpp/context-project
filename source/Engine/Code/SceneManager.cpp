@@ -123,8 +123,8 @@ void SceneManager::OnUpdate(float time) {
     pssmCount = pssm->getSplitCount();
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
     pssmPoints.w = ogreSceneManager->getShadowFarDistance();
-    for (unsigned int j = 0; j < 4; j++) {
-      pssmPoints[j] = splitPointList[j + 1];
+    for (unsigned int i = 0; i < Ogre::Math::Clamp(pssmCount, 0, 4); i++) {
+      pssmPoints[i] = splitPointList[i + 1];
     }
   } else {
     pssmPoints = Ogre::Vector4(0.0);
@@ -310,11 +310,11 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       }
     }
 
-    pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
-    pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
-    pass->getVertexProgram()->reload();
-    pass->getFragmentProgram()->reload();
-    mat->reload();
+    //pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
+    //pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
+    //pass->getVertexProgram()->reload();
+    //pass->getFragmentProgram()->reload();
+    //mat->reload();
     it->setMaterial(mat);
   }
 

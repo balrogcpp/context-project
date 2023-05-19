@@ -255,14 +255,14 @@ mediump float GetShadow(const mediump int light, mediump int tex)
 
     if (LightAttenuationArray[light].x > HALF_MAX_MINUS1) {
 #if PSSM_SPLIT_COUNT == 4
-#if MAX_SHADOW_TEXTURES > 2
-        if (light == 0)
+#if MAX_SHADOW_TEXTURES > 3
+        if (tex == 0)
             shadow = CalcPSSMShadow(vLightSpacePosArray[0], vLightSpacePosArray[1], vLightSpacePosArray[2], vLightSpacePosArray[3], \
                                     ShadowMap0, ShadowMap1, ShadowMap2, ShadowMap3, \
                                     ShadowTexel0, ShadowTexel1, ShadowTexel2, ShadowTexel3);
 #endif
-#if MAX_SHADOW_TEXTURES > 5
-        else if (light == 1)
+#if MAX_SHADOW_TEXTURES > 7
+        else if (tex == 4)
             shadow = CalcPSSMShadow(vLightSpacePosArray[4], vLightSpacePosArray[5], vLightSpacePosArray[6], vLightSpacePosArray[7], \
                                     ShadowMap4, ShadowMap5, ShadowMap6, ShadowMap7, \
                                     ShadowTexel4, ShadowTexel5, ShadowTexel6, ShadowTexel7);
@@ -271,19 +271,19 @@ mediump float GetShadow(const mediump int light, mediump int tex)
 
 #if PSSM_SPLIT_COUNT == 3
 #if MAX_SHADOW_TEXTURES > 2
-        if (light == 0)
+        if (tex == 0)
             shadow = CalcPSSMShadow(vLightSpacePosArray[0], vLightSpacePosArray[1], vLightSpacePosArray[2], \
                                     ShadowMap0, ShadowMap1, ShadowMap2, \
                                     ShadowTexel0, ShadowTexel1, ShadowTexel2);
 #endif
 #if MAX_SHADOW_TEXTURES > 5
-        else if (light == 1)
+        else if (tex == 3)
             shadow = CalcPSSMShadow(vLightSpacePosArray[3], vLightSpacePosArray[4], vLightSpacePosArray[5], \
                                     ShadowMap3, ShadowMap4, ShadowMap5, \
                                     ShadowTexel3, ShadowTexel4, ShadowTexel5);
 #endif
 #if MAX_SHADOW_TEXTURES > 8
-        else if (light == 2)
+        else if (tex == 6)
             shadow = CalcPSSMShadow(vLightSpacePosArray[6], vLightSpacePosArray[7], vLightSpacePosArray[8], \
                                     ShadowMap6, ShadowMap7, ShadowMap8, \
                                     ShadowTexel6, ShadowTexel7, ShadowTexel8);
@@ -295,33 +295,17 @@ mediump float GetShadow(const mediump int light, mediump int tex)
         if (tex == 0)
             shadow = CalcPSSMShadow(vLightSpacePosArray[0], vLightSpacePosArray[1], ShadowMap0, ShadowMap1, ShadowTexel0, ShadowTexel1);
 #endif
-#if MAX_SHADOW_TEXTURES > 2
-        else if (tex == 1)
-            shadow = CalcPSSMShadow(vLightSpacePosArray[1], vLightSpacePosArray[2], ShadowMap1, ShadowMap2, ShadowTexel1, ShadowTexel2);
-#endif
 #if MAX_SHADOW_TEXTURES > 3
         else if (tex == 2)
             shadow = CalcPSSMShadow(vLightSpacePosArray[2], vLightSpacePosArray[3], ShadowMap2, ShadowMap3, ShadowTexel2, ShadowTexel3);
-#endif
-#if MAX_SHADOW_TEXTURES > 4
-        else if (tex == 3)
-            shadow = CalcPSSMShadow(vLightSpacePosArray[3], vLightSpacePosArray[4], ShadowMap3, ShadowMap4, ShadowTexel3, ShadowTexel4);
 #endif
 #if MAX_SHADOW_TEXTURES > 5
         else if (tex == 4)
             shadow = CalcPSSMShadow(vLightSpacePosArray[4], vLightSpacePosArray[5], ShadowMap4, ShadowMap5, ShadowTexel4, ShadowTexel5);
 #endif
-#if MAX_SHADOW_TEXTURES > 6
-        else if (tex == 5)
-            shadow = CalcPSSMShadow(vLightSpacePosArray[5], vLightSpacePosArray[6], ShadowMap5, ShadowMap6, ShadowTexel5, ShadowTexel6);
-#endif
 #if MAX_SHADOW_TEXTURES > 7
         else if (tex == 6)
             shadow = CalcPSSMShadow(vLightSpacePosArray[6], vLightSpacePosArray[7], ShadowMap6, ShadowMap7, ShadowTexel6, ShadowTexel7);
-#endif
-#if MAX_SHADOW_TEXTURES > 8
-        else if (tex == 7)
-            shadow = CalcPSSMShadow(vLightSpacePosArray[7], vLightSpacePosArray[8], ShadowMap7, ShadowMap8, ShadowTexel6, ShadowTexel7);
 #endif
 #endif
 
@@ -358,10 +342,6 @@ mediump float GetShadow(const mediump int light, mediump int tex)
         else if (tex == 7)
             shadow = CalcPSSMShadow(ShadowMap7, vLightSpacePosArray[7], ShadowTexel7);
 #endif
-#if MAX_SHADOW_TEXTURES > 8
-        else if (tex == 8)
-            shadow = CalcPSSMShadow(ShadowMap8, vLightSpacePosArray[8], ShadowTexel8);
-#endif
 #endif
 
         tex += PSSM_SPLIT_COUNT;
@@ -395,10 +375,6 @@ mediump float GetShadow(const mediump int light, mediump int tex)
 #if MAX_SHADOW_TEXTURES > 7
         else if (tex == 6)
             shadow = CalcDPSMShadow(vLightSpacePosArray[6], vLightSpacePosArray[7], ShadowMap6, ShadowMap7, ShadowTexel6, ShadowTexel7);
-#endif
-#if MAX_SHADOW_TEXTURES > 8
-        else if (tex == 7)
-            shadow = CalcDPSMShadow(vLightSpacePosArray[7], vLightSpacePosArray[8], ShadowMap7, ShadowMap8, ShadowTexel6, ShadowTexel7);
 #endif
 
         tex += 2;
@@ -435,10 +411,6 @@ mediump float GetShadow(const mediump int light, mediump int tex)
 #if MAX_SHADOW_TEXTURES > 7
         else if (tex == 7)
             shadow = CalcDepthShadow(ShadowMap7, vLightSpacePosArray[7], ShadowTexel7);
-#endif
-#if MAX_SHADOW_TEXTURES > 8
-        else if (tex == 8)
-            shadow = CalcDepthShadow(ShadowMap8, vLightSpacePosArray[8], ShadowTexel8);
 #endif
 
         tex += 1;

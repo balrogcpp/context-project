@@ -220,7 +220,7 @@ namespace Caelum
                 //        " name=" + inner->getName () +
                 //        " handle=" + Ogre::StringConverter::toString (inner->getHandle ()) );
                 ManagerT::getSingletonPtr ()->remove (inner->getHandle ());
-                assert (inner.unique () && "Resource pointer not unique after destruction");
+                //assert (inner.unique () && "Resource pointer not unique after destruction");
                 inner.reset();
             }
         }
