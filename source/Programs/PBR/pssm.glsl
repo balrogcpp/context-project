@@ -2,14 +2,23 @@
 
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
-//#define PENUMBRA
 
 #ifndef PSSM_SPLIT_COUNT
-    #define PSSM_SPLIT_COUNT 1
+    #define PSSM_SPLIT_COUNT 2
+#endif
+#ifndef PSSM_FILTER_RADIUS
     #define PSSM_FILTER_RADIUS 12
+#endif
+#ifndef PSSM_FILTER_SIZE
     #define PSSM_FILTER_SIZE 16
+#endif
+#ifndef PENUMBRA_FILTER_RADIUS
     #define PENUMBRA_FILTER_RADIUS 4
+#endif
+#ifndef PENUMBRA_FILTER_SIZE
     #define PENUMBRA_FILTER_SIZE 4
+#endif
+#ifndef PENUMBRA_LIGHT_SIZE
     #define PENUMBRA_LIGHT_SIZE 50.0
 #endif
 

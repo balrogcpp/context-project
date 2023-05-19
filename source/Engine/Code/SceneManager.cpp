@@ -120,6 +120,7 @@ void SceneManager::OnUpdate(float time) {
 
   if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
     auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
+    pssmCount = pssm->getSplitCount();
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
     pssmPoints.w = ogreSceneManager->getShadowFarDistance();
     for (unsigned int j = 0; j < 4; j++) {
@@ -207,130 +208,114 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
   }
 
-  if (entity->getMesh()->isReloadable()) {
-    static unsigned long long generator = 0;
-    for (auto &it : entity->getSubEntities()) {
-      const auto &old = it->getMaterial();
-      const auto &mat = old->clone(std::to_string(generator++));
+  if (!entity->getMesh()->isReloadable()) {
+    return;
+  }
 
-      auto *pass = mat->getTechnique(0)->getPass(0);
-      const auto &vp = pass->getVertexProgramParameters();
-      const auto &fp = pass->getFragmentProgramParameters();
-      std::string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
-      std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
-      bool dirty = false;
+  static unsigned long long generator = 0;
+  for (auto &it : entity->getSubEntities()) {
+    const auto &old = it->getMaterial();
+    const auto &mat = old->clone(std::to_string(generator++));
 
-      // GLSLES2 on mobile breaks IBL when >4 shadow textures
-      if (ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE) {
-        auto i = fpDefines.find("MAX_SHADOW_TEXTURES");
-        auto j = vpDefines.find("MAX_SHADOW_TEXTURES");
-        if (i != string::npos) {
-          fpDefines[i] = 'X';
-          dirty = true;
-        }
-        if (j != string::npos) {
-          fpDefines[j] = 'X';
-          dirty = true;
-        }
+    auto *pass = mat->getTechnique(0)->getPass(0);
+    const auto &vp = pass->getVertexProgramParameters();
+    const auto &fp = pass->getFragmentProgramParameters();
+    std::string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
+    std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
+
+    //fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
+
+    // GLSLES2 on mobile breaks IBL when >4 shadow textures
+    if (ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE) {
+      auto i = vpDefines.find("MAX_SHADOW_TEXTURES");
+      auto j = fpDefines.find("MAX_SHADOW_TEXTURES");
+      if (i != string::npos) {
+        vpDefines[i] = 'X';
       }
-
-      // this optimisation not working, rebinding of shader programs on fly is hard to implement
-      if (false) {
-        const size_t MAX_TEXTURE_NUMBER = 14;
-        std::array<std::string, MAX_TEXTURE_NUMBER> textures = {"AlbedoMap",  "NormalMap",  "OrmMap",     "EmissiveMap", "SpecularEnvMap",
-                                                                "ShadowMap0", "ShadowMap1", "ShadowMap2", "ShadowMap3",  "ShadowMap4",
-                                                                "ShadowMap5", "ShadowMap6", "ShadowMap7", "ShadowMap8"};
-        std::array<std::string, MAX_TEXTURE_NUMBER> sizes = {"ShadowTexel0", "ShadowTexel1", "ShadowTexel2", "ShadowTexel3", "ShadowTexel4",
-                                                             "ShadowTexel5", "ShadowTexel6", "ShadowTexel7", "ShadowTexel8"};
-        std::array<int, MAX_TEXTURE_NUMBER> indexes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-
-        if (auto *tex = pass->getTextureUnitState("Albedo")) {
-          if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-            auto i = fpDefines.find("HAS_BASECOLORMAP");
-            if (i != string::npos) {
-              fpDefines[i] = 'X';
-              indexes[0] = -1;
-              dirty = true;
-            }
-          }
-        }
-
-        if (auto *tex = pass->getTextureUnitState("Normal")) {
-          if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-            auto i = fpDefines.find("HAS_NORMALMAP");
-            if (i != string::npos) {
-              fpDefines[i] = 'X';
-              indexes[1] = -1;
-              dirty = true;
-            }
-          }
-        }
-
-        if (auto *tex = pass->getTextureUnitState("ORM")) {
-          if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-            auto i = fpDefines.find("HAS_ORM");
-            if (i != string::npos) {
-              fpDefines[i] = 'X';
-              indexes[2] = -1;
-              dirty = true;
-            }
-          }
-        }
-
-        if (auto *tex = pass->getTextureUnitState("Emissive")) {
-          if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-            auto i = fpDefines.find("HAS_EMISSIVEMAP");
-            if (i != string::npos) {
-              fpDefines[i] = 'X';
-              indexes[3] = -1;
-              dirty = true;
-            }
-          }
-        }
-
-        if (auto *tex = pass->getTextureUnitState("IBL")) {
-          if (RenderSystemIsGL3()) {
-            pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-            auto i = fpDefines.find("HAS_IBL");
-            if (i != string::npos) {
-              fpDefines[i] = 'X';
-              indexes[4] = -1;
-              dirty = true;
-            }
-          }
-        }
-
-        for (int i = 0, counter = 0; i < MAX_TEXTURE_NUMBER; i++) {
-          if (indexes[i] > -1 && dirty) {
-            fp->setNamedConstant(textures[i], counter);
-            if (i > 4) {
-              if (ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE) break;
-              fp->setNamedAutoConstant(sizes[i], Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE, counter);
-            }
-            counter++;
-          }
-        }
+      if (j != string::npos) {
+        fpDefines[j] = 'X';
       }
-
-      if (dirty) {
-        pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
-        pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
-        pass->getVertexProgram()->reload();
-        pass->getFragmentProgram()->reload();
-      }
-
-      mat->reload();
-      it->setMaterial(mat);
     }
+
+    // this optimisation not working, rebinding of shader programs on fly is hard to implement
+    if (false) {
+      const size_t MAX_TEXTURE_NUMBER = 5;
+      std::array<std::string, MAX_TEXTURE_NUMBER> textures = {"AlbedoMap", "NormalMap", "OrmMap", "EmissiveMap", "SpecularEnvMap"};
+      std::array<int, MAX_TEXTURE_NUMBER> mask = {1, 1, 1, 1, 1};
+
+      if (auto *tex = pass->getTextureUnitState("Albedo")) {
+        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+          auto i = fpDefines.find("HAS_BASECOLORMAP");
+          if (i != string::npos) {
+            fpDefines[i] = 'X';
+            mask[0] = 0;
+          }
+        }
+      }
+
+      if (auto *tex = pass->getTextureUnitState("Normal")) {
+        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+          auto i = fpDefines.find("HAS_NORMALMAP");
+          if (i != string::npos) {
+            fpDefines[i] = 'X';
+            mask[1] = 0;
+          }
+        }
+      }
+
+      if (auto *tex = pass->getTextureUnitState("ORM")) {
+        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+          auto i = fpDefines.find("HAS_ORM");
+          if (i != string::npos) {
+            fpDefines[i] = 'X';
+            mask[2] = 0;
+          }
+        }
+      }
+
+      if (auto *tex = pass->getTextureUnitState("Emissive")) {
+        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+          auto i = fpDefines.find("HAS_EMISSIVEMAP");
+          if (i != string::npos) {
+            fpDefines[i] = 'X';
+            mask[3] = 0;
+          }
+        }
+      }
+
+      if (auto *tex = pass->getTextureUnitState("IBL")) {
+        if (RenderSystemIsGL3()) {
+          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+          auto i = fpDefines.find("HAS_IBL");
+          if (i != string::npos) {
+            fpDefines[i] = 'X';
+            mask[4] = 0;
+          }
+        }
+      }
+
+      for (int i = 0, counter = 0; i < MAX_TEXTURE_NUMBER; i++) {
+        if (mask[i] > 0) {
+          fp->setNamedConstant(textures[i], counter++);
+        }
+      }
+    }
+
+    pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
+    pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
+    pass->getVertexProgram()->reload();
+    pass->getFragmentProgram()->reload();
+    mat->reload();
+    it->setMaterial(mat);
   }
 
   if (entity->hasSkeleton()) {
@@ -362,7 +347,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
   if (objBindings.getUserAny("proxy").has_value()) {
     gge::GetComponent<gge::PhysicsManager>().ProcessData(entity);
   }
-}  // namespace gge
+}
 
 void SceneManager::ScanNode(Ogre::SceneNode *node) {
   for (auto it : node->getAttachedObjects()) {
@@ -402,7 +387,7 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-  if (_sleep || !pLightList || !pass || suppressRenderStateChanges) {
+  if (!pass) {
     return;
   }
 
@@ -412,15 +397,10 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
 
   const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
-  vp->setIgnoreMissingParams(true);
-  fp->setIgnoreMissingParams(true);
-
+  
   // apply for entities, skip grass
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
     auto *entity = subentity->getParent();
-    if (!entity->isInScene() || !entity->isVisible()) {
-      return;
-    }
 
     if (entity->getMesh()->isReloadable()) {
       Ogre::Matrix4 MVP;
@@ -450,9 +430,6 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   }
 
   fp->setNamedConstant("PssmSplitPoints", pssmPoints);
-
-  vp->setIgnoreMissingParams(false);
-  fp->setIgnoreMissingParams(false);
 }
 
 }  // namespace gge

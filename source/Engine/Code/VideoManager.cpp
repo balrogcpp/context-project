@@ -520,13 +520,14 @@ void VideoManager::InitOgreSceneManager() {
 
     // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();
-    pssmSplitCount = 1;
+    pssmSplitCount = 2;
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowColour(Ogre::ColourValue::Black);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
+    ogreSceneManager->setShadowTextureSelfShadow(true);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
@@ -534,6 +535,18 @@ void VideoManager::InitOgreSceneManager() {
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
     ogreSceneManager->setShadowTextureCount(8);
+    Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigIterator().getNext();
+    ogreSceneManager->setShadowTextureConfig(0, texConfig);
+    texConfig.height *= 0.5;
+    texConfig.width *= 0.5;
+    ogreSceneManager->setShadowTextureConfig(1, texConfig);
+    ogreSceneManager->setShadowTextureConfig(2, texConfig);
+    ogreSceneManager->setShadowTextureConfig(3, texConfig);
+    ogreSceneManager->setShadowTextureConfig(4, texConfig);
+    ogreSceneManager->setShadowTextureConfig(5, texConfig);
+    ogreSceneManager->setShadowTextureConfig(6, texConfig);
+    ogreSceneManager->setShadowTextureConfig(7, texConfig);
+ 
 
     // pssm stuf
     pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
