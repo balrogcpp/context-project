@@ -4,7 +4,6 @@
 #define HLSL2_GLSL
 #ifdef OGRE_HLSL
 
-
 // some glsl functions as macros
 #define vec4 float4
 #define vec3 float3
@@ -58,7 +57,7 @@
 
 
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/OgreUnifiedShader.h
-// #define mod(a, b)   ( a - b * floor(a / b) )
+#define mod(a, b) ( a - b * floor(a / b) )
 #define vec2_splat(x) ( vec2(x, x) )
 #define vec3_splat(x) ( vec3(x, x, x) )
 #define vec4_splat(x) ( vec4(x, x, x, x) )
@@ -108,7 +107,6 @@
 
 #define IN(decl, sem) in decl : sem,
 #define OUT(decl, sem) out decl : sem,
-
 
 #endif // OGRE_HLSL
 #endif // HLSL2_GLSL

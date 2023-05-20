@@ -27,7 +27,7 @@ mat4 transpose(mat4 m)
               m[0][2], m[1][2], m[2][2], m[3][2],
               m[0][3], m[1][3], m[2][3], m[3][3]);
 }
-#endif // __VERSION__ == 100
+#endif
 
 
 // some hlsl functions as macros
@@ -61,11 +61,7 @@ mat4 transpose(mat4 m)
 #define ddy_coarse dFdy
 #define ddx_fine dFdx
 #define ddy_fine dFdy
-#ifdef GL_ES
-#   define mad(a, b, c) ((a) * (b) + (c))
-#else
-#   define mad fma
-#endif
+#define mad(a, b, c) ((a) * (b) + (c))
 #define mul(a, b) ((a) * (b))
 #define round(a) floor(a + 0.5)
 #define saturate(x) clamp(x, 0.0, 1.0)
@@ -89,9 +85,9 @@ mat4 transpose(mat4 m)
 
 
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/OgreUnifiedShader.h
-#define vec2_splat vec2
-#define vec3_splat vec3
-#define vec4_splat vec4
+#define vec2_splat(x) vec2(x)
+#define vec3_splat(x) vec3(x)
+#define vec4_splat(x) vec4(x)
 #define mtxFromRows3x3(a, b, c)    ( transpose(mat3(a, b, c)) )
 #define mtxFromRows4x4(a, b, c, d) ( transpose(mat4(a, b, c, d)) )
 #define mtxFromCols3x3(a, b, c)    ( mat3(a, b, c) )
