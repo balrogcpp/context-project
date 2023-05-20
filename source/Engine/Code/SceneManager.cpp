@@ -223,7 +223,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     std::string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
     std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
 
-    //fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
+    fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
 
     // GLSLES2 on mobile breaks IBL when >4 shadow textures
     if (ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE) {
@@ -234,79 +234,6 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       }
       if (j != string::npos) {
         fpDefines[j] = 'X';
-      }
-    }
-
-    // this optimisation not working, rebinding of shader programs on fly is hard to implement
-    if (false) {
-      const size_t MAX_TEXTURE_NUMBER = 5;
-      std::array<std::string, MAX_TEXTURE_NUMBER> textures = {"AlbedoMap", "NormalMap", "OrmMap", "EmissiveMap", "SpecularEnvMap"};
-      std::array<int, MAX_TEXTURE_NUMBER> mask = {1, 1, 1, 1, 1};
-
-      if (auto *tex = pass->getTextureUnitState("Albedo")) {
-        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-          auto i = fpDefines.find("HAS_BASECOLORMAP");
-          if (i != string::npos) {
-            fpDefines[i] = 'X';
-            mask[0] = 0;
-          }
-        }
-      }
-
-      if (auto *tex = pass->getTextureUnitState("Normal")) {
-        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-          auto i = fpDefines.find("HAS_NORMALMAP");
-          if (i != string::npos) {
-            fpDefines[i] = 'X';
-            mask[1] = 0;
-          }
-        }
-      }
-
-      if (auto *tex = pass->getTextureUnitState("ORM")) {
-        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-          auto i = fpDefines.find("HAS_ORM");
-          if (i != string::npos) {
-            fpDefines[i] = 'X';
-            mask[2] = 0;
-          }
-        }
-      }
-
-      if (auto *tex = pass->getTextureUnitState("Emissive")) {
-        if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
-          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-          auto i = fpDefines.find("HAS_EMISSIVEMAP");
-          if (i != string::npos) {
-            fpDefines[i] = 'X';
-            mask[3] = 0;
-          }
-        }
-      }
-
-      if (auto *tex = pass->getTextureUnitState("IBL")) {
-        if (RenderSystemIsGL3()) {
-          pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-          auto i = fpDefines.find("HAS_IBL");
-          if (i != string::npos) {
-            fpDefines[i] = 'X';
-            mask[4] = 0;
-          }
-        }
-      }
-
-      for (int i = 0, counter = 0; i < MAX_TEXTURE_NUMBER; i++) {
-        if (mask[i] > 0) {
-          fp->setNamedConstant(textures[i], counter++);
-        }
       }
     }
 
