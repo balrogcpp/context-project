@@ -18,7 +18,7 @@ SAMPLER2D(NormalMap, 2);
 SAMPLER2D(GlossMap, 3);
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvProjMatrix;
-uniform mediump mat4 InvViewMatrix;
+uniform mediump mat4 ViewMatrix;
 uniform mediump float FarClipDistance;
 
 
@@ -126,10 +126,10 @@ MAIN_DECLARATION
         return;
     }
 
-    mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
+    //mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
+    mediump vec3 normal = mul(ViewMatrix, vec4(texture2D(NormalMap, vUV0).xyz, 0.0)).xyz;
     mediump vec3 viewPos = vRay * texture2D(DepthMap, vUV0).x;
-
-    mediump vec3 worldPos = mul(InvViewMatrix, vec4(viewPos, 1.0)).xyz;
+    mediump vec3 worldPos = mul(InvProjMatrix, vec4(viewPos, 1.0)).xyz;
     mediump vec3 jitt = hash(worldPos) * ssr.g;
 
     // Reflection vector

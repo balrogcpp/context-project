@@ -11,6 +11,16 @@ compositor SSR
         compositor_logic DeferredLogic
         texture_ref mrt MRT mrt
         texture_ref rt MRT rt
+         texture rt0 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target rt0
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 rt
+            }
+        }
 
         target rt
         {
@@ -19,7 +29,7 @@ compositor SSR
                 identifier 2
                 quad_normals camera_far_corners_view_space
                 material SSR
-                input 0 rt
+                input 0 rt0
                 input 1 mrt 2
                 input 2 mrt 3
                 input 3 mrt 1
