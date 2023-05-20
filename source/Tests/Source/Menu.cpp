@@ -26,7 +26,6 @@ void Menu::OnSetUp() {
   int x = GetComponent<VideoManager>().GetWindow().GetDisplaySizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetDisplaySizeY();
   GetComponent<CompositorManager>().SetFixedViewportSize(x / 1.5, y / 1.5);
-  GetComponent<CompositorManager>().EnableCompositor("Blur", true);
 #else
   int x = GetComponent<VideoManager>().GetWindow().GetSizeX();
   int y = GetComponent<VideoManager>().GetWindow().GetSizeY();

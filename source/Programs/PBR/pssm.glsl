@@ -29,42 +29,40 @@
 
 // shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
-#define MAX_TEXTURES 6
+#ifndef NUM_TEXTURES
+#define NUM_TEXTURES 0
+#endif
 uniform mediump vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
-SAMPLER2D(ShadowMap0, MAX_TEXTURES + 0);
+SAMPLER2D(ShadowMap0, NUM_TEXTURES + 0);
 uniform mediump vec2 ShadowTexel0;
 #if MAX_SHADOW_TEXTURES > 1
-SAMPLER2D(ShadowMap1, MAX_TEXTURES + 1);
+SAMPLER2D(ShadowMap1, NUM_TEXTURES + 1);
 uniform mediump vec2 ShadowTexel1;
 #endif
 #if MAX_SHADOW_TEXTURES > 2
-SAMPLER2D(ShadowMap2, MAX_TEXTURES + 2);
+SAMPLER2D(ShadowMap2, NUM_TEXTURES + 2);
 uniform mediump vec2 ShadowTexel2;
 #endif
 #if MAX_SHADOW_TEXTURES > 3
-SAMPLER2D(ShadowMap3, MAX_TEXTURES + 3);
+SAMPLER2D(ShadowMap3, NUM_TEXTURES + 3);
 uniform mediump vec2 ShadowTexel3;
 #endif
 #if MAX_SHADOW_TEXTURES > 4
-SAMPLER2D(ShadowMap4, MAX_TEXTURES + 4);
+SAMPLER2D(ShadowMap4, NUM_TEXTURES + 4);
 uniform mediump vec2 ShadowTexel4;
 #endif
 #if MAX_SHADOW_TEXTURES > 5
-SAMPLER2D(ShadowMap5, MAX_TEXTURES + 5);
+SAMPLER2D(ShadowMap5, NUM_TEXTURES + 5);
 uniform mediump vec2 ShadowTexel5;
 #endif
 #if MAX_SHADOW_TEXTURES > 6
-SAMPLER2D(ShadowMap6, MAX_TEXTURES + 6);
+SAMPLER2D(ShadowMap6, NUM_TEXTURES + 6);
 uniform mediump vec2 ShadowTexel6;
 #endif
 #if MAX_SHADOW_TEXTURES > 7
-SAMPLER2D(ShadowMap7, MAX_TEXTURES + 7);
+SAMPLER2D(ShadowMap7, NUM_TEXTURES + 7);
 uniform mediump vec2 ShadowTexel7;
-#endif
-#if MAX_SHADOW_TEXTURES > 8
-SAMPLER2D(ShadowMap8, MAX_TEXTURES + 8);
-uniform mediump vec2 ShadowTexel8;
 #endif
 uniform mediump vec4 PssmSplitPoints;
 uniform mediump vec4 ShadowColour;
@@ -284,12 +282,6 @@ mediump float GetShadow(const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]
             shadow = CalcPSSMShadow(depth, lightSpacePosArray[3], lightSpacePosArray[4], lightSpacePosArray[5], \
                                     ShadowMap3, ShadowMap4, ShadowMap5, \
                                     ShadowTexel3, ShadowTexel4, ShadowTexel5);
-#endif
-#if MAX_SHADOW_TEXTURES > 8
-        else if (tex == 6)
-            shadow = CalcPSSMShadow(depth, lightSpacePosArray[6], lightSpacePosArray[7], lightSpacePosArray[8], \
-                                    ShadowMap6, ShadowMap7, ShadowMap8, \
-                                    ShadowTexel6, ShadowTexel7, ShadowTexel8);
 #endif
 #endif
 

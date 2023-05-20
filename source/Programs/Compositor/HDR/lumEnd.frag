@@ -32,5 +32,5 @@ MAIN_DECLARATION
 
     mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 
-    FragColor = vec4(lum, 0.0, 0.0, 1.0);
+    FragColor = vec4(SafeHDR(lum), 0.0, 0.0, 1.0);
 }

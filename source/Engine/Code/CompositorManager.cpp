@@ -16,8 +16,6 @@ void CompositorManager::OnUpdate(float time) {}
 
 void CompositorManager::SetSleep(bool sleep) {
   _sleep = sleep;
-
-  EnableCompositor("Paused", sleep);
 }
 
 class DeferredLogic final : public Ogre::CompositorLogic {

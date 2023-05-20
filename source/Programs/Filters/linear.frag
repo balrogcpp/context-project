@@ -22,5 +22,5 @@ IN(highp vec2 vUV0, TEXCOORD0)
 MAIN_DECLARATION
 {
     highp vec4 color = texture2D(RT, vUV0);
-    FragColor = color;
+    FragColor = vec4(SafeHDR(color.rgb), color.a);
 }

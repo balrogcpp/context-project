@@ -514,6 +514,7 @@ void VideoManager::InitOgreSceneManager() {
   shadowEnabled = false;
   shadowTexSize = 512;
 #endif
+
   if (shadowEnabled) {
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     shadowFarDistance = 99;

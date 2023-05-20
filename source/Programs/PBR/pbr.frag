@@ -117,27 +117,35 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 
 
 // uniforms
+#define NUM_TEXTURES 0
 #ifdef HAS_BASECOLORMAP
-SAMPLER2D(AlbedoMap, 0)
+SAMPLER2D(AlbedoMap, 0);
+#define NUM_TEXTURES 1
 #endif // HAS_BASECOLORMAP
 #ifdef HAS_NORMALMAP
-SAMPLER2D(NormalMap, 1)
+SAMPLER2D(NormalMap, 1);
+#define NUM_TEXTURES 2
 #endif // HAS_NORMALMAP
 #ifdef HAS_ORM
-SAMPLER2D(OrmMap, 2)
+SAMPLER2D(OrmMap, 2);
+#define NUM_TEXTURES 3
 #endif // HAS_ORM
 #ifdef HAS_EMISSIVEMAP
-SAMPLER2D(EmissiveMap, 3)
+SAMPLER2D(EmissiveMap, 3);
+#define NUM_TEXTURES 4
 #endif // HAS_EMISSIVEMAP
 #ifdef HAS_IBL
-SAMPLERCUBE(SpecularEnvMap, 4)
+SAMPLERCUBE(SpecularEnvMap, 4);
+#define NUM_TEXTURES 5
 #endif // HAS_IBL
 uniform mediump vec3 iblSH[9];
 #ifdef TERRA_NORMALMAP
-SAMPLER2D(TerraNormalMap, 2)
+SAMPLER2D(TerraNormalMap, 2);
+#define NUM_TEXTURES 3
 #endif
 #ifdef TERRA_LIGHTMAP
-SAMPLER2D(TerraLightMap, 3)
+SAMPLER2D(TerraLightMap, 3);
+#define NUM_TEXTURES 4
 uniform vec2 InvTerraLightMapSize;
 #endif
 
@@ -170,8 +178,6 @@ uniform mediump float TexScale;
 uniform mediump float OffsetScale;
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
-
-// shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
 #endif
@@ -463,6 +469,7 @@ MAIN_DECLARATION
     color += emission;
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vDepth);
+    //color = LINEARtoSRGB(color);
 
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
