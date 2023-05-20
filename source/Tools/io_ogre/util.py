@@ -400,6 +400,8 @@ def image_magick( image, origin_filepath, target_filepath, compression='bc5', se
 
     MAX_TEXTURE_SIZE = 1024
     if x > MAX_TEXTURE_SIZE or y > MAX_TEXTURE_SIZE:
+        cmd.append( '-filter' )
+        cmd.append( 'Lanczos' )
         cmd.append( '-resize' )
         cmd.append( str(MAX_TEXTURE_SIZE) )
 

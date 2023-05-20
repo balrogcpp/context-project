@@ -105,10 +105,10 @@ _CONFIG_TAGS_ = 'OGRETOOLS_XML_CONVERTER OGRETOOLS_MESH_UPGRADER MESH_PREVIEWER 
     ships Ogre cmd line tools to ease the setup steps for end users. '''
 
 _CONFIG_DEFAULTS_WINDOWS = {
-    'OGRETOOLS_XML_CONVERTER' : 'C:\\OgreCommandLineTools\\OgreXMLConverter.exe',
-    'OGRETOOLS_MESH_UPGRADER' : 'C:\\OgreCommandLineTools\\OgreMeshUpgrader.exe',
+    'OGRETOOLS_XML_CONVERTER' : 'C:\\Program Files\\OGRE\\bin\\OgreXMLConverter.exe',
+    'OGRETOOLS_MESH_UPGRADER' : 'C:\\Program Files\\OGRE\\bin\\OgreMeshUpgrader.exe',
     'MESH_PREVIEWER' : 'ogre-meshviewer.bat',
-    'IMAGE_MAGICK_CONVERT' : 'C:\\Program Files\\ImageMagick\\convert.exe',
+    'IMAGE_MAGICK_CONVERT' : 'C:\\Program Files\\ImageMagick\\magick.exe',
     'USER_MATERIALS' : '',
     'SHADER_PROGRAMS' : 'C:\\'
 }
@@ -116,7 +116,7 @@ _CONFIG_DEFAULTS_WINDOWS = {
 _CONFIG_DEFAULTS_UNIX = {
     # do not use absolute paths like /usr/bin/exe_name. some distris install to /usr/local/bin ...
     # just trust the env PATH variable
-    'IMAGE_MAGICK_CONVERT' : 'convert',
+    'IMAGE_MAGICK_CONVERT' : 'magick',
     'OGRETOOLS_XML_CONVERTER' : 'ogre.XMLConverter',
     'OGRETOOLS_MESH_UPGRADER' : 'ogre.MeshUpgrader',
     'MESH_PREVIEWER' : 'ogre-meshviewer',
