@@ -11,8 +11,8 @@
 #endif
 
 #include "header.glsl"
-uniform sampler2D RT;
-uniform sampler2D SsaoMap;
+SAMPLER2D(RT, 0);
+SAMPLER2D(SsaoMap, 1);
 uniform vec4 ShadowColour;
 
 

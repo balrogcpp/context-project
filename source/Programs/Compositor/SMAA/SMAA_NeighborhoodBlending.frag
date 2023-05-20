@@ -16,10 +16,11 @@
 #define SMAA_INCLUDE_PS 1
 #define SMAA_REPROJECTION 0
 
-uniform sampler2D rt_input; //Can be sRGB
-uniform sampler2D blendTex;
+//Can be sRGB
+SAMPLER2D(rt_input, 0);
+SAMPLER2D(blendTex, 1);
 #if SMAA_REPROJECTION
-	uniform sampler2D velocityTex;
+SAMPLER2D(velocityTex, 2);
 #endif
 #include "smaa.glsl"
 

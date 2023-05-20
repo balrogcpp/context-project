@@ -118,26 +118,26 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 
 // uniforms
 #ifdef HAS_BASECOLORMAP
-uniform sampler2D AlbedoMap;
+SAMPLER2D(AlbedoMap, 0)
 #endif // HAS_BASECOLORMAP
 #ifdef HAS_NORMALMAP
-uniform sampler2D NormalMap;
+SAMPLER2D(NormalMap, 1)
 #endif // HAS_NORMALMAP
 #ifdef HAS_ORM
-uniform sampler2D OrmMap;
+SAMPLER2D(OrmMap, 2)
 #endif // HAS_ORM
 #ifdef HAS_EMISSIVEMAP
-uniform sampler2D EmissiveMap;
+SAMPLER2D(EmissiveMap, 3)
 #endif // HAS_EMISSIVEMAP
 #ifdef HAS_IBL
-uniform samplerCube SpecularEnvMap;
+SAMPLERCUBE(SpecularEnvMap, 4)
 #endif // HAS_IBL
 uniform mediump vec3 iblSH[9];
 #ifdef TERRA_NORMALMAP
-uniform sampler2D TerraNormalMap;
+SAMPLER2D(TerraNormalMap, 2)
 #endif
 #ifdef TERRA_LIGHTMAP
-uniform sampler2D TerraLightMap;
+SAMPLER2D(TerraLightMap, 3)
 uniform vec2 InvTerraLightMapSize;
 #endif
 

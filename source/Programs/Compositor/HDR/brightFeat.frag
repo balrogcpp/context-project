@@ -11,7 +11,7 @@
 #endif
 
 #include "header.glsl"
-uniform sampler2D RT;
+SAMPLER2D(RT, 0);
 uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
 uniform mediump int FeaturesCount;

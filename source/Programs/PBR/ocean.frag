@@ -14,7 +14,7 @@
 #define USE_MRT
 #include "header.glsl"
 
-uniform sampler2D NormapMap;
+SAMPLER2D(NormapMap, 0);
 uniform highp vec3 CameraPosition;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;

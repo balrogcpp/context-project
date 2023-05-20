@@ -19,9 +19,10 @@
 	#define SMAA_PREDICATION 0
 #endif
 
-uniform sampler2D rt_input;  //Must not be sRGB
+//Must not be sRGB
+SAMPLER2D(rt_input, 0);
 #if SMAA_PREDICATION
-	uniform sampler2D depthTex;
+SAMPLER2D(depthTex, 1);
 #endif
 #include "smaa.glsl"
 

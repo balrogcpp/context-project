@@ -12,8 +12,8 @@
 
 #include "header.glsl"
 #include "filters_RGB16.glsl"
-uniform sampler2D RT;
-uniform sampler2D FBO;
+SAMPLER2D(RT, 0);
+SAMPLER2D(FBO, 1);
 
 
 //----------------------------------------------------------------------------------------------------------------------

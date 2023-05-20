@@ -29,40 +29,41 @@
 
 // shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
+#define MAX_TEXTURES 6
 uniform mediump vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
-uniform sampler2D ShadowMap0;
+SAMPLER2D(ShadowMap0, MAX_TEXTURES + 0);
 uniform mediump vec2 ShadowTexel0;
 #if MAX_SHADOW_TEXTURES > 1
-uniform sampler2D ShadowMap1;
+SAMPLER2D(ShadowMap1, MAX_TEXTURES + 1);
 uniform mediump vec2 ShadowTexel1;
 #endif
 #if MAX_SHADOW_TEXTURES > 2
-uniform sampler2D ShadowMap2;
+SAMPLER2D(ShadowMap2, MAX_TEXTURES + 2);
 uniform mediump vec2 ShadowTexel2;
 #endif
 #if MAX_SHADOW_TEXTURES > 3
-uniform sampler2D ShadowMap3;
+SAMPLER2D(ShadowMap3, MAX_TEXTURES + 3);
 uniform mediump vec2 ShadowTexel3;
 #endif
 #if MAX_SHADOW_TEXTURES > 4
-uniform sampler2D ShadowMap4;
+SAMPLER2D(ShadowMap4, MAX_TEXTURES + 4);
 uniform mediump vec2 ShadowTexel4;
 #endif
 #if MAX_SHADOW_TEXTURES > 5
-uniform sampler2D ShadowMap5;
+SAMPLER2D(ShadowMap5, MAX_TEXTURES + 5);
 uniform mediump vec2 ShadowTexel5;
 #endif
 #if MAX_SHADOW_TEXTURES > 6
-uniform sampler2D ShadowMap6;
+SAMPLER2D(ShadowMap6, MAX_TEXTURES + 6);
 uniform mediump vec2 ShadowTexel6;
 #endif
 #if MAX_SHADOW_TEXTURES > 7
-uniform sampler2D ShadowMap7;
+SAMPLER2D(ShadowMap7, MAX_TEXTURES + 7);
 uniform mediump vec2 ShadowTexel7;
 #endif
 #if MAX_SHADOW_TEXTURES > 8
-uniform sampler2D ShadowMap8;
+SAMPLER2D(ShadowMap8, MAX_TEXTURES + 8);
 uniform mediump vec2 ShadowTexel8;
 #endif
 uniform mediump vec4 PssmSplitPoints;

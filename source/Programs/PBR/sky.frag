@@ -13,12 +13,11 @@
 
 #define USE_MRT
 #include "header.glsl"
-
+SAMPLERCUBE(CubeMap, 0);
 uniform vec3 SunDirection;
 uniform float SunSize;
 uniform vec3 SunColor;
 uniform highp vec3 A, B, C, D, E, F, G, H, I, Z;
-uniform samplerCube CubeMap;
 
 
 //----------------------------------------------------------------------------------------------------------------------

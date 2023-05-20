@@ -11,8 +11,8 @@
 #endif
 
 #include "header.glsl"
-uniform sampler2D RT;
-uniform sampler2D Lum;
+SAMPLER2D(RT, 0);
+SAMPLER2D(Lum, 1);
 
 
 //----------------------------------------------------------------------------------------------------------------------

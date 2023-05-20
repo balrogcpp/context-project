@@ -14,7 +14,7 @@
 
 
 #ifdef SHADOWCASTER_ALPHA
-uniform sampler2D AlbedoMap;
+SAMPLER2D(AlbedoMap, 0);
 uniform float SurfaceAlphaRejection;
 IN(highp vec2 vUV0, TEXCOORD0)
 #endif

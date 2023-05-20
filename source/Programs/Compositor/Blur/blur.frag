@@ -15,8 +15,8 @@
 #define MAX_SAMPLES 5
 #endif
 
-uniform sampler2D RT;
-uniform sampler2D VelocitySampler;
+SAMPLER2D(RT, 0);
+SAMPLER2D(VelocitySampler, 1);
 uniform mediump vec2 TexSize1;
 
 

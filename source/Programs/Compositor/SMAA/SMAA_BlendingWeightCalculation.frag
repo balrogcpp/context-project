@@ -15,9 +15,9 @@
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 
-uniform sampler2D edgeTex;
-uniform sampler2D areaTex;
-uniform sampler2D searchTex;
+SAMPLER2D(edgeTex, 0);
+SAMPLER2D(areaTex, 1);
+SAMPLER2D(searchTex, 2);
 #include "smaa.glsl"
 
 

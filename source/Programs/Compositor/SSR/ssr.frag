@@ -12,10 +12,10 @@
 
 #include "header.glsl"
 
-uniform sampler2D DepthMap;
-uniform sampler2D NormalMap;
-uniform sampler2D GlossMap;
-uniform sampler2D RT;
+SAMPLER2D(RT, 0);
+SAMPLER2D(DepthMap, 1);
+SAMPLER2D(NormalMap, 2);
+SAMPLER2D(GlossMap, 3);
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvProjMatrix;
 uniform mediump mat4 InvViewMatrix;

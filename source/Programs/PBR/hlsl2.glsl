@@ -133,12 +133,12 @@ mat4 transpose(mat4 m)
 #define _UNIFORM_BINDING(b) uniform
 #endif
 
-#define SAMPLER1D(name, reg) _UNIFORM_BINDING(reg) sampler1D name
-#define SAMPLER2D(name, reg) _UNIFORM_BINDING(reg) sampler2D name
-#define SAMPLER3D(name, reg) _UNIFORM_BINDING(reg) sampler3D name
-#define SAMPLER2DARRAY(name, reg) _UNIFORM_BINDING(reg) sampler2DArray name
-#define SAMPLERCUBE(name, reg) _UNIFORM_BINDING(reg) samplerCube name
-#define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2D name
+#define SAMPLER1D(name, reg) _UNIFORM_BINDING(reg) sampler1D name;
+#define SAMPLER2D(name, reg) _UNIFORM_BINDING(reg) sampler2D name;
+#define SAMPLER3D(name, reg) _UNIFORM_BINDING(reg) sampler3D name;
+#define SAMPLER2DARRAY(name, reg) _UNIFORM_BINDING(reg) sampler2DArray name;
+#define SAMPLERCUBE(name, reg) _UNIFORM_BINDING(reg) samplerCube name;
+#define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2D name;
 
 // semantics as aliases for attribute locations
 #ifdef OGRE_VERTEX_SHADER

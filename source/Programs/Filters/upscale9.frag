@@ -12,7 +12,7 @@
 
 #include "header.glsl"
 #include "filters_RGB16.glsl"
-uniform sampler2D RT;
+SAMPLER2D(RT, 0);
 uniform mediump vec2 TexelSize0;
 
 
