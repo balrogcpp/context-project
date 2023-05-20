@@ -32,7 +32,7 @@ highp vec3 hash(const highp vec3 a)
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0)
 IN(highp vec3 vRay, TEXCOORD1)
 
 MAIN_DECLARATION

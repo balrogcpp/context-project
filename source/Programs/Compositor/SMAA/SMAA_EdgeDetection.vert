@@ -22,7 +22,7 @@ uniform mediump mat4 worldViewProj;
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)
 IN(highp vec4 uv0, TEXCOORD0)
-OUT(highp vec2 vUV0, TEXCOORD0)
+OUT(mediump vec2 vUV0, TEXCOORD0)
 OUT(mediump mat4 offset, TEXCOORD1)
 
 MAIN_DECLARATION

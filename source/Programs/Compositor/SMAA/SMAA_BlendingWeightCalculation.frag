@@ -23,7 +23,7 @@ SAMPLER2D(searchTex, 2);
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0)
 IN(mediump vec2 pixcoord0, TEXCOORD1)
 IN(mediump mat4 offset, TEXCOORD2)
 

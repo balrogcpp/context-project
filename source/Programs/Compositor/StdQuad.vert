@@ -14,7 +14,7 @@
 
 
 IN(highp vec4 vertex, POSITION)
-OUT(highp vec2 vUV0, TEXCOORD0)
+OUT(mediump vec2 vUV0, TEXCOORD0)
 uniform highp mat4 WorldViewProj;
 
 

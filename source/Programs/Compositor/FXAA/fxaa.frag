@@ -293,7 +293,7 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0)
 
 MAIN_DECLARATION
 {

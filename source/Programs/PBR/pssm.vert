@@ -16,7 +16,7 @@
 IN(highp vec4 vertex, POSITION)
 #ifdef SHADOWCASTER_ALPHA
 IN(highp vec4 uv0, TEXCOORD0)
-OUT(highp vec2 vUV0, TEXCOORD0)
+OUT(mediump vec2 vUV0, TEXCOORD0)
 #endif
 uniform highp mat4 WorldViewProjMatrix;
 

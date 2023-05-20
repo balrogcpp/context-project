@@ -27,7 +27,7 @@ SAMPLER2D(velocityTex, 2);
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0)
 IN(mediump vec4 offset, TEXCOORD1)
 
 MAIN_DECLARATION

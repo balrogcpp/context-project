@@ -18,7 +18,7 @@ uniform vec4 ShadowColour;
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0)
 
 MAIN_DECLARATION
 {
