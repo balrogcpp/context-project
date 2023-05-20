@@ -66,13 +66,12 @@ IN(highp vec4 uv2, TEXCOORD2)
 OUT(highp vec3 vWorldPosition, TEXCOORD0)
 OUT(highp float vDepth, TEXCOORD1)
 OUT(highp mat3 vTBN, TEXCOORD2)
-OUT(highp vec3 oNormal, TEXCOORD3)
-OUT(highp vec2 vUV0, TEXCOORD4)
-OUT(mediump vec4 vColor, TEXCOORD5)
-OUT(mediump vec4 vScreenPosition, TEXCOORD6)
-OUT(mediump vec4 vPrevScreenPosition, TEXCOORD7)
+OUT(highp vec2 vUV0, TEXCOORD3)
+OUT(mediump vec4 vColor, TEXCOORD4)
+OUT(mediump vec4 vScreenPosition, TEXCOORD5)
+OUT(mediump vec4 vPrevScreenPosition, TEXCOORD6)
 #if MAX_SHADOW_TEXTURES > 0
-OUT(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], P8)
+OUT(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7)
 #endif
 
 MAIN_DECLARATION
@@ -106,13 +105,11 @@ MAIN_DECLARATION
     highp vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
-    oNormal = normalize(mul(WorldViewMatrix, vec4(normal.xyz, 0.0)).xyz);
 #else
     const highp vec3 n = vec3(0.0, 1.0, 0.0);
     const highp vec3 t = vec3(1.0, 0.0, 0.0);
     const highp vec3 b = cross(n, t);
     vTBN = mtxFromCols3x3(t, b, n);
-    oNormal = n;
 #endif // HAS_NORMALS
 
     highp vec4 world = mul(WorldMatrix, position);

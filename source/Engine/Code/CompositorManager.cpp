@@ -14,9 +14,7 @@ CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
 
-void CompositorManager::SetSleep(bool sleep) {
-  _sleep = sleep;
-}
+void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
 
 class DeferredLogic final : public Ogre::CompositorLogic {
  public:
@@ -390,8 +388,8 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
-    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
+    fp->setNamedConstant("ViewMatrix", ogreCamera->getViewMatrix());
+    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(ogreCamera->getViewMatrix() * ogreCamera->getProjectionMatrix()).inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setIgnoreMissingParams(false);
 
@@ -399,8 +397,8 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
-    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix()).inverse());
+    fp->setNamedConstant("ViewMatrix", ogreCamera->getViewMatrix());
+    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(ogreCamera->getViewMatrix() * ogreCamera->getProjectionMatrix()).inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setIgnoreMissingParams(false);
 

@@ -312,14 +312,13 @@ MAIN_PARAMETERS
 IN(highp vec3 vWorldPosition, TEXCOORD0)
 IN(highp float vDepth, TEXCOORD1)
 IN(highp mat3 vTBN, TEXCOORD2)
-IN(highp vec3 oNormal, TEXCOORD3)
-IN(highp vec2 vUV0, TEXCOORD4)
+IN(highp vec2 vUV0, TEXCOORD3)
+IN(mediump vec4 vColor, TEXCOORD4)
+IN(mediump vec4 vScreenPosition, TEXCOORD5)
+IN(mediump vec4 vPrevScreenPosition, TEXCOORD6)
 #if MAX_SHADOW_TEXTURES > 0
-varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+IN(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7)
 #endif
-IN(mediump vec4 vColor, TEXCOORD5)
-IN(mediump vec4 vScreenPosition, TEXCOORD6)
-IN(mediump vec4 vPrevScreenPosition, TEXCOORD7)
 
 MAIN_DECLARATION
 {
@@ -474,8 +473,7 @@ MAIN_DECLARATION
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
     FragData[2] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[3] = vec4(oNormal, 1.0);
-//    FragData[3] = vec4(n, 1.0);
+    FragData[3] = vec4(n, 1.0);
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);

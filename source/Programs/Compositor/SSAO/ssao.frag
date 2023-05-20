@@ -16,7 +16,7 @@
 SAMPLER2D(DepthMap, 0);
 SAMPLER2D(NormalMap, 1);
 uniform mediump mat4 ProjMatrix;
-uniform mediump mat4 InvViewMatrix;
+uniform mediump mat4 ViewMatrix;
 uniform mediump mat4 InvProjMatrix;
 uniform mediump float FarClipDistance;
 
@@ -65,13 +65,13 @@ MAIN_DECLARATION
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     mediump vec3 viewPos = vRay * depth;
-    mediump vec3 randN = hash(viewPos);
+    mediump vec3 worldPos = mul(InvProjMatrix, vec4(viewPos, 1.0)).xyz;
+    mediump vec3 randN = hash(worldPos);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
-    //mediump vec4 viewNorm = mul(InvViewMatrix, vec4(texture2D(NormalMap, vUV0).xyz, 0.0));
-    //viewNorm *= viewNorm.w;
+    //mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
+    mediump vec4 viewNorm = mul(ViewMatrix, vec4(texture2D(NormalMap, vUV0).xyz, 0.0));
 
     // Accumulated occlusion factor
     mediump float occ = 0.0;
