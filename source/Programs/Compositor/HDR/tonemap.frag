@@ -11,15 +11,15 @@
 #endif
 
 #include "header.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 
 
 // https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/FinalToneMapping_ps.glsl
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
 

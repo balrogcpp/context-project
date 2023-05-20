@@ -9,6 +9,7 @@ import Base from base.material
 fragment_program fbo glsl glsles hlsl
 {
 	source fbo.frag
+    target ps_2_0
 }
 
 material FBO : Base
@@ -51,6 +52,7 @@ material FBO : Base
 fragment_program rays glsl glsles hlsl
 {
 	source rays.frag
+    target ps_2_0
 
     default_params
     {
@@ -88,6 +90,7 @@ material Rays : Base
 fragment_program raysMod glsl glsles hlsl
 {
 	source raysMod.frag
+    target ps_2_0
 
     default_params
     {

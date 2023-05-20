@@ -13,9 +13,6 @@
 
 #include "header.glsl"
 
-
-varying mediump vec2 vUV0;
-varying mediump vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;
@@ -34,7 +31,11 @@ highp vec3 hash(const highp vec3 a)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+IN(highp vec3 vRay, TEXCOORD1)
+
+MAIN_DECLARATION
 {
     #define MAX_RAND_SAMPLES 14
 

@@ -11,6 +11,10 @@
 #endif
 
 #include "header.glsl"
+uniform sampler2D RT;
+uniform mediump vec2 TexelSize0;
+uniform mediump float ChromaticRadius;
+uniform mediump int FeaturesCount;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -88,15 +92,11 @@ mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump ve
 }
 
 
-varying mediump vec2 vUV0;
-uniform sampler2D RT;
-uniform mediump vec2 TexelSize0;
-uniform mediump float ChromaticRadius;
-uniform mediump int FeaturesCount;
-
-
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
 

@@ -97,6 +97,9 @@ mat4 transpose(mat4 m)
 
 #define OGRE_UNIFORMS_BEGIN
 #define OGRE_UNIFORMS_END
+#define OGRE_UNIFORMS(params) OGRE_UNIFORMS_BEGIN params OGRE_UNIFORMS_END
+#define MAIN_PARAMETERS
+#define MAIN_DECLARATION void main()
 
 #if __VERSION__ > 120 || defined(OGRE_GLSLANG)
 
@@ -136,6 +139,29 @@ mat4 transpose(mat4 m)
 #define SAMPLER2DARRAY(name, reg) _UNIFORM_BINDING(reg) sampler2DArray name
 #define SAMPLERCUBE(name, reg) _UNIFORM_BINDING(reg) samplerCube name
 #define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2D name
+
+// semantics as aliases for attribute locations
+#ifdef OGRE_VERTEX_SHADER
+#if !defined(OGRE_HLSL) && !defined(OGRE_CG)
+#define POSITION    0
+#define BLENDWEIGHT 1
+#define NORMAL      2
+#define COLOR0      3
+#define COLOR1      4
+#define COLOR COLOR0
+#define FOG         5
+#define BLENDINDICES 7
+#define TEXCOORD0   8
+#define TEXCOORD1   9
+#define TEXCOORD2  10
+#define TEXCOORD3  11
+#define TEXCOORD4  12
+#define TEXCOORD5  13
+#define TEXCOORD6  14
+#define TEXCOORD7  15
+#define TANGENT    14
+#endif
+#endif
 
 #endif // OGRE_GLSL
 #endif // HLSL2_GLSL

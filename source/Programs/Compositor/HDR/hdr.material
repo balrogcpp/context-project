@@ -8,6 +8,7 @@ import Base from base.material
 fragment_program lumStart glsl glsles hlsl
 {
 	source lumStart.frag
+    target ps_2_0
 
     default_params
     {
@@ -18,6 +19,7 @@ fragment_program lumStart glsl glsles hlsl
 fragment_program lumEnd glsl glsles hlsl
 {
 	source lumEnd.frag
+    target ps_2_0
 
     default_params
     {
@@ -81,6 +83,7 @@ material HdrEnd : Base
 fragment_program HDR glsl glsles hlsl
 {
     source hdr.frag
+    target ps_2_0
 }
 
 material HDR : Base
@@ -120,6 +123,7 @@ material HDR : Base
 fragment_program tonemap glsl glsles hlsl
 {
     source tonemap.frag
+    target ps_2_0
 }
 
 material Tonemap : Base

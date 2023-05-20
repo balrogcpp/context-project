@@ -10,21 +10,20 @@
 #endif
 #endif
 
-
 #include "header.glsl"
 
-
-attribute highp vec4 vertex;
-attribute mediump vec4 uv0;
-
-varying highp vec3 vPosition;
-varying mediump vec3 vUV0; // direction vector representing a 3D texture coordinate
 
 uniform highp mat4 WorldViewProj;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec4 vertex, POSITION)
+IN(highp vec4 uv0, TEXCOORD0)
+OUT(highp vec3 vPosition, TEXCOORD0)
+OUT(highp vec3 vUV0, TEXCOORD1)
+
+MAIN_DECLARATION
 {
     vUV0 = uv0.xyz;
     vPosition = vertex.xyz;

@@ -14,10 +14,6 @@
 #define USE_MRT
 #include "header.glsl"
 
-
-varying highp vec3 vPosition;
-varying mediump vec3 vUV0;
-
 uniform vec3 SunDirection;
 uniform float SunSize;
 uniform vec3 SunColor;
@@ -34,7 +30,12 @@ highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec3 vPosition, TEXCOORD0)
+IN(highp vec3 vUV0, TEXCOORD1)
+
+
+MAIN_DECLARATION
 {
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);

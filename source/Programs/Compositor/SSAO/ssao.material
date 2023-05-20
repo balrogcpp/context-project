@@ -9,6 +9,7 @@ import Base from base.material
 fragment_program ssao glsl glsles hlsl
 {
 	source ssao.frag
+    target ps_2_0
 }
 
 material SSAO : Base
@@ -44,6 +45,7 @@ material SSAO : Base
 fragment_program ssaoMod glsl glsles hlsl
 {
 	source ssaoMod.frag
+    target ps_2_0
 }
 
 material SSAO_mod : Base
@@ -78,11 +80,13 @@ material SSAO_mod : Base
 fragment_program ssaox glsl glsles hlsl
 {
 	source ssaox.frag
+    target ps_2_0
 }
 
 fragment_program ssaoy glsl glsles hlsl
 {
 	source ssaoy.frag
+    target ps_2_0
 }
 
 material SSAOX : Base

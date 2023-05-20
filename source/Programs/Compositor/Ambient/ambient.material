@@ -9,6 +9,7 @@ import Base from base.material
 fragment_program Ambient glsl glsles hlsl
 {
     source ambient.frag
+    target ps_2_0
 }
 
 material Ambient : Base

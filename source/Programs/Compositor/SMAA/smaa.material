@@ -4,6 +4,7 @@
 vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 {
 	source SMAA_EdgeDetection.vert
+    target vs_2_0
 
 	default_params
 	{
@@ -16,6 +17,7 @@ vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
 {
 	source SMAA_EdgeDetection.frag
+    target ps_2_0
     default_params
     {
         param_named_auto FarClipDistance far_clip_distance
@@ -64,6 +66,7 @@ material SMAA/EdgeDetection
 vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 {
 	source SMAA_BlendingWeightCalculation.vert
+    target vs_2_0
 
 	default_params
 	{
@@ -75,6 +78,7 @@ vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles hlsl
 {
 	source SMAA_BlendingWeightCalculation.frag
+    target ps_2_0
 
 	default_params
 	{
@@ -133,6 +137,7 @@ material SMAA/BlendingWeightCalculation
 vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 {
 	source SMAA_NeighborhoodBlending.vert
+    target vs_2_0
 
 	default_params
 	{
@@ -144,6 +149,7 @@ vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 fragment_program SMAA/NeighborhoodBlending_ps glsl glsles hlsl
 {
 	source SMAA_NeighborhoodBlending.frag
+    target ps_2_0
 
 	default_params
 	{

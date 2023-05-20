@@ -10,16 +10,12 @@
 #endif
 #endif
 
-
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 #define SMAA_REPROJECTION 0
 
-
-varying mediump vec2 vUV0;
-varying mediump vec4 offset;
 uniform sampler2D rt_input; //Can be sRGB
 uniform sampler2D blendTex;
 #if SMAA_REPROJECTION
@@ -28,7 +24,12 @@ uniform sampler2D blendTex;
 #include "smaa.glsl"
 
 
-void main()
+//----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump vec4 offset, TEXCOORD1)
+
+MAIN_DECLARATION
 {
 #if SMAA_REPROJECTION
 	FragColor = SafeHDR(SMAANeighborhoodBlendingPS( vUV0, offset,

@@ -3,6 +3,7 @@
 vertex_program StdQuad_vp glsl glsles hlsl
 {
 	source StdQuad.vert
+    target vs_2_0
 
 	default_params
 	{

@@ -22,16 +22,19 @@ uniform float uScroll;
 uniform float vScroll;
 uniform vec4  preRotatedQuad[4];
 
-attribute vec4 vertex;
-attribute vec4 normal;
-attribute vec4 colour;
-attribute vec4 uv0;
 
-varying vec4 oUV;
-varying vec4 oColour;
-varying float oFogCoord;
 
-void main()
+//----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
+IN(highp vec4 vertex, POSITION)
+IN(highp vec4 normal, NORMAL)
+IN(highp vec4 colour, COLOR)
+IN(highp vec4 uv0, TEXCOORD0)
+OUT(highp vec4 oUV, TEXCOORD0)
+OUT(mediump vec4 oColour, TEXCOORD1)
+OUT(mediump float oFogCoord, TEXCOORD2)
+
+MAIN_DECLARATION
 {
     //Face the camera
 	vec4 vCenter = vec4( vertex.x, vertex.y, vertex.z, 1.0 );

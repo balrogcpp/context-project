@@ -11,9 +11,6 @@
 #endif
 
 #include "header.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D FBO;
 uniform mediump float LightCount;
 uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];
@@ -49,7 +46,10 @@ mediump vec3 GodRays(sampler2D tex, const mediump vec2 uv, const mediump vec2 li
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 

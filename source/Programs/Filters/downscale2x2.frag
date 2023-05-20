@@ -12,15 +12,15 @@
 
 #include "header.glsl"
 #include "filters_RGB16.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     FragColor = vec4(Downscale2x2(RT, vUV0, TexelSize0), 1.0);
 }

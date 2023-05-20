@@ -15,50 +15,10 @@
 #include "pgeometry.glsl"
 #endif
 
-
-#ifndef VERTEX_COMPRESSION
-attribute highp vec4 vertex;
-#else
-attribute highp vec2 vertex;
+#ifdef VERTEX_COMPRESSION
 uniform highp mat4 posIndexToObjectSpace;
 uniform highp float baseUVScale;
-#endif // VERTEX_COMPRESSION
-#ifdef HAS_NORMALS
-attribute highp vec4 normal;
-attribute highp vec4 tangent;
 #endif
-#ifdef HAS_VERTEXCOLOR
-attribute mediump vec4 colour;
-#endif
-#ifdef HAS_UV
-#ifndef VERTEX_COMPRESSION
-attribute highp vec4 uv0;
-#else
-attribute highp float uv0;
-#endif // VERTEX_COMPRESSION
-#ifdef PAGED_GEOMETRY
-attribute highp vec4 uv1;
-attribute highp vec4 uv2;
-#endif // PAGED_GEOMETRY
-// attribute highp vec4 uv3;
-// attribute highp vec4 uv4;
-// attribute highp vec4 uv5;
-// attribute highp vec4 uv6;
-// attribute highp vec4 uv7;
-#endif //  HAS_UV
-
-varying highp vec3 vWorldPosition;
-varying highp float vDepth;
-varying highp mat3 vTBN;
-varying highp vec3 oNormal;
-varying highp vec2 vUV0;
-varying mediump vec4 vColor;
-varying mediump vec4 vScreenPosition;
-varying mediump vec4 vPrevScreenPosition;
-#if MAX_SHADOW_TEXTURES > 0
-varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
-
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
@@ -73,9 +33,49 @@ uniform highp float FadeRange;
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
 
+MAIN_PARAMETERS
+#ifndef VERTEX_COMPRESSION
+IN(highp vec4 vertex, POSITION)
+#else
+IN(highp vec2 vertex, POSITION)
+#endif // VERTEX_COMPRESSION
+#ifdef HAS_NORMALS
+IN(highp vec4 normal, NORMAL)
+IN(highp vec4 tangent, TANGENT)
+#endif
+#ifdef HAS_VERTEXCOLOR
+IN(highp vec4 colour, COLOR)
+#endif
+#ifdef HAS_UV
+#ifndef VERTEX_COMPRESSION
+IN(highp vec4 uv0, TEXCOORD0)
+#else
+IN(highp float uv0, TEXCOORD0)
+#endif // VERTEX_COMPRESSION
+#ifdef PAGED_GEOMETRY
+IN(highp vec4 uv1, TEXCOORD1)
+IN(highp vec4 uv2, TEXCOORD2)
+#endif // PAGED_GEOMETRY
+//IN(highp vec4 uv3, TEXCOORD3)
+//IN(highp vec4 uv4, TEXCOORD4)
+//IN(highp vec4 uv5, TEXCOORD5)
+//IN(highp vec4 uv6, TEXCOORD6)
+//IN(highp vec4 uv7, TEXCOORD7)
+#endif //  HAS_UV
 
-//----------------------------------------------------------------------------------------------------------------------
-void main()
+OUT(highp vec3 vWorldPosition, TEXCOORD0)
+OUT(highp float vDepth, TEXCOORD1)
+OUT(highp mat3 vTBN, TEXCOORD2)
+OUT(highp vec3 oNormal, TEXCOORD3)
+OUT(highp vec2 vUV0, TEXCOORD4)
+OUT(mediump vec4 vColor, TEXCOORD5)
+OUT(mediump vec4 vScreenPosition, TEXCOORD6)
+OUT(mediump vec4 vPrevScreenPosition, TEXCOORD7)
+#if MAX_SHADOW_TEXTURES > 0
+OUT(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], P8)
+#endif
+
+MAIN_DECLARATION
 {
 #ifdef HAS_VERTEXCOLOR
     vColor = max3(colour.rgb) > 0.0 ? colour.rgba : vec4(1.0, 1.0, 1.0, 1.0);

@@ -10,23 +10,24 @@
 #endif
 #endif
 
-
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 
-
-varying mediump vec2 vUV0;
-varying mediump vec2 pixcoord0;
-varying mediump mat4 offset;
 uniform sampler2D edgeTex;
 uniform sampler2D areaTex;
 uniform sampler2D searchTex;
 #include "smaa.glsl"
 
 
-void main()
+//----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 pixcoord0, TEXCOORD1)
+IN(mediump mat4 offset, TEXCOORD2)
+
+MAIN_DECLARATION
 {
 	FragColor = SMAABlendingWeightCalculationPS(vUV0, pixcoord0, offset,
 													edgeTex, areaTex, searchTex,

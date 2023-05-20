@@ -115,15 +115,6 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 }
 
 
-// varyings
-varying highp vec3 vWorldPosition;
-varying highp float vDepth;
-varying highp mat3 vTBN;
-varying highp vec3 oNormal;
-varying highp vec2 vUV0;
-varying mediump vec4 vColor;
-varying mediump vec4 vScreenPosition;
-varying mediump vec4 vPrevScreenPosition;
 
 // uniforms
 #ifdef HAS_BASECOLORMAP
@@ -180,8 +171,6 @@ uniform mediump float OffsetScale;
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 
-// fog function
-#include "fog.glsl"
 // shadow receiver
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
@@ -237,14 +226,14 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-highp vec3 GetNormal(const mediump vec2 uv)
+highp vec3 GetNormal(highp mat3 tbn, const mediump vec2 uv, const mediump vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
-    highp vec3 ng = texture2D(TerraNormalMap, vUV0.xy).xyz * 2.0 - 1.0;
+    highp vec3 ng = texture2D(TerraNormalMap, uv1).xyz * 2.0 - 1.0;
     highp vec3 b = normalize(cross(ng, t));
     t = normalize(cross(ng ,b));
-    highp mat3 tbn = mtxFromCols3x3(t, b, ng);
+    tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
     highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
@@ -266,7 +255,7 @@ highp vec3 GetNormal(const mediump vec2 uv)
     highp vec3 n1 = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
     highp vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
     highp vec3 t = normalize(cross(n0, b));
-    highp mat3 tbn = mtxFromCols3x3(t, b, n0);
+    tbn = mtxFromCols3x3(t, b, n0);
     n1 = normalize(mul(tbn, (2.0 * n1 - 1.0)));
     return n1;
 #else
@@ -277,10 +266,10 @@ highp vec3 GetNormal(const mediump vec2 uv)
 #ifdef HAS_NORMALS
 #ifdef HAS_NORMALMAP
     highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
-    n = normalize(mul(vTBN, ((2.0 * n - 1.0))));
+    n = normalize(mul(tbn, ((2.0 * n - 1.0))));
     return n;
 #else
-    highp vec3 n = vTBN[2].xyz;
+    highp vec3 n = tbn[2].xyz;
     return n;
 #endif // HAS_NORMALMAP
 #endif // HAS_NORMALS
@@ -290,9 +279,9 @@ highp vec3 GetNormal(const mediump vec2 uv)
 
 // Sampler helper functions
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec4 GetAlbedo(const mediump vec2 uv)
+mediump vec4 GetAlbedo(const mediump vec4 color, const mediump vec2 uv)
 {
-    mediump vec4 albedo = SurfaceDiffuseColour * vColor;
+    mediump vec4 albedo = SurfaceDiffuseColour * color;
 
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(AlbedoMap, uv);
@@ -312,9 +301,21 @@ mediump vec3 GetEmission(const mediump vec2 uv)
 #endif
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec3 vWorldPosition, TEXCOORD0)
+IN(highp float vDepth, TEXCOORD1)
+IN(highp mat3 vTBN, TEXCOORD2)
+IN(highp vec3 oNormal, TEXCOORD3)
+IN(highp vec2 vUV0, TEXCOORD4)
+#if MAX_SHADOW_TEXTURES > 0
+varying highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+#endif
+IN(mediump vec4 vColor, TEXCOORD5)
+IN(mediump vec4 vScreenPosition, TEXCOORD6)
+IN(mediump vec4 vPrevScreenPosition, TEXCOORD7)
+
+MAIN_DECLARATION
 {
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
     highp vec2 uv = vUV0.xy;
@@ -326,7 +327,7 @@ void main()
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 
-    mediump vec4 s = GetAlbedo(uv);
+    mediump vec4 s = GetAlbedo(vColor, uv);
     mediump vec3 albedo = s.rgb;
 
 #ifdef HAS_ALPHA
@@ -374,7 +375,7 @@ void main()
     mediump vec3 reflectance0 = specularColor.rgb;
 
     // Normal at surface point
-    highp vec3 n = GetNormal(uv);
+    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -443,7 +444,7 @@ void main()
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] > 0.0) {
-            light *= clamp(GetShadow(i, texCounter) + ShadowColour.r, 0.0, 1.0);
+            light *= clamp(GetShadow(vLightSpacePosArray, vScreenPosition.z, i, texCounter) + ShadowColour.r, 0.0, 1.0);
         }
 #endif
 

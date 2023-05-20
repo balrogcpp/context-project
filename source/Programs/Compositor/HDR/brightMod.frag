@@ -12,16 +12,16 @@
 
 #include "header.glsl"
 #include "filters_RGB16.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D RT0;
 uniform mediump vec2 TexelSize1;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 rt = texture2D(RT, vUV0).rgb;
     mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize1);

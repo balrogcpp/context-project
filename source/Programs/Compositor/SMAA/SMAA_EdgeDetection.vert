@@ -10,22 +10,22 @@
 #endif
 #endif
 
-
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 1
 #define SMAA_INCLUDE_PS 0
 
-
-attribute mediump vec4 vertex;
-attribute mediump vec2 uv0;
 uniform mediump mat4 worldViewProj;
-varying mediump vec2 vUV0;
-varying mediump mat4 offset;
 #include "smaa.glsl"
 
+//----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
+IN(highp vec4 vertex, POSITION)
+IN(highp vec4 uv0, TEXCOORD0)
+OUT(highp vec2 vUV0, TEXCOORD0)
+OUT(mediump mat4 offset, TEXCOORD1)
 
-void main()
+MAIN_DECLARATION
 {
 	gl_Position = worldViewProj * vertex;
 	vUV0 = uv0.xy;

@@ -11,16 +11,16 @@
 #endif
 
 #include "header.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D SsaoMap;
 uniform vec4 ShadowColour;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump float ssao = texture2D(SsaoMap, vUV0).r;

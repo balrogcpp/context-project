@@ -11,21 +11,20 @@
 #endif
 
 #include "header.glsl"
-
-
 #ifndef MAX_SAMPLES
 #define MAX_SAMPLES 5
 #endif
 
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D VelocitySampler;
 uniform mediump vec2 TexSize1;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec2 velocity = texture2D(VelocitySampler, vUV0).xy;

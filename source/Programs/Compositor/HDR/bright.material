@@ -8,6 +8,7 @@ import Base from base.material
 fragment_program brightStart glsl glsles hlsl
 {
 	source brightStart.frag
+    target ps_2_0
 
     default_params
     {
@@ -47,6 +48,7 @@ material BrightStart : Base
 fragment_program brightMod glsl glsles hlsl
 {
 	source brightMod.frag
+    target ps_2_0
 }
 
 material BrightMod : Base
@@ -81,6 +83,7 @@ material BrightMod : Base
 fragment_program brightFeat glsl glsles hlsl
 {
 	source brightFeat.frag
+    target ps_2_0
 
     default_params
     {

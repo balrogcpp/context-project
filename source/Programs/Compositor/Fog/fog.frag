@@ -11,10 +11,7 @@
 #endif
 
 #include "header.glsl"
-#include "fog.glsl"
 
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D DepthMap;
 uniform mediump vec4 FogColour;
@@ -24,7 +21,10 @@ uniform mediump float NearClipDistance;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;

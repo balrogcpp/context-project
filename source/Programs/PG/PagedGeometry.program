@@ -2,6 +2,7 @@
 vertex_program Sprite_vp glsl glsles hlsl
 {
     source Sprite.vert
+    target vs_2_0
 
     default_params
     {
@@ -13,6 +14,7 @@ vertex_program Sprite_vp glsl glsles hlsl
 vertex_program SpriteFade_vp glsl glsles hlsl
 {
     source Sprite.vert
+    target vs_2_0
 
     preprocessor_defines FADE
 
@@ -27,6 +29,7 @@ vertex_program SpriteFade_vp glsl glsles hlsl
 fragment_program Default_AlphaTest glsl glsles hlsl
 {
     source Default.frag
+    target ps_2_0
 
     preprocessor_defines ALPHA_TEST
 
@@ -42,6 +45,7 @@ fragment_program Default_AlphaTest glsl glsles hlsl
 fragment_program Default_AlphaTest_NoFog glsl glsles hlsl
 {
     source Default.frag
+    target ps_2_0
 
     preprocessor_defines ALPHA_TEST
 

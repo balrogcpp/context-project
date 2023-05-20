@@ -13,15 +13,15 @@
 #include "header.glsl"
 
 
-attribute highp vec4 vertex;
+IN(highp vec4 vertex, POSITION)
 #ifdef SHADOWCASTER_ALPHA
-attribute highp vec2 uv0;
-varying mediump vec2 vUV0;
+IN(highp vec4 uv0, TEXCOORD0)
+OUT(highp vec2 vUV0, TEXCOORD0)
 #endif
 uniform highp mat4 WorldViewProjMatrix;
 
 
-void main()
+MAIN_DECLARATION
 {
 #ifdef SHADOWCASTER_ALPHA
     vUV0.xy = uv0.xy;

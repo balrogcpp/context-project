@@ -10,7 +10,6 @@
 #endif
 #endif
 
-
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
 #define SMAA_INCLUDE_VS 0
@@ -20,9 +19,6 @@
 	#define SMAA_PREDICATION 0
 #endif
 
-
-varying mediump vec2 vUV0;
-varying mediump mat4 offset;
 uniform sampler2D rt_input;  //Must not be sRGB
 #if SMAA_PREDICATION
 	uniform sampler2D depthTex;
@@ -30,7 +26,12 @@ uniform sampler2D rt_input;  //Must not be sRGB
 #include "smaa.glsl"
 
 
-void main()
+//----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+IN(mediump mat4 offset, TEXCOORD1)
+
+MAIN_DECLARATION
 {
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2
 	#if SMAA_PREDICATION

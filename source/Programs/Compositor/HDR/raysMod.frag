@@ -12,15 +12,15 @@
 
 #include "header.glsl"
 #include "filters_RGB16.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D FBO;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec3 rays = texture2D(FBO, vUV0).rgb;

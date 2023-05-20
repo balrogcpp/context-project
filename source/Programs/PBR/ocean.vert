@@ -10,23 +10,21 @@
 #endif
 #endif
 
-
 #include "header.glsl"
 
-
-attribute highp vec4 vertex;
-varying highp vec3 vWorldPosition;
-varying mediump mat3 vTBN;
-varying mediump vec4 vScreenPosition;
-varying mediump vec4 vPrevScreenPosition;
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform mediump vec4 Time;
 
-
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec4 vertex, POSITION)
+OUT(highp vec3 vWorldPosition, TEXCOORD0)
+OUT(mediump vec4 vScreenPosition, TEXCOORD1)
+OUT(mediump vec4 vPrevScreenPosition, TEXCOORD2)
+
+MAIN_DECLARATION
 {
     highp vec4 position = vertex;
 

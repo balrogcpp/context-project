@@ -9,6 +9,7 @@ import Base from base.material
 fragment_program Fog glsl glsles hlsl
 {
     source fog.frag
+    target ps_2_0
 
 	default_params
 	{

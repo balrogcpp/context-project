@@ -11,9 +11,6 @@
 #endif
 
 #include "header.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform mediump vec4 TexSize0;
 uniform mediump vec4 ViewportSize;
@@ -56,7 +53,10 @@ mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump v
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     //Compute how many pixels we have to skip because we can't sample them all
     //e.g we have a 4096x4096 viewport (rt0), and we're rendering to a 64x64 surface

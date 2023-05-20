@@ -3,7 +3,9 @@
 //----------------------------------------------------------------------------------------------------------------------
 // PBR
 //----------------------------------------------------------------------------------------------------------------------
-shared_params PBR_Shared_vert {}
+shared_params PBR_Shared_vert
+{
+}
 
 shared_params PSSM_Shared_frag
 {
@@ -17,7 +19,7 @@ shared_params IBL_Shared_frag
 abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
-
+    target vs_2_0
     preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR
 
     default_params
@@ -37,7 +39,7 @@ vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-
+    target ps_2_0
     preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_IBL
     
     default_params

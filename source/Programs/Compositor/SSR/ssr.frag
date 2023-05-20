@@ -12,9 +12,6 @@
 
 #include "header.glsl"
 
-
-varying mediump vec2 vUV0;
-varying mediump vec3 vRay;
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
@@ -115,7 +112,11 @@ mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+IN(highp vec3 vRay, TEXCOORD1)
+
+MAIN_DECLARATION
 {
     mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
     mediump float reflectionStrength = ssr.r;

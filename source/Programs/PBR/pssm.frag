@@ -16,7 +16,7 @@
 #ifdef SHADOWCASTER_ALPHA
 uniform sampler2D AlbedoMap;
 uniform float SurfaceAlphaRejection;
-varying mediump vec2 vUV0;
+IN(highp vec2 vUV0, TEXCOORD0)
 #endif
 
 
@@ -35,7 +35,7 @@ mediump float map_1(const mediump float x, const mediump float v0, const mediump
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_DECLARATION
 {
 #ifdef SHADOWCASTER_ALPHA
     if (texture2D(AlbedoMap, vUV0.xy).a < SurfaceAlphaRejection) {

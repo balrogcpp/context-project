@@ -12,9 +12,6 @@
 
 #include "header.glsl"
 #include "filters_F16.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform sampler2D OldLum;
 uniform mediump vec2 TexelSize0;
@@ -23,7 +20,10 @@ uniform mediump float timeSinceLast;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);
     newLum = expose2(newLum, Exposure);

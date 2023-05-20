@@ -12,8 +12,6 @@
 
 #include "header.glsl"
 
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 
@@ -295,7 +293,10 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     FragColor = vec4(SafeHDR(FxaaPixelShader(vUV0, RT, TexelSize0)), 1.0);
 }

@@ -12,20 +12,21 @@
 
 #define USE_MRT
 #include "header.glsl"
-#include "fog.glsl"
 
 
 uniform sampler2D texMap;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-uniform float FarClipDistance;
-uniform float NearClipDistance;
-varying vec4 oUV;
-varying vec4 oColour;
-varying float oFogCoord;
+uniform mediump float FarClipDistance;
+uniform mediump float NearClipDistance;
 
+//----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
+IN(highp vec4 oUV, TEXCOORD0)
+IN(mediump vec4 oColour, TEXCOORD1)
+IN(mediump float oFogCoord, TEXCOORD2)
 
-void main()
+MAIN_DECLARATION
 {
     vec4 color = texture2D(texMap, oUV.xy);
 

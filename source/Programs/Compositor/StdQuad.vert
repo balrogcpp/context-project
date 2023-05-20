@@ -13,13 +13,13 @@
 #include "header.glsl"
 
 
-attribute highp vec4 vertex;
-varying mediump vec2 vUV0;
+IN(highp vec4 vertex, POSITION)
+OUT(highp vec2 vUV0, TEXCOORD0)
 uniform highp mat4 WorldViewProj;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_DECLARATION
 {
     gl_Position = mul(WorldViewProj, vertex);
 

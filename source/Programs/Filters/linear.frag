@@ -12,14 +12,14 @@
 
 #include "header.glsl"
 #include "filters_RGB16.glsl"
-
-
-varying mediump vec2 vUV0;
 uniform sampler2D RT;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec2 vUV0, TEXCOORD0)
+
+MAIN_DECLARATION
 {
     highp vec4 color = texture2D(RT, vUV0);
     FragColor = color;

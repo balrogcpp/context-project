@@ -13,13 +13,7 @@
 
 #define USE_MRT
 #include "header.glsl"
-#include "fog.glsl"
 
-
-varying highp vec3 vWorldPosition;
-varying mediump mat3 vTBN;
-varying mediump vec4 vScreenPosition;
-varying mediump vec4 vPrevScreenPosition;
 uniform sampler2D NormapMap;
 uniform highp vec3 CameraPosition;
 uniform mediump vec4 FogColour;
@@ -69,7 +63,12 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void main()
+MAIN_PARAMETERS
+IN(highp vec3 vWorldPosition, TEXCOORD0)
+IN(mediump vec4 vScreenPosition, TEXCOORD1)
+IN(mediump vec4 vPrevScreenPosition, TEXCOORD2)
+
+MAIN_DECLARATION
 {
     const bool aboveWater = true;
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
@@ -103,7 +102,6 @@ void main()
                             normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1 +
                             normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1);
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
-    //lNormal = normalize(vTBN * lNormal);
 
     highp vec3 lR = reflect(-lVec, lNormal);
 

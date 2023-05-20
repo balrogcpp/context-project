@@ -8,6 +8,7 @@ import Base from base.material
 fragment_program End glsl glsles hlsl
 {
     source end.frag
+    target ps_2_0
 }
 
 material End : Base
