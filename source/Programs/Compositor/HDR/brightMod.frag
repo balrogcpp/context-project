@@ -19,7 +19,7 @@ uniform mediump vec2 TexelSize1;
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0);
+IN(mediump vec2 vUV0, TEXCOORD0)
 
 MAIN_DECLARATION
 {

@@ -22,9 +22,9 @@ uniform mediump float NearClipDistance;
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec4 oUV, TEXCOORD0);
-IN(mediump vec4 oColour, TEXCOORD1);
-IN(mediump float oFogCoord, TEXCOORD2);
+IN(highp vec4 oUV, TEXCOORD0)
+IN(mediump vec4 oColour, TEXCOORD1)
+IN(mediump float oFogCoord, TEXCOORD2)
 
 MAIN_DECLARATION
 {

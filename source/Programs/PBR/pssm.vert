@@ -16,10 +16,10 @@ uniform highp mat4 WorldViewProjMatrix;
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec4 vertex, POSITION);
+IN(highp vec4 vertex, POSITION)
 #ifdef SHADOWCASTER_ALPHA
-IN(highp vec4 uv0, TEXCOORD0);
-OUT(mediump vec2 vUV0, TEXCOORD0);
+IN(highp vec4 uv0, TEXCOORD0)
+OUT(mediump vec2 vUV0, TEXCOORD0)
 #endif
 
 MAIN_DECLARATION

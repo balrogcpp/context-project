@@ -19,10 +19,10 @@ uniform mediump vec4 Time;
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec4 vertex, POSITION);
-OUT(highp vec3 vWorldPosition, TEXCOORD0);
-OUT(mediump vec4 vScreenPosition, TEXCOORD1);
-OUT(mediump vec4 vPrevScreenPosition, TEXCOORD2);
+IN(highp vec4 vertex, POSITION)
+OUT(highp vec3 vWorldPosition, TEXCOORD0)
+OUT(mediump vec4 vScreenPosition, TEXCOORD1)
+OUT(mediump vec4 vPrevScreenPosition, TEXCOORD2)
 
 MAIN_DECLARATION
 {

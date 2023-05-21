@@ -17,7 +17,7 @@ SAMPLER2D(RT, 0);
 // https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/FinalToneMapping_ps.glsl
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0);
+IN(mediump vec2 vUV0, TEXCOORD0)
 
 MAIN_DECLARATION
 {

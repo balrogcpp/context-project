@@ -29,8 +29,8 @@ SAMPLER2D(depthTex, 1);
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0);
-IN(mediump mat4 offset, TEXCOORD1);
+IN(mediump vec2 vUV0, TEXCOORD0)
+IN(mediump mat4 offset, TEXCOORD1)
 
 MAIN_DECLARATION
 {

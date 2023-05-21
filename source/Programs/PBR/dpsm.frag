@@ -34,7 +34,7 @@ highp float map_1(const highp float x, const highp float v0, const highp float v
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 #ifdef SHADOWCASTER_ALPHA
-IN(highp vec2 vUV0, TEXCOORD0);
+IN(highp vec2 vUV0, TEXCOORD0)
 #endif
 
 MAIN_DECLARATION

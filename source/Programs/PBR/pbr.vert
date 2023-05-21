@@ -36,34 +36,34 @@ uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 
 MAIN_PARAMETERS
 #ifndef VERTEX_COMPRESSION
-IN(highp vec4 vertex, POSITION);
+IN(highp vec4 vertex, POSITION)
 #else
-IN(highp vec2 vertex, POSITION);
+IN(highp vec2 vertex, POSITION)
 #endif // VERTEX_COMPRESSION
 #ifdef HAS_NORMALS
-IN(highp vec4 normal, NORMAL);
-IN(highp vec4 tangent, TANGENT);
+IN(highp vec4 normal, NORMAL)
+IN(highp vec4 tangent, TANGENT)
 #endif
 #ifdef HAS_VERTEXCOLOR
-IN(highp vec4 colour, COLOR);
+IN(highp vec4 colour, COLOR)
 #endif
 #ifdef HAS_UV
 #ifndef VERTEX_COMPRESSION
-IN(highp vec4 uv0, TEXCOORD0);
+IN(highp vec4 uv0, TEXCOORD0)
 #else
-IN(highp float uv0, TEXCOORD0);
+IN(highp float uv0, TEXCOORD0)
 #endif // VERTEX_COMPRESSION
 #ifdef PAGED_GEOMETRY
-IN(highp vec4 uv1, TEXCOORD1);
-IN(highp vec4 uv2, TEXCOORD2);
+IN(highp vec4 uv1, TEXCOORD1)
+IN(highp vec4 uv2, TEXCOORD2)
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
-OUT(highp vec3 vWorldPosition, TEXCOORD0);
-OUT(highp float vDepth, TEXCOORD1);
-OUT(highp mat3 vTBN, TEXCOORD2);
-OUT(highp mat3 vTBN1, TEXCOORD3);
-OUT(highp vec2 vUV0, TEXCOORD4);
+OUT(highp vec3 vWorldPosition, TEXCOORD0)
+OUT(highp float vDepth, TEXCOORD1)
+OUT(highp mat3 vTBN, TEXCOORD2)
+OUT(highp mat3 vTBN1, TEXCOORD3)
+OUT(highp vec2 vUV0, TEXCOORD4)
 OUT(mediump vec4 vColor, TEXCOORD5)
 OUT(mediump vec4 vScreenPosition, TEXCOORD6)
 OUT(mediump vec4 vPrevScreenPosition, TEXCOORD7)

@@ -112,8 +112,8 @@ mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0);
-IN(highp vec3 vRay, TEXCOORD1);
+IN(mediump vec2 vUV0, TEXCOORD0)
+IN(highp vec3 vRay, TEXCOORD1)
 
 MAIN_DECLARATION
 {

@@ -40,8 +40,8 @@ mediump float pow5(const mediump float x)
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0);
-IN(highp vec3 vRay, TEXCOORD1);
+IN(mediump vec2 vUV0, TEXCOORD0)
+IN(highp vec3 vRay, TEXCOORD1)
 
 MAIN_DECLARATION
 {
