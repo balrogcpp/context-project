@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -14,7 +14,7 @@ fragment_program Blur glsl glsles hlsl
     preprocessor_defines MAX_SAMPLES=5
 }
 
-material Blur : Base
+material Blur : StdQuad
 {
 	technique
 	{

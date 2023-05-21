@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ fragment_program fbo glsl glsles hlsl
     target ps_2_0
 }
 
-material FBO : Base
+material FBO : StdQuad
 {
 	technique
 	{
@@ -65,7 +65,7 @@ fragment_program rays glsl glsles hlsl
 }
 
 
-material Rays : Base
+material Rays : StdQuad
 {
     technique
     {
@@ -100,7 +100,7 @@ fragment_program raysMod glsl glsles hlsl
 }
 
 
-material RaysMod : Base
+material RaysMod : StdQuad
 {
     technique
     {

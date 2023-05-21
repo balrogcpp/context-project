@@ -22,9 +22,9 @@ uniform mediump float FarClipDistance;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-highp vec3 hash(const highp vec3 a)
+mediump vec3 hash(const mediump vec3 a)
 {
-    highp vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
+    mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
 }

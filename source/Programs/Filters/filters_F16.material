@@ -11,7 +11,7 @@ abstract material Filter_F16
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref StdQuad_vp {}
+			vertex_program_ref StdQuad {}
 
 			texture_unit RT
             {

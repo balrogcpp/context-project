@@ -4,7 +4,7 @@
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-abstract material Base
+abstract material StdQuad
 {
 	technique
 	{
@@ -15,7 +15,23 @@ abstract material Base
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref StdQuad_vp {}
+			vertex_program_ref StdQuad {}
+		}
+	}
+}
+
+abstract material RayCast
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+
+			vertex_program_ref RayCast {}
 		}
 	}
 }

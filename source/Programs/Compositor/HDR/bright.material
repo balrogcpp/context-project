@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // Cut bright parts of scene
@@ -16,7 +16,7 @@ fragment_program brightStart glsl glsles hlsl
     }
 }
 
-material BrightStart : Base
+material BrightStart : StdQuad
 {
 	technique
 	{
@@ -51,7 +51,7 @@ fragment_program brightMod glsl glsles hlsl
     target ps_2_0
 }
 
-material BrightMod : Base
+material BrightMod : StdQuad
 {
 	technique
 	{
@@ -91,7 +91,7 @@ fragment_program brightFeat glsl glsles hlsl
     }
 }
 
-material BrightFeat : Base
+material BrightFeat : StdQuad
 {
     technique
     {

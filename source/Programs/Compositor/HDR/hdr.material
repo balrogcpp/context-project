@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // Tent downsampling
@@ -29,7 +29,7 @@ fragment_program lumEnd glsl glsles hlsl
 }
 
 
-material HdrStart : Base
+material HdrStart : StdQuad
 {
     technique
     {
@@ -51,7 +51,7 @@ material HdrStart : Base
     }
 }
 
-material HdrEnd : Base
+material HdrEnd : StdQuad
 {
     technique
     {
@@ -86,7 +86,7 @@ fragment_program HDR glsl glsles hlsl
     target ps_2_0
 }
 
-material HDR : Base
+material HDR : StdQuad
 {
 	technique
 	{
@@ -126,7 +126,7 @@ fragment_program tonemap glsl glsles hlsl
     target ps_2_0
 }
 
-material Tonemap : Base
+material Tonemap : StdQuad
 {
 	technique
 	{

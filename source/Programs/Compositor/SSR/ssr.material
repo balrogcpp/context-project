@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
+import RayCast from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSR
@@ -12,14 +13,12 @@ fragment_program ssr glsl glsles hlsl
 }
 
 
-material SSR : Base
+material SSR : RayCast
 {
     technique
     {
         pass
         {
-			vertex_program_ref RayCast {}
-
             fragment_program_ref ssr
             {
                 param_named RT int 0

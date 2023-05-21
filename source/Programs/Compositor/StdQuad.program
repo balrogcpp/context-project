@@ -1,8 +1,8 @@
 // created by Andrey Vasiliev
 
-vertex_program StdQuad_vp glsl glsles hlsl
+vertex_program StdQuad glsl glsles hlsl
 {
-	source StdQuad.vert
+	source stdquad.vert
     target vs_2_0
 
 	default_params

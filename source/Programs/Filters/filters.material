@@ -11,7 +11,7 @@ abstract material Filter
             depth_write off
             polygon_mode_overrideable false
 
-			vertex_program_ref StdQuad_vp {}
+			vertex_program_ref StdQuad {}
 
 			texture_unit RT
             {
@@ -133,7 +133,7 @@ material Downscale13 : Filter
     {
         pass
         {
-            vertex_program_ref StdQuad_vp {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref downscale13
             {

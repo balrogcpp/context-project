@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -11,7 +11,7 @@ fragment_program End glsl glsles hlsl
     target ps_2_0
 }
 
-material End : Base
+material End : StdQuad
 {
 	technique
 	{

@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // FOG
@@ -20,7 +20,7 @@ fragment_program Fog glsl glsles hlsl
 	}
 }
 
-material Fog : Base
+material Fog : StdQuad
 {
 	technique
 	{

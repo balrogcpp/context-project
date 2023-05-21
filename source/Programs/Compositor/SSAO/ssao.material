@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
-import Base from base.material
+import StdQuad from stdquad.material
+import RayCast from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSAO
@@ -12,14 +13,12 @@ fragment_program ssao glsl glsles hlsl
     target ps_2_0
 }
 
-material SSAO : Base
+material SSAO : RayCast
 {
     technique
     {
         pass
         {
-			vertex_program_ref RayCast {}
-
             fragment_program_ref ssao
             {
                 param_named DepthMap int 0
@@ -48,7 +47,7 @@ fragment_program ssaoMod glsl glsles hlsl
     target ps_2_0
 }
 
-material SSAO_mod : Base
+material SSAO_mod : StdQuad
 {
     technique
     {
@@ -89,7 +88,7 @@ fragment_program ssaoy glsl glsles hlsl
     target ps_2_0
 }
 
-material SSAOX : Base
+material SSAOX : StdQuad
 {
     technique
     {
@@ -110,7 +109,7 @@ material SSAOX : Base
         }
     }
 }
-material SSAOY : Base
+material SSAOY : StdQuad
 {
     technique
     {
