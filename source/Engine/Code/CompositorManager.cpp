@@ -62,7 +62,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);
   AddCompositor("FXAA", false);
-  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
+  AddCompositor("SMAA", false);
   AddCompositor("HDR", true);
   InitMipChain(false);
   AddCompositor("Tonemap", true);
