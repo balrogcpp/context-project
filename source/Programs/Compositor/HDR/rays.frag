@@ -47,7 +47,7 @@ mediump vec3 GodRays(sampler2D tex, const mediump vec2 uv, const mediump vec2 li
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0);
 
 MAIN_DECLARATION
 {

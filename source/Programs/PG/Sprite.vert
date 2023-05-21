@@ -26,13 +26,13 @@ uniform vec4  preRotatedQuad[4];
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec4 vertex, POSITION)
-IN(highp vec4 normal, NORMAL)
-IN(highp vec4 colour, COLOR)
-IN(highp vec4 uv0, TEXCOORD0)
-OUT(highp vec4 oUV, TEXCOORD0)
-OUT(mediump vec4 oColour, TEXCOORD1)
-OUT(mediump float oFogCoord, TEXCOORD2)
+IN(highp vec4 vertex, POSITION);
+IN(highp vec4 normal, NORMAL);
+IN(highp vec4 colour, COLOR);
+IN(highp vec4 uv0, TEXCOORD0);
+OUT(highp vec4 oUV, TEXCOORD0);
+OUT(mediump vec4 oColour, TEXCOORD1);
+OUT(mediump float oFogCoord, TEXCOORD2);
 
 MAIN_DECLARATION
 {

@@ -18,10 +18,10 @@ uniform highp mat4 WorldViewProj;
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec4 vertex, POSITION)
-IN(highp vec4 uv0, TEXCOORD0)
-OUT(highp vec3 vPosition, TEXCOORD0)
-OUT(highp vec3 vUV0, TEXCOORD1)
+IN(highp vec4 vertex, POSITION);
+IN(highp vec4 uv0, TEXCOORD0);
+OUT(highp vec3 vPosition, TEXCOORD0);
+OUT(highp vec3 vUV0, TEXCOORD1);
 
 MAIN_DECLARATION
 {

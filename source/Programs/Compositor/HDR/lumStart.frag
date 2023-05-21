@@ -54,7 +54,7 @@ mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump v
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0);
 
 MAIN_DECLARATION
 {

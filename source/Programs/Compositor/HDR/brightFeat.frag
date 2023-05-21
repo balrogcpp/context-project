@@ -94,7 +94,7 @@ mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump ve
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0);
 
 MAIN_DECLARATION
 {

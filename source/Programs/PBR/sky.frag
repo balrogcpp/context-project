@@ -30,8 +30,8 @@ highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec3 vPosition, TEXCOORD0)
-IN(highp vec3 vUV0, TEXCOORD1)
+IN(highp vec3 vPosition, TEXCOORD0);
+IN(highp vec3 vUV0, TEXCOORD1);
 
 
 MAIN_DECLARATION

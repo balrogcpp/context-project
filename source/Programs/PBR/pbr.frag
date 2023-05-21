@@ -309,15 +309,15 @@ mediump vec3 GetEmission(const mediump vec2 uv)
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec3 vWorldPosition, TEXCOORD0)
-IN(highp float vDepth, TEXCOORD1)
-IN(highp mat3 vTBN, TEXCOORD2)
-IN(highp vec2 vUV0, TEXCOORD3)
-IN(mediump vec4 vColor, TEXCOORD4)
-IN(mediump vec4 vScreenPosition, TEXCOORD5)
-IN(mediump vec4 vPrevScreenPosition, TEXCOORD6)
+IN(highp vec3 vWorldPosition, TEXCOORD0);
+IN(highp float vDepth, TEXCOORD1);
+IN(highp mat3 vTBN, TEXCOORD2);
+IN(highp vec2 vUV0, TEXCOORD3);
+IN(mediump vec4 vColor, TEXCOORD4);
+IN(mediump vec4 vScreenPosition, TEXCOORD5);
+IN(mediump vec4 vPrevScreenPosition, TEXCOORD6);
 #if MAX_SHADOW_TEXTURES > 0
-IN(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7)
+IN(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7);
 #endif
 
 MAIN_DECLARATION

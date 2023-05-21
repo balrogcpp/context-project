@@ -64,9 +64,9 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(highp vec3 vWorldPosition, TEXCOORD0)
-IN(mediump vec4 vScreenPosition, TEXCOORD1)
-IN(mediump vec4 vPrevScreenPosition, TEXCOORD2)
+IN(highp vec3 vWorldPosition, TEXCOORD0);
+IN(mediump vec4 vScreenPosition, TEXCOORD1);
+IN(mediump vec4 vPrevScreenPosition, TEXCOORD2);
 
 MAIN_DECLARATION
 {

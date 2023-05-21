@@ -11,14 +11,15 @@
 #endif
 
 #include "header.glsl"
+uniform float SurfaceAlphaRejection;
 
 
+//----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
 #ifdef SHADOWCASTER_ALPHA
 SAMPLER2D(AlbedoMap, 0);
-uniform float SurfaceAlphaRejection;
-IN(mediump vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0);
 #endif
-
 
 MAIN_DECLARATION
 {

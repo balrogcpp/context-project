@@ -19,13 +19,13 @@ uniform mediump vec2 TexelSize1;
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
+IN(mediump vec2 vUV0, TEXCOORD0);
 
 MAIN_DECLARATION
 {
     mediump vec3 rt = texture2D(RT, vUV0).rgb;
     mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize1);
-    const mediump float w = 1.0 / 10.0;
+    const mediump float w = 1.0 / 8.0;
 
     FragColor = vec4(SafeHDR(rt + rt0 * w), 1.0);
 }
