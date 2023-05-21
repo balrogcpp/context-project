@@ -11,14 +11,30 @@
 #endif
 
 #include "header.glsl"
-uniform float SurfaceAlphaRejection;
+#ifdef SHADOWCASTER_ALPHA
+uniform highp float SurfaceAlphaRejection;
+SAMPLER2D(AlbedoMap, 0);
+#endif
+
+
+//----------------------------------------------------------------------------------------------------------------------
+highp float map_0(const highp float x, const highp float v0, const highp float v1)
+{
+    return (x - v0) / (v1 - v0);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+highp float map_1(const highp float x, const highp float v0, const highp float v1)
+{
+    return x * (v1 - v0) + v0;
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 #ifdef SHADOWCASTER_ALPHA
-SAMPLER2D(AlbedoMap, 0);
-IN(mediump vec2 vUV0, TEXCOORD0);
+IN(highp vec2 vUV0, TEXCOORD0);
 #endif
 
 MAIN_DECLARATION
@@ -29,5 +45,5 @@ MAIN_DECLARATION
     }
 #endif
 
-    FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+    FragColor = vec4(map_0(gl_FragCoord.z, 0.0, 100.0), 0.0, 0.0, 1.0);
 }

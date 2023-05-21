@@ -56,22 +56,18 @@ IN(highp float uv0, TEXCOORD0);
 IN(highp vec4 uv1, TEXCOORD1);
 IN(highp vec4 uv2, TEXCOORD2);
 #endif // PAGED_GEOMETRY
-//IN(highp vec4 uv3, TEXCOORD3);
-//IN(highp vec4 uv4, TEXCOORD4);
-//IN(highp vec4 uv5, TEXCOORD5);
-//IN(highp vec4 uv6, TEXCOORD6);
-//IN(highp vec4 uv7, TEXCOORD7);
 #endif //  HAS_UV
 
 OUT(highp vec3 vWorldPosition, TEXCOORD0);
 OUT(highp float vDepth, TEXCOORD1);
 OUT(highp mat3 vTBN, TEXCOORD2);
-OUT(highp vec2 vUV0, TEXCOORD3);
-OUT(mediump vec4 vColor, TEXCOORD4)
-OUT(mediump vec4 vScreenPosition, TEXCOORD5)
-OUT(mediump vec4 vPrevScreenPosition, TEXCOORD6)
+OUT(highp mat3 vTBN1, TEXCOORD3);
+OUT(highp vec2 vUV0, TEXCOORD4);
+OUT(mediump vec4 vColor, TEXCOORD5)
+OUT(mediump vec4 vScreenPosition, TEXCOORD6)
+OUT(mediump vec4 vPrevScreenPosition, TEXCOORD7)
 #if MAX_SHADOW_TEXTURES > 0
-OUT(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7)
+OUT(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD8)
 #endif
 
 MAIN_DECLARATION
@@ -105,19 +101,24 @@ MAIN_DECLARATION
     highp vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
+    highp vec3 n1 = normalize(mul(WorldViewMatrix, vec4(normal.xyz, 0.0)).xyz);
+    highp vec3 t1 = normalize(mul(WorldViewMatrix, vec4(tangent.xyz, 0.0)).xyz);
+    highp vec3 b1 = cross(n1, t1) * tangent.w;
+    vTBN1 = mtxFromCols3x3(t1, b1, n1);
 #else
     const highp vec3 n = vec3(0.0, 1.0, 0.0);
     const highp vec3 t = vec3(1.0, 0.0, 0.0);
-    const highp vec3 b = cross(n, t);
+    const highp vec3 b = normalize(cross(n, t));
     vTBN = mtxFromCols3x3(t, b, n);
+    vTBN1 = vTBN;
 #endif // HAS_NORMALS
 
     highp vec4 world = mul(WorldMatrix, position);
     vWorldPosition = world.xyz / world.w;
+    vDepth = length(mul(WorldViewMatrix, position).xyz);
 
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
-    vDepth = length(mul(WorldViewMatrix, position));
     vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
 
 #if MAX_SHADOW_TEXTURES > 0

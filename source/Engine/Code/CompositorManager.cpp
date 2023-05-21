@@ -389,7 +389,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("ViewMatrix", ogreCamera->getViewMatrix());
-    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(ogreCamera->getViewMatrix() * ogreCamera->getProjectionMatrix()).inverse());
+    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setIgnoreMissingParams(false);
 
@@ -398,7 +398,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("ViewMatrix", ogreCamera->getViewMatrix());
-    fp->setNamedConstant("InvProjMatrix", Ogre::Matrix4(ogreCamera->getViewMatrix() * ogreCamera->getProjectionMatrix()).inverse());
+    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setIgnoreMissingParams(false);
 

@@ -223,10 +223,25 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     std::string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
     std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
 
-    fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
+    auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
+    pssmCount = pssm->getSplitCount();
+    auto x = fpDefines.find("PSSM_SPLIT_COUNT");
+    if (x == string::npos) {
+      fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
+    }
 
-    // GLSLES2 on mobile breaks IBL when >4 shadow textures
     if (ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE) {
+      if (auto *tex = pass->getTextureUnitState("IBL")) {
+        if (RenderSystemIsGLES2()) {
+          //pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+
+          auto i = fpDefines.find("HAS_IBL");
+          if (i != string::npos) {
+            fpDefines[i] = 'X';
+          }
+        }
+      }
+
       auto i = vpDefines.find("MAX_SHADOW_TEXTURES");
       auto j = fpDefines.find("MAX_SHADOW_TEXTURES");
       if (i != string::npos) {
@@ -237,11 +252,10 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       }
     }
 
-    //pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
-    //pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
-    //pass->getVertexProgram()->reload();
-    //pass->getFragmentProgram()->reload();
-    //mat->reload();
+    pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
+    pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
+    pass->getVertexProgram()->reload();
+    pass->getFragmentProgram()->reload();
     it->setMaterial(mat);
   }
 

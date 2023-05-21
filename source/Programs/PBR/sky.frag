@@ -33,7 +33,6 @@ MAIN_PARAMETERS
 IN(highp vec3 vPosition, TEXCOORD0);
 IN(highp vec3 vUV0, TEXCOORD1);
 
-
 MAIN_DECLARATION
 {
     highp vec3 V = normalize(vPosition);

@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PSSM
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 {
 	source pssm.vert
@@ -67,13 +66,6 @@ material PSSM/shadow_caster
 			vertex_program_ref PSSM/shadow_caster_vs {}
 
 			fragment_program_ref PSSM/shadow_caster_fs {}
-
-            texture_unit Albedo
-            {
-                texture white.dds
-                tex_address_mode clamp
-				filtering bilinear
-            }
 		}
 	}
 }
@@ -109,7 +101,6 @@ material PSSM/shadow_caster_alpha
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DPSM
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 vertex_program DPSM/shadow_caster_alpha_vs glsl glsles hlsl
 {
 	source dpsm.vert
@@ -119,7 +110,7 @@ vertex_program DPSM/shadow_caster_alpha_vs glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto WorldViewMatrix worldview_matrix
+		param_named_auto WorldViewProjMatrix worldviewproj_matrix
 	}
 }
 
@@ -137,6 +128,26 @@ fragment_program DPSM/shadow_caster_alpha_fs glsl glsles hlsl
 	}
 }
 
+vertex_program DPSM/shadow_caster_vs glsl glsles hlsl
+{
+	source dpsm.vert
+    target vs_2_0
+
+	default_params
+	{
+		param_named_auto WorldViewProjMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program DPSM/shadow_caster_fs glsl glsles hlsl
+{
+	source dpsm.frag
+    target ps_2_0
+
+	default_params
+	{
+	}
+}
 
 material DPSM/shadow_caster_alpha
 {
@@ -161,6 +172,25 @@ material DPSM/shadow_caster_alpha
                 tex_address_mode clamp
 				filtering bilinear
             }
+		}
+	}
+}
+
+material DPSM/shadow_caster
+{
+	receive_shadows off
+
+	technique
+	{
+		pass
+		{
+			lighting off
+			polygon_mode_overrideable off
+			cull_hardware anticlockwise
+
+			vertex_program_ref DPSM/shadow_caster_vs {}
+
+			fragment_program_ref DPSM/shadow_caster_fs {}
 		}
 	}
 }

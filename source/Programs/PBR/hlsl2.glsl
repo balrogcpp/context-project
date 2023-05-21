@@ -159,6 +159,7 @@ mat4 transpose(mat4 m)
 #define TEXCOORD5  13
 #define TEXCOORD6  14
 #define TEXCOORD7  15
+#define TEXCOORD8  16
 #define TANGENT    14
 #endif
 #endif

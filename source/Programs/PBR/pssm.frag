@@ -11,30 +11,30 @@
 #endif
 
 #include "header.glsl"
-
-
 #ifdef SHADOWCASTER_ALPHA
+uniform highp float SurfaceAlphaRejection;
 SAMPLER2D(AlbedoMap, 0);
-uniform float SurfaceAlphaRejection;
-IN(mediump vec2 vUV0, TEXCOORD0);
 #endif
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float map_0(const mediump float x, const mediump float v0, const mediump float v1)
+highp float map_0(const highp float x, const highp float v0, const highp float v1)
 {
     return (x - v0) / (v1 - v0);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
-mediump float map_1(const mediump float x, const mediump float v0, const mediump float v1)
+highp float map_1(const highp float x, const highp float v0, const highp float v1)
 {
     return x * (v1 - v0) + v0;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
+MAIN_PARAMETERS
+#ifdef SHADOWCASTER_ALPHA
+IN(highp vec2 vUV0, TEXCOORD0);
+#endif
+
 MAIN_DECLARATION
 {
 #ifdef SHADOWCASTER_ALPHA

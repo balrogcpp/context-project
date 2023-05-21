@@ -59,7 +59,7 @@ compositor SSAO
         {
             pass render_quad
             {
-                material SSAO_mod
+                material ssaoMod
                 input 0 rt
                 input 1 ssaoy
             }

@@ -12,7 +12,6 @@
 
 #define USE_MRT
 #include "header.glsl"
-#define HAS_NORMALS
 #ifndef GL_ES
 #define USE_TEX_LOD
 #define SPHERICAL_HARMONICS_BANDS 8
@@ -77,7 +76,7 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 envBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
+mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
 {
     const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
     const mediump vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
@@ -115,7 +114,6 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 }
 
 
-
 // uniforms
 #define NUM_TEXTURES 0
 #ifdef HAS_BASECOLORMAP
@@ -146,7 +144,8 @@ SAMPLER2D(TerraNormalMap, 2);
 #ifdef TERRA_LIGHTMAP
 SAMPLER2D(TerraLightMap, 3);
 #define NUM_TEXTURES 4
-uniform vec2 InvTerraLightMapSize;
+uniform mediump vec2 InvTerraLightMapSize;
+uniform highp mat4 WorldViewMatrix;
 #endif
 
 // lights
@@ -185,7 +184,7 @@ uniform mediump float OffsetScale;
 
 #ifdef HAS_IBL
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 diffuseIrradiance(const mediump vec3 n)
+mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
     if (iblSH[0].x >= HALF_MAX_MINUS1) {
         return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
@@ -212,10 +211,10 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
 mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
-    mediump vec3 brdf = envBRDFApprox(specularColor, perceptualRoughness, NdotV);
+    mediump vec3 brdf = EnvBRDFApprox(specularColor, perceptualRoughness, NdotV);
 
 #ifdef HAS_IBL
-    mediump vec3 diffuseLight = diffuseIrradiance(reflection);
+    mediump vec3 diffuseLight = DiffuseIrradiance(reflection);
     mediump vec3 specularLight = GetIblSpeculaColor(reflection, perceptualRoughness);
 #else
     mediump vec3 diffuseLight = Irradiance_SphericalHarmonics(iblSH, reflection);
@@ -232,7 +231,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-highp vec3 GetNormal(highp mat3 tbn, const mediump vec2 uv, const mediump vec2 uv1)
+void GetNormal(highp mat3 tbn, highp mat3 tbn1, const mediump vec2 uv, const mediump vec2 uv1, out highp vec3 n, out highp vec3 n1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -242,43 +241,24 @@ highp vec3 GetNormal(highp mat3 tbn, const mediump vec2 uv, const mediump vec2 u
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
+    n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
     n = normalize(mul(tbn, (2.0 * n - 1.0)));
-    return n;
+    n1 = mul(WorldViewMatrix, vec4(n, 0.0)).xyz;
 #else
     highp vec3 n = tbn[2].xyz;
-    return ng;
+    n1 = mul(WorldViewMatrix, vec4(n, 0.0)).xyz;
 #endif // HAS_NORMALMAP
 
-#endif // TERRA_NORMALMAP
-
-
-#ifndef TERRA_NORMALMAP
-#ifndef HAS_NORMALS
-    highp vec3 n0 = cross(dFdx(vWorldPosition), dFdy(vWorldPosition));
-
-#ifdef HAS_NORMALMAP
-    highp vec3 n1 = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
-    highp vec3 b = normalize(cross(n0, vec3(1.0, 0.0, 0.0)));
-    highp vec3 t = normalize(cross(n0, b));
-    tbn = mtxFromCols3x3(t, b, n0);
-    n1 = normalize(mul(tbn, (2.0 * n1 - 1.0)));
-    return n1;
 #else
-    return n0;
-#endif // HAS_NORMALMAP
-#endif // !HAS_NORMALS
 
-#ifdef HAS_NORMALS
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
+    n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
+    n1 = normalize(mul(tbn1, ((2.0 * n - 1.0))));
     n = normalize(mul(tbn, ((2.0 * n - 1.0))));
-    return n;
 #else
-    highp vec3 n = tbn[2].xyz;
-    return n;
+    n = tbn[2].xyz;
+    n1 = tbn1[2].xyz;
 #endif // HAS_NORMALMAP
-#endif // HAS_NORMALS
 #endif // TERRA_NORMALMAP
 }
 
@@ -312,12 +292,13 @@ MAIN_PARAMETERS
 IN(highp vec3 vWorldPosition, TEXCOORD0);
 IN(highp float vDepth, TEXCOORD1);
 IN(highp mat3 vTBN, TEXCOORD2);
-IN(highp vec2 vUV0, TEXCOORD3);
-IN(mediump vec4 vColor, TEXCOORD4);
-IN(mediump vec4 vScreenPosition, TEXCOORD5);
+IN(highp mat3 vTBN1, TEXCOORD3);
+IN(highp vec2 vUV0, TEXCOORD4);
+IN(mediump vec4 vColor, TEXCOORD5);
+IN(mediump vec4 vScreenPosition, TEXCOORD6);
 IN(mediump vec4 vPrevScreenPosition, TEXCOORD6);
 #if MAX_SHADOW_TEXTURES > 0
-IN(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7);
+IN(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD8);
 #endif
 
 MAIN_DECLARATION
@@ -380,7 +361,10 @@ MAIN_DECLARATION
     mediump vec3 reflectance0 = specularColor.rgb;
 
     // Normal at surface point
-    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
+    highp vec3 n, n1;
+    GetNormal(vTBN, vTBN1, uv, vUV0.xy, n, n1);
+    // highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
+    // highp vec3 n1 = GetNormal(vTBN1, uv, vUV0.xy);
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -468,15 +452,19 @@ MAIN_DECLARATION
     color += emission;
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vDepth);
-    //color = LINEARtoSRGB(color);
 
+#ifndef USE_MRT
+    color = LINEARtoSRGB(color);
+    FragColor = vec4(SafeHDR(color), alpha);
+#else
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
     FragData[2] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[3] = vec4(n, 1.0);
+    FragData[3] = vec4(n1, 1.0);
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     mediump vec2 velocity = ((0.5 * 0.01666666666667) / FrameTime) * (b - a);
     FragData[4] = vec4(velocity, 0.0, 1.0);
+#endif
 }

@@ -13,9 +13,9 @@
 
 #define USE_MRT
 #include "header.glsl"
-
 SAMPLER2D(NormapMap, 0);
 uniform highp vec3 CameraPosition;
+uniform highp mat4 WorldViewMatrix;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;
@@ -164,7 +164,7 @@ MAIN_DECLARATION
     FragData[0] = vec4(color, 0.5);
     FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
     FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[3] = vec4(lNormal, 1.0);
+    FragData[3] = WorldViewMatrix * vec4(lNormal, 0.0);
 
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);

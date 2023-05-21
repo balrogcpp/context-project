@@ -15,9 +15,10 @@
 
 SAMPLER2D(DepthMap, 0);
 SAMPLER2D(NormalMap, 1);
+uniform mediump vec2 TexelSize0;
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 ViewMatrix;
-uniform mediump mat4 InvProjMatrix;
+uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 
 
@@ -27,6 +28,13 @@ mediump vec3 hash(const mediump vec3 a)
     mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+mediump float pow5(const mediump float x)
+{
+    mediump float x2 = x * x;
+    return x2 * x2 * x;
 }
 
 
@@ -65,13 +73,12 @@ MAIN_DECLARATION
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     mediump vec3 viewPos = vRay * depth;
-    mediump vec3 worldPos = mul(InvProjMatrix, vec4(viewPos, 1.0)).xyz;
-    mediump vec3 randN = hash(worldPos);
+    mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
+    mediump vec3 randN = hash(worldPos) * pow5(1.0 - depth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    //mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
-    mediump vec4 viewNorm = mul(ViewMatrix, vec4(texture2D(NormalMap, vUV0).xyz, 0.0));
+    mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
 
     // Accumulated occlusion factor
     mediump float occ = 0.0;
@@ -84,14 +91,15 @@ MAIN_DECLARATION
         mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm.xyz;
 
         // Move new view-space position back into texture space
-        //#define RADIUS 0.2125
+        // #define RADIUS 0.2125
         #define RADIUS 0.0525
 
         mediump vec4 nuv = mul(ProjMatrix, vec4(viewPos + randomDir * RADIUS, 1.0));
         nuv /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x - 2.0 * HALF_EPSILON), 0.0, 1.0);
+        mediump float radius = max(TexelSize0.x, TexelSize0.x) * RADIUS;
+        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x - radius), 0.0, 1.0);
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
         occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);

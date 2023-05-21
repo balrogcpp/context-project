@@ -1,11 +1,11 @@
-import Paged from pbr.material
+import PG from pbr.material
 
-material leaf08png : Paged
+material leaf08png : PG
 {
 	set $Albedo Leaf08.png
 }
 
-material wood03png : Paged
+material wood03png : PG
 {
 	set $Albedo Wood03.png
 }
