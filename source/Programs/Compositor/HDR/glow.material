@@ -3,11 +3,11 @@
 import StdQuad from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
-// Cut bright parts of scene
+// Cut glow parts of scene
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program brightStart glsl glsles hlsl
+fragment_program glowStart glsl glsles hlsl
 {
-	source brightStart.frag
+	source glowStart.frag
     target ps_2_0
 
     default_params
@@ -16,13 +16,13 @@ fragment_program brightStart glsl glsles hlsl
     }
 }
 
-material BrightStart : StdQuad
+material GlowStart : StdQuad
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref brightStart
+            fragment_program_ref glowStart
 			{
                 param_named RT int 0
                 param_named Lum int 1
@@ -45,19 +45,19 @@ material BrightStart : StdQuad
 	}
 }
 
-fragment_program brightMod glsl glsles hlsl
+fragment_program glowMod glsl glsles hlsl
 {
-	source brightMod.frag
+	source glowMod.frag
     target ps_2_0
 }
 
-material BrightMod : StdQuad
+material GlowMod : StdQuad
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref brightMod
+            fragment_program_ref glowMod
 			{
                 param_named RT int 0
                 param_named RT0 int 1
@@ -80,9 +80,9 @@ material BrightMod : StdQuad
 	}
 }
 
-fragment_program brightFeat glsl glsles hlsl
+fragment_program glowFeat glsl glsles hlsl
 {
-	source brightFeat.frag
+	source glowFeat.frag
     target ps_2_0
 
     default_params
@@ -91,13 +91,13 @@ fragment_program brightFeat glsl glsles hlsl
     }
 }
 
-material BrightFeat : StdQuad
+material GlowFeat : StdQuad
 {
     technique
     {
         pass
         {
-            fragment_program_ref brightFeat
+            fragment_program_ref glowFeat
             {
                 param_named RT int 0
                 param_named_auto TexelSize0 inverse_texture_size 0

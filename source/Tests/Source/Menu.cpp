@@ -119,7 +119,7 @@ void Menu::BeforeRender(float time) {
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
   ImGui::PushFont(nullptr);
-  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
   ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::PopStyleColor();
   ImGui::PopFont();
@@ -338,8 +338,8 @@ void Menu::BeforeRender(float time) {
   }
 
   static bool compositorFlags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-  if (ImGui::Checkbox("Bloom", &compositorFlags[0])) {
-    GetComponent<CompositorManager>().EnableCompositor("Bloom", compositorFlags[0]);
+  if (ImGui::Checkbox("Glow", &compositorFlags[0])) {
+    GetComponent<CompositorManager>().EnableCompositor("Glow", compositorFlags[0]);
   }
 
   if (ImGui::Checkbox("Blur", &compositorFlags[1])) {

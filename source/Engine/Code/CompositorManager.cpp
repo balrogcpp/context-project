@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChainSize(10), mipMask{4, 7, 9} {}
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(10), mipMask{4, 7, 9} {}
 
 CompositorManager::~CompositorManager() {}
 
@@ -218,7 +218,7 @@ void CompositorManager::InitMRT(bool enable) {
 
 void CompositorManager::InitMipChain(bool enable) {
   auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR);
-  ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
+  ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Glow compoitor");
 
   //
   if (enable) {
@@ -231,7 +231,7 @@ void CompositorManager::InitMipChain(bool enable) {
   for (int i = 0; i < mipChainSize; i++) {
     string name = BLOOM_COMPOSITOR + "It" + to_string(i);
     auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name);
-    ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Bloom compositor");
+    ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Glow compositor");
     compositorManager->setCompositorEnabled(ogreViewport, name, false);
   }
 
