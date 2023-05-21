@@ -3,6 +3,32 @@
 //----------------------------------------------------------------------------------------------------------------------
 // MRT
 //----------------------------------------------------------------------------------------------------------------------
+compositor NoMRT
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa
+
+        target rt
+        {
+            pass clear {}
+            pass render_scene
+            {
+                identifier 0
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 rt
+            }
+        }
+    }
+}
 
 compositor MRT
 {
@@ -11,7 +37,6 @@ compositor MRT
         compositor_logic DeferredLogic
         // 0 color; 1 gloss; 2 depth; 3 normals; 4 velocity; 
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R11G11B10_FLOAT PF_R8G8_SNORM no_fsaa chain_scope
-        texture rt  target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
 
         target mrt
         {
@@ -22,7 +47,7 @@ compositor MRT
             }
         }
 
-        target rt
+        target_output
         {
             pass render_quad
             {

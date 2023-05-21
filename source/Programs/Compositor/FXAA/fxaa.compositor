@@ -9,24 +9,19 @@ compositor FXAA
 {
     technique
     {
-        texture_ref rt MRT rt
-        texture rt0 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-
-        target rt0
-        {
-            pass render_quad
-            {
-                material Copy
-                input 0 rt
-            }
-        }
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt
+        {
+            input previous
+        }
+
+        target_output
         {
             pass render_quad
             {
                 material FXAA
-                input 0 rt0
+                input 0 rt
             }
         }
     }

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChainSize(8), mipMask{4, 7} {}
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom"), mipChainSize(10), mipMask{4, 7, 9} {}
 
 CompositorManager::~CompositorManager() {}
 
@@ -57,6 +57,7 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
+//  AddCompositor("NoMRT", true);
   InitMRT(true);
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);

@@ -10,7 +10,7 @@
 #endif
 #endif
 
-#define USE_MRT
+#define HAS_MRT
 #include "header.glsl"
 
 

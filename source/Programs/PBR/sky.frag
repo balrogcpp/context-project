@@ -11,7 +11,7 @@
 #endif
 
 
-#define USE_MRT
+#define HAS_MRT
 #include "header.glsl"
 SAMPLERCUBE(CubeMap, 0);
 uniform vec3 SunDirection;

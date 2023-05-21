@@ -10,7 +10,7 @@
 #endif
 #endif
 
-#define USE_MRT
+#define HAS_MRT
 #include "header.glsl"
 #ifndef GL_ES
 #define USE_TEX_LOD
@@ -453,8 +453,8 @@ MAIN_DECLARATION
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vDepth);
 
-#ifndef USE_MRT
-    color = LINEARtoSRGB(color);
+#ifndef HAS_MRT
+    //color = LINEARtoSRGB(color);
     FragColor = vec4(SafeHDR(color), alpha);
 #else
     FragData[0] = vec4(SafeHDR(color), alpha);

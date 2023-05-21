@@ -11,7 +11,7 @@
 #endif
 
 
-#define USE_MRT
+#define HAS_MRT
 #include "header.glsl"
 SAMPLER2D(NormapMap, 0);
 uniform highp vec3 CameraPosition;

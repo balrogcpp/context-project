@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#define HAS_MRT
 #include "header.glsl"
 #ifdef PAGED_GEOMETRY
 #include "pgeometry.glsl"
@@ -101,10 +102,12 @@ MAIN_DECLARATION
     highp vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
+#ifdef HAS_MRT
     highp vec3 n1 = normalize(mul(WorldViewMatrix, vec4(normal.xyz, 0.0)).xyz);
     highp vec3 t1 = normalize(mul(WorldViewMatrix, vec4(tangent.xyz, 0.0)).xyz);
     highp vec3 b1 = cross(n1, t1) * tangent.w;
     vTBN1 = mtxFromCols3x3(t1, b1, n1);
+#endif
 #else
     const highp vec3 n = vec3(0.0, 1.0, 0.0);
     const highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -119,7 +122,9 @@ MAIN_DECLARATION
 
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
+#ifdef HAS_MRT
     vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
+#endif
 
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space
