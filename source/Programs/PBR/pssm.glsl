@@ -250,7 +250,7 @@ mediump float CalcDPSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
 
 #if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------
-mediump float GetShadow(const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES], const mediump float depth, const mediump int light, inout mediump int tex)
+mediump float GetShadow(const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES], const mediump float depth, const int light, inout int tex)
 {
     mediump float shadow = 1.0;
 

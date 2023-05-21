@@ -244,7 +244,7 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
     posN += offNP * vec2(-1.0, -1.0);
     posP += offNP * vec2( 1.0,  1.0);
     
-    for(mediump int i = 0; i < FXAA_SEARCH_STEPS; ++i) {
+    for(int i = 0; i < FXAA_SEARCH_STEPS; ++i) {
         if(!doneN)
         {
             lumaEndN = FxaaLuma(texture2D(tex, posN.xy).xyz);

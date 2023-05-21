@@ -83,7 +83,7 @@ MAIN_DECLARATION
     // Accumulated occlusion factor
     mediump float occ = 0.0;
 
-    for (mediump int i = 0; i < NUM_BASE_SAMPLES; ++i) {
+    for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
         // Reflected direction to move in for the sphere
         // (based on random samples and a random texture sample)
         // bias the random direction away from the normal

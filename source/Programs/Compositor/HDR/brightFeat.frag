@@ -14,7 +14,7 @@
 SAMPLER2D(RT, 0);
 uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
-uniform mediump int FeaturesCount;
+uniform int FeaturesCount;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ mediump float WindowCubic(const mediump float x, const mediump float center, con
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
+mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const int counter, const mediump float radius)
 {
     mediump vec2 nuv = vec2(1.0, 1.0) - uv;
     mediump vec2 ghostVec = (vec2(0.5, 0.5) - nuv) * 0.44;
@@ -52,7 +52,7 @@ mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump v
     #define MAX_GHOST_COUNT 24
 
     // ghosts
-    for (mediump int i = 0; i < MAX_GHOST_COUNT; ++i) {
+    for (int i = 0; i < MAX_GHOST_COUNT; ++i) {
         if (counter <= i) break;
 
         mediump vec2 suv = fract(nuv + ghostVec * float(i));
@@ -67,7 +67,7 @@ mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump v
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const mediump int counter, const mediump float radius)
+mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const int counter, const mediump float radius)
 {
     mediump vec2 nuv = vec2(1.0, 1.0) - uv;
     mediump vec2 haloVec = vec2(0.5, 0.5) - nuv;

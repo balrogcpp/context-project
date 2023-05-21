@@ -369,7 +369,7 @@ MAIN_DECLARATION
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
 #if MAX_SHADOW_TEXTURES > 0
-    mediump int texCounter = 0;
+    int texCounter = 0;
 #endif
 
 #if MAX_LIGHTS > 0
