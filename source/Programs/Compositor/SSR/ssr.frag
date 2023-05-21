@@ -31,19 +31,16 @@ uniform mediump float FarClipDistance;
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec2 BinarySearch(inout mediump vec3 position, inout mediump vec3 direction, inout mediump float delta)
+mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
 {
-
-    mediump float depth;
     mediump vec4 projectedCoord;
 
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
         projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
         projectedCoord.xy /= projectedCoord.w;
 
-        depth = texture2D(DepthMap, projectedCoord.xy).x;
-
-        delta = position.z - depth;
+        mediump float depth = texture2D(DepthMap, projectedCoord.xy).x;
+        mediump float delta = position.z - depth;
 
         direction *= 0.5;
 
@@ -58,7 +55,7 @@ mediump vec2 BinarySearch(inout mediump vec3 position, inout mediump vec3 direct
 
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction, out mediump float delta)
+mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
 {
     direction *= STEP;
 
@@ -71,7 +68,7 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction, out me
         projectedCoord.xy /= projectedCoord.w;
 
         mediump float depth = texture2D(DepthMap, projectedCoord.xy).x;
-        delta = position.z - depth;
+        mediump float delta = position.z - depth;
 
         // if (depth - (position.z - direction.z) < 1.2f)
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
@@ -79,7 +76,7 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction, out me
         // We're at least past the point where the ray intersects a surface.
         // Now, determine the values at the precise location of intersection.
         if (FarClipDistance * (direction.z - delta) < 1.2 && delta <= 0.0) {
-            return BinarySearch(position, direction, delta);
+            return BinarySearch(position, direction);
         }
     }
 
@@ -119,10 +116,10 @@ MAIN_DECLARATION
 {
     mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
 
-    if (ssr.r < 0.04) {
-        FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
-        return;
-    }
+    // if (ssr.r < 0.04) {
+    //     FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
+    //     return;
+    // }
 
     #define MIN_RAY_STEP 0.2
     #define LLIMITER 0.1
@@ -137,9 +134,7 @@ MAIN_DECLARATION
     mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal))) + jitt * JITT_SCALE;
 
     // Ray cast
-    mediump vec3 position = viewPos;
-    mediump float delta;
-    mediump vec2 coords = RayCast(position, reflected, delta);
+    mediump vec2 coords = RayCast(viewPos, reflected);
 
     mediump float L = abs(texture2D(DepthMap, coords).x - texture2D(DepthMap, vUV0).x);
     L = clamp(L * LLIMITER, 0.0, 1.0);
@@ -147,5 +142,6 @@ MAIN_DECLARATION
     mediump float fresnel = Fresnel(reflected, normal);
     mediump vec3 color = texture2D(RT, coords.xy).rgb * error * fresnel;
 
-    FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, ssr.r), 1.0);
+    // FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, ssr.r), 1.0);
+    FragColor = vec4(color, 1.0);
 }
