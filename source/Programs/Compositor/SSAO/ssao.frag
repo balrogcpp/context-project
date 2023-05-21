@@ -91,7 +91,7 @@ MAIN_DECLARATION
         nuv /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x), 0.0, 1.0);
+        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x - 2.0 * HALF_EPSILON), 0.0, 1.0);
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
         occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);

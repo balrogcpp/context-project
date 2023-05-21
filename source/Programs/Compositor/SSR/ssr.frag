@@ -11,7 +11,6 @@
 #endif
 
 #include "header.glsl"
-
 SAMPLER2D(RT, 0);
 SAMPLER2D(DepthMap, 1);
 SAMPLER2D(NormalMap, 2);
@@ -20,6 +19,10 @@ uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvProjMatrix;
 uniform mediump mat4 ViewMatrix;
 uniform mediump float FarClipDistance;
+
+#define MAX_BIN_SEARCH_COUNT 10
+#define STEP 0.05
+#define MAX_RAY_MARCH_COUNT 30
 
 
 // SSR based on tutorial by Imanol Fotia
@@ -30,7 +33,6 @@ uniform mediump float FarClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 vec2 BinarySearch(mediump vec3 position, mediump vec3 direction, mediump float delta)
 {
-    #define MAX_BIN_SEARCH_COUNT 10
 
     mediump float depth;
     mediump vec4 projectedCoord;
@@ -58,9 +60,6 @@ vec2 BinarySearch(mediump vec3 position, mediump vec3 direction, mediump float d
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction, mediump float delta)
 {
-    #define STEP 0.05
-    #define MAX_RAY_MARCH_COUNT 30
-
     direction *= STEP;
 
     mediump vec4 projectedCoord;
