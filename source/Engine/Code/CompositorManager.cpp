@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(10), mipMask{4, 7, 9} {}
+    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {}
 
 CompositorManager::~CompositorManager() {}
 

@@ -11,7 +11,6 @@ compositor Glow
         texture_ref  mrt MRT mrt
         texture_ref  hdr HDR rt
         texture_ref  lum HDR lum
-        texture rt0  target_width_scaled 1 target_height_scaled 1 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
         texture rt1  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
         texture rt2  target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
         texture rt3  target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT chain_scope  no_fsaa depth_pool 0
@@ -21,16 +20,11 @@ compositor Glow
         texture rt7  target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
         texture rt8  target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
 
-        texture rt1_ target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fbo  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fb0x target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fb0y target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-
-        target rt0
-        {
-            input previous
-        }
+        //texture rt1_ target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        //texture fbo  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        //texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        //texture fb0x target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        //texture fb0y target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt1
         {
@@ -162,6 +156,11 @@ compositor Glow
                 input 0 rt7
             }
         }
+
+        target_output
+        {
+            input previous
+        }
     }
 }
 
@@ -170,7 +169,7 @@ abstract compositor GlowIt
 {
     technique
     {
-        texture_ref rt0  Glow rt0
+        texture     rt  target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture_ref rt1  Glow rt1
         texture_ref rt2  Glow rt2
         texture_ref rt3  Glow rt3
@@ -179,22 +178,10 @@ abstract compositor GlowIt
         texture_ref rt6  Glow rt6
         texture_ref rt7  Glow rt7
         texture_ref rt8  Glow rt8
-        texture_ref fb0y Glow fb0y
-    }
-}
 
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt9 : GlowIt
-{
-    technique
-    {
-        target_output
+        target rt
         {
-            pass render_quad
-            {
-                material Copy
-                input 0 rt0
-            }
+            input previous
         }
     }
 }
@@ -204,12 +191,12 @@ compositor GlowIt0 : GlowIt
 {
     technique
     {
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -230,12 +217,12 @@ compositor GlowIt1 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -265,12 +252,12 @@ compositor GlowIt2 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -309,12 +296,12 @@ compositor GlowIt3 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -362,12 +349,12 @@ compositor GlowIt4 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -424,12 +411,12 @@ compositor GlowIt5 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -486,12 +473,12 @@ compositor GlowIt6 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -557,12 +544,12 @@ compositor GlowIt7 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
@@ -637,12 +624,12 @@ compositor GlowIt8 : GlowIt
             }
         }
 
-        target rt0
+        target_output
         {
             pass render_quad
             {
                 material GlowMod
-                input 0 rt0
+                input 0 rt
                 input 1 rt1
             }
         }
