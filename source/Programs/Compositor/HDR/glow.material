@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import StdQuad from stdquad.material
+import STD from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // Cut glow parts of scene
@@ -16,7 +16,7 @@ fragment_program glowStart glsl glsles hlsl
     }
 }
 
-material GlowStart : StdQuad
+material GlowStart : STD
 {
 	technique
 	{
@@ -51,7 +51,7 @@ fragment_program glowMod glsl glsles hlsl
     target ps_2_0
 }
 
-material GlowMod : StdQuad
+material GlowMod : STD
 {
 	technique
 	{
@@ -91,7 +91,7 @@ fragment_program glowFeat glsl glsles hlsl
     }
 }
 
-material GlowFeat : StdQuad
+material GlowFeat : STD
 {
     technique
     {

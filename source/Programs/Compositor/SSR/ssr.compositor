@@ -1,22 +1,13 @@
 // created by Andrey Vasiliev
+import STD from std.compositor
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSR
 //----------------------------------------------------------------------------------------------------------------------
-
-compositor SSR
+compositor SSR : STD
 {
     technique
     {
-        compositor_logic DeferredLogic
-        texture_ref mrt MRT mrt
-        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-
-        target rt
-        {
-            input previous
-        }
-
         target_output
         {
             pass render_quad

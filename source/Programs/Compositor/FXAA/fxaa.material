@@ -1,17 +1,14 @@
 // created by Andrey Vasiliev
 
-import StdQuad from stdquad.material
+import STD from std.material
 
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
 fragment_program fxaa glsl glsles hlsl
 {
     source fxaa.frag
     target ps_2_0
 }
 
-material FXAA : StdQuad
+material FXAA : STD
 {
 	technique
 	{

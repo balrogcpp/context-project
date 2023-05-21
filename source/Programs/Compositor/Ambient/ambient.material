@@ -1,10 +1,6 @@
 // created by Andrey Vasiliev
 
-import StdQuad from stdquad.material
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
+import STD from std.material
 
 fragment_program Ambient glsl glsles hlsl
 {
@@ -12,7 +8,7 @@ fragment_program Ambient glsl glsles hlsl
     target ps_2_0
 }
 
-material Ambient : StdQuad
+material Ambient : STD
 {
 	technique
 	{

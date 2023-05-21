@@ -1,21 +1,19 @@
 // created by Andrey Vasiliev
-import STD from std.compositor
 
 //----------------------------------------------------------------------------------------------------------------------
-// Motion blur
+// STD
 //----------------------------------------------------------------------------------------------------------------------
-compositor Blur : STD
+abstract compositor STD
 {
     technique
     {
-        target_output
+        compositor_logic DeferredLogic
+        texture_ref mrt MRT mrt
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target rt
         {
-            pass render_quad
-            {
-                material Blur
-                input 0 rt
-                input 1 mrt 4
-            }
+            input previous
         }
     }
 }

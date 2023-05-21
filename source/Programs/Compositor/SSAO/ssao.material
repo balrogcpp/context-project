@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-import StdQuad from stdquad.material
-import RayCast from stdquad.material
+import STD from std.material
+import RayCast from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSAO
@@ -48,7 +48,7 @@ fragment_program ssaoMod glsl glsles hlsl
     target ps_2_0
 }
 
-material ssaoMod : StdQuad
+material ssaoMod : STD
 {
     technique
     {
@@ -89,7 +89,7 @@ fragment_program ssaoy glsl glsles hlsl
     target ps_2_0
 }
 
-material SSAOX : StdQuad
+material SSAOX : STD
 {
     technique
     {
@@ -110,7 +110,7 @@ material SSAOX : StdQuad
         }
     }
 }
-material SSAOY : StdQuad
+material SSAOY : STD
 {
     technique
     {

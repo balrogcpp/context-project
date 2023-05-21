@@ -1,22 +1,15 @@
 // created by Andrey Vasiliev
+import STD from std.compositor
 
 //----------------------------------------------------------------------------------------------------------------------
 // SMAA
 //----------------------------------------------------------------------------------------------------------------------
-
-compositor SMAA
+compositor SMAA : STD
 {
 	technique
 	{
-		texture_ref mrt MRT mrt
-		texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 		texture edges target_width target_height PF_R8G8_SNORM no_fsaa depth_pool 0
 		texture blend target_width target_height PF_R8G8B8A8_SNORM no_fsaa depth_pool 0
-
-        target rt
-        {
-            input previous
-        }
 
 		target edges
 		{
