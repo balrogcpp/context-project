@@ -63,9 +63,9 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
   AddCompositor("FXAA", false);
   AddCompositor("SMAA", false);
-//  AddCompositor("HDR", true);
-//  InitMipChain(false);
-//  AddCompositor("Tonemap", true);
+  AddCompositor("HDR", true);
+  InitMipChain(false);
+  AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
   AddCompositor("End", true);
   AddCompositor("Paused", false);
