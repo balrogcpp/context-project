@@ -17,7 +17,6 @@ SAMPLER2D(DepthMap, 0);
 SAMPLER2D(NormalMap, 1);
 uniform mediump vec2 TexelSize0;
 uniform mediump mat4 ProjMatrix;
-uniform mediump mat4 ViewMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 

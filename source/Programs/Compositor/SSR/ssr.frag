@@ -80,7 +80,7 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
         }
     }
 
-    return projectedCoord.xy;
+    return vec2(-1.0, -1.0);
 }
 
 
@@ -116,10 +116,10 @@ MAIN_DECLARATION
 {
     mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
 
-    // if (ssr.r < 0.04) {
-    //     FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
-    //     return;
-    // }
+    if (ssr.r < 0.04) {
+        FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
+        return;
+    }
 
     #define MIN_RAY_STEP 0.2
     #define LLIMITER 0.1
@@ -142,6 +142,10 @@ MAIN_DECLARATION
     mediump float fresnel = Fresnel(reflected, normal);
     mediump vec3 color = texture2D(RT, coords.xy).rgb * error * fresnel;
 
-    // FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, ssr.r), 1.0);
-    FragColor = vec4(color, 1.0);
+    if (coords.x != -1.0) {
+        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, ssr.r), 1.0);
+        return;
+    }
+
+    FragColor = vec4(mix(texture2D(RT, vUV0).rgb, vec3(0.0, 1.0, 0.0), ssr.r), 1.0);
 }

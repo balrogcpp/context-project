@@ -63,9 +63,9 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
   AddCompositor("FXAA", false);
   AddCompositor("SMAA", false);
-  AddCompositor("HDR", true);
-  InitMipChain(false);
-  AddCompositor("Tonemap", true);
+//  AddCompositor("HDR", true);
+//  InitMipChain(false);
+//  AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
   AddCompositor("End", true);
   AddCompositor("Paused", false);
@@ -387,12 +387,9 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   if (pass_id == 1) {  // 1 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("ViewMatrix", ogreCamera->getViewMatrix());
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
-    fp->setIgnoreMissingParams(false);
 
   } else if (pass_id == 2) {  // 2 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
