@@ -135,8 +135,7 @@ MAIN_DECLARATION
 
     // Ray cast
     mediump vec2 coords = RayCast(viewPos, reflected);
-
-    mediump float L = abs(texture2D(DepthMap, coords).x - texture2D(DepthMap, vUV0).x);
+    mediump float L = FarClipDistance * abs(texture2D(DepthMap, coords).x - texture2D(DepthMap, vUV0).x);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;
     mediump float fresnel = Fresnel(reflected, normal);
