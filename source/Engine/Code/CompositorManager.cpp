@@ -393,12 +393,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 2) {  // 2 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("ViewMatrix", ogreCamera->getViewMatrix());
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
-    fp->setIgnoreMissingParams(false);
 
   } else if (pass_id == 3) {  // 3 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();

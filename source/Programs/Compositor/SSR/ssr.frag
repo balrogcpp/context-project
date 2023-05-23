@@ -1,4 +1,7 @@
 // created by Andrey Vasiliev
+// SSR based on tutorial by Imanol Fotia
+// http://imanolfotia.com/blog/update/2017/03/11/ScreenSpaceReflections.html
+// https://gitlab.com/congard/algine/-/blob/v1.6-alpha/src/resources/shaders/ssr/fragment.glsl
 
 #ifndef __VERSION__
 #if defined(OGRE_GLSL)
@@ -17,17 +20,11 @@ SAMPLER2D(NormalMap, 2);
 SAMPLER2D(GlossMap, 3);
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
-uniform mediump mat4 ViewMatrix;
 uniform mediump float FarClipDistance;
 
 #define MAX_BIN_SEARCH_COUNT 10
 #define STEP 0.05
 #define MAX_RAY_MARCH_COUNT 30
-
-
-// SSR based on tutorial by Imanol Fotia
-// http://imanolfotia.com/blog/update/2017/03/11/ScreenSpaceReflections.html
-// https://gitlab.com/congard/algine/-/blob/v1.6-alpha/src/resources/shaders/ssr/fragment.glsl
 
 
 //----------------------------------------------------------------------------------------------------------------------
