@@ -30,7 +30,7 @@ uniform mediump float FarClipDistance;
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
 {
-    mediump vec4 projectedCoord;
+    mediump vec4 projectedCoord = vec4(-1.0, -1.0, -1.0, -1.0);
 
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
         projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
@@ -56,7 +56,7 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
 {
     direction *= STEP;
 
-    mediump vec4 projectedCoord;
+    mediump vec4 projectedCoord = vec4(-1.0, -1.0, -1.0, -1.0);
 
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         position += direction;
@@ -77,7 +77,7 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
         }
     }
 
-    return vec2(-1.0, -1.0);
+    return projectedCoord.xy;
 }
 
 
@@ -95,7 +95,6 @@ mediump vec3 hash(const mediump vec3 a)
 mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
 {
     mediump vec3 halfDirection = normalize(normal + direction);
-
     mediump float cosine = dot(halfDirection, direction);
     mediump float product = max(cosine, 0.0);
     mediump float factor = 1.0 - pow(product, 5.0);

@@ -2,18 +2,14 @@
 
 #ifndef SRGB_GLSL
 #define SRGB_GLSL
-
-
 #define MANUAL_SRGB
-// #define SRGB_FAST_APPROXIMATION
-#define SRGB_VERY_FAST_APPROXIMATION
-
+#define SRGB_FAST_APPROXIMATION
+//#define SRGB_VERY_FAST_APPROXIMATION
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 SRGBtoLINEAR(const mediump vec3 srgbIn)
 {
 #ifdef MANUAL_SRGB
-
 #if defined(SRGB_FAST_APPROXIMATION)
   mediump vec3 linOut = pow(srgbIn.rgb, vec3(2.2, 2.2, 2.2));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
@@ -30,12 +26,10 @@ mediump vec3 SRGBtoLINEAR(const mediump vec3 srgbIn)
 #endif //MANUAL_SRGB
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 LINEARtoSRGB(const mediump vec3 linIn)
 {
 #ifdef MANUAL_SRGB
-
 #if defined(SRGB_FAST_APPROXIMATION)
   return pow(linIn, vec3(0.45454545454545454545, 0.45454545454545454545, 0.45454545454545454545));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
@@ -47,7 +41,6 @@ mediump vec3 LINEARtoSRGB(const mediump vec3 linIn)
 #endif //  MANUAL_SRGB
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 XYZtoACES2065(const mediump vec3 xyz)
 {
@@ -57,7 +50,6 @@ mediump vec3 XYZtoACES2065(const mediump vec3 xyz)
   0.0000000000,  0.0000000000, 0.9912520182
   ) * xyz;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 ACES2065toACEScg(const mediump vec3 color)
@@ -69,7 +61,6 @@ mediump vec3 ACES2065toACEScg(const mediump vec3 color)
   ) * color;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 ACES2065tosRGB(const mediump vec3 color)
 {
@@ -79,7 +70,6 @@ mediump vec3 ACES2065tosRGB(const mediump vec3 color)
   -0.0159250101,  -0.1478063681, 1.1638058159
   ) * color;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 XYZtoRGB(const mediump vec3 xyz)
@@ -91,7 +81,6 @@ mediump vec3 XYZtoRGB(const mediump vec3 xyz)
   ) * xyz;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 RGBtoXYZ(const mediump vec3 xyz)
 {
@@ -101,7 +90,6 @@ mediump vec3 RGBtoXYZ(const mediump vec3 xyz)
   0.18045380393360833, 0.07218152157344333, 0.9503900340503373
   ) * xyz;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 XYZtoSRGB(const mediump vec3 xyz)
@@ -113,7 +101,6 @@ mediump vec3 XYZtoSRGB(const mediump vec3 xyz)
   ) * xyz;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 XYZtoACEScg(const mediump vec3 xyz)
 {
@@ -123,6 +110,5 @@ mediump vec3 XYZtoACEScg(const mediump vec3 xyz)
   0.008243398885150702, -0.005979678038940186, 0.9889882973537895
   ) * xyz;
 }
-
 
 #endif //SRGB_GLSL

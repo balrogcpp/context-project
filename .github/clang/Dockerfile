@@ -20,17 +20,17 @@ ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
 ## 2.38;2.39 is broken
-ARG BINUTILS_VERSION=2.37
-ARG MINGW_VERSION=10.0.0
-# 12.2.0 openal error: undefined symbol: std::__once_callable
-ARG GCC_VERSION=11.3.0
+ARG BINUTILS_VERSION=2.40
+ARG MINGW_VERSION=11.0.0
+# 12.2.0 mingw openal error: undefined symbol: std::__once_callable
+ARG GCC_VERSION=13.1.0
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=10
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 10000 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -q -O - | tar -xz \
     && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -q -O - | tar -xJ \
     && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -q -O - | tar -xJ \

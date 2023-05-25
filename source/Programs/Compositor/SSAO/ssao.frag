@@ -12,7 +12,6 @@
 #endif
 
 #include "header.glsl"
-
 SAMPLER2D(DepthMap, 0);
 SAMPLER2D(NormalMap, 1);
 uniform mediump vec2 TexelSize0;

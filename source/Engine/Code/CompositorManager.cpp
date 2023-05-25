@@ -400,12 +400,12 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   } else if (pass_id == 3) {  // 3 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
-
     static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
     int directionals = 0;  // count directional light
+
     for (int i = 0; i < lightList.size(); i++) {
-      Ogre::Light *l = lightList[i];
-      if (l->getType() == Ogre::Light::LT_DIRECTIONAL) {
+      Ogre::Light *light = lightList[i];
+      if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
         directionals++;
         Ogre::Vector4 point = GetLightScreenSpaceCoords(lightList[i], ogreCamera);
         LightPositionViewSpace[4 * i] = point.x;
@@ -414,8 +414,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
         LightPositionViewSpace[4 * i + 3] = point.w;
       }
     }
+
     fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
-    fp->setNamedConstant("LightCount", directionals > 0 ? static_cast<Ogre::Real>(1.0) : static_cast<Ogre::Real>(0.0));
+    fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(directionals));
 
   } else if (pass_id == 0) {  // mrt render
 

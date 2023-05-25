@@ -12,7 +12,7 @@
 
 #include "header.glsl"
 SAMPLER2D(FBO, 0);
-uniform mediump float LightCount;
+uniform int LightCount;
 uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];
 uniform int RayCount;
 uniform mediump float Decay;
@@ -54,7 +54,7 @@ MAIN_DECLARATION
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
-        if (int(LightCount) <= i) break;
+        if (LightCount <= i) break;
 
         mediump vec4 point = LightPositionViewSpace[i];
         float w = Weight * point.w;
