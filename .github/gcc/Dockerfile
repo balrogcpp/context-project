@@ -1,8 +1,11 @@
 FROM ubuntu:12.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG UBUNTU_VERSION=precise
 WORKDIR /mnt
 
+
+# git zip etc.
 RUN rm /etc/apt/sources.list \
     && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise main restricted universe multiverse' >> /etc/apt/sources.list \
     && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise-updates main restricted universe multiverse' >> /etc/apt/sources.list \
@@ -16,6 +19,7 @@ RUN rm /etc/apt/sources.list \
     && apt-get clean
 
 
+# gcc
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
 ## 2.38;2.39;2.40 is broken
@@ -67,10 +71,12 @@ RUN apt-get update \
     && rm -rf gcc-linux \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
     && apt-get -y autoremove \
-    && update-alternatives --install /usr/bin/gcc gcc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 100 \
-        --slave /usr/bin/g++ g++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
-        --slave /usr/bin/ar ar ${GCC_HOME}/bin/x86_64-linux-gnu-ar \
-        --slave /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld \
+    && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
+    && rm /usr/bin/ldd \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 100 --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/x86_64-linux-gnu-gcc 100 --slave /usr/bin/c++ c++ /usr/bin/x86_64-linux-gnu-g++ \
+    && update-alternatives --install /usr/bin/ldd ldd /usr/bin/x86_64-linux-gnu-ld 100 \
+    && update-alternatives --install /usr/bin/ar ar /usr/bin/x86_64-linux-gnu-gcc-ar 100
     && export PATH="${GCC_HOME}/bin:${PATH}" \
     && export LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
 
