@@ -161,13 +161,19 @@ MAIN_DECLARATION
     color += (LightColor0.xyz * specular);
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
-    FragData[0] = vec4(color, 0.5);
+#ifdef FORCE_SRGB
+    color = LINEARtoSRGB(color);
+#endif
+#ifndef HAS_MRT
+    FragColor = vec4(SafeHDR(color), alpha);
+#else
+    FragData[0] = vec4(SafeHDR(color), 0.5);
     FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
     FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = WorldViewMatrix * vec4(lNormal, 0.0);
-
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     mediump vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
     FragData[4] = vec4(velocity, 0.0, 1.0);
+#endif
 }

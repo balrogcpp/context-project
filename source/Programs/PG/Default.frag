@@ -28,19 +28,29 @@ IN(mediump float oFogCoord, TEXCOORD2)
 
 MAIN_DECLARATION
 {
-    vec4 color = texture2D(texMap, oUV.xy);
+    mediump vec4 s = texture2D(texMap, oUV.xy);
+    mediump vec3 color = s.rgb;
+    mediump float alpha = s.a;
 
 #ifdef ALPHA_TEST
-    if(color.a < 0.5 || oColour.a < 0.5)  {
+    if(alpha < 0.5 || oColour.a < 0.5)  {
         discard;
     }
 #endif
 
-    color.rgb = ApplyFog(color.rgb, FogParams, FogColour.rgb, oFogCoord);
-    color.rgb = SRGBtoLINEAR(color.rgb);
-    FragData[0] = color;
+    color = SRGBtoLINEAR(color);
+    color = ApplyFog(color, FogParams, FogColour.rgb, oFogCoord);
+
+#ifdef FORCE_SRGB
+    color = LINEARtoSRGB(color);
+#endif
+#ifndef HAS_MRT
+    FragColor = vec4(SafeHDR(color), alpha);
+#else
+    FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(0.0, 0.0, 1.0, 1.0);
     FragData[2] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[4] = vec4(0.0, 0.0, 0.0, 1.0);
+#endif
 }

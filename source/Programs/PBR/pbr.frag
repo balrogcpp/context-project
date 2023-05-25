@@ -453,15 +453,16 @@ MAIN_DECLARATION
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vDepth);
 
+#ifdef FORCE_SRGB
+    color = LINEARtoSRGB(color);
+#endif
 #ifndef HAS_MRT
-    //color = LINEARtoSRGB(color);
     FragColor = vec4(SafeHDR(color), alpha);
 #else
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
     FragData[2] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(n1, 1.0);
-
     mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
     mediump vec2 velocity = ((0.5 * 0.01666666666667) / FrameTime) * (b - a);

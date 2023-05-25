@@ -50,9 +50,16 @@ MAIN_DECLARATION
         color = SunColor;
     }
 
+#ifdef FORCE_SRGB
+    color = LINEARtoSRGB(color);
+#endif
+#ifndef HAS_MRT
+    FragColor = vec4(SafeHDR(color), 1.0);
+#else
     FragData[0] = vec4(SafeHDR(color), 1.0);
     FragData[1] = vec4(0.0, 0.0, 1.0, 1.0);
     FragData[2] = vec4(1.0, 0.0, 0.0, 1.0);
     FragData[3] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[4] = vec4(0.0, 0.0, 0.0, 1.0);
+#endif
 }
