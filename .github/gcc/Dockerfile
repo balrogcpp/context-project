@@ -76,7 +76,8 @@ RUN apt-get update \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 100 --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/x86_64-linux-gnu-gcc 100 --slave /usr/bin/c++ c++ /usr/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install /usr/bin/ldd ldd /usr/bin/x86_64-linux-gnu-ld 100 \
-    && update-alternatives --install /usr/bin/ar ar /usr/bin/x86_64-linux-gnu-gcc-ar 100
+    && update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/x86_64-linux-gnu-gcc-ar 100 \
+    && update-alternatives --install /usr/bin/ar ar /usr/bin/x86_64-linux-gnu-gcc-ar 100 \
     && export PATH="${GCC_HOME}/bin:${PATH}" \
     && export LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
 
