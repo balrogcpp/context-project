@@ -22,9 +22,8 @@ RUN rm /etc/apt/sources.list \
 # gcc
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
-## 2.38;2.39;2.40 is broken
+# 2.38;2.39;2.40 are broken
 ARG BINUTILS_VERSION=2.37
-# 12.2.0 mingw openal error: undefined symbol: std::__once_callable
 ARG GCC_VERSION=13.1.0
 ARG GCC_APT_MAJOR=9
 RUN apt-get update \
@@ -86,7 +85,7 @@ ENV LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.26.3
+ARG CMAKE_VERSION=3.26.4
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.0.2

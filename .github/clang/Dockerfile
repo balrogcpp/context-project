@@ -19,10 +19,9 @@ RUN apt-get update \
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
-## 2.38;2.39 is broken
-ARG BINUTILS_VERSION=2.40
+# 2.38;2.39;2.40 are broken
+ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=11.0.0
-# 12.2.0 mingw openal error: undefined symbol: std::__once_callable
 ARG GCC_VERSION=13.1.0
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=10
@@ -57,6 +56,7 @@ RUN apt-get update \
       --disable-multilib \
       --disable-nls \
       --disable-werror \
+      --enable-gprofng=no \
       --with-system-zlib \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
@@ -168,7 +168,7 @@ ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.26.3
+ARG CMAKE_VERSION=3.26.4
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.0.2

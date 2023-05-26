@@ -65,26 +65,26 @@ RUN mkdir build && cd build \
 
 
 # android
-ARG ANDROID_HOME=/opt/android-sdk
-ARG ANDROID_CMD_VERSION=9123335
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends openjdk-8-jdk \
-    && apt-get clean \
-    && cd /opt \
-    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
-    && unzip -q tools.zip && rm tools.zip \
-    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME}  \
-    && export PATH="/opt/cmdline-tools/bin:${PATH}" \
-    && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
-    && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME}  \
-    && cd ${CONTEXT_HOME} && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-    && cmake --build . --target GradleContrib \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-    && cmake --build . --target GradleBuild \
-    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
-    && apt-get -y purge openjdk-8-jdk \
-    && apt-get -y autoremove
+#ARG ANDROID_HOME=/opt/android-sdk
+#ARG ANDROID_CMD_VERSION=9123335
+#RUN apt-get update \
+#    && apt-get -y install --no-install-recommends openjdk-8-jdk \
+#    && apt-get clean \
+#    && cd /opt \
+#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
+#    && unzip -q tools.zip && rm tools.zip \
+#    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME}  \
+#    && export PATH="/opt/cmdline-tools/bin:${PATH}" \
+#    && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
+#    && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME}  \
+#    && cd ${CONTEXT_HOME} && mkdir build && cd build \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
+#    && cmake --build . --target GradleContrib \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
+#    && cmake --build . --target GradleBuild \
+#    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
+#    && apt-get -y purge openjdk-8-jdk \
+#    && apt-get -y autoremove
 
 
 # wasm

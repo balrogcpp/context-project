@@ -222,7 +222,7 @@ externalproject_add(Target_Bullet
         )
 
 
-check_stamp_patch(Target_OpenAL openal-1.21.1.patch)
+check_stamp_patch(Target_OpenAL openal-1.23.1.patch)
 externalproject_add(Target_OpenAL
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
