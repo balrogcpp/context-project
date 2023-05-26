@@ -29,7 +29,7 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 10000 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -q -O - | tar -xz \
     && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -q -O - | tar -xJ \
     && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -q -O - | tar -xJ \
@@ -122,7 +122,7 @@ RUN apt-get update \
     && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
     && apt-get -y autoremove \
     && apt-get -y clean \
-    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 100 \
+    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 1000 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
@@ -130,15 +130,16 @@ RUN apt-get update \
 
 # clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
 ARG CLANG_MAJOR=16
+ARG STDLIB_APT_MAJOR=7
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-7-dev libstdc++-7-dev \
+    && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-${STDLIB_APT_MAJOR}-dev libstdc++-${STDLIB_APT_MAJOR}-dev \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 100 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 100
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 1000 \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1000
 ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 

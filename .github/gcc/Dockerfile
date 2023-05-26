@@ -20,19 +20,20 @@ RUN rm /etc/apt/sources.list \
 
 
 # gcc
-ARG GCC_HOME=/usr
-ARG GNU_MIRROR=https://ftp.gnu.org/gnu
+ARG GCC_HOME=/usr/local
+ARG GNU_MIRROR=http://ftpmirror.gnu.org/gnu
 # 2.38;2.39;2.40 are broken
 ARG BINUTILS_VERSION=2.37
 ARG GCC_VERSION=13.1.0
 ARG GCC_APT_MAJOR=9
+ARG STDLIB_APT_MAJOR=6
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev libisl10 libmpc2 \
+    && apt-get -y install --no-install-recommends zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 libisl10 libmpc2 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
     && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
-    && wget http://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
-    && wget http://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
+    && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
+    && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
     && export CPPFLAGS='-g0' \
     && mkdir binutils-${BINUTILS_VERSION}-linux \
     && cd binutils-${BINUTILS_VERSION}-linux \
@@ -42,6 +43,7 @@ RUN apt-get update \
       --disable-multilib \
       --disable-nls \
       --disable-werror \
+      --enable-gprofng=no \
       --with-system-zlib \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
@@ -68,17 +70,15 @@ RUN apt-get update \
     && rm -rf binutils-${BINUTILS_VERSION}-linux \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-linux \
-    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
-    && apt-get -y autoremove \
+    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
     && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
-    && rm /usr/bin/ldd \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 100 --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/x86_64-linux-gnu-gcc 100 --slave /usr/bin/c++ c++ /usr/bin/x86_64-linux-gnu-g++ \
-    && update-alternatives --install /usr/bin/ldd ldd /usr/bin/x86_64-linux-gnu-ld 100 \
-    && update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/x86_64-linux-gnu-gcc-ar 100 \
-    && update-alternatives --install /usr/bin/ar ar /usr/bin/x86_64-linux-gnu-gcc-ar 100 \
-    && export PATH="${GCC_HOME}/bin:${PATH}" \
-    && export LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
+    && apt-get -y autoremove \
+    && apt-get -y install --no-install-recommends libgcc-${STDLIB_APT_MAJOR}-dev libstdc++-${STDLIB_APT_MAJOR}-dev \
+    && apt-get clean \
+    && update-alternatives --install ${GCC_HOME}/bin/gcc gcc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 1000 --slave ${GCC_HOME}/bin/g++ g++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
+    && update-alternatives --install ${GCC_HOME}/bin/cc cc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 1000 --slave ${GCC_HOME}/bin/c++ c++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
+    && update-alternatives --install ${GCC_HOME}/bin/gcc-ar gcc-ar ${GCC_HOME}/bin/x86_64-linux-gnu-gcc-ar 1000 --slave ${GCC_HOME}/bin/ar ar ${GCC_HOME}/bin/x86_64-linux-gnu-gcc-ar \
+    && update-alternatives --install ${GCC_HOME}/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 1000
 
 ENV PATH="${GCC_HOME}/bin:${PATH}"
 ENV LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
