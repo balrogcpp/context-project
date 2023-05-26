@@ -10,6 +10,19 @@ index 55644b0..7724ba5 100644
      if(NOT SED_EXECUTABLE OR NOT CMAKE_DLLTOOL)
          message(STATUS "")
          if(NOT SED_EXECUTABLE)
+diff --git a/al/source.cpp b/al/source.cpp
+index cba3386..04cb737 100644
+--- a/al/source.cpp
++++ b/al/source.cpp
+@@ -21,7 +21,7 @@
+ #include "config.h"
+ 
+ #include "source.h"
+-
++#define __STDC_FORMAT_MACROS
+ #include <algorithm>
+ #include <array>
+ #include <atomic>
 diff --git a/alc/alc.cpp b/alc/alc.cpp
 index af8ff55..9946bd8 100644
 --- a/alc/alc.cpp
