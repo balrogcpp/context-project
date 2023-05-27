@@ -2,8 +2,21 @@
 
 #ifndef KNOSEK_GLSL
 #define KNOSEK_GLSL
-
 #ifdef GPU_HOSEK
+
+// Ground albedo and turbidy are baked into the lookup tables
+#ifndef ALBEDO
+    #define ALBEDO 1.0
+#endif
+#ifndef TURBIDITY
+    #define TURBIDITY 4.0
+#endif
+#ifndef M_PI
+    #define M_PI 3.1415926535897932384626433832795
+#endif
+#define CIE_X 0
+#define CIE_Y 1
+#define CIE_Z 2
 
 const float kHosekCoeffsX[] = float[](
 -1.171419,
@@ -203,20 +216,7 @@ const float kHosekRadZ[] = float[](
 30.848420
 );
 
-// Ground albedo and turbidy are baked into the lookup tables
-#ifndef ALBEDO
-#define ALBEDO 1
-#endif
-#ifndef TURBIDITY
-#define TURBIDITY 4
-#endif
-#ifndef M_PI
-#define M_PI 3.1415926535897932384626433832795
-#endif
-#define CIE_X 0
-#define CIE_Y 1
-#define CIE_Z 2
-//----------------------------------------------------------------------------------------------------------------------
+
 float sample_coeff(int channel, int albedo, int turbidity, int quintic_coeff, int coeff)
 {
     // int index = 540 * albedo + 54 * turbidity + 9 * quintic_coeff + coeff;
@@ -225,7 +225,7 @@ float sample_coeff(int channel, int albedo, int turbidity, int quintic_coeff, in
     if (channel == CIE_Y) return kHosekCoeffsY[index];
     if (channel == CIE_Z) return kHosekCoeffsZ[index];
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 float sample_radiance(int channel, int albedo, int turbidity, int quintic_coeff)
 {
     //int index = 60 * albedo + 6 * turbidity + quintic_coeff;
@@ -234,7 +234,7 @@ float sample_radiance(int channel, int albedo, int turbidity, int quintic_coeff)
     if (channel == CIE_Y) return kHosekRadY[index];
     if (channel == CIE_Z) return kHosekRadZ[index];
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 float eval_quintic_bezier(in float[6] control_points, float t)
 {
     float t2 = t * t;
@@ -257,23 +257,23 @@ float eval_quintic_bezier(in float[6] control_points, float t)
     control_points[5] *        t5
     );
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 float transform_sun_zenith(float sun_zenith)
 {
     float elevation = M_PI / 2.0 - sun_zenith;
     return pow(elevation / (M_PI / 2.0), 0.333333);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 void get_control_points(int channel, int albedo, int turbidity, int coeff, out float[6] control_points)
 {
     for (int i = 0; i < 6; ++i) control_points[i] = sample_coeff(channel, albedo, turbidity, i, coeff);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 void get_control_points_radiance(int channel, int albedo, int turbidity, out float[6] control_points)
 {
     for (int i = 0; i < 6; ++i) control_points[i] = sample_radiance(channel, albedo, turbidity, i);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 void get_coeffs(int channel, int albedo, int turbidity, float sun_zenith, out float[9] coeffs)
 {
     float t = transform_sun_zenith(sun_zenith);
@@ -283,7 +283,7 @@ void get_coeffs(int channel, int albedo, int turbidity, float sun_zenith, out fl
         coeffs[i] = eval_quintic_bezier(control_points, t);
     }
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 vec3 mean_spectral_radiance(int albedo, int turbidity, float sun_zenith)
 {
     vec3 spectral_radiance;
@@ -295,7 +295,7 @@ vec3 mean_spectral_radiance(int albedo, int turbidity, float sun_zenith)
     }
     return spectral_radiance;
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 float HosekWilkie(float theta, float gamma, in float[9] coeffs)
 {
     float A = coeffs[0];
@@ -314,7 +314,7 @@ float HosekWilkie(float theta, float gamma, in float[9] coeffs)
     (C + D * exp(E * gamma) + F * pow(cos(gamma), 2.0) + G * chi + I * sqrt(cos(theta)))
     );
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma, vec3 params[10])
 {
     vec3 A = params[0];
@@ -330,7 +330,7 @@ vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma, vec3 params[10])
     vec3 chi = (1.0 + cos_gamma * cos_gamma) / pow(1.0 + H * H - 2.0 * cos_gamma * H, vec3(1.5));
     return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * (cos_gamma * cos_gamma) + G * chi + I * sqrt(cos_theta));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 vec3 spectral_radiance(float theta, float gamma, int albedo, int turbidity, float sun_zenith)
 {
     vec3 XYZ;
@@ -349,19 +349,18 @@ float angle(float z1, float a1, float z2, float a2) {
     sin(z1) * sin(a1) * sin(z2) * sin(a2) +
     cos(z1) * cos(z2));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 vec3 sample_sky2(float view_zenith, float view_azimuth, float sun_zenith, float sun_azimuth)
 {
     float gamma = angle(view_zenith, view_azimuth, sun_zenith, sun_azimuth);
     float theta = view_zenith;
     return spectral_radiance(theta, gamma, ALBEDO, TURBIDITY, sun_zenith) * mean_spectral_radiance(ALBEDO, TURBIDITY, sun_zenith);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 vec3 sample_sky(float theta, float gamma, float sun_zenith, float sun_azimuth)
 {
     return spectral_radiance(theta, gamma, ALBEDO, TURBIDITY, sun_zenith) * mean_spectral_radiance(ALBEDO, TURBIDITY, sun_zenith);
 }
 
 #endif // GPU_HOSEK
-
 #endif // KNOSEK_GLSL

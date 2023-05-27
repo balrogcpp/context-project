@@ -114,7 +114,6 @@ SAMPLER2D(EmissiveMap, 3);
 SAMPLERCUBE(SpecularEnvMap, 4);
 #define NUM_TEXTURES 5
 #endif // HAS_IBL
-uniform mediump vec3 iblSH[9];
 #ifdef TERRA_NORMALMAP
 SAMPLER2D(TerraNormalMap, 2);
 #define NUM_TEXTURES 3
@@ -122,11 +121,42 @@ SAMPLER2D(TerraNormalMap, 2);
 #ifdef TERRA_LIGHTMAP
 SAMPLER2D(TerraLightMap, 3);
 #define NUM_TEXTURES 4
-uniform mediump vec2 InvTerraLightMapSize;
-uniform highp mat4 WorldViewMatrix;
+#endif
+#if MAX_SHADOW_TEXTURES > 0
+#if MAX_SHADOW_TEXTURES > 0
+SAMPLER2D(ShadowMap0, NUM_TEXTURES + 0);
+#endif
+#if MAX_SHADOW_TEXTURES > 1
+SAMPLER2D(ShadowMap1, NUM_TEXTURES + 1);
+#endif
+#if MAX_SHADOW_TEXTURES > 2
+SAMPLER2D(ShadowMap2, NUM_TEXTURES + 2);
+#endif
+#if MAX_SHADOW_TEXTURES > 3
+SAMPLER2D(ShadowMap3, NUM_TEXTURES + 3);
+#endif
+#if MAX_SHADOW_TEXTURES > 4
+SAMPLER2D(ShadowMap4, NUM_TEXTURES + 4);
+#endif
+#if MAX_SHADOW_TEXTURES > 5
+SAMPLER2D(ShadowMap5, NUM_TEXTURES + 5);
+#endif
+#if MAX_SHADOW_TEXTURES > 6
+SAMPLER2D(ShadowMap6, NUM_TEXTURES + 6);
+#endif
+#if MAX_SHADOW_TEXTURES > 7
+SAMPLER2D(ShadowMap7, NUM_TEXTURES + 7);
+#endif
 #endif
 
 OGRE_UNIFORMS_BEGIN
+#ifdef HAS_IBL
+uniform mediump vec3 iblSH[9];
+#endif
+#ifdef TERRA_LIGHTMAP
+uniform mediump vec2 InvTerraLightMapSize;
+uniform highp mat4 WorldViewMatrix;
+#endif
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
 uniform mediump float LightCount;
@@ -155,6 +185,36 @@ uniform mediump float TexScale;
 uniform mediump float OffsetScale;
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
+#if MAX_SHADOW_TEXTURES > 0
+uniform mediump vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
+uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
+uniform mediump vec4 PssmSplitPoints;
+uniform mediump vec4 ShadowColour;
+#if MAX_SHADOW_TEXTURES > 0
+uniform mediump vec2 ShadowTexel0;
+#endif
+#if MAX_SHADOW_TEXTURES > 1
+uniform mediump vec2 ShadowTexel1;
+#endif
+#if MAX_SHADOW_TEXTURES > 2
+uniform mediump vec2 ShadowTexel2;
+#endif
+#if MAX_SHADOW_TEXTURES > 3
+uniform mediump vec2 ShadowTexel3;
+#endif
+#if MAX_SHADOW_TEXTURES > 4
+uniform mediump vec2 ShadowTexel4;
+#endif
+#if MAX_SHADOW_TEXTURES > 5
+uniform mediump vec2 ShadowTexel5;
+#endif
+#if MAX_SHADOW_TEXTURES > 6
+uniform mediump vec2 ShadowTexel6;
+#endif
+#if MAX_SHADOW_TEXTURES > 7
+uniform mediump vec2 ShadowTexel7;
+#endif
+#endif
 OGRE_UNIFORMS_END
 
 #if MAX_SHADOW_TEXTURES > 0
