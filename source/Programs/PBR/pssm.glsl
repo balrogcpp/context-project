@@ -437,6 +437,5 @@ mediump float GetShadow(const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]
     return shadow;
 }
 
-
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // PSSM_GLSL

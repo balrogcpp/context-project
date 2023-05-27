@@ -205,5 +205,4 @@ mediump float Downscale13(sampler2D tex, const mediump vec2 uv, const mediump ve
     return c1 + c2 + c3 + c4 + c5;
 }
 
-
 #endif // FILTERS_GLSL
