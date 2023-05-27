@@ -18,7 +18,6 @@ uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec4 oUV, TEXCOORD0)

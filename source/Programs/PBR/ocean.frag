@@ -41,7 +41,6 @@ uniform mediump vec3 SunTransmittance;
 uniform mediump float SunFade;
 uniform mediump float ScatterFade;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 normal, const mediump float eta)
 {
@@ -60,7 +59,6 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
         return 1.0; // TIR (no refracted component)
     }    
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS

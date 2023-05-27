@@ -14,7 +14,6 @@
 #include "filters_RGB16.glsl"
 SAMPLER2D(RT, 0);
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)

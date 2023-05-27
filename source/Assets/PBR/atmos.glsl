@@ -6,7 +6,6 @@
 #define M_PI 3.141592653589793
 #define iSteps 16
 #define jSteps 8
-
 //----------------------------------------------------------------------------------------------------------------------
 vec2 rsi(vec3 r0, vec3 rd, float sr)
 {
@@ -23,7 +22,6 @@ vec2 rsi(vec3 r0, vec3 rd, float sr)
     (-b + sqrt(d))/(2.0*a)
     );
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAtmos, vec3 kRlh, float kMie, float shRlh, float shMie, float g)
 {
@@ -121,13 +119,11 @@ const float g =  0.9800;
 const vec3 nitrogen = vec3(0.650, 0.570, 0.475);
 const vec3 Kr = Br / pow(nitrogen, vec3(4.0));
 const vec3 Km = Bm / pow(nitrogen, vec3(0.84));
-
 //----------------------------------------------------------------------------------------------------------------------
 float hash(float n)
 {
     return fract(sin(n) * 43758.5453123);
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 float noise(vec3 x)
 {
@@ -138,7 +134,6 @@ float noise(vec3 x)
     mix(mix(hash(n + 113.0), hash(n + 114.0), f.x),
     mix(hash(n + 270.0), hash(n + 271.0), f.x), f.y), f.z);
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 float fbm(vec3 p)
 {
@@ -152,7 +147,6 @@ float fbm(vec3 p)
     f += noise(p) / 24.0;
     return f;
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ProceduralClouds(vec3 color, const vec3 cloud_color, const vec3 position, const float cirrus, const float cumulus, const float time)
 {

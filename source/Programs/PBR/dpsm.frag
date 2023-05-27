@@ -16,21 +16,6 @@ uniform highp float SurfaceAlphaRejection;
 SAMPLER2D(AlbedoMap, 0);
 #endif
 
-
-//----------------------------------------------------------------------------------------------------------------------
-highp float map_0(const highp float x, const highp float v0, const highp float v1)
-{
-    return (x - v0) / (v1 - v0);
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-highp float map_1(const highp float x, const highp float v0, const highp float v1)
-{
-    return x * (v1 - v0) + v0;
-}
-
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 #ifdef SHADOWCASTER_ALPHA

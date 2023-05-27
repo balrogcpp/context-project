@@ -20,7 +20,6 @@ SAMPLER2D(areaTex, 1);
 SAMPLER2D(searchTex, 2);
 #include "smaa.glsl"
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)

@@ -16,7 +16,6 @@ uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform mediump vec4 Time;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)

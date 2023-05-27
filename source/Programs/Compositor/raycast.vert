@@ -14,7 +14,6 @@
 
 uniform highp mat4 WorldViewProj;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)

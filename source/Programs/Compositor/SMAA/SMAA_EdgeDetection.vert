@@ -17,7 +17,6 @@
 
 uniform mediump mat4 worldViewProj;
 #include "smaa.glsl"
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)

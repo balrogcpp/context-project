@@ -6,13 +6,11 @@
 
 #include "srgb.glsl"
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Linear(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     return texture2D(tex, uv).xyz;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -33,7 +31,6 @@ mediump vec3 Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump ve
 
     return c1 + c2 + c3;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -63,7 +60,6 @@ mediump vec3 Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump ve
     return c1 + c2 + c3 + c4;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Gauss5V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -76,7 +72,6 @@ mediump vec3 Gauss5V(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
     return c1;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Gauss5H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -88,7 +83,6 @@ mediump vec3 Gauss5H(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
 
     return c1;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -104,7 +98,6 @@ mediump vec3 Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
     return c1;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -118,7 +111,6 @@ mediump vec3 Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
 
     return c1;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Gauss13V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -136,7 +128,6 @@ mediump vec3 Gauss13V(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Gauss13H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -152,7 +143,6 @@ mediump vec3 Gauss13H(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
 
     return c1;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
@@ -175,7 +165,6 @@ mediump vec3 Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1 + c2 + c3;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -189,7 +178,6 @@ mediump vec3 Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump ve
     return c1;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Downscale2x2_05(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -202,7 +190,6 @@ mediump vec3 Downscale2x2_05(sampler2D tex, const mediump vec2 uv, const mediump
 
     return c1;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15

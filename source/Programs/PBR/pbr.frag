@@ -268,7 +268,6 @@ mediump vec4 GetAlbedo(const mediump vec4 color, const mediump vec2 uv)
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GetEmission(const mediump vec2 uv)
 {
@@ -278,7 +277,6 @@ mediump vec3 GetEmission(const mediump vec2 uv)
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec3 vWorldPosition, TEXCOORD0)

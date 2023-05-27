@@ -13,6 +13,9 @@
 #endif
 #endif
 
+#define MAX_BIN_SEARCH_COUNT 10
+#define STEP 0.05
+#define MAX_RAY_MARCH_COUNT 30
 #include "header.glsl"
 SAMPLER2D(RT, 0);
 SAMPLER2D(DepthMap, 1);
@@ -21,11 +24,6 @@ SAMPLER2D(GlossMap, 3);
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
-
-#define MAX_BIN_SEARCH_COUNT 10
-#define STEP 0.05
-#define MAX_RAY_MARCH_COUNT 30
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
@@ -49,7 +47,6 @@ mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
 
     return projectedCoord.xy;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
@@ -80,7 +77,6 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
     return projectedCoord.xy;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -101,7 +97,6 @@ mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
 
     return factor;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS

@@ -17,7 +17,6 @@ SAMPLER2D(Lum, 1);
 uniform mediump vec2 TexelSize0;
 uniform mediump vec2 BrightThreshold;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)

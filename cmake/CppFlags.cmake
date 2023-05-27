@@ -5,6 +5,7 @@ endif (_cppflags_included)
 set(_cppflags_included true)
 
 
+include(CMakeDependentOption)
 include(ProcessorCount)
 processorcount(PROCESSOR_COUNT)
 
@@ -15,7 +16,7 @@ option(ENABLE_AVX2 "ENABLE_AVX2" ON)
 option(ENABLE_FASTMATH "ENABLE_FASTMATH" ON)
 option(DISABLE_EXCEPTIONS "DISABLE_EXCEPTIONS" OFF)
 option(DISABLE_RTTI "DISABLE_RTTI" OFF)
-option(ENABLE_CXX_STATIC "ENABLE_CXX_STATIC" ON)
+cmake_dependent_option(ENABLE_CXX_STATIC "ENABLE_CXX_STATIC" ON "CMAKE_CXX_COMPILER_ID STREQUAL GNU AND NOT MINGW" OFF)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -95,9 +96,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
     endif ()
 
     if (ENABLE_CXX_STATIC)
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
-            string(APPEND CMAKE_CXX_FLAGS " -static-libstdc++")
-        endif ()
+        string(APPEND CMAKE_CXX_FLAGS " -static-libstdc++")
     endif ()
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")

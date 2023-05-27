@@ -189,6 +189,32 @@ float pow12(const float x)
     return x4 * x4 * x4;
 }
 
+highp float map_0(const highp float x, const highp float v0, const highp float v1)
+{
+    return (x - v0) / (v1 - v0);
+}
+
+
+highp float map_1(const highp float x, const highp float v0, const highp float v1)
+{
+    return x * (v1 - v0) + v0;
+}
+
+bool Any(vec2 x)
+{
+    return x.x > 0.0 || x.y > 0.0;
+}
+
+bool Any(vec3 x)
+{
+    return x.x > 0.0 || x.y > 0.0 || x.z > 0.0;
+}
+
+bool Any(vec4 x)
+{
+    return x.x > 0.0 || x.y > 0.0 || x.z > 0.0 || x.w > 0.0;
+}
+
 // NaN checker
 // /Gic isn't enabled on fxc so we can't rely on isnan() anymore
 bool IsNan(float x)

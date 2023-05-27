@@ -19,14 +19,12 @@ uniform float SunSize;
 uniform vec3 SunColor;
 uniform highp vec3 A, B, C, D, E, F, G, H, I, Z;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos_gamma)
 {
     highp vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5, 1.5, 1.5)));
     return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta)));
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS

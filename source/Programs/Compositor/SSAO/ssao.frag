@@ -19,7 +19,6 @@ uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -27,7 +26,6 @@ mediump vec3 hash(const mediump vec3 a)
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)

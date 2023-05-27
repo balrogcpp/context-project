@@ -23,7 +23,6 @@ uniform float vScroll;
 uniform vec4  preRotatedQuad[4];
 
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)

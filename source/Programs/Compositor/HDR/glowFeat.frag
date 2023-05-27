@@ -16,7 +16,6 @@ uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
 uniform int FeaturesCount;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 SampleChromatic(sampler2D tex, const mediump vec2 uv, const mediump float radius)
 {
@@ -41,7 +40,6 @@ mediump float WindowCubic(const mediump float x, const mediump float center, con
     return 1.0 - y * y * (3.0 - 2.0 * y);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const int counter, const mediump float radius)
 {
@@ -64,7 +62,6 @@ mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump v
 
     return color;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const int counter, const mediump float radius)
@@ -90,7 +87,6 @@ mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump ve
 
     return color;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS

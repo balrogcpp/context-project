@@ -886,7 +886,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_COMPONENT_TERRAIN=ON
         -DOGRE_BUILD_PLUGIN_FREEIMAGE=OFF
         -DOGRE_BUILD_PLUGIN_EXRCODEC=OFF
-        -DOGRE_BUILD_PLUGIN_ASSIMP=OFF
+        -DOGRE_BUILD_PLUGIN_ASSIMP=ON
         -DOGRE_BUILD_PLUGIN_STBI=ON
         -DOGRE_BUILD_PLUGIN_RSIMAGE=OFF
         -DOGRE_BUILD_PLUGIN_BSP=OFF
@@ -1389,7 +1389,7 @@ externalproject_add(Target_beast
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_asio Target_OpenSSL
+        DEPENDS Target_asio
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -1595,7 +1595,6 @@ add_dependencies(Contrib Target_filesystem)
 add_dependencies(Contrib Target_beast)
 add_dependencies(Contrib Target_cpr)
 add_dependencies(Contrib Target_sol2)
-add_dependencies(Contrib Target_Ogg)
 add_dependencies(Contrib Target_Vorbis)
 add_dependencies(Contrib Target_Bullet)
 add_dependencies(Contrib Target_OGRE)

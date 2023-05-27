@@ -15,7 +15,6 @@ SAMPLER2D(RT, 0);
 SAMPLER2D(SsaoMap, 1);
 uniform vec4 ShadowColour;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)

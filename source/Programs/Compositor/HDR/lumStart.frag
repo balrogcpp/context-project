@@ -14,7 +14,6 @@
 SAMPLER2D(RT, 0);
 uniform mediump vec4 TexSize0;
 uniform mediump vec4 ViewportSize;
-
 //----------------------------------------------------------------------------------------------------------------------
 //const vec2 c_offsets[16] = vec2[16]
 //(
@@ -50,7 +49,6 @@ mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump v
 
     return c1 + c2 + c3 + c4;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS

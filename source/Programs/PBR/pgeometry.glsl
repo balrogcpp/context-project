@@ -14,7 +14,6 @@ highp vec4 WaveGrass(const highp vec4 position, const highp float time, const fl
     return n * direction;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 // Apply tree waving animation to vertex
 highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec4 params1, const vec4 params2)

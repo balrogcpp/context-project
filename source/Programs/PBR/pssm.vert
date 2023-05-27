@@ -13,7 +13,6 @@
 #include "header.glsl"
 uniform highp mat4 WorldViewProjMatrix;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)

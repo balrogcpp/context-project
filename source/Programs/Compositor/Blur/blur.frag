@@ -19,7 +19,6 @@ SAMPLER2D(RT, 0);
 SAMPLER2D(VelocitySampler, 1);
 uniform mediump vec2 TexSize1;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)

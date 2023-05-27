@@ -290,7 +290,6 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
         pos.y + (horzSpan ? subPixelOffset : 0.0))).xyz;
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)

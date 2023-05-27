@@ -24,7 +24,6 @@ SAMPLER2D(velocityTex, 2);
 #endif
 #include "smaa.glsl"
 
-
 //----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
