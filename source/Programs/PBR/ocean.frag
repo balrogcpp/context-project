@@ -171,9 +171,6 @@ MAIN_DECLARATION
     FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
     FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = WorldViewMatrix * vec4(lNormal, 0.0);
-    mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
-    mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-    mediump vec2 velocity = ((0.5 * 0.0166667) / FrameTime) * (b - a);
-    FragData[4] = vec4(velocity, 0.0, 1.0);
+    FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif
 }

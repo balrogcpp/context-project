@@ -463,9 +463,6 @@ MAIN_DECLARATION
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
     FragData[2] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(n1, 1.0);
-    mediump vec2 a = (vScreenPosition.xz / vScreenPosition.w);
-    mediump vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-    mediump vec2 velocity = ((0.5 * 0.01666666666667) / FrameTime) * (b - a);
-    FragData[4] = vec4(velocity, 0.0, 1.0);
+    FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif
 }
