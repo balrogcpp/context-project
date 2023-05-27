@@ -12,6 +12,7 @@
 
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
+
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 #if !SMAA_INITIALIZED
@@ -26,11 +27,9 @@ SAMPLER2D(depthTex, 1);
 #endif
 #include "smaa.glsl"
 
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
 IN(mediump mat4 offset, TEXCOORD1)
-
 MAIN_DECLARATION
 {
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2

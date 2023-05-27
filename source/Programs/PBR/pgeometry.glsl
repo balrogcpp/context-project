@@ -7,14 +7,12 @@
 
 
 // Apply grass waving animation to vertex
-//----------------------------------------------------------------------------------------------------------------------
 highp vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
 {
     highp float n = NoiseHp(position.xz * time) * 2.0 - 2.0;
     return n * direction;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 // Apply tree waving animation to vertex
 highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec4 params1, const vec4 params2)
 {

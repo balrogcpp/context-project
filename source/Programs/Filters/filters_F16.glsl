@@ -6,13 +6,11 @@
 
 #include "srgb.glsl"
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Linear(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     return texture2D(tex, uv).x;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).x;
@@ -32,7 +30,6 @@ mediump float Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump v
     return c1 + c2 + c3;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).x;
@@ -60,7 +57,6 @@ mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump v
     return c1 + c2 + c3 + c4;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Gauss5V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).x;
@@ -72,7 +68,6 @@ mediump float Gauss5V(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Gauss5H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).x;
@@ -84,7 +79,6 @@ mediump float Gauss5H(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).x;
@@ -98,7 +92,6 @@ mediump float Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).x;
@@ -112,7 +105,6 @@ mediump float Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Gauss13V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).x;
@@ -128,7 +120,6 @@ mediump float Gauss13V(sampler2D tex, const mediump vec2 uv, const mediump vec2 
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Gauss13H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).x;
@@ -144,8 +135,7 @@ mediump float Gauss13H(sampler2D tex, const mediump vec2 uv, const mediump vec2 
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-//  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
+// https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 mediump float Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
@@ -165,7 +155,6 @@ mediump float Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 
     return c1 + c2 + c3;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).x;
@@ -178,7 +167,6 @@ mediump float Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump v
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Downscale2x2_05(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5))).x;
@@ -191,8 +179,7 @@ mediump float Downscale2x2_05(sampler2D tex, const mediump vec2 uv, const medium
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-//  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
+// https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 mediump float Downscale13(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;

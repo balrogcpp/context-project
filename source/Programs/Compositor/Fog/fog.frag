@@ -11,17 +11,19 @@
 #endif
 
 #include "header.glsl"
+
 SAMPLER2D(RT, 0);
 SAMPLER2D(DepthMap, 1);
+
+OGRE_UNIFORMS_BEGIN
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
+OGRE_UNIFORMS_END
 
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
-
 MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;

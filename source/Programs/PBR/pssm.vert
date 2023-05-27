@@ -11,16 +11,17 @@
 #endif
 
 #include "header.glsl"
-uniform highp mat4 WorldViewProjMatrix;
 
-//----------------------------------------------------------------------------------------------------------------------
+OGRE_UNIFORMS_BEGIN
+uniform highp mat4 WorldViewProjMatrix;
+OGRE_UNIFORMS_END
+
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)
 #ifdef SHADOWCASTER_ALPHA
 IN(highp vec4 uv0, TEXCOORD0)
 OUT(mediump vec2 vUV0, TEXCOORD0)
 #endif
-
 MAIN_DECLARATION
 {
 #ifdef SHADOWCASTER_ALPHA

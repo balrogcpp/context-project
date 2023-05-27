@@ -11,12 +11,15 @@
 #endif
 
 #include "header.glsl"
+
 SAMPLER2D(RT, 0);
+
+OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
 uniform int FeaturesCount;
+OGRE_UNIFORMS_END
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 SampleChromatic(sampler2D tex, const mediump vec2 uv, const mediump float radius)
 {
     mediump vec2 offset = normalize(vec2(0.5, 0.5) - uv) * radius;
@@ -30,17 +33,14 @@ mediump vec3 SampleChromatic(sampler2D tex, const mediump vec2 uv, const mediump
     return color;
 }
 
-
 // https://john-chapman.github.io/2017/11/05/pseudo-lens-flare.html
 // Cubic window; map [0, radius] in [1, 0] as a cubic falloff from center.
-//----------------------------------------------------------------------------------------------------------------------
 mediump float WindowCubic(const mediump float x, const mediump float center, const mediump float radius)
 {
     mediump float y = min(abs(x - center) / radius, 1.0);
     return 1.0 - y * y * (3.0 - 2.0 * y);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const int counter, const mediump float radius)
 {
     mediump vec2 nuv = vec2(1.0, 1.0) - uv;
@@ -63,7 +63,6 @@ mediump vec3 GhostFeatures(sampler2D tex, const mediump vec2 uv, const mediump v
     return color;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump vec2 texel, const int counter, const mediump float radius)
 {
     mediump vec2 nuv = vec2(1.0, 1.0) - uv;
@@ -88,10 +87,8 @@ mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump ve
     return color;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
-
 MAIN_DECLARATION
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;

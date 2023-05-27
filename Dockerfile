@@ -1,4 +1,4 @@
-FROM balrogcpp/cross_clang
+FROM balrogcpp/clang_cross
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/var/build

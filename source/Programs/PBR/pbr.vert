@@ -16,6 +16,7 @@
 #include "pgeometry.glsl"
 #endif
 
+OGRE_UNIFORMS_BEGIN
 #ifdef VERTEX_COMPRESSION
 uniform highp mat4 posIndexToObjectSpace;
 uniform highp float baseUVScale;
@@ -33,6 +34,7 @@ uniform highp float FadeRange;
 #if MAX_SHADOW_TEXTURES > 0
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
+OGRE_UNIFORMS_END
 
 MAIN_PARAMETERS
 #ifndef VERTEX_COMPRESSION
@@ -70,7 +72,6 @@ OUT(mediump vec4 vPrevScreenPosition, TEXCOORD7)
 #if MAX_SHADOW_TEXTURES > 0
 OUT(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD8)
 #endif
-
 MAIN_DECLARATION
 {
 #ifdef HAS_VERTEXCOLOR

@@ -11,7 +11,10 @@
 #endif
 
 #include "header.glsl"
+
 SAMPLER2D(FBO, 0);
+
+OGRE_UNIFORMS_BEGIN
 uniform int LightCount;
 uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];
 uniform int RayCount;
@@ -19,8 +22,8 @@ uniform mediump float Decay;
 uniform mediump float Density;
 uniform mediump float Weight;
 uniform mediump float Exposure;
+OGRE_UNIFORMS_END
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GodRays(sampler2D tex, const mediump vec2 uv, const mediump vec2 lightPos, const int counter, const mediump float density, const mediump float weight, const mediump float decay, const mediump float exposure)
 {
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
@@ -43,10 +46,8 @@ mediump vec3 GodRays(sampler2D tex, const mediump vec2 uv, const mediump vec2 li
     return color;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
-
 MAIN_DECLARATION
 {
     mediump vec3 color = vec3(0.0, 0.0, 0.0);

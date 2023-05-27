@@ -12,12 +12,9 @@
 
 #include "header.glsl"
 
-
 IN(highp vec4 vertex, POSITION)
 OUT(mediump vec2 vUV0, TEXCOORD0)
 uniform highp mat4 WorldViewProj;
-
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_DECLARATION
 {
     gl_Position = mul(WorldViewProj, vertex);

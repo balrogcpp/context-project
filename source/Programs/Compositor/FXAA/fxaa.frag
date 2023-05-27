@@ -9,25 +9,25 @@
 #define __VERSION__ 300
 #endif
 #endif
-
-#include "header.glsl"
-SAMPLER2D(RT, 0);
-uniform mediump vec2 TexelSize0;
-
-
 #ifndef FXAA_REDUCE_MIN
-    #define FXAA_REDUCE_MIN   (1.0/ 128.0)
+#define FXAA_REDUCE_MIN   (1.0/ 128.0)
 #endif
 #ifndef FXAA_REDUCE_MUL
-    #define FXAA_REDUCE_MUL   (1.0 / 8.0)
+#define FXAA_REDUCE_MUL   (1.0 / 8.0)
 #endif
 #ifndef FXAA_SPAN_MAX
-    #define FXAA_SPAN_MAX     8.0
+#define FXAA_SPAN_MAX     8.0
 #endif
 
+#include "header.glsl"
+
+SAMPLER2D(RT, 0);
+
+OGRE_UNIFORMS_BEGIN
+uniform mediump vec2 TexelSize0;
+OGRE_UNIFORMS_END
 
 // https://github.com/mattdesl/glsl-fxaa/blob/master/fxaa.glsl
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 FastFxaa(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec3 rgbNW = texture2D(tex, uv + vec2(-1.0, -1.0) * tsize).xyz;
@@ -290,10 +290,9 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
         pos.y + (horzSpan ? subPixelOffset : 0.0))).xyz;
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
-
 MAIN_DECLARATION
 {
     FragColor = vec4(SafeHDR(FxaaPixelShader(vUV0, RT, TexelSize0)), 1.0);

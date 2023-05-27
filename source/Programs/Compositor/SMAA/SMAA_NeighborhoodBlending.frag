@@ -12,6 +12,7 @@
 
 #include "header.glsl"
 #include "SMAA_GLSL.glsl"
+
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 #define SMAA_REPROJECTION 0
@@ -22,13 +23,12 @@ SAMPLER2D(blendTex, 1);
 #if SMAA_REPROJECTION
 SAMPLER2D(velocityTex, 2);
 #endif
+
 #include "smaa.glsl"
 
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
 IN(mediump vec4 offset, TEXCOORD1)
-
 MAIN_DECLARATION
 {
 #if SMAA_REPROJECTION

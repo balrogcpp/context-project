@@ -13,19 +13,22 @@
 #endif
 #endif
 
+#include "header.glsl"
 #define MAX_BIN_SEARCH_COUNT 10
 #define STEP 0.05
 #define MAX_RAY_MARCH_COUNT 30
-#include "header.glsl"
+
 SAMPLER2D(RT, 0);
 SAMPLER2D(DepthMap, 1);
 SAMPLER2D(NormalMap, 2);
 SAMPLER2D(GlossMap, 3);
+
+OGRE_UNIFORMS_BEGIN
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
+OGRE_UNIFORMS_END
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
 {
     mediump vec4 projectedCoord = vec4(-1.0, -1.0, -1.0, -1.0);
@@ -48,7 +51,6 @@ mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
     return projectedCoord.xy;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
 {
     direction *= STEP;
@@ -77,7 +79,6 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
     return projectedCoord.xy;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 hash(const mediump vec3 a)
 {
     mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
@@ -87,7 +88,6 @@ mediump vec3 hash(const mediump vec3 a)
 
 
 // source: https://www.standardabweichung.de/code/javascript/webgl-glsl-fresnel-schlick-approximation
-//----------------------------------------------------------------------------------------------------------------------
 mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
 {
     mediump vec3 halfDirection = normalize(normal + direction);
@@ -98,11 +98,9 @@ mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
     return factor;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
 IN(highp vec3 vRay, TEXCOORD1)
-
 MAIN_DECLARATION
 {
     mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;

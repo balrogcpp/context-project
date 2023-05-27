@@ -4,50 +4,49 @@
 #define TONEMAP_GLSL
 
 // https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
-//----------------------------------------------------------------------------------------------------------------------
 // https://en.wikipedia.org/wiki/Relative_luminance
 highp float luminance(const highp vec3 color)
 {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 // https://www.w3.org/TR/AERT/#color-contrast
 highp float luminance2(const highp vec3 color)
 {
     return dot(color, vec3(0.299, 0.587, 0.114));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 // https://alienryderflex.com/hsp.html
 highp float luminance3(const highp vec3 color)
 {
     return sqrt(dot(color * color, vec3(0.2126, 0.7152, 0.0722)));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float luminance4(const highp vec3 color)
 {
     return sqrt(dot(color * color, vec3(0.2126, 0.7152, 0.0722)));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp vec3 expose(const highp vec3 color, const highp float exposure)
 {
     return vec3(1.0, 1.0, 1.0) - exp(-color * exposure);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float expose(const highp float color, const highp float exposure)
 {
     return 1.0 - exp(-color * exposure);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp vec3 expose2(const highp vec3 color, const highp vec3 exposure)
 {
     return exposure.x / exp(clamp(color, exposure.y, exposure.z));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float expose2(const highp float color, const highp vec3 exposure)
 {
     return exposure.x / exp(clamp(color, exposure.y, exposure.z));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp vec3 tonemap(const highp vec3 inColour, const highp float lum)
 {
     const highp float middle_grey = 0.72;
@@ -70,7 +69,6 @@ highp vec3 tonemap(const highp vec3 inColour, const highp float lum)
 }
 
 // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
-//----------------------------------------------------------------------------------------------------------------------
 highp vec3 aces(const highp vec3 x) {
     const highp float a = 2.51;
     const highp float b = 0.03;
@@ -80,7 +78,7 @@ highp vec3 aces(const highp vec3 x) {
 
     return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float aces(const highp float x) {
     const highp float a = 2.51;
     const highp float b = 0.03;
@@ -92,13 +90,12 @@ highp float aces(const highp float x) {
 }
 
 // Filmic Tonemapping Operators http://filmicworlds.com/blog/filmic-tonemapping-operators/
-//----------------------------------------------------------------------------------------------------------------------
 highp vec3 filmic(const highp vec3 x) {
     highp vec3 X = max(vec3(0.0, 0.0, 0.0), x - 0.004);
     highp vec3 result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
     return result;
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float filmic(const highp float x) {
     highp float X = max(0.0, x - 0.004);
     highp float result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
@@ -106,7 +103,6 @@ highp float filmic(const highp float x) {
 }
 
 // Lottes 2016, "Advanced Techniques and Optimization of HDR Color Pipelines"
-//----------------------------------------------------------------------------------------------------------------------
 highp vec3 lottes(const highp vec3 x) {
     const highp vec3 a = vec3(1.6, 1.6, 1.6);
     const highp vec3 d = vec3(0.977, 0.977, 0.977);
@@ -123,7 +119,7 @@ highp vec3 lottes(const highp vec3 x) {
 
     return pow(x, a) / (pow(x, a * d) * b + c);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float lottes(const highp float x) {
     const highp float a = 1.6;
     const highp float d = 0.977;
@@ -140,27 +136,27 @@ highp float lottes(const highp float x) {
 
     return pow(x, a) / (pow(x, a * d) * b + c);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp vec3 reinhard(const highp vec3 x) {
     return x / (1.0 + x);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float reinhard(const highp float x) {
     return x / (1.0 + x);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp vec3 reinhard2(const highp vec3 x) {
     const highp float L_white = 4.0;
 
     return (x * (1.0 + x / (L_white * L_white))) / (1.0 + x);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float reinhard2(const highp float x) {
     const highp float L_white = 4.0;
 
     return (x * (1.0 + x / (L_white * L_white))) / (1.0 + x);
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp vec3 uncharted2Tonemap(const highp vec3 x) {
 //    const highp float A = 0.15;
 //    const highp float B = 0.50;
@@ -179,7 +175,7 @@ highp vec3 uncharted2Tonemap(const highp vec3 x) {
 
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp vec3 uncharted2(const highp vec3 color) {
     const highp float W = 11.2;
     const highp float exposureBias = 1.0;
@@ -187,7 +183,7 @@ highp vec3 uncharted2(const highp vec3 color) {
     highp vec3 curr = uncharted2Tonemap(exposureBias * color);
     return curr / uncharted2Tonemap(vec3(W, W, W));
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float uncharted2Tonemap(const highp float x) {
 //    const highp float A = 0.15;
 //    const highp float B = 0.50;
@@ -206,7 +202,7 @@ highp float uncharted2Tonemap(const highp float x) {
 
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float uncharted2(const highp float color) {
     const highp float W = 11.2;
     const highp float exposureBias = 1.0;
@@ -219,11 +215,10 @@ highp float uncharted2(const highp float color) {
 // Unreal 3, Documentation: "Color Grading"
 // Adapted to be close to Tonemap_ACES, with similar range
 // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-//----------------------------------------------------------------------------------------------------------------------
 highp vec3 unreal(const highp vec3 x) {
     return x / (x + 0.155) * 1.019;
 }
-//----------------------------------------------------------------------------------------------------------------------
+
 highp float unreal(const highp float x) {
     return x / (x + 0.155) * 1.019;
 }

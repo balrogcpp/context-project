@@ -12,16 +12,15 @@
 
 #include "header.glsl"
 
-
+OGRE_UNIFORMS_BEGIN
 uniform highp mat4 WorldViewProj;
+OGRE_UNIFORMS_END
 
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec4 vertex, POSITION)
 IN(highp vec4 uv0, TEXCOORD0)
 OUT(highp vec3 vPosition, TEXCOORD0)
 OUT(highp vec3 vUV0, TEXCOORD1)
-
 MAIN_DECLARATION
 {
     vUV0 = uv0.xyz;

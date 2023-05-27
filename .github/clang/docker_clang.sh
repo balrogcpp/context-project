@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker build -t balrogcpp/cross_clang .
-#docker push balrogcpp/cross_clang
+docker build -t balrogcpp/clang_cross .
+#docker push balrogcpp/clang_cross

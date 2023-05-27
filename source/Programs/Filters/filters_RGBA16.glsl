@@ -6,13 +6,11 @@
 
 #include "srgb.glsl"
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Linear(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     return texture2D(tex, uv);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0)));
@@ -32,7 +30,6 @@ mediump vec4 Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump ve
     return c1 + c2 + c3;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0)));
@@ -60,7 +57,6 @@ mediump vec4 Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump ve
     return c1 + c2 + c3 + c4;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Gauss5V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv);
@@ -72,7 +68,6 @@ mediump vec4 Gauss5V(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Gauss5H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv);
@@ -84,7 +79,6 @@ mediump vec4 Gauss5H(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv);
@@ -98,7 +92,6 @@ mediump vec4 Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv);
@@ -112,7 +105,6 @@ mediump vec4 Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Gauss13V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv);
@@ -128,7 +120,6 @@ mediump vec4 Gauss13V(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Gauss13H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv);
@@ -144,8 +135,7 @@ mediump vec4 Gauss13H(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-//  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
+// https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 mediump vec4 Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0));
@@ -165,7 +155,6 @@ mediump vec4 Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
     return c1 + c2 + c3;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0)));
@@ -178,7 +167,6 @@ mediump vec4 Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump ve
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 Downscale2x2_05(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5)));
@@ -191,8 +179,7 @@ mediump vec4 Downscale2x2_05(sampler2D tex, const mediump vec2 uv, const mediump
     return c1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-//  https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
+// https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 mediump vec4 Downscale13(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump vec4 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0));

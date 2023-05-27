@@ -12,38 +12,33 @@
 
 #define HAS_MRT
 #include "header.glsl"
+
 #ifndef GL_ES
 #define USE_TEX_LOD
-#define SPHERICAL_HARMONICS_BANDS 8
+    #define SPHERICAL_HARMONICS_BANDS 8
 #else
-#define SPHERICAL_HARMONICS_BANDS 3
+    #define SPHERICAL_HARMONICS_BANDS 3
 #endif
-
 
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 Diffuse(const mediump vec3 diffuseColor)
 {
     return diffuseColor / M_PI;
 }
 
-
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 SpecularReflection(const mediump vec3 reflectance0, const mediump vec3 reflectance90, const mediump float VdotH)
 {
     return reflectance0 + (reflectance90 - reflectance0) * pow5(1.0 - VdotH);
 }
 
-
 // This calculates the specular geometric attenuation (aka G()),
 // where rougher material will reflect less light back to the viewer.
 // This implementation is based on [1] Equation 4, and we adopt their modifications to
 // alphaRoughness as input as originally proposed in [2].
-//----------------------------------------------------------------------------------------------------------------------
 mediump float GeometricOcclusion(const mediump float NdotL, const mediump float NdotV, const mediump float r)
 {
     mediump float r2 = (r * r);
@@ -53,11 +48,9 @@ mediump float GeometricOcclusion(const mediump float NdotL, const mediump float 
     return attenuationL * attenuationV;
 }
 
-
 // The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
 // Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
 // Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-//----------------------------------------------------------------------------------------------------------------------
 highp float MicrofacetDistribution(const highp float alphaRoughness, const highp float NdotH)
 {
     highp float roughnessSq = alphaRoughness * alphaRoughness;
@@ -65,9 +58,7 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
     return roughnessSq / (M_PI * (f * f));
 }
 
-
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
 {
     const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
@@ -77,7 +68,6 @@ mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float
     mediump vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
     return specularColor * AB.x + AB.y;
 }
-
 
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
 mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const mediump vec3 n) {
@@ -98,15 +88,11 @@ mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const me
         , 0.0);
 }
 
-
-//
 vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec3 n) {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
     return textureCubeLod(SpecularEnvMap, n, 9.0).rgb;
 }
 
-
-// uniforms
 #define NUM_TEXTURES 0
 #ifdef HAS_BASECOLORMAP
 SAMPLER2D(AlbedoMap, 0);
@@ -140,7 +126,7 @@ uniform mediump vec2 InvTerraLightMapSize;
 uniform highp mat4 WorldViewMatrix;
 #endif
 
-// lights
+OGRE_UNIFORMS_BEGIN
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
 uniform mediump float LightCount;
@@ -169,13 +155,14 @@ uniform mediump float TexScale;
 uniform mediump float OffsetScale;
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
+OGRE_UNIFORMS_END
+
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
 #endif
 
 
 #ifdef HAS_IBL
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
     if (iblSH[0].x >= HALF_MAX_MINUS1) {
@@ -199,7 +186,6 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
@@ -222,7 +208,6 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-//----------------------------------------------------------------------------------------------------------------------
 void GetNormal(highp mat3 tbn, highp mat3 tbn1, const mediump vec2 uv, const mediump vec2 uv1, out highp vec3 n, out highp vec3 n1)
 {
 #ifdef TERRA_NORMALMAP
@@ -256,7 +241,6 @@ void GetNormal(highp mat3 tbn, highp mat3 tbn1, const mediump vec2 uv, const med
 
 
 // Sampler helper functions
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec4 GetAlbedo(const mediump vec4 color, const mediump vec2 uv)
 {
     mediump vec4 albedo = SurfaceDiffuseColour * color;
@@ -268,7 +252,6 @@ mediump vec4 GetAlbedo(const mediump vec4 color, const mediump vec2 uv)
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 mediump vec3 GetEmission(const mediump vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
@@ -277,7 +260,6 @@ mediump vec3 GetEmission(const mediump vec2 uv)
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 }
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(highp vec3 vWorldPosition, TEXCOORD0)
 IN(highp float vDepth, TEXCOORD1)
@@ -290,7 +272,6 @@ IN(mediump vec4 vPrevScreenPosition, TEXCOORD7)
 #if MAX_SHADOW_TEXTURES > 0
 IN(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7)
 #endif
-
 MAIN_DECLARATION
 {
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
