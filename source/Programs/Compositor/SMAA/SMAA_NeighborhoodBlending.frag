@@ -24,6 +24,10 @@ SAMPLER2D(blendTex, 1);
 SAMPLER2D(velocityTex, 2);
 #endif
 
+OGRE_UNIFORMS_BEGIN
+uniform mediump vec4 ViewportSize;
+OGRE_UNIFORMS_END
+
 #include "smaa.glsl"
 
 MAIN_PARAMETERS

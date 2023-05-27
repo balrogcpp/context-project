@@ -18,6 +18,7 @@
 
 OGRE_UNIFORMS_BEGIN
 uniform mediump mat4 worldViewProj;
+uniform mediump vec4 ViewportSize;
 OGRE_UNIFORMS_END
 
 #include "smaa.glsl"

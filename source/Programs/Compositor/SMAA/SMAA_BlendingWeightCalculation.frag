@@ -20,6 +20,10 @@ SAMPLER2D(edgeTex, 0);
 SAMPLER2D(areaTex, 1);
 SAMPLER2D(searchTex, 2);
 
+OGRE_UNIFORMS_BEGIN
+uniform mediump vec4 ViewportSize;
+OGRE_UNIFORMS_END
+
 #include "smaa.glsl"
 
 MAIN_PARAMETERS

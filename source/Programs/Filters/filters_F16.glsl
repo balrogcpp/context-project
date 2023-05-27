@@ -3,7 +3,6 @@
 #ifndef FILTERS_GLSL
 #define FILTERS_GLSL
 
-
 #include "srgb.glsl"
 
 mediump float Linear(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)

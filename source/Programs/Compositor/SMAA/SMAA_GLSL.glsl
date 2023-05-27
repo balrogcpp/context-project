@@ -1,3 +1,6 @@
+#ifndef SMAA_GLSL
+#define SMAA_GLSL
+
 #ifndef SMAA_RT_METRICS
 	#define SMAA_RT_METRICS ViewportSize.zwxy
 #endif
@@ -10,17 +13,14 @@
 #endif
 
 
-vec4 toSRGB( vec4 x )
+mediump vec4 toSRGB(mediump vec4 x )
 {
-	//return vec4(LINEARtoSRGB(x.rgb), x.a);
-	return x;
+	return LINEARtoSRGB(x);
 }
 
-vec4 fromSRGB( vec4 x )
+mediump vec4 fromSRGB(mediump vec4 x )
 {
-	//return vec4(SRGBtoLINEAR(x.rgb), x.a);
-	return x;
+	return SRGBtoLINEAR(x);
 }
 
-uniform mediump vec4 ViewportSize;
-uniform mediump float FarClipDistance;
+#endif // SMAA_GLSL

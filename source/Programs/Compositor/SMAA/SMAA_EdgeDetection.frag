@@ -25,6 +25,11 @@ SAMPLER2D(rt_input, 0);
 #if SMAA_PREDICATION
 SAMPLER2D(depthTex, 1);
 #endif
+
+OGRE_UNIFORMS_BEGIN
+uniform mediump vec4 ViewportSize;
+OGRE_UNIFORMS_END
+
 #include "smaa.glsl"
 
 MAIN_PARAMETERS

@@ -117,7 +117,7 @@ SAMPLERCUBE(SpecularEnvMap, 4);
 #ifdef TERRA_NORMALMAP
 SAMPLER2D(TerraNormalMap, 2);
 #define NUM_TEXTURES 3
-#endif
+#endif // TERRA_NORMALMAP
 #ifdef TERRA_LIGHTMAP
 SAMPLER2D(TerraLightMap, 3);
 #define NUM_TEXTURES 4
@@ -147,16 +147,14 @@ SAMPLER2D(ShadowMap6, NUM_TEXTURES + 6);
 #if MAX_SHADOW_TEXTURES > 7
 SAMPLER2D(ShadowMap7, NUM_TEXTURES + 7);
 #endif
-#endif
+#endif // MAX_SHADOW_TEXTURES > 0
 
 OGRE_UNIFORMS_BEGIN
-#ifdef HAS_IBL
 uniform mediump vec3 iblSH[9];
-#endif
 #ifdef TERRA_LIGHTMAP
 uniform mediump vec2 InvTerraLightMapSize;
 uniform highp mat4 WorldViewMatrix;
-#endif
+#endif // TERRA_LIGHTMAP
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
 uniform mediump float LightCount;
@@ -214,7 +212,7 @@ uniform mediump vec2 ShadowTexel6;
 #if MAX_SHADOW_TEXTURES > 7
 uniform mediump vec2 ShadowTexel7;
 #endif
-#endif
+#endif // MAX_SHADOW_TEXTURES > 0
 OGRE_UNIFORMS_END
 
 #if MAX_SHADOW_TEXTURES > 0
