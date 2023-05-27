@@ -118,6 +118,77 @@ vec4 fsign(mediump vec4 x)
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
+float pow2(const float x)
+{
+    return x * x;
+}
+
+float pow3(const float x)
+{
+    float x2 = x * x;
+    return x2 * x;
+}
+
+float pow4(const float x)
+{
+    float x2 = x * x;
+    return x2 * x2;
+}
+
+float pow5(const float x)
+{
+    float x2 = x * x;
+    return x2 * x2 * x;
+}
+
+float pow6(const float x)
+{
+    float x2 = x * x;
+    return x2 * x2 * x2;
+}
+
+float pow7(const float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x2 * x;
+}
+
+float pow8(const float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x4;
+}
+
+float pow9(const float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x4 * x;
+}
+
+float pow10(const float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x4 * x2;
+}
+
+float pow11(const float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x4 * x2 * x;
+}
+
+float pow12(const float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x4 * x4;
+}
+
 // NaN checker
 // /Gic isn't enabled on fxc so we can't rely on isnan() anymore
 bool IsNan(float x)

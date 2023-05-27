@@ -29,14 +29,6 @@ mediump vec3 hash(const mediump vec3 a)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-mediump float pow5(const mediump float x)
-{
-    mediump float x2 = x * x;
-    return x2 * x2 * x;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
 MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
 IN(highp vec3 vRay, TEXCOORD1)
@@ -100,7 +92,8 @@ MAIN_DECLARATION
         mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x - radius), 0.0, 1.0);
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);
+        //occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);
+        occ += clamp(pow10(1.0 - zd) + zd, 0.0, 1.0);
     }
 
     // normalise

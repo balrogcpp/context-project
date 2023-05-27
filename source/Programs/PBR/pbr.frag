@@ -30,14 +30,6 @@ mediump vec3 Diffuse(const mediump vec3 diffuseColor)
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
-mediump float pow5(const mediump float x)
-{
-    mediump float x2 = x * x;
-    return x2 * x2 * x;
-}
-
-
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
 //----------------------------------------------------------------------------------------------------------------------
