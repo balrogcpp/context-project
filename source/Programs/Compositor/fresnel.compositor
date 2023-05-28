@@ -24,7 +24,7 @@ compositor Fresnel
             input previous
         }
 
-        target rt
+        target_output
         {
             input previous
         }

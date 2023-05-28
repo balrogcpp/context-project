@@ -51,6 +51,7 @@ abstract material PBR
             texture_unit IBL
             {
                 texture $IBL cubic
+                //content_type compositor CubeMap cube
                 filtering bilinear
                 tex_address_mode clamp
             }

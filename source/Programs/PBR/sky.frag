@@ -44,7 +44,7 @@ MAIN_DECLARATION
 {
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);
-    highp float cos_theta = clamp(V.y, 0.0, 1.0);
+    highp float cos_theta = clamp(abs(V.y), 0.0, 1.0);
     highp float cos_gamma = dot(V, N);
     highp float gamma = acos(cos_gamma);
     mediump vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
@@ -53,7 +53,7 @@ MAIN_DECLARATION
     color = expose(color, 0.1);
     color = SRGBtoLINEAR(color);
 
-    if (gamma <= SunSize) {
+    if (gamma <= SunSize && V.y > 0.0) {
         color = SunColor;
     }
 

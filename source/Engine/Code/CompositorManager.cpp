@@ -57,6 +57,9 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
+//  AddCompositor("WaterNormals", true);
+//  AddCubeCamera();
+
 //  AddCompositor("NoMRT", true);
   InitMRT(true);
   AddCompositor("SSAO", false);
@@ -113,14 +116,17 @@ void CompositorManager::DestroyRefrCamera() {
 
 void CompositorManager::AddCubeCamera() {
   // create the camera used to render to our cubemap
-  cubeCamera = ogreSceneManager->createCamera("CubeCamera");
-  cubeCamera->setFOVy(Ogre::Degree(90.0));
-  cubeCamera->setAspectRatio(1.0);
-  cubeCamera->setNearClipDistance(5.0);
-  ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
+  if (!ogreSceneManager->hasCamera("CubeCamera")) {
+    cubeCamera = ogreSceneManager->createCamera("CubeCamera");
+    cubeCamera->setFOVy(Ogre::Degree(90.0));
+    cubeCamera->setAspectRatio(1.0);
+    cubeCamera->setNearClipDistance(5.0);
+    ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
+  }
 
+  if (!IsCompositorInChain("CubeMap")) AddCompositor("CubeMap", true);
+  compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->removeAllViewports();
   compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->addViewport(cubeCamera);
-  if (!IsCompositorInChain("Fresnel")) AddCompositor("CubeMap", true);
 }
 
 void CompositorManager::DestroyCubeCamera() {

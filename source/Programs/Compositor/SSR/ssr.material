@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
 
-import STD from std.material
 import RayCast from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -11,7 +10,6 @@ fragment_program ssr glsl glsles hlsl
 	source ssr.frag
     target ps_2_0
 }
-
 
 material SSR : RayCast
 {
@@ -31,7 +29,7 @@ material SSR : RayCast
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit Depth
             {
@@ -43,13 +41,13 @@ material SSR : RayCast
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit Gloss
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
         }
     }

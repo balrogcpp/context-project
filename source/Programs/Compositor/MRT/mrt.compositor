@@ -58,7 +58,6 @@ compositor MRT
     }
 }
 
-
 compositor Paused
 {
     technique

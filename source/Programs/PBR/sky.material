@@ -20,7 +20,7 @@ fragment_program SkyBoxFp glsl glsles hlsl
     {
         param_named_auto SunDirection light_direction 0
         param_named SunSize float 0.03
-        param_named SunColor float3 100 100 100
+        param_named SunColor float3 30 30 30
     }
 }
 

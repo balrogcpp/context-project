@@ -11,7 +11,7 @@ abstract target CubeFace
 
     pass render_scene
     {
-        camera CubeMapCamera align_to_face
+        camera CubeCamera align_to_face
     }
 }
 
@@ -31,7 +31,7 @@ compositor CubeMap
         target cube 4 : CubeFace {}
         target cube 5 : CubeFace {}
 
-        target rt
+        target_output
         {
             input previous
         }

@@ -228,7 +228,7 @@ OGRE_UNIFORMS_END
 mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
     if (iblSH[0].x >= HALF_MAX_MINUS1) {
-        return SRGBtoLINEAR(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
+        return textureCubeLod(SpecularEnvMap, n, 9.0).rgb;
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
     }

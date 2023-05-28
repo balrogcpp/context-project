@@ -6,8 +6,6 @@
 #endif
 
 #if !SMAA_INITIALIZED
-	//Leave compatible defaults in case this file gets compiled
-	//before calling SmaaUtils::initialize from C++
 	#define SMAA_PRESET_MEDIUM 1
 	#define SMAA_GLSL_3 1
 #endif

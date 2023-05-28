@@ -1,0 +1,35 @@
+// created by Andrey Vasiliev
+
+compositor WaterNormals
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        texture noise 128 128 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture normal 128 128 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target noise
+        {
+            only_initial on
+            pass render_quad
+            {
+                material Noise
+            }
+        }
+
+        target normal
+        {
+            only_initial on
+            pass render_quad
+            {
+                material Normal
+                input 0 noise
+            }
+        }
+
+        target_output
+        {
+            input previous
+        }
+    }
+}

@@ -1,4 +1,5 @@
 // created by Andrey Vasiliev
+
 import STD from std.compositor
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -8,6 +9,17 @@ compositor SSR : STD
 {
     technique
     {
+        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+
+        target depth
+        {
+            pass render_quad
+            {
+                material Downscale2x2
+                input 0 mrt 2
+            }
+        }
+
         target_output
         {
             pass render_quad
@@ -16,7 +28,7 @@ compositor SSR : STD
                 quad_normals camera_far_corners_view_space
                 material SSR
                 input 0 rt
-                input 1 mrt 2
+                input 1 depth
                 input 2 mrt 3
                 input 3 mrt 1
             }

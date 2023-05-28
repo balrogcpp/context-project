@@ -8,14 +8,14 @@ compositor Glow
         texture_ref  mrt MRT mrt
         texture_ref  hdr HDR rt
         texture_ref  lum HDR lum
-        texture rt1  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
-        texture rt2  target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
-        texture rt3  target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT chain_scope  no_fsaa depth_pool 0
-        texture rt4  target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
-        texture rt5  target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
-        texture rt6  target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
-        texture rt7  target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
-        texture rt8  target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT chain_scope no_fsaa depth_pool 0
+        texture rt1  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt2  target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt3  target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt4  target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt5  target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt6  target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt7  target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt8  target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
 
         //texture rt1_ target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         //texture fbo  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0

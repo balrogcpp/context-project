@@ -10,7 +10,6 @@
 #endif
 #endif
 
-
 #define HAS_MRT
 #include "header.glsl"
 
@@ -166,7 +165,7 @@ MAIN_DECLARATION
 #ifndef HAS_MRT
     FragColor = vec4(SafeHDR(color), alpha);
 #else
-    FragData[0] = vec4(SafeHDR(color), 0.5);
+    FragData[0] = vec4(SafeHDR(color), 0.75);
     FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
     FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = WorldViewMatrix * vec4(lNormal, 0.0);
