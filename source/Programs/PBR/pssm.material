@@ -90,7 +90,6 @@ material PSSM/shadow_caster_alpha
             texture_unit Albedo
             {
                 texture white.dds
-                tex_address_mode clamp
 				filtering bilinear
             }
 		}
@@ -169,7 +168,6 @@ material DPSM/shadow_caster_alpha
             texture_unit Albedo
             {
                 texture white.dds
-                tex_address_mode clamp
 				filtering bilinear
             }
 		}

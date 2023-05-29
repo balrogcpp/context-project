@@ -22,7 +22,7 @@ MAIN_PARAMETERS
 IN(mediump vec2 vUV0, TEXCOORD0)
 MAIN_DECLARATION
 {
-    const float SCALE = 11.0;
+    float SCALE = 11.0 * pow(0.7071068 - distance(vUV0, vec2(0.5, 0.5)), 0.3333333) ;
     highp float s11 = texture2D(RT, vUV0).x * SCALE;
     highp float s01 = texture2D(RT, vUV0 + TexelSize0 * vec2(-1.0, 0.0)).x * SCALE;
     highp float s21 = texture2D(RT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).x * SCALE;
@@ -34,5 +34,4 @@ MAIN_DECLARATION
     bump = bump * 0.5 + 0.5;
 
     FragColor = bump;
-    // FragColor = vec4(s12);
 }
