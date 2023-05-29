@@ -58,9 +58,8 @@ void CompositorManager::OnSetUp() {
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
   AddCompositor("WaterNormals", true);
-//  AddCubeCamera();
+  //  AddCubeCamera();
 
-//  AddCompositor("NoMRT", true);
   InitMRT(true);
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);
@@ -78,61 +77,87 @@ void CompositorManager::OnSetUp() {
 }
 
 void CompositorManager::AddReflCamera() {
-  reflCamera = ogreSceneManager->createCamera("ReflCamera");
-  ogreCamera->getParentSceneNode()->attachObject(reflCamera);
-  reflCamera->setAspectRatio(ogreCamera->getAspectRatio());
-  reflCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
-  reflCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
-  reflCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::UNIT_Y, -2.0));
-  reflCamera->enableReflection(Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0));
+  if (!ogreSceneManager->hasCamera("ReflCamera")) {
+    reflCamera = ogreSceneManager->createCamera("ReflCamera");
+    ogreCamera->getParentSceneNode()->attachObject(reflCamera);
+    reflCamera->setAspectRatio(ogreCamera->getAspectRatio());
+    reflCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
+    reflCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
+    reflCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0));
+    reflCamera->enableReflection(Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0));
 
-  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addViewport(reflCamera);
-  if (!IsCompositorInChain("Fresnel")) AddCompositor("Fresnel", true);
+    if (!IsCompositorInChain("Fresnel")) {
+      AddCompositor("Fresnel", true);
+      compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addViewport(reflCamera);
+    }
+  }
 }
 
 void CompositorManager::DestroyReflCamera() {
-  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
-  compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
-  ogreSceneManager->destroyCamera(reflCamera);
+  if (ogreSceneManager->hasCamera("RefrCamera")) {
+    if (IsCompositorInChain("Fresnel")) {
+      compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
+      compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
+    }
+
+    ogreSceneManager->destroyCamera(reflCamera);
+  }
 }
 
 void CompositorManager::AddRefrCamera() {
-  refrCamera = ogreSceneManager->createCamera("RefrCamera");
-  ogreCamera->getParentSceneNode()->attachObject(refrCamera);
-  refrCamera->setAspectRatio(ogreCamera->getAspectRatio());
-  refrCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
-  refrCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
-  refrCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::NEGATIVE_UNIT_Y, -2.0));
+  if (!ogreSceneManager->hasCamera("RefrCamera")) {
+    refrCamera = ogreSceneManager->createCamera("RefrCamera");
+    ogreCamera->getParentSceneNode()->attachObject(refrCamera);
+    refrCamera->setAspectRatio(ogreCamera->getAspectRatio());
+    refrCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
+    refrCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
+    refrCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::NEGATIVE_UNIT_Y, -2.0));
 
-  compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->addViewport(refrCamera);
-  if (!IsCompositorInChain("Fresnel")) AddCompositor("Fresnel", true);
+    if (!IsCompositorInChain("Fresnel")) {
+      AddCompositor("Fresnel", true);
+      compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->addViewport(refrCamera);
+    }
+  }
 }
 
 void CompositorManager::DestroyRefrCamera() {
-  compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
-  compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
-  ogreSceneManager->destroyCamera(reflCamera);
+  if (ogreSceneManager->hasCamera("ReflCamera")) {
+    if (IsCompositorInChain("Fresnel")) {
+      compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->removeAllViewports();
+      compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
+    }
+
+    ogreSceneManager->destroyCamera(reflCamera);
+  }
 }
 
 void CompositorManager::AddCubeCamera() {
-  // create the camera used to render to our cubemap
   if (!ogreSceneManager->hasCamera("CubeCamera")) {
     cubeCamera = ogreSceneManager->createCamera("CubeCamera");
     cubeCamera->setFOVy(Ogre::Degree(90.0));
     cubeCamera->setAspectRatio(1.0);
     cubeCamera->setNearClipDistance(5.0);
+    cubeCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
     ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
   }
 
-  if (!IsCompositorInChain("CubeMap")) AddCompositor("CubeMap", true);
-  compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->removeAllViewports();
-  compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->addViewport(cubeCamera);
+  if (!IsCompositorInChain("CubeMap")) {
+    AddCompositor("CubeMap", true);
+    auto *rt = compositorChain->getCompositor("CubeMap")->getRenderTarget("cube");
+    rt->removeAllViewports();
+    rt->addViewport(cubeCamera);
+  }
 }
 
 void CompositorManager::DestroyCubeCamera() {
-  compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->removeAllViewports();
-  compositorChain->removeCompositor(compositorChain->getCompositorPosition("CubeMap"));
-  ogreSceneManager->destroyCamera(cubeCamera);
+  if (ogreSceneManager->hasCamera("CubeCamera")) {
+    if (IsCompositorInChain("CubeMap")) {
+      compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->removeAllViewports();
+      compositorChain->removeCompositor(compositorChain->getCompositorPosition("CubeMap"));
+    }
+
+    ogreSceneManager->destroyCamera(cubeCamera);
+  }
 }
 
 void CompositorManager::OnClean() { ogreViewport->removeListener(this); }

@@ -2,6 +2,7 @@
 
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
+#include "math.glsl"
 
 highp float InterleavedGradientNoise(const highp vec2 position_screen)
 {
@@ -60,48 +61,7 @@ mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediu
 #ifndef PENUMBRA_LIGHT_SIZE
     #define PENUMBRA_LIGHT_SIZE 50.0
 #endif
-#include "math.glsl"
 
-
-#ifndef NUM_TEXTURES
-#define NUM_TEXTURES 0
-#endif
-// uniform mediump vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
-// uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
-// #if MAX_SHADOW_TEXTURES > 0
-// SAMPLER2D(ShadowMap0, NUM_TEXTURES + 0);
-// uniform mediump vec2 ShadowTexel0;
-// #endif
-// #if MAX_SHADOW_TEXTURES > 1
-// SAMPLER2D(ShadowMap1, NUM_TEXTURES + 1);
-// uniform mediump vec2 ShadowTexel1;
-// #endif
-// #if MAX_SHADOW_TEXTURES > 2
-// SAMPLER2D(ShadowMap2, NUM_TEXTURES + 2);
-// uniform mediump vec2 ShadowTexel2;
-// #endif
-// #if MAX_SHADOW_TEXTURES > 3
-// SAMPLER2D(ShadowMap3, NUM_TEXTURES + 3);
-// uniform mediump vec2 ShadowTexel3;
-// #endif
-// #if MAX_SHADOW_TEXTURES > 4
-// SAMPLER2D(ShadowMap4, NUM_TEXTURES + 4);
-// uniform mediump vec2 ShadowTexel4;
-// #endif
-// #if MAX_SHADOW_TEXTURES > 5
-// SAMPLER2D(ShadowMap5, NUM_TEXTURES + 5);
-// uniform mediump vec2 ShadowTexel5;
-// #endif
-// #if MAX_SHADOW_TEXTURES > 6
-// SAMPLER2D(ShadowMap6, NUM_TEXTURES + 6);
-// uniform mediump vec2 ShadowTexel6;
-// #endif
-// #if MAX_SHADOW_TEXTURES > 7
-// SAMPLER2D(ShadowMap7, NUM_TEXTURES + 7);
-// uniform mediump vec2 ShadowTexel7;
-// #endif
-// uniform mediump vec4 PssmSplitPoints;
-// uniform mediump vec4 ShadowColour;
 
 mediump float AvgBlockersDepthToPenumbra(const mediump float z_shadowMapView, const mediump float avgBlockersDepth)
 {

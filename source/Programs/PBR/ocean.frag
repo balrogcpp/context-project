@@ -21,11 +21,11 @@ SAMPLER2D(NormapMap, 0);
 OGRE_UNIFORMS_BEGIN
 uniform highp vec3 CameraPosition;
 uniform highp mat4 WorldViewMatrix;
+uniform highp float FarClipDistance;
+uniform highp float NearClipDistance;
+uniform highp vec4 Time;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-uniform mediump float FarClipDistance;
-uniform mediump float NearClipDistance;
-uniform mediump vec4 Time;
 uniform mediump float FrameTime;
 uniform mediump vec4 WorldSpaceLightPos0;
 uniform mediump vec4 LightColor0;
@@ -76,37 +76,37 @@ MAIN_DECLARATION
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
-    mediump vec3 normal0 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
+    highp vec3 normal0 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
     highp vec3 normal = normal0 * BigWaves.x;
     highp vec3 lNormal = normal0 * BigWaves.x * 0.5;
 
 #if MAX_WATER_OCTAVES > 0
     nCoord = vWorldPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
-    mediump vec3 normal1 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
+    highp vec3 normal1 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
     normal += normal1 * BigWaves.y;
     lNormal += normal1 * BigWaves.y * 0.5;
 #endif
 #if MAX_WATER_OCTAVES > 1
     nCoord = vWorldPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
-    mediump vec3 normal2 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
+    highp vec3 normal2 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
     normal += normal2 * MidWaves.x;
     lNormal += normal2 * MidWaves.x * 0.1;
 #endif
 #if MAX_WATER_OCTAVES > 2
     nCoord = vWorldPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
-    mediump vec3 normal3 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
+    highp vec3 normal3 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
     normal += normal3 * MidWaves.y;
     lNormal += normal3 * MidWaves.y * 0.1;
 #endif
 #if MAX_WATER_OCTAVES > 3
     nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
-    mediump vec3 normal4 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
+    highp vec3 normal4 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
     normal += normal4 * SmallWaves.x;
     lNormal += normal4 * SmallWaves.x * 0.1;
 #endif
 #if MAX_WATER_OCTAVES > 4
     nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
-    mediump vec3 normal5 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
+    highp vec3 normal5 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
     normal += normal5 * SmallWaves.y;
     lNormal += normal5 * SmallWaves.y * 0.1;
 #endif
