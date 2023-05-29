@@ -12,6 +12,9 @@
 
 #define HAS_MRT
 #include "header.glsl"
+#ifndef MAX_WATER_OCTAVES
+    #define MAX_WATER_OCTAVES 3
+#endif
 
 SAMPLER2D(NormapMap, 0);
 
@@ -68,38 +71,54 @@ IN(mediump vec4 vScreenPosition, TEXCOORD1)
 IN(mediump vec4 vPrevScreenPosition, TEXCOORD2)
 MAIN_DECLARATION
 {
-    const bool aboveWater = true;
+    bool aboveWater = CameraPosition.y > vWorldPosition.y;
 
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
     mediump vec3 normal0 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
+    highp vec3 normal = normal0 * BigWaves.x;
+    highp vec3 lNormal = normal0 * BigWaves.x * 0.5;
+
+#if MAX_WATER_OCTAVES > 0
     nCoord = vWorldPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
     mediump vec3 normal1 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
-
+    normal += normal1 * BigWaves.y;
+    lNormal += normal1 * BigWaves.y * 0.5;
+#endif
+#if MAX_WATER_OCTAVES > 1
     nCoord = vWorldPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
     mediump vec3 normal2 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
+    normal += normal2 * MidWaves.x;
+    lNormal += normal2 * MidWaves.x * 0.1;
+#endif
+#if MAX_WATER_OCTAVES > 2
     nCoord = vWorldPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
     mediump vec3 normal3 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
-
+    normal += normal3 * MidWaves.y;
+    lNormal += normal3 * MidWaves.y * 0.1;
+#endif
+#if MAX_WATER_OCTAVES > 3
     nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
     mediump vec3 normal4 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
+    normal += normal4 * SmallWaves.x;
+    lNormal += normal4 * SmallWaves.x * 0.1;
+#endif
+#if MAX_WATER_OCTAVES > 4
     nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
     mediump vec3 normal5 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
+    normal += normal5 * SmallWaves.y;
+    lNormal += normal5 * SmallWaves.y * 0.1;
+#endif
 
-    highp vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y +
-                            normal2 * MidWaves.x + normal3 * MidWaves.y +
-                            normal4 * SmallWaves.x + normal5 * SmallWaves.y);
-
+    normal = normalize(normal);
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space 
     highp vec3 vVec = normalize(CameraPosition - vWorldPosition);
     highp vec3 lVec = WorldSpaceLightPos0.xyz;
 
     // normal for light scattering
-    highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5 +
-                            normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1 +
-                            normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1);
+    lNormal = normalize(lNormal);
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);

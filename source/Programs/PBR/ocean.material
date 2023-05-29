@@ -96,7 +96,6 @@ material Ocean
 
             texture_unit Normal
             {
-                //texture WaterNormal1.dds
                 content_type compositor WaterNormals normal
                 filtering bilinear
             }

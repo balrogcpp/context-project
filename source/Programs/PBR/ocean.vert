@@ -11,6 +11,9 @@
 #endif
 
 #include "header.glsl"
+#ifndef MAX_WATER_OCTAVES
+    #define MAX_WATER_OCTAVES 3
+#endif
 
 SAMPLER2D(NoiseMap, 0);
 
@@ -51,26 +54,35 @@ MAIN_DECLARATION
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
     mediump float normal0 = texture2D(NoiseMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).x;
+    highp float height = normal0 * BigWaves.x;
+
+#if MAX_WATER_OCTAVES > 0
     nCoord = vWorldPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
     mediump float normal1 = texture2D(NoiseMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).x;
+    height += normal1 * BigWaves.y;
+#endif
+#if MAX_WATER_OCTAVES > 1
+    nCoord = vWorldPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
+    mediump float normal2 = texture2D(NoiseMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).x;
+    height += normal2 * MidWaves.x;
+#endif
+#if MAX_WATER_OCTAVES > 2
+    nCoord = vWorldPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
+    mediump float normal3 = texture2D(NoiseMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).x;
+    height += normal3 * MidWaves.y;
+#endif
+#if MAX_WATER_OCTAVES > 3
+    nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
+    mediump float normal4 = texture2D(NoiseMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).x;
+    height += normal4 * SmallWaves.x;
+#endif
+#if MAX_WATER_OCTAVES > 4
+    nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
+    mediump float normal5 = texture2D(NoiseMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).x;
+    height += normal5 * BigWaves.y;
+#endif
 
-    // nCoord = vWorldPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
-    // mediump float normal2 = texture2D(NoiseMap, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).x;
-    // nCoord = vWorldPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
-    // mediump float normal3 = texture2D(NoiseMap, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).x;
-
-    // nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
-    // mediump float normal4 = texture2D(NoiseMap, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).x;
-    // nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
-    // mediump float normal5 = texture2D(NoiseMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).x;
-
-    // highp float normal = (normal0 * BigWaves.x + normal1 * BigWaves.y +
-    //                         normal2 * MidWaves.x + normal3 * MidWaves.y +
-    //                         normal4 * SmallWaves.x + normal5 * SmallWaves.y);
-
-    highp float normal = (normal0 * BigWaves.x + normal1 * BigWaves.y);
-
-    position.y += normal;
+    position.y += height;
 
     gl_Position = mul(WorldViewProjMatrix, position);
 
