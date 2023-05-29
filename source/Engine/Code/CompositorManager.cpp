@@ -57,7 +57,7 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
-//  AddCompositor("WaterNormals", true);
+  AddCompositor("WaterNormals", true);
 //  AddCubeCamera();
 
 //  AddCompositor("NoMRT", true);

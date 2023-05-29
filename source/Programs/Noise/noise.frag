@@ -29,7 +29,8 @@ MAIN_DECLARATION
     state.lacunarity = 2.0;
     state.gain = 0.7;
 
-    highp float noise = fnlGetNoise3D(state, gl_FragCoord.x, Time * 60.0, gl_FragCoord.y) * 0.5 + 0.5;
+    float SCALE = 1.0 * pow(0.7071068 - distance(vUV0, vec2(0.5, 0.5)), 0.3333333) ;
+    highp float noise = SCALE * fnlGetNoise3D(state, gl_FragCoord.x, Time * 60.0, gl_FragCoord.y) * 0.5 + 0.5;
 
     FragColor = vec4(noise, 0.0, 0.0, 1.0);
 }

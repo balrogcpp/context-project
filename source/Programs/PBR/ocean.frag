@@ -69,6 +69,7 @@ IN(mediump vec4 vPrevScreenPosition, TEXCOORD2)
 MAIN_DECLARATION
 {
     const bool aboveWater = true;
+
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
