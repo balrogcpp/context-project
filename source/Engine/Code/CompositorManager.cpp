@@ -88,7 +88,9 @@ void CompositorManager::AddReflCamera() {
 
     if (!IsCompositorInChain("Fresnel")) {
       AddCompositor("Fresnel", true);
-      compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->addViewport(reflCamera);
+      auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+      rt->removeAllViewports();
+      rt->addViewport(reflCamera);
     }
   }
 }
@@ -115,7 +117,9 @@ void CompositorManager::AddRefrCamera() {
 
     if (!IsCompositorInChain("Fresnel")) {
       AddCompositor("Fresnel", true);
-      compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->addViewport(refrCamera);
+      auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
+      rt->removeAllViewports();
+      rt->addViewport(refrCamera);
     }
   }
 }

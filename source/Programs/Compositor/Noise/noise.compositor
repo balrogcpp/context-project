@@ -5,7 +5,7 @@ compositor WaterNormals
     technique
     {
         compositor_logic DeferredLogic
-        texture noise 256 256 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture noise 256 256 PF_FLOAT16_R global_scope no_fsaa depth_pool 0
         texture normal 256 256 PF_R11G11B10_FLOAT global_scope no_fsaa depth_pool 0
 
         target noise
