@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 458a328..a5446b8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -487,7 +487,7 @@ ELSE()
+     FIND_PACKAGE(ZLIB)
+   ENDIF()
+ 
+-  IF( NOT ZLIB_FOUND )
++  IF( 0 )
+     MESSAGE(STATUS "compiling zlib from sources")
+     INCLUDE(CheckIncludeFile)
+     INCLUDE(CheckTypeSize)
