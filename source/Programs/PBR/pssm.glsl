@@ -4,26 +4,26 @@
 #define PSSM_GLSL
 #include "math.glsl"
 
-highp float InterleavedGradientNoise(const highp vec2 position_screen)
+mediump float InterleavedGradientNoise()
 {
-    highp vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
-    return fract(magic.z * fract(dot(position_screen, magic.xy)));
+    mediump vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
 }
 
-mediump vec2 VogelDiskSample(const mediump float sampleIndex, const mediump float samplesCount, const mediump float phi)
+mediump vec2 VogelDiskSample(const int sampleIndex, const mediump float samplesCount, const mediump float phi)
 {
-    mediump float r = sqrt((sampleIndex + 0.5) / samplesCount);
-    mediump float theta = sampleIndex * 2.4 + phi;
-    return vec2(r * cos(theta), r * sin(theta));
+    mediump float r = sqrt((float(sampleIndex) + 0.5) / samplesCount);
+    mediump float theta = float(sampleIndex) * 2.4 + phi;
+   return vec2(r * cos(theta), r * sin(theta));
 }
 
 mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float shadow = 0.0;
-    mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+    mediump float phi = InterleavedGradientNoise();
 
     for (int i = 0; i < 4; ++i) {
-      mediump vec2 offset = VogelDiskSample(float(i), 4.0, gradientNoise) * 2.0 * tsize;
+      mediump vec2 offset = VogelDiskSample(i, 4.0, phi) * 2.0 * tsize;
 
       uv += offset;
       shadow += texture2D(shadowMap, uv.xy).x;
@@ -43,20 +43,20 @@ mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediu
     #define DPSM_SPLIT_COUNT 2
 #endif
 #ifndef PSSM_FILTER_RADIUS
-    #define PSSM_FILTER_RADIUS 16
+    #define PSSM_FILTER_RADIUS 12
     #define PSSM_FILTER_RADIUS0 1.0
     #define PSSM_FILTER_RADIUS1 0.3
     #define PSSM_FILTER_RADIUS2 0.2
     #define PSSM_FILTER_RADIUS3 0.1
 #endif
 #ifndef PSSM_FILTER_SIZE
-    #define PSSM_FILTER_SIZE 16
+    #define PSSM_FILTER_SIZE 12
 #endif
 #ifndef PENUMBRA_FILTER_RADIUS
-    #define PENUMBRA_FILTER_RADIUS 16
+    #define PENUMBRA_FILTER_RADIUS 12
 #endif
 #ifndef PENUMBRA_FILTER_SIZE
-    #define PENUMBRA_FILTER_SIZE 16
+    #define PENUMBRA_FILTER_SIZE 12
 #endif
 #ifndef PENUMBRA_LIGHT_SIZE
     #define PENUMBRA_LIGHT_SIZE 50.0
@@ -74,13 +74,13 @@ mediump float map_01(const mediump float x)
     return x * 100.0;
 }
 
-mediump float Penumbra(sampler2D shadowMap, const mediump vec2 lightSpace, const mediump vec2 tsize, const mediump float gradientNoise, const mediump float z_shadowMapView)
+mediump float Penumbra(sampler2D shadowMap, const mediump vec2 lightSpace, const mediump vec2 tsize, const mediump float phi, const mediump float z_shadowMapView)
 {
     mediump float avgBlockersDepth = 0.0;
     mediump float blockersCount = 0.0;
 
     for (int i = 0; i < PENUMBRA_FILTER_SIZE; ++i) {
-        mediump vec2 offsetUV = VogelDiskSample(float(i), float(PENUMBRA_FILTER_SIZE), gradientNoise) * tsize * float(PENUMBRA_FILTER_RADIUS);
+        mediump vec2 offsetUV = VogelDiskSample(i, float(PENUMBRA_FILTER_SIZE), phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
         mediump float sampleDepth = map_01(texture2D(shadowMap, lightSpace + offsetUV).x);
 
         mediump float depthTest = clamp((z_shadowMapView - sampleDepth), 0.0, 1.0);
@@ -98,15 +98,15 @@ mediump float CalcDepthShadow(sampler2D shadowMap, mediump vec4 lightSpace, cons
 
   mediump float shadow = 0.0;
   mediump float currentDepth = lightSpace.z - 2.0 * HALF_EPSILON;
-  mediump float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+  mediump float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
-  mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, tsize, gradientNoise, currentDepth);
+  mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, tsize, currentDepth);
 #else
   const mediump float penumbra = 1.0;
 #endif
 
   for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
-    mediump vec2 offset = VogelDiskSample(float(i), float(PSSM_FILTER_SIZE), gradientNoise) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
+    mediump vec2 offset = VogelDiskSample(i, float(PSSM_FILTER_SIZE), phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
 
     lightSpace.xy += offset;
     mediump float depth = map_01(texture2D(shadowMap, lightSpace.xy).x);
