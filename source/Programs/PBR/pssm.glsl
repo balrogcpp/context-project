@@ -26,7 +26,7 @@ mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediu
       mediump vec2 offset = VogelDiskSample(i, 4.0, phi) * 2.0 * tsize;
 
       uv += offset;
-      shadow += texture2D(shadowMap, uv.xy).x;
+      shadow += texture2D(shadowMap, uv).x;
     }
 
     shadow *= 0.25;
@@ -63,9 +63,9 @@ mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediu
 #endif
 
 
-mediump float AvgBlockersDepthToPenumbra(const mediump float z_shadowMapView, const mediump float avgBlockersDepth)
+mediump float AvgBlockersDepthToPenumbra(const mediump float depth, const mediump float avgBlockersDepth)
 {
-    mediump float penumbra = PENUMBRA_LIGHT_SIZE * (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
+    mediump float penumbra = PENUMBRA_LIGHT_SIZE * (depth - avgBlockersDepth) / avgBlockersDepth;
     return clamp(80.0 * penumbra * penumbra, 0.0, 1.0);
 }
 
@@ -74,33 +74,33 @@ mediump float map_01(const mediump float x)
     return x * 100.0;
 }
 
-mediump float Penumbra(sampler2D shadowMap, const mediump vec2 lightSpace, const mediump vec2 tsize, const mediump float phi, const mediump float z_shadowMapView)
+mediump float Penumbra(sampler2D shadowMap, const mediump vec2 uv, const mediump vec2 tsize, const mediump float phi, const mediump float depth)
 {
     mediump float avgBlockersDepth = 0.0;
     mediump float blockersCount = 0.0;
 
     for (int i = 0; i < PENUMBRA_FILTER_SIZE; ++i) {
         mediump vec2 offsetUV = VogelDiskSample(i, float(PENUMBRA_FILTER_SIZE), phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
-        mediump float sampleDepth = map_01(texture2D(shadowMap, lightSpace + offsetUV).x);
+        mediump float sampleDepth = map_01(texture2D(shadowMap, uv + offsetUV).x);
 
-        mediump float depthTest = clamp((z_shadowMapView - sampleDepth), 0.0, 1.0);
+        mediump float depthTest = clamp((depth - sampleDepth), 0.0, 1.0);
         avgBlockersDepth += depthTest * sampleDepth;
         blockersCount += depthTest;
     }
 
-    return AvgBlockersDepthToPenumbra(z_shadowMapView, avgBlockersDepth / blockersCount);
+    return AvgBlockersDepthToPenumbra(depth, avgBlockersDepth / blockersCount);
 }
 
-mediump float CalcDepthShadow(sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 tsize)
+mediump float CalcDepthShadow(sampler2D shadowMap, mediump vec4 uv, const mediump vec2 tsize)
 {
-  lightSpace /= lightSpace.w;
-  lightSpace.z = lightSpace.z * 0.5 + 0.5;
+  uv /= uv.w;
+  uv.z = uv.z * 0.5 + 0.5;
 
   mediump float shadow = 0.0;
-  mediump float currentDepth = lightSpace.z - 2.0 * HALF_EPSILON;
+  mediump float currentDepth = uv.z - 2.0 * HALF_EPSILON;
   mediump float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
-  mediump float penumbra = Penumbra(shadowMap, lightSpace.xy, tsize, currentDepth);
+  mediump float penumbra = Penumbra(shadowMap, uv.xy, tsize, currentDepth);
 #else
   const mediump float penumbra = 1.0;
 #endif
@@ -108,8 +108,8 @@ mediump float CalcDepthShadow(sampler2D shadowMap, mediump vec4 lightSpace, cons
   for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
     mediump vec2 offset = VogelDiskSample(i, float(PSSM_FILTER_SIZE), phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
 
-    lightSpace.xy += offset;
-    mediump float depth = map_01(texture2D(shadowMap, lightSpace.xy).x);
+    uv.xy += offset;
+    mediump float depth = map_01(texture2D(shadowMap, uv.xy).x);
     shadow += bigger(depth, currentDepth);
   }
 
@@ -189,9 +189,9 @@ mediump float CalcDPSMShadow(const mediump vec4 lightSpacePos0, const mediump ve
 #endif
 
 #if DPSM_SPLIT_COUNT == 1
-mediump float CalcDPSMShadow(sampler2D shadowMap, mediump vec4 lightSpace, const mediump vec2 tsize)
+mediump float CalcDPSMShadow(sampler2D shadowMap, mediump vec4 uv, const mediump vec2 tsize)
 {
-    return CalcDepthShadow(shadowMap, lightSpace, tsize);
+    return CalcDepthShadow(shadowMap, uv, tsize);
 }
 #endif
 

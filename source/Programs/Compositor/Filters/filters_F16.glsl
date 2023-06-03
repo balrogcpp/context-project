@@ -12,15 +12,15 @@ mediump float Linear(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
 
 mediump float Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
-    mediump float A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).x;
-    mediump float B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).x;
-    mediump float C = texture2D(tex, uv + (tsize * vec2(-2.0, 0.0))).x;
-    mediump float D = texture2D(tex, uv + (tsize * vec2(-1.0, -2.0))).x;
-    mediump float E = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).x;
-    mediump float F = texture2D(tex, uv + (tsize * vec2(-1.0, 0.0))).x;
-    mediump float G = texture2D(tex, uv + (tsize * vec2(0.0, -2.0))).x;
-    mediump float H = texture2D(tex, uv + (tsize * vec2(0.0, -1.0))).x;
-    mediump float I = texture2D(tex, uv + (tsize * vec2(0.0, 0.0))).x;
+    mediump float A = texture2D(tex, uv + tsize * vec2(-2.0, -2.0)).x;
+    mediump float B = texture2D(tex, uv + tsize * vec2(-2.0, -1.0)).x;
+    mediump float C = texture2D(tex, uv + tsize * vec2(-2.0, 0.0)).x;
+    mediump float D = texture2D(tex, uv + tsize * vec2(-1.0, -2.0)).x;
+    mediump float E = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
+    mediump float F = texture2D(tex, uv + tsize * vec2(-1.0, 0.0)).x;
+    mediump float G = texture2D(tex, uv + tsize * vec2(0.0, -2.0)).x;
+    mediump float H = texture2D(tex, uv + tsize * vec2(0.0, -1.0)).x;
+    mediump float I = texture2D(tex, uv + tsize * vec2(0.0, 0.0)).x;
 
     mediump float c1 = (A + B + C) * 0.111111111111111;
     mediump float c2 = (D + E + F) * 0.111111111111111;
@@ -31,22 +31,22 @@ mediump float Downscale3x3(sampler2D tex, const mediump vec2 uv, const mediump v
 
 mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
-    mediump float A = texture2D(tex, uv + (tsize * vec2(-2.0, -2.0))).x;
-    mediump float B = texture2D(tex, uv + (tsize * vec2(-2.0, -1.0))).x;
-    mediump float C = texture2D(tex, uv + (tsize * vec2(-2.0,  0.0))).x;
-    mediump float D = texture2D(tex, uv + (tsize * vec2(-2.0,  1.0))).x;
-    mediump float E = texture2D(tex, uv + (tsize * vec2(-1.0, -2.0))).x;
-    mediump float F = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).x;
-    mediump float G = texture2D(tex, uv + (tsize * vec2(-1.0,  0.0))).x;
-    mediump float H = texture2D(tex, uv + (tsize * vec2(-1.0,  1.0))).x;
-    mediump float I = texture2D(tex, uv + (tsize * vec2( 0.0, -2.0))).x;
-    mediump float J = texture2D(tex, uv + (tsize * vec2( 0.0, -1.0))).x;
-    mediump float K = texture2D(tex, uv + (tsize * vec2( 0.0,  0.0))).x;
-    mediump float L = texture2D(tex, uv + (tsize * vec2( 0.0,  1.0))).x;
-    mediump float M = texture2D(tex, uv + (tsize * vec2( 1.0, -2.0))).x;
-    mediump float N = texture2D(tex, uv + (tsize * vec2( 1.0, -1.0))).x;
-    mediump float O = texture2D(tex, uv + (tsize * vec2( 1.0,  0.0))).x;
-    mediump float P = texture2D(tex, uv + (tsize * vec2( 1.0,  1.0))).x;
+    mediump float A = texture2D(tex, uv + tsize * vec2(-2.0, -2.0)).x;
+    mediump float B = texture2D(tex, uv + tsize * vec2(-2.0, -1.0)).x;
+    mediump float C = texture2D(tex, uv + tsize * vec2(-2.0,  0.0)).x;
+    mediump float D = texture2D(tex, uv + tsize * vec2(-2.0,  1.0)).x;
+    mediump float E = texture2D(tex, uv + tsize * vec2(-1.0, -2.0)).x;
+    mediump float F = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
+    mediump float G = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).x;
+    mediump float H = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;
+    mediump float I = texture2D(tex, uv + tsize * vec2( 0.0, -2.0)).x;
+    mediump float J = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).x;
+    mediump float K = texture2D(tex, uv + tsize * vec2( 0.0,  0.0)).x;
+    mediump float L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).x;
+    mediump float M = texture2D(tex, uv + tsize * vec2( 1.0, -2.0)).x;
+    mediump float N = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x;
+    mediump float O = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).x;
+    mediump float P = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).x;
 
     mediump float c1 = (A + B + C + D) * 0.0625;
     mediump float c2 = (E + F + G + H) * 0.0625;
@@ -156,10 +156,10 @@ mediump float Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 
 
 mediump float Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
-    mediump float A = texture2D(tex, uv + (tsize * vec2(-1.0, -1.0))).x;
-    mediump float B = texture2D(tex, uv + (tsize * vec2(-1.0,  1.0))).x;
-    mediump float C = texture2D(tex, uv + (tsize * vec2( 1.0, -1.0))).x;
-    mediump float D = texture2D(tex, uv + (tsize * vec2( 1.0,  1.0))).x;
+    mediump float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
+    mediump float B = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;
+    mediump float C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x;
+    mediump float D = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).x;
 
     mediump float c1 = (A + B + C + D) * 0.25;
 
@@ -168,10 +168,10 @@ mediump float Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump v
 
 mediump float Downscale2x2_05(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
-    mediump float A = texture2D(tex, uv + (tsize * vec2(-0.5, -0.5))).x;
-    mediump float B = texture2D(tex, uv + (tsize * vec2(-0.5,  0.5))).x;
-    mediump float C = texture2D(tex, uv + (tsize * vec2( 0.5, -0.5))).x;
-    mediump float D = texture2D(tex, uv + (tsize * vec2( 0.5,  0.5))).x;
+    mediump float A = texture2D(tex, uv + tsize * vec2(-0.5, -0.5)).x;
+    mediump float B = texture2D(tex, uv + tsize * vec2(-0.5,  0.5)).x;
+    mediump float C = texture2D(tex, uv + tsize * vec2( 0.5, -0.5)).x;
+    mediump float D = texture2D(tex, uv + tsize * vec2( 0.5,  0.5)).x;
 
     mediump float c1 = (A + B + C + D) * 0.25;
 

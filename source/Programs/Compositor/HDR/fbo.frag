@@ -29,7 +29,7 @@ MAIN_DECLARATION
     mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
     mediump float depth = texture2D(DepthMap, vUV0).x;
 
-    color *= lum;
+    //color *= lum;
 
     FragColor = vec4(bigger(depth, 0.5) * color, 1.0);
 }
