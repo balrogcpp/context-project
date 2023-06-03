@@ -11,14 +11,24 @@
 #endif
 
 
-mediump vec4 toSRGB(mediump vec4 x )
+mediump float toSRGB(const mediump float x)
 {
-	return LINEARtoSRGB(x);
+	return (x < 0.0031308 ? x * 12.92 : 1.055 * pow(x, 0.41666 ) - 0.055);
 }
 
-mediump vec4 fromSRGB(mediump vec4 x )
+mediump float fromSRGB(const mediump float x)
 {
-	return SRGBtoLINEAR(x);
+	return (x <= 0.040449907) ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);
+}
+
+mediump vec4 toSRGB(const mediump vec4 x)
+{
+	return vec4(toSRGB(x.x), toSRGB(x.y), toSRGB(x.z), x.w);
+}
+
+mediump vec4 fromSRGB(const mediump vec4 x)
+{
+	return vec4(fromSRGB(x.x ), fromSRGB(x.y), fromSRGB(x.z), x.w);
 }
 
 #endif // SMAA_GLSL

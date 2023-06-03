@@ -158,13 +158,6 @@ highp float reinhard2(const highp float x) {
 }
 
 highp vec3 uncharted2Tonemap(const highp vec3 x) {
-//    const highp float A = 0.15;
-//    const highp float B = 0.50;
-//    const highp float C = 0.10;
-//    const highp float D = 0.20;
-//    const highp float E = 0.02;
-//    const highp float F = 0.30;
-//    const highp float W = 11.2;
     const highp float A = 0.22;
     const highp float B = 0.3;
     const highp float C = 0.10;
@@ -185,13 +178,6 @@ highp vec3 uncharted2(const highp vec3 color) {
 }
 
 highp float uncharted2Tonemap(const highp float x) {
-//    const highp float A = 0.15;
-//    const highp float B = 0.50;
-//    const highp float C = 0.10;
-//    const highp float D = 0.20;
-//    const highp float E = 0.02;
-//    const highp float F = 0.30;
-//    const highp float W = 11.2;
     const highp float A = 0.22;
     const highp float B = 0.3;
     const highp float C = 0.10;

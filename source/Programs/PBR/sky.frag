@@ -16,9 +16,9 @@
 SAMPLERCUBE(CubeMap, 0);
 
 OGRE_UNIFORMS_BEGIN
-uniform vec3 SunDirection;
-uniform float SunSize;
-uniform vec3 SunColor;
+uniform mediump vec3 SunColor;
+uniform highp vec3 SunDirection;
+uniform highp float SunSize;
 uniform highp vec3 A;
 uniform highp vec3 B;
 uniform highp vec3 C;
@@ -31,7 +31,7 @@ uniform highp vec3 I;
 uniform highp vec3 Z;
 OGRE_UNIFORMS_END
 
-highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos_gamma)
+highp vec3 HosekWilkie(const highp float cos_theta, const highp float gamma, const highp float cos_gamma)
 {
     highp vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5, 1.5, 1.5)));
     return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta)));

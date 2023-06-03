@@ -4,16 +4,22 @@ import STD from std.compositor
 //----------------------------------------------------------------------------------------------------------------------
 // HDR
 //----------------------------------------------------------------------------------------------------------------------
-compositor HDR : STD
+compositor HDR
 {
     technique
     {
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
         texture rt1 256 256 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt2 64 64 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt3 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
         texture rt4 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lum0 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
+
+        target rt
+        {
+            input previous
+        }
 
         target rt1
         {
