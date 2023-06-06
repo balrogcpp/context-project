@@ -7,7 +7,7 @@ WORKDIR /var/build
 
 # git zip etc.
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends wget ca-certificates gnupg2 apt-transport-https \
+    && apt-get -y install --no-install-recommends wget curl ca-certificates gnupg2 apt-transport-https \
     && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
@@ -182,6 +182,6 @@ RUN cd /tmp \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
     && mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin && rm -rf upx-${UPX_VERSION}-amd64_linux \
     && wget https://github.com/microsoft/vcpkg/archive/refs/tags/${VCPKG_VERSION}.zip -q -O vcpkg.zip \
-    && unzip vcpkg.zip . && rm vcpkg.zip \
-    && sh ./vcpkg-${VCPKG_VERSION}/bootstrap-vcpkg.sh && cp ./vcpkg-${VCPKG_VERSION}/vcpkg /usr/local/bin && rm -rf vcpkg-${VCPKG_VERSION}
+    && unzip vcpkg.zip && rm vcpkg.zip \
+    && sh ./vcpkg-${VCPKG_VERSION}/bootstrap-vcpkg.sh -disableMetrics && cp ./vcpkg-${VCPKG_VERSION}/vcpkg /usr/local/bin && rm -rf vcpkg-${VCPKG_VERSION}
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
