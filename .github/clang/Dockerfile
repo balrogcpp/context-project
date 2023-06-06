@@ -158,14 +158,11 @@ RUN apt-get update \
     && rm -rf ../osxcross-${OSXCROSS_GIT_HASH} \
     && apt-get -y purge cmake python lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove
-ARG MACOS_SDK_CODE=22
-ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
-ENV OSXCROSS_HOST_X86_64=x86_64-apple-darwin${MACOS_SDK_CODE}
-ENV OSXCROSS_HOST_ARM64=aarch64-apple-darwin${MACOS_SDK_CODE}
-ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV X86_64_EVAL=`x86_64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
-ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
+ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
+ENV OSXCROSS_EVAL=`osxcross-conf`
+ENV OSXCROSS_HOST_X86_64=x86_64-apple
+ENV OSXCROSS_HOST_ARM64=aarch64-apple
 
 
 # cmake ninja upx
@@ -174,6 +171,7 @@ ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.0.2
 ARG VCPKG_VERSION=2023.04.15
+ARG VCPKG_HOME=/opt
 RUN cd /tmp \
     && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
@@ -181,7 +179,7 @@ RUN cd /tmp \
     && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
     && mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin && rm -rf upx-${UPX_VERSION}-amd64_linux \
-    && wget https://github.com/microsoft/vcpkg/archive/refs/tags/${VCPKG_VERSION}.zip -q -O vcpkg.zip \
-    && unzip vcpkg.zip && rm vcpkg.zip \
-    && sh ./vcpkg-${VCPKG_VERSION}/bootstrap-vcpkg.sh -disableMetrics && cp ./vcpkg-${VCPKG_VERSION}/vcpkg /usr/local/bin && rm -rf vcpkg-${VCPKG_VERSION}
+    && cd ${VCPKG_HOME} && git clone -b ${VCPKG_VERSION} --depth 1 https://github.com/microsoft/vcpkg.git \
+    && sh ./vcpkg/bootstrap-vcpkg.sh -disableMetrics && cp ./vcpkg/vcpkg /usr/local/bin
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg

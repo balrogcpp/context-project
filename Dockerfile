@@ -44,8 +44,8 @@ RUN mkdir build && cd build \
 
 # apple x86_64
 RUN mkdir build && cd build \
-    && export OSXCROSS_HOST=$OSXCROSS_HOST_X86_64 \
-    && eval $X86_64_EVAL \
+    && export OSXCROSS_HOST=x86_64-apple \
+    && eval $OSXCROSS_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
     && cmake --build . --target Contrib \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
@@ -55,8 +55,8 @@ RUN mkdir build && cd build \
 
 # apple aarch64
 #RUN mkdir build && cd build \
-#    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
-#    && eval $ARM64_EVAL \
+#    && export OSXCROSS_HOST=aarch64-apple \
+#    && eval $OSXCROSS_EVAL \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
 #    && cmake --build . --target Contrib \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
