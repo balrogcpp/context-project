@@ -146,7 +146,7 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 # apple
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG OSXCROSS_GIT_HASH=50e86ebca7d14372febd0af8cd098705049161b9
+ARG OSXCROSS_GIT_HASH=ed079949e7aee248ad7e7cb97726cd1c8556afd1
 RUN apt-get update \
     && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
@@ -181,6 +181,7 @@ RUN cd /tmp \
     && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
     && mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin && rm -rf upx-${UPX_VERSION}-amd64_linux \
-    && git clone -b ${VCPKG_VERSION} --depth 1 https://github.com/microsoft/vcpkg.git \
-    && sh ./vcpkg/bootstrap-vcpkg.sh && cp ./vcpkg/vcpkg /usr/local/bin && rm -rf vcpkg
+    && wget https://github.com/microsoft/vcpkg/archive/refs/tags/${VCPKG_VERSION}.zip -q -O vcpkg.zip \
+    && unzip vcpkg.zip . && rm vcpkg.zip \
+    && sh ./vcpkg-${VCPKG_VERSION}/bootstrap-vcpkg.sh && cp ./vcpkg-${VCPKG_VERSION}/vcpkg /usr/local/bin && rm -rf vcpkg-${VCPKG_VERSION}
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
