@@ -10,7 +10,7 @@ index 7847830..6ddd5da 100644
 +	find_package(Git REQUIRED)
 +	if (WIN32)
 +		get_filename_component(GIT_DIR ${GIT_EXECUTABLE} DIRECTORY)
-+		set(SH ${GIT_DIR}/sh)
++		set(SH ${GIT_DIR}/../bin/sh.exe)
 +	else ()
 +		find_program(SH sh)
 +	endif ()

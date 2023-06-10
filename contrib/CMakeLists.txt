@@ -1364,18 +1364,15 @@ externalproject_add(Target_OpenSSL
         )
 
 
-check_stamp_patch(Target_LibreSSL libressl-3.8.0.patch)
+check_stamp(Target_LibreSSL)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
-        GIT_REPOSITORY https://github.com/libressl/portable.git
-        GIT_TAG v3.8.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/libressl-3.8.0
+        URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.8.0.tar.gz
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
@@ -1395,6 +1392,7 @@ externalproject_add(Target_LibreSSL
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DBUILD_SHARED_LIBS=OFF
         -DLIBRESSL_SKIP_INSTALL=OFF
         -DLIBRESSL_APPS=OFF
         -DLIBRESSL_TESTS=OFF
