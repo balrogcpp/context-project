@@ -30,17 +30,17 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 #ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg
 
 
+# https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
+RUN git config --global http.postBuffer 1048576000 \
+    && git config --global https.postBuffer 1048576000 \
+    && git config --global core.compression -1
+
+
 COPY ./source ./source
 COPY ./contrib ./contrib
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 COPY ./.git ./.git
-
-
-# https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
-RUN git config --global http.postBuffer 1048576000 \
-    && git config --global https.postBuffer 1048576000 \
-    && git config --global core.compression -1
 
 
 # linux x86_64
