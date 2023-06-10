@@ -2,32 +2,22 @@
 // It is subject to the license terms in the LICENSE file found in the top-level directory
 // of this distribution.
 
-#ifndef CAELUM__POINT_STARFIELD_H
-#define CAELUM__POINT_STARFIELD_H
+#include "CaelumPrecompiled.h"
+#include "PointStarfield.h"
 
-namespace Caelum
-{
-/** POD for bright star catalogue entries.
- *  Only J2000 position and magnitude included.
- */
-struct BrightStarCatalogueEntry {
-  signed char rasc_hour;
-  signed char rasc_min;
-  float rasc_sec;
-  signed char decl_deg;
-  signed char decl_min;
-  float decl_sec;
-  float magn;
-};
+#ifdef _MSC_VER
+// disable: "conversion from 'double' to 'float', possible loss of data
+#   pragma warning (disable : 4244)
 
-/// There are exactly 9110 stars in our version of the BSC.
-constexpr int BrightStarCatalogueSize = 9110;
+// disable: "truncation from 'double' to 'float'
+#   pragma warning (disable : 4305)
+#endif
 
 // Data from http://heasarc.gsfc.nasa.gov/W3Browse/star-catalog/bsc5p.html
 // Converted using the following MSVS regexps:
 // ^\|0*{:d+} 0*{:d+} 0*{[0-9.]+}\|{[+\-]}0*{:d+} 0*{:d+} 0*{[0-9.]+}\|{.*}\|$
 // { \(2,1), \(2,2), \(5,3), \4\(2,5), \(2,6), \(4,7),\(5, 8) },
-constexpr BrightStarCatalogueEntry BrightStarCatalogue[BrightStarCatalogueSize] = {
+const Caelum::BrightStarCatalogueEntry Caelum::BrightStarCatalogue[BrightStarCatalogueSize] = {
     { 21,  8, 46.20, -88, 57, 23.0, 5.47 },
     { 22, 45, 28.61, -88, 49,  5.9, 6.57 },
     { 15, 28, 19.10, -88,  7, 59.2, 6.48 },
@@ -9139,6 +9129,4 @@ constexpr BrightStarCatalogueEntry BrightStarCatalogue[BrightStarCatalogueSize] 
     { 17, 16, 56.81, +89,  2, 16.1, 6.38 },
     {  2, 31, 48.70, +89, 15, 51.1, 2.02 },
 };
-} // namespace Caelum
 
-#endif // CAELUM__POINT_STARFIELD_H
