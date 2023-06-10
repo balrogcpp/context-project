@@ -1371,8 +1371,11 @@ externalproject_add(Target_LibreSSL
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/libressl-3.8.0
-        URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.8.0.tar.gz
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
+        GIT_REPOSITORY https://github.com/PowerShell/LibreSSL.git
+        GIT_TAG V3.7.2.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
