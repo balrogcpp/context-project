@@ -342,13 +342,13 @@ namespace Caelum
         }
         // Detach old
         if (getAutoAttachViewportsToComponents() && oldptr) {
-            std::for_each (mAttachedViewports.begin(), mAttachedViewports.end(),
-                          std::bind(std::mem_fn(&PrecipitationController::destroyViewportInstance), oldptr, std::placeholders::_1));
+            for (auto *it : mAttachedViewports)
+                oldptr->destroyViewportInstance(it);
         }
         // Attach new.
         if (getAutoAttachViewportsToComponents() && newptr) {
-            std::for_each (mAttachedViewports.begin(), mAttachedViewports.end(),
-                          std::bind(std::mem_fn(&PrecipitationController::createViewportInstance), newptr, std::placeholders::_1));
+            for (auto *it : mAttachedViewports)
+                newptr->createViewportInstance(it);
         }
         mPrecipitationController.reset(newptr);
     }
@@ -356,10 +356,8 @@ namespace Caelum
     void CaelumSystem::setDepthComposer (DepthComposer* ptr) {
         mDepthComposer.reset(ptr);
         if (getDepthComposer() && getAutoAttachViewportsToComponents()) {
-            std::for_each (
-                    mAttachedViewports.begin(), mAttachedViewports.end(),
-                    std::bind (
-                            std::mem_fn (&DepthComposer::createViewportInstance), getDepthComposer(), std::placeholders::_1));
+            for (auto *it : mAttachedViewports)
+                getDepthComposer()->createViewportInstance(it);
         }
     }
 
