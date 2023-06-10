@@ -6,13 +6,6 @@ ARG DEPS_DIR=${CONTEXT_HOME}/contrib
 WORKDIR ${CONTEXT_HOME}
 
 
-COPY ./source ./source
-COPY ./contrib ./contrib
-COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./cmake ./cmake
-COPY ./.git ./.git
-
-
 # cmake ninja upx
 ARG CMAKE_VERSION=3.26.4
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
@@ -35,6 +28,13 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 #    && unzip vcpkg.zip && rm vcpkg.zip \
 #    && sh ./vcpkg-${VCPKG_VERSION}/bootstrap-vcpkg.sh -disableMetrics && cp ./vcpkg-${VCPKG_VERSION}/vcpkg /usr/local/bin && rm -rf vcpkg-${VCPKG_VERSION}
 #ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg
+
+
+COPY ./source ./source
+COPY ./contrib ./contrib
+COPY ./CMakeLists.txt ./CMakeLists.txt
+COPY ./cmake ./cmake
+COPY ./.git ./.git
 
 
 # https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
