@@ -15,14 +15,13 @@ RUN rm /etc/apt/sources.list \
     && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu precise main' >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
-    && apt-get install --no-install-recommends -y git zip unzip xz-utils wget ca-certificates make autoconf file patch \
+    && apt-get install --no-install-recommends -y git zip unzip xz-utils wget curl ca-certificates make autoconf file patch \
     && apt-get clean
 
 
 # gcc
 ARG GCC_HOME=/usr/local
 ARG GNU_MIRROR=http://ftpmirror.gnu.org/gnu
-# 2.38;2.39;2.40 are broken
 ARG BINUTILS_VERSION=2.37
 ARG GCC_VERSION=13.1.0
 ARG GCC_APT_MAJOR=9
@@ -79,24 +78,8 @@ RUN apt-get update \
     && update-alternatives --install ${GCC_HOME}/bin/cc cc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 1000 --slave ${GCC_HOME}/bin/c++ c++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install ${GCC_HOME}/bin/gcc-ar gcc-ar ${GCC_HOME}/bin/x86_64-linux-gnu-gcc-ar 1000 --slave ${GCC_HOME}/bin/ar ar ${GCC_HOME}/bin/x86_64-linux-gnu-gcc-ar \
     && update-alternatives --install ${GCC_HOME}/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 1000
-
 ENV PATH="${GCC_HOME}/bin:${PATH}"
 ENV LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
-
-
-# cmake ninja upx
-ARG CMAKE_VERSION=3.26.4
-ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.11.1
-ARG UPX_VERSION=4.0.2
-RUN cd /tmp \
-    && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
-    && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
-    && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
-    && mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin && rm -rf upx-${UPX_VERSION}-amd64_linux
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
 #ARG LLVM_VERSION=12.0.1

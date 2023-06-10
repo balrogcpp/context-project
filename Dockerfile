@@ -24,10 +24,10 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 #vcpkg
 #ARG VCPKG_VERSION=2023.04.15
 #ARG VCPKG_HOME=/opt
-#RUN wget https://github.com/microsoft/vcpkg/archive/refs/tags/${VCPKG_VERSION}.zip -q -O vcpkg.zip \
-#    && unzip vcpkg.zip && rm vcpkg.zip \
-#    && sh ./vcpkg-${VCPKG_VERSION}/bootstrap-vcpkg.sh -disableMetrics && cp ./vcpkg-${VCPKG_VERSION}/vcpkg /usr/local/bin && rm -rf vcpkg-${VCPKG_VERSION}
+#RUN cd ${VCPKG_HOME} && git clone -b ${VCPKG_VERSION} --depth 1 https://github.com/microsoft/vcpkg.git \
+#    && sh ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 #ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg
+#ENV PATH="${VCPKG_ROOT}:${PATH}"
 
 
 # https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
@@ -90,7 +90,7 @@ RUN mkdir build && cd build \
 
 # android
 ARG ANDROID_HOME=/opt/android-sdk
-ARG ANDROID_CMD_VERSION=9477386
+ARG ANDROID_CMD_VERSION=9123335
 RUN apt-get update \
     && apt-get -y install --no-install-recommends openjdk-8-jdk \
     && apt-get clean \
