@@ -680,7 +680,7 @@ externalproject_add(Target_rapidjson
         )
 
 
-check_stamp(Target_assimp assimp-5.2.5.patch)
+check_stamp_patch(Target_assimp assimp-5.2.5.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1359,6 +1359,46 @@ externalproject_add(Target_OpenSSL
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DWITH_APPS=OFF
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+        )
+
+
+check_stamp_patch(Target_LibreSSL libressl-3.8.0.patch)
+externalproject_add(Target_LibreSSL
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
+        GIT_REPOSITORY https://github.com/libressl/portable.git
+        GIT_TAG v3.8.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
+        -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
+        -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
+        -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
+        -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DLIBRESSL_SKIP_INSTALL=OFF
+        -DLIBRESSL_APPS=OFF
+        -DLIBRESSL_TESTS=OFF
+        -DENABLE_ASM=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )

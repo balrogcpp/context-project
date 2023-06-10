@@ -170,8 +170,6 @@ ARG CMAKE_VERSION=3.26.4
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.0.2
-ARG VCPKG_VERSION=2023.04.15
-ARG VCPKG_HOME=/opt
 RUN cd /tmp \
     && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
@@ -179,7 +177,12 @@ RUN cd /tmp \
     && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
     && mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin && rm -rf upx-${UPX_VERSION}-amd64_linux \
-    && cd ${VCPKG_HOME} && git clone -b ${VCPKG_VERSION} --depth 1 https://github.com/microsoft/vcpkg.git \
-    && sh ./vcpkg/bootstrap-vcpkg.sh -disableMetrics && cp ./vcpkg/vcpkg /usr/local/bin
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg
+
+
+#vcpkg
+#ARG VCPKG_VERSION=2023.04.15
+#ARG VCPKG_HOME=/opt
+#RUN cd ${VCPKG_HOME} && git clone -b ${VCPKG_VERSION} --depth 1 https://github.com/microsoft/vcpkg.git \
+#    && sh ./vcpkg/bootstrap-vcpkg.sh -disableMetrics && cp ./vcpkg/vcpkg /usr/local/bin
+#ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg

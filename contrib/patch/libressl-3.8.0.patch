@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7847830..6ddd5da 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -7,6 +7,17 @@ endif()
+ 
+ project (LibreSSL C ASM)
+ 
++if (NOT EXISTS ${CMAKE_SOURCE_DIR}/VERSION)
++	find_package(Git REQUIRED)
++	if (WIN32)
++		get_filename_component(GIT_DIR ${GIT_EXECUTABLE} DIRECTORY)
++		set(SH ${GIT_DIR}/sh)
++	else ()
++		find_program(SH sh)
++	endif ()
++	execute_process(COMMAND ${SH} ${CMAKE_SOURCE_DIR}/autogen.sh WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
++endif ()
++
+ include(CheckFunctionExists)
+ include(CheckSymbolExists)
+ include(CheckLibraryExists)
