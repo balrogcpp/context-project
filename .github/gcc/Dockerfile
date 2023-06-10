@@ -7,12 +7,12 @@ WORKDIR /mnt
 
 # git zip etc.
 RUN rm /etc/apt/sources.list \
-    && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise main restricted universe multiverse' >> /etc/apt/sources.list \
-    && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise-updates main restricted universe multiverse' >> /etc/apt/sources.list \
-    && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse' >> /etc/apt/sources.list \
-    && echo 'deb http://ppa.launchpad.net/git-core/ppa/ubuntu precise main' >> /etc/apt/sources.list \
+    && echo "deb http://old-releases.ubuntu.com/ubuntu/ ${UBUNTU_VERSION} main restricted universe multiverse" >> /etc/apt/sources.list \
+    && echo "deb http://old-releases.ubuntu.com/ubuntu/ ${UBUNTU_VERSION}-updates main restricted universe multiverse" >> /etc/apt/sources.list \
+    && echo "deb http://old-releases.ubuntu.com/ubuntu/ ${UBUNTU_VERSION}-security main restricted universe multiverse" >> /etc/apt/sources.list \
+    && echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DD270288B4E6030699E45FA1715D88E1DF1F24 \
-    && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu precise main' >> /etc/apt/sources.list \
+    && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
     && apt-get install --no-install-recommends -y git zip unzip xz-utils wget curl ca-certificates make autoconf file patch \
