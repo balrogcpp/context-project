@@ -1372,6 +1372,7 @@ externalproject_add(Target_libcurl
         -DCURL_STATIC_CRT=OFF
         -DENABLE_UNICODE=OFF
         -DCURL_LTO=OFF
+        -DCURL_DISABLE_LDAP=ON
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )
