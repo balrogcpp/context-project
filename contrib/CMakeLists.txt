@@ -1223,6 +1223,55 @@ externalproject_add(Target_yaml-cpp
         )
 
 
+check_stamp(Target_asio)
+externalproject_add(Target_asio
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
+        GIT_REPOSITORY https://github.com/boostorg/asio.git
+        GIT_TAG boost-1.82.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/include/boost/asio ${DEPS_INCLUDE_DIR}/asio
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/include/boost/asio.hpp ${DEPS_INCLUDE_DIR}
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+        )
+
+
+check_stamp(Target_beast)
+externalproject_add(Target_beast
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        DEPENDS Target_asio
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_beast
+        GIT_REPOSITORY https://github.com/boostorg/beast.git
+        GIT_TAG boost-1.82.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_beast/include/boost/beast ${DEPS_INCLUDE_DIR}/beast
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_beast/include/boost/beast.hpp ${DEPS_INCLUDE_DIR}
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+        )
+
+
 check_stamp(Target_OpenSSL)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
@@ -1291,50 +1340,38 @@ externalproject_add(Target_LibreSSL
         )
 
 
-check_stamp(Target_asio)
-externalproject_add(Target_asio
+check_stamp(Target_libcurl)
+externalproject_add(Target_libcurl
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
-        GIT_REPOSITORY https://github.com/boostorg/asio.git
-        GIT_TAG boost-1.82.0
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libcurl
+        GIT_REPOSITORY https://github.com/curl/curl.git
+        GIT_TAG curl-8_1_2
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/include/boost/asio ${DEPS_INCLUDE_DIR}/asio
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/include/boost/asio.hpp ${DEPS_INCLUDE_DIR}
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_beast)
-externalproject_add(Target_beast
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS Target_asio
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_beast
-        GIT_REPOSITORY https://github.com/boostorg/beast.git
-        GIT_TAG boost-1.82.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_beast/include/boost/beast ${DEPS_INCLUDE_DIR}/beast
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_beast/include/boost/beast.hpp ${DEPS_INCLUDE_DIR}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DPICKY_COMPILER=OFF
+        -DBUILD_CURL_EXE=OFF
+        -DBUILD_SHARED_LIBS=OFF
+        -DCURL_STATIC_CRT=OFF
+        -DENABLE_UNICODE=OFF
+        -DCURL_LTO=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )
