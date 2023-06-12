@@ -7,7 +7,6 @@
 
 // Include external headers
 #include <Ogre.h>
-#include <OgreBuildSettings.h>
 
 #include "CaelumConfig.h"
 

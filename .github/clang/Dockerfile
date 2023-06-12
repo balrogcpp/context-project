@@ -150,12 +150,13 @@ ARG OSXCROSS_GIT_HASH=ed079949e7aee248ad7e7cb97726cd1c8556afd1
 RUN apt-get update \
     && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
-    && wget https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -q -O osxcross.zip \
-    && unzip osxcross.zip && rm osxcross.zip \
-    && cd osxcross-${OSXCROSS_GIT_HASH} \
+    && git clone https://github.com/tpoechtrager/osxcross.git \
+    && cd osxcross \
+    && git checkout ${OSXCROSS_GIT_HASH} \
+    && git apply ../tarballs/osxcross.patch \
     && cp -r ../tarballs . && rm -rf ../tarballs \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
-    && rm -rf ../osxcross-${OSXCROSS_GIT_HASH} \
+    && rm -rf ../osxcross \
     && apt-get -y purge cmake python lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"

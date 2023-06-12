@@ -1,0 +1,27 @@
+diff --git a/build.sh b/build.sh
+index 14b9137..5cb00e4 100755
+--- a/build.sh
++++ b/build.sh
+@@ -51,6 +51,7 @@ case $SDK_VERSION in
+   12.4*)  TARGET=darwin21.5; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
+   13.0*)  TARGET=darwin22; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
+   13.1*)  TARGET=darwin22.2; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
++  13.3*)  TARGET=darwin22.4; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
+  *) echo "Unsupported SDK"; exit 1 ;;
+ esac
+ 
+diff --git a/tools/gen_sdk_package.sh b/tools/gen_sdk_package.sh
+index b41d08c..493f2e2 100755
+--- a/tools/gen_sdk_package.sh
++++ b/tools/gen_sdk_package.sh
+@@ -182,8 +182,10 @@ for SDK in $SDKS; do
+ 
+   # libc++ headers for C++11/C++14
+   if [ -d $LIBCXXDIR1 ]; then
++    rm -rf "$TMP/$SDK/usr/include/c++/v1/__string"
+     cp -rf $LIBCXXDIR1 "$TMP/$SDK/usr/include/c++"
+   elif [ -d $LIBCXXDIR2 ]; then
++    rm -rf "$TMP/$SDK/usr/include/c++/v1/__string"
+     cp -rf $LIBCXXDIR2 "$TMP/$SDK/usr/include/c++"
+   fi
+ 

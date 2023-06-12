@@ -6,6 +6,12 @@ ARG DEPS_DIR=${CONTEXT_HOME}/contrib
 WORKDIR ${CONTEXT_HOME}
 
 
+# https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
+RUN git config --global http.postBuffer 1048576000 \
+    && git config --global https.postBuffer 1048576000 \
+    && git config --global core.compression -1
+
+
 # cmake ninja upx
 ARG CMAKE_VERSION=3.26.4
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
@@ -28,12 +34,6 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 #    && sh ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 #ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg
 #ENV PATH="${VCPKG_ROOT}:${PATH}"
-
-
-# https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
-RUN git config --global http.postBuffer 1048576000 \
-    && git config --global https.postBuffer 1048576000 \
-    && git config --global core.compression -1
 
 
 COPY ./source ./source
