@@ -31,13 +31,13 @@
 
 // By default only compile type descriptors for scripting.
 #ifndef CAELUM_TYPE_DESCRIPTORS
-    #define CAELUM_TYPE_DESCRIPTORS 1
+    #define CAELUM_TYPE_DESCRIPTORS 0
 #endif
 
 // Scripting support requires Ogre 1.6
 // Can be also configured on compiler command line
 #ifndef CAELUM_SCRIPT_SUPPORT
-    #define CAELUM_SCRIPT_SUPPORT 1
+    #define CAELUM_SCRIPT_SUPPORT 0
 #endif
 
 #if CAELUM_SCRIPT_SUPPORT
