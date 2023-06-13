@@ -10,8 +10,6 @@
 
 #include "CaelumConfig.h"
 
-#include <memory>
-
 // Define the dll export qualifier if compiling for Windows
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 	#ifdef CAELUM_LIB
