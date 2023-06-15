@@ -777,7 +777,7 @@ externalproject_add(Target_OGRE
         -DOGRE_DEPENDENCIES_DIR=${DEPS_ROOT}
         -DOGRE_ENABLE_PRECOMPILED_HEADERS=ON
         -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
-        -DOGRE_ASSERT_MODE=0
+        -DOGRE_ASSERT_MODE=2
         -DOGRE_CONFIG_THREADS=3
         -DOGRE_CONFIG_THREAD_PROVIDER=std
         -DOGRE_CONFIG_DOUBLE=OFF
@@ -1304,13 +1304,15 @@ externalproject_add(Target_OpenSSL
         )
 
 
-check_stamp(Target_LibreSSL)
+check_stamp_patch(Target_LibreSSL libressl-3.8.0.patch)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        #SOURCE_DIR ${DEPS_SOURCE_LOCATION}/libressl-3.8.0
+        #URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.8.0.tar.gz
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
         GIT_REPOSITORY https://github.com/PowerShell/LibreSSL.git
         GIT_TAG V3.7.2.0
