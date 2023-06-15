@@ -9,7 +9,6 @@
 #include "CaelumPrecompiled.h"
 #include "FlatCloudLayer.h"
 #include "InternalUtilities.h"
-#include <functional>
 
 using namespace Ogre;
 
@@ -236,7 +235,6 @@ namespace Caelum
 
         if (cleanup) {
             mOgreRoot->removeFrameListener (this);
-            delete this;
         } else {
             // We'll delete later. Make sure we're registered as a frame listener, or we'd leak.
             mOgreRoot->addFrameListener(this);
@@ -287,7 +285,6 @@ namespace Caelum
     void CaelumSystem::detachViewport (Ogre::Viewport* vp)
     {
         std::set<Viewport*>::size_type erase_result = mAttachedViewports.erase(vp);
-        assert(erase_result == 0 || erase_result == 1);
         bool found = erase_result == 1;
         if (found) {
             detachViewportImpl (vp);
@@ -410,7 +407,6 @@ namespace Caelum
         if (mCleanup) {
             // Delayed destruction.
             mOgreRoot->removeFrameListener (this);
-            delete this;
             return true;
         }
 
@@ -663,7 +659,6 @@ namespace Caelum
     Ogre::ColourValue CaelumSystem::getSunLightColour (Real time, const Ogre::Vector3 &sunDir)
     {
         if (!mSkyGradientsImage.get()) {
-            exit(-1);
             return Ogre::ColourValue::White;
         }
         Real elevation = sunDir.dotProduct (Ogre::Vector3::UNIT_Y) * 0.5 + 0.5;
@@ -673,7 +668,6 @@ namespace Caelum
         Ogre::ColourValue col = InternalUtilities::getInterpolatedColour (elevation, elevation, mSkyGradientsImage.get(), false);
         Real val = (col.r + col.g + col.b) / 3;
         col = Ogre::ColourValue(val, val, val, 1.0);
-        assert(Ogre::Math::RealEqual(col.a, 1));
         return col;
     }
 
@@ -691,7 +685,6 @@ namespace Caelum
         Ogre::ColourValue col = InternalUtilities::getInterpolatedColour (elevation, elevation, mSkyGradientsImage.get(), false);
         Real val = (col.r + col.g + col.b) / 3;
         col = Ogre::ColourValue(val / 2.5f, val / 2.5f, val / 2.5f, 1.0);
-        assert(Ogre::Math::RealEqual(col.a, 1));
         return col;
     }
 
