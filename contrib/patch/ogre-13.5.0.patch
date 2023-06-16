@@ -133,7 +133,7 @@ index 44a177874..ef6c0c436 100644
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
-index 5e06c1945..0eef1b96b 100644
+index 5e06c1945..ee4cf91e9 100644
 --- a/OgreMain/include/OgreException.h
 +++ b/OgreMain/include/OgreException.h
 @@ -69,7 +69,7 @@ THE SOFTWARE.
@@ -141,7 +141,7 @@ index 5e06c1945..0eef1b96b 100644
  #   define OgreAssertDbg( expr, mesg )
  #endif
 -
-+#define OgreAssertDbg2( a ) OgreAssertDbg( a, a )
++#define OgreAssertDbg2( a ) OgreAssertDbg( a, #a )
  namespace Ogre {
  
      /** \addtogroup Core
