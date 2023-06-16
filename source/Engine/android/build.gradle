@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    //buildToolsVersion '33.0.0'
+    buildToolsVersion '30.0.3'
     compileSdkVersion 33
     ndkVersion '25.2.9519653'
 
@@ -38,12 +38,12 @@ android {
         variant.outputs.all {
             def zonedDate = ZonedDateTime.now(ZoneOffset.UTC)
             def date = zonedDate.format("YYYYMMdd'T'HHMMSS'Z'")
-            def sha1 = System.getenv("GIT_SHA1") ?: "1.0"
+            def sha1 = System.getenv("GIT_SHA1") ?: "0.1"
             def deploy = System.getenv("GRADLE_DEPLOY")
             if (variant.name == "release") {
-                outputFileName = "demo-${sha1}-android-arm64-${variant.name}-${date}.apk"
+                outputFileName = "tests-${sha1}-android-arm64-${variant.name}-${date}.apk"
              } else {
-                outputFileName = "demo-${sha1}-android-arm64-${variant.name}.apk"
+                outputFileName = "tests-${sha1}-android-arm64-${variant.name}.apk"
              }
             if (deploy) {
                 outputFileName = "../../../../../../../artifacts/" + outputFileName
