@@ -90,14 +90,15 @@ RUN mkdir build && cd build \
 
 # android
 ARG ANDROID_HOME=/opt/android-sdk
-ARG ANDROID_CMD_VERSION=9123335
+ARG ANDROID_CMD_VERSION=9477386
+ARG JAVA_MAJOR=11
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends openjdk-8-jdk \
+    && apt-get -y install --no-install-recommends openjdk-${JAVA_MAJOR}-jdk \
     && apt-get clean \
     && cd /opt \
     && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
     && unzip -q tools.zip && rm tools.zip \
-    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME}  \
+    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME} > /dev/null \
     && export PATH="/opt/cmdline-tools/bin:${PATH}" \
     && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
     && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME}  \
@@ -107,7 +108,7 @@ RUN apt-get update \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && cmake --build . --target GradleBuild \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
-    && apt-get -y purge openjdk-8-jdk \
+    && apt-get -y purge openjdk-${JAVA_MAJOR}-jdk \
     && apt-get -y autoremove
 
 
