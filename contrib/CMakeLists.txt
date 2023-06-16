@@ -969,7 +969,7 @@ externalproject_add(Target_Lua
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
@@ -1304,16 +1304,16 @@ externalproject_add(Target_OpenSSL
         )
 
 
-check_stamp_patch(Target_LibreSSL libressl-3.8.0.patch)
+check_stamp(Target_LibreSSL)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        #SOURCE_DIR ${DEPS_SOURCE_LOCATION}/libressl-3.8.0
-        #URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.8.0.tar.gz
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
+        #URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.8.0.tar.gz
+        #DOWNLOAD_NO_PROGRESS true
         GIT_REPOSITORY https://github.com/PowerShell/LibreSSL.git
         GIT_TAG V3.7.2.0
         GIT_SHALLOW true
@@ -1321,7 +1321,7 @@ externalproject_add(Target_LibreSSL
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchLibreSSL.cmake
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
