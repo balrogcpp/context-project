@@ -83,7 +83,7 @@ namespace Caelum
         } else if (mSkyDomeHazeEnabled == true && mGroundFogEnabled == true) {
             return CompositorName_SkyDomeHaze_ExpGroundFog;
         } else {
-            assert (0);
+            OgreAssertDbg2 (0);
             return CompositorName_Dummy;
         }
     }
@@ -105,7 +105,7 @@ namespace Caelum
         ViewportInstanceMap::const_iterator begin = mViewportInstanceMap.begin();
         ViewportInstanceMap::const_iterator end = mViewportInstanceMap.end();
         for (it = begin; it != end; ++it) {
-            assert(it->first == it->second->getViewport());
+            OgreAssertDbg2(it->first == it->second->getViewport());
             it->second->_update ();
         }
 	}
@@ -150,7 +150,7 @@ namespace Caelum
                     "Can't add \'" + compositorName + "\' compositor.",
                     "DepthComposer");
         }
-        assert(mCompInst);
+        OgreAssertDbg2(mCompInst);
 		mCompInst->setEnabled (true);
 		mCompInst->addListener (this);
     }
@@ -196,7 +196,7 @@ namespace Caelum
 	{
         Camera* camera = getViewport ()->getCamera ();
 
-        assert(mParams.fpParams == mat->getBestTechnique ()->getPass (0)->getFragmentProgramParameters ());
+        OgreAssertDbg2(mParams.fpParams == mat->getBestTechnique ()->getPass (0)->getFragmentProgramParameters ());
 
         // Auto param in a compositor does not use the external camera.
         // This means that sending matrices as auto_param will not work as expected.
@@ -259,7 +259,7 @@ namespace Caelum
         ViewportInstanceMap::const_iterator begin = mViewportInstanceMap.begin();
         ViewportInstanceMap::const_iterator end = mViewportInstanceMap.end();
         for (it = begin; it != end; ++it) {
-            assert(it->first == it->second->getViewport());
+            OgreAssertDbg2(it->first == it->second->getViewport());
             delete it->second;
         }
         mViewportInstanceMap.clear();
@@ -344,7 +344,7 @@ namespace Caelum
                 TU_RENDERTARGET,
                 0);
 
-        assert(getDepthRenderTarget());
+        OgreAssertDbg2(getDepthRenderTarget());
 
         // Should be the same format
         LogManager::getSingleton().logMessage (
@@ -383,9 +383,9 @@ namespace Caelum
         Viewport* oldCameraViewport = camera->getViewport ();
         SceneManager *sceneManager = camera->getSceneManager ();
 
-        assert (oldCameraViewport == getMasterViewport ());
-        assert (getDepthRenderViewport ()->getActualWidth () == getMasterViewport()->getActualWidth ());
-        assert (getDepthRenderViewport ()->getActualHeight () == getMasterViewport()->getActualHeight ());
+        OgreAssertDbg2 (oldCameraViewport == getMasterViewport ());
+        OgreAssertDbg2 (getDepthRenderViewport ()->getActualWidth () == getMasterViewport()->getActualWidth ());
+        OgreAssertDbg2 (getDepthRenderViewport ()->getActualHeight () == getMasterViewport()->getActualHeight ());
 
         getDepthRenderViewport ()->setVisibilityMask (mViewportVisibilityMask);
         getDepthRenderViewport ()->setCamera (camera);
@@ -422,7 +422,7 @@ namespace Caelum
                 Ogre::Technique** ppTech,
                 Ogre::RenderQueue* pQueue)
     {
-        assert (mDepthRenderingNow);
+        OgreAssertDbg2 (mDepthRenderingNow);
 
         /*
         LogManager::getSingleton ().logMessage (

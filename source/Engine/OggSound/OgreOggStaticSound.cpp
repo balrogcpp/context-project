@@ -295,7 +295,7 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggStaticSound::_pauseImpl()
 	{
-		assert(mState != SS_DESTROYED);
+		OgreAssertDbg2(mState != SS_DESTROYED);
 
 		if ( mSource==AL_NONE ) return;
 
@@ -309,7 +309,7 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggStaticSound::_playImpl()
 	{
-		assert(mState != SS_DESTROYED);
+		OgreAssertDbg2(mState != SS_DESTROYED);
 
 		if(isPlaying())
 			return;
@@ -332,7 +332,7 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggStaticSound::_stopImpl()
 	{
-		assert(mState != SS_DESTROYED);
+		OgreAssertDbg2(mState != SS_DESTROYED);
 
 		if ( mSource==AL_NONE || isStopped() ) return;
 

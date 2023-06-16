@@ -165,7 +165,7 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggISound::play(bool immediate)
 	{
-		assert(mState != SS_DESTROYED);
+		OgreAssertDbg2(mState != SS_DESTROYED);
 
 #if OGGSOUND_THREADED
 		SoundAction action;
@@ -181,7 +181,7 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggISound::stop(bool immediate)
 	{
-		assert(mState != SS_DESTROYED);
+		OgreAssertDbg2(mState != SS_DESTROYED);
 
 #if OGGSOUND_THREADED
 		SoundAction action;
@@ -197,7 +197,7 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggISound::pause(bool immediate)
 	{
-		assert(mState != SS_DESTROYED);
+		OgreAssertDbg2(mState != SS_DESTROYED);
 
 #if OGGSOUND_THREADED
 		SoundAction action;

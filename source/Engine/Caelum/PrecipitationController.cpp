@@ -81,7 +81,7 @@ namespace Caelum
     }
 
 	const PrecipitationPresetParams& PrecipitationController::getPresetParams (PrecipitationType type) {
-        assert(isPresetType(type));
+        OgreAssertDbg2(isPresetType(type));
         return PrecipitationPresets[type];
     }
 
@@ -179,7 +179,7 @@ namespace Caelum
 		
         // Create the precipitation compositor.
         mCompInst = compMgr->addCompositor(mViewport, PrecipitationController::COMPOSITOR_NAME);
-        assert(mCompInst);
+        OgreAssertDbg2(mCompInst);
 		mCompInst->setEnabled (false);
 		mCompInst->addListener (this);
     }
@@ -368,7 +368,7 @@ namespace Caelum
         ViewportInstanceMap::const_iterator begin = mViewportInstanceMap.begin();
         ViewportInstanceMap::const_iterator end = mViewportInstanceMap.end();
         for (it = begin; it != end; ++it) {
-            assert(it->first == it->second->getViewport ());
+            OgreAssertDbg2(it->first == it->second->getViewport ());
             delete it->second;
         }
         mViewportInstanceMap.clear ();

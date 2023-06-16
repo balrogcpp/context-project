@@ -34,7 +34,7 @@ namespace Caelum
 
     void CloudSystem::addLayer(FlatCloudLayer* layer)
     {
-        assert(layer != NULL);
+        OgreAssertDbg2(layer != NULL);
         mLayers.push_back(layer);
     }
 
@@ -60,7 +60,7 @@ namespace Caelum
 		    const Ogre::ColourValue &sunSphereColour)
     {
 	    for (uint i = 0; i < mLayers.size(); i++) {
-            assert(mLayers[i] != NULL);
+            OgreAssertDbg2(mLayers[i] != NULL);
 		    mLayers[i]->update(timePassed, sunDirection, sunLightColour, fogColour, sunSphereColour);
 	    }
     }

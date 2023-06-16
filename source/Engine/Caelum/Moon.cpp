@@ -28,10 +28,10 @@ namespace Caelum
         mMoonMaterial.reset(InternalUtilities::checkLoadMaterialClone(MOON_MATERIAL_NAME, MOON_MATERIAL_NAME + uniqueSuffix));
         mBackMaterial.reset(InternalUtilities::checkLoadMaterialClone(MOON_BACKGROUND_MATERIAL_NAME, MOON_BACKGROUND_MATERIAL_NAME + uniqueSuffix));
 
-        assert (!mMoonMaterial.isNull ());
-        assert (mMoonMaterial->getTechnique (0));
-        assert (mMoonMaterial->getTechnique (0)->getPass (0));
-        assert (mMoonMaterial->getTechnique (0)->getPass( 0)->hasFragmentProgram ());
+        OgreAssertDbg2 (!mMoonMaterial.isNull ());
+        OgreAssertDbg2 (mMoonMaterial->getTechnique (0));
+        OgreAssertDbg2 (mMoonMaterial->getTechnique (0)->getPass (0));
+        OgreAssertDbg2 (mMoonMaterial->getTechnique (0)->getPass( 0)->hasFragmentProgram ());
         mParams.setup(mMoonMaterial->getBestTechnique ()->getPass (0)->getFragmentProgramParameters ());
 
         setMoonTexture(moonTextureName);
@@ -67,9 +67,9 @@ namespace Caelum
     void Moon::setMoonTexture (const Ogre::String &textureName)
     {
 	    // Update the moon material
-	    assert(mMoonMaterial->getBestTechnique ());
-	    assert(mMoonMaterial->getBestTechnique ()->getPass (0));
-	    assert(mMoonMaterial->getBestTechnique ()->getPass (0)->getTextureUnitState (0));
+	    OgreAssertDbg2(mMoonMaterial->getBestTechnique ());
+	    OgreAssertDbg2(mMoonMaterial->getBestTechnique ()->getPass (0));
+	    OgreAssertDbg2(mMoonMaterial->getBestTechnique ()->getPass (0)->getTextureUnitState (0));
 	    mMoonMaterial->getBestTechnique ()->getPass (0)->getTextureUnitState (0)->setTextureName (textureName);
 	    mBackMaterial->getBestTechnique ()->getPass (0)->getTextureUnitState (0)->setTextureName (textureName);
     }
@@ -114,7 +114,7 @@ namespace Caelum
     }
 
     uint Moon::getQueryFlags () const {
-        assert (mMoonBB->getQueryFlags () == mBackBB->getQueryFlags ());
+        OgreAssertDbg2 (mMoonBB->getQueryFlags () == mBackBB->getQueryFlags ());
         return mMoonBB->getQueryFlags ();
     }
 
@@ -124,7 +124,7 @@ namespace Caelum
     }
 
     uint Moon::getVisibilityFlags () const {
-        assert (mMoonBB->getVisibilityFlags () == mBackBB->getVisibilityFlags ());
+        OgreAssertDbg2 (mMoonBB->getVisibilityFlags () == mBackBB->getVisibilityFlags ());
         return mMoonBB->getVisibilityFlags ();
     }
 }

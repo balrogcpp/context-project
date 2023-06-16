@@ -128,7 +128,7 @@ namespace Caelum
         /// Set to null and destroy contents (if any).
         void setNull () {
             TraitsT::destroy (mInner);
-            assert(this->isNull());
+            OgreAssertDbg2(this->isNull());
         }
 
         PointedT* getPointer () const { return TraitsT::getPointer (mInner); }
@@ -220,7 +220,7 @@ namespace Caelum
                 //        " name=" + inner->getName () +
                 //        " handle=" + Ogre::StringConverter::toString (inner->getHandle ()) );
                 ManagerT::getSingletonPtr ()->remove (inner->getHandle ());
-                //assert (inner.unique () && "Resource pointer not unique after destruction");
+                //OgreAssertDbg2 (inner.unique () && "Resource pointer not unique after destruction");
                 inner.reset();
             }
         }

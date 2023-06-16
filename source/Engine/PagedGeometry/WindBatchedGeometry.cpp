@@ -123,7 +123,7 @@ BatchedGeometry::SubBatch(parent, ent)
 ///
 void WindBatchedGeometry::WindSubBatch::build()
 {
-	assert(!m_Built);
+	OgreAssertDbg2(!m_Built);
 
 	//Misc. setup
 	const Vector3 &batchCenter = static_cast < WindBatchedGeometry* > (m_pParentGeom)->m_vecCenter;
@@ -341,7 +341,7 @@ void WindBatchedGeometry::WindSubBatch::build()
          }
          else
          {
-				assert(m_RequireVertexColors);
+				OgreAssertDbg2(m_RequireVertexColors);
 
 				//Get the locked output buffer
 				uint32 *startPtr = (uint32*)vertexBuffers[vertBinding->getBufferCount()-1];

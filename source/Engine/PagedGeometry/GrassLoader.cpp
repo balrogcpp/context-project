@@ -175,7 +175,7 @@ void GrassLoader::loadPage(PageInfo &page)
 					mesh = generateGrass_SPRITE(page, layer, position, grassCount);
 					break;
 			}
-			assert(mesh);
+			OgreAssertDbg2(mesh);
 
 			//Add the mesh to PagedGeometry
 			Entity *entity = geom->getCamera()->getSceneManager()->createEntity(getUniqueID(), mesh->getName());

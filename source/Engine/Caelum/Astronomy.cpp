@@ -365,7 +365,7 @@ namespace Caelum
     void Astronomy::restoreFloatingPointMode (int oldMode)
     {
         // Useless check.
-        assert(oldMode == 0xC0FFEE);
+        OgreAssertDbg2(oldMode == 0xC0FFEE);
     }
 #endif
 }

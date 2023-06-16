@@ -89,9 +89,9 @@ namespace Caelum
 
     void SpriteSun::setSunTexture (const Ogre::String &textureName) {
         // Update the sun material
-        assert(mSunMaterial->getBestTechnique ());
-        assert(mSunMaterial->getBestTechnique ()->getPass (0));
-        assert(mSunMaterial->getBestTechnique ()->getPass (0)->getTextureUnitState (0));
+        OgreAssertDbg2(mSunMaterial->getBestTechnique ());
+        OgreAssertDbg2(mSunMaterial->getBestTechnique ()->getPass (0));
+        OgreAssertDbg2(mSunMaterial->getBestTechnique ()->getPass (0)->getTextureUnitState (0));
         mSunMaterial->getBestTechnique ()->getPass (0)->getTextureUnitState (0)->setTextureName (textureName);
     }
 

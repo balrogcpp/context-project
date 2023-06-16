@@ -117,7 +117,7 @@ namespace Caelum
 	}
 
 	void PointStarfield::addBrightStarCatalogue (int count) {
-		assert(count >= 0);
+		OgreAssertDbg2(count >= 0);
 		if (count < BrightStarCatalogueSize) {
 			// Only sort if we don't add everything.
 			// It would be lovely if the catalogue was already sorted.
@@ -131,7 +131,7 @@ namespace Caelum
 				addStar(BrightStarCatalogue[vec[i].second]);
 			}
 		} else {
-			assert(count == BrightStarCatalogueSize);
+			OgreAssertDbg2(count == BrightStarCatalogueSize);
 			for (int i = 0; i < BrightStarCatalogueSize; ++i) {
 				addStar(BrightStarCatalogue[i]);
 			}

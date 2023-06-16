@@ -163,7 +163,7 @@ void PagedGeometry::setCoordinateSystem(Vector3 up, Vector3 right)
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
 Vector3 PagedGeometry::_convertToLocal(const Vector3 &globalVec) const
 {
-	assert(getSceneNode());
+	OgreAssertDbg2(getSceneNode());
 	//Convert from the given global position to the local coordinate system of PagedGeometry's root scene node.
 	return (getSceneNode()->getOrientation().Inverse() * globalVec);
 }
@@ -270,7 +270,7 @@ void PagedGeometry::update(float deltaTime)
 
 void PagedGeometry::reloadGeometry()
 {
-	assert(pageLoader);
+	OgreAssertDbg2(pageLoader);
 
 	std::list<GeometryPageManager *>::iterator it;
 	for (it = managerList.begin(); it != managerList.end(); ++it){

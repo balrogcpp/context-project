@@ -17,7 +17,7 @@ namespace Caelum
     }
 
     CaelumPlugin& CaelumPlugin::getSingleton () {  
-        assert (msSingleton);
+        OgreAssertDbg2 (msSingleton);
         return *msSingleton;
     }
 
@@ -34,7 +34,7 @@ namespace Caelum
 
     void CaelumPlugin::initialise ()
     {
-        assert(!mIsInstalled && "Already installed");
+        OgreAssertDbg2(!mIsInstalled && "Already installed");
 
         Ogre::LogManager::getSingleton ().logMessage("Caelum plugin version " + 
                 Ogre::StringConverter::toString (CAELUM_VERSION_MAIN) + "." +
@@ -58,7 +58,7 @@ namespace Caelum
 
     void CaelumPlugin::shutdown ()
     {
-        assert(mIsInstalled && "Not installed");
+        OgreAssertDbg2(mIsInstalled && "Not installed");
 
 #if CAELUM_SCRIPT_SUPPORT
         getScriptTranslatorManager()->_setPropScriptResourceManager (0);
@@ -80,8 +80,8 @@ namespace Caelum
             const Ogre::String& objectName,
             const Ogre::String& groupName)
     {
-        assert (sys);
-        assert (this->isInstalled () && "Must install CaelumPlugin before loading scripts");
+        OgreAssertDbg2 (sys);
+        OgreAssertDbg2 (this->isInstalled () && "Must install CaelumPlugin before loading scripts");
 
         // Fetch raw resource ptr.
         Ogre::ResourcePtr res = getPropScriptResourceManager ()->createOrRetrieve (objectName, groupName).first;

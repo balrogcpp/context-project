@@ -326,13 +326,13 @@ namespace Caelum
         //LogManager::getSingleton ().logMessage ("TypeDescriptorScriptTranslator::translate begin");
 
         // Check type descriptor was set.
-        assert (getTypeDescriptor () && "Type descriptor must be set before we can translate.");
+        OgreAssertDbg2 (getTypeDescriptor () && "Type descriptor must be set before we can translate.");
 
         // Fetch target object.
 		ObjectAbstractNode *objNode = reinterpret_cast<ObjectAbstractNode*>(node.get());
-        assert (!objNode->context.isEmpty ());
+        OgreAssertDbg2 (!objNode->context.isEmpty ());
         void* targetObject = any_cast<void*> (objNode->context);
-        assert (targetObject);
+        OgreAssertDbg2 (targetObject);
 
 		for (AbstractNodeList::iterator i = objNode->children.begin(); i != objNode->children.end(); ++i)
 		{
@@ -361,7 +361,7 @@ namespace Caelum
 
     void CaelumSystemScriptTranslator::setTranslationTarget (CaelumSystem* target, const Ogre::String& name)
     {
-        assert (target != 0);
+        OgreAssertDbg2 (target != 0);
         this->mTranslationTarget = target;
         this->mTranslationTargetName = name;
         this->mTranslationTargetFound = false;
@@ -497,9 +497,9 @@ namespace Caelum
         //LogManager::getSingleton ().logMessage ("SkySystemScriptTranslator::translate begin");
 
 		ObjectAbstractNode *objNode = reinterpret_cast<ObjectAbstractNode*>(node.get());
-        assert (!objNode->context.isEmpty ());
+        OgreAssertDbg2 (!objNode->context.isEmpty ());
         void* rawTargetObject = any_cast<void*> (objNode->context);
-        assert (rawTargetObject);
+        OgreAssertDbg2 (rawTargetObject);
 
         CloudSystem* target = static_cast<CloudSystem*>(rawTargetObject);
 
@@ -590,7 +590,7 @@ namespace Caelum
 
     size_t CaelumScriptTranslatorManager::getNumTranslators () const {
         // Turns out this is never called.
-        assert(0 && "This method should be removed from Ogre::ScriptTranslatorManager");
+        OgreAssertDbg2(0 && "This method should be removed from Ogre::ScriptTranslatorManager");
         return mTranslatorMap.size ();
     }
 

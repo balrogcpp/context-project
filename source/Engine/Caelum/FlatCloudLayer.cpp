@@ -127,7 +127,7 @@ namespace Caelum
         _invalidateGeometry ();
         setMeshParameters(10000000, 10000000, 10, 10);
 
-        assert (mCloudCoverLookup.get() == 0);
+        OgreAssertDbg2 (mCloudCoverLookup.get() == 0);
         setCloudCoverLookup ("CloudCoverLookup.png");
 		setCloudCover (0.3);
         setCloudCoverVisibilityThreshold (0.001);
@@ -270,8 +270,8 @@ namespace Caelum
         // Convert to int and bring to [0, textureCount)
         int currentTextureIndex = static_cast<int>(floor(mCloudBlendPos));
         currentTextureIndex = ((currentTextureIndex % textureCount) + textureCount) % textureCount;
-        assert(0 <= currentTextureIndex);
-        assert(currentTextureIndex < textureCount);
+        OgreAssertDbg2(0 <= currentTextureIndex);
+        OgreAssertDbg2(currentTextureIndex < textureCount);
 
         // Check if we have to change textures.
         if (currentTextureIndex != mCurrentTextureIndex) {

@@ -19,17 +19,17 @@ namespace Caelum
             const Ogre::String& name,
             bool throwIfNotFound/* = false*/)
     {
-        assert(!params.isNull());
+        OgreAssertDbg2(!params.isNull());
         #if CAELUM_DEBUG_PARAM_REF
             mParams = params;
         #endif
         const GpuConstantDefinition* def = params->_findNamedConstantDefinition(name, throwIfNotFound);
         if (def) {
             mPhysicalIndex = def->physicalIndex;
-            assert(this->isBound());
+            OgreAssertDbg2(this->isBound());
         } else {
             mPhysicalIndex = InvalidPhysicalIndex;
-            assert(!this->isBound());
+            OgreAssertDbg2(!this->isBound());
         }
     }
 
@@ -38,6 +38,6 @@ namespace Caelum
             mParams.setNull();
         #endif
         mPhysicalIndex = InvalidPhysicalIndex;
-        assert(!this->isBound());
+        OgreAssertDbg2(!this->isBound());
     }
 }
