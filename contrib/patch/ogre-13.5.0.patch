@@ -140,7 +140,7 @@ index 5e06c194..17e8e022 100644
              }
          }
      public:
-+#if defined(_MSC_VER) && defined(_DEBUG)
++#if defined(_MSC_VER) && defined(OGRE_DEBUG_MODE)
          static OGRE_NORETURN void throwException(
 +#else
 +        static void throwException(
@@ -149,7 +149,7 @@ index 5e06c194..17e8e022 100644
              const String& desc,
              const String& src, const char* file, long line)
          {
-+#if OGRE_ASSERT_MODE > 0 || OGRE_DEBUG_MODE
++#if OGRE_ASSERT_MODE == 2 || (OGRE_ASSERT_MODE == 1 && !defined(OGRE_DEBUG_MODE))
              _throwException(code, code, desc, src, file, line);
 +#endif
          }
