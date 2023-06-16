@@ -235,6 +235,7 @@ namespace Caelum
 
         if (cleanup) {
             mOgreRoot->removeFrameListener (this);
+            delete this;
         } else {
             // We'll delete later. Make sure we're registered as a frame listener, or we'd leak.
             mOgreRoot->addFrameListener(this);
@@ -407,6 +408,7 @@ namespace Caelum
         if (mCleanup) {
             // Delayed destruction.
             mOgreRoot->removeFrameListener (this);
+            delete this;
             return true;
         }
 
