@@ -227,7 +227,7 @@ namespace Caelum
 
         LogManager::getSingleton ().logMessage ("Caelum: DONE initializing");
     }
-
+#endif
     void CaelumSystem::shutdown (const bool cleanup) {
         LogManager::getSingleton ().logMessage ("Caelum: Shutting down Caelum system...");
 
@@ -242,7 +242,7 @@ namespace Caelum
             mCleanup = true;
         }
     }
-#endif
+
     void CaelumSystem::attachViewportImpl (Ogre::Viewport* vp)
     {
         LogManager::getSingleton().getDefaultLog ()->logMessage (
