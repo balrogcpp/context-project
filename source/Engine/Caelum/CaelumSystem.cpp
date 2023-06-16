@@ -122,7 +122,7 @@ namespace Caelum
         mObserverLongitude = Ogre::Degree(0);
         mUniversalClock->setJulianDay (Astronomy::J2000);
     }
-
+#if OGRE_COMPILER != OGRE_COMPILER_CLANG
     void CaelumSystem::autoConfigure
     (
         CaelumComponent componentsToCreate/* = CAELUM_COMPONENTS_DEFAULT*/
@@ -242,7 +242,7 @@ namespace Caelum
             mCleanup = true;
         }
     }
-
+#endif
     void CaelumSystem::attachViewportImpl (Ogre::Viewport* vp)
     {
         LogManager::getSingleton().getDefaultLog ()->logMessage (
