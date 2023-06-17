@@ -33,12 +33,13 @@ THE SOFTWARE.
 #include "ProceduralUtils.h"
 #include "OgreMesh.h"
 #include "OgreManualObject.h"
-#include "ProceduralMultiShape.h"
+//#include "ProceduralMultiShape.h"
 #include "ProceduralTrack.h"
 
 namespace Procedural
 {
 class Path;
+class MultiShape;
 
 /**
 \defgroup shapegrp Shape

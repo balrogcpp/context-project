@@ -28,9 +28,10 @@ THE SOFTWARE.
 #ifndef PROCEDURAL_SVG_INCLUDED
 #define PROCEDURAL_SVG_INCLUDED
 
-#include "ProceduralPath.h"
-#include "ProceduralShape.h"
 #include "ProceduralPlatform.h"
+
+#ifdef PROCEDURAL_USE_SVG
+#include "ProceduralPath.h"
 #include "ProceduralShapeGenerators.h"
 #include <vector>
 
@@ -172,4 +173,6 @@ private:
 };
 
 }
+
+#endif // PROCEDURAL_USE_SVG
 #endif

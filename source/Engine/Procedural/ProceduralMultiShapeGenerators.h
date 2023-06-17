@@ -29,6 +29,7 @@ THE SOFTWARE.
 #define PROCEDURAL_MULTISHAPE_GENERATORS_INCLUDED
 
 #include "ProceduralMultiShape.h"
+#include "ProceduralShape.h"
 
 namespace Procedural
 {

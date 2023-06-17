@@ -26,8 +26,11 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "ProceduralStableHeaders.h"
+
+#ifdef PROCEDURAL_USE_SVG
 #include "ProceduralSVG.h"
 #include "ProceduralShape.h"
+#include "ProceduralMultiShape.h"
 #include "ProceduralShapeGenerators.h"
 #include "ProceduralPath.h"
 #include "ProceduralPathGenerators.h"
@@ -789,3 +792,4 @@ void SvgLoader::SvgLoaderPath::parseVLineTo(bool rel, bool next)
 	shape.addPoint(point);
 }
 }
+#endif // PROCEDURAL_USE_SVG

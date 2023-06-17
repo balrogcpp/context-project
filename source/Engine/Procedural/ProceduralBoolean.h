@@ -25,6 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
  */
+#ifndef PROCEDURAL_BOOLEAN_H_INCLUDED
+#define PROCEDURAL_BOOLEAN_H_INCLUDED
+
 #include "Ogre.h"
 #include "ProceduralPlatform.h"
 #include "ProceduralMeshGenerator.h"
@@ -68,3 +71,5 @@ public:
 	void addToTriangleBuffer(TriangleBuffer& buffer) const;
 };
 }
+
+#endif // PROCEDURAL_BOOLEAN_H_INCLUDED
