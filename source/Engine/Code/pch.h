@@ -7,5 +7,6 @@
 #include <Ogre.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <PagedGeometry/PagedGeometryAll.h>
+#include <OgreProcedural/Procedural.h>
 #include <SkyModel/SkyModel.h>
 #include "Platform.h"
