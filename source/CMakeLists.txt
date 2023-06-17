@@ -173,7 +173,11 @@ set(ANDROID_HOME $ENV{ANDROID_HOME})
 set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK_ROOT})
 if (ANDROID_HOME OR ANDROID_SDK_ROOT)
     if (UNIX)
-        find_program(SH sh REQUIRED)
+        find_program(SH sh)
+
+        if (NOT SH)
+            message(WARNING "SH not found on this Unix platform. Android targets will not work")
+        endif ()
     endif ()
 
     message(STATUS "Android SDK found. Adding android build targets")
