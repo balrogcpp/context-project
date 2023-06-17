@@ -167,23 +167,31 @@ if (RELEASE)
     set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPostBuild.cmake")
 endif ()
 
+
 # android
-if (UNIX)
-    set(SH "sh")
+set(ANDROID_HOME $ENV{ANDROID_HOME})
+set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK_ROOT})
+if (ANDROID_HOME OR ANDROID_SDK_ROOT)
+    if (UNIX)
+        find_program(SH sh REQUIRED)
+    endif ()
+
+    message(STATUS "Android SDK found. Adding android build targets")
+    add_custom_target(GradleContrib COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED}
+            COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets ${ARTIFACT_DIR}/demo-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
+    add_custom_target(GradleBuild COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=1 ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED})
+    add_custom_target(GradleClean COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets ${ARTIFACT_DIR}/demo-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
+else ()
+    message(STATUS "Android SDK not found. Skipping android build targets")
 endif ()
 
-add_custom_target(GradleContrib COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED}
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets ${ARTIFACT_DIR}/demo-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
-
-add_custom_target(GradleBuild COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=1 ${SH} gradlew assemble${CMAKE_BUILD_TYPE_NORMALISED})
-add_custom_target(GradleClean COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets ${ARTIFACT_DIR}/demo-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
 
 # doxygen
 include(Doxygen)
 
 
 #cpack
-set(PACKAGE_NAME "demo")
+set(PACKAGE_NAME "Tests")
 if (RELEASE)
     set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
 else ()
