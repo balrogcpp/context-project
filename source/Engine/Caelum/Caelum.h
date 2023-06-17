@@ -10,7 +10,7 @@
 #include "TypeDescriptor.h"
 #include "CaelumPlugin.h"
 #include "CaelumExceptions.h"
-//#include "CaelumSystem.h"
+#include "CaelumSystem.h"
 #include "CameraBoundElement.h"
 #include "SkyDome.h"
 #include "Sun.h"
