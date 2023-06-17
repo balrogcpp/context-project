@@ -121,6 +121,40 @@ externalproject_add(Target_SDL2
         )
 
 
+check_stamp(Target_SDL_net)
+externalproject_add(Target_SDL_net
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL_net
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL_net.git
+        GIT_TAG release-2.2.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DBUILD_SHARED_LIBS=OFF
+        -DSDL2NET_INSTALL=ON
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+        )
+
+
 check_stamp(Target_OIS)
 externalproject_add(Target_OIS
         EXCLUDE_FROM_ALL true
