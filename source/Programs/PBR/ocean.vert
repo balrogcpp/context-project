@@ -12,15 +12,18 @@
 
 #include "header.glsl"
 #ifndef MAX_WATER_OCTAVES
-    #define MAX_WATER_OCTAVES 3
+    #define MAX_WATER_OCTAVES 0
 #endif
 
+#if MAX_WATER_OCTAVES > 0
 SAMPLER2D(NoiseMap, 0);
+#endif
 
 OGRE_UNIFORMS_BEGIN
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
+#if MAX_WATER_OCTAVES > 0
 uniform highp vec4 Time;
 uniform mediump vec2 BigWaves;
 uniform mediump vec2 MidWaves;
@@ -38,6 +41,7 @@ uniform mediump vec3 WaterExtinction;
 uniform mediump vec3 SunTransmittance;
 uniform mediump float SunFade;
 uniform mediump float ScatterFade;
+#endif
 OGRE_UNIFORMS_END
 
 MAIN_PARAMETERS
@@ -52,6 +56,8 @@ MAIN_DECLARATION
     highp vec4 world = mul(WorldMatrix, position);
     vWorldPosition = world.xyz / world.w;
 
+
+#if MAX_WATER_OCTAVES > 0
     highp vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
     highp float height0 = texture2D(NoiseMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).x;
     highp float height = height0 * BigWaves.x;
@@ -83,6 +89,9 @@ MAIN_DECLARATION
 #endif
 
     position.y += height;
+
+#endif // MAX_WATER_OCTAVES > 0
+
 
     gl_Position = mul(WorldViewProjMatrix, position);
 
