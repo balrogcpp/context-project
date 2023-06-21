@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DOT_SCENELOADERB_H
 #define DOT_SCENELOADERB_H
 

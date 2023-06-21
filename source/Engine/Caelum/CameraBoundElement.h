@@ -2,6 +2,7 @@
 // It is subject to the license terms in the LICENSE file found in the top-level directory
 // of this distribution.
 
+#pragma once
 #ifndef CAELUM__CAMERA_BOUND_ELEMENT_H
 #define CAELUM__CAMERA_BOUND_ELEMENT_H
 

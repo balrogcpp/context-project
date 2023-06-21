@@ -2,6 +2,7 @@
 // It is subject to the license terms in the LICENSE file found in the top-level directory
 // of this distribution.
 
+#pragma once
 #ifndef CAELUM__FAST_GPU_PARAM_REF_H
 #define CAELUM__FAST_GPU_PARAM_REF_H
 

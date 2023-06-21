@@ -1,5 +1,4 @@
 #pragma once
-
 #include "ArHosekSkyModel.h"
 #include "Caelum/Astronomy.h"
 #include <OgreVector.h>

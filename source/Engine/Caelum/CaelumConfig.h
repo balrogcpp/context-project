@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CAELUMCONFIG_H__
 #define CAELUMCONFIG_H__
 

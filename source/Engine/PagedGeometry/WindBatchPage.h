@@ -10,6 +10,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 
 /// \file WindBatchPage.h
 /// \brief WindBatchPage is child of BatchPage to include a wind effect.
+#pragma once
 #ifndef __WindBatchPage_H__
 #define __WindBatchPage_H__
 

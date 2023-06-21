@@ -2,6 +2,7 @@
 // It is subject to the license terms in the LICENSE file found in the top-level directory
 // of this distribution.
 
+#pragma once
 #ifndef CAELUM__CAELUM_PREREQUISITES_H
 #define CAELUM__CAELUM_PREREQUISITES_H
 
@@ -25,12 +26,14 @@
     #define CAELUM_EXPORT
 #endif
 // By default only compile type descriptors for scripting.
+#pragma once
 #ifndef CAELUM_TYPE_DESCRIPTORS
     #define CAELUM_TYPE_DESCRIPTORS 0
 #endif
 
 // Scripting support requires Ogre 1.6
 // Can be also configured on compiler command line
+#pragma once
 #ifndef CAELUM_SCRIPT_SUPPORT
     #define CAELUM_SCRIPT_SUPPORT 0
 #endif

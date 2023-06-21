@@ -25,6 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+#pragma once
 #ifndef PROCEDURAL_SHAPE_GENERATORS_INCLUDED
 #define PROCEDURAL_SHAPE_GENERATORS_INCLUDED
 

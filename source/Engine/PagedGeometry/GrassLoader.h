@@ -8,6 +8,7 @@ Permission is granted to anyone to use this software for any purpose, including 
     3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
+#pragma once
 #ifndef __GrassLoader_H__
 #define __GrassLoader_H__
 

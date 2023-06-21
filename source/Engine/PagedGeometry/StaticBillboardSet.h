@@ -15,6 +15,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 //real-time)
 //-------------------------------------------------------------------------------------
 
+#pragma once
 #ifndef __StaticBillboardSet_H__
 #define __StaticBillboardSet_H__
 

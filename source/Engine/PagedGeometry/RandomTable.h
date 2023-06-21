@@ -8,6 +8,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
+#pragma once
 #ifndef __RandomTable_H__
 #define __RandomTable_H__
 

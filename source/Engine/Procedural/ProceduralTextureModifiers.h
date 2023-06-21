@@ -26,6 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
+#pragma once
 #ifndef PROCEDURAL_TEXTURE_MODIFIERS_INCLUDED
 #define PROCEDURAL_TEXTURE_MODIFIERS_INCLUDED
 

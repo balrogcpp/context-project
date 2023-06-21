@@ -20,6 +20,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 #endif //_MSC_VER
 
 
+#pragma once
 #ifndef __PagedGeometry_H__
 #define __PagedGeometry_H__
 

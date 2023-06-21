@@ -300,7 +300,7 @@ HINT #1:   if you want to model the sky of an earth-like planet that orbits
            previous paragraph.
 */
 
-
+#pragma once
 #ifndef _ARHOSEK_SKYMODEL_H_
 #define _ARHOSEK_SKYMODEL_H_
 

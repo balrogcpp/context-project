@@ -2,6 +2,7 @@
 // It is subject to the license terms in the LICENSE file found in the top-level directory
 // of this distribution.
 
+#pragma once
 #ifndef CAELUM__CAELUM_PLUGIN_H
 #define CAELUM__CAELUM_PLUGIN_H
 

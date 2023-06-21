@@ -25,6 +25,7 @@
  THE SOFTWARE.
  -----------------------------------------------------------------------------
  */
+#pragma once
 #ifndef PROCEDURAL_MESH_MODIFIERS_INCLUDED
 #define PROCEDURAL_MESH_MODIFIERS_INCLUDED
 
