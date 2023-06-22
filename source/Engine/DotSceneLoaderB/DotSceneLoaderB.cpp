@@ -9,7 +9,7 @@
 
 #include <PagedGeometry/PagedGeometryAll.h>
 
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 
 using namespace Ogre;
 
