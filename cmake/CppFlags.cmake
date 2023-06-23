@@ -19,7 +19,7 @@ option(DISABLE_RTTI "DISABLE_RTTI" OFF)
 cmake_dependent_option(ENABLE_CXX_STATIC "ENABLE_CXX_STATIC" ON "CMAKE_CXX_COMPILER_ID STREQUAL GNU AND NOT MINGW" OFF)
 
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU") AND NOT MSVC)
     if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "release")
         string(APPEND CMAKE_CXX_FLAGS " -g0 -s -Wno-unused-command-line-argument -funroll-loops")
         string(APPEND CMAKE_C_FLAGS " -g0 -s -Wno-unused-command-line-argument -funroll-loops")
@@ -104,7 +104,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+elseif (MSVC)
     if (DISABLE_EXCEPTIONS)
         string(APPEND CMAKE_CXX_FLAGS " /D_HAS_EXCEPTIONS=0")
         string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
@@ -145,4 +145,6 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         endif ()
     endif ()
 
+else ()
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} is not known")
 endif ()

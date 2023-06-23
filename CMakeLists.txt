@@ -60,7 +60,7 @@ set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
 # set artifact dir
 set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
 make_directory(${ARTIFACT_DIR})
-add_custom_target(BuildPackage ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target package --config ${CMAKE_BUILD_TYPE})
+
 
 # contrib
 add_subdirectory(contrib)
@@ -70,3 +70,7 @@ list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
 # engine sources
 add_subdirectory(source)
+
+
+# extra targets for IDEs
+add_custom_target(BuildPackage ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target package --config ${CMAKE_BUILD_TYPE})
