@@ -1,5 +1,5 @@
 # cmake min version
-cmake_minimum_required(VERSION 3.18.1)
+cmake_minimum_required(VERSION 3.18.0)
 
 
 # project
@@ -1550,43 +1550,6 @@ externalproject_add(Target_cpr
         )
 
 
-check_stamp(Target_entt)
-externalproject_add(Target_entt
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_entt
-        GIT_REPOSITORY https://github.com/skypjack/entt.git
-        GIT_TAG v3.12.1
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DENTT_INCLUDE_HEADERS=ON
-        -DENTT_INCLUDE_NATVIS=ON
-        -DENTT_BUILD_TESTING=OFF
-        -DENTT_BUILD_BENCHMARK=OFF
-        -DENTT_BUILD_EXAMPLE=OFF
-        -DENTT_BUILD_DOCS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
 check_stamp(Target_opencv_contrib)
 externalproject_add(Target_opencv_contrib
         EXCLUDE_FROM_ALL true
@@ -1670,6 +1633,38 @@ externalproject_add(Target_QT5
         CONFIGURE_COMMAND ${DEPS_SOURCE_LOCATION}/Target_QT5/configure -confirm-license -developer-build -opensource -nomake examples -nomake tests
         BUILD_COMMAND ${CMAKE_COMMAND} --build .
         INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+        )
+
+
+check_stamp(Target_swig)
+externalproject_add(Target_swig
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_swig
+        GIT_REPOSITORY https://github.com/swig/swig.git
+        GIT_TAG v4.1.1
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DWITH_PCRE=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )
