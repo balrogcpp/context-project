@@ -1479,14 +1479,14 @@ externalproject_add(Target_LibreSSL
         )
 
 
-check_stamp(Target_libcurl)
-externalproject_add(Target_libcurl
+check_stamp(Target_curl)
+externalproject_add(Target_curl
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libcurl
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_curl
         GIT_REPOSITORY https://github.com/curl/curl.git
         GIT_TAG curl-8_1_2
         GIT_SHALLOW true
