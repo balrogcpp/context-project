@@ -63,7 +63,6 @@ elseif (ANDROID OR IOS)
 endif ()
 
 
-
 if (CMAKE_BUILD_TYPE_LOWER STREQUAL "debug")
     set(DEBUG 1)
     set(CMAKE_BUILD_TYPE_NORMALISED "Debug")

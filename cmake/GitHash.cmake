@@ -24,7 +24,7 @@ if (NOT GIT_SHA AND NOT GIT_SHA_SHORT AND GIT_FOUND AND IS_DIRECTORY ${CMAKE_SOU
                 OUTPUT_STRIP_TRAILING_WHITESPACE
         )
 
-    # try to find out HEAD hash without main repo
+        # try to find out HEAD hash without main repo
     elseif (EXISTS "${CMAKE_SOURCE_DIR}/.git/HEAD")
         file(READ "${CMAKE_SOURCE_DIR}/.git/HEAD" GIT_HEAD)
         string(REGEX MATCH "[^ ]+$" GIT_HEAD ${GIT_HEAD})

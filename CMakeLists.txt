@@ -59,7 +59,7 @@ set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
 
 # set artifact dir
 set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
-make_directory(${ARTIFACT_DIR})
+file(MAKE_DIRECTORY ${ARTIFACT_DIR})
 
 
 # contrib

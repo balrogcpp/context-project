@@ -13,7 +13,7 @@ include(DateTime)
 # assets
 set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
 set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
-make_directory(${ASSETS_DIR_ANDROID})
+file(MAKE_DIRECTORY ${ASSETS_DIR_ANDROID})
 
 if (NOT CPP_COMPILER)
     if (CMAKE_CROSSCOMPILING)
