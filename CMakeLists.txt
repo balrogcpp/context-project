@@ -74,3 +74,4 @@ add_subdirectory(source)
 
 # extra targets for IDEs
 add_custom_target(BuildPackage ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target package --config ${CMAKE_BUILD_TYPE})
+add_custom_target(CleanPackage ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target clean --config ${CMAKE_BUILD_TYPE})
