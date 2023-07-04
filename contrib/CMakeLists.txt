@@ -759,7 +759,7 @@ externalproject_add(Target_imgui
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.89.6 # same version as used by OGRE
+        GIT_TAG v1.89.7
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1280,7 +1280,7 @@ externalproject_add(Target_GoogleBenchmark
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleBenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.7.1
+        GIT_TAG v1.8.1
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
