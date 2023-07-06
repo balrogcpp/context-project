@@ -1280,7 +1280,7 @@ externalproject_add(Target_GoogleBenchmark
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleBenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.8.1
+        GIT_TAG v1.8.2
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
