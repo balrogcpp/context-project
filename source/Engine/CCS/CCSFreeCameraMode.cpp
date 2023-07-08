@@ -215,7 +215,7 @@ Ogre::Vector3 CCS::FreeCameraMode::getFirstRealHit(Ogre::Vector3 origin, Ogre::V
 			intersect = true;
 			if(itr->worldFragment)
 			{
-				hit = itr->worldFragment->singleIntersection;
+				//hit = itr->worldFragment->singleIntersection;
 			}
 			else //if(itr->movable)
 			{					

@@ -255,7 +255,7 @@ namespace CCS
 				intersect = true;
 				if(itr->worldFragment)
 				{
-					finalCameraPosition = itr->worldFragment->singleIntersection;
+					//finalCameraPosition = itr->worldFragment->singleIntersection;
 				}
 				else //if(itr->movable)
 				{					

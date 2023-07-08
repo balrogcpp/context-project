@@ -56,7 +56,7 @@ Ogre::Vector3 CCS::CollidableOrbitalCameraMode::DefaultCollisionDetectionFunctio
 	// Get the results, set the camera height
 	if (itr != result.end() && itr->worldFragment)
 	{
-		finalCameraPosition = itr->worldFragment->singleIntersection;				
+		//finalCameraPosition = itr->worldFragment->singleIntersection;				
 	}
 
 	mCameraCS->getSceneManager()->destroyQuery(raySceneQuery);

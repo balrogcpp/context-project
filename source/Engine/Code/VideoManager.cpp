@@ -422,7 +422,7 @@ void VideoManager::InitOgreRoot() {
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
-  Ogre::Root::getSingleton().installPlugin(new Ogre::STBIImageCodec());
+  Ogre::STBIImageCodec::startup();
 #endif
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
   Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
