@@ -1,0 +1,354 @@
+diff --git a/CMake/Templates/imconfig.h b/CMake/Templates/imconfig.h
+index 7f6a28ce2..861009898 100644
+--- a/CMake/Templates/imconfig.h
++++ b/CMake/Templates/imconfig.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
++#define IMGUI_USE_WCHAR32
+ #include <OgreOverlayPrerequisites.h>
+ #define IMGUI_API _OgreOverlayExport
+ #cmakedefine IMGUI_ENABLE_FREETYPE
+\ No newline at end of file
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b7a7b8bf8..b8d053d42 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -267,12 +267,12 @@ elseif(EMSCRIPTEN)
+   set(OGRE_BUILD_PLUGIN_BSP FALSE CACHE BOOL "Disable pcz on Emscripten" FORCE)
+   set(OGRE_BUILD_TOOLS FALSE CACHE BOOL "Disable tools on Emscripten" FORCE)
+   set(OGRE_BUILD_TESTS FALSE CACHE BOOL "Disable tests on Emscripten" FORCE)
+-  set(OGRE_BUILD_COMPONENT_VOLUME FALSE CACHE BOOL "Disable volume component on Emscripten" FORCE)
++  #set(OGRE_BUILD_COMPONENT_VOLUME FALSE CACHE BOOL "Disable volume component on Emscripten" FORCE)
+   set(OGRE_BUILD_COMPONENT_PAGING FALSE CACHE BOOL "Disable paging component on Emscripten" FORCE)
+-  set(OGRE_BUILD_COMPONENT_TERRAIN FALSE CACHE BOOL "Disable terrain component on Emscripten" FORCE)
++  #set(OGRE_BUILD_COMPONENT_TERRAIN FALSE CACHE BOOL "Disable terrain component on Emscripten" FORCE)
+   set(OGRE_STATIC TRUE CACHE BOOL "Forcing static build for Emscripten" FORCE)
+ 
+-  set(OGRE_CONFIG_THREADS "0" CACHE STRING "Threading is unstable on Emscripten" FORCE)
++  #set(OGRE_CONFIG_THREADS "0" CACHE STRING "Threading is unstable on Emscripten" FORCE)
+ elseif (APPLE AND NOT APPLE_IOS)
+   # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
+   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
+diff --git a/Components/Overlay/CMakeLists.txt b/Components/Overlay/CMakeLists.txt
+index 0c74ce293..829e60803 100644
+--- a/Components/Overlay/CMakeLists.txt
++++ b/Components/Overlay/CMakeLists.txt
+@@ -86,7 +86,7 @@ if(OGRE_BUILD_COMPONENT_OVERLAY_IMGUI)
+   configure_file(${OGRE_TEMPLATES_DIR}/imconfig.h ${IMGUI_DIR}/imconfig.h)
+ 
+   list(APPEND HEADER_FILES
+-    ${IMGUI_DIR}/imgui.h
++    ${IMGUI_DIR}/imgui.h ${IMGUI_DIR}/imgui_internal.h ${IMGUI_DIR}/imstb_textedit.h ${IMGUI_DIR}/imstb_truetype.h ${IMGUI_DIR}/imstb_rectpack.h
+     ${IMGUI_DIR}/imconfig.h)
+ endif()
+ 
+diff --git a/Components/Terrain/include/OgreTerrainQuadTreeNode.h b/Components/Terrain/include/OgreTerrainQuadTreeNode.h
+index 4975e2d21..866b0eb07 100644
+--- a/Components/Terrain/include/OgreTerrainQuadTreeNode.h
++++ b/Components/Terrain/include/OgreTerrainQuadTreeNode.h
+@@ -77,7 +77,7 @@ namespace Ogre
+         the same (relative) LOD index no matter where you are in the tree, therefore
+         buffers can potentially be reused more easily.
+     */
+-    class _OgreTerrainExport TerrainQuadTreeNode : private Renderable, private MovableObject
++    class _OgreTerrainExport TerrainQuadTreeNode : public Renderable, public MovableObject
+     {
+     public:
+         /** Constructor.
+diff --git a/Components/Terrain/src/OgreTerrain.cpp b/Components/Terrain/src/OgreTerrain.cpp
+index 4aa482d78..41250c260 100644
+--- a/Components/Terrain/src/OgreTerrain.cpp
++++ b/Components/Terrain/src/OgreTerrain.cpp
+@@ -4191,7 +4191,7 @@ namespace Ogre
+         else
+         {
+             // float3 position
+-            sz += sizeof(float) * 3;
++            sz += sizeof(float) * 3; if(0) sz += sizeof(float) * 6; // + normal + tangent
+             // float2 uv
+             sz += sizeof(float) * 2;
+         }
+diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+index 18dbc9a73..17d8d7a69 100644
+--- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
++++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+@@ -179,7 +179,7 @@ namespace Ogre
+             for (int i = 0; i < 4; ++i)
+                 mChildren[i]->prepare();
+         }
+-
++        setCastShadows(TerrainGlobalOptions::getSingleton().getCastsDynamicShadows());
+     }
+     //---------------------------------------------------------------------
+     void TerrainQuadTreeNode::prepare(StreamSerialiser& stream)
+@@ -595,7 +595,7 @@ namespace Ogre
+                 // 28 bytes per vertex, compatibility
+                 // POSITION 
+                 // float3(x, y, z)
+-                offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_POSITION).getSize();
++                offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_POSITION).getSize(); if(0){offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_NORMAL).getSize(); offset += dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT3, VES_TANGENT).getSize();}
+                 // UV0
+                 // float2(u, v)
+                 dcl->addElement(POSITION_BUFFER, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0).getSize();
+@@ -898,7 +898,7 @@ namespace Ogre
+             *pPosBuf++ = pos.x;
+             *pPosBuf++ = pos.y;
+             *pPosBuf++ = pos.z;
+-            
++            if(0){Vector3 n = Vector3::ZERO, t, c, adj[8]; mTerrain->getPointFromSelfOrNeighbour(x, y ,&c); mTerrain->getPointFromSelfOrNeighbour(x+1, y, &adj[0]); mTerrain->getPointFromSelfOrNeighbour(x+1, y+1, &adj[1]); mTerrain->getPointFromSelfOrNeighbour(x, y+1, &adj[2]); mTerrain->getPointFromSelfOrNeighbour(x-1, y+1, &adj[3]); mTerrain->getPointFromSelfOrNeighbour(x-1, y, &adj[4]); mTerrain->getPointFromSelfOrNeighbour(x-1, y-1, &adj[5]); mTerrain->getPointFromSelfOrNeighbour(x, y-1, &adj[6]); mTerrain->getPointFromSelfOrNeighbour(x+1, y-1, &adj[7]); for (int i = 0; i < 8; ++i) n += Math::calculateBasicFaceNormal(c, adj[i], adj[(i+1)%8]); n.normalise(); *pPosBuf++ = n.x; *pPosBuf++ = n.y; *pPosBuf++ = n.z; t = adj[4].x >= 0.0 ? adj[4] - c : c - adj[0]; t.normalise(); *pPosBuf++ = t.x; *pPosBuf++ = t.y; *pPosBuf++ = t.z;}
+             // UVs - base UVs vary from 0 to 1, all other values
+             // will be derived using scalings
+             *pPosBuf++ = x * uvScale;
+diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
+index 44a177874..ef6c0c436 100644
+--- a/OgreMain/CMakeLists.txt
++++ b/OgreMain/CMakeLists.txt
+@@ -241,10 +241,10 @@ if (APPLE)
+   endif()
+ endif ()
+ target_link_libraries(OgreMain PUBLIC ${PLATFORM_LIBS} PRIVATE ${LIBRARIES} ${CMAKE_DL_LIBS})
+-
++if (!APPLE)
+ # specify a precompiled header to use
+ add_native_precompiled_header(OgreMain "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/src/OgreStableHeaders.h>")
+-
++endif ()
+ # install OgreMain
+ ogre_config_lib(OgreMain TRUE)
+ install(FILES ${HEADER_FILES}
+diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
+index 5e06c1945..ee4cf91e9 100644
+--- a/OgreMain/include/OgreException.h
++++ b/OgreMain/include/OgreException.h
+@@ -69,7 +69,7 @@ THE SOFTWARE.
+ /// replaced with OgreAssert(expr, mesg) in Debug configuration
+ #   define OgreAssertDbg( expr, mesg )
+ #endif
+-
++#define OgreAssertDbg2( a ) OgreAssertDbg( a, #a )
+ namespace Ogre {
+ 
+     /** \addtogroup Core
+@@ -272,12 +272,18 @@ namespace Ogre {
+             }
+         }
+     public:
++#if defined(_MSC_VER) && defined(_DEBUG)
+         static OGRE_NORETURN void throwException(
++#else
++        static void throwException(
++#endif
+             Exception::ExceptionCodes code,
+             const String& desc,
+             const String& src, const char* file, long line)
+         {
++#if OGRE_ASSERT_MODE == 2 || (OGRE_ASSERT_MODE == 1 && !defined(OGRE_DEBUG_MODE))
+             _throwException(code, code, desc, src, file, line);
++#endif
+         }
+     };
+     
+diff --git a/OgreMain/src/OgreAutoParamDataSource.cpp b/OgreMain/src/OgreAutoParamDataSource.cpp
+index 4ea04312e..8285ead87 100644
+--- a/OgreMain/src/OgreAutoParamDataSource.cpp
++++ b/OgreMain/src/OgreAutoParamDataSource.cpp
+@@ -340,7 +340,7 @@ namespace Ogre {
+             }
+             else
+             {
+-                mProjectionMatrix = mCurrentCamera->getProjectionMatrixWithRSDepth();
++                mProjectionMatrix = mCurrentCamera->getProjectionMatrix();
+             }
+             if (mCurrentRenderTarget && mCurrentRenderTarget->requiresTextureFlipping())
+             {
+@@ -674,14 +674,14 @@ namespace Ogre {
+                         mCurrentCamera->getDerivedPosition(), viewMatrix);
+                     mTextureViewProjMatrix[index] = 
+                         Matrix4::CLIPSPACE2DTOIMAGESPACE *
+-                        mCurrentTextureProjector[index]->getProjectionMatrixWithRSDepth() * 
++                        mCurrentTextureProjector[index]->getProjectionMatrix() *
+                         viewMatrix;
+                 }
+                 else
+                 {
+                     mTextureViewProjMatrix[index] = 
+                         Matrix4::CLIPSPACE2DTOIMAGESPACE *
+-                        mCurrentTextureProjector[index]->getProjectionMatrixWithRSDepth() * 
++                        mCurrentTextureProjector[index]->getProjectionMatrix() *
+                         mCurrentTextureProjector[index]->getViewMatrix();
+                 }
+                 mTextureViewProjMatrixDirty[index] = false;
+@@ -746,7 +746,7 @@ namespace Ogre {
+                 // since they are built into the frustum position
+                 mSpotlightViewProjMatrix[index] = 
+                     Matrix4::CLIPSPACE2DTOIMAGESPACE *
+-                    frust.getProjectionMatrixWithRSDepth() * 
++                    frust.getProjectionMatrix() *
+                     frust.getViewMatrix();
+ 
+                 mSpotlightViewProjMatrixDirty[index] = false;
+diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
+index 647458439..9df646c64 100644
+--- a/OgreMain/src/OgreRoot.cpp
++++ b/OgreMain/src/OgreRoot.cpp
+@@ -981,7 +981,7 @@ namespace Ogre {
+     //-----------------------------------------------------------------------
+     void Root::unloadPlugins(void)
+     {
+-#if OGRE_PLATFORM != OGRE_PLATFORM_EMSCRIPTEN
++#ifndef OGRE_STATIC_LIB
+         // unload dynamic libs first
+         for (PluginLibList::reverse_iterator i = mPluginLibs.rbegin(); i != mPluginLibs.rend(); ++i)
+         {
+@@ -1141,7 +1141,7 @@ namespace Ogre {
+     //-----------------------------------------------------------------------
+     void Root::loadPlugin(const String& pluginName)
+     {
+-#if OGRE_PLATFORM != OGRE_PLATFORM_EMSCRIPTEN
++#ifndef OGRE_STATIC_LIB
+         // Load plugin library
+         DynLib* lib = DynLibManager::getSingleton().load( pluginName );
+         // Store for later unload
+@@ -1168,7 +1168,7 @@ namespace Ogre {
+     //-----------------------------------------------------------------------
+     void Root::unloadPlugin(const String& pluginName)
+     {
+-#if OGRE_PLATFORM != OGRE_PLATFORM_EMSCRIPTEN
++#ifndef OGRE_STATIC_LIB
+         PluginLibList::iterator i;
+ 
+         for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
+diff --git a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp b/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
+index 560ac60b0..539c2e820 100644
+--- a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
++++ b/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
+@@ -50,9 +50,9 @@ namespace Ogre
+     //---------------------------------------------------------------------
+     void PSSMShadowCameraSetup::calculateSplitPoints(uint splitCount, Real nearDist, Real farDist, Real lambda)
+     {
+-        if (splitCount < 2)
+-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Cannot specify less than 2 splits", 
+-            "PSSMShadowCameraSetup::calculateSplitPoints");
++        //if (splitCount < 2)
++            //OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Cannot specify less than 2 splits",
++            //"PSSMShadowCameraSetup::calculateSplitPoints");
+ 
+         mSplitPoints.resize(splitCount + 1);
+         mOptimalAdjustFactors.resize(splitCount);
+diff --git a/OgreMain/src/OgreShadowRenderer.cpp b/OgreMain/src/OgreShadowRenderer.cpp
+index b03f7e932..6fa9e5ebf 100644
+--- a/OgreMain/src/OgreShadowRenderer.cpp
++++ b/OgreMain/src/OgreShadowRenderer.cpp
+@@ -747,7 +747,7 @@ void SceneManager::ShadowRenderer::prepareShadowTextures(Camera* cam, Viewport*
+     else
+     {
+         // disable fogging explicitly
+-        mShadowReceiverPass->setFog(true, FOG_NONE);
++        //mShadowReceiverPass->setFog(true, FOG_NONE);
+     }
+ 
+     // Iterate over the lights we've found, max out at the limit of light textures
+@@ -1287,7 +1287,7 @@ void SceneManager::ShadowRenderer::initShadowVolumeMaterials()
+      */
+     OgreAssert( mDestRenderSystem, "no RenderSystem");
+ 
+-    if (mShadowMaterialInitDone)
++    if (mShadowMaterialInitDone = true)
+         return;
+ 
+     if (!mShadowDebugPass)
+diff --git a/PlugIns/STBICodec/src/OgreSTBICodec.cpp b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
+index b605fff9b..9df811917 100644
+--- a/PlugIns/STBICodec/src/OgreSTBICodec.cpp
++++ b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
+@@ -41,7 +41,7 @@ THE SOFTWARE.
+ #define STB_IMAGE_IMPLEMENTATION
+ #define STB_IMAGE_STATIC
+ #include "stbi/stb_image.h"
+-
++#undef HAVE_ZLIB
+ #ifdef HAVE_ZLIB
+ #include <zlib.h>
+ static Ogre::uchar* custom_zlib_compress(Ogre::uchar* data, int data_len, int* out_len, int /*quality*/)
+diff --git a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+index 5cb052037..4d5a1e514 100644
+--- a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
++++ b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+@@ -199,7 +199,7 @@ namespace Ogre {
+                     GLsizei glArraySize = (GLsizei)def->arraySize;
+ 
+                     // this is a monolitic program so we can use the cache of any attached shader
+-                    GLUniformCache* uniformCache =  mShaders[GPT_VERTEX_PROGRAM]->getUniformCache();
++                    GLUniformCache* uniformCache =  mShaders[GPT_FRAGMENT_PROGRAM]->getUniformCache();
+                     void* val = def->isSampler() ? (void*)params->getRegPointer(def->physicalIndex)
+                                                  : (void*)params->getFloatPointer(def->physicalIndex);
+ 
+diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
+index 024ddebfa..19220d48b 100644
+--- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
++++ b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
+@@ -122,7 +122,7 @@ namespace Ogre {
+           mLevel(level)
+     {
+         // Get face identifier
+-        mFaceTarget = mTarget;
++        mFaceTarget = mTarget; mUsage &= ~TU_AUTOMIPMAP;
+         if(mTarget == GL_TEXTURE_CUBE_MAP)
+             mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
+ 
+diff --git a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+index 0c5d9323e..209508bf9 100644
+--- a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
++++ b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+@@ -215,7 +215,7 @@ namespace Ogre {
+ #if OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
+         int* gamma_attribs = NULL;
+ #else
+-        int gamma_attribs[] = {EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR, EGL_NONE};
++        int gamma_attribs[] = {EGL_NONE};
+ #endif
+         mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
+ 
+diff --git a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
+index 657a5cb1b..6fd19ef02 100644
+--- a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
++++ b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
+@@ -76,9 +76,9 @@ namespace Ogre {
+         if(mShaderVersion < 150 && getLanguage() == "glsl" && rsc->isShaderProfileSupported("glsl150"))
+             verStr = "150";
+ #endif
+-
++        if (getLanguage() == "glsles" && mShaderVersion >= 300 && mSource.find("#ifndef __VERSION__") != String::npos) mSource = String("#version 300 es\n") + mSource;
+         cpp.Define("__VERSION__", 11, verStr.c_str(), verStr.size());
+-
++        if (getLanguage() == "glsl" && mShaderVersion >= 300 && mSource.find("#ifndef __VERSION__") != String::npos) mSource = String("#version 330 core\n") + mSource;
+         String defines = appendBuiltinDefines(mPreprocessorDefines);
+ 
+         for(const auto& def : parseDefines(defines))
+diff --git a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm b/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
+index 6cab88362..f176b465b 100644
+--- a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
++++ b/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
+@@ -408,8 +408,8 @@ namespace Ogre {
+     unsigned int CocoaWindow::getWidth() const
+     {
+         // keep mWidth in sync with reality
+-        OgreAssertDbg(mView == nil || int(mWidth) == _getPixelFromPoint([mView frame].size.width),
+-                      "Window dimension mismatch. Did you call windowMovedOrResized?");
++        //OgreAssertDbg(mView == nil || int(mWidth) == _getPixelFromPoint([mView frame].size.width),
++                      //"Window dimension mismatch. Did you call windowMovedOrResized?");
+ 
+         return mWidth;
+     }
+@@ -417,8 +417,8 @@ namespace Ogre {
+     unsigned int CocoaWindow::getHeight() const
+     {
+         // keep mHeight in sync with reality
+-        OgreAssertDbg(mView == nil || int(mHeight) == _getPixelFromPoint([mView frame].size.height),
+-                      "Window dimension mismatch. Did you call windowMovedOrResized?");
++        //OgreAssertDbg(mView == nil || int(mHeight) == _getPixelFromPoint([mView frame].size.height),
++                      //"Window dimension mismatch. Did you call windowMovedOrResized?");
+ 
+         return mHeight;
+     }

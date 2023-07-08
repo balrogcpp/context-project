@@ -86,8 +86,8 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
 
  public:
   TerrainMaterialGeneratorB() {
-    mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
-    setActiveProfile(mProfiles.back());
+    //mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
+    //setActiveProfile(mProfiles.back());
   }
   virtual ~TerrainMaterialGeneratorB() {}
 };

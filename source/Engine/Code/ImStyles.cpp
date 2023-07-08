@@ -1872,7 +1872,7 @@ bool SliderScalar(const char *label, ImGuiDataType data_type, void *p_data, cons
     format = PatchFormatStringFloatToInt(format);
   const bool temp_input_allowed = (flags & ImGuiSliderFlags_NoInput) == 0;
   // Tabbing or CTRL-clicking on Slider turns it into an input box
-  const bool hovered = /*ItemHoverable( text, id ) || */ ItemHoverable(slider_bb, id);
+  const bool hovered = /*ItemHoverable( text, id ) || */ ItemHoverable(slider_bb, id, ImGuiItemFlags_None);
   bool temp_input_is_active = temp_input_allowed && TempInputIsActive(id);
   if (!temp_input_is_active) {
     const bool input_requested_by_tabbing = temp_input_allowed && (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_FocusedByTabbing) != 0;

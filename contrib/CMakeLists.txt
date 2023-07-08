@@ -774,7 +774,7 @@ externalproject_add(Target_imgui
         )
 
 
-check_stamp_patch(Target_OGRE ogre-13.5.0.patch)
+check_stamp_patch(Target_OGRE ogre-14.0.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -784,7 +784,7 @@ externalproject_add(Target_OGRE
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-        GIT_TAG v13.6.4
+        GIT_TAG v14.0.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
