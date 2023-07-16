@@ -19,11 +19,10 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
     virtual ~SM2Profile() {}
   };
 
+  std::unique_ptr<SM2Profile> activeProfile;
+
  public:
-  TerrainMaterialGeneratorB() {
-    // mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
-    // setActiveProfile(mProfiles.back());
-  }
+  TerrainMaterialGeneratorB() { activeProfile.reset(new SM2Profile(this)); }
   virtual ~TerrainMaterialGeneratorB() {}
 
   uint8 getMaxLayers(const Terrain *terrain) const override { return terrainMaxLayers; }
