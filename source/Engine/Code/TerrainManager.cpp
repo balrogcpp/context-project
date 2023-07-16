@@ -5,91 +5,92 @@
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "PhysicsManager.h"
 #include <Ogre.h>
+#include <OgreTerrainMaterialGenerator.h>
 
 using namespace std;
 
 namespace Ogre {
 
-class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
+class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
  private:
-  class SM2Profile : public Ogre::TerrainMaterialGenerator::Profile {
+  class SM2Profile : public Profile {
    public:
-    SM2Profile(TerrainMaterialGenerator *parent, const Ogre::String &name, const Ogre::String &desc) : Profile(parent, name, desc) {}
-    ~SM2Profile() {}
-
-    Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return terrainMaxLayers; }
-    void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
-    void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
-    bool isVertexCompressionSupported() const override { return enableVertexCompression; }
-    void setLightmapEnabled(bool enabled) override { enableLightmap = enabled; }
-
-    void requestOptions(Ogre::Terrain *terrain) override {
-      terrain->_setMorphRequired(true);
-      terrain->_setNormalMapRequired(enableNormalmap);
-      terrain->_setLightMapRequired(enableLightmap, true);
-      terrain->_setCompositeMapRequired(enableCompositeMap);
-    }
-
-    Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) override {
-      const std::string materialName = "TerrainCustom";
-      static unsigned long long generator = 0;
-      std::string newName = materialName + std::to_string(generator++);
-
-      auto newMaterial = Ogre::MaterialManager::getSingleton().getByName(materialName)->clone(newName);
-      auto *pass = newMaterial->getTechnique(0)->getPass(0);
-      auto *texState = pass->getTextureUnitState("TerraNormal");
-      auto *texState2 = pass->getTextureUnitState("TerraLight");
-      float uvScale = 2.0f * (terrain->getSize() - 1) / terrain->getWorldSize();
-
-      if (pass->hasFragmentProgram()) {
-        const auto &fp = pass->getFragmentProgramParameters();
-        fp->setNamedConstant("TexScale", uvScale);
-      }
-
-      if (isVertexCompressionSupported()) {
-        if (pass->hasVertexProgram()) {
-          const auto &vp = pass->getVertexProgramParameters();
-
-          Ogre::Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
-          vp->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
-          Ogre::Real baseUVScale = 1.0f / (terrain->getSize() - 1);
-          vp->setNamedConstant("baseUVScale", baseUVScale);
-        }
-      }
-
-      if (texState && enableNormalmap) {
-        texState->setTexture(terrain->getTerrainNormalMap());
-      }
-
-      if (texState2 && enableLightmap) {
-        texState2->setTexture(terrain->getLightmap());
-      }
-
-      return newMaterial;
-    }
-
-    Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) override {
-      std::string materialName = "TerrainCustom";
-      static unsigned long long generator = 0;
-      std::string newName = materialName + "Comp" + std::to_string(generator++);
-
-      return Ogre::MaterialManager::getSingleton().getByName(materialName)->clone(newName);
-    }
-
-   protected:
-    bool enableLightmap = true;
-    const bool enableNormalmap = true;
-    const bool enableCompositeMap = false;
-    const bool enableVertexCompression = true;
-    const int8_t terrainMaxLayers = 1;
+    SM2Profile(TerrainMaterialGenerator *parent) {}
+    virtual ~SM2Profile() {}
   };
 
  public:
   TerrainMaterialGeneratorB() {
-    //mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
-    //setActiveProfile(mProfiles.back());
+    // mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
+    // setActiveProfile(mProfiles.back());
   }
   virtual ~TerrainMaterialGeneratorB() {}
+
+  uint8 getMaxLayers(const Terrain *terrain) const override { return terrainMaxLayers; }
+  void updateParams(const MaterialPtr &mat, const Terrain *terrain) override {}
+  void updateParamsForCompositeMap(const MaterialPtr &mat, const Terrain *terrain) override {}
+  bool isVertexCompressionSupported() const override { return enableVertexCompression; }
+  void setLightmapEnabled(bool enabled) override { enableLightmap = enabled; }
+
+  void requestOptions(Terrain *terrain) override {
+    terrain->_setMorphRequired(true);
+    terrain->_setNormalMapRequired(enableNormalmap);
+    terrain->_setLightMapRequired(enableLightmap, true);
+    terrain->_setCompositeMapRequired(enableCompositeMap);
+  }
+
+  MaterialPtr generate(const Terrain *terrain) override {
+    const std::string materialName = "TerrainCustom";
+    static unsigned long long generator = 0;
+    std::string newName = materialName + std::to_string(generator++);
+
+    auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
+    auto *pass = newMaterial->getTechnique(0)->getPass(0);
+    auto *texState = pass->getTextureUnitState("TerraNormal");
+    auto *texState2 = pass->getTextureUnitState("TerraLight");
+    float uvScale = 2.0f * (terrain->getSize() - 1) / terrain->getWorldSize();
+
+    if (pass->hasFragmentProgram()) {
+      const auto &fp = pass->getFragmentProgramParameters();
+      fp->setNamedConstant("TexScale", uvScale);
+    }
+
+    if (isVertexCompressionSupported()) {
+      if (pass->hasVertexProgram()) {
+        const auto &vp = pass->getVertexProgramParameters();
+
+        Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
+        vp->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
+        Real baseUVScale = 1.0f / (terrain->getSize() - 1);
+        vp->setNamedConstant("baseUVScale", baseUVScale);
+      }
+    }
+
+    if (texState && enableNormalmap) {
+      texState->setTexture(terrain->getTerrainNormalMap());
+    }
+
+    if (texState2 && enableLightmap) {
+      texState2->setTexture(terrain->getLightmap());
+    }
+
+    return newMaterial;
+  }
+
+  MaterialPtr generateForCompositeMap(const Terrain *terrain) override {
+    std::string materialName = "TerrainCustom";
+    static unsigned long long generator = 0;
+    std::string newName = materialName + "Comp" + std::to_string(generator++);
+
+    return MaterialManager::getSingleton().getByName(materialName)->clone(newName);
+  }
+
+ protected:
+  bool enableLightmap = true;
+  const bool enableNormalmap = true;
+  const bool enableCompositeMap = false;
+  const bool enableVertexCompression = true;
+  const int8_t terrainMaxLayers = 1;
 };
 }  // namespace Ogre
 
