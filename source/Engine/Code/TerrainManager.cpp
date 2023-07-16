@@ -19,7 +19,7 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
     virtual ~SM2Profile() {}
   };
 
-  std::unique_ptr<SM2Profile> activeProfile;
+  unique_ptr<SM2Profile> activeProfile;
 
  public:
   TerrainMaterialGeneratorB() { activeProfile.reset(new SM2Profile(this)); }
@@ -39,9 +39,9 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
   }
 
   MaterialPtr generate(const Terrain *terrain) override {
-    const std::string materialName = "TerrainCustom";
+    const string materialName = "TerrainCustom";
     static unsigned long long generator = 0;
-    std::string newName = materialName + std::to_string(generator++);
+    string newName = materialName + std::to_string(generator++);
 
     auto newMaterial = MaterialManager::getSingleton().getByName(materialName)->clone(newName);
     auto *pass = newMaterial->getTechnique(0)->getPass(0);
@@ -77,9 +77,9 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
   }
 
   MaterialPtr generateForCompositeMap(const Terrain *terrain) override {
-    std::string materialName = "TerrainCustom";
+    string materialName = "TerrainCustom";
     static unsigned long long generator = 0;
-    std::string newName = materialName + "Comp" + std::to_string(generator++);
+    string newName = materialName + "Comp" + std::to_string(generator++);
 
     return MaterialManager::getSingleton().getByName(materialName)->clone(newName);
   }
@@ -137,7 +137,7 @@ void TerrainManager::ProcessTerrainCollider(Ogre::TerrainGroup *terrainGroup) {
   GetComponent<PhysicsManager>().CreateTerrainHeightfieldShape(terrainGroup);
 }
 
-void TerrainManager::LoadTerrainGroupLegacy(int x, int y, const std::string &filename) {
+void TerrainManager::LoadTerrainGroupLegacy(int x, int y, const string &filename) {
   ogreTerrainGroup->loadLegacyTerrain(filename, x, y, true);
   ogreTerrainGroup->setOrigin(Ogre::Vector3::ZERO);
   ogreTerrainGroup->freeTemporaryResources();
