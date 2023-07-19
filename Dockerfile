@@ -13,7 +13,7 @@ RUN git config --global http.postBuffer 1048576000 \
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.26.4
+ARG CMAKE_VERSION=3.27.0
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.0.2
@@ -28,7 +28,7 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
 #vcpkg
-#ARG VCPKG_VERSION=2023.04.15
+#ARG VCPKG_VERSION=2023.06.20
 #ARG VCPKG_HOME=/opt
 #RUN cd ${VCPKG_HOME} && git clone -b ${VCPKG_VERSION} --depth 1 https://github.com/microsoft/vcpkg.git \
 #    && sh ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
