@@ -96,6 +96,13 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GN
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
 
+    # fix for clang futures issue
+    # https://github.com/msys2/MINGW-packages/issues/5786#issuecomment-537495579
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
+        string(APPEND CMAKE_CXX_FLAGS " -femulated-tls")
+        string(APPEND CMAKE_C_FLAGS " -femulated-tls")
+    endif ()
+
     if (ENABLE_CXX_STATIC)
         string(APPEND CMAKE_CXX_FLAGS " -static-libstdc++")
     endif ()

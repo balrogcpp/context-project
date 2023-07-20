@@ -109,7 +109,7 @@ RUN apt-get update \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && cmake --build . --target GradleBuild \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
-    && apt-get -y purge openjdk-${JAVA_MAJOR}-jdk \
+    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
     && apt-get -y autoremove
 
 
