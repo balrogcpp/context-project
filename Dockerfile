@@ -1,4 +1,4 @@
-FROM balrogcpp/clang_cross
+FROM balrogcpp/clang_cross:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/var/build
@@ -106,7 +106,6 @@ RUN apt-get update \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && cmake --build . --target GradleContrib \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && cmake --build . --target GradleBuild \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \

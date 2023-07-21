@@ -1,4 +1,4 @@
-FROM balrogcpp/gcc_oldlinux
+FROM balrogcpp/gcc_oldlinux:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/var/build
