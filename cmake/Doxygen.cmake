@@ -43,7 +43,6 @@ endif ()
 if (${LATEX_PDFLATEX_FOUND})
     message(STATUS "Latex PDF found. PDF generation enabled")
     add_custom_target(DoxygenPdf
-            DEPENDS DoxygenHtml
             COMMAND ${DOXYGEN_EXECUTABLE} .codedocs
             COMMAND ${CMAKE_COMMAND} -E chdir ${ARTIFACT_DIR}/doxygen/latex ${DOXYGEN_MAKE_COMMAND}
             COMMAND ${CMAKE_COMMAND} -E copy ${ARTIFACT_DIR}/doxygen/latex/refman.pdf ${ARTIFACT_DIR}
