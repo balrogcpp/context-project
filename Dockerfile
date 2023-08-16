@@ -116,7 +116,6 @@ RUN apt-get update \
 #    && ./emsdk install latest \
 #    && ./emsdk activate latest
 #ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-
 #RUN cd ${EMSDK_ROOT} && EMSDK_QUIET=1 . ./emsdk_env.sh \
 #    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
