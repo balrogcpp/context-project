@@ -88,6 +88,10 @@ endmacro()
 # do the job
 FlatZipDirectory(${INPUT} ${OUTPUT} ${FORMAT})
 
+if (NOT GENERATE_HEADER)
+    return()
+endif ()
+
 file(WRITE Zip2Cpp.cpp
         "#define _CRT_SECURE_NO_WARNINGS\n"
         "\n"
