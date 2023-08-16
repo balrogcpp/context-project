@@ -221,8 +221,6 @@ if (NOT CPP_COMPILER)
 endif ()
 if (NOT CPP_COMPILER)
     message(FATAL_ERROR "CXX compiler not found manually")
-else ()
-    message(STATUS "CXX compiler found manually: ${CPP_COMPILER}")
 endif ()
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CPP_COMPILER} ${CMAKE_CURRENT_BINARY_DIR}/Zip2Cpp.cpp -o zip2cpp)

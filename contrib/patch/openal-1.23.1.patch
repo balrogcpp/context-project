@@ -1,17 +1,18 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 55644b0..7724ba5 100644
+index 55644b0..4eb964d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1453,6 +1453,7 @@ endif()
- 
+@@ -1450,7 +1450,7 @@ target_compile_options(${IMPL_TARGET} PRIVATE ${C_FLAGS})
+ if(TARGET build_version)
+     add_dependencies(${IMPL_TARGET} build_version)
+ endif()
+-
++find_program(CMAKE_DLLTOOL NAMES "${DLLTOOL}" DOC "dlltool executable")
  if(WIN32 AND MINGW AND ALSOFT_BUILD_IMPORT_LIB AND NOT LIBTYPE STREQUAL "STATIC")
      find_program(SED_EXECUTABLE NAMES sed DOC "sed executable")
-+    find_program(CMAKE_DLLTOOL NAMES "${DLLTOOL}" DOC "dlltool executable")
      if(NOT SED_EXECUTABLE OR NOT CMAKE_DLLTOOL)
-         message(STATUS "")
-         if(NOT SED_EXECUTABLE)
 diff --git a/al/source.cpp b/al/source.cpp
-index cba3386..04cb737 100644
+index cba3386..4fc7292 100644
 --- a/al/source.cpp
 +++ b/al/source.cpp
 @@ -21,7 +21,7 @@
@@ -23,25 +24,3 @@ index cba3386..04cb737 100644
  #include <algorithm>
  #include <array>
  #include <atomic>
-diff --git a/alc/alc.cpp b/alc/alc.cpp
-index af8ff55..9946bd8 100644
---- a/alc/alc.cpp
-+++ b/alc/alc.cpp
-@@ -956,7 +956,7 @@ std::atomic<ALCenum> LastNullDeviceError{ALC_NO_ERROR};
- bool TrapALCError{false};
- 
- /* One-time configuration init control */
--std::once_flag alc_config_once{};
-+//std::once_flag alc_config_once{};
- 
- /* Flag to specify if alcSuspendContext/alcProcessContext should defer/process
-  * updates.
-@@ -1370,7 +1370,7 @@ void alc_initconfig(void)
- #endif // ALSOFT_EAX
- }
- inline void InitConfig()
--{ std::call_once(alc_config_once, [](){alc_initconfig();}); }
-+{ alc_initconfig(); }
- 
- 
- /************************************************

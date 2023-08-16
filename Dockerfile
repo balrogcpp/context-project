@@ -13,7 +13,7 @@ RUN git config --global http.postBuffer 1048576000 \
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.27.1
+ARG CMAKE_VERSION=3.27.3
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.1.0
@@ -25,15 +25,6 @@ RUN cd /tmp \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
     && mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin && rm -rf upx-${UPX_VERSION}-amd64_linux
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-
-
-#vcpkg
-#ARG VCPKG_VERSION=2023.06.20
-#ARG VCPKG_HOME=/opt
-#RUN cd ${VCPKG_HOME} && git clone -b ${VCPKG_VERSION} --depth 1 https://github.com/microsoft/vcpkg.git \
-#    && sh ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
-#ENV VCPKG_ROOT=${VCPKG_HOME}/vcpkg
-#ENV PATH="${VCPKG_ROOT}:${PATH}"
 
 
 COPY ./source ./source
