@@ -1,7 +1,28 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 55644b0..4eb964d 100644
+index 55644b0..8c73ff2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -277,13 +277,13 @@ else()
+             set(C_FLAGS ${C_FLAGS} $<$<COMPILE_LANGUAGE:CXX>:-Wno-c++20-extensions>)
+         endif()
+     endif()
+-
+-    if(ALSOFT_WERROR)
+-        set(C_FLAGS ${C_FLAGS} -Werror)
+-    endif()
+-
+-    # We want RelWithDebInfo to actually include debug stuff (define _DEBUG
+-    # instead of NDEBUG)
++    if (NOT MSVC)
++        string(APPEND CMAKE_CXX_FLAGS " -g0 -s")
++    endif ()
++    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
++        string(APPEND CMAKE_CXX_FLAGS " -femulated-tls")
++    endif ()
++    # We want RelWithDebInfo to actually include debug stuff (define _DEBUG instead of NDEBUG)
+     foreach(flag_var  CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+         if(${flag_var} MATCHES "-DNDEBUG")
+             string(REGEX REPLACE "-DNDEBUG" "-D_DEBUG" ${flag_var} "${${flag_var}}")
 @@ -1450,7 +1450,7 @@ target_compile_options(${IMPL_TARGET} PRIVATE ${C_FLAGS})
  if(TARGET build_version)
      add_dependencies(${IMPL_TARGET} build_version)
