@@ -117,8 +117,8 @@ _CONFIG_DEFAULTS_UNIX = {
     # do not use absolute paths like /usr/bin/exe_name. some distris install to /usr/local/bin ...
     # just trust the env PATH variable
     'IMAGE_MAGICK_CONVERT' : 'magick',
-    'OGRETOOLS_XML_CONVERTER' : 'ogre.XMLConverter',
-    'OGRETOOLS_MESH_UPGRADER' : 'ogre.MeshUpgrader',
+    'OGRETOOLS_XML_CONVERTER' : 'OgreXMLConverter',
+    'OGRETOOLS_MESH_UPGRADER' : 'OgreMeshUpgrader',
     'MESH_PREVIEWER' : 'ogre-meshviewer',
     'USER_MATERIALS' : '',
     'SHADER_PROGRAMS' : '~/',
