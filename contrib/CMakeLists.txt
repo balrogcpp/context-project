@@ -1353,10 +1353,66 @@ externalproject_add(Target_ini
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${DEPS_SOURCE_LOCATION}/Target_ini/ini_parser.hpp ${DEPS_INCLUDE_DIR}
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_ini/ini_parser.hpp ${DEPS_INCLUDE_DIR}
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )
+
+
+check_stamp(Target_rapidcsv)
+externalproject_add(Target_rapidcsv
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_rapidcsv
+        GIT_REPOSITORY https://github.com/d99kris/rapidcsv.git
+        GIT_TAG v8.77
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DRAPIDCSV_BUILD_TESTS=OFF
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+)
+
+
+check_stamp(Target_fast-cpp-csv-parser)
+externalproject_add(Target_fast-cpp-csv-parser
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_fast-cpp-csv-parser
+        GIT_REPOSITORY https://github.com/ben-strasser/fast-cpp-csv-parser.git
+        GIT_TAG 4ade42d5f8c454c6c57b3dce9c51c6dd02182a66
+        GIT_SHALLOW false
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_fast-cpp-csv-parser/csv.h ${DEPS_INCLUDE_DIR}
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+)
 
 
 check_stamp(Target_yaml)
