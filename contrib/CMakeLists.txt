@@ -86,7 +86,7 @@ externalproject_add(Target_SDL2
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.28.2
+        GIT_TAG release-2.28.3
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -405,7 +405,7 @@ externalproject_add(Target_zlib
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
         GIT_REPOSITORY https://github.com/madler/zlib.git
-        GIT_TAG v1.2.13
+        GIT_TAG v1.3
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1181,7 +1181,7 @@ externalproject_add(Target_fmt
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG 10.0.0
+        GIT_TAG 10.1.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1280,7 +1280,7 @@ externalproject_add(Target_GoogleBenchmark
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleBenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.8.2
+        GIT_TAG v1.8.3
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1542,7 +1542,7 @@ externalproject_add(Target_LibreSSL
         #URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.8.0.tar.gz
         #DOWNLOAD_NO_PROGRESS true
         GIT_REPOSITORY https://github.com/PowerShell/LibreSSL.git
-        GIT_TAG V3.7.2.0
+        GIT_TAG V3.7.3.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}

@@ -13,7 +13,7 @@ RUN git config --global http.postBuffer 1048576000 \
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.27.3
+ARG CMAKE_VERSION=3.27.4
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.1.0
