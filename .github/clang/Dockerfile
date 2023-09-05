@@ -146,14 +146,13 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 # apple
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG OSXCROSS_GIT_HASH=ed079949e7aee248ad7e7cb97726cd1c8556afd1
+ARG OSXCROSS_GIT_HASH=27499bce6f512bf5ed81fff81ed5db800b9c7cb7
 RUN apt-get update \
     && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
     && git clone https://github.com/tpoechtrager/osxcross.git \
     && cd osxcross \
     && git checkout ${OSXCROSS_GIT_HASH} \
-    && git apply ../tarballs/osxcross.patch \
     && cp -r ../tarballs . && rm -rf ../tarballs \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
     && rm -rf ../osxcross \
