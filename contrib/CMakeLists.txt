@@ -784,7 +784,7 @@ externalproject_add(Target_OGRE
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-        GIT_TAG v14.0.1
+        GIT_TAG v14.1.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -1607,7 +1607,7 @@ externalproject_add(Target_curl
         )
 
 
-check_stamp(Target_cpr)
+check_stamp_patch(Target_cpr cpr-1.10.4.patch)
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1771,7 +1771,7 @@ add_dependencies(Contrib Target_json)
 add_dependencies(Contrib Target_filesystem)
 add_dependencies(Contrib Target_fmt)
 add_dependencies(Contrib Target_beast)
-#add_dependencies(Contrib Target_cpr)
+add_dependencies(Contrib Target_cpr)
 add_dependencies(Contrib Target_sol2)
 add_dependencies(Contrib Target_Vorbis)
 add_dependencies(Contrib Target_Bullet)
