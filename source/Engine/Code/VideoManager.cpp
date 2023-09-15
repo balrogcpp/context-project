@@ -537,12 +537,12 @@ void VideoManager::InitOgreSceneManager() {
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
     ogreSceneManager->setShadowTextureCount(8);
-    Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigIterator().getNext();
+    Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigList().at(0);
     ogreSceneManager->setShadowTextureConfig(0, texConfig);
     ogreSceneManager->setShadowTextureConfig(1, texConfig);
-    texConfig.height *= 0.5;
-    texConfig.width *= 0.5;
     ogreSceneManager->setShadowTextureConfig(2, texConfig);
+    texConfig.height /= 2;
+    texConfig.width /= 2;
     ogreSceneManager->setShadowTextureConfig(3, texConfig);
     ogreSceneManager->setShadowTextureConfig(4, texConfig);
     ogreSceneManager->setShadowTextureConfig(5, texConfig);
