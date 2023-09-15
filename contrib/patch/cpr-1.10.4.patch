@@ -1,13 +1,19 @@
 diff --git a/include/CMakeLists.txt b/include/CMakeLists.txt
-index b14ec5e..b421827 100644
+index b14ec5e..42131cb 100644
 --- a/include/CMakeLists.txt
 +++ b/include/CMakeLists.txt
-@@ -4,9 +4,9 @@ target_include_directories(cpr PUBLIC
-     $<INSTALL_INTERFACE:include>
-     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/cpr_generated_includes/>)
--
-+file(DOWNLOAD https://raw.githubusercontent.com/gulrak/filesystem/v1.5.14/include/ghc/filesystem.hpp ${CMAKE_CURRENT_SOURCE_DIR}/cpr/ghc/filesystem.hpp)
+@@ -1,12 +1,12 @@
+ cmake_minimum_required(VERSION 3.15)
+ 
+-target_include_directories(cpr PUBLIC
+-    $<INSTALL_INTERFACE:include>
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/cpr_generated_includes/>)
++target_include_directories(cpr PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/cpr_generated_includes/>)
++if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpr/ghc/filesystem.hpp)
++    file(DOWNLOAD https://raw.githubusercontent.com/gulrak/filesystem/v1.5.14/include/ghc/filesystem.hpp ${CMAKE_CURRENT_SOURCE_DIR}/cpr/ghc/filesystem.hpp)
++endif ()
+ 
  target_sources(cpr PRIVATE
 -    # Header files (useful in IDEs)
 +    cpr/ghc/filesystem.hpp
@@ -37,5 +43,5 @@ index 0a3be50..732701b 100644
 +#include "ghc/filesystem.hpp"
 +namespace fs = ghc::filesystem;
  #endif
-
+ 
  #endif

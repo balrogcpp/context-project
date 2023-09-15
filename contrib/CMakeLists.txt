@@ -1761,7 +1761,7 @@ externalproject_add(Target_swig
 
 
 # list of dependency targets
-add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E true)
+add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PREFIX_LOCATION})
 if (NOT EMSCRIPTEN)
     add_dependencies(Contrib Target_SDL2)
     add_dependencies(Contrib Target_OpenAL)
