@@ -16,9 +16,8 @@
     #define MAX_WATER_OCTAVES 3
 #endif
 
-SAMPLER2D(NormapMap, 0);
+uniform sampler2D NormapMap;
 
-OGRE_UNIFORMS_BEGIN
 uniform highp vec3 CameraPosition;
 uniform highp mat4 WorldViewMatrix;
 uniform highp float FarClipDistance;
@@ -45,7 +44,6 @@ uniform mediump vec3 WaterExtinction;
 uniform mediump vec3 SunTransmittance;
 uniform mediump float SunFade;
 uniform mediump float ScatterFade;
-OGRE_UNIFORMS_END
 
 mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 normal, const mediump float eta)
 {
@@ -65,11 +63,10 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
     }    
 }
 
-MAIN_PARAMETERS
-IN(highp vec3 vWorldPosition, TEXCOORD0)
-IN(mediump vec4 vScreenPosition, TEXCOORD1)
-IN(mediump vec4 vPrevScreenPosition, TEXCOORD2)
-MAIN_DECLARATION
+in highp vec3 vWorldPosition;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
+void main()
 {
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
 

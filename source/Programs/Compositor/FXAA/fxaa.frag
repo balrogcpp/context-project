@@ -22,11 +22,9 @@
 
 #include "header.glsl"
 
-SAMPLER2D(RT, 0);
+uniform sampler2D RT;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize0;
-OGRE_UNIFORMS_END
 
 // https://github.com/mattdesl/glsl-fxaa/blob/master/fxaa.glsl
 mediump vec3 FastFxaa(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -292,9 +290,8 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     FragColor = vec4(SafeHDR(FxaaPixelShader(vUV0, RT, TexelSize0)), 1.0);
 }

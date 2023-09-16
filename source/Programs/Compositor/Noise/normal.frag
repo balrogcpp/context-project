@@ -12,15 +12,12 @@
 
 #include "header.glsl"
 
-SAMPLER2D(RT, 0);
+uniform sampler2D RT;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize0;
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     float SCALE = 11.0 * pow(0.7071068 - distance(vUV0, vec2(0.5, 0.5)), 0.3333333) ;
     highp float s11 = texture2D(RT, vUV0).x * SCALE;

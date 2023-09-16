@@ -16,7 +16,6 @@
 #include "pgeometry.glsl"
 #endif
 
-OGRE_UNIFORMS_BEGIN
 #ifdef VERTEX_COMPRESSION
 uniform highp mat4 posIndexToObjectSpace;
 uniform highp float baseUVScale;
@@ -34,45 +33,43 @@ uniform highp float FadeRange;
 #if MAX_SHADOW_TEXTURES > 0
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
 #ifndef VERTEX_COMPRESSION
-IN(highp vec4 vertex, POSITION)
+in highp vec4 vertex;
 #else
-IN(highp vec2 vertex, POSITION)
+in highp vec2 vertex;
 #endif // VERTEX_COMPRESSION
 #ifdef HAS_NORMALS
-IN(highp vec4 normal, NORMAL)
-IN(highp vec4 tangent, TANGENT)
+in highp vec4 normal;
+in highp vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
-IN(highp vec4 colour, COLOR)
+in highp vec4 colour;
 #endif
 #ifdef HAS_UV
 #ifndef VERTEX_COMPRESSION
-IN(highp vec4 uv0, TEXCOORD0)
+in highp vec4 uv0;
 #else
-IN(highp float uv0, TEXCOORD0)
+in highp float uv0;
 #endif // VERTEX_COMPRESSION
 #ifdef PAGED_GEOMETRY
-IN(highp vec4 uv1, TEXCOORD1)
-IN(highp vec4 uv2, TEXCOORD2)
+in highp vec4 uv1;
+in highp vec4 uv2;
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
-OUT(highp vec3 vWorldPosition, TEXCOORD0)
-OUT(highp float vDepth, TEXCOORD1)
-OUT(highp mat3 vTBN, TEXCOORD2)
-OUT(highp mat3 vTBN1, TEXCOORD3)
-OUT(highp vec2 vUV0, TEXCOORD4)
-OUT(mediump vec4 vColor, TEXCOORD5)
-OUT(mediump vec4 vScreenPosition, TEXCOORD6)
-OUT(mediump vec4 vPrevScreenPosition, TEXCOORD7)
+out highp vec3 vWorldPosition;
+out highp float vDepth;
+out highp mat3 vTBN;
+out highp mat3 vTBN1;
+out highp vec2 vUV0;
+out mediump vec4 vColor;
+out mediump vec4 vScreenPosition;
+out mediump vec4 vPrevScreenPosition;
 #if MAX_SHADOW_TEXTURES > 0
-OUT(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD8)
+out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
-MAIN_DECLARATION
+void main()
 {
 #ifdef HAS_VERTEXCOLOR
     vColor = max3(colour.rgb) > 0.0 ? colour.rgba : vec4(1.0, 1.0, 1.0, 1.0);

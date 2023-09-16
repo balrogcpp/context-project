@@ -95,61 +95,60 @@ vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec
 
 #define NUM_TEXTURES 0
 #ifdef HAS_BASECOLORMAP
-SAMPLER2D(AlbedoMap, 0);
+uniform sampler2D AlbedoMap;
 #define NUM_TEXTURES 1
 #endif // HAS_BASECOLORMAP
 #ifdef HAS_NORMALMAP
-SAMPLER2D(NormalMap, 1);
+uniform sampler2D NormalMap;
 #define NUM_TEXTURES 2
 #endif // HAS_NORMALMAP
 #ifdef HAS_ORM
-SAMPLER2D(OrmMap, 2);
+uniform sampler2D OrmMap;
 #define NUM_TEXTURES 3
 #endif // HAS_ORM
 #ifdef HAS_EMISSIVEMAP
-SAMPLER2D(EmissiveMap, 3);
+uniform sampler2D EmissiveMap;
 #define NUM_TEXTURES 4
 #endif // HAS_EMISSIVEMAP
 #ifdef HAS_IBL
-SAMPLERCUBE(SpecularEnvMap, 4);
+uniform samplerCube SpecularEnvMap;
 #define NUM_TEXTURES 5
 #endif // HAS_IBL
 #ifdef TERRA_NORMALMAP
-SAMPLER2D(TerraNormalMap, 2);
+uniform sampler2D TerraNormalMap;
 #define NUM_TEXTURES 3
 #endif // TERRA_NORMALMAP
 #ifdef TERRA_LIGHTMAP
-SAMPLER2D(TerraLightMap, 3);
+uniform sampler2D TerraLightMap;
 #define NUM_TEXTURES 4
 #endif
 #if MAX_SHADOW_TEXTURES > 0
 #if MAX_SHADOW_TEXTURES > 0
-SAMPLER2D(ShadowMap0, NUM_TEXTURES + 0);
+uniform sampler2D ShadowMap0;
 #endif
 #if MAX_SHADOW_TEXTURES > 1
-SAMPLER2D(ShadowMap1, NUM_TEXTURES + 1);
+uniform sampler2D ShadowMap1;
 #endif
 #if MAX_SHADOW_TEXTURES > 2
-SAMPLER2D(ShadowMap2, NUM_TEXTURES + 2);
+uniform sampler2D ShadowMap2;
 #endif
 #if MAX_SHADOW_TEXTURES > 3
-SAMPLER2D(ShadowMap3, NUM_TEXTURES + 3);
+uniform sampler2D ShadowMap3;
 #endif
 #if MAX_SHADOW_TEXTURES > 4
-SAMPLER2D(ShadowMap4, NUM_TEXTURES + 4);
+uniform sampler2D ShadowMap4;
 #endif
 #if MAX_SHADOW_TEXTURES > 5
-SAMPLER2D(ShadowMap5, NUM_TEXTURES + 5);
+uniform sampler2D ShadowMap5;
 #endif
 #if MAX_SHADOW_TEXTURES > 6
-SAMPLER2D(ShadowMap6, NUM_TEXTURES + 6);
+uniform sampler2D ShadowMap6;
 #endif
 #if MAX_SHADOW_TEXTURES > 7
-SAMPLER2D(ShadowMap7, NUM_TEXTURES + 7);
+uniform sampler2D ShadowMap7;
 #endif
 #endif // MAX_SHADOW_TEXTURES > 0
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec3 iblSH[9];
 #ifdef TERRA_LIGHTMAP
 uniform mediump vec2 InvTerraLightMapSize;
@@ -217,7 +216,6 @@ uniform mediump vec2 ShadowTexel6;
 uniform mediump vec2 ShadowTexel7;
 #endif
 #endif // MAX_SHADOW_TEXTURES > 0
-OGRE_UNIFORMS_END
 
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
@@ -322,19 +320,19 @@ mediump vec3 GetEmission(const mediump vec2 uv)
     return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 }
-MAIN_PARAMETERS
-IN(highp vec3 vWorldPosition, TEXCOORD0)
-IN(highp float vDepth, TEXCOORD1)
-IN(highp mat3 vTBN, TEXCOORD2)
-IN(highp mat3 vTBN1, TEXCOORD3)
-IN(highp vec2 vUV0, TEXCOORD4)
-IN(mediump vec4 vColor, TEXCOORD5)
-IN(mediump vec4 vScreenPosition, TEXCOORD6)
-IN(mediump vec4 vPrevScreenPosition, TEXCOORD7)
+
+in highp vec3 vWorldPosition;
+in highp float vDepth;
+in highp mat3 vTBN;
+in highp mat3 vTBN1;
+in highp vec2 vUV0;
+in mediump vec4 vColor;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
 #if MAX_SHADOW_TEXTURES > 0
-IN(highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD7)
+in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
-MAIN_DECLARATION
+void main()
 {
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
     highp vec2 uv = vUV0.xy;

@@ -12,12 +12,11 @@
 
 #include "header.glsl"
 
-SAMPLER2D(RT, 0);
-SAMPLER2D(AmbientMap, 1);
+uniform sampler2D RT;
+uniform sampler2D AmbientMap;
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec3 ambient = texture2D(AmbientMap, vUV0).rgb;

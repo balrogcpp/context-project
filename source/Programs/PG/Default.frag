@@ -13,20 +13,17 @@
 #define HAS_MRT
 #include "header.glsl"
 
-SAMPLER2D(texMap, 0);
+uniform sampler2D texMap;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(highp vec4 oUV, TEXCOORD0)
-IN(mediump vec4 oColour, TEXCOORD1)
-IN(mediump float oFogCoord, TEXCOORD2)
-MAIN_DECLARATION
+in highp vec4 oUV;
+in mediump vec4 oColour;
+in mediump float oFogCoord;
+void main()
 {
     mediump vec4 s = texture2D(texMap, oUV.xy);
     mediump vec3 color = s.rgb;

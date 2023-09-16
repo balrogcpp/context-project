@@ -16,21 +16,18 @@
 #define SMAA_INCLUDE_VS 0
 #define SMAA_INCLUDE_PS 1
 
-SAMPLER2D(edgeTex, 0);
-SAMPLER2D(areaTex, 1);
-SAMPLER2D(searchTex, 2);
+uniform sampler2D edgeTex;
+uniform sampler2D areaTex;
+uniform sampler2D searchTex;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec4 ViewportSize;
-OGRE_UNIFORMS_END
 
 #include "smaa.glsl"
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-IN(mediump vec2 pixcoord0, TEXCOORD1)
-IN(mediump mat4 offset, TEXCOORD2)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+in mediump vec2 pixcoord0;
+in mediump mat4 offset;
+void main()
 {
 	FragColor = SMAABlendingWeightCalculationPS(vUV0, pixcoord0, offset, edgeTex, areaTex, searchTex, vec4(0.0, 0.0, 0.0, 0.0));
 }

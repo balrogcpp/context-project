@@ -16,10 +16,9 @@
 #endif
 
 #if MAX_WATER_OCTAVES > 0
-SAMPLER2D(NoiseMap, 0);
+uniform sampler2D NoiseMap;
 #endif
 
-OGRE_UNIFORMS_BEGIN
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
@@ -42,17 +41,15 @@ uniform mediump vec3 SunTransmittance;
 uniform mediump float SunFade;
 uniform mediump float ScatterFade;
 #endif
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(highp vec4 vertex, POSITION)
-OUT(highp vec3 vWorldPosition, TEXCOORD0)
-OUT(mediump vec4 vScreenPosition, TEXCOORD1)
-OUT(mediump vec4 vPrevScreenPosition, TEXCOORD2)
-MAIN_DECLARATION
+in highp vec4 vertex;
+out highp vec3 vWorldPosition;
+out mediump vec4 vScreenPosition;
+out mediump vec4 vPrevScreenPosition;
+
+void main()
 {
     highp vec4 position = vertex;
-
     highp vec4 world = mul(WorldMatrix, position);
     vWorldPosition = world.xyz / world.w;
 

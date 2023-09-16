@@ -12,12 +12,10 @@
 
 #include "header.glsl"
 
-SAMPLER2D(RT, 0);
+uniform sampler2D RT;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec4 TexSize0;
 uniform mediump vec4 ViewportSize;
-OGRE_UNIFORMS_END
 
 //const vec2 c_offsets[16] = vec2[16]
 //(
@@ -54,9 +52,8 @@ mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump v
     return c1 + c2 + c3 + c4;
 }
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     //Compute how many pixels we have to skip because we can't sample them all
     //e.g we have a 4096x4096 viewport (rt0), and we're rendering to a 64x64 surface

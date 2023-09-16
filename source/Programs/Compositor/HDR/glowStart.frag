@@ -13,17 +13,14 @@
 #include "header.glsl"
 #include "filters_RGB16.glsl"
 
-SAMPLER2D(RT, 0);
-SAMPLER2D(Lum, 1);
+uniform sampler2D RT;
+uniform sampler2D Lum;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize0;
 uniform mediump vec2 BrightThreshold;
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     mediump vec3 color = Downscale13(RT, vUV0, TexelSize0);
     mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;

@@ -13,9 +13,8 @@
 #define HAS_MRT
 #include "header.glsl"
 
-SAMPLERCUBE(CubeMap, 0);
+uniform samplerCube CubeMap;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec3 SunColor;
 uniform highp vec3 SunDirection;
 uniform highp float SunSize;
@@ -29,7 +28,6 @@ uniform highp vec3 G;
 uniform highp vec3 H;
 uniform highp vec3 I;
 uniform highp vec3 Z;
-OGRE_UNIFORMS_END
 
 highp vec3 HosekWilkie(const highp float cos_theta, const highp float gamma, const highp float cos_gamma)
 {
@@ -37,10 +35,9 @@ highp vec3 HosekWilkie(const highp float cos_theta, const highp float gamma, con
     return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta)));
 }
 
-MAIN_PARAMETERS
-IN(highp vec3 vPosition, TEXCOORD0)
-IN(highp vec3 vUV0, TEXCOORD1)
-MAIN_DECLARATION
+in highp vec3 vPosition;
+in highp vec3 vUV0;
+void main()
 {
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);

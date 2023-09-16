@@ -18,16 +18,14 @@
 #define STEP 0.05
 #define MAX_RAY_MARCH_COUNT 30
 
-SAMPLER2D(RT, 0);
-SAMPLER2D(DepthMap, 1);
-SAMPLER2D(NormalMap, 2);
-SAMPLER2D(GlossMap, 3);
+uniform sampler2D RT;
+uniform sampler2D DepthMap;
+uniform sampler2D NormalMap;
+uniform sampler2D GlossMap;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
-OGRE_UNIFORMS_END
 
 mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
 {
@@ -98,10 +96,9 @@ mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
     return factor;
 }
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-IN(highp vec3 vRay, TEXCOORD1)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+in highp vec3 vRay;
+void main()
 {
     mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
 

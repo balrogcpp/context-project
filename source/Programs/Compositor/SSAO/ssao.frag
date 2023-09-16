@@ -13,15 +13,13 @@
 
 #include "header.glsl"
 
-SAMPLER2D(DepthMap, 0);
-SAMPLER2D(NormalMap, 1);
+uniform sampler2D DepthMap;
+uniform sampler2D NormalMap;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize0;
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
-OGRE_UNIFORMS_END
 
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -30,10 +28,9 @@ mediump vec3 hash(const mediump vec3 a)
     return fract((b.xxy + b.yxx) * b.zyx);
 }
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-IN(highp vec3 vRay, TEXCOORD1)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+in highp vec3 vRay;
+void main()
 {
     #define MAX_RAND_SAMPLES 14
 

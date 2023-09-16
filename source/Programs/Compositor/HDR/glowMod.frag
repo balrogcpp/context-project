@@ -13,16 +13,13 @@
 #include "header.glsl"
 #include "filters_RGB16.glsl"
 
-SAMPLER2D(RT, 0);
-SAMPLER2D(RT0, 1);
+uniform sampler2D RT;
+uniform sampler2D RT0;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize1;
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     mediump vec3 rt = texture2D(RT, vUV0).rgb;
     mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize1);

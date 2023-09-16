@@ -13,18 +13,15 @@
 #include "header.glsl"
 #include "filters_F16.glsl"
 
-SAMPLER2D(RT, 0);
-SAMPLER2D(Lum, 1);
+uniform sampler2D RT;
+uniform sampler2D Lum;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize0;
 uniform mediump vec3 Exposure;
 uniform mediump float timeSinceLast;
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);
     newLum = expose2(newLum, Exposure);

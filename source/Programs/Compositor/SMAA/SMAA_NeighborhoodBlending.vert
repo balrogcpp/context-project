@@ -16,19 +16,16 @@
 #define SMAA_INCLUDE_VS 1
 #define SMAA_INCLUDE_PS 0
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump mat4 worldViewProj;
 uniform mediump vec4 ViewportSize;
-OGRE_UNIFORMS_END
 
 #include "smaa.glsl"
 
-MAIN_PARAMETERS
-IN(highp vec4 vertex, POSITION)
-IN(highp vec4 uv0, TEXCOORD0)
-OUT(mediump vec2 vUV0, TEXCOORD0)
-OUT(mediump vec4 offset, TEXCOORD1)
-MAIN_DECLARATION
+in highp vec4 vertex;
+in highp vec4 uv0;
+out mediump vec2 vUV0;
+out mediump vec4 offset;
+void main()
 {
 	gl_Position = worldViewProj * vertex;
 	vUV0 = uv0.xy;

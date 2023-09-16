@@ -13,13 +13,10 @@
 #include "header.glsl"
 #include "FastNoiseLite.glsl"
 
-OGRE_UNIFORMS_BEGIN
 uniform highp float Time;
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     fnl_state state = fnlCreateState(1337);
     state.noise_type = FNL_NOISE_OPENSIMPLEX2S;

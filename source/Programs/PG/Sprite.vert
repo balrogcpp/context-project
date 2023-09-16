@@ -12,7 +12,6 @@
 
 #include "header.glsl"
 
-OGRE_UNIFORMS_BEGIN
 uniform mat4 worldViewProj;
 #ifdef FADE
 uniform vec3  camPos;
@@ -22,17 +21,15 @@ uniform float invisibleDist;
 uniform float uScroll;
 uniform float vScroll;
 uniform vec4  preRotatedQuad[4];
-OGRE_UNIFORMS_END
 
-MAIN_PARAMETERS
-IN(highp vec4 vertex, POSITION)
-IN(highp vec4 normal, NORMAL)
-IN(highp vec4 colour, COLOR)
-IN(highp vec4 uv0, TEXCOORD0)
-OUT(highp vec4 oUV, TEXCOORD0)
-OUT(mediump vec4 oColour, TEXCOORD1)
-OUT(mediump float oFogCoord, TEXCOORD2)
-MAIN_DECLARATION
+in highp vec4 vertex;
+in highp vec4 normal;
+in highp vec4 colour;
+in highp vec4 uv0;
+out highp vec4 oUV;
+out mediump vec4 oColour;
+out mediump float oFogCoord;
+void main()
 {
     //Face the camera
 	vec4 vCenter = vec4( vertex.x, vertex.y, vertex.z, 1.0 );

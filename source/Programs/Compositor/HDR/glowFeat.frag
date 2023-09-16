@@ -12,13 +12,11 @@
 
 #include "header.glsl"
 
-SAMPLER2D(RT, 0);
+uniform sampler2D RT;
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
 uniform int FeaturesCount;
-OGRE_UNIFORMS_END
 
 mediump vec3 SampleChromatic(sampler2D tex, const mediump vec2 uv, const mediump float radius)
 {
@@ -87,9 +85,8 @@ mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump ve
     return color;
 }
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
 

@@ -21,21 +21,18 @@
 #endif
 
 //Must not be sRGB
-SAMPLER2D(rt_input, 0);
+uniform sampler2D rt_input;
 #if SMAA_PREDICATION
-SAMPLER2D(depthTex, 1);
+uniform sampler2D depthTex;
 #endif
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec4 ViewportSize;
-OGRE_UNIFORMS_END
 
 #include "smaa.glsl"
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-IN(mediump mat4 offset, TEXCOORD1)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+in mediump mat4 offset;
+void main()
 {
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2
 	#if SMAA_PREDICATION

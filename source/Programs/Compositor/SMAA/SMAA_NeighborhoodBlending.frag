@@ -18,22 +18,19 @@
 #define SMAA_REPROJECTION 0
 
 //Can be sRGB
-SAMPLER2D(rt_input, 0);
-SAMPLER2D(blendTex, 1);
+uniform sampler2D rt_input;
+uniform sampler2D blendTex;
 #if SMAA_REPROJECTION
-SAMPLER2D(velocityTex, 2);
+uniform sampler2D velocityTex;
 #endif
 
-OGRE_UNIFORMS_BEGIN
 uniform mediump vec4 ViewportSize;
-OGRE_UNIFORMS_END
 
 #include "smaa.glsl"
 
-MAIN_PARAMETERS
-IN(mediump vec2 vUV0, TEXCOORD0)
-IN(mediump vec4 offset, TEXCOORD1)
-MAIN_DECLARATION
+in mediump vec2 vUV0;
+in mediump vec4 offset;
+void main()
 {
 #if SMAA_REPROJECTION
 	FragColor = SafeHDR(SMAANeighborhoodBlendingPS( vUV0, offset,
