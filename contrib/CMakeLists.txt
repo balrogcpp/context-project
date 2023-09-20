@@ -779,7 +779,7 @@ externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_imgui
+        DEPENDS Target_imgui Target_assimp
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE

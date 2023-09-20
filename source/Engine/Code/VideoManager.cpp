@@ -420,14 +420,14 @@ void VideoManager::InitOgreRoot() {
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
-#endif
+#endif          
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Ogre::STBIImageCodec::startup();
 #endif
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-  Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
+  Ogre::FreeImageCodec::startup();
 #endif
-#ifdef OGRE_BUILD_PLUGIN_ASSIMP
+#if defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(_DEBUG)
   Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
