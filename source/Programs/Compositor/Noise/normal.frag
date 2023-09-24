@@ -19,12 +19,12 @@ uniform mediump vec2 TexelSize0;
 in mediump vec2 vUV0;
 void main()
 {
-    float SCALE = 11.0 * pow(0.7071068 - distance(vUV0, vec2(0.5, 0.5)), 0.3333333) ;
-    highp float s11 = texture2D(RT, vUV0).x * SCALE;
-    highp float s01 = texture2D(RT, vUV0 + TexelSize0 * vec2(-1.0, 0.0)).x * SCALE;
-    highp float s21 = texture2D(RT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).x * SCALE;
-    highp float s10 = texture2D(RT, vUV0 + TexelSize0 * vec2(0.0, -1.0)).x * SCALE;
-    highp float s12 = texture2D(RT, vUV0 + TexelSize0 * vec2(0.0, 1.0)).x * SCALE;
+    highp float scale = 11.0 * pow(0.7071068 - distance(vUV0, vec2(0.5, 0.5)), 0.3333333) ;
+    highp float s11 = texture2D(RT, vUV0).x * scale;
+    highp float s01 = texture2D(RT, vUV0 + TexelSize0 * vec2(-1.0, 0.0)).x * scale;
+    highp float s21 = texture2D(RT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).x * scale;
+    highp float s10 = texture2D(RT, vUV0 + TexelSize0 * vec2(0.0, -1.0)).x * scale;
+    highp float s12 = texture2D(RT, vUV0 + TexelSize0 * vec2(0.0, 1.0)).x * scale;
     highp vec3 va = normalize(vec3(2.0, 0.0, s21 - s01));
     highp vec3 vb = normalize(vec3(0.0, 2.0, s12 - s10));
     highp vec4 bump = vec4(cross(va, vb), s11);

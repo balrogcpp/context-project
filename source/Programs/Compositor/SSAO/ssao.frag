@@ -71,10 +71,9 @@ void main()
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    mediump vec3 viewNorm = normalize(texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0);
-    viewNorm.z = -viewNorm.z;
+    mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0;
 
-    if((viewNorm.x == 0.0 && viewNorm.y == 0.0 && viewNorm.z == 0.0) || clampedDepth == 1.0) {
+    if(viewNorm == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }
@@ -99,7 +98,7 @@ void main()
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.5 * pow(clampedDepth, 0.3), 0.0, 1.0);
+        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.5 * pow(clampedDepth, 0.3333333), 0.0, 1.0);
     }
 
     // normalise

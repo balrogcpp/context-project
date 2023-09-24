@@ -10,9 +10,9 @@ mediump float InterleavedGradientNoise()
     return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
 }
 
-mediump vec2 VogelDiskSample(const int sampleIndex, const mediump float samplesCount, const mediump float phi)
+mediump vec2 VogelDiskSample(const int sampleIndex, const int samplesCount, const mediump float phi)
 {
-    mediump float r = sqrt((float(sampleIndex) + 0.5) / samplesCount);
+    mediump float r = sqrt((float(sampleIndex) + 0.5) / float(samplesCount));
     mediump float theta = float(sampleIndex) * 2.4 + phi;
    return vec2(r * cos(theta), r * sin(theta));
 }
@@ -23,7 +23,7 @@ mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediu
     mediump float phi = InterleavedGradientNoise();
 
     for (int i = 0; i < 4; ++i) {
-      mediump vec2 offset = VogelDiskSample(i, 4.0, phi) * 2.0 * tsize;
+      mediump vec2 offset = VogelDiskSample(i, 4, phi) * 2.0 * tsize;
 
       uv += offset;
       shadow += texture2D(shadowMap, uv).x;
@@ -80,7 +80,7 @@ mediump float Penumbra(sampler2D shadowMap, const mediump vec2 uv, const mediump
     mediump float blockersCount = 0.0;
 
     for (int i = 0; i < PENUMBRA_FILTER_SIZE; ++i) {
-        mediump vec2 offsetUV = VogelDiskSample(i, float(PENUMBRA_FILTER_SIZE), phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
+        mediump vec2 offsetUV = VogelDiskSample(i, PENUMBRA_FILTER_SIZE, phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
         mediump float sampleDepth = map_01(texture2D(shadowMap, uv + offsetUV).x);
 
         mediump float depthTest = clamp((depth - sampleDepth), 0.0, 1.0);
@@ -106,7 +106,7 @@ mediump float CalcDepthShadow(sampler2D shadowMap, mediump vec4 uv, const medium
 #endif
 
   for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
-    mediump vec2 offset = VogelDiskSample(i, float(PSSM_FILTER_SIZE), phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
+    mediump vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
 
     uv.xy += offset;
     mediump float depth = map_01(texture2D(shadowMap, uv.xy).x);
