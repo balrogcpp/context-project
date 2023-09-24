@@ -101,8 +101,10 @@ in highp vec3 vRay;
 void main()
 {
     mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
+    mediump float reflective = ssr.r;
+    mediump float jitter = ssr.g;
 
-    if (ssr.r < 0.04) {
+    if (reflective < 0.04) {
         FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
         return;
     }
@@ -111,17 +113,19 @@ void main()
     #define LLIMITER 0.1
     #define JITT_SCALE 0.01
 
-    mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
-    mediump vec3 viewPos = vRay * texture2D(DepthMap, vUV0).x;
+    mediump vec3 normal = normalize(texture2D(NormalMap, vUV0).xyz);
+    mediump float depth = texture2D(DepthMap, vUV0).x;
+    mediump vec3 ray = vRay;
+    mediump vec3 viewPos = ray * depth;
     mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
-    mediump vec3 jitt = hash(worldPos) * ssr.g;
+    mediump vec3 jitt = hash(worldPos) * jitter * JITT_SCALE;
 
     // Reflection vector
-    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal))) + jitt * JITT_SCALE;
+    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal))) + jitt;
 
     // Ray cast
     mediump vec2 coords = RayCast(viewPos, reflected);
-    mediump float L = FarClipDistance * abs(texture2D(DepthMap, coords).x - texture2D(DepthMap, vUV0).x);
+    mediump float L = FarClipDistance * abs(texture2D(DepthMap, coords).x - depth);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;
     mediump float fresnel = Fresnel(reflected, normal);
@@ -129,8 +133,7 @@ void main()
 
     if (coords.x != -1.0) {
         FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, ssr.r), 1.0);
-        return;
+    } else {
+        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, vec3(0.0, 1.0, 0.0), ssr.r), 1.0);
     }
-
-    FragColor = vec4(mix(texture2D(RT, vUV0).rgb, vec3(0.0, 1.0, 0.0), ssr.r), 1.0);
 }

@@ -280,7 +280,7 @@ void GetNormal(highp mat3 tbn, highp mat3 tbn1, const mediump vec2 uv, const med
 #ifdef HAS_NORMALMAP
     n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
     n = normalize(mul(tbn, (2.0 * n - 1.0)));
-    n1 = mul(WorldViewMatrix, vec4(n, 0.0)).xyz;
+    n1 = normalize(mul(WorldViewMatrix, vec4(n, 0.0)).xyz);
 #else
     highp vec3 n = tbn[2].xyz;
     n1 = mul(WorldViewMatrix, vec4(n, 0.0)).xyz;
@@ -396,8 +396,6 @@ void main()
     // Normal at surface point
     highp vec3 n, n1;
     GetNormal(vTBN, vTBN1, uv, vUV0.xy, n, n1);
-    // highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
-    // highp vec3 n1 = GetNormal(vTBN1, uv, vUV0.xy);
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 

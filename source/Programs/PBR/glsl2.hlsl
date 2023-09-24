@@ -27,6 +27,34 @@
 #define mat3x4 float4x3
 #define mat4x4 float4x4
 #define mat4x4 matrix
+#define half min16float
+#define half4 vector <min16float, 4>
+#define half3 vector <min16float, 3>
+#define half2 vector <min16float, 2>
+#define half2x2 matrix <min16float, 2, 2>
+#define half2x3 matrix <min16float, 3, 2>
+#define half2x4 matrix <min16float, 4, 2>
+#define half3x2 matrix <min16float, 2, 3>
+#define half3x3 matrix <min16float, 3, 3>
+#define half3x4 matrix <min16float, 4, 3>
+#define half4x2 matrix <min16float, 2, 4>
+#define half4x3 matrix <min16float, 3, 4>
+#define half4x4 matrix <min16float, 4, 4>
+#define fixed min10float
+#define fixed4 vector <min10float, 4>
+#define fixed3 vector <min10float, 3>
+#define fixed2 vector <min10float, 2>
+#define fixed2x2 matrix <min10float, 2, 2>
+#define fixed2x3 matrix <min10float, 3, 2>
+#define fixed2x4 matrix <min10float, 4, 2>
+#define fixed3x2 matrix <min10float, 2, 3>
+#define fixed3x3 matrix <min10float, 3, 3>
+#define fixed3x4 matrix <min10float, 4, 3>
+#define fixed4x2 matrix <min10float, 2, 4>
+#define fixed4x3 matrix <min10float, 3, 4>
+#define fixed4x4 matrix <min10float, 4, 4>
+#define inline
+#define noinline
 #define precision
 #define highp
 #define mediump

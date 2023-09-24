@@ -52,7 +52,35 @@ mat4 transpose(const mat4 m)
 #define float4x3 mat3x4
 #define float4x4 mat4x4
 #define matrix mat4x4
+#define half mediump float
+#define half4 mediump vec4
+#define half3 mediump vec3
+#define half2 mediump vec2
+#define half2x2 mediump mat2x2
+#define half2x3 mediump mat3x2
+#define half2x4 mediump mat4x2
+#define half3x2 mediump mat2x3
+#define half3x3 mediump mat3x3
+#define half3x4 mediump mat4x3
+#define half4x2 mediump mat2x4
+#define half4x3 mediump mat3x4
+#define half4x4 mediump mat4x4
+#define fixed lowp float
+#define fixed4 lowp vec4
+#define fixed3 lowp vec3
+#define fixed2 lowp vec2
+#define fixed2x2 lowp mat2x2
+#define fixed2x3 lowp mat3x2
+#define fixed2x4 lowp mat4x2
+#define fixed3x2 lowp mat2x3
+#define fixed3x3 lowp mat3x3
+#define fixed3x4 lowp mat4x3
+#define fixed4x2 lowp mat2x4
+#define fixed4x3 lowp mat3x4
+#define fixed4x4 lowp mat4x4
 #define static
+#define inline
+#define noinline
 #define groupshared shared
 #define ddx dFdx
 #define ddy dFdy
