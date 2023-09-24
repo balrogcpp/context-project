@@ -33,6 +33,7 @@ in highp vec3 vRay;
 void main()
 {
     #define MAX_RAND_SAMPLES 14
+    #define RADIUS 0.2125
 
     const mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
@@ -52,24 +53,34 @@ void main()
         normalize(vec3(-1.0, -1.0, -1.0)));
 
     // constant expression != const int :(
+#ifndef GL_ES
+    #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
+#else
     #define NUM_BASE_SAMPLES 6
+#endif
 
     // random normal lookup from a texture and expand to [-1..1]
-    mediump float depth = texture2D(DepthMap, vUV0).r;
-
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    mediump vec3 viewPos = vRay * depth;
+    mediump float clampedDepth = texture2D(DepthMap, vUV0).r;
+    mediump float pixelDepth = clampedDepth * FarClipDistance;
+    mediump vec3 ray = normalize(vRay);
+    mediump vec3 viewPos = ray * pixelDepth;
     mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
-    mediump vec3 randN = hash(worldPos) * pow5(1.0 - depth);
+    mediump vec3 randN = hash(worldPos) * pow5(1.0 - clampedDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz;
+    mediump vec3 viewNorm = normalize(texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0);
+    viewNorm.z = -viewNorm.z;
+
+    if((viewNorm.x == 0.0 && viewNorm.y == 0.0 && viewNorm.z == 0.0) || clampedDepth == 1.0) {
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        return;
+    }
 
     // Accumulated occlusion factor
     mediump float occ = 0.0;
-
     for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
         // Reflected direction to move in for the sphere
         // (based on random samples and a random texture sample)
@@ -77,20 +88,18 @@ void main()
         // this tends to minimize self occlusion
         mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm.xyz;
 
-        // Move new view-space position back into texture space
-        // #define RADIUS 0.2125
-        #define RADIUS 0.0525
-
-        mediump vec4 nuv = mul(ProjMatrix, vec4(viewPos + randomDir * RADIUS, 1.0));
+        mediump vec3 oSample = viewPos + randomDir * RADIUS;
+        mediump vec4 nuv = mul(ProjMatrix, vec4(oSample, 1.0));
         nuv /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float radius = max(TexelSize0.x, TexelSize0.y) * RADIUS;
-        mediump float zd = clamp(FarClipDistance * (depth - texture2D(DepthMap, nuv.xy).x - radius), 0.0, 1.0);
+        mediump float clampedSampleDepth = texture2D(DepthMap, nuv.xy).x;
+        mediump float sampleDepth = clampedSampleDepth * FarClipDistance;
+        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * (sampleDepth >= oSample.z ? 1.0 : 0.0);
+
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        //occ += clamp(pow(1.0 - zd, 11.0) + zd, 0.0, 1.0);
-        occ += clamp(pow10(1.0 - zd) + zd, 0.0, 1.0);
+        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.5 * pow(clampedDepth, 0.3), 0.0, 1.0);
     }
 
     // normalise

@@ -27,7 +27,7 @@ uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 
-mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
+mediump vec2 BinarySearch(mediump vec3 position, const mediump float pixelDepth, inout mediump vec3 direction)
 {
     mediump vec4 projectedCoord = vec4(-1.0, -1.0, -1.0, -1.0);
 
@@ -35,8 +35,8 @@ mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
         projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
         projectedCoord.xy /= projectedCoord.w;
 
-        mediump float depth = texture2D(DepthMap, projectedCoord.xy).x;
-        mediump float delta = position.z - depth;
+        mediump float depth = FarClipDistance * texture2D(DepthMap, projectedCoord.xy).x;
+        mediump float delta = pixelDepth - depth;
 
         direction *= 0.5;
 
@@ -49,7 +49,7 @@ mediump vec2 BinarySearch(mediump vec3 position, inout mediump vec3 direction)
     return projectedCoord.xy;
 }
 
-mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
+mediump vec2 RayCast(mediump vec3 position, const mediump float pixelDepth, inout mediump vec3 direction)
 {
     direction *= STEP;
 
@@ -61,16 +61,16 @@ mediump vec2 RayCast(mediump vec3 position, inout mediump vec3 direction)
         projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
         projectedCoord.xy /= projectedCoord.w;
 
-        mediump float depth = texture2D(DepthMap, projectedCoord.xy).x;
-        mediump float delta = position.z - depth;
+        mediump float depth = FarClipDistance * texture2D(DepthMap, projectedCoord.xy).x;
+        mediump float delta = pixelDepth - depth;
 
         // if (depth - (position.z - direction.z) < 1.2f)
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
         // We don't want to sample too far from the starting position.
         // We're at least past the point where the ray intersects a surface.
         // Now, determine the values at the precise location of intersection.
-        if (FarClipDistance * (direction.z - delta) < 1.2 && delta <= 0.0) {
-            return BinarySearch(position, direction);
+        if ((direction.z - delta) < 1.2 && delta <= 0.0) {
+            return BinarySearch(position, pixelDepth, direction);
         }
     }
 
@@ -113,27 +113,28 @@ void main()
     #define LLIMITER 0.1
     #define JITT_SCALE 0.01
 
-    mediump vec3 normal = normalize(texture2D(NormalMap, vUV0).xyz);
-    mediump float depth = texture2D(DepthMap, vUV0).x;
-    mediump vec3 ray = vRay;
-    mediump vec3 viewPos = ray * depth;
+    mediump vec3 normal = normalize(texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0);
+    normal.z = -normal.z;
+    mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
+    mediump float pixelDepth = clampedDepth * FarClipDistance;
+    mediump vec3 ray = normalize(vRay);
+    mediump vec3 viewPos = ray * pixelDepth;
     mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
     mediump vec3 jitt = hash(worldPos) * jitter * JITT_SCALE;
-
-    // Reflection vector
-    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal))) + jitt;
+    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normal)) + jitt;
 
     // Ray cast
-    mediump vec2 coords = RayCast(viewPos, reflected);
-    mediump float L = FarClipDistance * abs(texture2D(DepthMap, coords).x - depth);
+    mediump vec2 coords = RayCast(viewPos, pixelDepth, reflected);
+    mediump float L = FarClipDistance * abs(texture2D(DepthMap, coords).x - clampedDepth);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;
     mediump float fresnel = Fresnel(reflected, normal);
     mediump vec3 color = texture2D(RT, coords.xy).rgb * error * fresnel;
 
-    if (coords.x != -1.0) {
-        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, ssr.r), 1.0);
-    } else {
-        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, vec3(0.0, 1.0, 0.0), ssr.r), 1.0);
-    }
+    FragColor = vec4(color, 1.0);
+//    if (coords.x != -1.0) {
+//        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, ssr.r), 1.0);
+//    } else {
+//        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, vec3(0.0, 1.0, 0.0), ssr.r), 1.0);
+//    }
 }

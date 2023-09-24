@@ -44,11 +44,11 @@ in highp vec4 normal;
 in highp vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
-in highp vec4 colour;
+in highp vec3 colour;
 #endif
 #ifdef HAS_UV
 #ifndef VERTEX_COMPRESSION
-in highp vec4 uv0;
+in highp vec2 uv0;
 #else
 in highp float uv0;
 #endif // VERTEX_COMPRESSION
@@ -72,14 +72,14 @@ out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 void main()
 {
 #ifdef HAS_VERTEXCOLOR
-    vColor = max3(colour.rgb) > 0.0 ? colour.rgba : vec4(1.0, 1.0, 1.0, 1.0);
+    vColor = max3(colour) > 0.0 ? vec4(colour, 1.0) : vec4(1.0, 1.0, 1.0, 1.0);
 #else
     vColor = vec4(1.0, 1.0, 1.0, 1.0);
 #endif // HAS_VERTEXCOLOR
 
 #ifndef VERTEX_COMPRESSION
-    highp vec4 position = vertex.xyzw;
-    highp vec2 uv = uv0.xy;
+    highp vec4 position = vertex;
+    highp vec2 uv = uv0;
 #else
     highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0, 1.0);
     highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
