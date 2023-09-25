@@ -22,6 +22,13 @@ uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
 
+mediump vec3 getScreenSpacePos(const mediump vec2 uv, const mediump vec3 ray)
+{
+    mediump float clampedDepth = texture2D(DepthMap, uv).x;
+    mediump float linearDepth = clampedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    return ray * linearDepth;
+}
+
 mediump vec3 hash(const mediump vec3 a)
 {
     mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
@@ -34,7 +41,7 @@ in highp vec3 vRay;
 void main()
 {
     #define MAX_RAND_SAMPLES 14
-    #define RADIUS 0.105 // 0.2125
+    #define RADIUS 100.0
 
     const mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
@@ -63,9 +70,8 @@ void main()
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    mediump float clampedDepth = texture2D(DepthMap, vUV0).r;
-    mediump float pixelDepth = clampedDepth * FarClipDistance;
-    mediump vec3 viewPos = normalize(vRay) * pixelDepth;
+    mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
+    mediump vec3 viewPos = getScreenSpacePos(vUV0, vRay);
     mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
     mediump vec3 randN = hash(worldPos) * pow5(1.0 - clampedDepth);
 
@@ -92,9 +98,8 @@ void main()
         nuv /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float clampedSampleDepth = texture2D(DepthMap, nuv.xy).x;
-        mediump float sampleDepth = clampedSampleDepth * FarClipDistance;
-        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * (sampleDepth >= oSample.z ? 1.0 : 0.0);
+        mediump float sampleDepth = getScreenSpacePos(nuv.xy, vRay).z;
+        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (sampleDepth - viewPos.z)) * (sampleDepth >= oSample.z ? 1.0 : 0.0);
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
