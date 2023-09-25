@@ -374,11 +374,9 @@ void main()
 #endif
 
     ORM = clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
-
     mediump float occlusion = ORM.r;
     mediump float roughness = ORM.g;
     mediump float metallic = ORM.b;
-
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].

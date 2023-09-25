@@ -20,6 +20,7 @@ uniform mediump vec2 TexelSize0;
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
+uniform mediump float NearClipDistance;
 
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -33,7 +34,7 @@ in highp vec3 vRay;
 void main()
 {
     #define MAX_RAND_SAMPLES 14
-    #define RADIUS 0.2125
+    #define RADIUS 0.105 // 0.2125
 
     const mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
@@ -64,8 +65,7 @@ void main()
     // it should be normalized here
     mediump float clampedDepth = texture2D(DepthMap, vUV0).r;
     mediump float pixelDepth = clampedDepth * FarClipDistance;
-    mediump vec3 ray = normalize(vRay);
-    mediump vec3 viewPos = ray * pixelDepth;
+    mediump vec3 viewPos = normalize(vRay) * pixelDepth;
     mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
     mediump vec3 randN = hash(worldPos) * pow5(1.0 - clampedDepth);
 

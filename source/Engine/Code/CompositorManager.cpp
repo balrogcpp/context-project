@@ -426,6 +426,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
+    fp->setNamedConstant("NearClipDistance", ogreCamera->getNearClipDistance());
 
   } else if (pass_id == 2) {  // 2 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -433,6 +434,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
+    fp->setNamedConstant("NearClipDistance", ogreCamera->getNearClipDistance());
 
   } else if (pass_id == 3) {  // 3 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();

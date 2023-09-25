@@ -28,15 +28,16 @@ uniform sampler2D GlossMap;
 uniform mediump mat4 ProjMatrix;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
+uniform mediump float NearClipDistance;
 
-mediump vec2 BinarySearch(mediump vec3 position, const mediump float pixelDepth, mediump vec3 direction)
+mediump vec2 BinarySearch(mediump vec3 position, mediump vec3 direction)
 {
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
         mediump vec4 projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
         projectedCoord.xy /= projectedCoord.w;
 
-        mediump float depth = FarClipDistance * texture2D(DepthMap, projectedCoord.xy).x;
-        mediump float delta = pixelDepth - depth;
+        mediump float depth = texture2D(DepthMap, projectedCoord.xy).x * FarClipDistance;
+        mediump float delta = position.z - depth;
 
         direction *= 0.5;
 
@@ -49,9 +50,9 @@ mediump vec2 BinarySearch(mediump vec3 position, const mediump float pixelDepth,
     return projectedCoord.xy;
 }
 
-mediump vec2 RayCast(mediump vec3 position, const mediump float pixelDepth, mediump vec3 direction)
+mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction)
 {
-    direction /= float(MAX_RAY_MARCH_COUNT);
+    direction *= STEP;
 
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         position += direction;
@@ -59,16 +60,15 @@ mediump vec2 RayCast(mediump vec3 position, const mediump float pixelDepth, medi
         mediump vec4 projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
         projectedCoord.xy /= projectedCoord.w;
 
-        mediump float depth = FarClipDistance * texture2D(DepthMap, projectedCoord.xy).x;
-        mediump float delta = pixelDepth - depth;
+        mediump float depth = texture2D(DepthMap, projectedCoord.xy).x * FarClipDistance;
+        mediump float delta = position.z - depth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
         // We don't want to sample too far from the starting position.
         // We're at least past the point where the ray intersects a surface.
         // Now, determine the values at the precise location of intersection.
         if ((direction.z - delta) < 1.2 && delta <= 0.0) {
-            //return BinarySearch(position, pixelDepth, direction);
-            return projectedCoord.xy;
+            return BinarySearch(position, direction);
         }
     }
 
@@ -103,22 +103,20 @@ void main()
     mediump float roughness = ssr.g;
     mediump vec3 normal = texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0;
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
-
+    mediump float pixelDepth = clampedDepth * FarClipDistance;
 
     if (metallic < 0.04 || normal == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5) {
         FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
         return;
     }
 
-    mediump float pixelDepth = clampedDepth * FarClipDistance;
-    mediump vec3 ray = normalize(vRay);
-    mediump vec3 viewPos = ray * pixelDepth;
+    mediump vec3 viewPos = vRay * pixelDepth;
     mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
     mediump vec3 jitt = hash(worldPos) * roughness * JITT_SCALE;
-    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normal)) + jitt;
+    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal))) + jitt;
 
     // Ray cast
-    mediump vec2 coords = RayCast(viewPos, pixelDepth, reflected);
+    mediump vec2 coords = RayCast(viewPos, reflected);
     mediump float L = FarClipDistance * abs(texture2D(DepthMap, coords).x - clampedDepth);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;
