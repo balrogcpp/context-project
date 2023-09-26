@@ -16,18 +16,9 @@
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 
-uniform mediump vec2 TexelSize0;
 uniform mediump mat4 ProjMatrix;
-uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
-
-mediump vec3 getScreenSpacePos(const mediump vec2 uv, const mediump vec3 ray)
-{
-    mediump float clampedDepth = texture2D(DepthMap, uv).x;
-    mediump float linearDepth = clampedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
-    return ray * linearDepth;
-}
 
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -36,12 +27,29 @@ mediump vec3 hash(const mediump vec3 a)
     return fract((b.xxy + b.yxx) * b.zyx);
 }
 
+mediump float ClampDepth(const mediump float linearDepth)
+{
+    return (linearDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+}
+
+mediump float LineariseDepth(const mediump float clampedDepth)
+{
+    return clampedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+}
+
+mediump vec3 GetScreenSpacePos(const mediump vec2 uv, const mediump vec3 ray)
+{
+    mediump float clampedDepth = texture2D(DepthMap, uv).x;
+    mediump float linearDepth = LineariseDepth(clampedDepth);
+    return ray * linearDepth;
+}
+
 in mediump vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
     #define MAX_RAND_SAMPLES 14
-    #define RADIUS 100.0
+    #define RADIUS 0.105
 
     const mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
@@ -71,15 +79,16 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
-    mediump vec3 viewPos = getScreenSpacePos(vUV0, vRay);
-    mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
-    mediump vec3 randN = hash(worldPos) * pow5(1.0 - clampedDepth);
+    mediump float pixelDepth = LineariseDepth(clampedDepth);
+    mediump vec3 viewPos = normalize(vRay) * LineariseDepth(clampedDepth);
+    mediump vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
     mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0;
 
-    if(viewNorm == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5) {
+    vec2 p = vec2(floor(gl_FragCoord.x), floor(gl_FragCoord.y));
+    if(viewNorm == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }
@@ -95,15 +104,15 @@ void main()
 
         mediump vec3 oSample = viewPos + randomDir * RADIUS;
         mediump vec4 nuv = mul(ProjMatrix, vec4(oSample, 1.0));
-        nuv /= nuv.w;
+        nuv.xy /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float sampleDepth = getScreenSpacePos(nuv.xy, vRay).z;
-        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (sampleDepth - viewPos.z)) * (sampleDepth >= oSample.z ? 1.0 : 0.0);
+        mediump float sampleDepth = LineariseDepth(texture2D(DepthMap, nuv.xy).x);
+        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(sampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.5 * pow(clampedDepth, 0.3333333), 0.0, 1.0);
+        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6667 * sqrt(clampedDepth), 0.0, 1.0);
     }
 
     // normalise

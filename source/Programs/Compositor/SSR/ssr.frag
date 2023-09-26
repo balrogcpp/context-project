@@ -26,27 +26,40 @@ uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
 
 uniform mediump mat4 ProjMatrix;
-uniform mediump mat4 InvViewMatrix;
 uniform mediump float FarClipDistance;
 uniform mediump float NearClipDistance;
 
-in mediump vec2 vUV0;
-in highp vec3 vRay;
+mediump vec3 hash(const mediump vec3 a)
+{
+    mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
+    b += dot(b, b.yxz + 19.19);
+    return fract((b.xxy + b.yxx) * b. zyx);
+}
 
-mediump vec3 getScreenSpacePos(const mediump vec2 uv, const mediump vec3 ray)
+mediump float ClampDepth(const mediump float linearDepth)
+{
+    return (linearDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+}
+
+mediump float LineariseDepth(const mediump float clampedDepth)
+{
+    return clampedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+}
+
+mediump vec3 GetScreenSpacePos(const mediump vec2 uv, const mediump vec3 ray)
 {
     mediump float clampedDepth = texture2D(DepthMap, uv).x;
-    mediump float linearDepth = clampedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    mediump float linearDepth = LineariseDepth(clampedDepth);
     return ray * linearDepth;
 }
 
 mediump vec2 BinarySearch(mediump vec3 position, mediump vec3 direction)
 {
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
-        mediump vec4 projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
-        projectedCoord.xy /= projectedCoord.w;
+        mediump vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
+        nuv.xy /= nuv.w;
 
-        mediump float depth = getScreenSpacePos(projectedCoord.xy, vRay).z;
+        mediump float depth = LineariseDepth(texture2D(DepthMap, nuv.xy).x);
         mediump float delta = position.z - depth;
 
         direction *= 0.5;
@@ -67,10 +80,10 @@ mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction)
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         position += direction;
 
-        mediump vec4 projectedCoord = mul(ProjMatrix, vec4(position, 1.0));
-        projectedCoord.xy /= projectedCoord.w;
+        mediump vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
+        nuv.xy /= nuv.w;
 
-        mediump float depth = getScreenSpacePos(projectedCoord.xy, vRay).z;
+        mediump float depth = LineariseDepth(texture2D(DepthMap, nuv.xy).x);
         mediump float delta = position.z - depth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
@@ -85,13 +98,6 @@ mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction)
     return vec2(-1.0, -1.0);
 }
 
-mediump vec3 hash(const mediump vec3 a)
-{
-    mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
-    b += dot(b, b.yxz + 19.19);
-    return fract((b.xxy + b.yxx) * b. zyx);
-}
-
 // source: https://www.standardabweichung.de/code/javascript/webgl-glsl-fresnel-schlick-approximation
 mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
 {
@@ -103,23 +109,24 @@ mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
     return factor;
 }
 
+in mediump vec2 vUV0;
+in highp vec3 vRay;
 void main()
 {
     mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
     mediump float metallic = ssr.r;
     mediump float roughness = ssr.g;
-    mediump vec3 normal = normalize(texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0);
-    normal.z = -normal.z;
+    mediump vec3 normal = texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0;
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
 
-    if (metallic < 0.04 || normal == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5) {
+    vec2 p = vec2(floor(gl_FragCoord.x), floor(gl_FragCoord.y));
+    if (metallic < 0.04 || normal == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
         FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
         return;
     }
 
-    mediump vec3 viewPos = getScreenSpacePos(vUV0, vRay);
-    mediump vec3 worldPos = mul(vec4(viewPos, 1.0), InvViewMatrix).xyz;
-    mediump vec3 jitt = hash(worldPos) * roughness * JITT_SCALE;
+    mediump vec3 viewPos = normalize(vRay) * LineariseDepth(clampedDepth);
+    mediump vec3 jitt = hash(gl_FragCoord.xyz) * roughness * JITT_SCALE;
     mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal))) + jitt;
 
     // Ray cast
@@ -133,6 +140,6 @@ void main()
     if (coords.x > 0.0) {
         FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, metallic), 1.0);
     } else {
-        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, vec3(0.0, 1.0, 0.0), metallic), 1.0);
+        FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
     }
 }

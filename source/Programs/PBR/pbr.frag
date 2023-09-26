@@ -410,12 +410,12 @@ void main()
         highp float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
         // attenuation is property of spot and point light
+        highp vec4 vLightPositionArray = LightPositionArray[i];
         mediump float attenuation = 1.0;
-        mediump vec4 vAttParams = LightAttenuationArray[i];
-        highp float range = vAttParams.x;
-
-        if (range < HALF_MAX_MINUS1) {
-            highp vec3 vLightViewH = LightPositionArray[i].xyz - vWorldPosition;
+        if (vLightPositionArray.w != 0.0) {
+            mediump vec4 vAttParams = LightAttenuationArray[i];
+            highp float range = vAttParams.x;
+            highp vec3 vLightViewH = vLightPositionArray.xyz - vWorldPosition;
             highp float fLightD = length(vLightViewH);
             highp float fLightD2 = fLightD * fLightD;
             highp vec3 vLightView = normalize(vLightViewH);
@@ -426,10 +426,9 @@ void main()
             attenuation = biggerhp(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             // spotlight
-            mediump vec3 vSpotParams = LightSpotParamsArray[i].xyz;
-            mediump float outerRadius = vSpotParams.z;
-
-            if (outerRadius > 0.0) {
+            mediump vec4 vSpotParams = LightSpotParamsArray[i];
+            if (vSpotParams.w != 0.0) {
+                mediump float outerRadius = vSpotParams.z;
                 mediump float fallof = vSpotParams.x;
                 mediump float innerRadius = vSpotParams.y;
 
@@ -461,7 +460,7 @@ void main()
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0
-        if (LightCastsShadowsArray[i] > 0.0) {
+        if (LightCastsShadowsArray[i] != 0.0) {
             light *= clamp(GetShadow(vLightSpacePosArray, vScreenPosition.z, i, texCounter) + ShadowColour.r, 0.0, 1.0);
         }
 #endif

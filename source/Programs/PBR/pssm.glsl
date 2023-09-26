@@ -14,7 +14,7 @@ mediump vec2 VogelDiskSample(const int sampleIndex, const int samplesCount, cons
 {
     mediump float r = sqrt((float(sampleIndex) + 0.5) / float(samplesCount));
     mediump float theta = float(sampleIndex) * 2.4 + phi;
-   return vec2(r * cos(theta), r * sin(theta));
+    return vec2(r * cos(theta), r * sin(theta));
 }
 
 mediump float FetchTerraShadow(sampler2D shadowMap, mediump vec2 uv, const mediump vec2 tsize)

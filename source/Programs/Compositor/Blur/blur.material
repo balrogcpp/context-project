@@ -7,7 +7,7 @@ fragment_program Blur glsl glsles hlsl
     source blur.frag
     target ps_2_0
 
-    preprocessor_defines MAX_SAMPLES=5
+    preprocessor_defines MAX_SAMPLES=6
 }
 
 material Blur : STD
