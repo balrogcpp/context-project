@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
 import RayCast from std.material
+import STD from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSR
@@ -42,6 +43,48 @@ material SSR : RayCast
                 texture black.dds
                 tex_address_mode clamp
                 filtering none
+            }
+            texture_unit Gloss
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
+
+fragment_program ssrMod glsl glsles hlsl
+{
+	source ssrMod.frag
+    target ps_2_0
+}
+
+material ssrMod : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref ssrMod
+            {
+                param_named RT int 0
+                param_named SsrMap int 1
+                param_named GlossMap int 2
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit SSR
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
             }
             texture_unit Gloss
             {

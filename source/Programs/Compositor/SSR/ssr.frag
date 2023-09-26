@@ -113,15 +113,15 @@ in mediump vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    mediump vec2 ssr = texture2D(GlossMap, vUV0).rg;
-    mediump float metallic = ssr.r;
-    mediump float roughness = ssr.g;
+    mediump vec2 gloss = texture2D(GlossMap, vUV0).rg;
+    mediump float metallic = gloss.r;
+    mediump float roughness = gloss.g;
     mediump vec3 normal = texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0;
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
 
     vec2 p = vec2(floor(gl_FragCoord.x), floor(gl_FragCoord.y));
     if (metallic < 0.04 || normal == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
-        FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
+        FragColor = vec4(vec3(0.0, 1.0, 0.0), 1.0);
         return;
     }
 
@@ -138,8 +138,8 @@ void main()
     mediump vec3 color = texture2D(RT, coords.xy).rgb * error * fresnel;
 
     if (coords.x > 0.0) {
-        FragColor = vec4(mix(texture2D(RT, vUV0).rgb, color, metallic), 1.0);
+        FragColor = vec4(color, 1.0);
     } else {
-        FragColor = vec4(texture2D(RT, vUV0).rgb, 1.0);
+        FragColor = vec4(vec3(0.0, 1.0, 0.0), 1.0);
     }
 }
