@@ -88,7 +88,7 @@ void main()
     mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0;
 
     vec2 p = vec2(floor(gl_FragCoord.x), floor(gl_FragCoord.y));
-    if(viewNorm == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
+    if(clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }

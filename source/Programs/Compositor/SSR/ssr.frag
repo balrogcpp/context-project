@@ -90,7 +90,7 @@ mediump vec2 RayCast(mediump vec3 position, mediump vec3 direction)
         // We don't want to sample too far from the starting position.
         // We're at least past the point where the ray intersects a surface.
         // Now, determine the values at the precise location of intersection.
-        if ((direction.z - delta) < 1.2 && delta <= 0.0) {
+        if (delta <= 0.0) {
             return BinarySearch(position, direction);
         }
     }
@@ -120,17 +120,17 @@ void main()
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
 
     vec2 p = vec2(floor(gl_FragCoord.x), floor(gl_FragCoord.y));
-    if (metallic < 0.04 || normal == vec3(0.0, 0.0, 0.0) || clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
+    if (metallic < 0.04 || clampedDepth > 0.5) {
         FragColor = vec4(vec3(0.0, 1.0, 0.0), 1.0);
         return;
     }
 
     mediump vec3 viewPos = normalize(vRay) * LineariseDepth(clampedDepth);
     mediump vec3 jitt = hash(gl_FragCoord.xyz) * roughness * JITT_SCALE;
-    mediump vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal))) + jitt;
+    mediump vec3 reflected = normalize(reflect(normalize(viewPos.xyz), normalize(normal))) + jitt;
 
     // Ray cast
-    mediump vec2 coords = RayCast(viewPos, reflected);
+    mediump vec2 coords = RayCast(viewPos.xyz, reflected);
     mediump float L = FarClipDistance * abs(texture2D(DepthMap, coords).x - clampedDepth);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;

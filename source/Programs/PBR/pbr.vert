@@ -116,10 +116,11 @@ void main()
 
     highp vec4 world = mul(WorldMatrix, position);
     vWorldPosition = world.xyz / world.w;
-    vDepth = length(mul(WorldViewMatrix, position).xyz);
 
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
+    //vDepth = length(mul(WorldViewMatrix, position).xyz);
+    vDepth = gl_Position.z;
 #ifdef HAS_MRT
     vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
 #endif

@@ -16,8 +16,6 @@ uniform sampler2D RT;
 uniform sampler2D SsrMap;
 uniform sampler2D GlossMap;
 
-uniform vec4 ShadowColour;
-
 in mediump vec2 vUV0;
 void main()
 {
