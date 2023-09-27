@@ -24,6 +24,5 @@ void main()
     mediump float ssao = texture2D(SsaoMap, vUV0).r;
 
     color *= clamp(ssao + ShadowColour.g, 0.0, 1.0);
-
     FragColor = vec4(SafeHDR(color), 1.0);
 }

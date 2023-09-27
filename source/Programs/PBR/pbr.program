@@ -26,7 +26,6 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
     {
         shared_params_ref PBR_Shared_vert
         param_named_auto WorldMatrix world_matrix
-        param_named_auto WorldViewMatrix worldview_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
         param_named_auto Time time_0_x_packed 100
@@ -68,7 +67,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto FrameTime frame_time
         param_named_auto CameraPosition camera_position
-        param_named_auto WorldViewMatrix worldview_matrix
+        param_named_auto ViewMatrix view_matrix
         //param_named_auto Time time_0_x_packed 100
     }
 }

@@ -21,7 +21,6 @@ uniform highp mat4 posIndexToObjectSpace;
 uniform highp float baseUVScale;
 #endif
 uniform highp mat4 WorldMatrix;
-uniform highp mat4 WorldViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp float MovableObj;
@@ -35,7 +34,7 @@ uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
 
 #ifndef VERTEX_COMPRESSION
-in highp vec4 vertex;
+in highp vec3 vertex;
 #else
 in highp vec2 vertex;
 #endif // VERTEX_COMPRESSION
@@ -59,9 +58,7 @@ in highp vec4 uv2;
 #endif //  HAS_UV
 
 out highp vec3 vWorldPosition;
-out highp float vDepth;
 out highp mat3 vTBN;
-out highp mat3 vTBN1;
 out highp vec2 vUV0;
 out mediump vec4 vColor;
 out mediump vec4 vScreenPosition;
@@ -78,14 +75,14 @@ void main()
 #endif // HAS_VERTEXCOLOR
 
 #ifndef VERTEX_COMPRESSION
-    highp vec4 position = vertex;
+    highp vec4 position = vec4(vertex, 1.0);
     highp vec2 uv = uv0;
 #else
     highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0, 1.0);
     highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
-#ifdef HAS_UV 
+#ifdef HAS_UV
     vUV0.xy = uv.xy;
 #else
     vUV0.xy = vec2(0.0, 0.0);
@@ -100,18 +97,11 @@ void main()
     highp vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     highp vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols3x3(t, b, n);
-#ifdef HAS_MRT
-    highp vec3 n1 = normalize(mul(WorldViewMatrix, vec4(normal.xyz, 0.0)).xyz);
-    highp vec3 t1 = normalize(mul(WorldViewMatrix, vec4(tangent.xyz, 0.0)).xyz);
-    highp vec3 b1 = cross(n1, t1) * tangent.w;
-    vTBN1 = mtxFromCols3x3(t1, b1, n1);
-#endif
 #else
     const highp vec3 n = vec3(0.0, 1.0, 0.0);
     const highp vec3 t = vec3(1.0, 0.0, 0.0);
     const highp vec3 b = normalize(cross(n, t));
     vTBN = mtxFromCols3x3(t, b, n);
-    vTBN1 = vTBN;
 #endif // HAS_NORMALS
 
     highp vec4 world = mul(WorldMatrix, position);
@@ -119,8 +109,6 @@ void main()
 
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
-    //vDepth = length(mul(WorldViewMatrix, position).xyz);
-    vDepth = gl_Position.z;
 #ifdef HAS_MRT
     vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
 #endif

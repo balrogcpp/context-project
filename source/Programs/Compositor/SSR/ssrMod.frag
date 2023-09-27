@@ -26,5 +26,5 @@ void main()
     if (ssr != vec3(0.0, 1.0, 0.0)) {
         color = mix(color, ssr, metallic);
     }
-    FragColor = vec4(SafeHDR(color), 1.0);
+    FragColor = vec4(SafeHDR(ssr), 1.0);
 }

@@ -153,9 +153,7 @@ uniform mediump vec3 iblSH[9];
 #ifdef TERRA_LIGHTMAP
 uniform mediump vec2 InvTerraLightMapSize;
 #endif
-#ifdef TERRA_NORMALMAP
-uniform highp mat4 WorldViewMatrix;
-#endif
+uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
 uniform mediump float LightCount;
@@ -268,7 +266,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-void GetNormal(highp mat3 tbn, highp mat3 tbn1, const mediump vec2 uv, const mediump vec2 uv1, out highp vec3 n, out highp vec3 n1)
+highp vec3 GetNormal(highp mat3 tbn, const mediump vec2 uv, const mediump vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -278,23 +276,18 @@ void GetNormal(highp mat3 tbn, highp mat3 tbn1, const mediump vec2 uv, const med
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
-    n = normalize(mul(tbn, (2.0 * n - 1.0)));
-    n1 = normalize(mul(WorldViewMatrix, vec4(n, 0.0)).xyz);
+    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
+    return normalize(mul(tbn, (2.0 * n - 1.0)));
 #else
-    highp vec3 n = tbn[2].xyz;
-    n1 = mul(WorldViewMatrix, vec4(n, 0.0)).xyz;
+    return tbn[2].xyz;
 #endif // HAS_NORMALMAP
-
-#else
+    #else
 
 #ifdef HAS_NORMALMAP
-    n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
-    n1 = normalize(mul(tbn1, ((2.0 * n - 1.0))));
-    n = normalize(mul(tbn, ((2.0 * n - 1.0))));
+    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
+    return normalize(mul(tbn, ((2.0 * n - 1.0))));
 #else
-    n = tbn[2].xyz;
-    n1 = tbn1[2].xyz;
+    return tbn[2].xyz;
 #endif // HAS_NORMALMAP
 #endif // TERRA_NORMALMAP
 }
@@ -322,9 +315,7 @@ mediump vec3 GetEmission(const mediump vec2 uv)
 }
 
 in highp vec3 vWorldPosition;
-in highp float vDepth;
 in highp mat3 vTBN;
-in highp mat3 vTBN1;
 in highp vec2 vUV0;
 in mediump vec4 vColor;
 in mediump vec4 vScreenPosition;
@@ -392,8 +383,7 @@ void main()
     mediump vec3 reflectance0 = specularColor.rgb;
 
     // Normal at surface point
-    highp vec3 n, n1;
-    GetNormal(vTBN, vTBN1, uv, vUV0.xy, n, n1);
+    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -479,7 +469,7 @@ void main()
     color *= occlusion;
     color += emission;
 
-    color = ApplyFog(color, FogParams, FogColour.rgb, vDepth);
+    color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
 #ifdef FORCE_SRGB
     color = LINEARtoSRGB(color);
@@ -489,8 +479,8 @@ void main()
 #else
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[1] = vec4(metallic, roughness, alpha, 1.0);
-    FragData[2] = vec4((vDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[3] = vec4(n1, 1.0);
+    FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
     FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif
 }

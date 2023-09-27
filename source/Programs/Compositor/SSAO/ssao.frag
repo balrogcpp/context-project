@@ -79,8 +79,7 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
-    mediump float pixelDepth = LineariseDepth(clampedDepth);
-    mediump vec3 viewPos = normalize(vRay) * LineariseDepth(clampedDepth);
+    mediump vec3 viewPos = vRay * clampedDepth;
     mediump vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
@@ -107,8 +106,8 @@ void main()
         nuv.xy /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float sampleDepth = LineariseDepth(texture2D(DepthMap, nuv.xy).x);
-        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(sampleDepth, oSample.z);
+        mediump float sampleDepth = texture2D(DepthMap, nuv.xy).x;
+        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (FarClipDistance * (clampedDepth - sampleDepth)) ) * bigger(sampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
