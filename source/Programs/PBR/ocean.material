@@ -34,7 +34,7 @@ fragment_program Ocean_fs glsl glsles hlsl
     default_params
     {
         param_named_auto CameraPosition camera_position
-        param_named_auto WorldViewMatrix worldview_matrix
+        param_named_auto ViewMatrix view_matrix
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance

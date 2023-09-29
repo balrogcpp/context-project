@@ -15,9 +15,9 @@
 
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
-
 uniform mediump mat4 ProjMatrix;
 uniform mediump float FarClipDistance;
+uniform mediump float NearClipDistance;
 
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -60,16 +60,17 @@ void main()
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
-    mediump vec3 viewPos = vRay * clampedDepth;
-    mediump vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedDepth);
+    mediump float clampedPixelDepth = texture2D(DepthMap, vUV0).x;
+    mediump float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance);
+    mediump vec3 viewPos = vRay * clampedPixelDepth;
+    mediump vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedPixelDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
     mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
 
-    vec2 p = vec2(floor(gl_FragCoord.x), floor(gl_FragCoord.y));
-    if(clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
+    //if(clampedDepth > 0.5 || clampedPixelDepth < HALF_EPSILON  || (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0) || (mod(floor(gl_FragCoord.y), 2.0) == 0.0 && mod(floor(gl_FragCoord.x), 2.0) == 0.0)) {
+    if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }
@@ -88,12 +89,14 @@ void main()
         nuv.xy /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float sampleDepth = texture2D(DepthMap, nuv.xy).x;
-        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(clampedDepth - sampleDepth) / FarClipDistance) * bigger(sampleDepth, oSample.z);
+        mediump float clampedSampleDepth = texture2D(DepthMap, nuv.xy).x;
+        mediump float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance);
+        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(clampedSampleDepth, oSample.z);
+
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedDepth), 0.0, 1.0);
+        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
     }
 
     // normalise

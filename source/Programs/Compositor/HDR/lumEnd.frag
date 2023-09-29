@@ -15,7 +15,6 @@
 
 uniform sampler2D RT;
 uniform sampler2D Lum;
-
 uniform mediump vec2 TexelSize0;
 uniform mediump vec3 Exposure;
 uniform mediump float timeSinceLast;

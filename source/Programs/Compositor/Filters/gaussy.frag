@@ -14,7 +14,6 @@
 #include "filters_RGB16.glsl"
 
 uniform sampler2D RT;
-
 uniform mediump vec2 TexelSize0;
 
 in mediump vec2 vUV0;

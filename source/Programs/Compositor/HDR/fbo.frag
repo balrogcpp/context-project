@@ -16,7 +16,6 @@
 uniform sampler2D RT;
 uniform sampler2D Lum;
 uniform sampler2D DepthMap;
-
 uniform mediump vec2 TexelSize0;
 
 in mediump vec2 vUV0;

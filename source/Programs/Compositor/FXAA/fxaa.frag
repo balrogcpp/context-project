@@ -23,7 +23,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-
 uniform mediump vec2 TexelSize0;
 
 // https://github.com/mattdesl/glsl-fxaa/blob/master/fxaa.glsl

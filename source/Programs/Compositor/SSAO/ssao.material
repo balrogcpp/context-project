@@ -57,6 +57,7 @@ material ssaoMod : STD
             {
                 param_named RT int 0
                 param_named SsaoMap int 1
+                param_named_auto TexelSize0 inverse_texture_size 1
                 param_named_auto ShadowColour shadow_colour
             }
 

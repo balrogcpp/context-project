@@ -14,7 +14,6 @@
 #include "header.glsl"
 
 uniform sampler2D texMap;
-
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;

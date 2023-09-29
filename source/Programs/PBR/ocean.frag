@@ -17,9 +17,8 @@
 #endif
 
 uniform sampler2D NormapMap;
-
 uniform highp vec3 CameraPosition;
-uniform highp mat4 WorldViewMatrix;
+uniform highp mat4 ViewMatrix;
 uniform highp float FarClipDistance;
 uniform highp float NearClipDistance;
 uniform highp vec4 Time;
@@ -185,7 +184,7 @@ void main()
     FragData[0] = vec4(SafeHDR(color), 0.75);
     FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
     FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[3] = normalize(WorldViewMatrix * vec4(lNormal, 0.0));
+    FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
     FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif
 }

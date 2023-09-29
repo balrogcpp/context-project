@@ -25,7 +25,6 @@ uniform sampler2D rt_input;
 #if SMAA_PREDICATION
 uniform sampler2D depthTex;
 #endif
-
 uniform mediump vec4 ViewportSize;
 
 #include "smaa.glsl"

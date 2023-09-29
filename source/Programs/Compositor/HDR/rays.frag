@@ -13,7 +13,6 @@
 #include "header.glsl"
 
 uniform sampler2D FBO;
-
 uniform int LightCount;
 uniform mediump vec4 LightPositionViewSpace[MAX_LIGHTS];
 uniform int RayCount;

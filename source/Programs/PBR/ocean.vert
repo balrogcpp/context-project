@@ -18,7 +18,6 @@
 #if MAX_WATER_OCTAVES > 0
 uniform sampler2D NoiseMap;
 #endif
-
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;

@@ -14,7 +14,6 @@
 
 uniform sampler2D RT;
 uniform sampler2D DepthMap;
-
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;

@@ -18,7 +18,6 @@
 
 uniform sampler2D RT;
 uniform sampler2D VelocitySampler;
-
 uniform mediump vec2 TexSize1;
 
 in mediump vec2 vUV0;

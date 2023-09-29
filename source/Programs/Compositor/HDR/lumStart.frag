@@ -13,7 +13,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-
 uniform mediump vec4 TexSize0;
 uniform mediump vec4 ViewportSize;
 

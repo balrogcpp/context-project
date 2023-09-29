@@ -21,10 +21,12 @@ void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec3 ssr = texture2D(SsrMap, vUV0).rgb;
+    mediump vec2 uv = ssr.xy;
+    mediump float fresnel = ssr.z;
     mediump float metallic = texture2D(GlossMap, vUV0).r;
 
-    if (ssr != vec3(0.0, 0.0, 0.0)) {
-        color = mix(color, ssr, metallic);
+    if (uv.x > HALF_EPSILON && uv.y > HALF_EPSILON && uv.x <= 1.0 && uv.y <= 1.0) {
+        color = mix(color, texture2D(RT, uv).rgb, metallic * fresnel);
     }
     FragColor = vec4(SafeHDR(color), 1.0);
 }
