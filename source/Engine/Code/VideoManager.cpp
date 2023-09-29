@@ -274,7 +274,7 @@ VideoManager::~VideoManager() {
 }
 
 void VideoManager::OnUpdate(float time) {
-  if (imguiOverlay && gamepadSupport) {
+  if (imguiOverlay) {
     ImGui_ImplSDL2_NewFrame();
   }
 }
@@ -548,7 +548,6 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureConfig(5, texConfig);
     ogreSceneManager->setShadowTextureConfig(6, texConfig);
     ogreSceneManager->setShadowTextureConfig(7, texConfig);
- 
 
     // pssm stuf
     pssmSetup->setSplitPadding(0.5);
@@ -744,16 +743,9 @@ void VideoManager::RebuildOverlayFontAtlas() {
   unsigned char *pixels;
   int width, height;
 
-  io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-
-  const auto &mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL);
-  if (mat) {
-    Ogre::TexturePtr tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->_getTexturePtr();
-    std::string texName = tex->getName();
-    Ogre::TextureManager::getSingleton().unload(texName, Ogre::RGN_INTERNAL);
-    Ogre::TextureManager::getSingleton().remove(texName, Ogre::RGN_INTERNAL);
-    tex.reset();
-    tex = Ogre::TextureManager::getSingleton().createManual(texName, Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 0, Ogre::PF_BYTE_RGBA);
+  if (auto mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL)) {
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+    Ogre::TexturePtr tex = Ogre::TextureManager::getSingleton().getByName("ImGui/FontTex");
     tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
   }
 }
