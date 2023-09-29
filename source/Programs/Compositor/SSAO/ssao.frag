@@ -18,30 +18,12 @@ uniform sampler2D NormalMap;
 
 uniform mediump mat4 ProjMatrix;
 uniform mediump float FarClipDistance;
-uniform mediump float NearClipDistance;
 
 mediump vec3 hash(const mediump vec3 a)
 {
     mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
-}
-
-mediump float ClampDepth(const mediump float linearDepth)
-{
-    return (linearDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-}
-
-mediump float LineariseDepth(const mediump float clampedDepth)
-{
-    return clampedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
-}
-
-mediump vec3 GetScreenSpacePos(const mediump vec2 uv, const mediump vec3 ray)
-{
-    mediump float clampedDepth = texture2D(DepthMap, uv).x;
-    mediump float linearDepth = LineariseDepth(clampedDepth);
-    return ray * linearDepth;
 }
 
 in mediump vec2 vUV0;
@@ -84,7 +66,7 @@ void main()
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    mediump vec3 viewNorm = texture2D(NormalMap, vUV0).xyz * 2.0 - 1.0;
+    mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
 
     vec2 p = vec2(floor(gl_FragCoord.x), floor(gl_FragCoord.y));
     if(clampedDepth > 0.5 || (mod(p.y, 2.0) == 0.0 && mod(p.x, 2.0) == 0.0)) {
@@ -99,7 +81,7 @@ void main()
         // (based on random samples and a random texture sample)
         // bias the random direction away from the normal
         // this tends to minimize self occlusion
-        mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm.xyz;
+        mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + normal;
 
         mediump vec3 oSample = viewPos + randomDir * RADIUS;
         mediump vec4 nuv = mul(ProjMatrix, vec4(oSample, 1.0));
@@ -107,11 +89,11 @@ void main()
 
         // Compute occlusion based on the (scaled) Z difference
         mediump float sampleDepth = texture2D(DepthMap, nuv.xy).x;
-        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (FarClipDistance * (clampedDepth - sampleDepth)) ) * bigger(sampleDepth, oSample.z);
+        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(clampedDepth - sampleDepth) / FarClipDistance) * bigger(sampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6667 * sqrt(clampedDepth), 0.0, 1.0);
+        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedDepth), 0.0, 1.0);
     }
 
     // normalise

@@ -21,7 +21,7 @@ compositor SSR : STD
             }
         }
 
-        target ssr
+        target_output
         {
             pass render_quad
             {
@@ -35,7 +35,7 @@ compositor SSR : STD
             }
         }
 
-        target_output
+        /*target_output
         {
             pass render_quad
             {
@@ -44,6 +44,6 @@ compositor SSR : STD
                 input 1 ssr
                 input 2 mrt 1
             }
-        }
+        }*/
     }
 }

@@ -23,8 +23,8 @@ void main()
     mediump vec3 ssr = texture2D(SsrMap, vUV0).rgb;
     mediump float metallic = texture2D(GlossMap, vUV0).r;
 
-    if (ssr != vec3(0.0, 1.0, 0.0)) {
+    if (ssr != vec3(0.0, 0.0, 0.0)) {
         color = mix(color, ssr, metallic);
     }
-    FragColor = vec4(SafeHDR(ssr), 1.0);
+    FragColor = vec4(SafeHDR(color), 1.0);
 }
