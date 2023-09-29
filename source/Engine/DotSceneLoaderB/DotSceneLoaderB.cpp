@@ -549,8 +549,8 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
     // construct a scenenode is no parent
     if (!pParent)
         pParent = mAttachNode->createChildSceneNode(name);
-
-    pParent->attachObject(pCamera);
+    if (!pCamera->getParentSceneNode())
+        pParent->attachObject(pCamera);
 
     // Set the field-of-view
     //! @todo Is this always in degrees?

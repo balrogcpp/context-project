@@ -10,7 +10,7 @@ namespace gge {
 CompositorManager::CompositorManager()
     : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {}
 
-CompositorManager::~CompositorManager() {}
+CompositorManager::~CompositorManager() = default;
 
 void CompositorManager::OnUpdate(float time) {}
 
@@ -58,7 +58,8 @@ void CompositorManager::OnSetUp() {
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
   // AddCompositor("WaterNormals", true);
-  // AddCubeCamera();
+  //AddReflCamera();
+  //AddCubeCamera();
 
   InitMRT(true);
   AddCompositor("SSAO", false);
@@ -422,23 +423,20 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   if (pass_id == 1) {  // 1 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
 
   } else if (pass_id == 2) {  // 2 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
 
   } else if (pass_id == 3) {  // 3 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
     static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
-    int directionals = 0;  // count directional light
 
+    int directionals = 0;  // count directional light
     for (int i = 0; i < lightList.size(); i++) {
       Ogre::Light *light = lightList[i];
       if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
