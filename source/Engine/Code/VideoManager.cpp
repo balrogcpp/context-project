@@ -498,7 +498,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
     } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
       Ogre::PSSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
 
-    } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT) {
+    } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT || light->getType() == Ogre::Light::LT_RECTLIGHT) {
       Ogre::LiSPSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
 
     } else {
@@ -534,15 +534,16 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
-    ogreSceneManager->setShadowTextureCount(8);
+    ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
     Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigList().at(0);
     ogreSceneManager->setShadowTextureConfig(0, texConfig);
     ogreSceneManager->setShadowTextureConfig(1, texConfig);
-    ogreSceneManager->setShadowTextureConfig(2, texConfig);
     texConfig.height /= 2;
     texConfig.width /= 2;
+    ogreSceneManager->setShadowTextureConfig(2, texConfig);
     ogreSceneManager->setShadowTextureConfig(3, texConfig);
     ogreSceneManager->setShadowTextureConfig(4, texConfig);
     ogreSceneManager->setShadowTextureConfig(5, texConfig);
@@ -565,6 +566,7 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     ogreSceneManager->setShadowTextureCount(0);
   }
@@ -575,6 +577,7 @@ void VideoManager::EnableShadows(bool enable) {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
     ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
 
@@ -582,6 +585,7 @@ void VideoManager::EnableShadows(bool enable) {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     ogreSceneManager->setShadowTextureCount(0);
   }
