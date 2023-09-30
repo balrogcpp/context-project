@@ -137,11 +137,11 @@ void main()
     mediump vec3 reflection = LINEARtoSRGB(texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount)).rgb);
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
-    float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
+    mediump float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
 
-    vec3 R = reflect(vVec, nVec);
+    highp vec3 R = reflect(vVec, nVec);
 
-    float specular = min(pow(atan(max(dot(R, -lVec), 0.0) * 1.55), 1000.0) * reflectivity * 8.0, 50.0);
+    mediump float specular = min(pow(atan(max(dot(R, -lVec), 0.0) * 1.55), 1000.0) * reflectivity * 8.0, 50.0);
 
     mediump vec2 rcoord = reflect(vVec, nVec).xz;
     mediump vec2 refrOffset = nVec.xz * RefrDistortionAmount;
@@ -192,7 +192,7 @@ void main()
 #ifndef HAS_MRT
     FragColor = vec4(SafeHDR(color), alpha);
 #else
-    FragData[0] = vec4(SafeHDR(color), 0.75);
+    FragData[0] = vec4(SafeHDR(color), 1.0);
     FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);

@@ -7,8 +7,8 @@ compositor Fresnel
 {
     technique
     {
-        texture reflection 512 512 PF_R11G11B10_FLOAT no_fsaa
-        texture refraction 512 512 PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa
+        texture reflection target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa
+        texture refraction target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa
 
         target reflection
         {

@@ -886,7 +886,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     bool hasNormals = getAttribBool(XMLNode, "hasNormals", true);
     Vector3 normal = parseVector3(XMLNode.child("normal"), Ogre::Vector3::UNIT_Y);
     Vector3 up = parseVector3(XMLNode.child("upVector"), Ogre::Vector3::UNIT_Z);
-    Ogre::uint32 flags = getAttribUInt(XMLNode, "flags", 0xF00);
+    Ogre::uint32 flags = getAttribUInt(XMLNode, "flags", 0xFFF);
     bool castShadows = getAttribBool(XMLNode, "castShadows", false);
 
     Plane plane(normal, distance);

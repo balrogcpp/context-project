@@ -191,13 +191,13 @@ float pow12(const float x)
 
 highp float map_0(const highp float x, const highp float v0, const highp float v1)
 {
-    return (x - v0) / (v1 - v0);
+    return ((x - v0) / (v1 - v0)) * 0.2;
 }
 
 
 highp float map_1(const highp float x, const highp float v0, const highp float v1)
 {
-    return x * (v1 - v0) + v0;
+    return x * 5.0 * (v1 - v0) + v0;
 }
 
 bool Any(vec2 x)

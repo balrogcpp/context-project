@@ -54,9 +54,10 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
       fp->setNamedConstant("TexScale", uvScale);
     }
 
-    if (isVertexCompressionSupported()) {
+    if (isVertexCompressionSupported() && Ogre::TerrainGlobalOptions::getSingletonPtr()->getUseVertexCompressionWhenAvailable()) {
       if (pass->hasVertexProgram()) {
         const auto &vp = pass->getVertexProgramParameters();
+        vp->setIgnoreMissingParams(true);
 
         Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
         vp->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);

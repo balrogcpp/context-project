@@ -28,5 +28,5 @@ void main()
     }
 #endif
 
-    FragColor = vec4(map_0(gl_FragCoord.z, 0.0, 100.0), 0.0, 0.0, 1.0);
+    FragColor = vec4(map_0(gl_FragCoord.z, 0.1, 100.0), 0.0, 0.0, 1.0);
 }
