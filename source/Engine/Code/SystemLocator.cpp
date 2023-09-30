@@ -16,8 +16,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace gge {
-SystemLocator::SystemLocator() : sleep(false), lockFps(false), targetFps(60) {
-  componentList.reserve(50);
+SystemLocator::SystemLocator() : lockFps(false), targetFps(60) {
 #ifdef MOBILE
   lockFps = true;
   targetFps = 30;
@@ -26,11 +25,15 @@ SystemLocator::SystemLocator() : sleep(false), lockFps(false), targetFps(60) {
 SystemLocator::~SystemLocator() {
   OnClean();
   Ogre::Root::getSingleton().removeFrameListener(this);
+  InputSequencer::GetInstance().UnregWindowListener(this);
 }
 
 void SystemLocator::Init() {
   video = make_unique<VideoManager>();
   RegComponent(video.get());
+
+  InputSequencer::GetInstance().RegWindowListener(this);
+  Ogre::Root::getSingleton().addFrameListener(this);
 
   compositor = make_unique<CompositorManager>();
   RegComponent(compositor.get());
@@ -54,13 +57,14 @@ void SystemLocator::Init() {
 
   forests = make_unique<ForestsManager>();
   RegComponent(forests.get());
-
-  Ogre::Root::getSingleton().addFrameListener(this);
 }
 
 void SystemLocator::OnQuit() {}
-void SystemLocator::OnFocusLost() { sleep = true; }
-void SystemLocator::OnFocusGained() { sleep = false; }
+
+void SystemLocator::OnFocusLost() { _sleep = true; }
+
+void SystemLocator::OnFocusGained() { _sleep = false; }
+
 void SystemLocator::RenderFrame() { video->RenderFrame(); }
 
 void SystemLocator::Capture() {
@@ -86,7 +90,9 @@ void SystemLocator::UnregComponent(SystemI *component) {
 }
 
 bool SystemLocator::frameEnded(const Ogre::FrameEvent &evt) { return true; }
+
 bool SystemLocator::frameStarted(const Ogre::FrameEvent &evt) { return true; }
+
 bool SystemLocator::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   for (auto it : componentList) {
     if (!it->IsSleeping() && !IsSleeping()) {
@@ -118,12 +124,18 @@ void SystemLocator::SetSleep(bool sleep) {
 }
 
 void SystemLocator::EnableFpsLock(bool enable) { lockFps = enable; }
+
 void SystemLocator::SetFpsFreq(int fps) { targetFps = fps; }
+
 bool SystemLocator::IsFpsLockEnabled() { return lockFps; }
+
 int SystemLocator::GetFpsFreq() { return targetFps; }
 
 void SystemLocator::FrameControl(chrono::microseconds frameDuration) {
-  if (lockFps) {
+  if (_sleep) {
+    auto delay = chrono::microseconds(static_cast<long int>(1e+6 / 30)) - frameDuration;
+    this_thread::sleep_for(delay);
+  } else if (lockFps) {
     auto delay = chrono::microseconds(static_cast<long int>(1e+6 / targetFps)) - frameDuration;
     this_thread::sleep_for(delay);
   }

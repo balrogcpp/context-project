@@ -73,8 +73,8 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
-  // AddCompositor("WaterNormals", true);
   AddReflCamera();
+  AddCubeCamera();
   InitMRT(true);
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);
@@ -86,7 +86,6 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Blur", false);
   AddCompositor("LINEAR2SRGB", true);
   AddCompositor("Paused", false);
-  AddCubeCamera();
 
   // reg as viewport listener
   ogreViewport->addListener(this);

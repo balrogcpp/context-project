@@ -420,7 +420,7 @@ void VideoManager::InitOgreRoot() {
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
-#endif          
+#endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Ogre::STBIImageCodec::startup();
 #endif
@@ -557,10 +557,11 @@ void VideoManager::InitOgreSceneManager() {
     }
     pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
-    //auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);
-    //auto *subRenderState = static_cast<Ogre::RTShader::IntegratedPSSM3 *>(schemRenderState->getSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3));
+    // auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);
+    // auto *subRenderState = static_cast<Ogre::RTShader::IntegratedPSSM3
+    // *>(schemRenderState->getSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3));
     pssmSplitPointList = pssmSetup->getSplitPoints();
-    //subRenderState->setSplitPoints(pssmSplitPointList);
+    // subRenderState->setSplitPoints(pssmSplitPointList);
 
   } else {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);

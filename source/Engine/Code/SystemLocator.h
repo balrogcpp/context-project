@@ -50,7 +50,6 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void OnFocusLost() override;
   void OnFocusGained() override;
 
-  bool sleep;
   bool lockFps;
   int targetFps;
   std::vector<SystemI*> componentList;

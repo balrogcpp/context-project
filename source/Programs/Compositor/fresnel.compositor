@@ -23,10 +23,5 @@ compositor Fresnel
             pass clear { colour_value 0.0 0.0 0.0 1.0 }
             pass render_scene {}
         }
-
-        target_output
-        {
-            input previous
-        }
     }
 }

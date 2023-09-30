@@ -24,11 +24,12 @@ void Application::LoopBody() {
   auto tpBeforeFrame = chrono::steady_clock::now();
 
   engine->Capture();
-  engine->RenderFrame();
+  if (!sleep) {
+    engine->RenderFrame();
+  }
 
   auto tpAfterFrame = chrono::steady_clock::now();
   auto frameDuration = tpAfterFrame - tpBeforeFrame;
-
   engine->FrameControl(chrono::duration_cast<chrono::microseconds>(frameDuration));
 
 #ifdef EMSCRIPTEN
@@ -60,7 +61,9 @@ void Application::Go() {
 }
 
 void Application::OnQuit() { exiting = true; }
+
 void Application::OnFocusLost() { sleep = true; }
+
 void Application::OnFocusGained() { sleep = false; }
 
 int Application::Main() {
