@@ -2,19 +2,19 @@
 
 import STD from std.material
 
-fragment_program End glsl glsles hlsl
+fragment_program SRGB2LINEAR glsl glsles hlsl
 {
-    source end.frag
+    source srgb2linear.frag
     target ps_2_0
 }
 
-material End : STD
+material SRGB2LINEAR : STD
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref End
+            fragment_program_ref SRGB2LINEAR
 			{
                 param_named RT int 0
 			}

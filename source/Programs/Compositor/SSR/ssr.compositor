@@ -10,7 +10,7 @@ compositor SSR : STD
     technique
     {
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssr target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB no_fsaa depth_pool 0
+        texture ssr target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target depth
         {

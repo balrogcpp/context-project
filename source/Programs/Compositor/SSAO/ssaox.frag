@@ -12,6 +12,9 @@
 
 #include "header.glsl"
 
+uniform sampler2D RT;
+uniform mediump vec2 TexelSize0;
+
 mediump float Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
     mediump float A = texture2D(tex, uv).x;
@@ -24,9 +27,6 @@ mediump float Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
 
     return c1;
 }
-
-uniform sampler2D RT;
-uniform mediump vec2 TexelSize0;
 
 in mediump vec2 vUV0;
 void main()

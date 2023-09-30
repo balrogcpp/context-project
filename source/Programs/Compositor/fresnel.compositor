@@ -14,6 +14,7 @@ compositor Fresnel
         {
             visibility_mask 0x00F // SURFACE objects
             pass clear { colour_value 0.1 0.2 0.8 1.0 }
+            //input previous
             pass render_scene {}
         }
 
@@ -21,7 +22,8 @@ compositor Fresnel
         {
             visibility_mask 0x0F0 // SUBMERGED objects
             pass clear { colour_value 0.0 0.0 0.0 1.0 }
-            pass render_scene {}
+            input previous
+            //pass render_scene {}
         }
 
         target_output

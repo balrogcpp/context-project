@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 import STD from std.compositor
 
-compositor End : STD
+compositor LINEAR2SRGB : STD
 {
     technique
     {
@@ -10,7 +10,7 @@ compositor End : STD
             pass render_quad
             {
                 identifier 999
-                material End
+                material LINEAR2SRGB
                 input 0 rt
             }
         }

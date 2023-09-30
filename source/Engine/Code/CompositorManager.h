@@ -32,8 +32,6 @@ class CompositorManager : public System<CompositorManager>,
 
   void AddReflCamera();
   void DestroyReflCamera();
-  void AddRefrCamera();
-  void DestroyRefrCamera();
   void AddCubeCamera();
   void DestroyCubeCamera();
 
@@ -74,8 +72,6 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::SceneManager* ogreSceneManager = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
-  Ogre::Camera* reflCamera = nullptr;
-  Ogre::Camera* refrCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
 };
 }  // namespace gge

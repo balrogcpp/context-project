@@ -13,7 +13,7 @@
 #ifndef MAX_MRT_TEXTURES
 #define MAX_MRT_TEXTURES 5
 #endif
-
+#define FORCE_SRGB
 
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300

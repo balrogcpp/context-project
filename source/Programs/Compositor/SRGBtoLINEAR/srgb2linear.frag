@@ -13,13 +13,10 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform sampler2D AmbientMap;
 
 in mediump vec2 vUV0;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump vec3 ambient = texture2D(AmbientMap, vUV0).rgb;
-
-    FragColor = vec4(SafeHDR(color + ambient), 1.0);
+    FragColor = vec4(SRGBtoLINEAR(color), 1.0);
 }

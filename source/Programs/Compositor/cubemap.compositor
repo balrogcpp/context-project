@@ -22,7 +22,7 @@ compositor CubeMap
 {
     technique
     {
-        texture cube 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0
+        texture cube 64 64 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0
 
         target cube 0 : CubeFace {}
         target cube 1 : CubeFace {}

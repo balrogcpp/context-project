@@ -58,10 +58,8 @@ void CompositorManager::OnSetUp() {
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
   // AddCompositor("WaterNormals", true);
-  //AddReflCamera();
-  //AddCubeCamera();
-
   InitMRT(true);
+  AddCompositor("SRGB2LINEAR", true);
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);
   AddCompositor("FXAA", false);
@@ -70,69 +68,29 @@ void CompositorManager::OnSetUp() {
   InitMipChain(false);
   AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
-  AddCompositor("End", true);
+  AddCompositor("LINEAR2SRGB", true);
   AddCompositor("Paused", false);
+  AddReflCamera();
+  AddCubeCamera();
 
   // reg as viewport listener
   ogreViewport->addListener(this);
 }
 
 void CompositorManager::AddReflCamera() {
-  if (!ogreSceneManager->hasCamera("ReflCamera")) {
-    reflCamera = ogreSceneManager->createCamera("ReflCamera");
-    ogreCamera->getParentSceneNode()->attachObject(reflCamera);
-    reflCamera->setAspectRatio(ogreCamera->getAspectRatio());
-    reflCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
-    reflCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
-    reflCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0));
-    reflCamera->enableReflection(Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0));
-
-    if (!IsCompositorInChain("Fresnel")) {
-      AddCompositor("Fresnel", true);
-      auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-      rt->removeAllViewports();
-      rt->addViewport(reflCamera);
-    }
+  if (!IsCompositorInChain("Fresnel")) {
+    AddCompositor("Fresnel", true);
+    auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+    rt->addListener(new ReflTexListener(ogreCamera, Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0)));
+    auto mat = Ogre::MaterialManager::getSingleton().getByName("Ocean");
+    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, ogreCamera);
   }
 }
 
 void CompositorManager::DestroyReflCamera() {
-  if (ogreSceneManager->hasCamera("RefrCamera")) {
-    if (IsCompositorInChain("Fresnel")) {
-      compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
-      compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
-    }
-
-    ogreSceneManager->destroyCamera(reflCamera);
-  }
-}
-
-void CompositorManager::AddRefrCamera() {
-  if (!ogreSceneManager->hasCamera("RefrCamera")) {
-    refrCamera = ogreSceneManager->createCamera("RefrCamera");
-    ogreCamera->getParentSceneNode()->attachObject(refrCamera);
-    refrCamera->setAspectRatio(ogreCamera->getAspectRatio());
-    refrCamera->setNearClipDistance(ogreCamera->getNearClipDistance());
-    refrCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
-    refrCamera->enableCustomNearClipPlane(Ogre::Plane(Ogre::Vector3::NEGATIVE_UNIT_Y, -2.0));
-
-    if (!IsCompositorInChain("Fresnel")) {
-      AddCompositor("Fresnel", true);
-      auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
-      rt->removeAllViewports();
-      rt->addViewport(refrCamera);
-    }
-  }
-}
-
-void CompositorManager::DestroyRefrCamera() {
-  if (ogreSceneManager->hasCamera("ReflCamera")) {
-    if (IsCompositorInChain("Fresnel")) {
-      compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->removeAllViewports();
-      compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
-    }
-
-    ogreSceneManager->destroyCamera(reflCamera);
+  if (IsCompositorInChain("Fresnel")) {
+    compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
+    compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
   }
 }
 
@@ -141,7 +99,7 @@ void CompositorManager::AddCubeCamera() {
     cubeCamera = ogreSceneManager->createCamera("CubeCamera");
     cubeCamera->setFOVy(Ogre::Degree(90.0));
     cubeCamera->setAspectRatio(1.0);
-    cubeCamera->setNearClipDistance(5.0);
+    cubeCamera->setNearClipDistance(50.0);
     cubeCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
     ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
   }
@@ -459,7 +417,6 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   } else if (pass_id == 100) {  // paused
 
   } else if (pass_id == 99) {  // end render
-
   }
 }
 

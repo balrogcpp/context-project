@@ -93,7 +93,6 @@ void main()
         mediump float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance);
         mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(clampedSampleDepth, oSample.z);
 
-
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
         occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);

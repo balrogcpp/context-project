@@ -16,7 +16,9 @@
     #define MAX_WATER_OCTAVES 3
 #endif
 
+uniform sampler2D ReflectionTex;
 uniform sampler2D NormapMap;
+//uniform sampler2D RefractionTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform highp float FarClipDistance;
@@ -65,6 +67,7 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 in highp vec3 vWorldPosition;
 in mediump vec4 vScreenPosition;
 in mediump vec4 vPrevScreenPosition;
+in mediump vec4 vProjectionCoord;
 void main()
 {
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
@@ -128,7 +131,9 @@ void main()
     mediump float fresnel = fresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = vec3(1.0, 1.0 , 1.0);
+    mediump vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
+    fragCoord = clamp(fragCoord, 0.002, 0.998);
+    mediump vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount)).rgb;
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
