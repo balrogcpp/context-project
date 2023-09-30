@@ -748,11 +748,20 @@ void VideoManager::RebuildOverlayFontAtlas() {
   unsigned char *pixels;
   int width, height;
 
-  if (auto mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL)) {
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-    Ogre::TexturePtr tex = Ogre::TextureManager::getSingleton().getByName("ImGui/FontTex");
-    tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
-  }
+    if (auto mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL)) {
+      io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
+#ifdef WIN32
+      Ogre::TextureManager::getSingleton().unload("ImGui/FontTex", Ogre::RGN_INTERNAL);
+      Ogre::TextureManager::getSingleton().remove("ImGui/FontTex", Ogre::RGN_INTERNAL);
+      auto tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
+                                                            Ogre::PF_BYTE_RGBA);
+#else
+      auto tex = Ogre::TextureManager::getSingleton().getByName("ImGui/FontTex");
+#endif
+
+      tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
+    }
 }
 
 ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
