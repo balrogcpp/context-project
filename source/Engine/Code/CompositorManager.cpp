@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(true), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {}
+    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {}
 
 CompositorManager::~CompositorManager() = default;
 
@@ -90,6 +90,8 @@ void CompositorManager::OnSetUp() {
 
   // reg as viewport listener
   ogreViewport->addListener(this);
+  fixedViewportSize = false;
+  viewportDimensionsChanged(ogreViewport);
 }
 
 void CompositorManager::AddReflCamera() {
