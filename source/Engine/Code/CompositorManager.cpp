@@ -36,9 +36,25 @@ class ReflTexListener : public Ogre::RenderTargetListener {
     ogrePlane = plane;
   }
 
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->enableReflection(ogrePlane); }
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->enableCustomNearClipPlane(ogrePlane); ogreCamera->enableReflection(ogrePlane); }
 
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->disableReflection(); }
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt)  { ogreCamera->disableCustomNearClipPlane(); ogreCamera->disableReflection(); }
+
+ private:
+  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::Plane ogrePlane;
+};
+
+class RefrTexListener : public Ogre::RenderTargetListener {
+ public:
+  RefrTexListener(Ogre::Camera *camera, Ogre::Plane plane) {
+    ogreCamera = camera;
+    ogrePlane = plane;
+  }
+
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->enableCustomNearClipPlane(ogrePlane); }
+
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt)  { ogreCamera->disableCustomNearClipPlane(); }
 
  private:
   Ogre::Camera *ogreCamera = nullptr;
@@ -58,8 +74,8 @@ void CompositorManager::OnSetUp() {
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
   // AddCompositor("WaterNormals", true);
+  AddReflCamera();
   InitMRT(true);
-  AddCompositor("SRGB2LINEAR", true);
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);
   AddCompositor("FXAA", false);
@@ -70,7 +86,6 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Blur", false);
   AddCompositor("LINEAR2SRGB", true);
   AddCompositor("Paused", false);
-  AddReflCamera();
   AddCubeCamera();
 
   // reg as viewport listener
@@ -80,8 +95,11 @@ void CompositorManager::OnSetUp() {
 void CompositorManager::AddReflCamera() {
   if (!IsCompositorInChain("Fresnel")) {
     AddCompositor("Fresnel", true);
-    auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-    rt->addListener(new ReflTexListener(ogreCamera, Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0)));
+    auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+    rt1->addListener(new ReflTexListener(ogreCamera, Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0)));
+    auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
+    rt2->addListener(new RefrTexListener(ogreCamera, Ogre::Plane(-Ogre::Vector3::UNIT_Y, 0.0)));
+
     auto mat = Ogre::MaterialManager::getSingleton().getByName("Ocean");
     mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, ogreCamera);
   }
@@ -199,7 +217,7 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
 }
 
 void CompositorManager::InitMRT(bool enable) {
-  auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0);
+  auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR);
   ASSERTION(mrtCompositor, "[CompositorManager] Failed to add MRT compositor");
 
   // check textures

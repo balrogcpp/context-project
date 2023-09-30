@@ -19,7 +19,7 @@ compositor SMAA : STD
 			{
 				material SMAA/EdgeDetection
 				input 0 rt
-				input 1 mrt 2
+				input 1 mrt 1
 			}
 		}
 

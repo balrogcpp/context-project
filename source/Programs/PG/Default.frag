@@ -44,8 +44,8 @@ void main()
     FragColor = vec4(SafeHDR(color), alpha);
 #else
     FragData[0] = vec4(SafeHDR(color), alpha);
-    FragData[1] = vec4(0.0, 0.0, 1.0, 1.0);
-    FragData[2] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[2] = vec4(0.0, 0.0, 1.0, 1.0);
+    FragData[1] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[4] = vec4(0.0, 0.0, 0.0, 1.0);
 #endif

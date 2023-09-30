@@ -224,7 +224,7 @@ uniform mediump vec2 ShadowTexel7;
 mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
     if (iblSH[0].x >= HALF_MAX_MINUS1) {
-        return textureCubeLod(SpecularEnvMap, n, 9.0).rgb;
+        return LINEARtoSRGB(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
     }
@@ -233,9 +233,9 @@ mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump float perceptualRoughness)
 {
 #ifdef USE_TEX_LOD
-    return textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb;
+    return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb));
 #else
-    return textureCube(SpecularEnvMap, reflection).rgb;
+    return LINEARtoSRGB(textureCube(SpecularEnvMap, reflection).rgb);
 #endif
 }
 #endif // HAS_IBL
@@ -478,8 +478,8 @@ void main()
     FragColor = vec4(SafeHDR(color), alpha);
 #else
     FragData[0] = vec4(SafeHDR(color), alpha);
-    FragData[1] = vec4(metallic, roughness, alpha, 1.0);
-    FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[2] = vec4(metallic, roughness, alpha, 1.0);
+    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
     FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif

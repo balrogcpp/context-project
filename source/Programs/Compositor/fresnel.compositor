@@ -7,14 +7,13 @@ compositor Fresnel
 {
     technique
     {
-        texture reflection 512 512 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture refraction 512 512 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture reflection 512 512 PF_R11G11B10_FLOAT no_fsaa
+        texture refraction 512 512 PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa
 
         target reflection
         {
             visibility_mask 0x00F // SURFACE objects
             pass clear { colour_value 0.1 0.2 0.8 1.0 }
-            //input previous
             pass render_scene {}
         }
 
@@ -22,8 +21,7 @@ compositor Fresnel
         {
             visibility_mask 0x0F0 // SUBMERGED objects
             pass clear { colour_value 0.0 0.0 0.0 1.0 }
-            input previous
-            //pass render_scene {}
+            pass render_scene {}
         }
 
         target_output

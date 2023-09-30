@@ -16,9 +16,10 @@
     #define MAX_WATER_OCTAVES 3
 #endif
 
-uniform sampler2D ReflectionTex;
 uniform sampler2D NormapMap;
-//uniform sampler2D RefractionTex;
+uniform sampler2D ReflectionTex;
+uniform sampler2D RefractionTex;
+uniform sampler2D CameraDepthTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform highp float FarClipDistance;
@@ -133,7 +134,7 @@ void main()
     // texture edge bleed removal is handled by clip plane offset
     mediump vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
     fragCoord = clamp(fragCoord, 0.002, 0.998);
-    mediump vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount)).rgb;
+    mediump vec3 reflection = LINEARtoSRGB(texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount)).rgb);
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
@@ -149,6 +150,11 @@ void main()
     highp float surfaceDepth = vScreenPosition.w;
 
     highp vec3 refraction = vec3(0.0, 0.0, 0.0);
+    mediump float refractedDepth = (texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).x + surfaceDepth) * FarClipDistance;
+    mediump float distortFade = saturate(refractedDepth * 4.0);
+    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
+    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
+    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
 
     highp float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  
@@ -187,8 +193,8 @@ void main()
     FragColor = vec4(SafeHDR(color), alpha);
 #else
     FragData[0] = vec4(SafeHDR(color), 0.75);
-    FragData[1] = vec4(fresnel, 0.0, 0.5, 1.0);
-    FragData[2] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
     FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif

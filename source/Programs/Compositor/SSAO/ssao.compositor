@@ -18,7 +18,7 @@ compositor SSAO : STD
             pass render_quad
             {
                 material Downscale2x2
-                input 0 mrt 2
+                input 0 mrt 1
             }
         }
 

@@ -40,7 +40,7 @@ compositor Glow
                 material FBO
                 input 0 rt
                 input 1 lum
-                input 2 mrt 2
+                input 2 mrt 1
             }
         }
 
