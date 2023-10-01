@@ -416,7 +416,7 @@ void VideoManager::InitOgreRoot() {
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
   ogreSceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
-  ogreSceneManager = OgreRoot->createSceneManager(Ogre::ST_GENERIC, "Default");
+  ogreSceneManager = OgreRoot->createSceneManager(Ogre::SMT_DEFAULT, "Default");
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
