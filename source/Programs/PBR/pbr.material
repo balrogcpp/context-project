@@ -20,7 +20,6 @@ abstract material PBR
     set $Normal normal.dds
     set $ORM yellow.dds
     set $Emissive black.dds
-    set $IBL specular.dds
 
     technique
     {
@@ -47,13 +46,6 @@ abstract material PBR
             texture_unit Emissive
             {
                 texture $Emissive
-            }
-            texture_unit IBL
-            {
-                //texture $IBL cubic
-                content_type compositor CubeMap cube
-                filtering bilinear
-                tex_address_mode clamp
             }
 
             texture_unit ShadowMap0
@@ -100,6 +92,121 @@ abstract material PBR
             vertex_program_ref PBR_vs {}
 
             fragment_program_ref PBR_fs
+            {
+                param_named AlbedoMap      int 0
+                param_named NormalMap      int 1
+                param_named OrmMap         int 2
+                param_named EmissiveMap    int 3
+                param_named ShadowMap0 int 4
+                param_named ShadowMap1 int 5
+                param_named ShadowMap2 int 6
+                param_named ShadowMap3 int 7
+                param_named ShadowMap4 int 8
+                param_named ShadowMap5 int 9
+                param_named ShadowMap6 int 10
+                param_named ShadowMap7 int 11
+                param_named_auto ShadowTexel0 inverse_texture_size 4
+                param_named_auto ShadowTexel1 inverse_texture_size 5
+                param_named_auto ShadowTexel2 inverse_texture_size 6
+                param_named_auto ShadowTexel3 inverse_texture_size 7
+                param_named_auto ShadowTexel4 inverse_texture_size 8
+                param_named_auto ShadowTexel5 inverse_texture_size 9
+                param_named_auto ShadowTexel6 inverse_texture_size 10
+                param_named_auto ShadowTexel7 inverse_texture_size 11
+            }
+        }
+    }
+}
+
+
+abstract material IBL
+{
+    transparency_casts_shadows on
+    receive_shadows on
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM yellow.dds
+    set $Emissive black.dds
+    set $IBL specular.dds
+
+    technique
+    {
+        pass
+        {
+            diffuse 1 1 1
+            specular 1 1 1 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
+            }
+            texture_unit IBL
+            {
+                content_type compositor CubeMap cube
+                filtering bilinear
+                tex_address_mode clamp
+            }
+
+            texture_unit ShadowMap0
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap4
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap5
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap6
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap7
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+
+            vertex_program_ref IBL_vs {}
+
+            fragment_program_ref IBL_fs
             {
                 param_named AlbedoMap      int 0
                 param_named NormalMap      int 1

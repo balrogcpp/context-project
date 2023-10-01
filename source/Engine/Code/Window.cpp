@@ -129,35 +129,35 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 #endif
 
   Ogre::NameValuePairList renderParams;
-  const char *TRUE_STR = "true";
-  const char *FALSE_STR = "false";
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
+  renderParams["Fixed Pipeline Enabled"] = "No";
+  renderParams["RTT Preferred Mode"] = "FBO";
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  renderParams["currentGLContext"] = TRUE_STR;
-  renderParams["preserveContext"] = TRUE_STR;
-  renderParams["externalGLControl"] = TRUE_STR;
+  renderParams["currentGLContext"] = "true";
+  renderParams["preserveContext"] = "true";
+  renderParams["externalGLControl"] = "true";
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  // if (!getenv("WAYLAND_DISPLAY")) renderParams["currentGLContext"] = TRUE_STR;
-  renderParams["preserveContext"] = TRUE_STR;
+  // if (!getenv("WAYLAND_DISPLAY")) renderParams["currentGLContext"] = "true";
+  renderParams["preserveContext"] = "true";
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  renderParams["currentGLContext"] = TRUE_STR;
-  renderParams["preserveContext"] = TRUE_STR;
-  renderParams["externalGLControl"] = TRUE_STR;
+  renderParams["currentGLContext"] = "true";
+  renderParams["preserveContext"] = "true";
+  renderParams["externalGLControl"] = "true";
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  renderParams["currentGLContext"] = TRUE_STR;
-  renderParams["preserveContext"] = TRUE_STR;
-  renderParams["externalGLControl"] = TRUE_STR;
+  renderParams["currentGLContext"] = "true";
+  renderParams["preserveContext"] = "true";
+  renderParams["externalGLControl"] = "true";
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
-  renderParams["gamma"] = FALSE_STR;
-  renderParams["FSAA"] = to_string(0);
-  renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
+  renderParams["gamma"] = "false";
+  renderParams["FSAA"] = "0";
+  renderParams["vsync"] = vsync ? "true" : "false";
   renderParams["vsyncInterval"] = to_string(vsyncInt);
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
