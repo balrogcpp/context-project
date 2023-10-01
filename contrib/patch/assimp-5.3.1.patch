@@ -1,0 +1,18 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 75b160c..a120b76 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -490,11 +490,11 @@ ELSE()
+     FIND_PACKAGE(ZLIB)
+   ENDIF()
+ 
+-  IF ( NOT ZLIB_FOUND AND NOT ASSIMP_BUILD_ZLIB )
++  IF ( 0 )
+     message( FATAL_ERROR
+       "Build configured with -DASSIMP_BUILD_ZLIB=OFF but unable to find zlib"
+     )
+-  ELSEIF( NOT ZLIB_FOUND )
++  ELSEIF( 0 )
+     MESSAGE(STATUS "compiling zlib from sources")
+     INCLUDE(CheckIncludeFile)
+     INCLUDE(CheckTypeSize)

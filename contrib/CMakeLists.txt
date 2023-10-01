@@ -650,7 +650,7 @@ externalproject_add(Target_rapidjson
         )
 
 
-check_stamp_patch(Target_assimp assimp-5.2.5.patch)
+check_stamp_patch(Target_assimp assimp-5.3.1.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
