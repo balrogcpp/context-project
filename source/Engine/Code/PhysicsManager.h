@@ -27,16 +27,15 @@ class PhysicsManager final : public System<PhysicsManager> {
   void CreateTerrainHeightfieldShape(Ogre::Terrain *terrain);
   void CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup);
 
- protected:
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
 
+ protected:
   bool debugView;
   int subSteps;
   float fixedTimeStep;
-
   std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
   std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
 };

@@ -24,7 +24,7 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void RenderFrame();
   void FrameControl(std::chrono::microseconds time);
 
-  void RegComponent(SystemI* component);
+  void RegComponent(SystemI* component, bool preRender = false);
   void UnregComponent(SystemI* component);
 
   /// System impl
@@ -53,6 +53,8 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   bool lockFps;
   int targetFps;
   std::vector<SystemI*> componentList;
+  std::vector<SystemI*> preRenderList;
+  std::vector<SystemI*> postRenderList;
   std::unique_ptr<VideoManager> video;
   std::unique_ptr<SceneManager> scene;
   std::unique_ptr<CompositorManager> compositor;

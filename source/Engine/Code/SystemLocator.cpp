@@ -3,8 +3,6 @@
 #include "pch.h"
 #include "SystemLocator.h"
 #include "SDLListener.h"
-#include "SinbadCharacterController.h"
-#include <Ogre.h>
 #include <SDL2/SDL_messagebox.h>
 #ifdef _WIN32
 extern "C" {
@@ -16,7 +14,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace gge {
-SystemLocator::SystemLocator() : lockFps(false), targetFps(60) {
+SystemLocator::SystemLocator() : lockFps(true), targetFps(60) {
 #ifdef MOBILE
   lockFps = true;
   targetFps = 30;
@@ -30,13 +28,13 @@ SystemLocator::~SystemLocator() {
 
 void SystemLocator::Init() {
   video = make_unique<VideoManager>();
-  RegComponent(video.get());
+  RegComponent(video.get(), true);
 
   InputSequencer::GetInstance().RegWindowListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 
   compositor = make_unique<CompositorManager>();
-  RegComponent(compositor.get());
+  RegComponent(compositor.get(), true);
 
   physics = make_unique<PhysicsManager>();
   RegComponent(physics.get());
@@ -47,7 +45,7 @@ void SystemLocator::Init() {
 #endif
 
   scene = make_unique<SceneManager>();
-  RegComponent(scene.get());
+  RegComponent(scene.get(), true);
 
   terrain = make_unique<TerrainManager>();
   RegComponent(terrain.get());
@@ -72,11 +70,21 @@ void SystemLocator::Capture() {
   io.Capture();
 }
 
-void SystemLocator::RegComponent(SystemI *component) {
+void SystemLocator::RegComponent(SystemI *component, bool preRender) {
   auto it = find(componentList.begin(), componentList.end(), component);
   if (it == componentList.end()) {
     component->OnSetUp();
     componentList.push_back(component);
+  }
+
+  if (preRender) {
+    auto jt = find(preRenderList.begin(), preRenderList.end(), component);
+    if (jt == preRenderList.end())
+      preRenderList.push_back(component);
+  } else {
+    auto jt = find(postRenderList.begin(), postRenderList.end(), component);
+    if (jt == postRenderList.end())
+      postRenderList.push_back(component);
   }
 }
 
@@ -91,10 +99,18 @@ void SystemLocator::UnregComponent(SystemI *component) {
 
 bool SystemLocator::frameEnded(const Ogre::FrameEvent &evt) { return true; }
 
-bool SystemLocator::frameStarted(const Ogre::FrameEvent &evt) { return true; }
+bool SystemLocator::frameStarted(const Ogre::FrameEvent &evt) {
+  for (auto it : preRenderList) {
+    if (!it->IsSleeping() && !IsSleeping()) {
+      it->OnUpdate(evt.timeSinceLastFrame);
+    }
+  }
+
+  return true;
+}
 
 bool SystemLocator::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  for (auto it : componentList) {
+  for (auto it : postRenderList) {
     if (!it->IsSleeping() && !IsSleeping()) {
       it->OnUpdate(evt.timeSinceLastFrame);
     }
@@ -110,16 +126,16 @@ void SystemLocator::OnSetUp() {
 }
 
 void SystemLocator::OnClean() {
-  for (vector<SystemI *>::reverse_iterator it = componentList.rbegin(); it != componentList.rend(); ++it) {
-    (*it)->OnClean();
+  for (auto & it : std::ranges::reverse_view(componentList)) {
+    it->OnClean();
   }
 }
 
 void SystemLocator::SetSleep(bool sleep) {
   _sleep = sleep;
 
-  for (vector<SystemI *>::reverse_iterator it = componentList.rbegin(); it != componentList.rend(); ++it) {
-    (*it)->SetSleep(sleep);
+  for (auto & it : std::ranges::reverse_view(componentList)) {
+    it->SetSleep(sleep);
   }
 }
 

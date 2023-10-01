@@ -35,12 +35,12 @@ class CompositorManager : public System<CompositorManager>,
   void AddCubeCamera();
   void DestroyCubeCamera();
 
- protected:
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
   void SetSleep(bool sleep) override;
+ protected:
 
   void InitMRT(bool enable = true);
   void InitMipChain(bool enable = false);

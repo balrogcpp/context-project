@@ -8,7 +8,9 @@
 using namespace std;
 
 namespace gge {
+
 AudioManager::AudioManager() {}
+
 AudioManager::~AudioManager() { audioRoot->shutdown(); }
 
 void AudioManager::OnSetUp() {
@@ -35,10 +37,13 @@ void AudioManager::OnSetUp() {
     AddListener(ogreCamera->getParentSceneNode());
   }
 }
+
 void AudioManager::OnUpdate(float passedTime) {}
+
 void AudioManager::OnClean() {}
 
 void AudioManager::Pause() { oggSoundManager->pauseAllSounds(); }
+
 void AudioManager::Resume() { oggSoundManager->resumeAllPausedSounds(); }
 
 void AudioManager::AddSound(const std::string &name, const std::string &audioFile, Ogre::SceneNode *parent, bool playInLoop) {
@@ -88,4 +93,5 @@ void AudioManager::SetSoundVolume(const std::string &name, float volume) {
   OgreAssert(sound, "[AudioManager] Sound not found");
   sound->setVolume(volume);
 }
+
 }  // namespace gge

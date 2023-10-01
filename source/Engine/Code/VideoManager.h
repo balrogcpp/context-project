@@ -44,6 +44,11 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   float GetDisplayHDPI(int index);
   float GetDisplayVDPI(int index);
 
+  /// System impl
+  void OnSetUp() override;
+  void OnClean() override;
+  void OnUpdate(float time) override;
+
  protected:
   void MakeWindow();
   void InitOgreRoot();
@@ -53,11 +58,6 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void LoadResources();
   void InitOgreSceneManager();
   void CheckGPU();
-
-  /// System impl
-  void OnSetUp() override;
-  void OnClean() override;
-  void OnUpdate(float time) override;
 
   /// WindowListener impl
   void OnEvent(const SDL_Event& event) override;

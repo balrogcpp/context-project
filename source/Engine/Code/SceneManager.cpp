@@ -111,23 +111,22 @@ void SceneManager::OnClean() {
 }
 
 void SceneManager::OnUpdate(float time) {
-  if (sinbad) {
+  if (sinbad)
     sinbad->Update(time);
-  }
 
   viewProjPrev = viewProj;
   viewProj = ogreCamera->getProjectionMatrix() * ogreCamera->getViewMatrix();
 
   if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-    auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
+    auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
     pssmCount = pssm->getSplitCount();
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
     pssmPoints.w = ogreSceneManager->getShadowFarDistance();
-    for (unsigned int i = 0; i < Ogre::Math::Clamp(pssmCount, 0, 4); i++) {
+    for (unsigned int i = 0; i < Ogre::Math::Clamp<Ogre::uint32>(pssmCount, 0, 4); i++) {
       pssmPoints[i] = splitPointList[i + 1];
     }
   } else {
-    pssmPoints = Ogre::Vector4(0.0);
+    pssmPoints = Ogre::Vector4(0.0, 0.0, 0.0, ogreSceneManager->getShadowFarDistance());
   }
 }
 

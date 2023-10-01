@@ -15,14 +15,13 @@ class TerrainManager final : public System<TerrainManager> {
   void LoadTerrainGroupLegacy(int x, int y, const std::string &filename);
   void ProcessTerrainCollider(Ogre::TerrainGroup *terrainGroup);
 
- protected:
   /// System impl
   void OnSetUp() override;
   void OnUpdate(float time) override;
   void OnClean() override;
 
+ protected:
   std::unique_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
-
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;

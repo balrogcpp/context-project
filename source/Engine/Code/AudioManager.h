@@ -27,14 +27,14 @@ class AudioManager final : public System<AudioManager> {
   void AddListener(Ogre::SceneNode *parent);
   void RemoveListener(Ogre::SceneNode *parent);
 
- protected:
+  /// Window listener impl
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float passedTime) override;
 
+ protected:
   std::unique_ptr<OgreOggSound::Root> audioRoot;
   OgreOggSound::OgreOggSoundManager *oggSoundManager = nullptr;
-
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;

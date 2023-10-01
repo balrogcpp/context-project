@@ -10,3 +10,4 @@
 #include <Procedural/Procedural.h>
 #include <SkyModel/SkyModel.h>
 #include "Platform.h"
+#include <ranges>

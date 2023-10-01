@@ -17,13 +17,12 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   void ScanEntity(Ogre::Entity *entity);
   void ScanEntity(const std::string &name);
   void ScanNode(Ogre::SceneNode *node);
-
- protected:
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
 
+ protected:
   /// Ogre::RenderObjectListener impl
   void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                 const Ogre::LightList *pLightList, bool suppressRenderStateChanges) override;
@@ -37,7 +36,7 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
 
   Ogre::Matrix4 viewProj;
   Ogre::Matrix4 viewProjPrev;
-  int pssmCount;
+  Ogre::uint32 pssmCount;
   Ogre::Vector4 pssmPoints;
 };
 }  // namespace gge
