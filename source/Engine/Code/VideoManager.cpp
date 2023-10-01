@@ -360,9 +360,10 @@ class DefaultLogListener final : public Ogre::LogListener {
     static bool isOpen = of.is_open();
 
     if (isOpen) {
-      of << "[" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count() << "] ";
-      of << message << '\n';
-      of.flush();
+      std::stringstream ss;
+      ss << "[" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count() << "] ";
+      ss << message << '\n';
+      of << ss.str();
     }
 
 #ifdef _DEBUG

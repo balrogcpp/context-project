@@ -126,16 +126,16 @@ void SystemLocator::OnSetUp() {
 }
 
 void SystemLocator::OnClean() {
-  for (auto & it : std::ranges::reverse_view(componentList)) {
-    it->OnClean();
+  for (auto it = componentList.rbegin(); it != componentList.rend(); ++it) {
+    (*it)->OnClean();
   }
 }
 
 void SystemLocator::SetSleep(bool sleep) {
   _sleep = sleep;
 
-  for (auto & it : std::ranges::reverse_view(componentList)) {
-    it->SetSleep(sleep);
+  for (auto it = componentList.rbegin(); it != componentList.rend(); ++it) {
+    (*it)->SetSleep(sleep);
   }
 }
 
