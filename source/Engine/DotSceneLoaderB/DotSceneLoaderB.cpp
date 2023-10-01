@@ -891,7 +891,16 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     bool castShadows = getAttribBool(XMLNode, "castShadows", false);
 
     Plane plane(normal, distance);
-    if (flag == 0xF00) gge::GetComponent<gge::CompositorManager>().AddFresnelCompositor(plane);
+    if (flag == 0xF00) {
+        if (gge::GetComponent<gge::CompositorManager>().IsCompositorInChain("Fresnel")) 
+            return;
+
+        gge::GetComponent<gge::CompositorManager>().AddFresnelCompositor(plane);
+        OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
+        auto* camera = mSceneMgr->getCamera("Camera");
+        auto mat = Ogre::MaterialManager::getSingleton().getByName(material);
+        mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
+    }
     MeshPtr res = MeshManager::getSingletonPtr()->createPlane(name, m_sGroupName, plane, width, height, xSegments,
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, res);
@@ -899,9 +908,6 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     ent->setMaterialName(material);
     ent->setVisibilityFlags(flag);
     ent->setCastShadows(castShadows);
-    OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
-    auto* camera = mSceneMgr->getCamera("Camera");
-    Ogre::MaterialManager::getSingleton().getByName(material)->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
     pParent->attachObject(ent);
 
     // Process userDataReference (?)

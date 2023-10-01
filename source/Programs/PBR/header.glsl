@@ -3,7 +3,7 @@
 #ifndef HEADER_GLSL
 #define HEADER_GLSL
 
-
+//#define FORCE_SRGB
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
 #endif

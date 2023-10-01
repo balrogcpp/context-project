@@ -96,7 +96,7 @@ void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
   if (!IsCompositorInChain("Fresnel")) {
     AddCompositor("Fresnel", true, 0);
     auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-    rt1->addListener(new ReflTexListener(ogreCamera, plane));
+    rt1->addListener(new ReflTexListener(ogreCamera, Ogre::Plane(plane.normal, plane.d)));
     auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
     rt2->addListener(new RefrTexListener(ogreCamera, Ogre::Plane(-plane.normal, plane.d)));
   }

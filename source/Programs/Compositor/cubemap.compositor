@@ -7,6 +7,8 @@ abstract target CubeFace
 {
     visibility_mask 0xF0
 
+    pass clear {}
+
     pass render_scene
     {
         only_initial on
@@ -29,5 +31,10 @@ compositor CubeMap
         target cube 3 : CubeFace {}
         target cube 4 : CubeFace {}
         target cube 5 : CubeFace {}
+
+        target_output
+        {
+            input previous
+        }
     }
 }
