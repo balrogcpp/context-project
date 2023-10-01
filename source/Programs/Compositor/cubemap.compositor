@@ -7,11 +7,6 @@ abstract target CubeFace
 {
     visibility_mask 0xF0
 
-    pass clear
-    {
-        only_initial on
-    }
-
     pass render_scene
     {
         only_initial on
@@ -26,7 +21,7 @@ compositor CubeMap
 {
     technique
     {
-        texture cube 64 64 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0
+        texture cube 64 64 PF_R11G11B10_FLOAT cubic no_fsaa
 
         target cube 0 : CubeFace {}
         target cube 1 : CubeFace {}

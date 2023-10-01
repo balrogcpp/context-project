@@ -8,6 +8,7 @@
 #endif
 
 #include <PagedGeometry/PagedGeometryAll.h>
+#include <Code/SystemLocator.h>
 
 #include "pugixml/pugixml.hpp"
 
@@ -886,17 +887,21 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     bool hasNormals = getAttribBool(XMLNode, "hasNormals", true);
     Vector3 normal = parseVector3(XMLNode.child("normal"), Ogre::Vector3::UNIT_Y);
     Vector3 up = parseVector3(XMLNode.child("upVector"), Ogre::Vector3::UNIT_Z);
-    Ogre::uint32 flags = getAttribUInt(XMLNode, "flags", 0xFFF);
+    Ogre::uint32 flag = getAttribUInt(XMLNode, "flag", 0xFFF);
     bool castShadows = getAttribBool(XMLNode, "castShadows", false);
 
     Plane plane(normal, distance);
-    MeshPtr res =
-        MeshManager::getSingletonPtr()->createPlane(name + "mesh", m_sGroupName, plane, width, height, xSegments,
+    if (flag == 0xF00) gge::GetComponent<gge::CompositorManager>().AddFresnelCompositor(plane);
+    MeshPtr res = MeshManager::getSingletonPtr()->createPlane(name, m_sGroupName, plane, width, height, xSegments,
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
-    Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
+    Entity* ent = mSceneMgr->createEntity(name, res);
 
-    ent->setMaterialName(material); ent->setVisibilityFlags(flags); ent->setCastShadows(castShadows);
-
+    ent->setMaterialName(material);
+    ent->setVisibilityFlags(flag);
+    ent->setCastShadows(castShadows);
+    OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
+    auto* camera = mSceneMgr->getCamera("Camera");
+    Ogre::MaterialManager::getSingleton().getByName(material)->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
     pParent->attachObject(ent);
 
     // Process userDataReference (?)

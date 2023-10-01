@@ -30,8 +30,8 @@ class CompositorManager : public System<CompositorManager>,
   void EnableRendering();
   Ogre::Camera* GetOgreCamera();
 
-  void AddReflCamera();
-  void DestroyReflCamera();
+  void AddFresnelCompositor(Ogre::Plane plane);
+  void RemoveFresnelCompositor();
   void AddCubeCamera();
   void DestroyCubeCamera();
 

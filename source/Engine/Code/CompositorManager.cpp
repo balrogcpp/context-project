@@ -73,7 +73,6 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
-  AddReflCamera();
   AddCubeCamera();
   InitMRT(true);
   AddCompositor("SSAO", false);
@@ -93,22 +92,20 @@ void CompositorManager::OnSetUp() {
   viewportDimensionsChanged(ogreViewport);
 }
 
-void CompositorManager::AddReflCamera() {
+void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
   if (!IsCompositorInChain("Fresnel")) {
-    AddCompositor("Fresnel", true);
+    AddCompositor("Fresnel", true, 0);
     auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-    rt1->addListener(new ReflTexListener(ogreCamera, Ogre::Plane(Ogre::Vector3::UNIT_Y, 0.0)));
+    rt1->addListener(new ReflTexListener(ogreCamera, plane));
     auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
-    rt2->addListener(new RefrTexListener(ogreCamera, Ogre::Plane(-Ogre::Vector3::UNIT_Y, 0.0)));
-
-    auto mat = Ogre::MaterialManager::getSingleton().getByName("Ocean");
-    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, ogreCamera);
+    rt2->addListener(new RefrTexListener(ogreCamera, Ogre::Plane(-plane.normal, plane.d)));
   }
 }
 
-void CompositorManager::DestroyReflCamera() {
+void CompositorManager::RemoveFresnelCompositor() {
   if (IsCompositorInChain("Fresnel")) {
-    compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllViewports();
+    compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllListeners();
+    compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->removeAllListeners();
     compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
   }
 }

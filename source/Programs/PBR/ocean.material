@@ -56,7 +56,6 @@ material Ocean
     {
         pass
         {
-            //scene_blend alpha_blend
             cull_hardware none
 
             vertex_program_ref Ocean_vs  {}
