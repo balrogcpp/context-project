@@ -27,8 +27,7 @@ Window::Window()
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
 #ifdef MOBILE
-  vsync = false;
-  // vsyncInt = 2;
+  vsyncInt = 2;
   fullscreen = true;
 #endif
 }
@@ -107,8 +106,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   ParseSDLError(glContext, "SDL_GLContext is null");
   ASSERTION(glContext, "SDL_GLContext is null");
 #else
-  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
-  sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
+  sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, sdlFlags);
   ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 #endif

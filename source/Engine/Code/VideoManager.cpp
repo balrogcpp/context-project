@@ -733,8 +733,6 @@ void VideoManager::RenderFrame() {
   for (const auto &it : windowList) {
     it.RenderFrame();
   }
-
-  Ogre::MaterialManager::getSingleton().removeListener(shaderResolver.get());
 }
 
 void VideoManager::ShowOverlay(bool show) {
@@ -849,10 +847,11 @@ void VideoManager::OnSetUp() {
   InitOgreRTSS();
   InitOgreOverlay();
   LoadResources();
+  InitOgreSceneManager();
 #if OGRE_PROFILING == 1
-  Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
+  Ogre::FontManager::getSingleton().load("SdkTrays/Value", Ogre::RGN_INTERNAL);
+  ShaderResolver::ResolveMaterial("Fonts/SdkTrays/Value", Ogre::RGN_INTERNAL);
   Ogre::Profiler::getSingleton().setEnabled(true);
 #endif
-  InitOgreSceneManager();
 }
 }  // namespace gge
