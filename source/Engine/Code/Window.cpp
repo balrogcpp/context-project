@@ -16,7 +16,7 @@ inline void ParseSDLError(bool result, const char *message = "") {
 
 namespace gge {
 Window::Window()
-    : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI),
+    : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI), 
       vsyncInt(1),
       sizeX(1270),
       display(0),
@@ -124,8 +124,6 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 #endif
   renderParams["gamma"] = "false";
   renderParams["FSAA"] = "0";
-  renderParams["vsync"] = vsyncInt != 0 ? "true" : "false";
-  renderParams["vsyncInterval"] = to_string(vsyncInt);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
@@ -369,15 +367,19 @@ std::string Window::GetCaption() {
 void Window::EnableVsync(bool enable) {
   ASSERTION(ogreWindow, "ogreWindow not initialised");
   ogreWindow->setVSyncEnabled(enable);
-  SDL_GL_SetSwapInterval(enable);
+  if (enable) {
+    ogreWindow->setVSyncInterval(vsyncInt);
+    SDL_GL_SetSwapInterval(vsyncInt);
+  } else {
+    SDL_GL_SetSwapInterval(0);
+  }
 }
 
 void Window::SetVsyncInterval(int interval) {
   ASSERTION(ogreWindow, "ogreWindow not initialised");
-  if (interval > 0) {
-    ogreWindow->setVSyncInterval(interval);
-    SDL_GL_SetSwapInterval(interval);
-  }
+  vsyncInt = interval;
+  ogreWindow->setVSyncInterval(interval);
+  SDL_GL_SetSwapInterval(interval);
 }
 
 bool Window::IsVsyncEnabled() {

@@ -149,7 +149,7 @@ int SystemLocator::GetFpsFreq() { return targetFps; }
 
 void SystemLocator::FrameControl(chrono::microseconds frameDuration) {
   if (lockFps) {
-    auto delay = chrono::microseconds(static_cast<long int>(1e+6 / targetFps)) - frameDuration;
+    auto delay = chrono::microseconds(1000000 / targetFps) - frameDuration;
     this_thread::sleep_for(delay);
   }
 }

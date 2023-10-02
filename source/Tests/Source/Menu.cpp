@@ -209,6 +209,10 @@ void Menu::BeforeRender(float time) {
     manager.EnableShadows(flags[7]);
   }
 
+  if (ImGui::Checkbox("Enable profiler", &flags[8])) {
+    Ogre::Profiler::getSingleton().setEnabled(flags[8]);
+  }
+
   const char *intervalList = " -\0 1\0 2\0 3\0 4\0";
   if (ImGui::Combo("Vsync interval", &combos[0], intervalList)) {
     if (combos[0] == 0) {

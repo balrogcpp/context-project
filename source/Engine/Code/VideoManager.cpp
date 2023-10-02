@@ -851,7 +851,7 @@ void VideoManager::OnSetUp() {
 #if OGRE_PROFILING == 1
   Ogre::FontManager::getSingleton().load("SdkTrays/Value", Ogre::RGN_INTERNAL);
   ShaderResolver::ResolveMaterial("Fonts/SdkTrays/Value", Ogre::RGN_INTERNAL);
-  Ogre::Profiler::getSingleton().setEnabled(true);
+  Ogre::Profiler::getSingleton().setEnabled(false);
 #endif
 }
 }  // namespace gge
