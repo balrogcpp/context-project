@@ -21,6 +21,7 @@ void Application::Init() {
 }
 
 void Application::LoopBody() {
+  OgreProfileBegin("Ogre Main Loop");
   auto tpBeforeFrame = chrono::steady_clock::now();
 
   engine->Capture();
@@ -31,6 +32,7 @@ void Application::LoopBody() {
   auto tpAfterFrame = chrono::steady_clock::now();
   auto frameDuration = tpAfterFrame - tpBeforeFrame;
   engine->FrameControl(chrono::duration_cast<chrono::microseconds>(frameDuration));
+  OgreProfileEnd("Ogre Main Loop");
 
 #ifdef EMSCRIPTEN
   if (exiting) {

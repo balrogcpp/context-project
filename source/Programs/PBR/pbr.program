@@ -33,6 +33,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
     }
 }
 
+vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
 vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 
 abstract fragment_program PBR_I_fs glsl glsles hlsl

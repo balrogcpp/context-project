@@ -14,7 +14,10 @@ compositor Fresnel
         {
             visibility_mask 0x00F // SURFACE objects
             pass clear {}
-            pass render_scene {}
+            pass render_scene
+            {
+                shadows off
+            }
         }
 
         target refraction

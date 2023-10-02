@@ -292,14 +292,6 @@ void VideoManager::OnClean() {
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
 }
 
-void VideoManager::RenderFrame() {
-  ogreRoot->renderOneFrame();
-
-  for (const auto &it : windowList) {
-    it.RenderFrame();
-  }
-}
-
 Window &VideoManager::GetWindow(int number) { return windowList[0]; }
 
 Window &VideoManager::GetMainWindow() { return *mainWindow; }
@@ -457,7 +449,7 @@ void VideoManager::MakeWindow() {
 void VideoManager::InitOgreOverlay() {
   auto *ogreOverlay = new Ogre::OverlaySystem();
   imguiOverlay = new Ogre::ImGuiOverlay();
-  ImGui_ImplSDL2_InitForOpenGL(windowList[0].sdlWindow, windowList[0].sdlGlContext);
+  ImGui_ImplSDL2_InitForOpenGL(windowList[0].sdlWindow, windowList[0].glContext);
 
   float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
   ImGui::GetIO().FontGlobalScale = round(vpScale);
@@ -511,7 +503,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
   shadowEnabled = true;
-  shadowTexSize = 2048;
+  shadowTexSize = 1024;
 #else
   shadowEnabled = false;
   shadowTexSize = 512;
@@ -735,6 +727,16 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGen = nullptr;
 };
 
+void VideoManager::RenderFrame() {
+  ogreRoot->renderOneFrame();
+
+  for (const auto &it : windowList) {
+    it.RenderFrame();
+  }
+
+  Ogre::MaterialManager::getSingleton().removeListener(shaderResolver.get());
+}
+
 void VideoManager::ShowOverlay(bool show) {
   if (show) {
     imguiOverlay->show();
@@ -847,6 +849,10 @@ void VideoManager::OnSetUp() {
   InitOgreRTSS();
   InitOgreOverlay();
   LoadResources();
+#if OGRE_PROFILING == 1
+  Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
+  Ogre::Profiler::getSingleton().setEnabled(true);
+#endif
   InitOgreSceneManager();
 }
 }  // namespace gge

@@ -72,12 +72,11 @@ class Window : public WindowListener {
   int sizeX;
   int sizeY;
   uint32_t sdlFlags;
-  bool vsync;
   int vsyncInt;
   uint32_t id;
 
   SDL_Window* sdlWindow = nullptr;
-  SDL_GLContext* sdlGlContext = nullptr;
+  SDL_GLContext glContext = nullptr;
   Ogre::Root* ogreRoot = nullptr;
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::RenderTarget* renderTarget = nullptr;

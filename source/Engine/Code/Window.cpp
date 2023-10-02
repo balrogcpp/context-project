@@ -17,7 +17,6 @@ inline void ParseSDLError(bool result, const char *message = "") {
 namespace gge {
 Window::Window()
     : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI),
-      vsync(true),
       vsyncInt(1),
       sizeX(1270),
       display(0),
@@ -80,7 +79,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     sizeY = screenHeight;
   }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   if (RenderSystemIsGL3()) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -92,35 +91,21 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+#ifndef MOBILE
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+#else
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+#endif
   }
 
   sdlFlags |= SDL_WINDOW_OPENGL;
-  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
-  sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
-  ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
-  ASSERTION(sdlWindow, "SDL_CreateWindow failed");
-
-  SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
-  ParseSDLError(context, "SDL_GLContext is null");
-  ASSERTION(context, "SDL_GLContext is null");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-  sdlFlags |= SDL_WINDOW_OPENGL;
-
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, sdlFlags);
   ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
 
-  SDL_GLContext context = SDL_GL_CreateContext(sdlWindow);
-  ParseSDLError(context, "SDL_GLContext is null");
-  ASSERTION(context, "SDL_GLContext is null");
+  glContext = SDL_GL_CreateContext(sdlWindow);
+  ParseSDLError(glContext, "SDL_GLContext is null");
+  ASSERTION(glContext, "SDL_GLContext is null");
 #else
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(this->display);
   sdlWindow = SDL_CreateWindow(title.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
@@ -134,41 +119,38 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_GetWindowWMInfo(sdlWindow, &info);
   renderParams["Fixed Pipeline Enabled"] = "No";
   renderParams["RTT Preferred Mode"] = "FBO";
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["currentGLContext"] = "true";
   renderParams["preserveContext"] = "true";
+#ifndef LINUX
   renderParams["externalGLControl"] = "true";
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  // if (!getenv("WAYLAND_DISPLAY")) renderParams["currentGLContext"] = "true";
-  renderParams["preserveContext"] = "true";
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  renderParams["currentGLContext"] = "true";
-  renderParams["preserveContext"] = "true";
-  renderParams["externalGLControl"] = "true";
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  renderParams["currentGLContext"] = "true";
-  renderParams["preserveContext"] = "true";
-  renderParams["externalGLControl"] = "true";
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
   renderParams["gamma"] = "false";
   renderParams["FSAA"] = "0";
-  renderParams["vsync"] = vsync ? "true" : "false";
+  renderParams["vsync"] = vsyncInt != 0 ? "true" : "false";
   renderParams["vsyncInterval"] = to_string(vsyncInt);
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+#endif
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
-  ogreWindow = ogreRoot->createRenderWindow("Default", sizeX, sizeY, fullscreen, &renderParams);
-  SDL_GL_SetSwapInterval(vsync ? vsyncInt : 0);
+  ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
+  SDL_GL_SetSwapInterval(vsyncInt);
+  ogreWindow->setVSyncEnabled(vsyncInt != 0);
   ogreWindow->setVSyncInterval(vsyncInt);
-  renderTarget = ogreRoot->getRenderTarget("Default");
+  renderTarget = ogreRoot->getRenderTarget("Main");
   ogreViewport = renderTarget->addViewport(ogreCamera);
 
   // android is not completely ok without it
+#ifdef ANDROID
   SetSize(sizeX, sizeY);
+#endif
 
   ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
   ogreCamera->setAutoAspectRatio(true);
@@ -388,7 +370,6 @@ std::string Window::GetCaption() {
 
 void Window::EnableVsync(bool enable) {
   ASSERTION(ogreWindow, "ogreWindow not initialised");
-  vsync = enable;
   ogreWindow->setVSyncEnabled(enable);
   SDL_GL_SetSwapInterval(enable);
 }

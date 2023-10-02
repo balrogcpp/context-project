@@ -34,13 +34,23 @@ class ReflTexListener : public Ogre::RenderTargetListener {
   ReflTexListener(Ogre::Camera *camera, Ogre::Plane plane) {
     ogreCamera = camera;
     ogrePlane = plane;
+    ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   }
 
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->enableCustomNearClipPlane(ogrePlane); ogreCamera->enableReflection(ogrePlane); }
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+    ogreCamera->enableCustomNearClipPlane(ogrePlane);
+    ogreCamera->enableReflection(ogrePlane);
+    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  }
 
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt)  { ogreCamera->disableCustomNearClipPlane(); ogreCamera->disableReflection(); }
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+    ogreCamera->disableCustomNearClipPlane();
+    ogreCamera->disableReflection();
+    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+  }
 
  private:
+  Ogre::SceneManager* ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
   Ogre::Plane ogrePlane;
 };
@@ -54,7 +64,7 @@ class RefrTexListener : public Ogre::RenderTargetListener {
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->enableCustomNearClipPlane(ogrePlane); }
 
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt)  { ogreCamera->disableCustomNearClipPlane(); }
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->disableCustomNearClipPlane(); }
 
  private:
   Ogre::Camera *ogreCamera = nullptr;
@@ -117,7 +127,7 @@ void CompositorManager::AddCubeCamera() {
     cubeCamera->setAspectRatio(1.0);
     cubeCamera->setNearClipDistance(50.0);
     cubeCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
-    ogreSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(cubeCamera);
+    ogreSceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * 5.0)->attachObject(cubeCamera);
   }
 
   if (!IsCompositorInChain("CubeMap")) {

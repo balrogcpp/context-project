@@ -11,7 +11,6 @@ abstract target CubeFace
 
     pass render_scene
     {
-        only_initial on
         camera CubeCamera align_to_face
     }
 }
@@ -25,12 +24,36 @@ compositor CubeMap
     {
         texture cube 64 64 PF_R11G11B10_FLOAT cubic no_fsaa
 
-        target cube 0 : CubeFace {}
-        target cube 1 : CubeFace {}
-        target cube 2 : CubeFace {}
-        target cube 3 : CubeFace {}
-        target cube 4 : CubeFace {}
-        target cube 5 : CubeFace {}
+        target cube 0 : CubeFace
+        {
+            only_initial on
+            shadows off
+        }
+        target cube 1 : CubeFace
+        {
+            only_initial on
+            shadows off
+        }
+        target cube 2 : CubeFace
+        {
+            only_initial on
+            shadows off
+        }
+        target cube 3 : CubeFace
+        {
+            only_initial on
+            shadows off
+        }
+        target cube 4 : CubeFace
+        {
+            only_initial on
+            shadows off
+        }
+        target cube 5 : CubeFace
+        {
+            only_initial on
+            shadows off
+        }
 
         target_output
         {
