@@ -5,6 +5,9 @@
 #include "Platform.h"
 #include <Ogre.h>
 #include <SDL2/SDL_syswm.h>
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#define MANUAL_SDL_CONTROL
+#endif
 
 using namespace std;
 
@@ -27,7 +30,7 @@ Window::Window()
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
 #ifdef MOBILE
-  vsyncInt = 2;
+  vsyncInt = 0;
   fullscreen = true;
 #endif
 }
@@ -78,7 +81,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     sizeY = screenHeight;
   }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#ifdef MANUAL_SDL_CONTROL
   if (RenderSystemIsGL3()) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -115,10 +118,15 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
+  renderParams["gama"] = "false";
   renderParams["FSAA"] = "0";
   renderParams["preserveContext"] = "true";
-  //renderParams["currentGLContext"] = "true";
-  //renderParams["externalGLControl"] = "true";
+  renderParams["vsync"] = vsyncInt != 0 ? "true" : "false";
+  renderParams["vsyncInterval"] = to_string(vsyncInt);
+#ifdef MANUAL_SDL_CONTROL
+  renderParams["currentGLContext"] = "true";
+  renderParams["externalGLControl"] = "true";
+#endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
@@ -129,10 +137,13 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
+
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
   ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
+#ifdef MANUAL_SDL_CONTROL
   SDL_GL_SetSwapInterval(vsyncInt);
+#endif
   ogreWindow->setVSyncEnabled(vsyncInt != 0);
   ogreWindow->setVSyncInterval(vsyncInt);
   renderTarget = ogreRoot->getRenderTarget("Main");
@@ -364,9 +375,13 @@ void Window::EnableVsync(bool enable) {
   ogreWindow->setVSyncEnabled(enable);
   if (enable) {
     ogreWindow->setVSyncInterval(vsyncInt);
+#ifdef MANUAL_SDL_CONTROL
     SDL_GL_SetSwapInterval(vsyncInt);
+#endif
   } else {
+#ifdef MANUAL_SDL_CONTROL
     SDL_GL_SetSwapInterval(0);
+#endif
   }
 }
 
@@ -374,7 +389,9 @@ void Window::SetVsyncInterval(int interval) {
   ASSERTION(ogreWindow, "ogreWindow not initialised");
   vsyncInt = interval;
   ogreWindow->setVSyncInterval(interval);
+#ifdef MANUAL_SDL_CONTROL
   SDL_GL_SetSwapInterval(interval);
+#endif
 }
 
 bool Window::IsVsyncEnabled() {
@@ -385,7 +402,9 @@ bool Window::IsVsyncEnabled() {
 void Window::Delete() {}
 
 void Window::RenderFrame() const {
-  // SDL_GL_SwapWindow(sdlWindow);
+#ifdef MANUAL_SDL_CONTROL
+  SDL_GL_SwapWindow(sdlWindow);
+#endif
 }
 
 void Window::OnEvent(const SDL_Event &event) {}
