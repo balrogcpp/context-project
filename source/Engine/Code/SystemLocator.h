@@ -22,7 +22,7 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void Init();
   void Capture();
   void RenderFrame();
-  void FrameControl(std::chrono::microseconds time);
+  void FrameControl();
 
   void RegComponent(SystemI* component, bool preRender = false);
   void UnregComponent(SystemI* component);

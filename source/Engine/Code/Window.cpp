@@ -115,15 +115,12 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
-  renderParams["Fixed Pipeline Enabled"] = "No";
-  renderParams["RTT Preferred Mode"] = "FBO";
+  renderParams["FSAA"] = "0";
   renderParams["currentGLContext"] = "true";
   renderParams["preserveContext"] = "true";
 #ifndef LINUX
   renderParams["externalGLControl"] = "true";
 #endif
-  renderParams["gamma"] = "false";
-  renderParams["FSAA"] = "0";
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));

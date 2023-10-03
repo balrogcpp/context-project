@@ -14,7 +14,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace gge {
-SystemLocator::SystemLocator() : lockFps(false), targetFps(60) {
+SystemLocator::SystemLocator() : lockFps(true), targetFps(60) {
 #ifdef MOBILE
   lockFps = true;
   targetFps = 30;
@@ -63,7 +63,10 @@ void SystemLocator::OnFocusLost() { _sleep = true; }
 
 void SystemLocator::OnFocusGained() { _sleep = false; }
 
-void SystemLocator::RenderFrame() { video->RenderFrame(); }
+void SystemLocator::RenderFrame() {
+  if (!_sleep) video->RenderFrame();
+  FrameControl();
+}
 
 void SystemLocator::Capture() {
   static auto &io = InputSequencer::GetInstance();
@@ -79,12 +82,10 @@ void SystemLocator::RegComponent(SystemI *component, bool preRender) {
 
   if (preRender) {
     auto jt = find(preRenderList.begin(), preRenderList.end(), component);
-    if (jt == preRenderList.end())
-      preRenderList.push_back(component);
+    if (jt == preRenderList.end()) preRenderList.push_back(component);
   } else {
     auto jt = find(postRenderList.begin(), postRenderList.end(), component);
-    if (jt == postRenderList.end())
-      postRenderList.push_back(component);
+    if (jt == postRenderList.end()) postRenderList.push_back(component);
   }
 }
 
@@ -132,8 +133,6 @@ void SystemLocator::OnClean() {
 }
 
 void SystemLocator::SetSleep(bool sleep) {
-  _sleep = sleep;
-
   for (auto it = componentList.rbegin(); it != componentList.rend(); ++it) {
     (*it)->SetSleep(sleep);
   }
@@ -147,10 +146,15 @@ bool SystemLocator::IsFpsLockEnabled() { return lockFps; }
 
 int SystemLocator::GetFpsFreq() { return targetFps; }
 
-void SystemLocator::FrameControl(chrono::microseconds frameDuration) {
-  if (lockFps) {
-    auto delay = chrono::microseconds(1000000 / targetFps) - frameDuration;
-    this_thread::sleep_for(delay);
+void SystemLocator::FrameControl() {
+  static auto t1 = chrono::steady_clock::now();
+  auto t2 = chrono::steady_clock::now();
+
+  if (lockFps || _sleep) {
+    auto frameTime = t2 - t1;
+    this_thread::sleep_for(chrono::microseconds(1000000 / targetFps - 50) - frameTime);
   }
+
+  t1 = chrono::steady_clock::now();
 }
 }  // namespace gge
