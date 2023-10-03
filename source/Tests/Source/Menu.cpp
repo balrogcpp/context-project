@@ -210,10 +210,10 @@ void Menu::BeforeRender(float time) {
   }
 
   if (ImGui::Checkbox("Enable profiler", &flags[8])) {
-    Ogre::Profiler::getSingleton().setEnabled(flags[8]);
+    manager.ShowOgreProfiler(flags[8]);
   }
 
-  const char *intervalList = " -\0 1\0 2\0 3\0 4\0";
+  const char *intervalList = " 0\0 1\0 2\0 3\0 4\0";
   if (ImGui::Combo("Vsync interval", &combos[0], intervalList)) {
     if (combos[0] == 0) {
       window.EnableVsync(false);
@@ -224,7 +224,7 @@ void Menu::BeforeRender(float time) {
     }
   }
 
-  const char *fpsList = " -\0 60\0 30\0 20\0 15\0";
+  const char *fpsList = " 0\0 60\0 30\0 20\0 15\0";
   if (ImGui::Combo("Lock FPS", &combos[1], fpsList)) {
     switch (combos[1]) {
       case (0): {
@@ -263,13 +263,7 @@ void Menu::BeforeRender(float time) {
   const unsigned short anisotropyLevel[] = {1, 2, 4, 8, 16};
   const char *anisotropyLevelStr = " 1\0 2\0 4\0 8\0 16\0";
   if (ImGui::Combo("Anisotropy lvl", &combos[3], anisotropyLevelStr)) {
-    manager.SetTexFiltering(anisotropyLevel[combos[4]], combos[3]);
-  }
-
-  const unsigned short texFiltering[] = {0, 1, 2, 3};
-  const char *texFilteringStr = " None\0 Bilinear\0 Trilinear\0 Anisotropic\0";
-  if (ImGui::Combo("Texture filtering", &combos[4], texFilteringStr)) {
-    manager.SetTexFiltering(texFiltering[combos[4]], combos[3]);
+    manager.SetTexFiltering(anisotropyLevel[combos[4]], Ogre::TFO_ANISOTROPIC);
   }
 #endif
 

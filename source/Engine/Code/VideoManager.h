@@ -27,6 +27,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void EnableGamepadNav(bool enable);
   void EnableKeyboardNav(bool enable);
   void ShowOverlay(bool show);
+  void ShowOgreProfiler(bool show);
   ImFont* AddOverlayFont(const std::string& name, const int size = 0, const std::string& group = Ogre::RGN_AUTODETECT,
                          const ImFontConfig* cfg = nullptr, const ImWchar* ranges = nullptr);
   void RebuildOverlayFontAtlas();

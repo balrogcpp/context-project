@@ -744,6 +744,16 @@ void VideoManager::ShowOverlay(bool show) {
   }
 }
 
+void VideoManager::ShowOgreProfiler(bool show) {
+#if OGRE_PROFILING == 1
+  if (show) {
+    Ogre::FontManager::getSingleton().load("SdkTrays/Value", Ogre::RGN_INTERNAL);
+    ShaderResolver::ResolveMaterial("Fonts/SdkTrays/Value", Ogre::RGN_INTERNAL);
+  }
+  Ogre::Profiler::getSingleton().setEnabled(show);
+#endif
+}
+
 void VideoManager::RebuildOverlayFontAtlas() {
   ImGuiIO &io = ImGui::GetIO();
   unsigned char *pixels;
@@ -848,10 +858,5 @@ void VideoManager::OnSetUp() {
   InitOgreOverlay();
   LoadResources();
   InitOgreSceneManager();
-#if OGRE_PROFILING == 1
-  Ogre::FontManager::getSingleton().load("SdkTrays/Value", Ogre::RGN_INTERNAL);
-  ShaderResolver::ResolveMaterial("Fonts/SdkTrays/Value", Ogre::RGN_INTERNAL);
-  Ogre::Profiler::getSingleton().setEnabled(false);
-#endif
 }
 }  // namespace gge
