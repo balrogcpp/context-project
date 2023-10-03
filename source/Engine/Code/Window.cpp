@@ -78,7 +78,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
     sizeY = screenHeight;
   }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   if (RenderSystemIsGL3()) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -116,11 +116,9 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
   renderParams["FSAA"] = "0";
-  renderParams["currentGLContext"] = "true";
   renderParams["preserveContext"] = "true";
-#ifndef LINUX
-  renderParams["externalGLControl"] = "true";
-#endif
+  //renderParams["currentGLContext"] = "true";
+  //renderParams["externalGLControl"] = "true";
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
@@ -387,9 +385,7 @@ bool Window::IsVsyncEnabled() {
 void Window::Delete() {}
 
 void Window::RenderFrame() const {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  SDL_GL_SwapWindow(sdlWindow);
-#endif
+  // SDL_GL_SwapWindow(sdlWindow);
 }
 
 void Window::OnEvent(const SDL_Event &event) {}

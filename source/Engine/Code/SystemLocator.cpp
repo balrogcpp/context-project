@@ -152,7 +152,11 @@ void SystemLocator::FrameControl() {
 
   if (lockFps || _sleep) {
     auto frameTime = t2 - t1;
-    this_thread::sleep_for(chrono::microseconds(1000000 / targetFps - 50) - frameTime);
+    auto remainingTime = chrono::nanoseconds(1000000000 / targetFps) - frameTime;
+    this_thread::sleep_for(chrono::duration_cast<chrono::milliseconds>(remainingTime - 1ms));
+
+    // busy loop
+    while (chrono::steady_clock::now() < t2 + remainingTime) {}
   }
 
   t1 = chrono::steady_clock::now();
