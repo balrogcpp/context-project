@@ -34,25 +34,19 @@ class ReflTexListener : public Ogre::RenderTargetListener {
   ReflTexListener(Ogre::Camera *camera, Ogre::Plane plane) {
     ogreCamera = camera;
     ogrePlane = plane;
-    ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   }
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
     ogreCamera->enableCustomNearClipPlane(ogrePlane);
     ogreCamera->enableReflection(ogrePlane);
-    tech = ogreSceneManager->getShadowTechnique();
-    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   }
 
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
     ogreCamera->disableCustomNearClipPlane();
     ogreCamera->disableReflection();
-    ogreSceneManager->setShadowTechnique(tech);
   }
 
  private:
-  Ogre::ShadowTechnique tech = Ogre::SHADOWTYPE_NONE;
-  Ogre::SceneManager* ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
   Ogre::Plane ogrePlane;
 };

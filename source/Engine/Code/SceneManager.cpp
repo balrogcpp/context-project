@@ -111,8 +111,7 @@ void SceneManager::OnClean() {
 }
 
 void SceneManager::OnUpdate(float time) {
-  if (sinbad)
-    sinbad->Update(time);
+  if (sinbad) sinbad->Update(time);
 
   viewProjPrev = viewProj;
   viewProj = ogreCamera->getProjectionMatrix() * ogreCamera->getViewMatrix();
@@ -222,17 +221,17 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     std::string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
     std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
 
-    auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
-    pssmCount = pssm->getSplitCount();
-    auto x = fpDefines.find("PSSM_SPLIT_COUNT");
-    if (x == string::npos) {
-      fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
-    }
+    if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+      auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
+      pssmCount = pssm->getSplitCount();
+      auto x = fpDefines.find("PSSM_SPLIT_COUNT");
+      if (x == string::npos) {
+        fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
+      }
 
-    if (ogreSceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_NONE) {
       if (auto *tex = pass->getTextureUnitState("IBL")) {
         if (RenderSystemIsGLES2()) {
-          //pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+          // pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
 
           auto i = fpDefines.find("HAS_IBL");
           if (i != string::npos) {
