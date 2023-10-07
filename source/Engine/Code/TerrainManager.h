@@ -17,7 +17,7 @@ class TerrainManager final : public System<TerrainManager> {
 
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(float time) override;
+  void OnUpdate(Ogre::Real time) override;
   void OnClean() override;
 
  protected:

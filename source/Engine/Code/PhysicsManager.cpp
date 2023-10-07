@@ -71,7 +71,7 @@ void PhysicsManager::OnClean() {
   }
 }
 
-void PhysicsManager::OnUpdate(float time) {
+void PhysicsManager::OnUpdate(Ogre::Real time) {
   dynamicWorld->getBtWorld()->stepSimulation(time, subSteps, fixedTimeStep);
   if (debugView) {
     debugDrawer->update();
@@ -96,7 +96,6 @@ void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
 
   // Convert height data in a format suitable for the physics engine
   auto *terrainHeights = new float[size * size];
-  assert(terrainHeights != 0);
 
   for (int i = 0; i < size; i++) {
     memcpy(terrainHeights + size * i, data + size * (size - i - 1), sizeof(float) * size);

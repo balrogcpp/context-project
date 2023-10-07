@@ -35,7 +35,7 @@ void ForestsManager::UnregPagedGeometry(Forests::PagedGeometry *pagedGeometry) {
   }
 }
 
-void ForestsManager::OnUpdate(float time) {
+void ForestsManager::OnUpdate(Ogre::Real time) {
   for (auto it : pagedGeometryList) {
     it->update(time);
   }

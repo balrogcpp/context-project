@@ -57,7 +57,7 @@ void SkyManager::OnSetUp() {
   ogreCamera = ogreSceneManager->getCamera("Camera");
 }
 
-void SkyManager::OnUpdate(float time) {
+void SkyManager::OnUpdate(Ogre::Real time) {
   if (needsUpdate && fpParams) {
     for (int i = 0; i < hosekParamList.size(); i++) {
       fpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);

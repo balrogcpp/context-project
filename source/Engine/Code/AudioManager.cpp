@@ -93,5 +93,4 @@ void AudioManager::SetSoundVolume(const std::string &name, float volume) {
   OgreAssert(sound, "[AudioManager] Sound not found");
   sound->setVolume(volume);
 }
-
 }  // namespace gge

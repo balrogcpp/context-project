@@ -22,7 +22,6 @@ class PhysicsManager final : public System<PhysicsManager> {
   virtual ~PhysicsManager();
 
   void SetDebugView(bool debug);
-
   void ProcessData(Ogre::Entity *entity);
   void CreateTerrainHeightfieldShape(Ogre::Terrain *terrain);
   void CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup);
@@ -30,7 +29,7 @@ class PhysicsManager final : public System<PhysicsManager> {
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
-  void OnUpdate(float time) override;
+  void OnUpdate(Ogre::Real time) override;
 
  protected:
   bool debugView;

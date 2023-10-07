@@ -1,7 +1,18 @@
-//
-// Created by andrey on 01.10.23.
-//
+/// created by Andrey Vasiliev
 
+#include "pch.h"
 #include "OverlayManager.h"
 
-namespace gge {}  // namespace gge
+using namespace std;
+
+namespace gge {
+OverlayManager::OverlayManager() {}
+
+OverlayManager::~OverlayManager() {}
+
+void OverlayManager::OnSetUp() {}
+
+void OverlayManager::OnUpdate(Ogre::Real time) {}
+
+void OverlayManager::OnClean() {}
+}  // namespace gge

@@ -38,7 +38,7 @@ class CompositorManager : public System<CompositorManager>,
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
-  void OnUpdate(float time) override;
+  void OnUpdate(Ogre::Real time) override;
   void SetSleep(bool sleep) override;
  protected:
 

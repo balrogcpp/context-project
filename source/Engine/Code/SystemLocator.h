@@ -11,6 +11,7 @@
 #include "SkyManager.h"
 #include "TerrainManager.h"
 #include "VideoManager.h"
+#include "OverlayManager.h"
 #include <OgreFrameListener.h>
 
 namespace gge {
@@ -29,7 +30,7 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
 
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(float time) override {}
+  void OnUpdate(Ogre::Real time) override {}
   void OnClean() override;
   void SetSleep(bool sleep) override;
 
@@ -63,5 +64,6 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   std::unique_ptr<SkyManager> sky;
   std::unique_ptr<TerrainManager> terrain;
   std::unique_ptr<ForestsManager> forests;
+  std::unique_ptr<OverlayManager> overlay;
 };
 }  // namespace gge

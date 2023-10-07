@@ -191,7 +191,7 @@ void TextureBuffer::saveImage(Ogre::String filename)
 
 Ogre::TexturePtr TextureBuffer::createTexture(Ogre::String name, Ogre::String group) const
 {
-    return Ogre::TextureManager::getSingleton().loadImage(name, group, mPixels, TEX_TYPE_2D, 0);
+    return Ogre::TextureManager::getSingleton().loadImage(name, group, mPixels, TEX_TYPE_2D, Ogre::MIP_DEFAULT);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@ namespace gge {
 class SystemI {
  public:
   virtual void OnSetUp() = 0;
-  virtual void OnUpdate(float time) = 0;
+  virtual void OnUpdate(Ogre::Real time) = 0;
   virtual void OnClean() = 0;
   virtual void SetSleep(bool sleep) { _sleep = sleep; }
   virtual bool IsSleeping() { return _sleep; }

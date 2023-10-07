@@ -18,7 +18,7 @@ SinbadCharacterController::SinbadCharacterController(Ogre::Camera *camera) : bas
 
 SinbadCharacterController::~SinbadCharacterController() {}
 
-void SinbadCharacterController::Update(float time) {
+void SinbadCharacterController::Update(Ogre::Real time) {
   UpdateBody(time);
   UpdateAnimations(time);
   UpdateCamera(time);

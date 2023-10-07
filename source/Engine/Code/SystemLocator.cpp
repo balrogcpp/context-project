@@ -36,6 +36,9 @@ void SystemLocator::Init() {
   compositor = make_unique<CompositorManager>();
   RegComponent(compositor.get(), true);
 
+  overlay = make_unique<OverlayManager>();
+  RegComponent(overlay.get());
+
   physics = make_unique<PhysicsManager>();
   RegComponent(physics.get());
 

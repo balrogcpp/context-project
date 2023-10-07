@@ -20,7 +20,7 @@ class ForestsManager final : public System<ForestsManager> {
  protected:
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(float time) override;
+  void OnUpdate(Ogre::Real time) override;
   void OnClean() override;
 
   std::vector<Forests::PagedGeometry *> pagedGeometryList;

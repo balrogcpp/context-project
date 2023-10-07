@@ -20,7 +20,7 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
-  void OnUpdate(float time) override;
+  void OnUpdate(Ogre::Real time) override;
 
  protected:
   /// Ogre::RenderObjectListener impl

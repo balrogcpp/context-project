@@ -38,7 +38,7 @@ class SinbadCharacterController : public DeviceListener {
 
   explicit SinbadCharacterController(Ogre::Camera *camera);
   virtual ~SinbadCharacterController();
-  void Update(float time);
+  void Update(Ogre::Real time);
   void OnKeyEvent(SDL_Scancode key, bool pressed) override;
   void OnMouseMotion(int dx, int dy) override;
   void OnMouseWheel(int x, int y) override;

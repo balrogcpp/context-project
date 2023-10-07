@@ -4,10 +4,11 @@
 #include "System.h"
 
 namespace gge {
-class OverlayManager final : public System<OverlayManager> {
+
+class TemplateManager final : public System<TemplateManager> {
  public:
-  OverlayManager();
-  virtual ~OverlayManager();
+  TemplateManager();
+  virtual ~TemplateManager();
 
   /// System impl
   void OnSetUp() override;
@@ -19,4 +20,5 @@ class OverlayManager final : public System<OverlayManager> {
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
 };
+
 }  // namespace gge

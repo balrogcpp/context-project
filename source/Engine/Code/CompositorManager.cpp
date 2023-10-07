@@ -12,7 +12,7 @@ CompositorManager::CompositorManager()
 
 CompositorManager::~CompositorManager() = default;
 
-void CompositorManager::OnUpdate(float time) {}
+void CompositorManager::OnUpdate(Ogre::Real time) {}
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
 
@@ -173,7 +173,7 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 
   if (name == BLOOM_COMPOSITOR) {
-    for (int i : mipMask) {
+    for (auto i : mipMask) {
       compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
     }
   }
@@ -251,7 +251,7 @@ void CompositorManager::InitMipChain(bool enable) {
     compositorManager->setCompositorEnabled(ogreViewport, name, false);
   }
 
-  for (int i : mipMask) {
+  for (auto i : mipMask) {
     compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
   }
 }
@@ -443,5 +443,4 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 }
 
 void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
-
 }  // namespace gge

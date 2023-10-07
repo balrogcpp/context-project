@@ -1805,6 +1805,7 @@ add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PREFIX_LOCAT
 if (NOT EMSCRIPTEN)
     add_dependencies(Contrib Target_SDL2)
     add_dependencies(Contrib Target_OpenAL)
+    add_dependencies(Contrib Target_Theora)
 endif ()
 add_dependencies(Contrib Target_GoogleTest)
 add_dependencies(Contrib Target_json)

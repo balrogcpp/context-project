@@ -1289,7 +1289,7 @@ static const ImU64 IM_U64_MAX = (2ULL * 9223372036854775807LL + 1);
 void SetupImGuiStyle_NeverBlue() {
   ImGuiIO &io = ImGui::GetIO();
   ImVec4 *colors = ImGui::GetStyle().Colors;
-  float time = io.DeltaTime * 12.f * AnimationSpeed;
+  Ogre::Real time = io.DeltaTime * 12.f * AnimationSpeed;
   int alpha = 255 * ImGui::GetStyle().Alpha;
 
   Colors::LeftBar = ImLerp(Colors::LeftBar, ImColor(3, 30, 50, alpha).Value, time);
@@ -1315,7 +1315,7 @@ void SetupImGuiStyle_NeverBlue() {
 void SetupImGuiStyle_NeverDark() {
   ImGuiIO &io = ImGui::GetIO();
   ImVec4 *colors = ImGui::GetStyle().Colors;
-  float time = io.DeltaTime * 12.f * AnimationSpeed;
+  Ogre::Real time = io.DeltaTime * 12.f * AnimationSpeed;
   int alpha = 255 * ImGui::GetStyle().Alpha;
 
   Colors::LeftBar = ImLerp(Colors::LeftBar, ImColor(8, 8, 8, alpha).Value, time);
@@ -1341,7 +1341,7 @@ void SetupImGuiStyle_NeverDark() {
 void SetupImGuiStyle_NeverLight() {
   ImGuiIO &io = ImGui::GetIO();
   ImVec4 *colors = ImGui::GetStyle().Colors;
-  float time = io.DeltaTime * 12.f * AnimationSpeed;
+  Ogre::Real time = io.DeltaTime * 12.f * AnimationSpeed;
   int alpha = 255 * ImGui::GetStyle().Alpha;
 
   Colors::LeftBar = ImLerp(Colors::LeftBar, ImColor(255, 255, 255, int(255 * ImGui::GetStyle().Alpha * 0.75f)).Value, time);
