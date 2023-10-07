@@ -251,10 +251,10 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
         {
             lumaEndP = FxaaLuma(texture2D(tex, posP.xy).xyz);
         }
-        
+
         doneN = doneN || (abs(lumaEndN - lumaN) >= gradientN);
         doneP = doneP || (abs(lumaEndP - lumaN) >= gradientN);
-        
+
         if(doneN && doneP)
         {
             break;

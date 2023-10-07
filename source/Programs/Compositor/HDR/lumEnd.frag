@@ -24,9 +24,7 @@ void main()
 {
     mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);
     newLum = expose2(newLum, Exposure);
-
     mediump float oldLum = texture2D(Lum, vec2(0.0, 0.0)).r;
-
     mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 
     FragColor = vec4(SafeHDR(lum), 0.0, 0.0, 1.0);
