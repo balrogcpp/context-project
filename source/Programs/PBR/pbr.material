@@ -128,7 +128,7 @@ abstract material IBL
     set $Normal normal.dds
     set $ORM yellow.dds
     set $Emissive black.dds
-    //set $IBL specular.dds
+    set $IBL specular.dds
 
     technique
     {
