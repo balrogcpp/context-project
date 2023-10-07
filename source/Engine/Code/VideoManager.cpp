@@ -194,8 +194,12 @@ void VideoManager::LoadResources() {
 #endif
 
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
-  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
+  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
+  Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
+
+  ///
+  //CreateProceduralTextures();
 
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
@@ -856,18 +860,16 @@ void VideoManager::CreateProceduralTextures() {
   noise.SetFractalLacunarity(2.0);
   noise.SetFractalGain(0.7);
 
-  constexpr size_t texSize = 256;
+  constexpr long texSize = 256;
   Procedural::TextureBuffer buffer(texSize);
-  for (int y = 0; y < texSize; y++) {
-    for (int x = 0; x < texSize; x++) {
-      float val = noise.GetNoise(float(x), float(y)) * 0.5 + 0.5;
-      buffer.setPixel(x, y, Ogre::ColourValue(Ogre::ColourValue::White * val));
-    }
+  for (int y = 0; y < texSize; y++)
+    for (int x = 0; x < texSize; x++)
+      buffer.setPixel(x, y, Ogre::ColourValue(Ogre::ColourValue::White * (noise.GetNoise(float(x), float(y)) * 0.5 + 0.5)));
+
+  for (long mipSize = texSize; mipSize != 1; mipSize /= 2) {
   }
-  auto normals = Procedural::Normals(&buffer);
-  normals.setAmplify(64);
-  normals.process();
-  buffer.saveImage("WaterNormal.dds");
+
+  Procedural::Normals(&buffer).process();
   buffer.createTexture("WaterNormal.dds", Ogre::RGN_INTERNAL);
 }
 
@@ -882,7 +884,6 @@ void VideoManager::OnSetUp() {
   CheckGPU();
   InitOgreRTSS();
   InitOgreOverlay();
-  CreateProceduralTextures();
   LoadResources();
   InitOgreSceneManager();
 }

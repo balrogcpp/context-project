@@ -37,9 +37,6 @@ void Menu::OnSetUp() {
   // ImGuiB::SetupImGuiStyle_Unreal();
   ImGuiB::SetupImGuiStyle_SpectrumDark();
 
-//  GetComponent<SceneManager>().LoadFromFile("bath.scene");
-  //GetComponent<SceneManager>().LoadFromFile("metallic_showroom_gallery.scene");
-//  GetComponent<SceneManager>().LoadFromFile("throne_room.scene");
   GetComponent<SceneManager>().LoadFromFile("1.scene");
   GetComponent<SkyManager>().SetUpSky();
 
@@ -146,23 +143,11 @@ void Menu::BeforeRender(float time) {
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
   ImGui::SetNextWindowBgAlpha(0.8);
   ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoDecoration);
-
   ImGui::PushFont(font);
-
-  // ImGuiB::SetupImGuiStyle_NeverBlue();
-  // static int activeTab = 0;
-  // std::vector<std::string> tabs{"Window", "Errors", "Info", "AnotherTab"};
-  // const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-  // ImGuiB::DrawTabHorizontally("Settings", ImVec2(ImGetWidth(), ImGui::GetFontSize() * 4.0), tabs, activeTab);
-
   ImGui::BeginChild("ScrollingRegion1", ImVec2(ImGetWidth(), ImGetHeight()), false);
 
   static bool flags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  static int combos[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-#ifdef ANDROID
-  flags[0] = 1;
-#endif
+  static int combos[10] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #ifndef ANDROID
   if (ImGui::Checkbox("Fullscreen", &flags[0])) {
@@ -263,7 +248,7 @@ void Menu::BeforeRender(float time) {
   const unsigned short anisotropyLevel[] = {1, 2, 4, 8, 16};
   const char *anisotropyLevelStr = " 1\0 2\0 4\0 8\0 16\0";
   if (ImGui::Combo("Anisotropy lvl", &combos[3], anisotropyLevelStr)) {
-    manager.SetTexFiltering(anisotropyLevel[combos[4]], Ogre::TFO_ANISOTROPIC);
+    manager.SetTexFiltering(Ogre::TFO_ANISOTROPIC, anisotropyLevel[combos[4]]);
   }
 #endif
 
@@ -303,14 +288,14 @@ void Menu::BeforeRender(float time) {
   // used to generate resolution string
   int sizeX = window.GetDisplaySizeX();
   int sizeY = window.GetDisplaySizeY();
-  std::string resStr = std::string(" -") + '\0';
+  int resListSize = 0;
+  std::string resStr = std::string("-") + '\0';
   resStr += std::to_string(sizeX) + "x" + std::to_string(sizeY) + " (native)" + '\0';
-  for (const auto &it : resList) {
-    if (sizeX >= it.x && sizeY >= it.y) {
-      resStr += it.item;
+  for (auto it = rbegin(resList); it != rend(resList); ++it) {
+    if (sizeX > (*it).x && sizeY > (*it).y) {
+      resStr += (*it).item;
       resStr += '\0';
-    } else {
-      break;
+      resListSize++;
     }
   }
 
@@ -322,8 +307,8 @@ void Menu::BeforeRender(float time) {
         x = sizeX;
         y = sizeY;
       } else {
-        x = resList[j - 2].x;
-        y = resList[j - 2].y;
+        x = resList[resListSize - j - 1].x;
+        y = resList[resListSize - j - 1].y;
       }
 
       if (flags[0]) {

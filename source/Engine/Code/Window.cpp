@@ -19,7 +19,7 @@ inline void ParseSDLError(bool result, const char *message = "") {
 
 namespace gge {
 Window::Window()
-    : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI), 
+    : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI),
       vsyncInt(1),
       sizeX(1270),
       display(0),
@@ -168,9 +168,7 @@ void Window::SetSize(int x, int y) {
   sizeY = y;
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowSize(sdlWindow, x, y);
-#ifdef MOBILE
   ogreWindow->resize(x, y);
-#endif
 }
 
 void Window::SetFullscreen(bool fullscreen) {
@@ -415,10 +413,8 @@ void Window::OnQuit() {}
 void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
-#ifndef MOBILE
   if (this->id == id) {
     ogreWindow->resize(x, y);
   }
-#endif
 }
 }  // namespace gge
