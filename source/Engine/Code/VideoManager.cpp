@@ -3,46 +3,48 @@
 #include "pch.h"
 #include "VideoManager.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
+#include "FastNoiseLite/FastNoiseLite.h"
 #include "Platform.h"
+#include "Procedural/ProceduralTextureGenerator.h"
 #include "imgui_impl_sdl2.h"
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  #include <RTShaderSystem/OgreRTShaderSystem.h>
+#include <RTShaderSystem/OgreRTShaderSystem.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
+#include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
-  #include <Plugins/STBICodec/OgreSTBICodec.h>
+#include <Plugins/STBICodec/OgreSTBICodec.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-  #include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
+#include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
-  #include <Plugins/Assimp/OgreAssimpLoader.h>
+#include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
-  #include <Plugins/DotScene/OgreDotSceneLoader.h>
+#include <Plugins/DotScene/OgreDotSceneLoader.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
-  #include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
+#include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  #include <Terrain/OgreTerrainGroup.h>
+#include <Terrain/OgreTerrainGroup.h>
 #ifdef OGRE_BUILD_COMPONENT_PAGING
-  #include <Terrain/OgreTerrainPaging.h>
+#include <Terrain/OgreTerrainPaging.h>
 #endif
 #endif
 #ifdef OGRE_BUILD_COMPONENT_PAGING
-  #include <Paging/OgrePaging.h>
+#include <Paging/OgrePaging.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
-  #include <Overlay/OgreFontManager.h>
-  #include <Overlay/OgreImGuiOverlay.h>
-  #include <Overlay/OgreOverlayManager.h>
-  #include <Overlay/OgreOverlaySystem.h>
+#include <Overlay/OgreFontManager.h>
+#include <Overlay/OgreImGuiOverlay.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlaySystem.h>
 #endif
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL) || defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) || defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
-  #include <OgreGLRenderSystemCommon.h>
+#include <OgreGLRenderSystemCommon.h>
 #endif
 #include <Ogre.h>
 #include <SDL2/SDL.h>
@@ -53,35 +55,35 @@
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
     || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
-  #include <filesystem>
-  namespace fs = std::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 #else
-  #include "ghc/filesystem.hpp"
-  namespace fs = ghc::filesystem;
+#include "ghc/filesystem.hpp"
+namespace fs = ghc::filesystem;
 #endif  // <filesystem>
 #endif  // DESKTOP
 #ifdef APPLE
-  #include <mach-o/dyld.h>
+#include <mach-o/dyld.h>
 #endif
 #ifdef LINUX
-  #include <unistd.h>
+#include <unistd.h>
 #endif
 #ifdef WINDOWS
-  #include <windows.h>
+#include <windows.h>
 #endif
 #ifdef __ANDROID__
-  #include <OgreArchiveFactory.h>
-  #include <OgreFileSystem.h>
-  #include <OgreZip.h>
-  #include <android/asset_manager.h>
-  #include <android/asset_manager_jni.h>
-  #include <android/configuration.h>
-  #include <android/input.h>
-  #include <android/log.h>
-  #include <android/native_window.h>
-  #include <android/native_window_jni.h>
-  #include <android/sensor.h>
-  #include <jni.h>
+#include <OgreArchiveFactory.h>
+#include <OgreFileSystem.h>
+#include <OgreZip.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#include <android/configuration.h>
+#include <android/input.h>
+#include <android/log.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include <android/sensor.h>
+#include <jni.h>
 #endif
 
 using namespace std;
@@ -273,7 +275,7 @@ VideoManager::~VideoManager() {
   SDL_Quit();
 }
 
-void VideoManager::OnUpdate(float time) {
+void VideoManager::OnUpdate(Ogre::Real time) {
   if (imguiOverlay) {
     ImGui_ImplSDL2_NewFrame();
   }
@@ -759,20 +761,20 @@ void VideoManager::RebuildOverlayFontAtlas() {
   unsigned char *pixels;
   int width, height;
 
-    if (auto mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL)) {
-      io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+  if (auto mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL)) {
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 // doesn't work at windows
 #ifdef WIN32
-      Ogre::TextureManager::getSingleton().unload("ImGui/FontTex", Ogre::RGN_INTERNAL);
-      Ogre::TextureManager::getSingleton().remove("ImGui/FontTex", Ogre::RGN_INTERNAL);
-      auto tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
-                                                            Ogre::PF_BYTE_RGBA);
+    Ogre::TextureManager::getSingleton().unload("ImGui/FontTex", Ogre::RGN_INTERNAL);
+    Ogre::TextureManager::getSingleton().remove("ImGui/FontTex", Ogre::RGN_INTERNAL);
+    auto tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
+                                                                 Ogre::PF_BYTE_RGBA);
 #else
-      auto tex = Ogre::TextureManager::getSingleton().getByName("ImGui/FontTex");
+    auto tex = Ogre::TextureManager::getSingleton().getByName("ImGui/FontTex");
 #endif
 
-      tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
-    }
+    tex->getBuffer()->blitFromMemory(Ogre::PixelBox(Ogre::Box(0, 0, width, height), Ogre::PF_BYTE_RGBA, pixels));
+  }
 }
 
 ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
@@ -845,6 +847,30 @@ void VideoManager::InitOgreRTSS() {
   shaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
 }
 
+void VideoManager::CreateProceduralTextures() {
+  FastNoiseLite noise(1337);
+  noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+  noise.SetFractalType(FastNoiseLite::FractalType_Ridged);
+  noise.SetFrequency(0.005);
+  noise.SetFractalOctaves(3);
+  noise.SetFractalLacunarity(2.0);
+  noise.SetFractalGain(0.7);
+
+  constexpr size_t texSize = 256;
+  Procedural::TextureBuffer buffer(texSize);
+  for (int y = 0; y < texSize; y++) {
+    for (int x = 0; x < texSize; x++) {
+      float val = noise.GetNoise(float(x), float(y)) * 0.5 + 0.5;
+      buffer.setPixel(x, y, Ogre::ColourValue(Ogre::ColourValue::White * val));
+    }
+  }
+  auto normals = Procedural::Normals(&buffer);
+  normals.setAmplify(64);
+  normals.process();
+  buffer.saveImage("WaterNormal.dds");
+  buffer.createTexture("WaterNormal.dds", Ogre::RGN_INTERNAL);
+}
+
 void VideoManager::OnSetUp() {
   // reg as input listener
   InputSequencer::GetInstance().RegWindowListener(this);
@@ -856,6 +882,7 @@ void VideoManager::OnSetUp() {
   CheckGPU();
   InitOgreRTSS();
   InitOgreOverlay();
+  CreateProceduralTextures();
   LoadResources();
   InitOgreSceneManager();
 }

@@ -48,7 +48,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
-  void OnUpdate(float time) override;
+  void OnUpdate(Ogre::Real time) override;
 
  protected:
   void MakeWindow();
@@ -58,6 +58,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void InitOgreOverlay();
   void LoadResources();
   void InitOgreSceneManager();
+  void CreateProceduralTextures();
   void CheckGPU();
 
   /// WindowListener impl
