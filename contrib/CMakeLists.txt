@@ -118,41 +118,7 @@ externalproject_add(Target_SDL2
         -DSDL_HIDAPI_JOYSTICK=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_SDL_net)
-externalproject_add(Target_SDL_net
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL_net
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL_net.git
-        GIT_TAG release-2.2.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-        -DBUILD_SHARED_LIBS=OFF
-        -DSDL2NET_INSTALL=ON
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_OIS)
@@ -185,7 +151,7 @@ externalproject_add(Target_OIS
         -DOIS_BUILD_DEMOS=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_Bullet)
@@ -243,7 +209,7 @@ externalproject_add(Target_Bullet
         -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp_patch(Target_OpenAL openal-1.23.1.patch)
@@ -289,7 +255,7 @@ externalproject_add(Target_OpenAL
         -DALSOFT_OSX_FRAMEWORK=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp_patch(Target_Ogg ogg-1.3.5.patch)
@@ -327,7 +293,7 @@ externalproject_add(Target_Ogg
         -DBUILD_TESTING=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_Vorbis)
@@ -361,7 +327,7 @@ externalproject_add(Target_Vorbis
         -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_Theora)
@@ -381,7 +347,7 @@ externalproject_add(Target_Theora
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/cmake/FindOgg.cmake 
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/cmake/FindOgg.cmake
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -396,7 +362,7 @@ externalproject_add(Target_Theora
         -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_zlib)
@@ -432,49 +398,7 @@ externalproject_add(Target_zlib
         TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -rf
         lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
         COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_ZZIP)
-externalproject_add(Target_ZZIP
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS Target_zlib
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ZZIP
-        GIT_REPOSITORY https://github.com/gdraheim/zziplib.git
-        GIT_TAG v0.13.72
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DBUILD_SHARED_LIBS=OFF
-        -DBUILD_STATIC_LIBS=ON
-        -DMSVC_STATIC_RUNTIME=OFF
-        -DZZIPMMAPPED=OFF
-        -DZZIPFSEEKO=OFF
-        -DZZIPWRAP=OFF
-        -DZZIPSDL=OFF
-        -DZZIPDOCS=OFF
-        -DZZIPTEST=OFF
-        -DZZIPBINS=OFF
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_pugixml)
@@ -505,74 +429,7 @@ externalproject_add(Target_pugixml
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_tinyxml2)
-externalproject_add(Target_tinyxml2
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_tinyxml2
-        GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
-        GIT_TAG 9.0.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -Dtinyxml2_BUILD_TESTING=OFF
-        -Dtinyxml2_SHARED_LIBS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_PNG)
-externalproject_add(Target_PNG
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS Target_zlib
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_PNG
-        GIT_REPOSITORY https://github.com/glennrp/libpng.git
-        GIT_TAG v1.6.39
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DPNG_SHARED=OFF
-        -DPNG_TESTS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_FreeType)
@@ -614,7 +471,7 @@ externalproject_add(Target_FreeType
         -DBUILD_SHARED_LIBS=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_rapidjson)
@@ -650,7 +507,7 @@ externalproject_add(Target_rapidjson
         -DRAPIDJSON_HAS_STDSTRING=ON
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp_patch(Target_assimp assimp-5.3.1.patch)
@@ -750,7 +607,7 @@ externalproject_add(Target_assimp
         -DASSIMP_BUILD_IQM_IMPORTER=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_imgui)
@@ -774,7 +631,7 @@ externalproject_add(Target_imgui
         INSTALL_COMMAND ${CMAKE_COMMAND} -E true
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp_patch(Target_OGRE ogre-14.0.0.patch)
@@ -889,109 +746,7 @@ externalproject_add(Target_OGRE
         ${DEPS_SOURCE_LOCATION}/Target_OGRE/RenderSystems/GLSupport/include/GLSL
         ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2/GLSL
         COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_OGRE2)
-externalproject_add(Target_OGRE2
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS Target_ZZIP Target_FreeType Target_rapidjson Target_tinyxml2
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE2
-        GIT_REPOSITORY https://github.com/OGRECave/ogre-next.git
-        GIT_TAG v2.3.1
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
-        -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
-        -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
-        -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
-        -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DOGRE_STATIC=ON
-        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
-        -DOGRE_SIMD_SSE2=ON
-        -DOGRE_SIMD_NEON=ON
-        -DOGRE_RESTRICT_ALIASING=ON
-        -DOGRE_CONFIG_ENABLE_STBI=ON
-        -DOGRE_BUILD_PLUGIN_PFX=ON
-        -DOGRE_BUILD_COMPONENT_PLANAR_REFLECTIONS=ON
-        -DOGRE_BUILD_COMPONENT_RTSHADERSYSTEM=OFF
-        -DOGRE_CONFIG_ENABLE_TBB_SCHEDULER=OFF
-        -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
-        -DOGRE_CONFIG_ENABLE_TBB_SCHEDULER=ON
-        -DOGRE_CONFIG_ENABLE_MESHLOD=ON
-        -DOGRE_CONFIG_ENABLE_DDS=ON
-        -DOGRE_CONFIG_ENABLE_PVRTC=OFF
-        -DOGRE_CONFIG_ENABLE_ETC=OFF
-        -DOGRE_CONFIG_ENABLE_ASTC=OFF
-        -DOGRE_CONFIG_ENABLE_JSON=ON
-        -DOGRE_BUILD_SAMPLES2=OFF
-        -DOGRE_BUILD_TOOLS=OFF
-        -DOGRE_BUILD_SAMPLES_AS_BUNDLES=OFF
-        -DOGRE_BUILD_XSIEXPORTER=OFF
-        -DOGRE_CONFIG_ENABLE_FREEIMAGE=OFF
-        -DOGRE_CONFIG_ENABLE_STBI=ON
-        -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
-        -DOGRE_INSTALL_DOCS=OFF
-        -DOGRE_CONFIG_THREADS=0
-        -DOGRE_USE_BOOST=OFF
-        -DOGRE_CONFIG_THREAD_PROVIDER=std
-        -DCMAKE_SKIP_INSTALL_RPATH=ON
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_freeglut)
-externalproject_add(Target_freeglut
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_freeglut
-        GIT_REPOSITORY https://github.com/FreeGLUTProject/freeglut.git
-        GIT_TAG v3.4.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DFREEGLUT_BUILD_SHARED_LIBS=OFF
-        -DFREEGLUT_BUILD_STATIC_LIBS=ON
-        -DFREEGLUT_GLES=OFF
-        -DINSTALL_PDB=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_Lua)
@@ -1028,7 +783,7 @@ externalproject_add(Target_Lua
         -DLUA_USE_DLOPEN=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp_patch(Target_sol2 sol2-3.3.0.patch)
@@ -1068,7 +823,7 @@ externalproject_add(Target_sol2
         -DCMAKE_DISABLE_FIND_PACKAGE_Lua=ON
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_angelscript)
@@ -1102,7 +857,7 @@ externalproject_add(Target_angelscript
         -DAS_NO_EXCEPTIONS=OFF
         -DBUILD_FRAMEWORK=OFF
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_filesystem)
@@ -1135,7 +890,7 @@ externalproject_add(Target_filesystem
         -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_fmt)
@@ -1169,40 +924,7 @@ externalproject_add(Target_fmt
         -DFMT_OS=ON
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_generator)
-externalproject_add(Target_generator
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_generator
-        GIT_REPOSITORY https://github.com/TartanLlama/generator.git
-        GIT_TAG v0.4.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DGENERATOR_BUILD_PACKAGE=OFF
-        -DGENERATOR_BUILD_TESTS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_GoogleTest)
@@ -1234,7 +956,7 @@ externalproject_add(Target_GoogleTest
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_GoogleBenchmark)
@@ -1266,7 +988,7 @@ externalproject_add(Target_GoogleBenchmark
         -DBENCHMARK_ENABLE_TESTING=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_json)
@@ -1298,7 +1020,7 @@ externalproject_add(Target_json
         -DJSON_BuildTests=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_ini)
@@ -1322,7 +1044,7 @@ externalproject_add(Target_ini
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_ini/ini_parser.hpp ${DEPS_INCLUDE_DIR}
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_rapidcsv)
@@ -1413,7 +1135,7 @@ externalproject_add(Target_yaml-cpp
         -DYAML_CPP_BUILD_TESTS=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_asio)
@@ -1437,7 +1159,7 @@ externalproject_add(Target_asio
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/include/boost/asio.hpp ${DEPS_INCLUDE_DIR}
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_beast)
@@ -1462,39 +1184,7 @@ externalproject_add(Target_beast
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_beast/include/boost/beast.hpp ${DEPS_INCLUDE_DIR}
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_OpenSSL)
-externalproject_add(Target_OpenSSL
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
-        GIT_REPOSITORY https://github.com/janbar/openssl-cmake.git
-        GIT_TAG 1.1.1t-20230216
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DWITH_APPS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_LibreSSL)
@@ -1532,45 +1222,7 @@ externalproject_add(Target_LibreSSL
         -DENABLE_ASM=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_curl)
-externalproject_add(Target_curl
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_curl
-        GIT_REPOSITORY https://github.com/curl/curl.git
-        GIT_TAG curl-8_1_2
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DPICKY_COMPILER=OFF
-        -DBUILD_CURL_EXE=OFF
-        -DBUILD_SHARED_LIBS=OFF
-        -DCURL_STATIC_CRT=OFF
-        -DENABLE_UNICODE=OFF
-        -DCURL_LTO=OFF
-        -DCURL_DISABLE_LDAP=ON
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp_patch(Target_cpr cpr-1.10.4.patch)
@@ -1603,7 +1255,7 @@ externalproject_add(Target_cpr
         -DBUILD_SHARED_LIBS=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
+)
 
 
 check_stamp(Target_cereal)
@@ -1681,126 +1333,6 @@ externalproject_add(Target_armadillo
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
-
-
-check_stamp(Target_opencv_contrib)
-externalproject_add(Target_opencv_contrib
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_opencv_contrib
-        GIT_REPOSITORY https://github.com/opencv/opencv_contrib.git
-        GIT_TAG 4.6.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E true
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_opencv)
-externalproject_add(Target_opencv
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS Target_opencv_contrib
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_opencv
-        GIT_REPOSITORY https://github.com/opencv/opencv.git
-        GIT_TAG 4.7.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DOPENCV_EXTRA_MODULES_PATH=${DEPS_SOURCE_LOCATION}/Target_opencv_contrib/modules
-        -DOPENCV_FORCE_3RDPARTY_BUILD=OFF
-        -DBUILD_ZLIB=OFF
-        -DBUILD_SHARED_LIBS=OFF
-        -DBUILD_opencv_apps=OFF
-        -DBUILD_EXAMPLES=OFF
-        -DBUILD_TESTS=OFF
-        -DBUILD_DOCS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_QT5)
-externalproject_add(Target_QT5
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_QT5
-        GIT_REPOSITORY https://github.com/qt/qt5.git
-        GIT_TAG v5.15.8-lts-lgpl
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CONFIGURE_COMMAND ${DEPS_SOURCE_LOCATION}/Target_QT5/configure -confirm-license -developer-build -opensource -nomake examples -nomake tests
-        BUILD_COMMAND ${CMAKE_COMMAND} --build .
-        INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
-
-
-check_stamp(Target_swig)
-externalproject_add(Target_swig
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_swig
-        GIT_REPOSITORY https://github.com/swig/swig.git
-        GIT_TAG v4.1.1
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DWITH_PCRE=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-        )
 
 
 # list of dependency targets
