@@ -11,9 +11,6 @@
 #endif
 
 #include "header.glsl"
-#ifndef MAX_WATER_OCTAVES
-    #define MAX_WATER_OCTAVES 0
-#endif
 
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
