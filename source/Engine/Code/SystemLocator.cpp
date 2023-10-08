@@ -33,12 +33,11 @@ void SystemLocator::Init() {
   InputSequencer::GetInstance().RegWindowListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 
-  overlay = make_unique<OverlayManager>();
-  RegComponent(overlay.get(), true);
-
   compositor = make_unique<CompositorManager>();
   RegComponent(compositor.get(), true);
 
+  overlay = make_unique<OverlayManager>();
+  RegComponent(overlay.get(), true);
 
   physics = make_unique<PhysicsManager>();
   RegComponent(physics.get());

@@ -413,8 +413,10 @@ void Window::OnQuit() {}
 void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
+#ifndef MOBILE
   if (this->id == id) {
     ogreWindow->resize(x, y);
   }
+#endif
 }
 }  // namespace gge

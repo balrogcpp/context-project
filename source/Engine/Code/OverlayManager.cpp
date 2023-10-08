@@ -88,13 +88,14 @@ void OverlayManager::OnSetUp() {
   float scale = diag / diag0;
   scale *= dpi;
 #ifdef MOBILE
-  //  scale *= (7.0 / 8.0);
   scale *= 0.5;
 #endif
 
   style.ScaleAllSizes(scale);
   io.Fonts->AddFontDefault();
   font = GetComponent<VideoManager>().AddOverlayFont("Muse500", floor(34 * scale));
+
+  GetComponent<VideoManager>().ShowOverlay(true);
 }
 
 void OverlayManager::OnUpdate(float time) {
@@ -147,6 +148,10 @@ void OverlayManager::OnUpdate(float time) {
 
   static bool flags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   static int combos[10] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+
+#ifdef MOBILE
+  flags[0] = 1;
+#endif
 
 #ifndef ANDROID
   if (ImGui::Checkbox("Fullscreen", &flags[0])) {

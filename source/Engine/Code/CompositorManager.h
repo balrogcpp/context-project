@@ -64,7 +64,8 @@ class CompositorManager : public System<CompositorManager>,
   int mipChainSize;
   std::vector<int> mipMask;
   bool fixedViewportSize;
-  int forceSizeX, forceSizeY;
+  int forceSizeX;
+  int forceSizeY;
   std::queue<std::pair<std::string, bool>> compositorList;
 
   Ogre::CompositorManager* compositorManager = nullptr;

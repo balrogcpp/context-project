@@ -12,7 +12,6 @@ void Menu::OnClean() { GetComponent<SystemLocator>().OnClean(); }
 void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {}
 
 void Menu::OnSetUp() {
-  GetComponent<VideoManager>().ShowOverlay(true);
   GetComponent<SceneManager>().LoadFromFile("1.scene");
 }
 
