@@ -14,7 +14,7 @@ void AppStateManager::Init() {
 }
 
 void AppStateManager::OnSetUp() {}
-void AppStateManager::OnUpdate(Ogre::Real time) {}
+void AppStateManager::OnUpdate(float time) {}
 void AppStateManager::OnClean() { Ogre::Root::getSingleton().addFrameListener(this); }
 AppState *AppStateManager::GetActiveAppState() { return activeAppState.get(); }
 

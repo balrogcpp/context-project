@@ -11,7 +11,7 @@ class OverlayManager final : public System<OverlayManager> {
 
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(Ogre::Real time) override;
+  void OnUpdate(float time) override;
   void OnClean() override;
 
  protected:

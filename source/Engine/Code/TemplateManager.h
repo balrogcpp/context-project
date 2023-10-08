@@ -12,7 +12,7 @@ class TemplateManager final : public System<TemplateManager> {
 
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(Ogre::Real time) override;
+  void OnUpdate(float time) override;
   void OnClean() override;
 
  protected:

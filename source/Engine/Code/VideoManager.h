@@ -48,7 +48,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
-  void OnUpdate(Ogre::Real time) override;
+  void OnUpdate(float time) override;
 
  protected:
   void MakeWindow();

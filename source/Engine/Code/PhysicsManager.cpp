@@ -71,7 +71,7 @@ void PhysicsManager::OnClean() {
   }
 }
 
-void PhysicsManager::OnUpdate(Ogre::Real time) {
+void PhysicsManager::OnUpdate(float time) {
   dynamicWorld->getBtWorld()->stepSimulation(time, subSteps, fixedTimeStep);
   if (debugView) {
     debugDrawer->update();

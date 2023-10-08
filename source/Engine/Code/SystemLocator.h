@@ -30,7 +30,7 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
 
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(Ogre::Real time) override {}
+  void OnUpdate(float time) override {}
   void OnClean() override;
   void SetSleep(bool sleep) override;
 

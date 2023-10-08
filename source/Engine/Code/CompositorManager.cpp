@@ -12,7 +12,7 @@ CompositorManager::CompositorManager()
 
 CompositorManager::~CompositorManager() = default;
 
-void CompositorManager::OnUpdate(Ogre::Real time) {}
+void CompositorManager::OnUpdate(float time) {}
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
 

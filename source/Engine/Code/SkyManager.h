@@ -15,7 +15,7 @@ class SkyManager final : public System<SkyManager> {
 
   /// System impl
   void OnSetUp() override;
-  void OnUpdate(Ogre::Real time) override;
+  void OnUpdate(float time) override;
   void OnClean() override;
 
  protected:

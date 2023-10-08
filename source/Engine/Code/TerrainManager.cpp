@@ -144,7 +144,7 @@ void TerrainManager::LoadTerrainGroupLegacy(int x, int y, const string &filename
   ogreTerrainGroup->freeTemporaryResources();
 }
 
-void TerrainManager::OnUpdate(Ogre::Real time) {}
+void TerrainManager::OnUpdate(float time) {}
 void TerrainManager::OnClean() {
   if (ogreTerrainGroup) {
     ogreTerrainGroup->removeAllTerrains();

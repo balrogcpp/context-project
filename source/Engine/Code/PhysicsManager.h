@@ -29,7 +29,7 @@ class PhysicsManager final : public System<PhysicsManager> {
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
-  void OnUpdate(Ogre::Real time) override;
+  void OnUpdate(float time) override;
 
  protected:
   bool debugView;

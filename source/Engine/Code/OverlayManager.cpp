@@ -12,7 +12,7 @@ OverlayManager::~OverlayManager() {}
 
 void OverlayManager::OnSetUp() {}
 
-void OverlayManager::OnUpdate(Ogre::Real time) {}
+void OverlayManager::OnUpdate(float time) {}
 
 void OverlayManager::OnClean() {}
 }  // namespace gge

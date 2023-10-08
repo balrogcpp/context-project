@@ -279,7 +279,7 @@ VideoManager::~VideoManager() {
   SDL_Quit();
 }
 
-void VideoManager::OnUpdate(Ogre::Real time) {
+void VideoManager::OnUpdate(float time) {
   if (imguiOverlay) {
     ImGui_ImplSDL2_NewFrame();
   }

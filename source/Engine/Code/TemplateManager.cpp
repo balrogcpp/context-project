@@ -13,7 +13,7 @@ TemplateManager::~TemplateManager() {}
 
 void TemplateManager::OnSetUp() {}
 
-void TemplateManager::OnUpdate(Ogre::Real time) {}
+void TemplateManager::OnUpdate(float time) {}
 
 void TemplateManager::OnClean() {}
 
