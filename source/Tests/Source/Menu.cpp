@@ -19,6 +19,4 @@ void Menu::OnSetUp() {
 void Menu::OnUpdate(float time) {}
 
 void Menu::OnSizeChanged(int x, int y, uint32_t id) {}
-
-void Menu::BeforeRender(float time) {}
 }  // namespace gge

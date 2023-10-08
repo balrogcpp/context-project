@@ -131,11 +131,11 @@ void OverlayManager::OnUpdate(float time) {
 
   if (!showMenu) {
     window.SetMouseRelativeMode(true);
-    GetComponent<SystemLocator>().SetSleep(false);
+    // GetComponent<SystemLocator>().SetSleep(false);
     return;
   } else {
     window.SetMouseRelativeMode(false);
-    GetComponent<SystemLocator>().SetSleep(true);
+    // GetComponent<SystemLocator>().SetSleep(true);
   }
 
   ImGui::SetNextWindowPos({border * vx, border * vy});

@@ -68,12 +68,12 @@ bool AppStateManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 };
 
 bool AppStateManager::frameStarted(const Ogre::FrameEvent &evt) {
-  activeAppState->BeforeRender(evt.timeSinceLastFrame);
+  activeAppState->BeforeFrame(evt.timeSinceLastFrame);
   return true;
 };
 
 bool AppStateManager::frameEnded(const Ogre::FrameEvent &evt) {
-  activeAppState->AfterRender(evt.timeSinceLastFrame);
+  activeAppState->AfterFrame(evt.timeSinceLastFrame);
   return true;
 };
 }  // namespace gge
