@@ -17,9 +17,9 @@ the terms of the BSD license: http://www.opensource.org/licenses/bsd-license.php
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #   ifdef THEORAVIDEO_PLUGIN_EXPORTS 
-#       define _OgreTheoraExport __declspec(dllexport)
+#       define _OgreTheoraExport //__declspec(dllexport)
 #   else 
-#       define _OgreTheoraExport __declspec(dllimport)
+#       define _OgreTheoraExport //__declspec(dllimport)
 #   endif 
 #else 
 #   define _OgreTheoraExport 

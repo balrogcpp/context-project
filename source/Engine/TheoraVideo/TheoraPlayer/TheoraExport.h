@@ -1,7 +1,7 @@
 
 #ifndef TheoraPlayerExport_H
 #define TheoraPlayerExport_H
-
+#define THEORAPLAYER_STATIC_DEFINE
 #ifdef THEORAPLAYER_STATIC_DEFINE
 #  define TheoraPlayerExport
 #  define THEORAPLAYER_NO_EXPORT
