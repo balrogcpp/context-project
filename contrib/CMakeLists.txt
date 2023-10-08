@@ -357,8 +357,8 @@ externalproject_add(Target_Vorbis
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include #for Android
-        -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a #for Android
+        -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include
+        -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )
@@ -392,6 +392,8 @@ externalproject_add(Target_Theora
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include
+        -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )

@@ -2,9 +2,7 @@
 
 #include "pch.h"
 #include "SceneManager.h"
-#include "ForestsManager.h"
-#include "PhysicsManager.h"
-#include "TerrainManager.h"
+#include "SystemLocator.h"
 #include <PagedGeometry/PagedGeometryAll.h>
 
 using namespace std;
@@ -175,6 +173,8 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   // search for GrassPage
   ScanForests(objBindings, "GrassPage");
   ScanForests(objBindings, "BatchPage");
+
+  GetComponent<SkyManager>().SetUpSky();
 
   // scan second time, new objects added during first scan
   for (auto it : rootNode->getChildren()) {
