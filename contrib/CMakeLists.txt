@@ -380,7 +380,8 @@ externalproject_add(Target_Theora
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/cmake/FindOgg.cmake 
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1003,7 +1004,7 @@ externalproject_add(Target_Lua
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}

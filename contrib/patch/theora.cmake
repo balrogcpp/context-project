@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.9)
 
 # https://github.com/xiph/theora/issues/10#issuecomment-591894142
 
-
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(Ogg REQUIRED)
 
 

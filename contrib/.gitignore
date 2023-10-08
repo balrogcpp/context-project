@@ -1,4 +1,3 @@
-**
-
-!/patch
-!/CMakeLists.txt
+/build/
+/download/
+/sdk/
