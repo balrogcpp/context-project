@@ -52,6 +52,28 @@ index 9b6f7908f..5df4a47ba 100644
      ${IMGUI_DIR}/imconfig.h)
  endif()
  
+diff --git a/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp b/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp
+index 8b210c1f0..049d9c0af 100644
+--- a/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp
++++ b/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp
+@@ -108,7 +108,7 @@ namespace Ogre
+     void OverlayProfileSessionListener::finializeSession()
+     {
+         OverlayContainer* container = dynamic_cast<OverlayContainer*>(mProfileGui);
+-        if (container)
++        if (0)
+         {
+             for (const auto& p : container->getChildren())
+             {
+@@ -122,7 +122,7 @@ namespace Ogre
+             OverlayManager::getSingleton().destroyOverlayElement(mProfileGui);
+         if(mOverlay)
+             OverlayManager::getSingleton().destroy(mOverlay);
+-
++        OverlayManager::getSingleton().destroyAllOverlayElements();
+         mProfileBars.clear();
+     }
+     //-----------------------------------------------------------------------
 diff --git a/Components/Terrain/include/OgreTerrainQuadTreeNode.h b/Components/Terrain/include/OgreTerrainQuadTreeNode.h
 index e2e18a155..1a2146106 100644
 --- a/Components/Terrain/include/OgreTerrainQuadTreeNode.h

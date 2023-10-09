@@ -634,7 +634,7 @@ externalproject_add(Target_imgui
 )
 
 
-check_stamp_patch(Target_OGRE ogre-14.0.0.patch)
+check_stamp_patch(Target_OGRE ogre-14.1.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
