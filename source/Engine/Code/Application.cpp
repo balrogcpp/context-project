@@ -40,7 +40,7 @@ void Application::Loop() {
 }
 
 void Application::EmscriptenLoop(void *arg) {
-  static auto *app = static_cast<Application *>(arg);
+  static auto *app = (Application *)arg;
   app->LoopBody();
 }
 

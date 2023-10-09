@@ -144,7 +144,7 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   rootNode->loadChildren(filename);
 
   for (auto it : rootNode->getChildren()) {
-    ScanNode(static_cast<Ogre::SceneNode *>(it));
+    ScanNode(dynamic_cast<Ogre::SceneNode *>(it));
   }
 
   if (!sinbad && ogreSceneManager->hasCamera("Camera")) {
@@ -178,7 +178,7 @@ void SceneManager::LoadFromFile(const std::string &filename) {
 
   // scan second time, new objects added during first scan
   for (auto it : rootNode->getChildren()) {
-    ScanNode(static_cast<Ogre::SceneNode *>(it));
+    ScanNode(dynamic_cast<Ogre::SceneNode *>(it));
   }
 }
 
@@ -221,7 +221,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
 
     if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-      auto *pssm = static_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
+      auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
       pssmCount = pssm->getSplitCount();
       auto x = fpDefines.find("PSSM_SPLIT_COUNT");
       if (x == string::npos) {
@@ -319,7 +319,7 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
   // recurse
   for (auto it : node->getChildren()) {
-    ScanNode(static_cast<Ogre::SceneNode *>(it));
+    ScanNode(dynamic_cast<Ogre::SceneNode *>(it));
   }
 }
 

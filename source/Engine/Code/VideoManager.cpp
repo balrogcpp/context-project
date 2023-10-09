@@ -177,12 +177,12 @@ void InitEmbeddedResources();
 
 void VideoManager::LoadResources() {
 #ifdef ANDROID
-  JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
+  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
   jclass classActivity = env->FindClass("android/app/Activity");
   jclass classResources = env->FindClass("android/content/res/Resources");
   jmethodID methodGetResources = env->GetMethodID(classActivity, "getResources", "()Landroid/content/res/Resources;");
   jmethodID methodGetAssets = env->GetMethodID(classResources, "getAssets", "()Landroid/content/res/AssetManager;");
-  jobject rawActivity = static_cast<jobject>(SDL_AndroidGetActivity());
+  jobject rawActivity = (jobject)SDL_AndroidGetActivity();
   jobject rawResources = env->CallObjectMethod(rawActivity, methodGetResources);
   jobject rawAssetManager = env->CallObjectMethod(rawResources, methodGetAssets);
   AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
@@ -199,7 +199,7 @@ void VideoManager::LoadResources() {
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
 
   ///
-  //CreateProceduralTextures();
+  // CreateProceduralTextures();
 
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
@@ -307,7 +307,7 @@ void VideoManager::ShowWindow(bool show, int index) { windowList[index].Show(sho
 void VideoManager::CheckGPU() {
   const auto *ogreRenderSystem = ogreRoot->getRenderSystem();
   const auto *ogreRenderCapabilities = ogreRenderSystem->getCapabilities();
-  const auto *ogreRenderSystemCommon = static_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
+  const auto *ogreRenderSystemCommon = dynamic_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
@@ -555,12 +555,8 @@ void VideoManager::InitOgreSceneManager() {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     }
     pssmSetup->calculateSplitPoints(pssmSplitCount, 1.0, ogreSceneManager->getShadowFarDistance());
-    ogreSceneManager->setShadowCameraSetup(pssmSetup);
-    // auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);
-    // auto *subRenderState = static_cast<Ogre::RTShader::IntegratedPSSM3
-    // *>(schemRenderState->getSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3));
     pssmSplitPointList = pssmSetup->getSplitPoints();
-    // subRenderState->setSplitPoints(pssmSplitPointList);
+    ogreSceneManager->setShadowCameraSetup(pssmSetup);
 
   } else {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
@@ -835,13 +831,10 @@ void VideoManager::InitOgreRTSS() {
   shaderGen.addSceneManager(ogreSceneManager);
   shaderGen.setShaderCachePath("");
   shaderResolver = make_unique<ShaderResolver>(&shaderGen);
-
   auto *schemRenderState = shaderGen.getRenderState(Ogre::MSN_SHADERGEN);
-  auto *subRenderState = shaderGen.createSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3);
-  schemRenderState->addTemplateSubRenderState(subRenderState);
 
   // Add the hardware skinning to the shader generator default render state
-  subRenderState = shaderGen.createSubRenderState(Ogre::RTShader::SRS_HARDWARE_SKINNING);
+  auto *subRenderState = shaderGen.createSubRenderState(Ogre::RTShader::SRS_HARDWARE_SKINNING);
   schemRenderState->addTemplateSubRenderState(subRenderState);
 
   // increase max bone count for higher efficiency
