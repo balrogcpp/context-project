@@ -328,6 +328,18 @@ index 663dc69bf..cf41e9b1f 100644
          if(mTarget == GL_TEXTURE_CUBE_MAP)
              mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
  
+diff --git a/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp b/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp
+index 8c875176a..bd4f143af 100644
+--- a/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp
++++ b/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp
+@@ -127,6 +127,7 @@ namespace Ogre {
+                                 "EGLWindow::create");
+                 }
+ 
++                mEglSurface = eglGetCurrentSurface(EGL_DRAW);
+                 mEglDisplay = eglGetCurrentDisplay();
+             }
+ 
 diff --git a/RenderSystems/GLSupport/src/EGL/OgreEGLContext.cpp b/RenderSystems/GLSupport/src/EGL/OgreEGLContext.cpp
 index 9277d4eb1..1778d4ed8 100644
 --- a/RenderSystems/GLSupport/src/EGL/OgreEGLContext.cpp
