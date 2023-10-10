@@ -23,7 +23,6 @@ uniform highp float baseUVScale;
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
-uniform highp float MovableObj;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
 uniform highp vec3 CameraPosition;
@@ -110,7 +109,7 @@ void main()
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
 #ifdef HAS_MRT
-    vPrevScreenPosition = MovableObj > 0.0 ? mul(WorldViewProjPrev, position) : mul(WorldViewProjPrev, mul(WorldMatrix, position));
+    vPrevScreenPosition = mul(WorldViewProjPrev, position);
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0

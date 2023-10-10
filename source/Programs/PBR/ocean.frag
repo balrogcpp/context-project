@@ -28,6 +28,7 @@ uniform highp vec4 Time;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FrameTime;
+uniform mediump float IsEven;
 uniform mediump vec4 WorldSpaceLightPos0;
 uniform mediump vec4 LightColor0;
 uniform mediump vec2 BigWaves;
@@ -71,6 +72,15 @@ in mediump vec4 vPrevScreenPosition;
 in mediump vec4 vProjectionCoord;
 void main()
 {
+#ifdef HAS_MRT
+    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[4] = vec4(vPrevScreenPosition.xz / vPrevScreenPosition.w - vScreenPosition.xz / vScreenPosition.w, 0.0, 1.0);
+#endif
+
+    if (mod(floor(gl_FragCoord.y), 2.0) != IsEven && mod(floor(gl_FragCoord.x), 2.0) == IsEven) {
+        return;
+    }
+
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
 
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
@@ -194,8 +204,8 @@ void main()
 #else
     FragData[0] = vec4(SafeHDR(color), 1.0);
     FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
-    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+//    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
-    FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
+//    FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif
 }

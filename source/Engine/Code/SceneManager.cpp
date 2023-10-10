@@ -86,7 +86,7 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }  // namespace
 
 namespace gge {
-SceneManager::SceneManager() : viewProj(Ogre::Matrix4::ZERO), viewProjPrev(Ogre::Matrix4::ZERO), pssmPoints(Ogre::Vector4::ZERO) {}
+SceneManager::SceneManager() : viewProj(Ogre::Matrix4::IDENTITY), viewProjPrev(Ogre::Matrix4::IDENTITY), pssmPoints(Ogre::Vector4::ZERO), isEven(false) {}
 SceneManager::~SceneManager() { ogreSceneManager->removeRenderObjectListener(this); }
 
 void SceneManager::OnSetUp() {
@@ -112,6 +112,7 @@ void SceneManager::OnUpdate(float time) {
 
   viewProjPrev = viewProj;
   viewProj = ogreCamera->getProjectionMatrix() * ogreCamera->getViewMatrix();
+  isEven = !isEven;
 
   if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
     auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
@@ -223,30 +224,19 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
       auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
       pssmCount = pssm->getSplitCount();
-      auto x = fpDefines.find("PSSM_SPLIT_COUNT");
-      if (x == string::npos) {
+      if (fpDefines.find("PSSM_SPLIT_COUNT") == string::npos) {
         fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
       }
 
       if (auto *tex = pass->getTextureUnitState("IBL")) {
         if (RenderSystemIsGLES2()) {
           // pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-
-          auto i = fpDefines.find("HAS_IBL");
-          if (i != string::npos) {
-            fpDefines[i] = 'X';
-          }
+          if (auto i = fpDefines.find("HAS_IBL"); i != string::npos) fpDefines[i] = 'X';
         }
       }
 
-      auto i = vpDefines.find("MAX_SHADOW_TEXTURES");
-      auto j = fpDefines.find("MAX_SHADOW_TEXTURES");
-      if (i != string::npos) {
-        vpDefines[i] = 'X';
-      }
-      if (j != string::npos) {
-        fpDefines[j] = 'X';
-      }
+      if (auto i = vpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) vpDefines[i] = 'X';
+      if (auto i = fpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) fpDefines[i] = 'X';
     }
 
     pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
@@ -343,19 +333,16 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
     auto *entity = subentity->getParent();
 
     if (entity->getMesh()->isReloadable()) {
-      Ogre::Matrix4 MVP;
-      Ogre::Any value = rend->getUserAny();
+      Ogre::Matrix4 MVP = Ogre::Matrix4::IDENTITY;
       rend->getWorldTransforms(&MVP);
-      rend->setUserAny(viewProj * MVP);
-
-      if (value.has_value()) {
-        vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(value));
-        vp->setNamedConstant("MovableObj", Ogre::Real(1.0));
-      }
+      Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
+      rend->getUserObjectBindings().setUserAny(viewProj * MVP);
+      if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevMVP));
 
     } else {
-      vp->setNamedConstant("WorldViewProjPrev", viewProjPrev);
-      vp->setNamedConstant("MovableObj", Ogre::Real(0.0));
+      Ogre::Matrix4 MVP = Ogre::Matrix4::IDENTITY;
+      rend->getWorldTransforms(&MVP);
+      vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
     }
   }
 
@@ -365,14 +352,13 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend)) {}
 
   else {
-    vp->setNamedConstant("WorldViewProjPrev", viewProjPrev);
-    vp->setNamedConstant("MovableObj", Ogre::Real(0.0));
+    Ogre::Matrix4 MVP = Ogre::Matrix4::IDENTITY;
+    rend->getWorldTransforms(&MVP);
+    vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
   }
 
   fp->setNamedConstant("PssmSplitPoints", pssmPoints);
-
-  vp->setIgnoreMissingParams(false);
-  fp->setIgnoreMissingParams(false);
+  fp->setNamedConstant("IsEven", Ogre::Real(isEven));
 }
 
 }  // namespace gge

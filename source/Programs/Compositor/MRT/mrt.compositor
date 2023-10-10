@@ -30,7 +30,7 @@ compositor NoMRT
     }
 }
 
-compositor MRT
+compositor MRT2
 {
     technique
     {
@@ -58,6 +58,70 @@ compositor MRT
     }
 }
 
+compositor MRT
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        // 0 color; 1 depth; 2 gloss; 3 normals; 4 velocity;
+        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R8G8 PF_R11G11B10_FLOAT PF_R8G8_SNORM no_fsaa chain_scope
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture depth target_width target_height PF_FLOAT16_R no_fsaa depth_pool 0
+        texture result target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target mrt
+        {
+            pass clear {}
+            pass render_scene
+            {
+                identifier 0
+            }
+        }
+
+        target result
+        {
+            pass render_quad
+            {
+                identifier 1
+                material Reconstructor
+                input 0 mrt 0
+                input 1 rt
+                input 2 mrt 4
+                input 3 mrt 1
+                input 4 depth
+            }
+        }
+
+        target rt
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 mrt 0
+            }
+        }
+
+        target depth
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 mrt 1
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 result
+                input 1 rt
+            }
+        }
+    }
+}
+
 compositor Paused
 {
     technique
@@ -66,6 +130,8 @@ compositor Paused
         texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rtx target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rty target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rtx1 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rty2 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt
         {
@@ -93,13 +159,33 @@ compositor Paused
             }
         }
 
+        target rtx1
+        {
+            only_initial on
+            pass render_quad
+            {
+                material FilterX
+                input 0 rty
+            }
+        }
+
+        target rty1
+        {
+            only_initial on
+            pass render_quad
+            {
+                material FilterY
+                input 0 rtx1
+            }
+        }
+
         target_output
         {
             pass render_quad
             {
                 identifier 1000
                 material Copy
-                input 0 rty
+                input 0 rty1
             }
         }
     }

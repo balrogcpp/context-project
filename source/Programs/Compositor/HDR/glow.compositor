@@ -48,7 +48,7 @@ compositor Glow
         // {
         //     pass render_quad
         //     {
-        //         identifier 3
+        //         identifier 12
         //         material Rays
         //         input 0 fbo
         //     }

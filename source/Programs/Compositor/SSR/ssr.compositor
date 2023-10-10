@@ -25,7 +25,7 @@ compositor SSR : STD
         {
             pass render_quad
             {
-                identifier 2
+                identifier 11
                 quad_normals camera_far_corners_view_space
                 material SSR
                 input 0 depth

@@ -17,6 +17,7 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   void ScanEntity(Ogre::Entity *entity);
   void ScanEntity(const std::string &name);
   void ScanNode(Ogre::SceneNode *node);
+
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
@@ -34,6 +35,7 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
 
+  bool isEven;
   Ogre::Matrix4 viewProj;
   Ogre::Matrix4 viewProjPrev;
   Ogre::uint32 pssmCount;

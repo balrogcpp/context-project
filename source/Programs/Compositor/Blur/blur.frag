@@ -32,7 +32,7 @@ void main()
     for (int i = 1; i < MAX_SAMPLES; ++i) {
         if (int(nSamples) <= i) break;
 
-        vec2 offset = (float(i) * invSamples - 0.5) * velocity;
+        mediump vec2 offset = (float(i) * invSamples - 0.5) * velocity;
         color += texture2D(RT, vUV0 + offset).rgb;
     }
 

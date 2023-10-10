@@ -157,6 +157,7 @@ uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
 uniform mediump float LightCount;
+uniform mediump float IsEven;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform mediump vec4 LightDirectionArray[MAX_LIGHTS];
@@ -325,6 +326,15 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 void main()
 {
+#ifdef HAS_MRT
+    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[4] = vec4((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w), 0.0, 1.0);
+#endif
+
+    if (mod(floor(gl_FragCoord.y), 2.0) != IsEven && mod(floor(gl_FragCoord.x), 2.0) == IsEven) {
+        return;
+    }
+
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
     highp vec2 uv = vUV0.xy;
     uv *= (1.0 + TexScale);
@@ -412,7 +422,6 @@ void main()
             mediump float attenuation_const = vAttParams.y;
             mediump float attenuation_linear = vAttParams.z;
             mediump float attenuation_quad = vAttParams.w;
-
             attenuation = biggerhp(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             // spotlight
@@ -479,8 +488,6 @@ void main()
 #else
     FragData[0] = vec4(SafeHDR(color), alpha);
     FragData[2] = vec4(metallic, roughness, alpha, 1.0);
-    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
-    FragData[4] = vec4((0.01666666666667 / FrameTime) * ((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w)), 0.0, 1.0);
 #endif
 }

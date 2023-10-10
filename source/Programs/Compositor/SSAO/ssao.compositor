@@ -26,7 +26,7 @@ compositor SSAO : STD
         {
             pass render_quad
             {
-                identifier 1
+                identifier 10
                 quad_normals camera_far_corners_view_space
                 material SSAO
                 input 0 depth

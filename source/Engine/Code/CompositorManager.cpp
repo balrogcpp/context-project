@@ -401,19 +401,27 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 1) {  // 1 = SSAO
+  if (pass_id == 0) { // 0 = mrt render
+  } else if (pass_id == 1) {  // 1 = Reconstructor
+    static bool isEven = false;
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setIgnoreMissingParams(true);
+    fp->setNamedConstant("IsEven", Ogre::Real(isEven));
+    isEven = !isEven;
+
+  } else if (pass_id == 10) {  // 1 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", ogreCamera->getNearClipDistance());
 
-  } else if (pass_id == 2) {  // 2 = SSR
+  } else if (pass_id == 11) {  // 2 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", ogreCamera->getNearClipDistance());
 
-  } else if (pass_id == 3) {  // 3 = Rays
+  } else if (pass_id == 12) {  // 3 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
     static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
@@ -433,8 +441,6 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
     fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
     fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(directionals));
-
-  } else if (pass_id == 0) {  // mrt render
 
   } else if (pass_id == 100) {  // paused
 
