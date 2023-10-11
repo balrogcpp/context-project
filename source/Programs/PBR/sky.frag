@@ -12,6 +12,7 @@
 
 #define HAS_MRT
 #include "header.glsl"
+#include "hosek.glsl"
 
 uniform mediump vec3 SunColor;
 uniform highp vec3 SunDirection;
@@ -42,10 +43,11 @@ void main()
     highp float cos_theta = clamp(abs(V.y), 0.0, 1.0);
     highp float cos_gamma = dot(V, N);
     highp float gamma = acos(cos_gamma);
-    mediump vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
+//    mediump vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
+    vec3 color = sample_sky(cos_theta, gamma, N.y, N.x);
 
     color = XYZtoRGB(color);
-    color = expose(color, 0.1);
+    color = SkyLightExpose(color, 0.1);
     color = SRGBtoLINEAR(color);
 
     if (gamma <= SunSize && V.y > 0.0) {
