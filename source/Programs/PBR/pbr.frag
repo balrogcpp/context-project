@@ -396,6 +396,10 @@ void main()
     int texCounter = 0;
 #endif
 
+#ifdef HAS_MRT
+    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
+    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 1.0);
+#endif
 #ifdef CHECKERBOARD
     if (ExcludePixel()) {
         return;
@@ -485,7 +489,5 @@ void main()
     FragColor = vec4(SafeHDR(color), alpha);
 #else
     FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
-    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
-    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 1.0);
 #endif
 }

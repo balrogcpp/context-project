@@ -116,6 +116,14 @@ void main()
     lNormal += normal5 * SmallWaves.y * 0.1;
 #endif
 
+    // normal for light scattering
+    lNormal = normalize(lNormal);
+    lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
+
+#ifdef HAS_MRT
+    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
+    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
+#endif
 #ifdef CHECKERBOARD
     if (ExcludePixel()) {
         return;
@@ -127,10 +135,6 @@ void main()
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space 
     highp vec3 vVec = normalize(CameraPosition - vWorldPosition);
     highp vec3 lVec = WorldSpaceLightPos0.xyz;
-
-    // normal for light scattering
-    lNormal = normalize(lNormal);
-    lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);
 
@@ -204,7 +208,5 @@ void main()
     FragColor = vec4(SafeHDR(color), alpha);
 #else
     FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
-    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
-    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
 #endif
 }
