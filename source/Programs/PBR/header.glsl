@@ -67,5 +67,7 @@ out vec4 FragColor;
 #include "srgb.glsl"
 #include "tonemap.glsl"
 #include "fog.glsl"
+//#define CHECKERBOARD
+#include "mosaic.glsl"
 
 #endif // HEADER_GLSL

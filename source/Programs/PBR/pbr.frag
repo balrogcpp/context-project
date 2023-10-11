@@ -157,7 +157,6 @@ uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
 uniform mediump float LightCount;
-uniform mediump float IsEven;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform mediump vec4 LightDirectionArray[MAX_LIGHTS];
@@ -224,7 +223,7 @@ uniform mediump vec2 ShadowTexel7;
 #ifdef HAS_IBL
 mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
-    if (iblSH[0].x >= HALF_MAX_MINUS1) {
+    if (iblSH[0].r >= HALF_MAX_MINUS1) {
         return LINEARtoSRGB(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
@@ -300,7 +299,7 @@ mediump vec4 GetAlbedo(const mediump vec4 color, const mediump vec2 uv)
     mediump vec4 albedo = SurfaceDiffuseColour * color;
 
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(AlbedoMap, uv);
+    albedo *= texture2D(AlbedoMap, uv, 0.5);
 #endif
 
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
@@ -331,9 +330,11 @@ void main()
     FragData[4] = vec4((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w), 0.0, 1.0);
 #endif
 
-    if (mod(floor(gl_FragCoord.y), 2.0) != IsEven && mod(floor(gl_FragCoord.x), 2.0) == IsEven) {
+#ifdef CHECKERBOARD
+    if (ExcludePixel()) {
         return;
     }
+#endif
 
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
     highp vec2 uv = vUV0.xy;

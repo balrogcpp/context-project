@@ -175,6 +175,7 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   ScanForests(objBindings, "GrassPage");
   ScanForests(objBindings, "BatchPage");
 
+  // sky is separate component
   GetComponent<SkyManager>().SetUpSky();
 
   // scan second time, new objects added during first scan

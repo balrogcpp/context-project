@@ -21,21 +21,18 @@ material Reconstructor : STD
                 param_named DepthTex int 3
                 param_named DepthOldTex int 4
                 param_named_auto TexelSize0 inverse_texture_size 0
-                param_named_auto TexelSize1 inverse_texture_size 1
-                param_named_auto TexelSize2 inverse_texture_size 2
+                param_named_auto TexSize0 texture_size 0
 			}
 
 			texture_unit MRT
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
             }
 			texture_unit RT
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
             }
 			texture_unit Velocity
             {

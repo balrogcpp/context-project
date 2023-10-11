@@ -39,6 +39,12 @@ in highp vec3 vPosition;
 in highp vec3 vUV0;
 void main()
 {
+//#ifdef CHECKERBOARD
+//    if (ExcludePixel()) {
+//        return;
+//    }
+//#endif
+
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);
     highp float cos_theta = clamp(abs(V.y), 0.0, 1.0);

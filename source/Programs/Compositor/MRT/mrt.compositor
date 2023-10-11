@@ -30,7 +30,7 @@ compositor NoMRT
     }
 }
 
-compositor MRT2
+compositor MRT
 {
     technique
     {
@@ -58,7 +58,7 @@ compositor MRT2
     }
 }
 
-compositor MRT
+compositor MRT2
 {
     technique
     {
@@ -116,7 +116,6 @@ compositor MRT
             {
                 material Copy
                 input 0 result
-                input 1 rt
             }
         }
     }

@@ -2,9 +2,9 @@ import PBR from pbr.material
 
 material Plane : PBR
 {
-    set $Albedo hard-edged-rock7_albedo.dds
-    set $Normal hard-edged-rock7_nmap-ogl.dds
-    set $ORM hard-edged-rock7_orm.dds
+    //set $Albedo hard-edged-rock7_albedo.dds
+    //set $Normal hard-edged-rock7_nmap-ogl.dds
+    //set $ORM hard-edged-rock7_orm.dds
 
     technique {
         pass {
