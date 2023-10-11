@@ -30,7 +30,7 @@ compositor SSR : STD
                 material SSR
                 input 0 depth
                 input 1 mrt 3
-                input 2 mrt 2
+                input 2 mrt 4
             }
         }
 
@@ -41,7 +41,7 @@ compositor SSR : STD
                 material ssrMod
                 input 0 rt
                 input 1 ssr
-                input 2 mrt 2
+                input 2 mrt 4
             }
         }
     }

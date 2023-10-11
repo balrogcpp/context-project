@@ -168,7 +168,6 @@ uniform mediump vec4 AmbientLightColour;
 uniform mediump vec4 SurfaceAmbientColour;
 uniform mediump vec4 SurfaceDiffuseColour;
 uniform mediump vec4 SurfaceSpecularColour;
-// uniform mediump float SurfaceShininessColour;
 uniform mediump vec4 SurfaceEmissiveColour;
 #ifdef HAS_ALPHA
 uniform mediump float SurfaceAlphaRejection;
@@ -299,7 +298,7 @@ mediump vec4 GetAlbedo(const mediump vec4 color, const mediump vec2 uv)
     mediump vec4 albedo = SurfaceDiffuseColour * color;
 
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(AlbedoMap, uv, 0.5);
+    albedo *= texture2D(AlbedoMap, uv);
 #endif
 
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
@@ -326,14 +325,8 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 void main()
 {
 #ifdef HAS_MRT
-    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[4] = vec4((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w), 0.0, 1.0);
-#endif
-
-#ifdef CHECKERBOARD
-    if (ExcludePixel()) {
-        return;
-    }
+    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[MRT_VELOCITY] = vec4((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w), 0.0, 1.0);
 #endif
 
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
@@ -347,6 +340,7 @@ void main()
 #endif // HAS_NORMALMAP
 
     mediump vec4 s = GetAlbedo(vColor, uv);
+    mediump vec3 emission = GetEmission(uv);
     mediump vec3 albedo = s.rgb;
 
 #ifdef HAS_ALPHA
@@ -402,6 +396,11 @@ void main()
     int texCounter = 0;
 #endif
 
+#ifdef CHECKERBOARD
+    if (ExcludePixel()) {
+        return;
+    }
+#endif
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
@@ -469,8 +468,6 @@ void main()
     } //  lightning loop
 #endif //  MAX_LIGHTS > 0
 
-    mediump vec3 emission = GetEmission(uv);
-
 // Calculate lighting contribution from image based lighting source (IBL)
     mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, -normalize(reflect(v, n)))));
 
@@ -487,8 +484,8 @@ void main()
 #ifndef HAS_MRT
     FragColor = vec4(SafeHDR(color), alpha);
 #else
-    FragData[0] = vec4(SafeHDR(color), alpha);
-    FragData[2] = vec4(metallic, roughness, alpha, 1.0);
-    FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
+    FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
+    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
+    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 1.0);
 #endif
 }

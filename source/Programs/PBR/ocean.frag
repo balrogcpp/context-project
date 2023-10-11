@@ -72,14 +72,8 @@ in mediump vec4 vProjectionCoord;
 void main()
 {
 #ifdef HAS_MRT
-    FragData[1] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[4] = vec4(vPrevScreenPosition.xz / vPrevScreenPosition.w - vScreenPosition.xz / vScreenPosition.w, 0.0, 1.0);
-#endif
-
-#ifdef CHECKERBOARD
-    if (ExcludePixel()) {
-        return;
-    }
+    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[MRT_VELOCITY] = vec4((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w), 0.0, 1.0);
 #endif
 
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
@@ -120,6 +114,12 @@ void main()
     highp vec3 normal5 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
     normal += normal5 * SmallWaves.y;
     lNormal += normal5 * SmallWaves.y * 0.1;
+#endif
+
+#ifdef CHECKERBOARD
+    if (ExcludePixel()) {
+        return;
+    }
 #endif
 
     normal = normalize(normal);
@@ -203,8 +203,8 @@ void main()
 #ifndef HAS_MRT
     FragColor = vec4(SafeHDR(color), alpha);
 #else
-    FragData[0] = vec4(SafeHDR(color), 1.0);
-    FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
-    FragData[3] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
+    FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
+    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
+    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
 #endif
 }

@@ -39,7 +39,7 @@ compositor SMAA : STD
 				material SMAA/NeighborhoodBlending
 				input 0 rt
 				input 1 blend
-				input 2 mrt 4
+				input 2 mrt 2
 			}
 		}
 	}

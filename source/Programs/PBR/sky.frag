@@ -39,12 +39,6 @@ in highp vec3 vPosition;
 in highp vec3 vUV0;
 void main()
 {
-//#ifdef CHECKERBOARD
-//    if (ExcludePixel()) {
-//        return;
-//    }
-//#endif
-
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);
     highp float cos_theta = clamp(abs(V.y), 0.0, 1.0);
@@ -66,10 +60,10 @@ void main()
 #ifndef HAS_MRT
     FragColor = vec4(SafeHDR(color), 1.0);
 #else
-    FragData[0] = vec4(SafeHDR(color), 1.0);
-    FragData[2] = vec4(0.0, 0.0, 1.0, 1.0);
-    FragData[1] = vec4(1.0, 0.0, 0.0, 1.0);
-    FragData[3] = vec4(0.0, 0.0, 0.0, 1.0);
-    FragData[4] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
+    FragData[MRT_DEPTH] = vec4(1.0, 0.0, 0.0, 1.0);
+    FragData[MRT_VELOCITY] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
 #endif
 }

@@ -36,21 +36,6 @@ mediump float FetchDepthAverage(mediump vec2 uv)
     return (A + B + C + D) * 0.25;
 }
 
-bool PixelWasRenderedThisFrame(mediump vec2 uv, mediump vec2 tex_size)
-{
-    return mod(floor(uv.y * tex_size.y) + floor(uv.x * tex_size.x), 2.0) != IsEven;
-}
-
-bool PixelWasRenderedPrevFrame(mediump vec2 uv, mediump vec2 tex_size)
-{
-    return mod(floor(uv.y * tex_size.y) + floor(uv.x * tex_size.x), 2.0) == IsEven;
-}
-
-bool PixelIsInsideViewport(mediump vec2 uv)
-{
-    return uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0;
-}
-
 in mediump vec2 vUV0;
 void main()
 {
@@ -71,7 +56,7 @@ void main()
     mediump vec2 uv2 = vUV0 - TexelSize0 * velocity;
     mediump vec3 color2 = texture2D(RT, uv2).rgb;
     mediump float depth1 = texture2D(DepthTex, vUV0).x;
-    mediump float depth2 = texture2D(DepthOldTex, vUV0).x;
+    mediump float depth2 = texture2D(DepthOldTex, uv2).x;
     mediump float diff = abs(depth2 - depth1);
     if (PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
         mediump vec3 minColor = min(min(A, B), min(C, D));

@@ -35,8 +35,8 @@ compositor MRT
     technique
     {
         compositor_logic DeferredLogic
-        // 0 color; 1 depth; 2 gloss; 3 normals; 4 velocity;
-        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R11G11B10_FLOAT PF_R11G11B10_FLOAT PF_R8G8_SNORM no_fsaa chain_scope
+        // 0 color; 1 depth; 2 velocity; 3 normals; 4 gloss;
+        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R8G8_SNORM PF_R11G11B10_FLOAT PF_R8G8 no_fsaa chain_scope
 
         target mrt
         {
@@ -63,8 +63,8 @@ compositor MRT2
     technique
     {
         compositor_logic DeferredLogic
-        // 0 color; 1 depth; 2 gloss; 3 normals; 4 velocity;
-        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R8G8 PF_R11G11B10_FLOAT PF_R8G8_SNORM no_fsaa chain_scope
+        // 0 color; 1 depth; 2 velocity; 3 normals; 4 gloss;
+        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R8G8_SNORM PF_R11G11B10_FLOAT PF_R8G8 no_fsaa chain_scope
         texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture depth target_width target_height PF_FLOAT16_R no_fsaa depth_pool 0
         texture result target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
@@ -86,7 +86,7 @@ compositor MRT2
                 material Reconstructor
                 input 0 mrt 0
                 input 1 rt
-                input 2 mrt 4
+                input 2 mrt 2
                 input 3 mrt 1
                 input 4 depth
             }

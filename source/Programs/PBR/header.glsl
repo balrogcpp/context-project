@@ -55,6 +55,13 @@ out vec4 FragColor;
 #endif
 #endif
 
+#ifdef HAS_MRT
+#define MRT_COLOR 0
+#define MRT_DEPTH 1
+#define MRT_VELOCITY 2
+#define MRT_NORMALS 3
+#define MRT_GLOSS 4
+#endif
 
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 #include "hlsl2.glsl"

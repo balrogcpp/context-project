@@ -14,7 +14,7 @@ compositor Blur : STD
             {
                 material Blur
                 input 0 rt
-                input 1 mrt 4
+                input 1 mrt 2
             }
         }
     }
