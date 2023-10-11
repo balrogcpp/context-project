@@ -39,14 +39,14 @@ material SkyBox
             depth_write off
             cull_hardware none
 
+			vertex_program_ref SkyBoxVp {}
+
+			fragment_program_ref SkyBoxFp {}
+
 			texture_unit CubeMap
 			{
 				texture $CubeMap cubic
 			}
-
-			vertex_program_ref SkyBoxVp {}
-
-			fragment_program_ref SkyBoxFp {}
 		}
 	}
 }

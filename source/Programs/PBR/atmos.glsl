@@ -3,7 +3,9 @@
 #ifndef ATMOS_GLSL
 #define ATMOS_GLSL
 
-#define M_PI 3.141592653589793
+#ifndef M_PI
+    #define M_PI 3.141592653589793
+#endif
 #define iSteps 16
 #define jSteps 8
 

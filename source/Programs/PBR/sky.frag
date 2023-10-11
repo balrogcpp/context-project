@@ -13,8 +13,6 @@
 #define HAS_MRT
 #include "header.glsl"
 
-uniform samplerCube CubeMap;
-
 uniform mediump vec3 SunColor;
 uniform highp vec3 SunDirection;
 uniform highp float SunSize;
