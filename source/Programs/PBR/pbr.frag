@@ -264,7 +264,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(highp mat3 tbn, const mediump vec2 uv, const mediump vec2 uv1)
+highp vec3 GetNormal(highp vec3 normal, highp mat3 tbn, const mediump vec2 uv, const mediump vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -274,7 +274,7 @@ highp vec3 GetNormal(highp mat3 tbn, const mediump vec2 uv, const mediump vec2 u
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
+    highp vec3 n = SurfaceSpecularColour.a * normal;
     return normalize(mul(tbn, (2.0 * n - 1.0)));
 #else
     return tbn[2].xyz;
@@ -282,7 +282,7 @@ highp vec3 GetNormal(highp mat3 tbn, const mediump vec2 uv, const mediump vec2 u
     #else
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalMap, uv).xyz;
+    highp vec3 n = SurfaceSpecularColour.a * normal;
     return normalize(mul(tbn, ((2.0 * n - 1.0))));
 #else
     return tbn[2].xyz;
@@ -317,7 +317,9 @@ mediump vec3 GetORM(const mediump vec2 uv, const mediump float spec)
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 
 #ifdef TERRA_NORMALMAP
-    ORM.g *= spec;
+    //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
+    // converting phong specular value to pbr roughness
+    ORM.g *= 1.0 - 0.25 * pow(spec, 0.2);
     ORM.b = 0.0;
 #endif
 #ifdef HAS_ORM
@@ -348,39 +350,30 @@ void main()
 
     mediump vec4 c = GetAlbedo(vColor, uv);
     mediump vec3 albedo = c.rgb;
-#ifdef HAS_ALPHA
     mediump float alpha = c.a;
+#ifdef HAS_ALPHA
     if (alpha < SurfaceAlphaRejection) discard;
-    const mediump float spec = 1.0;
-#else
-    const mediump float alpha = 1.0;
-    //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
-    // converting phong specular value to pbr roughness
-#ifdef TERRA_NORMALMAP
-    mediump float spec = 1.0 - 0.25 * pow(c.a, 0.2);
-#else
-    const mediump float spec = 1.0;
-#endif
 #endif
 
-    mediump vec3 ORM = GetORM(uv, spec);
+    mediump vec3 ORM = GetORM(uv, alpha);
     mediump float roughness = ORM.g;
     mediump float metallic = ORM.b;
     mediump float occlusion = ORM.r;
     mediump vec3 emission = GetEmission(uv);
 
     // Normal at surface point
-    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
+    highp vec3 normal = texture2D(NormalMap, uv).xyz;
 
-#ifdef HAS_MRT
     FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
     FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 1.0);
-    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
     FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 1.0);
-#endif
+
 #ifdef CHECKERBOARD
     if (ExcludePixel()) return;
 #endif
+
+    highp vec3 n = GetNormal(normal, vTBN, uv, vUV0.xy);
+    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].

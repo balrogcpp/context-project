@@ -108,9 +108,7 @@ void main()
 
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
-#ifdef HAS_MRT
     vPrevScreenPosition = mul(WorldViewProjPrev, position);
-#endif
 
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space

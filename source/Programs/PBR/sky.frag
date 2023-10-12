@@ -40,12 +40,10 @@ in highp vec3 vPosition;
 in highp vec3 vUV0;
 void main()
 {
-#ifdef HAS_MRT
     FragData[MRT_DEPTH] = vec4(1.0, 0.0, 0.0, 1.0);
     FragData[MRT_VELOCITY] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 1.0);
     FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
-#endif
 
 #ifdef CHECKERBOARD
     if (ExcludePixel()) return;
