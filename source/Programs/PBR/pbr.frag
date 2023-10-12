@@ -319,7 +319,7 @@ mediump vec3 GetORM(const mediump vec2 uv, const mediump float spec)
 #ifdef TERRA_NORMALMAP
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
-    ORM.g *= 1.0 - 0.25 * pow(spec, 0.2);
+    ORM.g *= (1.0 - 0.25 * pow(spec, 0.2));
     ORM.b = 0.0;
 #endif
 #ifdef HAS_ORM
