@@ -41,6 +41,40 @@ material SSAO : RayCast
     }
 }
 
+fragment_program ssaoRec glsl glsles hlsl
+{
+	source ssaoRec.frag
+    target ps_2_0
+}
+
+material ssaoRec : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref ssaoRec
+            {
+                param_named SsaoTex int 0
+                param_named SsaoTex2 int 1
+            }
+
+            texture_unit SSAO
+            {
+                texture white.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit SSAO2
+            {
+                texture white.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+
 fragment_program ssaoMod glsl glsles hlsl
 {
 	source ssaoMod.frag

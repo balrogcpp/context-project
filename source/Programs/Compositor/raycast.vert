@@ -18,7 +18,7 @@ in highp vec3 vertex;
 in highp vec3 normal;
 in mediump vec2 uv0;
 
-out mediump vec2 vUV0;
+out highp vec2 vUV0;
 out highp vec3 vRay;
 void main()
 {

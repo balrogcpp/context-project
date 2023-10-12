@@ -16,7 +16,7 @@
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     FragColor = vec4(Downscale4x4(RT, vUV0, TexelSize0), 1.0);

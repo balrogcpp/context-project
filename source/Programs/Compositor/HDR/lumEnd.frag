@@ -19,7 +19,7 @@ uniform mediump vec2 TexelSize0;
 uniform mediump vec3 Exposure;
 uniform mediump float timeSinceLast;
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);

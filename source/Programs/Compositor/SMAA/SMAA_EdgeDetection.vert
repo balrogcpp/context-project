@@ -23,7 +23,7 @@ uniform mediump vec4 ViewportSize;
 
 in highp vec4 vertex;
 in highp vec4 uv0;
-out mediump vec2 vUV0;
+out highp vec2 vUV0;
 out mediump mat4 offset;
 void main()
 {

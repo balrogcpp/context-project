@@ -9,6 +9,8 @@ compositor SSAO : STD
     technique
     {
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssao1  target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssao2  target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssao  target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
@@ -22,7 +24,7 @@ compositor SSAO : STD
             }
         }
 
-        target ssao
+        target ssao1
         {
             pass render_quad
             {
@@ -31,6 +33,16 @@ compositor SSAO : STD
                 material SSAO
                 input 0 depth
                 input 1 mrt 3
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material ssaoRec
+                input 0 ssao1
+                input 1 ssao2
             }
         }
 
@@ -49,6 +61,15 @@ compositor SSAO : STD
             {
                 material SSAOY
                 input 0 ssaox
+            }
+        }
+
+        target ssao2
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 ssao1
             }
         }
 

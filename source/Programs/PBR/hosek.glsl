@@ -76,18 +76,18 @@ mediump float sample_radiance(const int channel, const int quintic_coeff)
     else if (channel == CIE_Z) return kHosekRadZ[index];
 }
 
-float eval_quintic_bezier(in float[6] control_points, float t)
+mediump float eval_quintic_bezier(const mediump float[6] control_points, const mediump float t)
 {
-    float t2 = t * t;
-    float t3 = t2 * t;
-    float t4 = t3 * t;
-    float t5 = t4 * t;
+    mediump float t2 = t * t;
+    mediump float t3 = t2 * t;
+    mediump float t4 = t3 * t;
+    mediump float t5 = t4 * t;
 
-    float t_inv = 1.0 - t;
-    float t_inv2 = t_inv * t_inv;
-    float t_inv3 = t_inv2 * t_inv;
-    float t_inv4 = t_inv3 * t_inv;
-    float t_inv5 = t_inv4 * t_inv;
+    mediump float t_inv = 1.0 - t;
+    mediump float t_inv2 = t_inv * t_inv;
+    mediump float t_inv3 = t_inv2 * t_inv;
+    mediump float t_inv4 = t_inv3 * t_inv;
+    mediump float t_inv5 = t_inv4 * t_inv;
 
     return (
     control_points[0] *             t_inv5 +
@@ -99,57 +99,57 @@ float eval_quintic_bezier(in float[6] control_points, float t)
     );
 }
 
-float transform_sun_zenith(float sun_zenith)
+mediump float transform_sun_zenith(const mediump float sun_zenith)
 {
-    float elevation = M_PI / 2.0 - sun_zenith;
+    mediump float elevation = M_PI / 2.0 - sun_zenith;
     return pow(elevation / (M_PI / 2.0), 0.333333);
 }
 
-void get_control_points(int channel, int coeff, out float[6] control_points)
+void get_control_points(const int channel, const int coeff, out mediump float[6] control_points)
 {
     for (int i = 0; i < 6; ++i) control_points[i] = sample_coeff(channel, i, coeff);
 }
 
-void get_control_points_radiance(int channel, out float[6] control_points)
+void get_control_points_radiance(const int channel, out mediump float[6] control_points)
 {
     for (int i = 0; i < 6; ++i) control_points[i] = sample_radiance(channel, i);
 }
 
-void get_coeffs(int channel, float sun_zenith, out float[9] coeffs)
+void get_coeffs(const int channel, const mediump float sun_zenith, out float[9] coeffs)
 {
-    float t = transform_sun_zenith(sun_zenith);
+    mediump float t = transform_sun_zenith(sun_zenith);
     for (int i = 0; i < 9; ++i) {
-        float control_points[6];
+        mediump float control_points[6];
         get_control_points(channel, i, control_points);
         coeffs[i] = eval_quintic_bezier(control_points, t);
     }
 }
 
-vec3 mean_spectral_radiance(float sun_zenith)
+mediump vec3 mean_spectral_radiance(const mediump float sun_zenith)
 {
-    vec3 spectral_radiance;
+    mediump vec3 spectral_radiance;
     for (int i = 0; i < 3; ++i) {
-        float control_points[6];
+        mediump float control_points[6];
         get_control_points_radiance(i, control_points);
-        float t = transform_sun_zenith(sun_zenith);
+        mediump float t = transform_sun_zenith(sun_zenith);
         spectral_radiance[i] = eval_quintic_bezier(control_points, t);
     }
     return spectral_radiance;
 }
 
-float HosekWilkie(float cos_theta, float gamma, in float[9] coeffs)
+float HosekWilkie(const highp float cos_theta, const highp float gamma, const in highp float[9] coeffs)
 {
-    float A = coeffs[0];
-    float B = coeffs[1];
-    float C = coeffs[2];
-    float D = coeffs[3];
-    float E = coeffs[4];
-    float F = coeffs[5];
-    float G = coeffs[6];
-    float H = coeffs[8];
-    float I = coeffs[7];
-    float cos_gamma = cos(gamma);
-    float chi = (1.0 + pow(cos_gamma, 2.0)) / pow(1.0 + H*H - 2.0 * H * cos_gamma, 1.5);
+    highp float A = coeffs[0];
+    highp float B = coeffs[1];
+    highp float C = coeffs[2];
+    highp float D = coeffs[3];
+    highp float E = coeffs[4];
+    highp float F = coeffs[5];
+    highp float G = coeffs[6];
+    highp float H = coeffs[8];
+    highp float I = coeffs[7];
+    highp float cos_gamma = cos(gamma);
+    highp float chi = (1.0 + pow(cos_gamma, 2.0)) / pow(1.0 + H*H - 2.0 * H * cos_gamma, 1.5);
 
     return (
     (1.0 + A * exp(B / (cos_theta + 0.01))) *

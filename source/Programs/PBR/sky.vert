@@ -12,7 +12,7 @@
 
 #include "header.glsl"
 
-uniform highp mat4 WorldViewProj;
+uniform highp mat4 WorldViewProjMatrix;
 
 in highp vec4 vertex;
 in highp vec4 uv0;
@@ -22,5 +22,5 @@ void main()
 {
     vUV0 = uv0.xyz;
     vPosition = vertex.xyz;
-    gl_Position = mul(WorldViewProj, vertex);
+    gl_Position = mul(WorldViewProjMatrix, vertex);
 }

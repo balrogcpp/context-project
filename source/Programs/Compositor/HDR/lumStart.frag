@@ -51,7 +51,7 @@ mediump float Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump v
     return c1 + c2 + c3 + c4;
 }
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     //Compute how many pixels we have to skip because we can't sample them all

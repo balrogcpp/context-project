@@ -316,11 +316,7 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-  if (!pass) {
-    return;
-  }
-
-  if (!pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) {
+  if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) {
     return;
   }
 

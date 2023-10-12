@@ -11,6 +11,7 @@
 #endif
 
 #include "header.glsl"
+#include "mosaic.glsl"
 
 uniform sampler2D MRT;
 uniform sampler2D RT;
@@ -21,22 +22,12 @@ uniform mediump vec2 TexelSize0;
 uniform mediump vec2 TexSize0;
 
 // https://github.com/pezcode/mosaiikki/blob/e434b4dda52eba7c821591a5a4ac2de409e56244/src/Shaders/ReconstructionShader.frag#L242
-mediump float ColorBlendWeight(mediump vec3 a, mediump vec3 b)
+mediump float ColorBlendWeight(const mediump vec3 a, const mediump vec3 b)
 {
     return 1.0 / max(length(a - b), 0.001);
 }
 
-mediump float FetchDepthAverage(mediump vec2 uv)
-{
-    mediump float A = texture2D(DepthTex, uv + TexelSize0 * vec2(0.0, 1.0)).x;
-    mediump float B = texture2D(DepthTex, uv + TexelSize0 * vec2(0.0, -1.0)).x;
-    mediump float C = texture2D(DepthTex, uv + TexelSize0 * vec2(-1.0, 0.0)).x;
-    mediump float D = texture2D(DepthTex, uv + TexelSize0 * vec2(1.0, 0.0)).x;
-
-    return (A + B + C + D) * 0.25;
-}
-
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     // pixel was rendered this frame = use it
@@ -52,13 +43,14 @@ void main()
     mediump vec3 D = texture2D(MRT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).rgb;
 
     // pixel was render prev frame, reconstruct it's position in prev frame
-    mediump vec2 velocity = texture2D(VelocityTex, vUV0).xy;
-    mediump vec2 uv2 = vUV0 - TexelSize0 * velocity;
+    highp vec2 velocity = texture2D(VelocityTex, vUV0).xy;
+    highp float speed = length(velocity * TexSize0);
+    highp vec2 uv2 = vUV0 - TexelSize0 * velocity;
     mediump vec3 color2 = texture2D(RT, uv2).rgb;
     mediump float depth1 = texture2D(DepthTex, vUV0).x;
-    mediump float depth2 = texture2D(DepthOldTex, uv2).x;
+    mediump float depth2 = texture2D(DepthOldTex, vUV0).x;
     mediump float diff = abs(depth2 - depth1);
-    if (PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
+    if (floor(speed) > 1.0 && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
         mediump vec3 minColor = min(min(A, B), min(C, D));
         mediump vec3 maxColor = max(max(A, B), max(C, D));
         mediump vec3 clampedColor = clamp(color2, minColor, maxColor);

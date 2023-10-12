@@ -14,6 +14,7 @@
 #endif
 
 #include "header.glsl"
+#include "mosaic.glsl"
 #define MAX_BIN_SEARCH_COUNT 10
 #define MAX_RAY_MARCH_COUNT 30
 #define STEP 0.1
@@ -89,7 +90,7 @@ mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
     return factor;
 }
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
@@ -99,9 +100,7 @@ void main()
     mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
     mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
 
-    //if (metallic < 0.04 || clampedDepth > 0.5 || clampedDepth < HALF_EPSILON || (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0) || (mod(floor(gl_FragCoord.y), 2.0) == 0.0 && mod(floor(gl_FragCoord.x), 2.0) == 0.0)) {
-    if (metallic < 0.04 || clampedDepth > 0.5 || clampedDepth < HALF_EPSILON || (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)) {
-        FragColor = vec4(vec3(0.0, 0.0, 0.0), 1.0);
+    if (metallic < 0.04 || clampedDepth > 0.5 || clampedDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
         return;
     }
 

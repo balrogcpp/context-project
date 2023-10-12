@@ -30,14 +30,27 @@ uniform highp vec3 Z;
 
 highp vec3 HosekWilkie(const highp float cos_theta, const highp float gamma, const highp float cos_gamma)
 {
-    highp vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5, 1.5, 1.5)));
-    return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta)));
+    highp float cos_gamma2 = cos_gamma * cos_gamma;
+    highp vec3 I2 = I * I;
+    highp vec3 chi = ((1.0 + cos_gamma2) / pow(1.0 + I2 - 2.0 * (cos_gamma * I), vec3(1.5, 1.5, 1.5)));
+    return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * sqrt(cos_theta)));
 }
 
 in highp vec3 vPosition;
 in highp vec3 vUV0;
 void main()
 {
+#ifdef HAS_MRT
+    FragData[MRT_DEPTH] = vec4(1.0, 0.0, 0.0, 1.0);
+    FragData[MRT_VELOCITY] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
+#endif
+
+#ifdef CHECKERBOARD
+    if (ExcludePixel()) return;
+#endif
+
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);
     highp float cos_theta = clamp(abs(V.y), 0.0, 1.0);
@@ -61,9 +74,5 @@ void main()
     FragColor = vec4(SafeHDR(color), 1.0);
 #else
     FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
-    FragData[MRT_DEPTH] = vec4(1.0, 0.0, 0.0, 1.0);
-    FragData[MRT_VELOCITY] = vec4(0.0, 0.0, 0.0, 1.0);
-    FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 1.0);
-    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
 #endif
 }

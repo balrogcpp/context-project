@@ -11,15 +11,13 @@
 #endif
 
 #include "header.glsl"
+#include "mosaic.glsl"
 
-uniform highp mat4 WorldViewProj;
+uniform sampler2D SsaoTex;
+uniform sampler2D SsaoTex2;
 
-in highp vec4 vertex;
-out highp vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
-    gl_Position = mul(WorldViewProj, vertex);
-
-    highp vec2 inPos = sign(vertex.xy);
-    vUV0 = (vec2(inPos.x, -inPos.y) + 1.0) * 0.5;
+    FragColor = vec4(SafeHDR(min(texture2D(SsaoTex, vUV0).r, texture2D(SsaoTex2, vUV0).r)), 0.0, 0.0, 1.0);
 }

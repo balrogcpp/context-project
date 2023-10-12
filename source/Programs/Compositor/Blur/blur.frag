@@ -20,7 +20,7 @@ uniform sampler2D RT;
 uniform sampler2D VelocitySampler;
 uniform mediump vec2 TexSize1;
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;

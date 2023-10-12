@@ -176,7 +176,6 @@ uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform highp float FarClipDistance;
 uniform highp float NearClipDistance;
-uniform mediump float FrameTime;
 uniform mediump float TexScale;
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
@@ -313,52 +312,8 @@ mediump vec3 GetEmission(const mediump vec2 uv)
 #endif
 }
 
-in highp vec3 vWorldPosition;
-in highp mat3 vTBN;
-in highp vec2 vUV0;
-in mediump vec4 vColor;
-in mediump vec4 vScreenPosition;
-in mediump vec4 vPrevScreenPosition;
-#if MAX_SHADOW_TEXTURES > 0
-in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
-void main()
+mediump vec3 GetORM(const mediump vec2 uv, const mediump float spec)
 {
-#ifdef HAS_MRT
-    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[MRT_VELOCITY] = vec4((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w), 0.0, 1.0);
-#endif
-
-    highp vec3 v = normalize(CameraPosition - vWorldPosition);
-    highp vec2 uv = vUV0.xy;
-    uv *= (1.0 + TexScale);
-
-#ifdef HAS_NORMALMAP
-#ifdef HAS_PARALLAXMAP
-    uv -= (v.xy * (OffsetScale * texture2D(NormalMap, uv).a));
-#endif // HAS_PARALLAXMAP
-#endif // HAS_NORMALMAP
-
-    mediump vec4 s = GetAlbedo(vColor, uv);
-    mediump vec3 emission = GetEmission(uv);
-    mediump vec3 albedo = s.rgb;
-
-#ifdef HAS_ALPHA
-    mediump float alpha = s.a;
-    const mediump float spec = 1.0;
-
-    if (alpha < SurfaceAlphaRejection) {
-        discard;
-    }
-#else
-    const mediump float alpha = 1.0;
-    //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
-    // converting phong specular value to pbr roughness
-#ifdef TERRA_NORMALMAP
-    mediump float spec = 1.0 - 0.25 * pow(s.a, 0.2);
-#endif
-#endif
-
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 
 #ifdef TERRA_NORMALMAP
@@ -370,9 +325,62 @@ void main()
 #endif
 
     ORM = clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
-    mediump float occlusion = ORM.r;
+
+    return ORM;
+}
+
+in highp vec3 vWorldPosition;
+in highp mat3 vTBN;
+in highp vec2 vUV0;
+in mediump vec4 vColor;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
+#if MAX_SHADOW_TEXTURES > 0
+in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+#endif
+void main()
+{
+    highp vec2 uv = vUV0.xy * (1.0 + TexScale);
+#if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
+    highp vec3 v = normalize(CameraPosition - vWorldPosition);
+    uv -= (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalMap, uv).a));
+#endif
+
+    mediump vec4 c = GetAlbedo(vColor, uv);
+    mediump vec3 albedo = c.rgb;
+#ifdef HAS_ALPHA
+    mediump float alpha = c.a;
+    if (alpha < SurfaceAlphaRejection) discard;
+    const mediump float spec = 1.0;
+#else
+    const mediump float alpha = 1.0;
+    //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
+    // converting phong specular value to pbr roughness
+#ifdef TERRA_NORMALMAP
+    mediump float spec = 1.0 - 0.25 * pow(c.a, 0.2);
+#else
+    const mediump float spec = 1.0;
+#endif
+#endif
+
+    mediump vec3 ORM = GetORM(uv, spec);
     mediump float roughness = ORM.g;
     mediump float metallic = ORM.b;
+    mediump float occlusion = ORM.r;
+    mediump vec3 emission = GetEmission(uv);
+
+    // Normal at surface point
+    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
+
+#ifdef HAS_MRT
+    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 1.0);
+    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
+    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 1.0);
+#endif
+#ifdef CHECKERBOARD
+    if (ExcludePixel()) return;
+#endif
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -387,24 +395,14 @@ void main()
     mediump vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
     mediump vec3 reflectance0 = specularColor.rgb;
 
-    // Normal at surface point
-    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
-    mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
-    mediump vec3 color = vec3(0.0, 0.0, 0.0);
-
 #if MAX_SHADOW_TEXTURES > 0
     int texCounter = 0;
 #endif
-
-#ifdef HAS_MRT
-    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
-    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 1.0);
+#if !defined(HAS_PARALLAXMAP)
+    highp vec3 v = normalize(CameraPosition - vWorldPosition);
 #endif
-#ifdef CHECKERBOARD
-    if (ExcludePixel()) {
-        return;
-    }
-#endif
+    mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
+    mediump vec3 color = vec3(0.0, 0.0, 0.0);
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;

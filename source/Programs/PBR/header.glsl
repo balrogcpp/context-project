@@ -3,7 +3,6 @@
 #ifndef HEADER_GLSL
 #define HEADER_GLSL
 
-//#define FORCE_SRGB
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
 #endif
@@ -74,7 +73,8 @@ out vec4 FragColor;
 #include "srgb.glsl"
 #include "tonemap.glsl"
 #include "fog.glsl"
-//#define CHECKERBOARD
+#ifdef CHECKERBOARD
 #include "mosaic.glsl"
+#endif
 
 #endif // HEADER_GLSL

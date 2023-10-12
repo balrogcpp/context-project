@@ -289,7 +289,7 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     FragColor = vec4(SafeHDR(FxaaPixelShader(vUV0, RT, TexelSize0)), 1.0);

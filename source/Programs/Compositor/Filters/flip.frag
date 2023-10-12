@@ -15,7 +15,7 @@
 
 uniform sampler2D RT;
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     vec2 uv = vec2(vUV0.s, 1.0 - vUV0.t);

@@ -43,7 +43,7 @@ mediump vec3 GodRays(sampler2D tex, const mediump vec2 uv, const mediump vec2 li
     return color;
 }
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = vec3(0.0, 0.0, 0.0);

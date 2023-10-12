@@ -11,6 +11,8 @@ compositor SSR : STD
     {
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssr target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture ssr1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture ssr2 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target depth
         {
@@ -21,7 +23,7 @@ compositor SSR : STD
             }
         }
 
-        target ssr
+        target ssr1
         {
             pass render_quad
             {
@@ -31,6 +33,25 @@ compositor SSR : STD
                 input 0 depth
                 input 1 mrt 3
                 input 2 mrt 4
+            }
+        }
+
+        target ssr
+        {
+            pass render_quad
+            {
+                material ssrRec
+                input 0 ssr1
+                input 1 ssr2
+            }
+        }
+
+        target ssr2
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 ssr1
             }
         }
 

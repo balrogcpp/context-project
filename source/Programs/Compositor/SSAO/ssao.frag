@@ -12,6 +12,7 @@
 #endif
 
 #include "header.glsl"
+#include "mosaic.glsl"
 
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
@@ -26,7 +27,7 @@ mediump vec3 hash(const mediump vec3 a)
     return fract((b.xxy + b.yxx) * b.zyx);
 }
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
@@ -69,8 +70,7 @@ void main()
     // considering this is just for bias, this loss is acceptable
     mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
 
-    //if(clampedDepth > 0.5 || clampedPixelDepth < HALF_EPSILON  || (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0) || (mod(floor(gl_FragCoord.y), 2.0) == 0.0 && mod(floor(gl_FragCoord.x), 2.0) == 0.0)) {
-    if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)) {
+    if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }

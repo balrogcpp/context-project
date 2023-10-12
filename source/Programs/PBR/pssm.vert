@@ -17,7 +17,7 @@ uniform highp mat4 WorldViewProjMatrix;
 in highp vec4 vertex;
 #ifdef SHADOWCASTER_ALPHA
 in highp vec4 uv0;
-out mediump vec2 vUV0;
+out highp vec2 vUV0;
 #endif
 void main()
 {

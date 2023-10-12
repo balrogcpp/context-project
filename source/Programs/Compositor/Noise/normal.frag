@@ -15,7 +15,7 @@
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     highp float scale = 11.0 * pow(0.7071068 - distance(vUV0, vec2(0.5, 0.5)), 0.3333333) ;

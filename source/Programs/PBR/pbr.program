@@ -66,7 +66,6 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto NearClipDistance near_clip_distance
-        param_named_auto FrameTime frame_time
         param_named_auto CameraPosition camera_position
         param_named_auto ViewMatrix view_matrix
         //param_named_auto Time time_0_x_packed 100

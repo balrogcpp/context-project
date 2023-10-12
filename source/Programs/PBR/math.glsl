@@ -215,6 +215,21 @@ bool Any(vec4 x)
     return x.x > 0.0 || x.y > 0.0 || x.z > 0.0 || x.w > 0.0;
 }
 
+bool Null(vec2 x)
+{
+    return x.x == 0.0 && x.y == 0.0;
+}
+
+bool Null(vec3 x)
+{
+    return x.x == 0.0 && x.y == 0.0 && x.z == 0.0;
+}
+
+bool Null(vec4 x)
+{
+    return x.x == 0.0 && x.y == 0.0 && x.z == 0.0 && x.w == 0.0;
+}
+
 // NaN checker
 // /Gic isn't enabled on fxc so we can't rely on isnan() anymore
 bool IsNan(float x)

@@ -18,7 +18,7 @@ uniform sampler2D Lum;
 uniform mediump vec2 TexelSize0;
 uniform mediump vec2 BrightThreshold;
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = Downscale13(RT, vUV0, TexelSize0);

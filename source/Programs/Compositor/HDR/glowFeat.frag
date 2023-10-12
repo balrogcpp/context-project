@@ -84,7 +84,7 @@ mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump ve
     return color;
 }
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;

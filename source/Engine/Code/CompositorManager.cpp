@@ -405,23 +405,28 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   } else if (pass_id == 1) {  // 1 = Reconstructor
     static bool isEven = false;
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("IsEven", Ogre::Real(isEven));
     isEven = !isEven;
 
-  } else if (pass_id == 10) {  // 1 = SSAO
+  } else if (pass_id == 10) {  // 10 = SSAO
+    static bool isEven = false;
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", ogreCamera->getNearClipDistance());
+    fp->setNamedConstant("IsEven", Ogre::Real(isEven));
+    isEven = !isEven;
 
-  } else if (pass_id == 11) {  // 2 = SSR
+  } else if (pass_id == 11) {  // 11 = SSR
+    static bool isEven = false;
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", ogreCamera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", ogreCamera->getNearClipDistance());
+    fp->setNamedConstant("IsEven", Ogre::Real(isEven));
+    isEven = !isEven;
 
-  } else if (pass_id == 12) {  // 3 = Rays
+  } else if (pass_id == 12) {  // 12 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
     static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];

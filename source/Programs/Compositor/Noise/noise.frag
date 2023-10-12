@@ -15,7 +15,7 @@
 
 uniform highp float Time;
 
-in mediump vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     fnl_state state = fnlCreateState(1337);
