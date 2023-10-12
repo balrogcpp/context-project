@@ -70,9 +70,5 @@ void main()
 #ifdef FORCE_SRGB
     color = LINEARtoSRGB(color);
 #endif
-#ifndef HAS_MRT
-    FragColor = vec4(SafeHDR(color), 1.0);
-#else
     FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
-#endif
 }

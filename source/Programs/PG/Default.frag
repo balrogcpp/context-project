@@ -37,16 +37,9 @@ void main()
     color = SRGBtoLINEAR(color);
     color = ApplyFog(color, FogParams, FogColour.rgb, oFogCoord);
 
-#ifdef FORCE_SRGB
-    color = LINEARtoSRGB(color);
-#endif
-#ifndef HAS_MRT
-    FragColor = vec4(SafeHDR(color), alpha);
-#else
-    FragData[0] = vec4(SafeHDR(color), alpha);
-    FragData[2] = vec4(0.0, 0.0, 1.0, 1.0);
-    FragData[1] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[3] = vec4(0.0, 0.0, 0.0, 1.0);
-    FragData[4] = vec4(0.0, 0.0, 0.0, 1.0);
-#endif
+    FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
+    FragData[MRT_DEPTH] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
+    FragData[MRT_VELOCITY] = vec4(0.0, 0.0, 1.0, 1.0);
+    FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 1.0);
+    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 0.0, 1.0);
 }

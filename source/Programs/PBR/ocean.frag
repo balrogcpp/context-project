@@ -199,12 +199,5 @@ void main()
     color += (LightColor0.xyz * specular);
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
-#ifdef FORCE_SRGB
-    color = LINEARtoSRGB(color);
-#endif
-#ifndef HAS_MRT
-    FragColor = vec4(SafeHDR(color), alpha);
-#else
     FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
-#endif
 }
