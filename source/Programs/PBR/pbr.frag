@@ -12,7 +12,8 @@
 
 #define HAS_MRT
 #include "header.glsl"
-
+#include "fog.glsl"
+#include "srgb.glsl"
 #ifndef GL_ES
 #define USE_TEX_LOD
     #define SPHERICAL_HARMONICS_BANDS 8

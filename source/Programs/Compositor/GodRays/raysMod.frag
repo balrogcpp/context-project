@@ -11,7 +11,6 @@
 #endif
 
 #include "header.glsl"
-#include "filters_RGB16.glsl"
 
 uniform sampler2D RT;
 uniform sampler2D FBO;

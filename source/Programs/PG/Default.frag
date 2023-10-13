@@ -12,6 +12,8 @@
 
 #define HAS_MRT
 #include "header.glsl"
+#include "fog.glsl"
+#include "srgb.glsl"
 
 uniform sampler2D texMap;
 uniform mediump vec4 FogColour;

@@ -11,6 +11,7 @@
 #endif
 
 #include "header.glsl"
+#include "tonemap.glsl"
 
 uniform sampler2D RT;
 uniform mediump vec4 TexSize0;

@@ -11,10 +11,22 @@
 #endif
 
 #include "header.glsl"
-#include "filters_RGB16.glsl"
 
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
+
+mediump vec3 Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+{
+    mediump vec3 A = texture2D(tex, uv).xyz;
+    mediump vec3 B = texture2D(tex, uv + tsize * vec2(1.3846153846, 0.0)).xyz;
+    mediump vec3 C = texture2D(tex, uv - tsize * vec2(1.3846153846, 0.0)).xyz;
+    mediump vec3 D = texture2D(tex, uv + tsize * vec2(3.2307692308, 0.0)).xyz;
+    mediump vec3 E = texture2D(tex, uv - tsize * vec2(3.2307692308, 0.0)).xyz;
+
+    mediump vec3 c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+
+    return c1;
+}
 
 in highp vec2 vUV0;
 void main()

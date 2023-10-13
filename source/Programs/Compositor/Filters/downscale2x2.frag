@@ -11,10 +11,21 @@
 #endif
 
 #include "header.glsl"
-#include "filters_RGB16.glsl"
 
 uniform sampler2D RT;
 uniform mediump vec2 TexelSize0;
+
+mediump vec3 Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+{
+    mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
+    mediump vec3 B = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).xyz;
+    mediump vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).xyz;
+    mediump vec3 D = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).xyz;
+
+    mediump vec3 c1 = (A + B + C + D) * 0.25;
+
+    return c1;
+}
 
 in highp vec2 vUV0;
 void main()

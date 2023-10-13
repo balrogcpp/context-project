@@ -3,13 +3,24 @@
 #ifndef PGEOMETRY_GLSL
 #define PGEOMETRY_GLSL
 
-#include "noise.glsl"
+highp float Hash(const highp float x)
+{
+    return fract(sin(x) * 43758.5453);
+}
 
+highp float Noise(const highp vec2 x)
+{
+    highp vec2 p = floor(x);
+    highp vec2 f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    highp float n = p.x + p.y * 57.0;
+    return mix(mix(Hash(n + 0.0), Hash(n + 1.0),f.x), mix(Hash(n + 57.0), Hash(n + 58.0), f.x), f.y);
+}
 
 // Apply grass waving animation to vertex
 highp vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
 {
-    highp float n = NoiseHp(position.xz * time) * 2.0 - 2.0;
+    highp float n = Noise(position.xz * time) * 2.0 - 2.0;
     return n * direction;
 }
 

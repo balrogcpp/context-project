@@ -11,6 +11,7 @@
 #endif
 
 #include "header.glsl"
+#include "srgb.glsl"
 
 uniform sampler2D RT;
 

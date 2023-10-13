@@ -22,7 +22,7 @@ void SkyManager::SetUpSky() {
   auto colorspace = ColorSpace::sRGB;
   float sunSize = 0.27f;
   float turbidity = 4.0f;
-  auto groundAlbedo = Ogre::Vector3(1.0);
+  auto groundAlbedo = Ogre::Vector3(0.0);
   auto sunColor = Ogre::Vector3(10000);
   auto sunDir = GetSunPosition();
 

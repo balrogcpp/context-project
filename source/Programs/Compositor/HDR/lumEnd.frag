@@ -11,7 +11,19 @@
 #endif
 
 #include "header.glsl"
-#include "filters_F16.glsl"
+#include "tonemap.glsl"
+
+mediump float Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+{
+    mediump float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
+    mediump float B = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;
+    mediump float C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x;
+    mediump float D = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).x;
+
+    mediump float c1 = (A + B + C + D) * 0.25;
+
+    return c1;
+}
 
 uniform sampler2D RT;
 uniform sampler2D Lum;
