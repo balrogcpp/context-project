@@ -86,7 +86,8 @@ inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }  // namespace
 
 namespace gge {
-SceneManager::SceneManager() : viewProj(Ogre::Matrix4::IDENTITY), viewProjPrev(Ogre::Matrix4::IDENTITY), pssmPoints(Ogre::Vector4::ZERO), isEven(false) {}
+SceneManager::SceneManager()
+    : viewProj(Ogre::Matrix4::IDENTITY), viewProjPrev(Ogre::Matrix4::IDENTITY), pssmPoints(Ogre::Vector4::ZERO), isEven(false) {}
 SceneManager::~SceneManager() { ogreSceneManager->removeRenderObjectListener(this); }
 
 void SceneManager::OnSetUp() {
@@ -219,8 +220,8 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
     auto *pass = mat->getTechnique(0)->getPass(0);
     const auto &vp = pass->getVertexProgramParameters();
     const auto &fp = pass->getFragmentProgramParameters();
-    std::string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
-    std::string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
+    string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
+    string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
 
     if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
       auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
@@ -239,7 +240,48 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       if (auto i = vpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) vpDefines[i] = 'X';
       if (auto i = fpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) fpDefines[i] = 'X';
     }
+    /*
+    int counter = 0;
+    if (auto *tex = pass->getTextureUnitState("Albedo")) {
+      if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+        pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+        if (auto i = fpDefines.find("HAS_BASECOLORMAP"); i != string::npos) fpDefines[i] = 'X';
+      } else {
+        fp->setNamedConstant("AlbedoMap", counter++);
+      }
+    }
 
+    if (auto *tex = pass->getTextureUnitState("Normal")) {
+      if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+        pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+        if (auto i = fpDefines.find("HAS_NORMALMAP"); i != string::npos) fpDefines[i] = 'X';
+      } else {
+        fp->setNamedConstant("NormalMap", counter++);
+      }
+    }
+
+    if (auto *tex = pass->getTextureUnitState("ORM")) {
+      if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+        pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+        if (auto i = fpDefines.find("HAS_ORM"); i != string::npos) fpDefines[i] = 'X';
+      } else {
+        fp->setNamedConstant("OrmMap", counter++);
+      }
+    }
+
+    if (auto *tex = pass->getTextureUnitState("Emissive")) {
+      if (tex->getTextureDimensions().first == 1 && tex->getTextureDimensions().second == 1) {
+        pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
+        if (auto i = fpDefines.find("HAS_EMISSIVEMAP"); i != string::npos) fpDefines[i] = 'X';
+      } else {
+        fp->setNamedConstant("EmissiveMap", counter++);
+      }
+    }
+
+    if (auto *tex = pass->getTextureUnitState("IBL")) {
+      fp->setNamedConstant("SpecularEnvMap", counter++);
+    }
+    */
     pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
     pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
     pass->getVertexProgram()->reload();

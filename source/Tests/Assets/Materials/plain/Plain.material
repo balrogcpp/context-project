@@ -4,11 +4,11 @@ material Plane : PBR
 {
     set $Albedo hard-edged-rock7_albedo.dds
     set $Normal hard-edged-rock7_nmap-ogl.dds
-    //set $ORM hard-edged-rock7_orm.dds
+    set $ORM hard-edged-rock7_orm.dds
 
     technique {
         pass {
-            diffuse 1 0.753 0.796
+            //diffuse 1 0.753 0.796
         }
     }
 }
