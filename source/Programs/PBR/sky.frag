@@ -13,9 +13,14 @@
 #define HAS_MRT
 #include "header.glsl"
 #include "srgb.glsl"
+#include "fog.glsl"
 uniform mediump vec3 SunColor;
 uniform highp vec3 SunDirection;
 uniform highp float SunSize;
+uniform mediump vec4 FogColour;
+uniform mediump vec4 FogParams;
+uniform highp float FarClipDistance;
+uniform highp float NearClipDistance;
 
 #ifdef GPU_HOSEK
 #include "hosek.glsl"
@@ -48,10 +53,12 @@ highp vec3 SkyLightExpose(const highp vec3 color, const highp float exposure)
 
 in highp vec3 vPosition;
 in highp vec3 vUV0;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
 void main()
 {
-    FragData[MRT_DEPTH] = vec4(1.0, 0.0, 0.0, 0.0);
-    FragData[MRT_VELOCITY] = vec4(0.0, 0.0, 0.0, 0.0);
+    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
+    FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
     FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 0.0);
     FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
 
@@ -69,15 +76,13 @@ void main()
 #else
     mediump vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 #endif
-    color = SkyLightExpose(color, 0.1);
-    color = SRGBtoLINEAR(color);
 
     if (gamma <= SunSize && V.y > 0.0) {
         color = SunColor;
     }
 
-#ifdef FORCE_SRGB
-    color = LINEARtoSRGB(color);
-#endif
+    color = SkyLightExpose(color, 0.1);
+    color = SRGBtoLINEAR(color);
+
     FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
 }

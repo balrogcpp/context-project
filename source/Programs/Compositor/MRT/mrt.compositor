@@ -30,7 +30,7 @@ compositor NoMRT
     }
 }
 
-compositor MRT
+compositor MRT2
 {
     technique
     {
@@ -58,7 +58,7 @@ compositor MRT
     }
 }
 
-compositor MRT2
+compositor MRT
 {
     technique
     {

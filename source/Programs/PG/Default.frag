@@ -24,6 +24,8 @@ uniform mediump float NearClipDistance;
 in highp vec4 oUV;
 in mediump vec4 oColour;
 in mediump float oFogCoord;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
 void main()
 {
     mediump vec4 s = texture2D(texMap, oUV.xy);
@@ -41,7 +43,7 @@ void main()
 
     FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
     FragData[MRT_DEPTH] = vec4((oFogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-    FragData[MRT_VELOCITY] = vec4(0.0, 0.0, 0.0, 0.0);
+    FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
     FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 0.0);
     FragData[MRT_GLOSS] = vec4(0.0, 0.0, 0.0, 0.0);
 }

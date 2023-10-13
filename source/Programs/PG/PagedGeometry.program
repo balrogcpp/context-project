@@ -6,7 +6,7 @@ vertex_program Sprite_vp glsl glsles hlsl
 
     default_params
     {
-        param_named_auto worldViewProj worldviewproj_matrix
+        param_named_auto WorldViewProjMatrix worldviewproj_matrix
     }
 }
 
@@ -20,7 +20,7 @@ vertex_program SpriteFade_vp glsl glsles hlsl
 
     default_params
     {
-        param_named_auto worldViewProj worldviewproj_matrix
+        param_named_auto WorldViewProjMatrix worldviewproj_matrix
         param_named_auto camPos camera_position_object_space
     }
 }

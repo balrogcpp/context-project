@@ -12,7 +12,8 @@
 
 #include "header.glsl"
 
-uniform mat4 worldViewProj;
+uniform highp mat4 WorldViewProjMatrix;
+uniform highp mat4 WorldViewProjPrev;
 #ifdef FADE
 uniform vec3  camPos;
 uniform float fadeGap;
@@ -29,20 +30,24 @@ in highp vec4 uv0;
 out highp vec4 oUV;
 out mediump vec4 oColour;
 out mediump float oFogCoord;
+out mediump vec4 vScreenPosition;
+out mediump vec4 vPrevScreenPosition;
 void main()
 {
     //Face the camera
 	vec4 vCenter = vec4( vertex.x, vertex.y, vertex.z, 1.0 );
 	vec4 vScale = vec4( normal.x, normal.y, normal.x , 1.0 );
-	gl_Position = worldViewProj * (vCenter + (preRotatedQuad[int(normal.z)] * vScale));
+	vec4 position = vCenter + (preRotatedQuad[int(normal.z)] * vScale);
+	gl_Position = mul(WorldViewProjMatrix, position);
+	vScreenPosition = gl_Position;
+	vPrevScreenPosition = mul(WorldViewProjPrev, position);
 
 	//Color
 	oColour = colour;
 
     //Fade out in the distance
 #ifdef FADE
-	vec4 position = vertex;
-	float dist = distance(camPos.xz, position.xz);
+	float dist = distance(camPos.xz, vertex.xz);
 	oColour.w = (invisibleDist - dist) / fadeGap;
 #endif
 
