@@ -8,7 +8,6 @@ import STD from std.material
 fragment_program glowStart glsl glsles hlsl
 {
 	source glowStart.frag
-    target ps_2_0
 
     default_params
     {
@@ -48,7 +47,6 @@ material GlowStart : STD
 fragment_program glowMod glsl glsles hlsl
 {
 	source glowMod.frag
-    target ps_2_0
 }
 
 material GlowMod : STD
@@ -83,7 +81,6 @@ material GlowMod : STD
 fragment_program glowFeat glsl glsles hlsl
 {
 	source glowFeat.frag
-    target ps_2_0
 
     default_params
     {

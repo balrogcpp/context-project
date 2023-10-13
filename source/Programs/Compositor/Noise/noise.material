@@ -5,7 +5,6 @@ import STD from std.material
 fragment_program noise glsl glsles hlsl
 {
 	source noise.frag
-    target ps_2_0
 
     default_params
     {
@@ -16,7 +15,6 @@ fragment_program noise glsl glsles hlsl
 fragment_program normal glsl glsles hlsl
 {
 	source normal.frag
-    target ps_2_0
 }
 
 material Noise : STD

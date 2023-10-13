@@ -5,7 +5,6 @@ import STD from std.material
 fragment_program SRGB2LINEAR glsl glsles hlsl
 {
     source srgb2linear.frag
-    target ps_2_0
 }
 
 material SRGB2LINEAR : STD

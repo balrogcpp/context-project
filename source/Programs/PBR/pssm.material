@@ -19,7 +19,6 @@ vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 {
 	source pssm.frag
-    target ps_2_0
 
 	preprocessor_defines SHADOWCASTER_ALPHA
 
@@ -44,7 +43,6 @@ vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 fragment_program PSSM/shadow_caster_fs glsl glsles hlsl
 {
 	source pssm.frag
-    target ps_2_0
 
 	default_params
 	{
@@ -116,7 +114,6 @@ vertex_program DPSM/shadow_caster_alpha_vs glsl glsles hlsl
 fragment_program DPSM/shadow_caster_alpha_fs glsl glsles hlsl
 {
 	source dpsm.frag
-    target ps_2_0
 
 	preprocessor_defines SHADOWCASTER_ALPHA
 
@@ -141,7 +138,6 @@ vertex_program DPSM/shadow_caster_vs glsl glsles hlsl
 fragment_program DPSM/shadow_caster_fs glsl glsles hlsl
 {
 	source dpsm.frag
-    target ps_2_0
 
 	default_params
 	{

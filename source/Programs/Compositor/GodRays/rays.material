@@ -9,7 +9,6 @@ import STD from std.material
 fragment_program fbo glsl glsles hlsl
 {
 	source fbo.frag
-    target ps_2_0
 }
 
 material FBO : STD
@@ -52,7 +51,6 @@ material FBO : STD
 fragment_program rays glsl glsles hlsl
 {
 	source rays.frag
-    target ps_2_0
 
     default_params
     {
@@ -90,7 +88,6 @@ material Rays : STD
 fragment_program raysMod glsl glsles hlsl
 {
 	source raysMod.frag
-    target ps_2_0
 
     default_params
     {

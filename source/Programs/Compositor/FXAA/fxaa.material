@@ -5,7 +5,6 @@ import STD from std.material
 fragment_program fxaa glsl glsles hlsl
 {
     source fxaa.frag
-    target ps_2_0
 }
 
 material FXAA : STD

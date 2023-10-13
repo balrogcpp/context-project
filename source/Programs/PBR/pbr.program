@@ -39,7 +39,6 @@ vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    target ps_2_0
     preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM
     
     default_params
@@ -89,7 +88,7 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
     preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY
 }
 
-fragment_program PG_fs glsl glsles hlsl : PBR_I_fs 
+fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
 {
     preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
 }
@@ -99,7 +98,7 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
     preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY
 }
 
-fragment_program PG0_fs glsl glsles hlsl : PG_fs 
+fragment_program PG0_fs glsl glsles hlsl : PG_fs
 {
     preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
 }
@@ -113,7 +112,7 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
     preprocessor_defines HAS_UV,VERTEX_COMPRESSION
 }
 
-fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs 
+fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs
 {
     preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
 

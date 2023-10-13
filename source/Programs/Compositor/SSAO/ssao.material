@@ -10,7 +10,6 @@ import RayCast from std.material
 fragment_program ssao glsl glsles hlsl
 {
 	source ssao.frag
-    target ps_2_0
 }
 
 material SSAO : RayCast
@@ -44,7 +43,6 @@ material SSAO : RayCast
 fragment_program ssaoRec glsl glsles hlsl
 {
 	source ssaoRec.frag
-    target ps_2_0
 }
 
 material ssaoRec : STD
@@ -78,7 +76,6 @@ material ssaoRec : STD
 fragment_program ssaoMod glsl glsles hlsl
 {
 	source ssaoMod.frag
-    target ps_2_0
 }
 
 material ssaoMod : STD
@@ -114,13 +111,11 @@ material ssaoMod : STD
 fragment_program ssaox glsl glsles hlsl
 {
 	source ssaox.frag
-    target ps_2_0
 }
 
 fragment_program ssaoy glsl glsles hlsl
 {
 	source ssaoy.frag
-    target ps_2_0
 }
 
 material SSAOX : STD

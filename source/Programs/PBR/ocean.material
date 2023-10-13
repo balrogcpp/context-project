@@ -16,7 +16,6 @@ vertex_program Ocean_vs glsl glsles hlsl
 fragment_program Ocean_fs glsl glsles hlsl
 {
     source ocean.frag
-    target ps_2_0
 
     default_params
     {

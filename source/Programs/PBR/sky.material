@@ -14,7 +14,6 @@ vertex_program SkyBoxVp glsl glsles hlsl
 fragment_program SkyBoxFp glsl glsles hlsl
 {
 	source sky.frag
-    target ps_2_0
 
     default_params
     {

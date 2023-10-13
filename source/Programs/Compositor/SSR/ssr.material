@@ -9,7 +9,6 @@ import STD from std.material
 fragment_program ssr glsl glsles hlsl
 {
 	source ssr.frag
-    target ps_2_0
 }
 
 material SSR : RayCast
@@ -50,7 +49,6 @@ material SSR : RayCast
 fragment_program ssrRec glsl glsles hlsl
 {
 	source ssrRec.frag
-    target ps_2_0
 }
 
 material ssrRec : STD
@@ -85,7 +83,6 @@ material ssrRec : STD
 fragment_program ssrMod glsl glsles hlsl
 {
 	source ssrMod.frag
-    target ps_2_0
 }
 
 material ssrMod : STD
