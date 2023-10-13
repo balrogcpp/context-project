@@ -63,6 +63,7 @@ class CompositorManager : public System<CompositorManager>,
   const std::string BLOOM_COMPOSITOR;
   int mipChainSize;
   std::vector<int> mipMask;
+  Ogre::Plane plane;
   bool fixedViewportSize;
   int forceSizeX;
   int forceSizeY;

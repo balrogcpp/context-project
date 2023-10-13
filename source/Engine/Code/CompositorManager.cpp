@@ -99,6 +99,8 @@ void CompositorManager::OnSetUp() {
 }
 
 void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
+  this->plane = plane;
+
   if (!IsCompositorInChain("Fresnel")) {
     AddCompositor("Fresnel", true, 0);
     auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
@@ -205,8 +207,12 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
-    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+    if (compositorName == "Fresnel") {
+      AddFresnelCompositor(plane);
+    } else {
+      auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
+      ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+    }
 
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
@@ -286,8 +292,12 @@ void CompositorManager::ApplyCachedCompositorChain() {
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
-    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+    if (compositorName == "Fresnel") {
+      AddFresnelCompositor(plane);
+    } else {
+      auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
+      ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+    }
 
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
@@ -328,8 +338,12 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    auto *compositor = compositorManager->addCompositor(viewport, compositorName);
-    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+    if (compositorName == "Fresnel") {
+      AddFresnelCompositor(plane);
+    } else {
+      auto *compositor = compositorManager->addCompositor(viewport, compositorName);
+      ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+    }
 
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {

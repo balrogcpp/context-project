@@ -46,11 +46,12 @@ void main()
     highp vec2 velocity = 0.5 * texture2D(VelocityTex, vUV0).xy;
     highp float speed = length(velocity * TexSize0);
     velocity = TexelSize0 * floor(velocity * TexSize0);
-    highp vec2 uv2 = vUV0 - velocity;
+    highp vec2 uv2 = speed > HALF_EPSILON ? vUV0 : vUV0 - velocity;
     mediump float depth1 = texture2D(DepthTex, vUV0).x;
     mediump float depth2 = texture2D(DepthOldTex, uv2).x;
     mediump float diff = abs(depth2 - depth1);
-    if (speed >= 1.0 && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
+
+    if (speed > HALF_EPSILON && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
         mediump vec3 color2 = texture2D(RT, uv2).rgb;
         mediump vec3 minColor = min(min(A, B), min(C, D));
         mediump vec3 maxColor = max(max(A, B), max(C, D));

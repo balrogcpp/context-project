@@ -7,7 +7,7 @@ compositor Fresnel
 {
     technique
     {
-        texture reflection target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa
+        texture reflection target_width_scaled 0.33 target_height_scaled 0.33 PF_R11G11B10_FLOAT no_fsaa
         texture refraction target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa
 
         target reflection
@@ -21,6 +21,7 @@ compositor Fresnel
         target refraction
         {
             visibility_mask 0x0F0 // SUBMERGED objects
+            shadows off
             pass clear {}
             pass render_scene {}
         }
