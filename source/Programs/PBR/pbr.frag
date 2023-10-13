@@ -171,9 +171,6 @@ uniform mediump vec4 SurfaceAmbientColour;
 uniform mediump vec4 SurfaceDiffuseColour;
 uniform mediump vec4 SurfaceSpecularColour;
 uniform mediump vec4 SurfaceEmissiveColour;
-#ifdef HAS_ALPHA
-uniform mediump float SurfaceAlphaRejection;
-#endif
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform highp float FarClipDistance;
@@ -354,7 +351,7 @@ void main()
     mediump vec3 albedo = c.rgb;
     mediump float alpha = c.a;
 #ifdef HAS_ALPHA
-    if (alpha < SurfaceAlphaRejection) discard;
+    if (alpha <= 0.5) discard;
 #endif
 
     mediump vec3 ORM = GetORM(uv, alpha);

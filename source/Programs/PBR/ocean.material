@@ -31,7 +31,7 @@ fragment_program Ocean_fs glsl glsles hlsl
 
         param_named BigWaves float2 0.3 0.3
         param_named MidWaves float2 0.3 0.15
-        param_named SmallWaves float2 0.15 0.1
+        //param_named SmallWaves float2 0.15 0.1
         param_named Visibility float 28.0
         param_named WindDirection float2 0.5 -0.8
         param_named WindSpeed float 0.2
