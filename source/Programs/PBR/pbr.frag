@@ -362,11 +362,15 @@ void main()
     mediump vec3 emission = GetEmission(uv);
 
     // Normal at surface point
+#ifdef HAS_NORMALMAP
     highp vec3 normal = texture2D(NormalMap, uv).xyz;
+#else
+    highp vec3 normal = vec3(0.0, 0.0, 0.0);
+#endif
 
-    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 1.0);
-    FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 1.0);
-    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 1.0);
+    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
+    FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
+    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
 
 #ifdef CHECKERBOARD
     if (ExcludePixel()) return;
@@ -378,7 +382,7 @@ void main()
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
     mediump vec3 diffuseColor = albedo * ((1.0 - F0) * (1.0 - metallic));
-    mediump vec3 specularColor = mix(vec3(F0), albedo, metallic);
+    mediump vec3 specularColor = mix(vec3(F0, F0, F0), albedo, metallic);
 
     // Compute reflectance.
     mediump float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);

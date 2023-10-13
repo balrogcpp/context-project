@@ -43,14 +43,15 @@ void main()
     mediump vec3 D = texture2D(MRT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).rgb;
 
     // pixel was render prev frame, reconstruct it's position in prev frame
-    highp vec2 velocity = texture2D(VelocityTex, vUV0).xy;
+    highp vec2 velocity = 0.5 * texture2D(VelocityTex, vUV0).xy;
     highp float speed = length(velocity * TexSize0);
-    highp vec2 uv2 = vUV0 - TexelSize0 * velocity;
-    mediump vec3 color2 = texture2D(RT, uv2).rgb;
+    velocity = TexelSize0 * floor(velocity * TexSize0);
+    highp vec2 uv2 = vUV0 - velocity;
     mediump float depth1 = texture2D(DepthTex, vUV0).x;
-    mediump float depth2 = texture2D(DepthOldTex, vUV0).x;
+    mediump float depth2 = texture2D(DepthOldTex, uv2).x;
     mediump float diff = abs(depth2 - depth1);
-    if (floor(speed) > 1.0 && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
+    if (speed >= 1.0 && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
+        mediump vec3 color2 = texture2D(RT, uv2).rgb;
         mediump vec3 minColor = min(min(A, B), min(C, D));
         mediump vec3 maxColor = max(max(A, B), max(C, D));
         mediump vec3 clampedColor = clamp(color2, minColor, maxColor);

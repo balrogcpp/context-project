@@ -28,26 +28,31 @@ material Reconstructor : STD
             {
                 texture black.dds
                 tex_address_mode clamp
+                filtering none
             }
 			texture_unit RT
             {
                 texture black.dds
                 tex_address_mode clamp
+                filtering none
             }
 			texture_unit Velocity
             {
                 texture black.dds
                 tex_address_mode clamp
+                filtering none
             }
 			texture_unit Depth
             {
                 texture black.dds
                 tex_address_mode clamp
+                filtering none
             }
 			texture_unit DepthOld
             {
                 texture black.dds
                 tex_address_mode clamp
+                filtering none
             }
 		}
 	}
