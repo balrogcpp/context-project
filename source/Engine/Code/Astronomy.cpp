@@ -2,7 +2,7 @@
 // It is subject to the license terms in the LICENSE file found in the top-level directory
 // of this distribution.
 
-#include "CaelumPrecompiled.h"
+#include "pch.h"
 #include "Astronomy.h"
 
 namespace Caelum
@@ -270,8 +270,6 @@ namespace Caelum
             int year, int month, int day,
             int hour, int minute, LongReal second)
     {
-        ScopedHighPrecissionFloatSwitch precissionSwitch;
-
         int jdn = getJulianDayFromGregorianDate (year, month, day);
         // These are NOT integer divisions.
         LongReal jd = jdn + (hour - 12) / 24.0 + minute / 1440.0 + second / 86400.0;
@@ -318,7 +316,6 @@ namespace Caelum
         // Integer julian days are at noon.
         // static_cast<int)(floor( is more precise than Ogre::Math::IFloor.
         // Yes, it does matter.
-        int fpmode = enterHighPrecissionFloatingPointMode();
         julianDay += (LongReal)0.5;
        int ijd = static_cast<int>(floor(julianDay));
         getGregorianDateFromJulianDay(ijd, year, month, day);
@@ -331,7 +328,6 @@ namespace Caelum
         minute = static_cast<int>(floor(s / 60));
         s -= minute * 60;
         second = s;
-      restoreFloatingPointMode(fpmode);
     }
 
     void Astronomy::getGregorianDateFromJulianDay(
@@ -342,30 +338,4 @@ namespace Caelum
         LongReal second;
         getGregorianDateTimeFromJulianDay(julianDay, year, month, day, hour, minute, second);
     }
-
-#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32) && (OGRE_COMPILER == OGRE_COMPILER_MSVC) && (OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32)
-    int Astronomy::enterHighPrecissionFloatingPointMode ()
-    {
-        int oldMode = ::_controlfp (0, 0);
-        ::_controlfp (_PC_64, _MCW_PC);
-        return oldMode;
-    }
-
-    void Astronomy::restoreFloatingPointMode (int oldMode)
-    {
-        ::_controlfp (oldMode, _MCW_PC);
-    }
-#else
-    int Astronomy::enterHighPrecissionFloatingPointMode ()
-    {
-        // Meaningless
-        return 0xC0FFEE;
-    }
-
-    void Astronomy::restoreFloatingPointMode (int oldMode)
-    {
-        // Useless check.
-        OgreAssertDbg2(oldMode == 0xC0FFEE);
-    }
-#endif
 }

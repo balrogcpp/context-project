@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "SkyManager.h"
 #include "Platform.h"
+#include "Astronomy.h"
 #include <SkyModel/SkyModel.h>
 
 namespace gge {

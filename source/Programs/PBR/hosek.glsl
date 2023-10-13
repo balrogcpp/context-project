@@ -3,6 +3,8 @@
 #ifndef HOSEK_GLSL
 #define HOSEK_GLSL
 
+// https://www.shadertoy.com/view/wslfD7
+// https://www.shadertoy.com/view/wdlBRS
 // Ground albedo and turbidy are baked into the lookup tables
 #define ALBEDO 0
 #define TURBIDITY 4
