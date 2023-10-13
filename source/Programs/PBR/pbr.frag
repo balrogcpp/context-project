@@ -11,7 +11,6 @@
 #endif
 
 #define HAS_MRT
-#define CHECKERBOARD
 #include "header.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
