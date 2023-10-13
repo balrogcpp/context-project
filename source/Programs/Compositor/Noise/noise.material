@@ -8,7 +8,7 @@ fragment_program noise glsl glsles hlsl
 
     default_params
     {
-        param_named_auto Time time_0_x_packed 100
+        //param_named_auto Time time_0_x_packed 100
     }
 }
 
