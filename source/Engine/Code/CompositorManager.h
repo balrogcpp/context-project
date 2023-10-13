@@ -59,8 +59,8 @@ class CompositorManager : public System<CompositorManager>,
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent& evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent& evt) override;
 
-  const std::string MRT_COMPOSITOR;
-  const std::string BLOOM_COMPOSITOR;
+  std::string MRT_COMPOSITOR;
+  std::string BLOOM_COMPOSITOR;
   int mipChainSize;
   std::vector<int> mipMask;
   Ogre::Plane plane;

@@ -1,6 +1,9 @@
 // created by Andrey Vasiliev
 
+#ifndef MOSAIC_GLSL
+#define MOSAIC_GLSL
 #ifdef OGRE_FRAGMENT_SHADER
+
 uniform mediump float IsEven;
 
 bool ExcludePixel()
@@ -24,3 +27,4 @@ bool PixelIsInsideViewport(const highp vec2 uv)
 }
 
 #endif // OGRE_FRAGMENT_SHADER
+#endif // MOSAIC_GLSL

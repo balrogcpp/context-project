@@ -8,7 +8,9 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {}
+    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {
+  if (RenderSystemIsGLES2()) MRT_COMPOSITOR = "MRT2";
+}
 
 CompositorManager::~CompositorManager() = default;
 
@@ -415,7 +417,7 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 0) { // 0 = mrt render
+  if (pass_id == 0) {         // 0 = mrt render
   } else if (pass_id == 1) {  // 1 = Reconstructor
     static bool isEven = false;
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();

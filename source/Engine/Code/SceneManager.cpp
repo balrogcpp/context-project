@@ -229,14 +229,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
       if (fpDefines.find("PSSM_SPLIT_COUNT") == string::npos) {
         fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
       }
-
-      if (auto *tex = pass->getTextureUnitState("IBL")) {
-        if (RenderSystemIsGLES2()) {
-          // pass->removeTextureUnitState(pass->getTextureUnitStateIndex(tex));
-          if (auto i = fpDefines.find("HAS_IBL"); i != string::npos) fpDefines[i] = 'X';
-        }
-      }
-
+    } else {
       if (auto i = vpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) vpDefines[i] = 'X';
       if (auto i = fpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) fpDefines[i] = 'X';
     }

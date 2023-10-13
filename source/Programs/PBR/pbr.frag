@@ -16,9 +16,9 @@
 #include "srgb.glsl"
 #ifndef GL_ES
 #define USE_TEX_LOD
-    #define SPHERICAL_HARMONICS_BANDS 8
+#define SPHERICAL_HARMONICS_BANDS 8
 #else
-    #define SPHERICAL_HARMONICS_BANDS 3
+#define SPHERICAL_HARMONICS_BANDS 3
 #endif
 
 // Basic Lambertian diffuse

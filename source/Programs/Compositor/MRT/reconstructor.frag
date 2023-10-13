@@ -50,7 +50,7 @@ void main()
     mediump float depth1 = texture2D(DepthTex, vUV0).x;
     mediump float depth2 = texture2D(DepthOldTex, uv2).x;
     mediump float diff = abs(depth2 - depth1);
-    if (speed >= 1.0 && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.001) {
+    if (PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.01) {
         mediump vec3 color2 = texture2D(RT, uv2).rgb;
         mediump vec3 minColor = min(min(A, B), min(C, D));
         mediump vec3 maxColor = max(max(A, B), max(C, D));
@@ -59,7 +59,7 @@ void main()
         // blend back towards reprojected result using confidence based on old depth
         // reuse depthTolerance to indicate 0 confidence cutoff
         // square falloff
-        mediump float deviation = diff - 0.001;
+        mediump float deviation = diff - 0.01;
         mediump float confidence = clamp(deviation * deviation, 0.0, 1.0);
         color2 = mix(clampedColor, color2, confidence);
         FragColor = vec4(SafeHDR(color2), 1.0);

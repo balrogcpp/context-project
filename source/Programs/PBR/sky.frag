@@ -62,9 +62,9 @@ void main()
     FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 0.0);
     FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
 
-#ifdef CHECKERBOARD
-    if (ExcludePixel()) return;
-#endif
+//#ifdef CHECKERBOARD
+//    if (ExcludePixel()) return;
+//#endif
 
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);
