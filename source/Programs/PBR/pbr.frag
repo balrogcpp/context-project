@@ -15,7 +15,6 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 #ifndef GL_ES
-#define USE_TEX_LOD
 #define SPHERICAL_HARMONICS_BANDS 8
 #else
 #define SPHERICAL_HARMONICS_BANDS 3
@@ -228,7 +227,7 @@ mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 
 mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump float perceptualRoughness)
 {
-#ifdef USE_TEX_LOD
+#ifndef GL_ES
     return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb));
 #else
     return LINEARtoSRGB(textureCube(SpecularEnvTex, reflection).rgb);
