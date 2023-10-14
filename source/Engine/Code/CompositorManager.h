@@ -68,6 +68,8 @@ class CompositorManager : public System<CompositorManager>,
   int forceSizeX;
   int forceSizeY;
   std::queue<std::pair<std::string, bool>> compositorList;
+  Ogre::Matrix4 viewProj;
+  Ogre::Matrix4 viewProjPrev;
 
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;

@@ -8,42 +8,6 @@
 using namespace std;
 
 namespace {
-inline void UpgradeTransparentShadowCaster(const Ogre::Material *material) {
-  Ogre::LogManager::getSingleton().logMessage("[ScanNode] UpgradeTransparentShadowCaster: " + material->getName());
-
-  auto *tech = material->getTechnique(0);
-  auto *pass = tech->getPass(0);
-
-  if (!material->getTransparencyCastsShadows() || !pass->getNumTextureUnitStates() || !pass->getAlphaRejectValue() ||
-      !pass->getTextureUnitState("Albedo")) {
-    return;
-  }
-
-  const std::string baseCaster = "PSSM/shadow_caster_alpha";
-  auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName(baseCaster);
-  std::string newCasterName = baseCaster + "/" + material->getName();
-  auto newCaster = Ogre::MaterialManager::getSingleton().getByName(newCasterName);
-
-  if (!newCaster) {
-    newCaster = casterMaterial->clone(newCasterName);
-    std::string albedoTexture = pass->getTextureUnitState("Albedo")->getTextureName();
-    auto *newPass = newCaster->getTechnique(0)->getPass(0);
-    auto *baseColor = newPass->getTextureUnitState("Albedo");
-
-    baseColor->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-    baseColor->setTextureName(albedoTexture);
-    newPass->setCullingMode(pass->getCullingMode());
-    newPass->setManualCullingMode(pass->getManualCullingMode());
-    newPass->setAlphaRejectValue(pass->getAlphaRejectValue());
-
-    tech->setShadowCasterMaterial(newCaster);
-  }
-}
-
-inline void CheckTransparentShadowCaster(const std::string &material) {
-  UpgradeTransparentShadowCaster(Ogre::MaterialManager::getSingleton().getByName(material).get());
-}
-
 inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasNormals = false;
   bool hasTangents = false;
@@ -362,31 +326,13 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
 
   // apply for entities, skip grass
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    auto *entity = subentity->getParent();
-
-    if (entity->getMesh()->isReloadable()) {
+    if (subentity->getParent()->getMesh()->isReloadable()) {
       Ogre::Matrix4 MVP = Ogre::Matrix4::IDENTITY;
       rend->getWorldTransforms(&MVP);
       Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
       rend->getUserObjectBindings().setUserAny(viewProj * MVP);
       if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-
-    } else {
-      Ogre::Matrix4 MVP = Ogre::Matrix4::IDENTITY;
-      rend->getWorldTransforms(&MVP);
-      vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
     }
-  }
-
-  // skip this part
-  // else if (dynamic_cast<Forests::BatchedGeometry::SubBatch *>(rend)) {}
-  // else if (dynamic_cast<Ogre::StaticGeometry::GeometryBucket *>(rend)) {}
-  // else if (dynamic_cast<Ogre::TerrainQuadTreeNode *>(rend)) {}
-
-  else {
-    Ogre::Matrix4 MVP = Ogre::Matrix4::IDENTITY;
-    rend->getWorldTransforms(&MVP);
-    vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
   }
 
   fp->setNamedConstant("PssmSplitPoints", pssmPoints);

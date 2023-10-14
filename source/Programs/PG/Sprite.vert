@@ -30,8 +30,6 @@ in highp vec4 uv0;
 out highp vec4 oUV;
 out mediump vec4 oColour;
 out mediump float oFogCoord;
-out mediump vec4 vScreenPosition;
-out mediump vec4 vPrevScreenPosition;
 void main()
 {
     //Face the camera
@@ -39,8 +37,6 @@ void main()
 	vec4 vScale = vec4( normal.x, normal.y, normal.x , 1.0 );
 	vec4 position = vCenter + (preRotatedQuad[int(normal.z)] * vScale);
 	gl_Position = mul(WorldViewProjMatrix, position);
-	vScreenPosition = gl_Position;
-	vPrevScreenPosition = mul(WorldViewProjPrev, position);
 
 	//Color
 	oColour = colour;

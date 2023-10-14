@@ -25,8 +25,7 @@ uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform sampler2D GlossMap;
 uniform mediump mat4 ProjMatrix;
-uniform mediump float FarClipDistance;
-uniform mediump float NearClipDistance;
+uniform mediump float ClipDistance;
 
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -42,7 +41,7 @@ mediump vec2 BinarySearch(inout mediump vec3 position, mediump vec3 direction)
         nuv.xy /= nuv.w;
 
         mediump float depth = texture2D(DepthMap, nuv.xy).x;
-        mediump float delta = -position.z / (FarClipDistance - NearClipDistance) - depth;
+        mediump float delta = -position.z / ClipDistance - depth;
 
         direction *= 0.5;
 
@@ -67,7 +66,7 @@ mediump vec2 RayCast(inout mediump vec3 position, mediump vec3 direction)
         nuv.xy /= nuv.w;
 
         mediump float depth = texture2D(DepthMap, nuv.xy).x;
-        mediump float delta = -position.z / (FarClipDistance - NearClipDistance) - depth;
+        mediump float delta = -position.z / ClipDistance - depth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
         // We don't want to sample too far from the starting position.

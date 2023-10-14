@@ -38,7 +38,7 @@ material SkyBox
 	{
 		pass
 		{
-            //lighting off
+            lighting off
             depth_write off
             cull_hardware none
 

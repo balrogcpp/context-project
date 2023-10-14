@@ -20,7 +20,6 @@ uniform highp mat4 TextureProjMatrix;
 in highp vec4 vertex;
 out highp vec3 vWorldPosition;
 out mediump vec4 vScreenPosition;
-out mediump vec4 vPrevScreenPosition;
 out mediump vec4 vProjectionCoord;
 void main()
 {
@@ -30,5 +29,4 @@ void main()
 
     gl_Position = mul(WorldViewProjMatrix, vertex);
     vScreenPosition = gl_Position;
-    vPrevScreenPosition = mul(WorldViewProjPrev, vertex);
 }

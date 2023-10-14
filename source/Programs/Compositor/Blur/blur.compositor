@@ -12,9 +12,11 @@ compositor Blur : STD
         {
             pass render_quad
             {
+                identifier 14
+                quad_normals camera_far_corners_view_space
                 material Blur
                 input 0 rt
-                input 1 mrt 2
+                input 1 mrt 1
             }
         }
     }

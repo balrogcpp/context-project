@@ -25,7 +25,6 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 	default_params
 	{
 	    param_named AlbedoMap int 0
-	    param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
 	}
 }
 
@@ -79,7 +78,6 @@ material PSSM/shadow_caster_alpha
 			lighting off
 			polygon_mode_overrideable off
 			cull_hardware anticlockwise
-		    alpha_rejection greater_equal 127
 
 			vertex_program_ref PSSM/shadow_caster_alpha_vs {}
 
@@ -120,7 +118,6 @@ fragment_program DPSM/shadow_caster_alpha_fs glsl glsles hlsl
 	default_params
 	{
 	    param_named AlbedoMap int 0
-	    param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
 	}
 }
 
@@ -155,7 +152,6 @@ material DPSM/shadow_caster_alpha
 			lighting off
 			polygon_mode_overrideable off
 			cull_hardware anticlockwise
-		    alpha_rejection greater_equal 127
 
 			vertex_program_ref DPSM/shadow_caster_alpha_vs {}
 

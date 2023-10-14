@@ -73,6 +73,7 @@ compositor Reconstructor
             pass render_quad
             {
                 identifier 1
+                quad_normals camera_far_corners_view_space
                 material Reconstructor
                 input 0 mrt 0
                 input 1 prev

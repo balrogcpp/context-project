@@ -1,15 +1,16 @@
 // created by Andrey Vasiliev
 
 import STD from std.material
+import RayCast from std.material
 
 fragment_program Blur glsl glsles hlsl
 {
     source blur.frag
 
-    preprocessor_defines MAX_SAMPLES=6
+    preprocessor_defines MAX_SAMPLES=5
 }
 
-material Blur : STD
+material Blur : RayCast
 {
 	technique
 	{
@@ -18,8 +19,8 @@ material Blur : STD
             fragment_program_ref Blur
 			{
                 param_named RT int 0
-                param_named VelocitySampler int 1
-                param_named_auto TexSize1 texture_size 1
+                param_named DepthSampler int 1
+                param_named_auto TexSize1 texture_size 0
 			}
 
 			texture_unit RT
@@ -28,11 +29,11 @@ material Blur : STD
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit Velocity
+            texture_unit Depth
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
 		}
 	}

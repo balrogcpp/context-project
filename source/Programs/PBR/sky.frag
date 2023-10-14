@@ -53,12 +53,9 @@ highp vec3 SkyLightExpose(const highp vec3 color, const highp float exposure)
 
 in highp vec3 vPosition;
 in highp vec3 vUV0;
-in mediump vec4 vScreenPosition;
-in mediump vec4 vPrevScreenPosition;
 void main()
 {
-    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-    FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
+    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
 
 //#ifdef CHECKERBOARD
 //    if (ExcludePixel()) return;

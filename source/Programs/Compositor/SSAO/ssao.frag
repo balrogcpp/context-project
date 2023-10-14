@@ -17,8 +17,7 @@
 uniform sampler2D DepthMap;
 uniform sampler2D NormalMap;
 uniform mediump mat4 ProjMatrix;
-uniform mediump float FarClipDistance;
-uniform mediump float NearClipDistance;
+uniform mediump float ClipDistance;
 
 mediump vec3 hash(const mediump vec3 a)
 {
@@ -62,7 +61,7 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     mediump float clampedPixelDepth = texture2D(DepthMap, vUV0).x;
-    mediump float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance);
+    mediump float pixelDepth = clampedPixelDepth * ClipDistance;
     mediump vec3 viewPos = vRay * clampedPixelDepth;
     mediump vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedPixelDepth);
 
@@ -90,7 +89,7 @@ void main()
 
         // Compute occlusion based on the (scaled) Z difference
         mediump float clampedSampleDepth = texture2D(DepthMap, nuv.xy).x;
-        mediump float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance);
+        mediump float sampleDepth = clampedSampleDepth * ClipDistance;
         mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(clampedSampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with

@@ -1,13 +1,14 @@
 // created by Andrey Vasiliev
 
 import STD from std.material
+import RayCast from std.material
 
 fragment_program Reconstructor glsl glsles hlsl
 {
     source reconstructor.frag
 }
 
-material Reconstructor : STD
+material Reconstructor : RayCast
 {
 	technique
 	{

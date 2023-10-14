@@ -366,7 +366,7 @@ void main()
     highp vec3 normal = vec3(0.0, 0.0, 0.0);
 #endif
 
-    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
+    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
     FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
     FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
 

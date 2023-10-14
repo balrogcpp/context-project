@@ -19,13 +19,9 @@ in highp vec4 vertex;
 in highp vec4 uv0;
 out highp vec3 vPosition;
 out highp vec3 vUV0;
-out mediump vec4 vScreenPosition;
-out mediump vec4 vPrevScreenPosition;
 void main()
 {
     vUV0 = uv0.xyz;
     vPosition = vertex.xyz;
     gl_Position = mul(WorldViewProjMatrix, vertex);
-    vScreenPosition = gl_Position;
-    vPrevScreenPosition = mul(WorldViewProjPrev, vertex);
 }

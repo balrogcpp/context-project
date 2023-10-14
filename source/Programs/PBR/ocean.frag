@@ -68,13 +68,10 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 }
 
 in highp vec3 vWorldPosition;
-in mediump vec4 vScreenPosition;
-in mediump vec4 vPrevScreenPosition;
 in mediump vec4 vProjectionCoord;
 void main()
 {
-    FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-    FragData[MRT_VELOCITY] = 0.5 * vec4((vPrevScreenPosition.xz / vPrevScreenPosition.w) - (vScreenPosition.xz / vScreenPosition.w), 0.0, 0.0);
+    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
 
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
 
