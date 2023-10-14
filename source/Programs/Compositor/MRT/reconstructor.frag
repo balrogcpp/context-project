@@ -46,20 +46,24 @@ void main()
     mediump vec3 D = texture2D(MRT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).rgb;
 
     // pixel was render prev frame, reconstruct it's position in prev frame
+    highp vec2 velocity = texture2D(VelocityTex, vUV0).xy;
     highp float depth1 = texture2D(DepthTex, vUV0).x;
-    highp vec3 viewPos = vRay * depth1;
-    highp vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
-    worldPos.xyz /= worldPos.w;
-    highp vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
-    nuv.xy /= nuv.w;
-    mediump vec2 velocity = (nuv.xy - vUV0.xy);
 
-    //highp vec2 velocity = 0.5 * texture2D(VelocityTex, vUV0).xy;
+    if (Null(velocity)) {
+        highp vec3 viewPos = vRay * depth1;
+        highp vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
+        worldPos.xyz /= worldPos.w;
+        highp vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
+        nuv.xy /= nuv.w;
+        velocity = (nuv.xy - vUV0.xy);
+    }
+
     highp float speed = length(velocity * TexSize0);
     velocity = TexelSize0 * floor(velocity * TexSize0);
     highp vec2 uv2 = vUV0 - velocity;
-    mediump float depth2 = texture2D(DepthOldTex, uv2).x;
-    mediump float diff = abs(depth2 - depth1);
+    highp float depth2 = texture2D(DepthOldTex, uv2).x;
+    highp float diff = abs(depth2 - depth1);
+
     if (speed < 0.01 && diff < 0.01) {
         FragColor = vec4(SafeHDR(texture2D(RT, vUV0).rgb), 1.0);
         return;

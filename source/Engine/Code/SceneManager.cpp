@@ -327,7 +327,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   // apply for entities, skip grass
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
     if (subentity->getParent()->getMesh()->isReloadable()) {
-      Ogre::Matrix4 MVP = Ogre::Matrix4::IDENTITY;
+      Ogre::Matrix4 MVP;
       rend->getWorldTransforms(&MVP);
       Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
       rend->getUserObjectBindings().setUserAny(viewProj * MVP);

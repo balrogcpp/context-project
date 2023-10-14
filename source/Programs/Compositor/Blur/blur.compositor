@@ -17,6 +17,7 @@ compositor Blur : STD
                 material Blur
                 input 0 rt
                 input 1 mrt 1
+                input 2 mrt 2
             }
         }
     }

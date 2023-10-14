@@ -20,6 +20,7 @@ material Blur : RayCast
 			{
                 param_named RT int 0
                 param_named DepthSampler int 1
+                param_named VelocitySampler int 2
                 param_named_auto TexSize1 texture_size 0
 			}
 
@@ -30,6 +31,12 @@ material Blur : RayCast
                 filtering bilinear
             }
             texture_unit Depth
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit Velocity
             {
                 texture black.dds
                 tex_address_mode clamp
