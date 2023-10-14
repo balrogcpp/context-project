@@ -17,8 +17,8 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform sampler2D DepthSampler;
-uniform sampler2D VelocitySampler;
+uniform sampler2D DepthTex;
+uniform sampler2D VelocityTex;
 uniform mediump vec2 TexSize1;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump mat4 ViewProjPrev;
@@ -28,8 +28,8 @@ in highp vec3 vRay;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    highp float clampedDepth = texture2D(DepthSampler, vUV0).x;
-    mediump vec2 velocity = texture2D(VelocitySampler, vUV0).xy;
+    highp float clampedDepth = texture2D(DepthTex, vUV0).x;
+    mediump vec2 velocity = texture2D(VelocityTex, vUV0).xy;
 
     if (Null(velocity)) {
         highp vec3 viewPos = vRay * clampedDepth;
