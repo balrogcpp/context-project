@@ -262,7 +262,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(const highp vec3 normal, highp mat3 tbn, const mediump vec2 uv1)
+void GetNormal(inout highp vec3 n, highp mat3 tbn, const mediump vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -272,18 +272,18 @@ highp vec3 GetNormal(const highp vec3 normal, highp mat3 tbn, const mediump vec2
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * normal;
-    return normalize(mul(tbn, (2.0 * n - 1.0)));
+    n *= SurfaceSpecularColour.a;
+    n = normalize(mul(tbn, (2.0 * n - 1.0)));
 #else
-    return tbn[2].xyz;
+    n = tbn[2].xyz;
 #endif // HAS_NORMALMAP
-    #else
+#else
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * normal;
-    return normalize(mul(tbn, ((2.0 * n - 1.0))));
+    n *= SurfaceSpecularColour.a;
+    n = normalize(mul(tbn, ((2.0 * n - 1.0))));
 #else
-    return tbn[2].xyz;
+    n = tbn[2].xyz;
 #endif // HAS_NORMALMAP
 #endif // TERRA_NORMALMAP
 }
@@ -363,9 +363,9 @@ void main()
     emission = texture2D(EmissiveTex, uv).xyz;
 #endif
 
-    highp vec3 normal;
+    highp vec3 n;
 #ifdef HAS_NORMALMAP
-    normal = texture2D(NormalTex, uv).xyz;
+    n = texture2D(NormalTex, uv).xyz;
 #endif
 
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
@@ -387,7 +387,7 @@ void main()
     mediump float occlusion = ORM.r;
     FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
 
-    highp vec3 n = GetNormal(normal, vTBN, vUV0.xy);
+    GetNormal(n, vTBN, vUV0.xy);
     FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
 
     // Roughness is authored as perceptual roughness; as is convention,
