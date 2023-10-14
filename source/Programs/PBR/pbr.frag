@@ -262,7 +262,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(highp vec3 normal, highp mat3 tbn, const mediump vec2 uv, const mediump vec2 uv1)
+highp vec3 GetNormal(const highp vec3 normal, highp mat3 tbn, const mediump vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -290,29 +290,33 @@ highp vec3 GetNormal(highp vec3 normal, highp mat3 tbn, const mediump vec2 uv, c
 
 
 // Sampler helper functions
-mediump vec4 GetAlbedo(const mediump vec4 color, const mediump vec2 uv)
+void GetAlbedo(inout mediump vec4 color, const mediump vec4 vertexColor)
 {
-    mediump vec4 albedo = SurfaceDiffuseColour * color;
-
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(AlbedoMap, uv);
+    color *= vertexColor;
+#else
+    color = vertexColor;
 #endif
-
-    return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
+    color *= SurfaceDiffuseColour;
+    color.rgb = SRGBtoLINEAR(color.rgb);
 }
 
-mediump vec3 GetEmission(const mediump vec2 uv)
+void GetEmission(inout mediump vec3 emission)
 {
 #ifdef HAS_EMISSIVEMAP
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(SurfaceSpecularColour.b * texture2D(EmissiveMap, uv).rgb);
+    emission = SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(SurfaceSpecularColour.b * emission);
 #else
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
+    emission = SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 }
 
-mediump vec3 GetORM(const mediump vec2 uv, const mediump float spec)
+void GetORM(inout mediump vec3 ORM, const mediump float spec)
 {
-    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+#ifdef HAS_ORM
+    ORM *= vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+#else
+    ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+#endif
 
 #ifdef TERRA_NORMALMAP
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
@@ -320,13 +324,8 @@ mediump vec3 GetORM(const mediump vec2 uv, const mediump float spec)
     ORM.g *= (1.0 - 0.25 * pow(spec, 0.2));
     ORM.b = 0.0;
 #endif
-#ifdef HAS_ORM
-    ORM *= texture2D(OrmMap, uv).rgb;
-#endif
 
     ORM = clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
-
-    return ORM;
 }
 
 in highp vec3 vWorldPosition;
@@ -346,20 +345,24 @@ void main()
     uv -= (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalMap, uv).a));
 #endif
 
-    mediump vec4 c = GetAlbedo(vColor, uv);
-    mediump vec3 albedo = c.rgb;
-    mediump float alpha = c.a;
+    mediump vec4 colour;
+#ifdef HAS_BASECOLORMAP
+    colour = texture2D(AlbedoMap, uv);
 #ifdef HAS_ALPHA
-    if (alpha < 0.5) discard;
+    if (colour.a < 0.5) discard;
+#endif
 #endif
 
-    mediump vec3 ORM = GetORM(uv, alpha);
-    mediump float roughness = ORM.g;
-    mediump float metallic = ORM.b;
-    mediump float occlusion = ORM.r;
-    mediump vec3 emission = GetEmission(uv);
+    mediump vec3 ORM;
+#ifdef HAS_ORM
+    ORM = texture2D(OrmMap, uv).rgb;
+#endif
 
-    // Normal at surface point
+    mediump vec3 emission;
+#ifdef HAS_EMISSIVEMAP
+    emission = texture2D(EmissiveMap, uv).xyz;
+#endif
+
     highp vec3 normal;
 #ifdef HAS_NORMALMAP
     normal = texture2D(NormalMap, uv).xyz;
@@ -367,13 +370,24 @@ void main()
 
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
     FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
-    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
 
 #ifdef CHECKERBOARD
     if (ExcludePixel()) return;
 #endif
 
-    highp vec3 n = GetNormal(normal, vTBN, uv, vUV0.xy);
+    GetAlbedo(colour, vColor);
+    mediump vec3 albedo = colour.rgb;
+    mediump float alpha = colour.a;
+
+    GetEmission(emission);
+
+    GetORM(ORM, alpha);
+    mediump float roughness = ORM.g;
+    mediump float metallic = ORM.b;
+    mediump float occlusion = ORM.r;
+    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
+
+    highp vec3 n = GetNormal(normal, vTBN, vUV0.xy);
     FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
 
     // Roughness is authored as perceptual roughness; as is convention,
