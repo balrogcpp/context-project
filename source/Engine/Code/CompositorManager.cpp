@@ -241,9 +241,7 @@ void CompositorManager::InitMRT(bool enable) {
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 
-  if (RenderSystemIsGLES2()) {
-    AddCompositor("Reconstructor", true);
-  }
+  //AddCompositor("Reconstructor", true);
 }
 
 void CompositorManager::InitMipChain(bool enable) {
