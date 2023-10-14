@@ -337,6 +337,8 @@ void VideoManager::CheckGPU() {
   }
 }
 
+void SetGameControllerMapping();
+
 void VideoManager::InitSDL() {
 #ifdef _MSC_VER
   SDL_SetMainReady();
@@ -352,6 +354,8 @@ void VideoManager::InitSDL() {
     result = SDL_GameControllerAddMappingsFromFile(path.c_str());
     if (result == -1) LogError("gamecontrollerdb.txt not found", SDL_GetError());
     ASSERTION(result != -1, "gamecontrollerdb.txt not found");
+  } else {
+    //SetGameControllerMapping();
   }
 #endif
 }
