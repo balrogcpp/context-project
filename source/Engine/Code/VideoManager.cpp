@@ -71,6 +71,9 @@ namespace fs = ghc::filesystem;
 #ifdef WINDOWS
 #include <windows.h>
 #endif
+#if OGRE_CPU == OGRE_CPU_X86
+#include "test_avx.h"
+#endif
 #ifdef __ANDROID__
 #include <OgreArchiveFactory.h>
 #include <OgreFileSystem.h>
@@ -264,10 +267,11 @@ VideoManager::VideoManager()
       shadowTexSize(512),
       gamepadSupport(true),
       keyboardSupport(true) {
-#ifdef DESKTOP
-#if OGRE_CPU == OGRE_CPU_X86
-  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3), "SSE3 support required");
+#if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE==OGRE_ARCHITECTURE_32
+  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");
 #endif
+#if OGRE_CPU == OGRE_CPU_X86
+  OgreAssert(can_use_intel_core_4th_gen_features(), "AVX2 support required");
 #endif
 }
 
