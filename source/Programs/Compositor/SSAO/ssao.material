@@ -20,17 +20,17 @@ material SSAO : RayCast
         {
             fragment_program_ref ssao
             {
-                param_named DepthMap int 0
-                param_named NormalMap int 1
+                param_named DepthTex int 0
+                param_named NormalTex int 1
             }
 
-            texture_unit DepthMap
+            texture_unit DepthTex
             {
                 texture black.dds
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit NormalMap
+            texture_unit NormalTex
             {
                 texture black.dds
                 tex_address_mode clamp
@@ -87,7 +87,7 @@ material ssaoMod : STD
             fragment_program_ref ssaoMod
             {
                 param_named RT int 0
-                param_named SsaoMap int 1
+                param_named SsaoTex int 1
                 param_named_auto TexelSize0 inverse_texture_size 1
                 param_named_auto ShadowColour shadow_colour
             }

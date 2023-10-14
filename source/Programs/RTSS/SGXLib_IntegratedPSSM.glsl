@@ -65,45 +65,45 @@ void SGX_ApplyShadowFactor_Modulative(in vec4 ambient,
 }
 #endif
 	
-float sampleDepth(in SAMPLER_TYPE shadowMap, vec2 uv, float depth)
+float sampleDepth(in SAMPLER_TYPE shadowTex, vec2 uv, float depth)
 {
 #ifdef PSSM_SAMPLE_CMP
 #	if defined(OGRE_GLSL) && OGRE_GLSL < 130
-	return shadow2D(shadowMap, vec3(uv, depth)).r;
+	return shadow2D(shadowTex, vec3(uv, depth)).r;
 #	else
-	return shadow2D(shadowMap, vec3(uv, depth));
+	return shadow2D(shadowTex, vec3(uv, depth));
 #	endif
 #else
-	return (depth <= texture2D(shadowMap, uv).r) ? 1.0 : 0.0;
+	return (depth <= texture2D(shadowTex, uv).r) ? 1.0 : 0.0;
 #endif
 }
 
 //-----------------------------------------------------------------------------
 #ifdef PSSM_SAMPLE_COLOUR
-void SGX_ShadowPCF4(in sampler2D shadowMap, in vec4 shadowMapPos, in vec2 invTexSize, out float c)
+void SGX_ShadowPCF4(in sampler2D shadowTex, in vec4 shadowTexPos, in vec2 invTexSize, out float c)
 {
-	c = texture2DProj(shadowMap, shadowMapPos).x;
+	c = texture2DProj(shadowTex, shadowTexPos).x;
 }
 #else
-void SGX_ShadowPCF4(in SAMPLER_TYPE shadowMap, in vec4 shadowMapPos, in vec2 invTexSize, out float c)
+void SGX_ShadowPCF4(in SAMPLER_TYPE shadowTex, in vec4 shadowTexPos, in vec2 invTexSize, out float c)
 {
-	shadowMapPos = shadowMapPos / shadowMapPos.w;
+	shadowTexPos = shadowTexPos / shadowTexPos.w;
 #if !defined(OGRE_REVERSED_Z) && !defined(OGRE_HLSL) && !defined(VULKAN)
-	shadowMapPos.z = shadowMapPos.z * 0.5 + 0.5; // convert -1..1 to 0..1
+	shadowTexPos.z = shadowTexPos.z * 0.5 + 0.5; // convert -1..1 to 0..1
 #endif
-	vec2 uv = shadowMapPos.xy;
+	vec2 uv = shadowTexPos.xy;
 
     // depth must be clamped to support floating-point depth formats. This is to avoid comparing a
     // value from the depth texture (which is never greater than 1.0) with a greater-than-one
     // comparison value (which is possible with floating-point formats).
-	float depth = clamp(shadowMapPos.z, 0.0, 1.0);
+	float depth = clamp(shadowTexPos.z, 0.0, 1.0);
 
 	c = 0.0;
 	float scale = 1.0;
 	float offset = (PCF_XSAMPLES / 2.0 - 0.5) * scale;
 	for (float y = -offset; y <= offset; y += scale)
 		for (float x = -offset; x <= offset; x += scale)
-			c += sampleDepth(shadowMap, uv + invTexSize * vec2(x, y), depth);
+			c += sampleDepth(shadowTex, uv + invTexSize * vec2(x, y), depth);
 
 	c /= PCF_XSAMPLES * PCF_XSAMPLES;
 }
@@ -113,21 +113,21 @@ void SGX_ShadowPCF4(in SAMPLER_TYPE shadowMap, in vec4 shadowMapPos, in vec2 inv
 void SGX_ComputeShadowFactor_PSSM3(in float fDepth,
 							in vec4 vSplitPoints,	
 							in vec4 lightPosition0,
-							in SAMPLER_TYPE shadowMap0,
-							in vec2 invShadowMapSize0,
+							in SAMPLER_TYPE shadowTex0,
+							in vec2 invShadowTexSize0,
 							#if PSSM_NUM_SPLITS > 2
 							in vec4 lightPosition1,
-							in SAMPLER_TYPE shadowMap1,
-							in vec2 invShadowMapSize1,
+							in SAMPLER_TYPE shadowTex1,
+							in vec2 invShadowTexSize1,
 							#endif
 							#if PSSM_NUM_SPLITS > 3
 							in vec4 lightPosition2,
-							in SAMPLER_TYPE shadowMap2,
-							in vec2 invShadowMapSize2,
+							in SAMPLER_TYPE shadowTex2,
+							in vec2 invShadowTexSize2,
 							#endif
 							in vec4 lightPosition3,
-							in SAMPLER_TYPE shadowMap3,
-							in vec2 invShadowMapSize3,
+							in SAMPLER_TYPE shadowTex3,
+							in vec2 invShadowTexSize3,
 							out float oShadowFactor
 							#ifdef DEBUG_PSSM
 							, out vec4 oDiffuse
@@ -145,7 +145,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float fDepth,
 
 	if (fDepth  <= vSplitPoints.x)
 	{
-		SGX_ShadowPCF4(shadowMap0, lightPosition0, invShadowMapSize0, oShadowFactor);
+		SGX_ShadowPCF4(shadowTex0, lightPosition0, invShadowTexSize0, oShadowFactor);
 #ifdef DEBUG_PSSM
         oDiffuse.r += 1.0;
 #endif
@@ -153,7 +153,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float fDepth,
 #if PSSM_NUM_SPLITS > 2
 	else if (fDepth <= vSplitPoints.y)
 	{
-		SGX_ShadowPCF4(shadowMap1, lightPosition1, invShadowMapSize1, oShadowFactor);
+		SGX_ShadowPCF4(shadowTex1, lightPosition1, invShadowTexSize1, oShadowFactor);
 #ifdef DEBUG_PSSM
         oDiffuse.g += 1.0;
 #endif
@@ -162,7 +162,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float fDepth,
 #if PSSM_NUM_SPLITS > 3
 	else if (fDepth <= vSplitPoints.z)
 	{
-		SGX_ShadowPCF4(shadowMap2, lightPosition2, invShadowMapSize2, oShadowFactor);
+		SGX_ShadowPCF4(shadowTex2, lightPosition2, invShadowTexSize2, oShadowFactor);
 #ifdef DEBUG_PSSM
 		oDiffuse.r += 1.0;
         oDiffuse.g += 1.0;
@@ -171,7 +171,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float fDepth,
 #endif
 	else if (fDepth <= vSplitPoints.w)
 	{
-		SGX_ShadowPCF4(shadowMap3, lightPosition3, invShadowMapSize3, oShadowFactor);
+		SGX_ShadowPCF4(shadowTex3, lightPosition3, invShadowTexSize3, oShadowFactor);
 #ifdef DEBUG_PSSM
         oDiffuse.b += 1.0;
 #endif

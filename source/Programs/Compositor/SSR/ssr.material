@@ -19,9 +19,9 @@ material SSR : RayCast
         {
             fragment_program_ref ssr
             {
-                param_named DepthMap int 0
-                param_named NormalMap int 1
-                param_named GlossMap int 2
+                param_named DepthTex int 0
+                param_named NormalTex int 1
+                param_named GlossTex int 2
             }
 
             texture_unit Depth
@@ -94,8 +94,8 @@ material ssrMod : STD
             fragment_program_ref ssrMod
             {
                 param_named RT int 0
-                param_named SsrMap int 1
-                param_named GlossMap int 2
+                param_named SsrTex int 1
+                param_named GlossTex int 2
             }
 
             texture_unit RT

@@ -21,9 +21,9 @@
 #define JITT_SCALE 0.01
 #define LLIMITER 0.1
 
-uniform sampler2D DepthMap;
-uniform sampler2D NormalMap;
-uniform sampler2D GlossMap;
+uniform sampler2D DepthTex;
+uniform sampler2D NormalTex;
+uniform sampler2D GlossTex;
 uniform mediump mat4 ProjMatrix;
 uniform mediump float ClipDistance;
 
@@ -40,7 +40,7 @@ mediump vec2 BinarySearch(inout mediump vec3 position, mediump vec3 direction)
         mediump vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
         nuv.xy /= nuv.w;
 
-        mediump float depth = texture2D(DepthMap, nuv.xy).x;
+        mediump float depth = texture2D(DepthTex, nuv.xy).x;
         mediump float delta = -position.z / ClipDistance - depth;
 
         direction *= 0.5;
@@ -65,7 +65,7 @@ mediump vec2 RayCast(inout mediump vec3 position, mediump vec3 direction)
         nuv = mul(ProjMatrix, vec4(position, 1.0));
         nuv.xy /= nuv.w;
 
-        mediump float depth = texture2D(DepthMap, nuv.xy).x;
+        mediump float depth = texture2D(DepthTex, nuv.xy).x;
         mediump float delta = -position.z / ClipDistance - depth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
@@ -93,11 +93,11 @@ in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    mediump vec2 gloss = texture2D(GlossMap, vUV0).rg;
+    mediump vec2 gloss = texture2D(GlossTex, vUV0).rg;
     mediump float metallic = gloss.r;
     mediump float roughness = gloss.g;
-    mediump float clampedDepth = texture2D(DepthMap, vUV0).x;
-    mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
+    mediump float clampedDepth = texture2D(DepthTex, vUV0).x;
+    mediump vec3 normal = texture2D(NormalTex, vUV0).xyz;
 
     if (metallic < 0.04 || clampedDepth > 0.5 || clampedDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
         return;

@@ -89,70 +89,70 @@ mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const me
         , 0.0);
 }
 
-vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvMap, const mediump vec3 n) {
+vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvTex, const mediump vec3 n) {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
-    return textureCubeLod(SpecularEnvMap, n, 9.0).rgb;
+    return textureCubeLod(SpecularEnvTex, n, 9.0).rgb;
 }
 
 #define NUM_TEXTURES 0
 #ifdef HAS_BASECOLORMAP
-uniform sampler2D AlbedoMap;
+uniform sampler2D AlbedoTex;
 #define NUM_TEXTURES 1
 #endif // HAS_BASECOLORMAP
 #ifdef HAS_NORMALMAP
-uniform sampler2D NormalMap;
+uniform sampler2D NormalTex;
 #define NUM_TEXTURES 2
 #endif // HAS_NORMALMAP
 #ifdef HAS_ORM
-uniform sampler2D OrmMap;
+uniform sampler2D OrmTex;
 #define NUM_TEXTURES 3
 #endif // HAS_ORM
 #ifdef HAS_EMISSIVEMAP
-uniform sampler2D EmissiveMap;
+uniform sampler2D EmissiveTex;
 #define NUM_TEXTURES 4
 #endif // HAS_EMISSIVEMAP
 #ifdef HAS_IBL
-uniform samplerCube SpecularEnvMap;
+uniform samplerCube SpecularEnvTex;
 #define NUM_TEXTURES 5
 #endif // HAS_IBL
 #ifdef TERRA_NORMALMAP
-uniform sampler2D TerraNormalMap;
+uniform sampler2D TerraNormalTex;
 #define NUM_TEXTURES 3
 #endif // TERRA_NORMALMAP
 #ifdef TERRA_LIGHTMAP
-uniform sampler2D TerraLightMap;
+uniform sampler2D TerraLightTex;
 #define NUM_TEXTURES 4
 #endif
 #if MAX_SHADOW_TEXTURES > 0
 #if MAX_SHADOW_TEXTURES > 0
-uniform sampler2D ShadowMap0;
+uniform sampler2D ShadowTex0;
 #endif
 #if MAX_SHADOW_TEXTURES > 1
-uniform sampler2D ShadowMap1;
+uniform sampler2D ShadowTex1;
 #endif
 #if MAX_SHADOW_TEXTURES > 2
-uniform sampler2D ShadowMap2;
+uniform sampler2D ShadowTex2;
 #endif
 #if MAX_SHADOW_TEXTURES > 3
-uniform sampler2D ShadowMap3;
+uniform sampler2D ShadowTex3;
 #endif
 #if MAX_SHADOW_TEXTURES > 4
-uniform sampler2D ShadowMap4;
+uniform sampler2D ShadowTex4;
 #endif
 #if MAX_SHADOW_TEXTURES > 5
-uniform sampler2D ShadowMap5;
+uniform sampler2D ShadowTex5;
 #endif
 #if MAX_SHADOW_TEXTURES > 6
-uniform sampler2D ShadowMap6;
+uniform sampler2D ShadowTex6;
 #endif
 #if MAX_SHADOW_TEXTURES > 7
-uniform sampler2D ShadowMap7;
+uniform sampler2D ShadowTex7;
 #endif
 #endif // MAX_SHADOW_TEXTURES > 0
 
 uniform mediump vec3 iblSH[9];
 #ifdef TERRA_LIGHTMAP
-uniform mediump vec2 InvTerraLightMapSize;
+uniform mediump vec2 InvTerraLightTexSize;
 #endif
 uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
@@ -220,7 +220,7 @@ uniform mediump vec2 ShadowTexel7;
 mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
     if (iblSH[0].r >= HALF_MAX_MINUS1) {
-        return LINEARtoSRGB(textureCubeLod(SpecularEnvMap, n, 9.0).rgb);
+        return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, n, 9.0).rgb);
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
     }
@@ -229,17 +229,17 @@ mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump float perceptualRoughness)
 {
 #ifdef USE_TEX_LOD
-    return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvMap, reflection, perceptualRoughness * 9.0).rgb));
+    return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb));
 #else
-    return LINEARtoSRGB(textureCube(SpecularEnvMap, reflection).rgb);
+    return LINEARtoSRGB(textureCube(SpecularEnvTex, reflection).rgb);
 #endif
 }
 #endif // HAS_IBL
 
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
+// Precomputed Environment Texs are required uniform inputs and are computed as outlined in [1].
+// See our README.md on Environment Texs [3] for additional discussion.
 mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
@@ -266,7 +266,7 @@ highp vec3 GetNormal(const highp vec3 normal, highp mat3 tbn, const mediump vec2
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
-    highp vec3 ng = texture2D(TerraNormalMap, uv1).xyz * 2.0 - 1.0;
+    highp vec3 ng = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
     highp vec3 b = normalize(cross(ng, t));
     t = normalize(cross(ng ,b));
     tbn = mtxFromCols3x3(t, b, ng);
@@ -342,12 +342,12 @@ void main()
     highp vec2 uv = vUV0.xy * (1.0 + TexScale);
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
-    uv -= (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalMap, uv).a));
+    uv -= (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalTex, uv).a));
 #endif
 
     mediump vec4 colour;
 #ifdef HAS_BASECOLORMAP
-    colour = texture2D(AlbedoMap, uv);
+    colour = texture2D(AlbedoTex, uv);
 #ifdef HAS_ALPHA
     if (colour.a < 0.5) discard;
 #endif
@@ -355,17 +355,17 @@ void main()
 
     mediump vec3 ORM;
 #ifdef HAS_ORM
-    ORM = texture2D(OrmMap, uv).rgb;
+    ORM = texture2D(OrmTex, uv).rgb;
 #endif
 
     mediump vec3 emission;
 #ifdef HAS_EMISSIVEMAP
-    emission = texture2D(EmissiveMap, uv).xyz;
+    emission = texture2D(EmissiveTex, uv).xyz;
 #endif
 
     highp vec3 normal;
 #ifdef HAS_NORMALMAP
-    normal = texture2D(NormalMap, uv).xyz;
+    normal = texture2D(NormalTex, uv).xyz;
 #endif
 
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
@@ -464,7 +464,7 @@ void main()
 
 #ifdef TERRA_LIGHTMAP
         if (i == 0) {
-            light *= FetchTerraShadow(TerraLightMap, vUV0.xy, InvTerraLightMapSize);
+            light *= FetchTerraShadow(TerraLightTex, vUV0.xy, InvTerraLightTexSize);
         }
 #endif
 

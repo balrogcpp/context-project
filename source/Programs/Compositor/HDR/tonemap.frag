@@ -15,7 +15,7 @@
 
 uniform sampler2D RT;
 
-// https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/FinalToneMapping_ps.glsl
+// https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/FinalToneTexping_ps.glsl
 in highp vec2 vUV0;
 void main()
 {

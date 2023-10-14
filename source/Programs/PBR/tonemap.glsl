@@ -68,7 +68,7 @@ highp vec3 tonemap(const highp vec3 inColour, const highp float lum)
     return color;
 }
 
-// Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
+// Narkowicz 2015, "ACES Filmic Tone Texping Curve"
 highp vec3 aces(const highp vec3 x) {
     const highp float a = 2.51;
     const highp float b = 0.03;

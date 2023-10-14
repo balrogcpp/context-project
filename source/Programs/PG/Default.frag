@@ -15,7 +15,7 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 
-uniform sampler2D texMap;
+uniform sampler2D texTex;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
 uniform mediump float FarClipDistance;
@@ -26,7 +26,7 @@ in mediump vec4 oColour;
 in mediump float oFogCoord;
 void main()
 {
-    mediump vec4 s = texture2D(texMap, oUV.xy);
+    mediump vec4 s = texture2D(texTex, oUV.xy);
     mediump vec3 color = s.rgb;
     mediump float alpha = s.a;
 

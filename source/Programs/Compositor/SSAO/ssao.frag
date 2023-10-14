@@ -14,8 +14,8 @@
 #include "header.glsl"
 #include "mosaic.glsl"
 
-uniform sampler2D DepthMap;
-uniform sampler2D NormalMap;
+uniform sampler2D DepthTex;
+uniform sampler2D NormalTex;
 uniform mediump mat4 ProjMatrix;
 uniform mediump float ClipDistance;
 
@@ -60,14 +60,14 @@ void main()
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    mediump float clampedPixelDepth = texture2D(DepthMap, vUV0).x;
+    mediump float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
     mediump float pixelDepth = clampedPixelDepth * ClipDistance;
     mediump vec3 viewPos = vRay * clampedPixelDepth;
     mediump vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedPixelDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    mediump vec3 normal = texture2D(NormalMap, vUV0).xyz;
+    mediump vec3 normal = texture2D(NormalTex, vUV0).xyz;
 
     if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
@@ -88,7 +88,7 @@ void main()
         nuv.xy /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float clampedSampleDepth = texture2D(DepthMap, nuv.xy).x;
+        mediump float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
         mediump float sampleDepth = clampedSampleDepth * ClipDistance;
         mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(clampedSampleDepth, oSample.z);
 

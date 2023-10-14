@@ -13,7 +13,7 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform sampler2D SsaoMap;
+uniform sampler2D SsaoTex;
 uniform mediump vec2 TexelSize0;
 uniform mediump vec4 ShadowColour;
 
@@ -34,7 +34,7 @@ in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump float ssao = Gauss9V(SsaoMap, vUV0, TexelSize0);
+    mediump float ssao = Gauss9V(SsaoTex, vUV0, TexelSize0);
 
     color *= clamp(ssao + ShadowColour.g, 0.0, 1.0);
     FragColor = vec4(SafeHDR(color), 1.0);

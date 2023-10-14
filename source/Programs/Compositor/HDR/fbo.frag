@@ -14,7 +14,7 @@
 
 uniform sampler2D RT;
 uniform sampler2D Lum;
-uniform sampler2D DepthMap;
+uniform sampler2D DepthTex;
 uniform mediump vec2 TexelSize0;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
@@ -48,7 +48,7 @@ void main()
 {
     mediump vec3 color = Downscale13(RT, vUV0, TexelSize0).rgb;
     mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
-    mediump float depth = texture2D(DepthMap, vUV0).x;
+    mediump float depth = texture2D(DepthTex, vUV0).x;
 
     //color *= lum;
 

@@ -13,7 +13,7 @@
 #include "header.glsl"
 
 #ifdef SHADOWCASTER_ALPHA
-uniform sampler2D AlbedoMap;
+uniform sampler2D AlbedoTex;
 #endif
 
 #ifdef SHADOWCASTER_ALPHA
@@ -22,7 +22,7 @@ in highp vec2 vUV0;
 void main()
 {
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(AlbedoMap, vUV0.xy).a < 0.5) {
+    if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) {
         discard;
     }
 #endif

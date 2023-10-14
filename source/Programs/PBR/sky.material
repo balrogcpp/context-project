@@ -32,7 +32,7 @@ material SkyBox
     receive_shadows off
     transparency_casts_shadows off
 
-    set $CubeMap white.dds
+    set $CubeTex white.dds
 
 	technique
 	{
@@ -48,7 +48,7 @@ material SkyBox
 
 			texture_unit CubeMap
 			{
-				texture $CubeMap cubic
+				texture $CubeTex cubic
 			}
 		}
 	}
