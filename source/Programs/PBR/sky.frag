@@ -59,8 +59,6 @@ void main()
 {
     FragData[MRT_DEPTH] = vec4((vScreenPosition.z - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
     FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
-    FragData[MRT_NORMALS] = vec4(0.0, 0.0, 0.0, 0.0);
-    FragData[MRT_GLOSS] = vec4(0.0, 0.0, 1.0, 1.0);
 
 //#ifdef CHECKERBOARD
 //    if (ExcludePixel()) return;

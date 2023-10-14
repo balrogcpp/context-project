@@ -350,7 +350,7 @@ void main()
     mediump vec3 albedo = c.rgb;
     mediump float alpha = c.a;
 #ifdef HAS_ALPHA
-    if (alpha <= 0.5) discard;
+    if (alpha < 0.5) discard;
 #endif
 
     mediump vec3 ORM = GetORM(uv, alpha);
