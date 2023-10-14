@@ -360,10 +360,9 @@ void main()
     mediump vec3 emission = GetEmission(uv);
 
     // Normal at surface point
+    highp vec3 normal;
 #ifdef HAS_NORMALMAP
-    highp vec3 normal = texture2D(NormalMap, uv).xyz;
-#else
-    highp vec3 normal = vec3(0.0, 0.0, 0.0);
+    normal = texture2D(NormalMap, uv).xyz;
 #endif
 
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
