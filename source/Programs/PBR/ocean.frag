@@ -69,23 +69,21 @@ mediump float fresnelDielectric(const mediump vec3 incoming, const mediump vec3 
 
 in highp vec3 vWorldPosition;
 in mediump vec4 vProjectionCoord;
+in mediump vec4 vScreenPosition;
 void main()
 {
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
 
-    bool aboveWater = CameraPosition.y > vWorldPosition.y;
-
-    mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
-
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
     highp vec3 normal0 = 2.0 * texture2D(NormapMap, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
-    highp vec3 normal = normal0 * BigWaves.x;
-    highp vec3 lNormal = normal0 * BigWaves.x * 0.5;
-
 #ifdef CHECKERBOARD
     if (ExcludePixel()) return;
 #endif
 
+    mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
+    bool aboveWater = CameraPosition.y > vWorldPosition.y;
+    highp vec3 normal = normal0 * BigWaves.x;
+    highp vec3 lNormal = normal0 * BigWaves.x * 0.5;
 #if MAX_WATER_OCTAVES > 0
     nCoord = vWorldPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
     highp vec3 normal1 = 2.0 * texture2D(NormapMap, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
@@ -121,8 +119,8 @@ void main()
     lNormal = normalize(lNormal);
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
     FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
-    normal = normalize(normal);
 
+    normal = normalize(normal);
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space 
     highp vec3 vVec = normalize(CameraPosition - vWorldPosition);
     highp vec3 lVec = WorldSpaceLightPos0.xyz;

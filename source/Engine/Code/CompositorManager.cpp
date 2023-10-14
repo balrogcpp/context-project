@@ -118,7 +118,7 @@ void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
   this->plane = plane;
 
   if (!IsCompositorInChain("Fresnel")) {
-    auto *compositor = compositorManager->addCompositor(ogreViewport, "Fresnel");
+    auto *compositor = compositorManager->addCompositor(ogreViewport, "Fresnel", 0);
     ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
     compositorManager->setCompositorEnabled(ogreViewport, "Fresnel", true);
     auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
