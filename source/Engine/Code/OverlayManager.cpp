@@ -23,7 +23,6 @@ void OverlayManager::OnKeyEvent(SDL_Scancode key, bool pressed) {
   }
 }
 
-
 void OverlayManager::OnSizeChanged(int x, int y, uint32_t id) {
   if (x <= 0 || y <= 0) {
     return;

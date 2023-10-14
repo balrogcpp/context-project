@@ -20,10 +20,9 @@ SystemLocator::SystemLocator() : lockFps(true), targetFps(60) {
   targetFps = 30;
 #endif
 }
+
 SystemLocator::~SystemLocator() {
   OnClean();
-  Ogre::Root::getSingleton().removeFrameListener(this);
-  InputSequencer::GetInstance().UnregWindowListener(this);
 }
 
 void SystemLocator::Init() {

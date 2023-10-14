@@ -262,7 +262,7 @@ VideoManager::VideoManager()
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
       shadowTechnique(Ogre::SHADOWTYPE_NONE),
-      pssmSplitCount(3),
+      pssmSplitCount(2),
       shadowFarDistance(400.0),
       shadowTexSize(512),
       gamepadSupport(true),
@@ -345,6 +345,15 @@ void VideoManager::InitSDL() {
   int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
   if (!result) LogError("SDL_Init failed", SDL_GetError());
   ASSERTION(!result, "Failed to init SDL");
+
+#ifdef DESKTOP
+  string path = FindPath("gamecontrollerdb.txt", 1);
+  if (!path.empty()) {
+    result = SDL_GameControllerAddMappingsFromFile(path.c_str());
+    if (result == -1) LogError("gamecontrollerdb.txt not found", SDL_GetError());
+    ASSERTION(result != -1, "gamecontrollerdb.txt not found");
+  }
+#endif
 }
 
 class MutedLogListener final : public Ogre::LogListener {

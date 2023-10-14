@@ -7,9 +7,6 @@
 
 inline int ErrorWindow(const std::string &title, const std::string &text) noexcept {
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), text.c_str(), nullptr);
-  // this creates Singleton error on crash
-  //static auto &logManager = Ogre::LogManager::getSingleton();
-  //logManager.logError("ErrorWindow: [" + title + "] " + text);
 #ifdef __EMSCRIPTEN__
   emscripten_pause_main_loop();
 #endif

@@ -8,9 +8,7 @@ using namespace std;
 
 namespace gge {
 CompositorManager::CompositorManager()
-    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {
-  if (RenderSystemIsGLES2()) MRT_COMPOSITOR = "MRT2";
-}
+    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {}
 
 CompositorManager::~CompositorManager() = default;
 
@@ -60,9 +58,9 @@ class RefrTexListener : public Ogre::RenderTargetListener {
     ogrePlane = plane;
   }
 
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->enableCustomNearClipPlane(ogrePlane); }
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override { ogreCamera->enableCustomNearClipPlane(ogrePlane); }
 
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) { ogreCamera->disableCustomNearClipPlane(); }
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override { ogreCamera->disableCustomNearClipPlane(); }
 
  private:
   Ogre::Camera *ogreCamera = nullptr;
@@ -100,11 +98,26 @@ void CompositorManager::OnSetUp() {
   viewportDimensionsChanged(ogreViewport);
 }
 
+void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
+
+void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
+  if (name == "Fresnel") {
+    AddFresnelCompositor(plane);
+    return;
+  }
+
+  auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
+  ASSERTION(compositor, "[CompositorManager] Failed to add MRT compositor");
+  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+}
+
 void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
   this->plane = plane;
 
   if (!IsCompositorInChain("Fresnel")) {
-    AddCompositor("Fresnel", true, 0);
+    auto *compositor = compositorManager->addCompositor(ogreViewport, "Fresnel");
+    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
+    compositorManager->setCompositorEnabled(ogreViewport, "Fresnel", true);
     auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
     rt1->addListener(new ReflTexListener(ogreCamera, Ogre::Plane(plane.normal, -plane.d)));
     auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
@@ -147,14 +160,6 @@ void CompositorManager::DestroyCubeCamera() {
 
     ogreSceneManager->destroyCamera(cubeCamera);
   }
-}
-
-void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
-
-void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
-  auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
-  ASSERTION(compositor, "[CompositorManager] Failed to add MRT compositor");
-  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {
@@ -209,13 +214,7 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    if (compositorName == "Fresnel") {
-      AddFresnelCompositor(plane);
-    } else {
-      auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
-      ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
-    }
-
+    AddCompositor(compositorName, false);
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
@@ -238,6 +237,10 @@ void CompositorManager::InitMRT(bool enable) {
   ASSERTION(tech->getTextureDefinition("mrt"), "[CompositorManager] mrt texture failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
+
+  if (RenderSystemIsGLES2()) {
+    AddCompositor("Reconstructor", true);
+  }
 }
 
 void CompositorManager::InitMipChain(bool enable) {
@@ -294,13 +297,7 @@ void CompositorManager::ApplyCachedCompositorChain() {
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    if (compositorName == "Fresnel") {
-      AddFresnelCompositor(plane);
-    } else {
-      auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
-      ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
-    }
-
+    AddCompositor(compositorName, false);
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
@@ -340,13 +337,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    if (compositorName == "Fresnel") {
-      AddFresnelCompositor(plane);
-    } else {
-      auto *compositor = compositorManager->addCompositor(viewport, compositorName);
-      ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
-    }
-
+    AddCompositor(compositorName, false);
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
