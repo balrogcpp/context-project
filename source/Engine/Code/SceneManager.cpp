@@ -315,18 +315,22 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-  if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) {
-    return;
-  }
-
+  if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) return;
   const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
 
-  // apply for entities, skip grass
+  fp->setNamedConstant("PssmSplitPoints", pssmPoints);
+  // fp->setNamedConstant("IsEven", Ogre::Real(isEven));
+
+  // apply for dynamic entities only
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    if (subentity->getParent()->getMesh()->isReloadable()) {
+    auto *entity = subentity->getParent();
+    auto mass = entity->getUserObjectBindings().getUserAny("mass");
+    if (!mass.has_value()) return;
+    if (Ogre::any_cast<Ogre::Real>(mass) == 0.0) return;
+    if (entity->getMesh()->isReloadable()) {
       Ogre::Matrix4 MVP;
       rend->getWorldTransforms(&MVP);
       Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
@@ -334,9 +338,6 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
       if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevMVP));
     }
   }
-
-  fp->setNamedConstant("PssmSplitPoints", pssmPoints);
-  fp->setNamedConstant("IsEven", Ogre::Real(isEven));
 }
 
 }  // namespace gge

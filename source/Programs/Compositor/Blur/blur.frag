@@ -28,16 +28,16 @@ in highp vec3 vRay;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    highp float clampedDepth = texture2D(DepthTex, vUV0).x;
-    mediump vec2 velocity = texture2D(VelocityTex, vUV0).xy;
+    mediump float clampedDepth = texture2D(DepthTex, vUV0).x;
+    mediump vec2 velocity = 0.5 * texture2D(VelocityTex, vUV0).xy;
 
     if (Null(velocity)) {
-        highp vec3 viewPos = vRay * clampedDepth;
-        highp vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
+        mediump vec3 viewPos = vRay * clampedDepth;
+        mediump vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
         worldPos.xyz /= worldPos.w;
-        highp vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
+        mediump vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
         nuv.xy /= nuv.w;
-        velocity = (nuv.xy - vUV0.xy);
+        velocity = 0.5 * (nuv.xy - vUV0.xy);
     }
 
     mediump float speed = length(velocity * TexSize1);

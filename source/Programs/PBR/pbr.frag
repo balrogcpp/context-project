@@ -338,6 +338,9 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 void main()
 {
+    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
+    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
+
     highp vec2 uv = vUV0.xy * (1.0 + TexScale);
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
@@ -366,9 +369,6 @@ void main()
 #ifdef HAS_NORMALMAP
     n = texture2D(NormalTex, uv).xyz;
 #endif
-
-    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-    FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
 
 #ifdef CHECKERBOARD
     if (ExcludePixel()) return;
