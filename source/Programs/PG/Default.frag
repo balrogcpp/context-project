@@ -42,8 +42,5 @@ void main()
 #ifndef HAS_MRT
     color = LINEARtoSRGB(color);
 #endif
-    FragColor = vec4(SafeHDR(color), alpha);
-#ifdef HAS_MRT
-    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-#endif
+    EvaluateBuffer(SafeHDR(color), alpha);
 }

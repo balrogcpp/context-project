@@ -24,8 +24,8 @@ uniform sampler2D RefractionTex;
 uniform sampler2D CameraDepthTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
-uniform highp float FarClipDistance;
-uniform highp float NearClipDistance;
+//uniform highp float FarClipDistance;
+//uniform highp float NearClipDistance;
 uniform highp vec4 Time;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
@@ -190,9 +190,8 @@ void main()
 #ifndef HAS_MRT
     color = LINEARtoSRGB(color);
 #endif
-    FragColor = vec4(SafeHDR(color), 1.0);
+    EvaluateBuffer(SafeHDR(color), 1.0);
 #ifdef HAS_MRT
-    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
     FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(lNormal, 0.0)).xyz), 1.0);
 #endif
 }

@@ -171,8 +171,8 @@ uniform mediump vec4 SurfaceSpecularColour;
 uniform mediump vec4 SurfaceEmissiveColour;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-uniform highp float FarClipDistance;
-uniform highp float NearClipDistance;
+//uniform highp float FarClipDistance;
+//uniform highp float NearClipDistance;
 uniform mediump float TexScale;
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
@@ -481,9 +481,8 @@ void main()
 #ifndef HAS_MRT
     color = LINEARtoSRGB(color);
 #endif
-    FragColor = vec4(SafeHDR(color), alpha);
+    EvaluateBuffer(SafeHDR(color), alpha);
 #ifdef HAS_MRT
-    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
     if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
     FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
     FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);

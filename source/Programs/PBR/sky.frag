@@ -19,8 +19,8 @@ uniform highp vec3 SunDirection;
 uniform highp float SunSize;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-uniform highp float FarClipDistance;
-uniform highp float NearClipDistance;
+//uniform highp float FarClipDistance;
+//uniform highp float NearClipDistance;
 
 #ifdef GPU_HOSEK
 #include "hosek.glsl"
@@ -75,8 +75,5 @@ void main()
 #ifdef HAS_MRT
     color = SRGBtoLINEAR(color);
 #endif
-    FragColor = vec4(SafeHDR(color), 1.0);
-#ifdef HAS_MRT
-        FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-#endif
+    EvaluateBuffer(SafeHDR(color), 1.0);
 }
