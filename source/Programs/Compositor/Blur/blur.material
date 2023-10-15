@@ -8,6 +8,11 @@ fragment_program Blur glsl glsles hlsl
     source blur.frag
 
     preprocessor_defines MAX_SAMPLES=3
+
+    default_params
+    {
+        param_named_auto FrameTime frame_time
+    }
 }
 
 material Blur : RayCast
