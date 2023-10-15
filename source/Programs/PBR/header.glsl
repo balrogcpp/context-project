@@ -23,6 +23,13 @@ precision lowp sampler2D;
 precision lowp samplerCube;
 #endif
 
+#ifdef HAS_MRT
+#define MRT_COLOR 0
+#define MRT_DEPTH 1
+#define MRT_VELOCITY 2
+#define MRT_NORMALS 3
+#define MRT_GLOSS 4
+#endif
 
 #if (defined(OGRE_GLSL) && __VERSION__ >= 150) || (defined(OGRE_GLSLES) && __VERSION__ >= 300)
 #ifdef OGRE_VERTEX_SHADER
@@ -33,6 +40,7 @@ precision lowp samplerCube;
 #define varying in
 #ifdef HAS_MRT
 out vec4 FragData[MAX_MRT_TEXTURES];
+#define FragColor FragData[MRT_COLOR]
 #else
 out vec4 FragColor;
 #endif
@@ -47,19 +55,11 @@ out vec4 FragColor;
 #define textureCubeLod textureLod
 #endif
 
-#if (defined(OGRE_GLSL) && __VERSION__ < 150) || (defined(OGRE_GLSLES) && __VERSION__ < 300)
 #ifdef OGRE_FRAGMENT_SHADER
+#if (defined(OGRE_GLSL) && __VERSION__ < 150) || (defined(OGRE_GLSLES) && __VERSION__ < 300)
 #define FragData gl_FragData
 #define FragColor gl_FragColor
 #endif
-#endif
-
-#ifdef HAS_MRT
-#define MRT_COLOR 0
-#define MRT_DEPTH 1
-#define MRT_VELOCITY 2
-#define MRT_NORMALS 3
-#define MRT_GLOSS 4
 #endif
 
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)

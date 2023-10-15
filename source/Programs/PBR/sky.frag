@@ -55,8 +55,6 @@ in highp vec3 vPosition;
 in highp vec3 vUV0;
 void main()
 {
-    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);
     highp float cos_theta = clamp(abs(V.y), 0.0, 1.0);
@@ -73,7 +71,12 @@ void main()
     }
 
     color = SkyLightExpose(color, 0.1);
-    color = SRGBtoLINEAR(color);
 
-    FragData[MRT_COLOR] = vec4(SafeHDR(color), 1.0);
+#ifdef HAS_MRT
+    color = SRGBtoLINEAR(color);
+#endif
+    FragColor = vec4(SafeHDR(color), 1.0);
+#ifdef HAS_MRT
+        FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
+#endif
 }

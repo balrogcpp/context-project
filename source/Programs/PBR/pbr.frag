@@ -338,9 +338,6 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 void main()
 {
-    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
-    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
-
     highp vec2 uv = vUV0.xy * (1.0 + TexScale);
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
@@ -380,10 +377,8 @@ void main()
     mediump float roughness = ORM.g;
     mediump float metallic = ORM.b;
     mediump float occlusion = ORM.r;
-    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
 
     GetNormal(n, vTBN, vUV0.xy);
-    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -483,5 +478,14 @@ void main()
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
-    FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
+#ifndef HAS_MRT
+    color = LINEARtoSRGB(color);
+#endif
+    FragColor = vec4(SafeHDR(color), alpha);
+#ifdef HAS_MRT
+    FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
+    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
+    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
+    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
+#endif
 }
