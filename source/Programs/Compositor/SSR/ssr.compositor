@@ -9,8 +9,8 @@ compositor SSR : STD
 {
     technique
     {
+        texture ssr target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssr target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture ssr1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture ssr2 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
@@ -40,9 +40,11 @@ compositor SSR : STD
         {
             pass render_quad
             {
-                material ssrRec
-                input 0 ssr1
-                input 1 ssr2
+                material ssrMod
+                input 0 rt
+                input 1 ssr1
+                input 2 ssr2
+                input 3 mrt 4
             }
         }
 
@@ -59,10 +61,8 @@ compositor SSR : STD
         {
             pass render_quad
             {
-                material ssrMod
-                input 0 rt
-                input 1 ssr
-                input 2 mrt 4
+                material Copy
+                input 0 ssr
             }
         }
     }

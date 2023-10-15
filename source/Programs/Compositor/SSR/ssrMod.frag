@@ -13,14 +13,15 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform sampler2D SsrTex;
+uniform sampler2D SsrTex1;
+uniform sampler2D SsrTex2;
 uniform sampler2D GlossTex;
 
 in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump vec3 ssr = texture2D(SsrTex, vUV0).rgb;
+    mediump vec3 ssr = max(texture2D(SsrTex1, vUV0).rgb, texture2D(SsrTex2, vUV0).rgb);
     mediump vec2 uv = ssr.xy;
     mediump float fresnel = ssr.z;
     mediump float metallic = texture2D(GlossTex, vUV0).r;
