@@ -14,7 +14,6 @@
 
 #ifdef SHADOWCASTER_ALPHA
 uniform sampler2D AlbedoTex;
-uniform highp float SurfaceAlphaRejection;
 #endif
 
 #ifdef SHADOWCASTER_ALPHA
@@ -23,7 +22,7 @@ in highp vec2 vUV0;
 void main()
 {
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(AlbedoTex, vUV0.xy).a < SurfaceAlphaRejection) {
+    if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) {
         discard;
     }
 #endif
