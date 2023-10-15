@@ -58,6 +58,30 @@ compositor MRT
     }
 }
 
+compositor DepthHalved
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        texture_ref mrt MRT mrt
+        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
+
+        target depth
+        {
+            pass render_quad
+            {
+                material Downscale2x2
+                input 0 mrt 1
+            }
+        }
+
+        target_output
+        {
+            input previous
+        }
+    }
+}
+
 compositor Reconstructor
 {
     technique

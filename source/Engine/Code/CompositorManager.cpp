@@ -184,7 +184,11 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 
-  if (name == BLOOM_COMPOSITOR) {
+  if (name == "SSAO" || name == "SSR") {
+    compositorManager->setCompositorEnabled(ogreViewport, "DepthHalved", enable);
+  }
+
+  else if (name == BLOOM_COMPOSITOR) {
     for (auto i : mipMask) {
       compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
     }
@@ -241,7 +245,8 @@ void CompositorManager::InitMRT(bool enable) {
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 
-  //AddCompositor("Reconstructor", true);
+  // AddCompositor("Reconstructor", true);
+  AddCompositor("DepthHalved", false);
 }
 
 void CompositorManager::InitMipChain(bool enable) {

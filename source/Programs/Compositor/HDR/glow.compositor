@@ -166,7 +166,7 @@ abstract compositor GlowIt
 {
     technique
     {
-        texture     rt  target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt  target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture_ref rt1  Glow rt1
         texture_ref rt2  Glow rt2
         texture_ref rt3  Glow rt3
