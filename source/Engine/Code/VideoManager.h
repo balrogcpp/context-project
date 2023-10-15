@@ -58,7 +58,6 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void InitOgreOverlay();
   void LoadResources();
   void InitOgreSceneManager();
-  void CreateProceduralTextures();
   void CheckGPU();
 
   /// WindowListener impl

@@ -3,9 +3,7 @@
 #include "pch.h"
 #include "VideoManager.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
-#include "FastNoiseLite/FastNoiseLite.h"
 #include "Platform.h"
-#include "Procedural/ProceduralTextureGenerator.h"
 #include "imgui_impl_sdl2.h"
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>
@@ -856,28 +854,6 @@ void VideoManager::InitOgreRTSS() {
 
   // re-generate shaders to include new SRSs
   shaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
-}
-
-void VideoManager::CreateProceduralTextures() {
-  FastNoiseLite noise(1337);
-  noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-  noise.SetFractalType(FastNoiseLite::FractalType_Ridged);
-  noise.SetFrequency(0.005);
-  noise.SetFractalOctaves(3);
-  noise.SetFractalLacunarity(2.0);
-  noise.SetFractalGain(0.7);
-
-  constexpr long texSize = 256;
-  Procedural::TextureBuffer buffer(texSize);
-  for (int y = 0; y < texSize; y++)
-    for (int x = 0; x < texSize; x++)
-      buffer.setPixel(x, y, Ogre::ColourValue(Ogre::ColourValue::White * (noise.GetNoise(float(x), float(y)) * 0.5 + 0.5)));
-
-  for (long mipSize = texSize; mipSize != 1; mipSize /= 2) {
-  }
-
-  Procedural::Normals(&buffer).process();
-  buffer.createTexture("WaterNormal.dds", Ogre::RGN_INTERNAL);
 }
 
 void VideoManager::OnSetUp() {
