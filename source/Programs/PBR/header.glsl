@@ -70,8 +70,5 @@ out vec4 FragColor;
 #include "HLSL_SM4Support.hlsl"
 #endif
 #include "math.glsl"
-#ifdef CHECKERBOARD
-#include "mosaic.glsl"
-#endif
 
 #endif // HEADER_GLSL

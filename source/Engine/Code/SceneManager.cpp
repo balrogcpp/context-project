@@ -322,7 +322,6 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   fp->setIgnoreMissingParams(true);
 
   fp->setNamedConstant("PssmSplitPoints", pssmPoints);
-  // fp->setNamedConstant("IsEven", Ogre::Real(isEven));
 
   // apply for dynamic entities only
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {

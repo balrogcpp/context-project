@@ -57,10 +57,6 @@ void main()
 {
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
 
-//#ifdef CHECKERBOARD
-//    if (ExcludePixel()) return;
-//#endif
-
     highp vec3 V = normalize(vPosition);
     highp vec3 N = normalize(-SunDirection);
     highp float cos_theta = clamp(abs(V.y), 0.0, 1.0);

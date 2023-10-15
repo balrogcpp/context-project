@@ -370,10 +370,6 @@ void main()
     n = texture2D(NormalTex, uv).xyz;
 #endif
 
-#ifdef CHECKERBOARD
-    if (ExcludePixel()) return;
-#endif
-
     GetAlbedo(colour, vColor);
     mediump vec3 albedo = colour.rgb;
     mediump float alpha = colour.a;

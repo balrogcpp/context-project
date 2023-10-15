@@ -76,9 +76,6 @@ void main()
 
     mediump vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
     highp vec3 normal0 = 2.0 * texture2D(NormapTex, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
-#ifdef CHECKERBOARD
-    if (ExcludePixel()) return;
-#endif
 
     mediump float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
