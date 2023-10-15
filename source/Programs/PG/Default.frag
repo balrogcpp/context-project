@@ -18,8 +18,6 @@
 uniform sampler2D texTex;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-uniform mediump float FarClipDistance;
-uniform mediump float NearClipDistance;
 
 in highp vec4 oUV;
 in mediump vec4 oColour;
