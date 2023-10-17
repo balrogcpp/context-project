@@ -19,7 +19,7 @@
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
 uniform sampler2D VelocityTex;
-uniform mediump vec2 TexSize1;
+uniform mediump vec2 TexSize0;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump mat4 ViewProjPrev;
 uniform mediump float FrameTime;
@@ -30,7 +30,7 @@ void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump float clampedDepth = texture2D(DepthTex, vUV0).x;
-    mediump vec2 velocity = 0.5 * (0.1666667 / FrameTime) * texture2D(VelocityTex, vUV0).xy;
+    mediump vec2 velocity = 0.5 * (0.01666667 / FrameTime) * texture2D(VelocityTex, vUV0).xy;
 
     if (Null(velocity)) {
         mediump vec3 viewPos = vRay * clampedDepth;
@@ -41,7 +41,7 @@ void main()
         velocity = 0.5 * (nuv.xy - vUV0.xy);
     }
 
-    mediump float speed = length(velocity * TexSize1);
+    mediump float speed = length(velocity * TexSize0);
     mediump float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
     mediump float invSamples = 1.0 / nSamples;
 

@@ -27,7 +27,6 @@ uniform highp mat4 ViewMatrix;
 uniform highp vec4 Time;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-uniform mediump float FrameTime;
 uniform mediump vec4 WorldSpaceLightPos0;
 uniform mediump vec4 LightColor0;
 uniform mediump vec2 BigWaves;
