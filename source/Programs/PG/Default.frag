@@ -37,8 +37,5 @@ void main()
     color = SRGBtoLINEAR(color);
     color = ApplyFog(color, FogParams, FogColour.rgb, oFogCoord);
 
-#ifndef HAS_MRT
-    color = LINEARtoSRGB(color);
-#endif
     EvaluateBuffer(SafeHDR(color), alpha);
 }

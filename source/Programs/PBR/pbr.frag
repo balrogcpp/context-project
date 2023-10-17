@@ -237,9 +237,9 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
 
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Texs are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Texs [3] for additional discussion.
-mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 n, const mediump vec3 reflection)
+// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
+// See our README.md on Environment Maps [3] for additional discussion.
+mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const highp float NdotV, const highp vec3 n, const highp vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     mediump vec3 brdf = EnvBRDFApprox(specularColor, perceptualRoughness, NdotV);
@@ -254,14 +254,13 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 
     mediump vec3 diffuse = (diffuseLight * diffuseColor);
     mediump vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
-
     return diffuse + specular;
 }
 
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-void GetNormal(inout highp vec3 n, highp mat3 tbn, const mediump vec2 uv1)
+highp vec3 GetNormal(highp mat3 tbn, const highp vec2 uv, const mediump vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -271,60 +270,70 @@ void GetNormal(inout highp vec3 n, highp mat3 tbn, const mediump vec2 uv1)
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    n *= SurfaceSpecularColour.a;
-    n = normalize(mul(tbn, (2.0 * n - 1.0)));
+    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
+    return normalize(mul(tbn, (2.0 * n - 1.0)));
 #else
-    n = tbn[2].xyz;
+    return tbn[2].xyz;
 #endif // HAS_NORMALMAP
 #else
 
 #ifdef HAS_NORMALMAP
-    n *= SurfaceSpecularColour.a;
-    n = normalize(mul(tbn, ((2.0 * n - 1.0))));
+    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
+    return normalize(mul(tbn, ((2.0 * n - 1.0))));
 #else
-    n = tbn[2].xyz;
+    return tbn[2].xyz;
 #endif // HAS_NORMALMAP
 #endif // TERRA_NORMALMAP
 }
 
-
 // Sampler helper functions
-void GetAlbedo(inout mediump vec4 color, const mediump vec4 vertexColor)
+mediump vec4 GetAlbedo(const highp vec2 uv, const mediump vec4 color)
 {
+    mediump vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
-    color *= vertexColor;
-#else
-    color = vertexColor;
+    albedo *= texture2D(AlbedoTex, uv);
 #endif
-    color *= SurfaceDiffuseColour;
-    color.rgb = SRGBtoLINEAR(color.rgb);
+#ifdef HAS_ALPHA
+    if (albedo.a < 0.5) discard;
+#endif
+
+    return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-void GetEmission(inout mediump vec3 emission)
+mediump vec3 GetEmission(const highp vec2 uv)
 {
 #ifdef HAS_EMISSIVEMAP
-    emission = SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(SurfaceSpecularColour.b * emission);
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(SurfaceSpecularColour.b * texture2D(EmissiveTex, uv).rgb);
 #else
-    emission = SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
+    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #endif
 }
 
-void GetORM(inout mediump vec3 ORM, const mediump float spec)
+mediump vec3 GetORM(const highp vec2 uv, const mediump float spec)
 {
-#ifdef HAS_ORM
-    ORM *= vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
-#else
-    ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
-#endif
-
-#ifdef TERRA_NORMALMAP
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
-    ORM.g *= (1.0 - 0.25 * pow(spec, 0.2));
-    ORM.b = 0.0;
+#ifndef TERRA_NORMALMAP
+    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+#else
+    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r * (1.0 - 0.25 * pow(spec, 0.2)), 0.0);
+#endif
+#ifdef HAS_ORM
+    ORM *= texture2D(OrmTex, uv).rgb;
 #endif
 
-    ORM = clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
+    return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
+}
+
+highp vec2 GetParallaxCoord(const highp vec2 vUV0)
+{
+#if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
+    highp vec2 uv = vUV0.xy * (1.0 + TexScale);
+    highp vec3 v = normalize(CameraPosition - vWorldPosition);
+    return uv - (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalTex, uv).a));
+#else
+    return vUV0;
+#endif
 }
 
 in highp vec3 vWorldPosition;
@@ -338,47 +347,18 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 void main()
 {
-    highp vec2 uv = vUV0.xy * (1.0 + TexScale);
-#if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
-    highp vec3 v = normalize(CameraPosition - vWorldPosition);
-    uv -= (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalTex, uv).a));
-#endif
+    highp vec2 uv = GetParallaxCoord(vUV0);
 
-    mediump vec4 colour;
-#ifdef HAS_BASECOLORMAP
-    colour = texture2D(AlbedoTex, uv);
-#ifdef HAS_ALPHA
-    if (colour.a < 0.5) discard;
-#endif
-#endif
+    mediump vec4 colour = GetAlbedo(uv, vColor);
+    mediump vec3 orm = GetORM(uv, colour.a);
+    mediump vec3 emission = GetEmission(uv);
+    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
 
-    mediump vec3 ORM;
-#ifdef HAS_ORM
-    ORM = texture2D(OrmTex, uv).rgb;
-#endif
-
-    mediump vec3 emission;
-#ifdef HAS_EMISSIVEMAP
-    emission = texture2D(EmissiveTex, uv).xyz;
-#endif
-
-    highp vec3 n;
-#ifdef HAS_NORMALMAP
-    n = texture2D(NormalTex, uv).xyz;
-#endif
-
-    GetAlbedo(colour, vColor);
     mediump vec3 albedo = colour.rgb;
     mediump float alpha = colour.a;
-
-    GetEmission(emission);
-
-    GetORM(ORM, alpha);
-    mediump float roughness = ORM.g;
-    mediump float metallic = ORM.b;
-    mediump float occlusion = ORM.r;
-
-    GetNormal(n, vTBN, vUV0.xy);
+    mediump float roughness = orm.g;
+    mediump float metallic = orm.b;
+    mediump float occlusion = orm.r;
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -457,7 +437,6 @@ void main()
             light *= FetchTerraShadow(TerraLightTex, vUV0.xy, InvTerraLightTexSize);
         }
 #endif
-
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] != 0.0) {
             light *= clamp(GetShadow(vLightSpacePosArray, vScreenPosition.z, i, texCounter) + ShadowColour.r, 0.0, 1.0);
@@ -478,13 +457,10 @@ void main()
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
-#ifndef HAS_MRT
-    color = LINEARtoSRGB(color);
-#endif
     EvaluateBuffer(SafeHDR(color), alpha);
 #ifdef HAS_MRT
-    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
     FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
     FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
+    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
 #endif
 }

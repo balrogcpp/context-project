@@ -71,9 +71,6 @@ void main()
     }
 
     color = SkyLightExpose(color, 0.1);
-
-#ifdef HAS_MRT
     color = SRGBtoLINEAR(color);
-#endif
     EvaluateBuffer(SafeHDR(color), 1.0);
 }
