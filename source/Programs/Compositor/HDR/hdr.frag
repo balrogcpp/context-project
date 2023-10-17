@@ -25,8 +25,5 @@ void main()
 
     color *= lum;
 
-//    color = uncharted2(color);
-//    color = (color - 0.5) * 1.25 + 0.5 + 0.11;
-//    FragColor.rgb = LINEARtoSRGB(SafeHDR(color));
     FragColor.rgb = SafeHDR(unreal(color));
 }
