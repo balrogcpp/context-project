@@ -64,9 +64,18 @@ mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float
     const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
     const mediump vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
     mediump vec4 r = roughness * c0 + c1;
-    mediump float a004 = min(r.x * r.x, exp2( -9.28 * NdotV )) * r.x + r.y;
+    mediump float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
     mediump vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
     return specularColor * AB.x + AB.y;
+}
+
+mediump float EnvBRDFApproxNonmetal(const mediump float roughness, const mediump float NdotV)
+{
+    // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
+    const mediump vec2 c0 = vec2(-1.0, -0.0275);
+    const mediump vec2 c1 = vec2(1.0, 0.0425);
+    mediump vec2 r = roughness * c0 + c1;
+    return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
@@ -88,9 +97,13 @@ mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const me
         , 0.0);
 }
 
-vec3 Irradiance_RoughnessOne(const samplerCube SpecularEnvTex, const mediump vec3 n) {
+mediump vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const mediump vec3 n) {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
+#ifndef GL_ES
     return textureCubeLod(SpecularEnvTex, n, 9.0).rgb;
+#else
+    return textureCube(SpecularEnvTex, n).rgb;
+#endif
 }
 
 #define NUM_TEXTURES 0
@@ -219,7 +232,11 @@ uniform mediump vec2 ShadowTexel7;
 mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
     if (iblSH[0].r >= HALF_MAX_MINUS1) {
-        return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, n, 9.0).rgb);
+#ifndef GL_ES
+    return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, n, 9.0).rgb);
+#else
+    return LINEARtoSRGB(textureCube(SpecularEnvTex, n).rgb);
+#endif
     } else {
         return Irradiance_SphericalHarmonics(iblSH, n);
     }
@@ -230,7 +247,7 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
 #ifndef GL_ES
     return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb));
 #else
-    return LINEARtoSRGB(textureCube(SpecularEnvTex, reflection).rgb);
+    return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, reflection).rgb));
 #endif
 }
 #endif // HAS_IBL
@@ -239,7 +256,7 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const highp float NdotV, const highp vec3 n, const highp vec3 reflection)
+mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     mediump vec3 brdf = EnvBRDFApprox(specularColor, perceptualRoughness, NdotV);
@@ -252,8 +269,8 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
     mediump vec3 specularLight = diffuseLight;
 #endif
 
-    mediump vec3 diffuse = (diffuseLight * diffuseColor);
-    mediump vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
+    mediump vec3 diffuse = diffuseLight * diffuseColor;
+    mediump vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
     return diffuse + specular;
 }
 
@@ -448,7 +465,8 @@ void main()
 #endif //  MAX_LIGHTS > 0
 
 // Calculate lighting contribution from image based lighting source (IBL)
-    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, n, -normalize(reflect(v, n)))));
+    mediump vec3 reflection = -normalize(reflect(v, n));
+    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, reflection)));
 
 // Apply optional PBR terms for additional (optional) shading
     color += ambient;
