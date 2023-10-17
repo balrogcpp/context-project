@@ -37,5 +37,5 @@ void main()
     color = SRGBtoLINEAR(color);
     color = ApplyFog(color, FogParams, FogColour.rgb, oFogCoord);
 
-    EvaluateBuffer(SafeHDR(color), alpha);
+    EvaluateBuffer(color, alpha);
 }

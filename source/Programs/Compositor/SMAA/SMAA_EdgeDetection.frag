@@ -35,15 +35,15 @@ void main()
 {
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2
 	#if SMAA_PREDICATION
-		FragColor = vec4(SMAAColorEdgeDetectionPS( vUV0, offset, rt_input, depthTex ), 0.0, 1.0);
+		FragColor.rg = SMAAColorEdgeDetectionPS( vUV0, offset, rt_input, depthTex );
 	#else
-		FragColor = vec4(SMAAColorEdgeDetectionPS( vUV0, offset, rt_input ), 0.0, 1.0);
+		FragColor.rg = SMAAColorEdgeDetectionPS( vUV0, offset, rt_input );
 	#endif
 #else
 	#if SMAA_PREDICATION
-		FragColor = vec4(SMAALumaEdgeDetectionPS( vUV0, offset, rt_input, depthTex ), 0.0, 1.0);
+		FragColor.rg = SMAALumaEdgeDetectionPS( vUV0, offset, rt_input, depthTex );
 	#else
-		FragColor = vec4(SMAALumaEdgeDetectionPS( vUV0, offset, rt_input ), 0.0, 1.0);
+		FragColor.rg = SMAALumaEdgeDetectionPS( vUV0, offset, rt_input );
 	#endif
 #endif
 }

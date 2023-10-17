@@ -54,5 +54,5 @@ void main()
 	mediump vec3 w = clamp((color - BrightThreshold.xxx) * BrightThreshold.yyy, 0.0, 1.0);
 	color *= w * w * (3.0 - 2.0 * w);
     
-    FragColor = vec4(color, 1.0);
+    FragColor.rgb = color;
 }

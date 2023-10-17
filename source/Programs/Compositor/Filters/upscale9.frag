@@ -38,5 +38,5 @@ mediump vec3 Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
 in highp vec2 vUV0;
 void main()
 {
-    FragColor = vec4(Upscale9(RT, vUV0, TexelSize0), 1.0);
+    FragColor.rgb = Upscale9(RT, vUV0, TexelSize0);
 }

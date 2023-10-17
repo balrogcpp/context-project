@@ -11,6 +11,8 @@
 #endif
 
 #include "header.glsl"
+#include "srgb.glsl"
+#include "tonemap.glsl"
 
 uniform sampler2D RT;
 uniform sampler2D Lum;
@@ -19,9 +21,12 @@ in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
+    mediump float lum = clamp(texture2D(Lum, vec2(0.0, 0.0)).r, 0.0, 1.0);
 
     color *= lum;
 
-    FragColor = vec4(SafeHDR(color), 1.0);
+//    color = uncharted2(color);
+//    color = (color - 0.5) * 1.25 + 0.5 + 0.11;
+//    FragColor.rgb = LINEARtoSRGB(SafeHDR(color));
+    FragColor.rgb = SafeHDR(unreal(color));
 }

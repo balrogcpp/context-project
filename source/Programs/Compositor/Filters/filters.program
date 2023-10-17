@@ -39,8 +39,3 @@ fragment_program copy glsl glsles hlsl
 {
 	source linear.frag
 }
-
-fragment_program flip glsl glsles hlsl
-{
-	source flip.frag
-}

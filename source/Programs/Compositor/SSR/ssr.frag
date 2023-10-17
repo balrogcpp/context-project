@@ -116,5 +116,5 @@ void main()
     mediump float error = 1.0 - L;
     mediump float fresnel = Fresnel(reflected, normal);
 
-    FragColor = vec4(coords, fresnel * error, 1.0);
+    FragColor.rgb = vec3(coords, fresnel * error);
 }

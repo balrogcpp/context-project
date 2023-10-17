@@ -4,30 +4,32 @@
 #define MRT_HELPER_GLSL
 #ifdef OGRE_FRAGMENT_SHADER
 
-#ifdef HAS_MRT
 uniform highp float FarClipDistance;
 uniform highp float NearClipDistance;
-#else
+
+#ifndef HAS_MRT
+#include "math.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
 #endif
 
-void EvaluateBuffer(const mediump vec3 color, const mediump float alpha)
+void EvaluateBuffer(mediump vec3 color, const mediump float alpha)
 {
 #ifdef HAS_MRT
-    FragColor = vec4(color, alpha);
+    FragColor = vec4(SafeHDR(color), alpha);
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
 #else
-    FragColor = vec4(LINEARtoSRGB(color), alpha);
+    FragColor = vec4(SafeHDR(unreal(color)), alpha);
 #endif
 }
 
-void EvaluateBuffer(const mediump vec4 color)
+void EvaluateBuffer(mediump vec3 color)
 {
 #ifdef HAS_MRT
-    FragColor = vec4(color);
+    FragColor.rgb = SafeHDR(color);
     FragData[MRT_DEPTH] = vec4((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), 0.0, 0.0, 0.0);
 #else
-    FragColor = vec4(LINEARtoSRGB(color.rgb), color.a);
+    FragColor.rgb = SafeHDR(unreal(color));
 #endif
 }
 

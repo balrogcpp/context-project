@@ -43,5 +43,5 @@ void main()
     mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize1);
     const mediump float w = 1.0 / 8.0;
 
-    FragColor = vec4(SafeHDR(rt + rt0 * w), 1.0);
+    FragColor.rgb = SafeHDR(rt + rt0 * w);
 }

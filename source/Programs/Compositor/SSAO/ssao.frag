@@ -70,7 +70,7 @@ void main()
     mediump vec3 normal = texture2D(NormalTex, vUV0).xyz;
 
     if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
-        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        FragColor.r = 1.0;
         return;
     }
 
@@ -101,5 +101,5 @@ void main()
     occ /= float(NUM_BASE_SAMPLES);
 
     // amplify and saturate if necessary
-    FragColor = vec4(occ, 0.0, 0.0, 1.0);
+    FragColor.r = occ;
 }

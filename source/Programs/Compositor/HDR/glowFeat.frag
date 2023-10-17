@@ -92,5 +92,5 @@ void main()
     //color += GhostFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
     color += HaloFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
 
-    FragColor = vec4(color, 1.0);
+    FragColor.rgb = color;
 }

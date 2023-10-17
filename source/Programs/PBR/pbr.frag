@@ -20,91 +20,6 @@
 #define SPHERICAL_HARMONICS_BANDS 3
 #endif
 
-// Basic Lambertian diffuse
-// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
-// See also [1], Equation 1
-mediump vec3 Diffuse(const mediump vec3 diffuseColor)
-{
-    return diffuseColor / M_PI;
-}
-
-// The following equation models the Fresnel reflectance term of the spec equation (aka F())
-// Implementation of fresnel from [4], Equation 15
-mediump vec3 SpecularReflection(const mediump vec3 reflectance0, const mediump vec3 reflectance90, const mediump float VdotH)
-{
-    return reflectance0 + (reflectance90 - reflectance0) * pow5(1.0 - VdotH);
-}
-
-// This calculates the specular geometric attenuation (aka G()),
-// where rougher material will reflect less light back to the viewer.
-// This implementation is based on [1] Equation 4, and we adopt their modifications to
-// alphaRoughness as input as originally proposed in [2].
-mediump float GeometricOcclusion(const mediump float NdotL, const mediump float NdotV, const mediump float r)
-{
-    mediump float r2 = (r * r);
-    mediump float r3 = (1.0 - r2);
-    mediump float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
-    mediump float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
-    return attenuationL * attenuationV;
-}
-
-// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
-// Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
-// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-highp float MicrofacetDistribution(const highp float alphaRoughness, const highp float NdotH)
-{
-    highp float roughnessSq = alphaRoughness * alphaRoughness;
-    highp float f = (NdotH * roughnessSq - NdotH) * NdotH + 1.0;
-    return roughnessSq / (M_PI * (f * f));
-}
-
-// https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
-{
-    const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
-    const mediump vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
-    mediump vec4 r = roughness * c0 + c1;
-    mediump float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
-    mediump vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
-    return specularColor * AB.x + AB.y;
-}
-
-mediump float EnvBRDFApproxNonmetal(const mediump float roughness, const mediump float NdotV)
-{
-    // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
-    const mediump vec2 c0 = vec2(-1.0, -0.0275);
-    const mediump vec2 c1 = vec2(1.0, 0.0425);
-    mediump vec2 r = roughness * c0 + c1;
-    return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
-}
-
-// https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
-mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const mediump vec3 n) {
-    return max(
-        iblSH[0]
-#if SPHERICAL_HARMONICS_BANDS >= 2
-        + iblSH[1] * (n.y)
-        + iblSH[2] * (n.z)
-        + iblSH[3] * (n.x)
-#endif
-#if SPHERICAL_HARMONICS_BANDS >= 3
-        + iblSH[4] * (n.y * n.x)
-        + iblSH[5] * (n.y * n.z)
-        + iblSH[6] * (3.0 * n.z * n.z - 1.0)
-        + iblSH[7] * (n.z * n.x)
-        + iblSH[8] * (n.x * n.x - n.y * n.y)
-#endif
-        , 0.0);
-}
-
-mediump vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const mediump vec3 n) {
-    // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
-#ifndef GL_ES
-    return textureCubeLod(SpecularEnvTex, n, 9.0).rgb;
-#else
-    return textureCube(SpecularEnvTex, n).rgb;
-#endif
-}
 
 #define NUM_TEXTURES 0
 #ifdef HAS_BASECOLORMAP
@@ -184,8 +99,6 @@ uniform mediump vec4 SurfaceSpecularColour;
 uniform mediump vec4 SurfaceEmissiveColour;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-//uniform highp float FarClipDistance;
-//uniform highp float NearClipDistance;
 uniform mediump float TexScale;
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
@@ -228,6 +141,92 @@ uniform mediump vec2 ShadowTexel7;
 #endif
 
 
+// Basic Lambertian diffuse
+// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
+// See also [1], Equation 1
+mediump vec3 Diffuse(const mediump vec3 diffuseColor)
+{
+    return diffuseColor / M_PI;
+}
+
+// The following equation models the Fresnel reflectance term of the spec equation (aka F())
+// Implementation of fresnel from [4], Equation 15
+mediump vec3 SpecularReflection(const mediump vec3 reflectance0, const mediump vec3 reflectance90, const mediump float VdotH)
+{
+    return reflectance0 + (reflectance90 - reflectance0) * pow5(1.0 - VdotH);
+}
+
+// This calculates the specular geometric attenuation (aka G()),
+// where rougher material will reflect less light back to the viewer.
+// This implementation is based on [1] Equation 4, and we adopt their modifications to
+// alphaRoughness as input as originally proposed in [2].
+mediump float GeometricOcclusion(const mediump float NdotL, const mediump float NdotV, const mediump float r)
+{
+    mediump float r2 = (r * r);
+    mediump float r3 = (1.0 - r2);
+    mediump float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
+    mediump float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
+    return attenuationL * attenuationV;
+}
+
+// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
+// Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
+// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
+highp float MicrofacetDistribution(const highp float alphaRoughness, const highp float NdotH)
+{
+    highp float roughnessSq = alphaRoughness * alphaRoughness;
+    highp float f = (NdotH * roughnessSq - NdotH) * NdotH + 1.0;
+    return roughnessSq / (M_PI * (f * f));
+}
+
+// https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
+mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
+{
+    const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
+    const mediump vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
+    mediump vec4 r = roughness * c0 + c1;
+    mediump float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
+    mediump vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
+    return specularColor * AB.x + AB.y;
+}
+
+mediump float EnvBRDFApproxNonmetal(const mediump float roughness, const mediump float NdotV)
+{
+    // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
+    const mediump vec2 c0 = vec2(-1.0, -0.0275);
+    const mediump vec2 c1 = vec2(1.0, 0.0425);
+    mediump vec2 r = roughness * c0 + c1;
+    return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
+}
+
+// https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
+mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const mediump vec3 n) {
+    return max(
+    iblSH[0]
+    #if SPHERICAL_HARMONICS_BANDS >= 2
+    + iblSH[1] * (n.y)
+    + iblSH[2] * (n.z)
+    + iblSH[3] * (n.x)
+    #endif
+    #if SPHERICAL_HARMONICS_BANDS >= 3
+    + iblSH[4] * (n.y * n.x)
+    + iblSH[5] * (n.y * n.z)
+    + iblSH[6] * (3.0 * n.z * n.z - 1.0)
+    + iblSH[7] * (n.z * n.x)
+    + iblSH[8] * (n.x * n.x - n.y * n.y)
+    #endif
+    , 0.0);
+}
+
+mediump vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const mediump vec3 n) {
+    // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
+    #ifndef GL_ES
+    return textureCubeLod(SpecularEnvTex, n, 9.0).rgb;
+    #else
+    return textureCube(SpecularEnvTex, n).rgb;
+    #endif
+}
+
 #ifdef HAS_IBL
 mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 {
@@ -244,10 +243,18 @@ mediump vec3 DiffuseIrradiance(const mediump vec3 n)
 
 mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump float perceptualRoughness)
 {
+#ifdef HAS_MRT
 #ifndef GL_ES
     return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb));
 #else
     return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, reflection).rgb));
+#endif
+#else // !HAS_MRT
+#ifndef GL_ES
+    return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb);
+#else
+    return LINEARtoSRGB(textureCube(SpecularEnvTex, reflection).rgb);
+#endif
 #endif
 }
 #endif // HAS_IBL
@@ -342,11 +349,10 @@ mediump vec3 GetORM(const highp vec2 uv, const mediump float spec)
     return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
 }
 
-highp vec2 GetParallaxCoord(const highp vec2 vUV0)
+highp vec2 GetParallaxCoord(const highp vec2 vUV0, const highp vec3 v)
 {
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
     highp vec2 uv = vUV0.xy * (1.0 + TexScale);
-    highp vec3 v = normalize(CameraPosition - vWorldPosition);
     return uv - (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalTex, uv).a));
 #else
     return vUV0;
@@ -364,7 +370,8 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 void main()
 {
-    highp vec2 uv = GetParallaxCoord(vUV0);
+    highp vec3 v = normalize(CameraPosition - vWorldPosition);
+    highp vec2 uv = GetParallaxCoord(vUV0, v);
 
     mediump vec4 colour = GetAlbedo(uv, vColor);
     mediump vec3 orm = GetORM(uv, colour.a);
@@ -392,9 +399,6 @@ void main()
 
 #if MAX_SHADOW_TEXTURES > 0
     int texCounter = 0;
-#endif
-#if !defined(HAS_PARALLAXMAP)
-    highp vec3 v = normalize(CameraPosition - vWorldPosition);
 #endif
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
@@ -475,10 +479,11 @@ void main()
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
-    EvaluateBuffer(SafeHDR(color), alpha);
+    EvaluateBuffer(color, alpha);
+
 #ifdef HAS_MRT
-    FragData[MRT_NORMALS] = vec4(normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz), 1.0);
-    FragData[MRT_GLOSS] = vec4(metallic, roughness, alpha, 0.0);
-    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY] = vec4((vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w), 0.0, 0.0);
+    FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);
+    FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
+    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = (vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w);
 #endif
 }

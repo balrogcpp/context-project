@@ -21,5 +21,5 @@ void main()
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump vec3 rays = texture2D(FBO, vUV0).rgb;
 
-    FragColor = vec4(SafeHDR(color + rays), 1.0);
+    FragColor.rgb = SafeHDR(color + rays);
 }

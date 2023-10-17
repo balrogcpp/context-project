@@ -35,7 +35,7 @@ void main()
 {
     // pixel was rendered this frame = use it
     if (PixelWasRenderedThisFrame(vUV0, TexSize0)) {
-        FragColor = vec4(SafeHDR(texture2D(MRT, vUV0).rgb), 1.0);
+        FragColor.rgb = SafeHDR(texture2D(MRT, vUV0).rgb);
         return;
     }
 
@@ -65,7 +65,7 @@ void main()
     highp float diff = abs(depth2 - depth1);
 
     if (speed < 0.01 && diff < 0.01) {
-        FragColor = vec4(SafeHDR(texture2D(RT, vUV0).rgb), 1.0);
+        FragColor.rgb = SafeHDR(texture2D(RT, vUV0).rgb);
         return;
     }
 
@@ -81,7 +81,7 @@ void main()
         mediump float deviation = diff - 0.01;
         mediump float confidence = clamp(deviation * deviation, 0.0, 1.0);
         color2 = mix(clampedColor, color2, confidence);
-        FragColor = vec4(SafeHDR(color2), 1.0);
+        FragColor.rgb = SafeHDR(color2);
         return;
     }
 
@@ -91,5 +91,5 @@ void main()
     mediump vec3 result = (A + B) * verticalWeight + (C + D) * horizontalWeight;
     result = result * 0.5 * 1.0 / (verticalWeight + horizontalWeight);
 
-    FragColor = vec4(SafeHDR(result), 1.0);
+    FragColor.rgb = SafeHDR(result);
 }

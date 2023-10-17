@@ -29,5 +29,5 @@ void main()
     if (uv.x > HALF_EPSILON && uv.y > HALF_EPSILON && uv.x <= 1.0 && uv.y <= 1.0) {
         color = mix(color, texture2D(RT, uv).rgb, metallic * fresnel);
     }
-    FragColor = vec4(SafeHDR(color), 1.0);
+    FragColor.rgb = SafeHDR(color);
 }

@@ -54,5 +54,5 @@ void main()
 
     color *= invSamples;
 
-    FragColor = vec4(SafeHDR(color), 1.0);
+    FragColor.rgb = SafeHDR(color);
 }

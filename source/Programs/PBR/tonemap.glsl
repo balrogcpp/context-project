@@ -192,7 +192,6 @@ highp float uncharted2Tonemap(const highp float x) {
 highp float uncharted2(const highp float color) {
     const highp float W = 11.2;
     const highp float exposureBias = 1.0;
-
     highp float curr = uncharted2Tonemap(exposureBias * color);
 
     return curr / uncharted2Tonemap(W);
@@ -207,6 +206,14 @@ highp vec3 unreal(const highp vec3 x) {
 
 highp float unreal(const highp float x) {
     return x / (x + 0.155) * 1.019;
+}
+
+highp vec3 Tonemap_FilmicALU(const highp vec3 x) {
+    // Hable 2010, "Filmic Tonemapping Operators"
+    // Based on Duiker's curve, optimized by Hejl and Burgess-Dawson
+    // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
+    highp vec3 c = max(vec3(0.0), x - 0.004);
+    return (c * (c * 6.2 + 0.5)) / (c * (c * 6.2 + 1.7) + 0.06);
 }
 
 #endif // TONEMAP_GLSL

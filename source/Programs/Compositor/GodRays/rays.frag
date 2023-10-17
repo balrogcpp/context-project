@@ -56,5 +56,5 @@ void main()
         color += GodRays(FBO, vUV0, point.xy, RayCount, Density, w, Decay, Exposure);
     }
 
-    FragColor = vec4(SafeHDR(color), 1.0);
+    FragColor.rgb = SafeHDR(color);
 }

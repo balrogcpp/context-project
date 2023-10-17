@@ -31,5 +31,5 @@ mediump float Gauss9H(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
 in highp vec2 vUV0;
 void main()
 {
-    FragColor = vec4(Gauss9H(RT, vUV0, TexelSize0), 0.0, 0.0, 1.0);
+    FragColor.r = Gauss9H(RT, vUV0, TexelSize0);
 }

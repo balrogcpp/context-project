@@ -39,5 +39,5 @@ void main()
     mediump float oldLum = texture2D(Lum, vec2(0.0, 0.0)).r;
     mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 
-    FragColor = vec4(SafeHDR(lum), 0.0, 0.0, 1.0);
+    FragColor.r = SafeHDR(lum);
 }

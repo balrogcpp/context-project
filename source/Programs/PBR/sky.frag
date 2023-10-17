@@ -19,8 +19,6 @@ uniform highp vec3 SunDirection;
 uniform highp float SunSize;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
-//uniform highp float FarClipDistance;
-//uniform highp float NearClipDistance;
 
 #ifdef GPU_HOSEK
 #include "hosek.glsl"
@@ -70,7 +68,6 @@ void main()
         color = SunColor;
     }
 
-    color = SkyLightExpose(color, 0.1);
-    color = SRGBtoLINEAR(color);
-    EvaluateBuffer(SafeHDR(color), 1.0);
+    color = SRGBtoLINEAR(SkyLightExpose(color, 0.1));
+    EvaluateBuffer(color, 1.0);
 }

@@ -30,5 +30,5 @@ mediump vec3 Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump ve
 in highp vec2 vUV0;
 void main()
 {
-    FragColor = vec4(Downscale2x2(RT, vUV0, TexelSize0), 1.0);
+    FragColor.rgb = Downscale2x2(RT, vUV0, TexelSize0);
 }

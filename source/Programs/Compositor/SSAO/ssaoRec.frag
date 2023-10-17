@@ -19,5 +19,5 @@ uniform sampler2D SsaoTex2;
 in highp vec2 vUV0;
 void main()
 {
-    FragColor = vec4(SafeHDR(min(texture2D(SsaoTex, vUV0).r, texture2D(SsaoTex2, vUV0).r)), 0.0, 0.0, 1.0);
+    FragColor.r = SafeHDR(min(texture2D(SsaoTex, vUV0).r, texture2D(SsaoTex2, vUV0).r));
 }

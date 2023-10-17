@@ -34,7 +34,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material Downscale2x2_F16
+                material Downscale2x2
                 input 0 rt1
             }
         }
@@ -43,7 +43,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material Downscale2x2_F16
+                material Downscale2x2
                 input 0 rt2
             }
         }
@@ -52,7 +52,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material Downscale2x2_F16
+                material Downscale2x2
                 input 0 rt3
             }
         }
@@ -83,21 +83,6 @@ compositor HDR
                 material HDR
                 input 0 rt
                 input 1 lum
-            }
-        }
-    }
-}
-
-compositor Tonemap : STD
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Tonemap
-                input 0 rt
             }
         }
     }

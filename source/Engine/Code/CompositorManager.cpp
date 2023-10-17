@@ -86,13 +86,11 @@ void CompositorManager::OnSetUp() {
   InitMRT(true);
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);
-  AddCompositor("FXAA", false);
+  AddCompositor("FXAA", true);
   AddCompositor("SMAA", false);
   AddCompositor("HDR", true);
   InitMipChain(false);
-  AddCompositor("Tonemap", true);
   AddCompositor("Blur", false);
-  AddCompositor("LINEAR2SRGB", true);
   AddCompositor("Paused", false);
 
   // reg as viewport listener

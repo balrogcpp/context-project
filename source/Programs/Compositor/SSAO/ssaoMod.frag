@@ -37,5 +37,5 @@ void main()
     mediump float ssao = Gauss9V(SsaoTex, vUV0, TexelSize0);
 
     color *= clamp(ssao + ShadowColour.g, 0.0, 1.0);
-    FragColor = vec4(SafeHDR(color), 1.0);
+    FragColor.rgb = SafeHDR(color);
 }
