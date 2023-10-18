@@ -25,7 +25,6 @@ material GlowStart : STD
 			{
                 param_named RT int 0
                 param_named Lum int 1
-                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
 			texture_unit RT
@@ -59,7 +58,6 @@ material GlowMod : STD
 			{
                 param_named RT int 0
                 param_named RT0 int 1
-                param_named_auto TexelSize1 inverse_texture_size 1
 			}
 
 			texture_unit RT
@@ -97,7 +95,6 @@ material GlowFeat : STD
             fragment_program_ref glowFeat
             {
                 param_named RT int 0
-                param_named_auto TexelSize0 inverse_texture_size 0
             }
 
             texture_unit RT

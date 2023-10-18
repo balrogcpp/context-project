@@ -23,7 +23,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform mediump vec2 TexelSize0;
 
 // https://github.com/mattdesl/glsl-fxaa/blob/master/fxaa.glsl
 mediump vec3 FastFxaa(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -292,5 +291,6 @@ mediump vec3 FxaaPixelShader(const mediump vec2 pos, sampler2D tex, const medium
 in highp vec2 vUV0;
 void main()
 {
+    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
     FragColor.rgb = SafeHDR(FxaaPixelShader(vUV0, RT, TexelSize0));
 }

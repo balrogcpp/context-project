@@ -14,7 +14,6 @@
 
 uniform sampler2D RT;
 uniform sampler2D RT0;
-uniform mediump vec2 TexelSize1;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 mediump vec3 Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -40,7 +39,8 @@ in highp vec2 vUV0;
 void main()
 {
     mediump vec3 rt = texture2D(RT, vUV0).rgb;
-    mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize1);
+    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT0, 0));
+    mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize0);
     const mediump float w = 1.0 / 8.0;
 
     FragColor.rgb = SafeHDR(rt + rt0 * w);

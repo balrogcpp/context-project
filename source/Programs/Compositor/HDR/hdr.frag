@@ -21,9 +21,8 @@ in highp vec2 vUV0;
 void main()
 {
     mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump float lum = clamp(texture2D(Lum, vec2(0.0, 0.0)).r, 0.0, 1.0);
+    mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
 
     color *= lum;
-
     FragColor.rgb = SafeHDR(unreal(color));
 }

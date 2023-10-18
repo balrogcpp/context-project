@@ -88,7 +88,6 @@ material ssaoMod : STD
             {
                 param_named RT int 0
                 param_named SsaoTex int 1
-                param_named_auto TexelSize0 inverse_texture_size 1
                 param_named_auto ShadowColour shadow_colour
             }
 
@@ -127,7 +126,6 @@ material SSAOX : STD
 			fragment_program_ref ssaox
 			{
                 param_named RT int 0
-                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
             texture_unit RT
@@ -148,7 +146,6 @@ material SSAOY : STD
 			fragment_program_ref ssaoy
 			{
                 param_named RT int 0
-                param_named_auto TexelSize0 inverse_texture_size 0
 			}
 
             texture_unit RT

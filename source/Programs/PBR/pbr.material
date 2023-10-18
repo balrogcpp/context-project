@@ -105,14 +105,6 @@ abstract material PBR
                 param_named ShadowTex5 int 9
                 param_named ShadowTex6 int 10
                 param_named ShadowTex7 int 11
-                param_named_auto ShadowTexel0 inverse_texture_size 4
-                param_named_auto ShadowTexel1 inverse_texture_size 5
-                param_named_auto ShadowTexel2 inverse_texture_size 6
-                param_named_auto ShadowTexel3 inverse_texture_size 7
-                param_named_auto ShadowTexel4 inverse_texture_size 8
-                param_named_auto ShadowTexel5 inverse_texture_size 9
-                param_named_auto ShadowTexel6 inverse_texture_size 10
-                param_named_auto ShadowTexel7 inverse_texture_size 11
             }
         }
     }
@@ -222,14 +214,6 @@ abstract material IBL
                 param_named ShadowTex5 int 10
                 param_named ShadowTex6 int 11
                 param_named ShadowTex7 int 12
-                param_named_auto ShadowTexel0 inverse_texture_size 5
-                param_named_auto ShadowTexel1 inverse_texture_size 6
-                param_named_auto ShadowTexel2 inverse_texture_size 7
-                param_named_auto ShadowTexel3 inverse_texture_size 8
-                param_named_auto ShadowTexel4 inverse_texture_size 9
-                param_named_auto ShadowTexel5 inverse_texture_size 10
-                param_named_auto ShadowTexel6 inverse_texture_size 11
-                param_named_auto ShadowTexel7 inverse_texture_size 12
             }
         }
     }
@@ -329,14 +313,6 @@ abstract material PG
                 param_named ShadowTex5 int 8
                 param_named ShadowTex6 int 9
                 param_named ShadowTex7 int 10
-                param_named_auto ShadowTexel0 inverse_texture_size 3
-                param_named_auto ShadowTexel1 inverse_texture_size 4
-                param_named_auto ShadowTexel2 inverse_texture_size 5
-                param_named_auto ShadowTexel3 inverse_texture_size 6
-                param_named_auto ShadowTexel4 inverse_texture_size 7
-                param_named_auto ShadowTexel5 inverse_texture_size 8
-                param_named_auto ShadowTexel6 inverse_texture_size 9
-                param_named_auto ShadowTexel7 inverse_texture_size 10
             }
         }
     }
@@ -447,7 +423,6 @@ abstract material TERRA
                 param_named NormalTex      int 1
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
-                param_named_auto InvTerraLightTexSize inverse_texture_size 3
                 param_named ShadowTex0 int 4
                 param_named ShadowTex1 int 5
                 param_named ShadowTex2 int 6
@@ -456,14 +431,6 @@ abstract material TERRA
                 param_named ShadowTex5 int 9
                 param_named ShadowTex6 int 10
                 param_named ShadowTex7 int 11
-                param_named_auto ShadowTexel0 inverse_texture_size 4
-                param_named_auto ShadowTexel1 inverse_texture_size 5
-                param_named_auto ShadowTexel2 inverse_texture_size 6
-                param_named_auto ShadowTexel3 inverse_texture_size 7
-                param_named_auto ShadowTexel4 inverse_texture_size 8
-                param_named_auto ShadowTexel5 inverse_texture_size 9
-                param_named_auto ShadowTexel6 inverse_texture_size 10
-                param_named_auto ShadowTexel7 inverse_texture_size 11
             }
         }
     }

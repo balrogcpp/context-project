@@ -13,7 +13,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform mediump vec2 TexelSize0;
 uniform mediump float ChromaticRadius;
 uniform int FeaturesCount;
 
@@ -87,10 +86,10 @@ mediump vec3 HaloFeatures(sampler2D tex, const mediump vec2 uv, const mediump ve
 in highp vec2 vUV0;
 void main()
 {
+    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
     mediump vec3 color = texture2D(RT, vUV0).rgb;
 
     //color += GhostFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
     color += HaloFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
-
     FragColor.rgb = color;
 }

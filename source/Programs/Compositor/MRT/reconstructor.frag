@@ -18,8 +18,6 @@ uniform sampler2D RT;
 uniform sampler2D VelocityTex;
 uniform sampler2D DepthTex;
 uniform sampler2D DepthOldTex;
-uniform mediump vec2 TexelSize0;
-uniform mediump vec2 TexSize0;
 uniform mediump mat4 InvViewMatrix;
 uniform mediump mat4 ViewProjPrev;
 
@@ -34,12 +32,14 @@ in highp vec3 vRay;
 void main()
 {
     // pixel was rendered this frame = use it
-    if (PixelWasRenderedThisFrame(vUV0, TexSize0)) {
+    if (PixelWasRenderedThisFrame(vUV0, vec2(textureSize(MRT, 0)))) {
         FragColor.rgb = SafeHDR(texture2D(MRT, vUV0).rgb);
         return;
     }
 
     // neighbors
+    mediump vec2 TexSize0 = vec2(textureSize(MRT, 0));
+    mediump vec2 TexelSize0 = 1.0 / TexSize0;
     mediump vec3 A = texture2D(MRT, vUV0 + TexelSize0 * vec2(0.0, 1.0)).rgb;
     mediump vec3 B = texture2D(MRT, vUV0 + TexelSize0 * vec2(0.0, -1.0)).rgb;
     mediump vec3 C = texture2D(MRT, vUV0 + TexelSize0 * vec2(-1.0, 0.0)).rgb;

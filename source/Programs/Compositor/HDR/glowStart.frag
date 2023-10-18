@@ -14,7 +14,6 @@
 
 uniform sampler2D RT;
 uniform sampler2D Lum;
-uniform mediump vec2 TexelSize0;
 uniform mediump vec2 BrightThreshold;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
@@ -46,13 +45,12 @@ mediump vec3 Downscale13(sampler2D tex, const mediump vec2 uv, const mediump vec
 in highp vec2 vUV0;
 void main()
 {
+    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
     mediump vec3 color = Downscale13(RT, vUV0, TexelSize0);
     mediump float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
 
     color *= lum;
-
 	mediump vec3 w = clamp((color - BrightThreshold.xxx) * BrightThreshold.yyy, 0.0, 1.0);
 	color *= w * w * (3.0 - 2.0 * w);
-    
     FragColor.rgb = color;
 }

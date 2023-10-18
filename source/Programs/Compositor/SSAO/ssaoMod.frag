@@ -14,7 +14,6 @@
 
 uniform sampler2D RT;
 uniform sampler2D SsaoTex;
-uniform mediump vec2 TexelSize0;
 uniform mediump vec4 ShadowColour;
 
 mediump float Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
@@ -33,6 +32,7 @@ mediump float Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
 in highp vec2 vUV0;
 void main()
 {
+    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
     mediump vec3 color = texture2D(RT, vUV0).rgb;
     mediump float ssao = Gauss9V(SsaoTex, vUV0, TexelSize0);
 

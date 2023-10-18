@@ -13,7 +13,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform mediump vec2 TexelSize0;
 
 mediump vec3 Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
 {
@@ -45,5 +44,6 @@ mediump vec3 Downscale4x4(sampler2D tex, const mediump vec2 uv, const mediump ve
 in highp vec2 vUV0;
 void main()
 {
+    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
     FragColor.rgb = Downscale4x4(RT, vUV0, TexelSize0);
 }

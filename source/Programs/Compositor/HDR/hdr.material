@@ -59,7 +59,6 @@ material HdrEnd : STD
             {
                 param_named RT int 0
                 param_named Lum int 1
-                param_named_auto TexelSize0 inverse_texture_size 0
             }
 
             texture_unit RT

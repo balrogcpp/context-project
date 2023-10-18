@@ -78,9 +78,6 @@ uniform sampler2D ShadowTex7;
 #endif // MAX_SHADOW_TEXTURES > 0
 
 uniform mediump vec3 iblSH[9];
-#ifdef TERRA_LIGHTMAP
-uniform mediump vec2 InvTerraLightTexSize;
-#endif
 uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
@@ -96,6 +93,7 @@ uniform mediump vec4 AmbientLightColour;
 uniform mediump vec4 SurfaceAmbientColour;
 uniform mediump vec4 SurfaceDiffuseColour;
 uniform mediump vec4 SurfaceSpecularColour;
+uniform mediump float SurfaceShininessColour;
 uniform mediump vec4 SurfaceEmissiveColour;
 uniform mediump vec4 FogColour;
 uniform mediump vec4 FogParams;
@@ -110,30 +108,6 @@ uniform mediump vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
 uniform mediump vec4 PssmSplitPoints;
 uniform mediump vec4 ShadowColour;
-#if MAX_SHADOW_TEXTURES > 0
-uniform mediump vec2 ShadowTexel0;
-#endif
-#if MAX_SHADOW_TEXTURES > 1
-uniform mediump vec2 ShadowTexel1;
-#endif
-#if MAX_SHADOW_TEXTURES > 2
-uniform mediump vec2 ShadowTexel2;
-#endif
-#if MAX_SHADOW_TEXTURES > 3
-uniform mediump vec2 ShadowTexel3;
-#endif
-#if MAX_SHADOW_TEXTURES > 4
-uniform mediump vec2 ShadowTexel4;
-#endif
-#if MAX_SHADOW_TEXTURES > 5
-uniform mediump vec2 ShadowTexel5;
-#endif
-#if MAX_SHADOW_TEXTURES > 6
-uniform mediump vec2 ShadowTexel6;
-#endif
-#if MAX_SHADOW_TEXTURES > 7
-uniform mediump vec2 ShadowTexel7;
-#endif
 #endif // MAX_SHADOW_TEXTURES > 0
 
 #if MAX_SHADOW_TEXTURES > 0
@@ -302,8 +276,12 @@ highp vec3 GetNormal(highp mat3 tbn, const highp vec2 uv, const mediump vec2 uv1
 #else
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
-    return normalize(mul(tbn, ((2.0 * n - 1.0))));
+    if (textureSize(NormalTex, 0).x > 1) {
+        highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
+        return normalize(mul(tbn, ((2.0 * n - 1.0))));
+    } else {
+        return tbn[2].xyz;
+    }
 #else
     return tbn[2].xyz;
 #endif // HAS_NORMALMAP
@@ -315,7 +293,7 @@ mediump vec4 GetAlbedo(const highp vec2 uv, const mediump vec4 color)
 {
     mediump vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(AlbedoTex, uv);
+    if (textureSize(AlbedoTex, 0).x > 1) albedo *= texture2D(AlbedoTex, uv);
 #endif
 #ifdef HAS_ALPHA
     if (albedo.a < 0.5) discard;
@@ -326,11 +304,11 @@ mediump vec4 GetAlbedo(const highp vec2 uv, const mediump vec4 color)
 
 mediump vec3 GetEmission(const highp vec2 uv)
 {
+    mediump vec3 emission = SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
 #ifdef HAS_EMISSIVEMAP
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb) + SRGBtoLINEAR(SurfaceSpecularColour.b * texture2D(EmissiveTex, uv).rgb);
-#else
-    return SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
+     if (textureSize(EmissiveTex, 0).x > 1) emission += SRGBtoLINEAR(SurfaceSpecularColour.b * texture2D(EmissiveTex, uv).rgb);
 #endif
+    return emission;
 }
 
 mediump vec3 GetORM(const highp vec2 uv, const mediump float spec)
@@ -343,7 +321,8 @@ mediump vec3 GetORM(const highp vec2 uv, const mediump float spec)
     mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r * (1.0 - 0.25 * pow(spec, 0.2)), 0.0);
 #endif
 #ifdef HAS_ORM
-    ORM *= texture2D(OrmTex, uv).rgb;
+    if (textureSize(OrmTex, 0).x > 1) ORM *= texture2D(OrmTex, uv).rgb;
+    else ORM.b = 0.0;
 #endif
 
     return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
@@ -455,7 +434,7 @@ void main()
 
 #ifdef TERRA_LIGHTMAP
         if (i == 0) {
-            light *= FetchTerraShadow(TerraLightTex, vUV0.xy, InvTerraLightTexSize);
+            light *= FetchTerraShadow(TerraLightTex, vUV0.xy);
         }
 #endif
 #if MAX_SHADOW_TEXTURES > 0
