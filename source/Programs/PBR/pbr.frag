@@ -258,7 +258,7 @@ mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specular
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(highp mat3 tbn, const highp vec2 uv, const mediump vec2 uv1)
+highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const mediump vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -355,7 +355,7 @@ void main()
     mediump vec4 colour = GetAlbedo(uv, vColor);
     mediump vec3 orm = GetORM(uv, colour.a);
     mediump vec3 emission = GetEmission(uv);
-    highp vec3 n = GetNormal(vTBN, uv, vUV0.xy);
+    highp vec3 n = GetNormal(uv, vTBN, vUV0.xy);
 
     mediump vec3 albedo = colour.rgb;
     mediump float alpha = colour.a;

@@ -2,7 +2,7 @@ import PBR from pbr.material
 
 material Cube : PBR
 {
-    set $Albedo ridged-foam1_albedo.png
-    set $Normal ridged-foam1_normal-ogl.png
-    set $ORM ridged-foam1_roughness.png
+    set $Albedo hard-edged-rock7_albedo.dds
+    set $Normal hard-edged-rock7_nmap-ogl.dds
+    set $ORM hard-edged-rock7_rough.dds
 }
