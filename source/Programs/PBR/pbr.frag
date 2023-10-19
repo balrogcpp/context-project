@@ -316,25 +316,25 @@ mediump vec3 GetORM(const highp vec2 uv, const mediump float spec)
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
 #ifndef TERRA_NORMALMAP
-    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+    mediump vec3 orm = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
-    mediump vec3 ORM = vec3(1.0, SurfaceSpecularColour.r * (1.0 - 0.25 * pow(spec, 0.2)), 0.0);
+    mediump vec3 orm = vec3(1.0, SurfaceSpecularColour.r * (1.0 - 0.25 * pow(spec, 0.2)), 0.0);
 #endif
 #ifdef HAS_ORM
-    if (textureSize(OrmTex, 0).x > 1) ORM *= texture2D(OrmTex, uv).rgb;
-    else ORM.b = 0.0;
+    if (textureSize(OrmTex, 0).x > 1) orm *= texture2D(OrmTex, uv).rgb;
+    else orm.b = 0.0;
 #endif
 
-    return clamp(ORM, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
+    return clamp(orm, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
 }
 
-highp vec2 GetParallaxCoord(const highp vec2 vUV0, const highp vec3 v)
+highp vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 {
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
-    highp vec2 uv = vUV0.xy * (1.0 + TexScale);
+    highp vec2 uv = uv0 * (1.0 + TexScale);
     return uv - (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalTex, uv).a));
 #else
-    return vUV0;
+    return uv0;
 #endif
 }
 
@@ -355,7 +355,7 @@ void main()
     mediump vec4 colour = GetAlbedo(uv, vColor);
     mediump vec3 orm = GetORM(uv, colour.a);
     mediump vec3 emission = GetEmission(uv);
-    highp vec3 n = GetNormal(uv, vTBN, vUV0.xy);
+    highp vec3 n = GetNormal(uv, vTBN, vUV0);
 
     mediump vec3 albedo = colour.rgb;
     mediump float alpha = colour.a;
@@ -434,7 +434,7 @@ void main()
 
 #ifdef TERRA_LIGHTMAP
         if (i == 0) {
-            light *= FetchTerraShadow(TerraLightTex, vUV0.xy);
+            light *= FetchTerraShadow(TerraLightTex, vUV0);
         }
 #endif
 #if MAX_SHADOW_TEXTURES > 0
