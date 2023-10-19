@@ -58,12 +58,6 @@ highp vec3 aces(const highp vec3 x)
     return (x * (a * x + b)) / (x * (c * x + d) + e);
 }
 
-// Reinhard et al. 2002, "Photographic Tone Reproduction for Digital Images", Eq. 3
-highp vec3 reinhard(const highp vec3 x)
-{
-    return x / (1.0 + luminance(x));
-}
-
 highp vec3 uncharted2Tonemap(const highp vec3 x)
 {
     const highp float A = 0.22;

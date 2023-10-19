@@ -183,6 +183,15 @@ mediump float angle(const mediump float z1, const mediump float a1, const medium
     cos(z1) * cos(z2));
 }
 
+mediump vec3 XYZtoRGB(const mediump vec3 xyz)
+{
+    return mtx3x3(
+    3.240812398895283, -0.9692430170086407, 0.055638398436112804,
+    -1.5373084456298136,  1.8759663029085742, -0.20400746093241362,
+    -0.4985865229069666,  0.04155503085668564, 1.0571295702861434
+    ) * xyz;
+}
+
 highp vec3 sample_sky(const highp float cos_theta, const highp float gamma, const highp float sun_zenith, const highp float sun_azimuth)
 {
     return XYZtoRGB(spectral_radiance(cos_theta, gamma, sun_zenith) * mean_spectral_radiance(sun_zenith));
