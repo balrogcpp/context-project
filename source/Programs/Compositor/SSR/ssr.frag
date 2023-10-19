@@ -109,12 +109,14 @@ void main()
     // Reflection vector
     mediump vec3 position = viewPos.xyz;
     mediump vec3 reflected = normalize(reflect(normalize(position), normalize(normal)));
-    mediump vec2 coords = RayCast(position, reflected + jitt);
+    mediump vec2 uv = RayCast(position, reflected + jitt);
 
     mediump float L = length(viewPos - position);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     mediump float error = 1.0 - L;
     mediump float fresnel = Fresnel(reflected, normal);
 
-    FragColor.rgb = vec3(coords, metallic * fresnel * error);
+    if (uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0) {
+        FragColor.rgb = vec3(uv, metallic * fresnel * error);
+    }
 }

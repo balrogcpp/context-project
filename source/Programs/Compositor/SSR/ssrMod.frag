@@ -24,7 +24,7 @@ void main()
     mediump vec2 uv = ssr.xy;
     mediump float fresnel = ssr.z;
 
-    if (uv.x > HALF_EPSILON && uv.y > HALF_EPSILON && uv.x <= 1.0 && uv.y <= 1.0) {
+    if (Any(uv)) {
         color = mix(color, texture2D(RT, uv).rgb, fresnel);
     }
     FragColor.rgb = SafeHDR(color);
