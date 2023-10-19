@@ -70,6 +70,6 @@ out vec4 FragColor;
 #include "HLSL_SM4Support.hlsl"
 #endif
 #include "math.glsl"
-#include "mrt_helper.glsl"
+#include "mrt.glsl"
 
 #endif // HEADER_GLSL
