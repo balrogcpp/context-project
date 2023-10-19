@@ -177,28 +177,28 @@ mediump float EnvBRDFApproxNonmetal(const mediump float roughness, const mediump
 mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const mediump vec3 n) {
     return max(
     iblSH[0]
-    #if SPHERICAL_HARMONICS_BANDS >= 2
+#if SPHERICAL_HARMONICS_BANDS >= 2
     + iblSH[1] * (n.y)
     + iblSH[2] * (n.z)
     + iblSH[3] * (n.x)
-    #endif
-    #if SPHERICAL_HARMONICS_BANDS >= 3
+#endif
+#if SPHERICAL_HARMONICS_BANDS >= 3
     + iblSH[4] * (n.y * n.x)
     + iblSH[5] * (n.y * n.z)
     + iblSH[6] * (3.0 * n.z * n.z - 1.0)
     + iblSH[7] * (n.z * n.x)
     + iblSH[8] * (n.x * n.x - n.y * n.y)
-    #endif
+#endif
     , 0.0);
 }
 
 mediump vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const mediump vec3 n) {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
-    #ifndef GL_ES
+#ifndef GL_ES
     return textureCubeLod(SpecularEnvTex, n, 9.0).rgb;
-    #else
+#else
     return textureCube(SpecularEnvTex, n).rgb;
-    #endif
+#endif
 }
 
 #ifdef HAS_IBL
