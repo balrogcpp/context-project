@@ -26,7 +26,6 @@ fragment_program lumEnd glsl glsles hlsl
     }
 }
 
-
 material HdrStart : STD
 {
     technique

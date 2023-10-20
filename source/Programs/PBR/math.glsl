@@ -3,14 +3,12 @@
 #ifndef MATH_GLSL
 #define MATH_GLSL
 
-
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 #include "hlsl2.glsl"
 #endif
 #ifdef OGRE_HLSL
 #include "glsl2.hlsl"
 #endif
-
 
 #define HALF_MAX        65504.0 // (2 - 2^-10) * 2^15
 #define HALF_MAX_MINUS1 65472.0 // (2 - 2^-9) * 2^15
@@ -34,7 +32,6 @@
 #else
 #define F0 0.045
 #endif
-
 
 // extra optimized functions
 float min3(float a, float b, float c)

@@ -153,6 +153,13 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
     return roughnessSq / (M_PI * (f * f));
 }
 
+// Chan 2018, "Material Advances in Call of Duty: WWII"
+mediump float ComputeMicroShadowing(mediump float NdotL, mediump float visibility) {
+    mediump float aperture = inversesqrt(1.0 - visibility);
+    mediump float microShadow = saturate(NdotL * aperture);
+    return microShadow * microShadow;
+}
+
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
 mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
 {
@@ -376,18 +383,26 @@ void main()
     mediump vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
     mediump vec3 reflectance0 = specularColor.rgb;
 
-#if MAX_SHADOW_TEXTURES > 0
-    int texCounter = 0;
-#endif
     mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
     mediump vec3 color = vec3(0.0, 0.0, 0.0);
+
+    // Calculate lighting contribution from image based lighting source (IBL)
+    mediump vec3 reflection = -normalize(reflect(v, n));
+    color += SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, reflection));
+
+    // Apply optional PBR terms for additional (optional) shading
+    color += emission;
+
 #if MAX_LIGHTS > 0
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
         highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
+        highp float NdotL = dot(n, l);
+        if (NdotL < HALF_EPSILON) continue;
+
         highp vec3 h = normalize(l + v); // Half vector between both l and v
-        highp float NdotL = clamp(dot(n, l), 0.001, 1.0);
+        NdotL = clamp(NdotL, 0.001, 1.0);
 
         // attenuation is property of spot and point light
         highp vec4 vLightPositionArray = LightPositionArray[i];
@@ -417,7 +432,7 @@ void main()
             }
         }
 
-        mediump float light = NdotL * attenuation;
+        mediump float light = NdotL * attenuation * ComputeMicroShadowing(NdotL, occlusion);
         highp float alphaRoughness = roughness * roughness;
         highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
         mediump float LdotH = clamp(dot(l, h), 0.0, 1.0);
@@ -439,22 +454,13 @@ void main()
 #endif
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] != 0.0) {
-            light *= clamp(GetShadow(vLightSpacePosArray, vScreenPosition.z, i, texCounter) + ShadowColour.r, 0.0, 1.0);
+            light *= clamp(GetShadow(vLightSpacePosArray, vScreenPosition.z, i) + ShadowColour.r, 0.0, 1.0);
         }
 #endif
 
         color += LightDiffuseScaledColourArray[i].xyz * (light * (diffuseContrib + specContrib));
     } //  lightning loop
 #endif //  MAX_LIGHTS > 0
-
-// Calculate lighting contribution from image based lighting source (IBL)
-    mediump vec3 reflection = -normalize(reflect(v, n));
-    mediump vec3 ambient = occlusion * (SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, reflection)));
-
-// Apply optional PBR terms for additional (optional) shading
-    color += ambient;
-    color *= occlusion;
-    color += emission;
 
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 

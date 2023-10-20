@@ -17,7 +17,7 @@
 #if __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
 #endif
-precision highp float;
+precision mediump float;
 precision highp int;
 precision lowp sampler2D;
 precision lowp samplerCube;

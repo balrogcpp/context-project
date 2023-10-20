@@ -43,9 +43,6 @@ class CompositorManager : public System<CompositorManager>,
  protected:
 
   void InitMRT(bool enable = true);
-  void InitMipChain(bool enable = false);
-  void SetMipMask(std::vector<int> mipMask);
-  const std::vector<int>& GetMipMask();
 
   /// Ogre::Viewport::Listener impl
   void viewportCameraChanged(Ogre::Viewport* viewport) override;
@@ -61,12 +58,8 @@ class CompositorManager : public System<CompositorManager>,
 
   std::string MRT_COMPOSITOR;
   std::string BLOOM_COMPOSITOR;
-  int mipChainSize;
-  std::vector<int> mipMask;
   Ogre::Plane plane;
   bool fixedViewportSize;
-  int forceSizeX;
-  int forceSizeY;
   std::queue<std::pair<std::string, bool>> compositorList;
   Ogre::Matrix4 viewProj;
   Ogre::Matrix4 viewProjPrev;

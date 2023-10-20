@@ -7,8 +7,7 @@
 using namespace std;
 
 namespace gge {
-CompositorManager::CompositorManager()
-    : fixedViewportSize(false), forceSizeX(-1), forceSizeY(-1), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow"), mipChainSize(9), mipMask{4, 7} {}
+CompositorManager::CompositorManager() : fixedViewportSize(false), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow") {}
 
 CompositorManager::~CompositorManager() = default;
 
@@ -88,9 +87,9 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
   AddCompositor("FXAA", true);
   AddCompositor("SMAA", false);
-  AddCompositor("HDR", true);
-  InitMipChain(false);
   AddCompositor("Blur", false);
+  AddCompositor("HDR", true);
+  AddCompositor("Glow", false);
   AddCompositor("Paused", false);
 
   // reg as viewport listener
@@ -110,6 +109,28 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
   ASSERTION(compositor, "[CompositorManager] Failed to add MRT compositor");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+
+  if (name == BLOOM_COMPOSITOR) {
+    AddCompositor("GlowIt4", enable);
+    AddCompositor("GlowIt7", enable);
+  }
+}
+
+void CompositorManager::EnableCompositor(const string &name, bool enable) {
+  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+
+  if (name == "SSAO" || name == "SSR") {
+    compositorManager->setCompositorEnabled(ogreViewport, "DepthHalved", enable);
+  } else if (name == "HDR") {
+    EnableCompositor("HDR", true);
+  }
+
+  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+
+  if (name == BLOOM_COMPOSITOR) {
+    EnableCompositor("GlowIt4", enable);
+    EnableCompositor("GlowIt7", enable);
+  }
 }
 
 void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
@@ -178,21 +199,6 @@ void CompositorManager::SetCompositorScale(const std::string &name, float scale)
   size_t index = compositorChain->getCompositorPosition(name);
 }
 
-void CompositorManager::EnableCompositor(const string &name, bool enable) {
-  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
-  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
-
-  if (name == "SSAO" || name == "SSR") {
-    compositorManager->setCompositorEnabled(ogreViewport, "DepthHalved", enable);
-  }
-
-  else if (name == BLOOM_COMPOSITOR) {
-    for (auto i : mipMask) {
-      compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
-    }
-  }
-}
-
 void CompositorManager::SetFixedViewport(bool fixed) { fixedViewportSize = fixed; }
 void CompositorManager::SetFixedViewportSize(int x, int y) {
   fixedViewportSize = (x > 0) && (y > 0);
@@ -200,9 +206,6 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
   if (!fixedViewportSize) {
     return;
   }
-
-  forceSizeX = x;
-  forceSizeY = y;
 
   // remove compositors that have to be changed
   queue<pair<string, bool>> compositorList;
@@ -246,33 +249,6 @@ void CompositorManager::InitMRT(bool enable) {
   // AddCompositor("Reconstructor", true);
   AddCompositor("DepthHalved", false);
 }
-
-void CompositorManager::InitMipChain(bool enable) {
-  auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR);
-  ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Glow compoitor");
-
-  //
-  if (enable) {
-    EnableCompositor("HDR", true);
-  }
-
-  // check textures
-  compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, enable);
-
-  for (int i = 0; i < mipChainSize; i++) {
-    string name = BLOOM_COMPOSITOR + "It" + to_string(i);
-    auto *bloomItCompositor = compositorManager->addCompositor(ogreViewport, name);
-    ASSERTION(bloomItCompositor, "[CompositorManager] Failed to add Glow compositor");
-    compositorManager->setCompositorEnabled(ogreViewport, name, false);
-  }
-
-  for (auto i : mipMask) {
-    compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR + "It" + to_string(i), enable);
-  }
-}
-
-void CompositorManager::SetMipMask(std::vector<int> mipMask) { this->mipMask = mipMask; }
-const std::vector<int> &CompositorManager::GetMipMask() { return mipMask; }
 
 void CompositorManager::CacheCompositorChain() {
   // remove compositors that have to be changed
