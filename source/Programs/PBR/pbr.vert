@@ -58,7 +58,7 @@ in highp vec4 uv2;
 
 out highp vec3 vWorldPosition;
 out highp mat3 vTBN;
-out highp vec2 vUV0;
+out vec2 vUV0;
 out vec4 vColor;
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;

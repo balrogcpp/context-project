@@ -26,8 +26,8 @@ vec3 hash(const vec3 a)
     return fract((b.xxy + b.yxx) * b.zyx);
 }
 
-in highp vec2 vUV0;
-in highp vec3 vRay;
+in vec2 vUV0;
+in vec3 vRay;
 void main()
 {
     #define MAX_RAND_SAMPLES 14

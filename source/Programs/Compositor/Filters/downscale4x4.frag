@@ -41,7 +41,7 @@ vec3 Downscale4x4(sampler2D tex, const vec2 uv, const vec2 tsize)
     return c1 + c2 + c3 + c4;
 }
 
-in highp vec2 vUV0;
+in vec2 vUV0;
 void main()
 {
     vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));

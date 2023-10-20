@@ -35,7 +35,7 @@ highp float expose(const highp float color, const highp vec3 exposure)
     return exposure.x / exp(clamp(color, exposure.y, exposure.z));
 }
 
-in highp vec2 vUV0;
+in vec2 vUV0;
 void main()
 {
     vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));

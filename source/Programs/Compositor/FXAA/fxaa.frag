@@ -288,7 +288,7 @@ vec3 FxaaPixelShader(const vec2 pos, sampler2D tex, const vec2 rcpFrame)
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
 
-in highp vec2 vUV0;
+in vec2 vUV0;
 void main()
 {
     vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));

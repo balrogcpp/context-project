@@ -23,8 +23,8 @@ uniform mat4 InvViewMatrix;
 uniform mat4 ViewProjPrev;
 uniform float FrameTime;
 
-in highp vec2 vUV0;
-in highp vec3 vRay;
+in vec2 vUV0;
+in vec3 vRay;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;

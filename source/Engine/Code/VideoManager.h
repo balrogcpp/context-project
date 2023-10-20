@@ -69,21 +69,16 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   unsigned short ogreMinLogLevel;
   std::unique_ptr<Ogre::LogManager> ogreLogManager;
   std::unique_ptr<ShaderResolver> shaderResolver;
-  Ogre::ShadowTechnique shadowTechnique;
   Ogre::Real shadowFarDistance;
   bool shadowEnabled;
   unsigned short shadowTexSize;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<Ogre::Real> pssmSplitPointList;
   int pssmSplitCount;
-  bool gamepadSupport;
-  bool keyboardSupport;
 
   Ogre::Root* ogreRoot = nullptr;
   Ogre::SceneManager* ogreSceneManager = nullptr;
-  Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
-  Ogre::Viewport* ogreViewport = nullptr;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
 };
 }  // namespace gge

@@ -50,7 +50,7 @@ highp vec3 SkyLightExpose(const highp vec3 color)
 }
 
 in highp vec3 vPosition;
-in highp vec3 vUV0;
+in vec3 vUV0;
 void main()
 {
     highp vec3 V = normalize(vPosition);

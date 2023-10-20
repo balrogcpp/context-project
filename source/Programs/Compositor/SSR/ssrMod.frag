@@ -16,7 +16,7 @@ uniform sampler2D RT;
 uniform sampler2D SsrTex1;
 uniform sampler2D SsrTex2;
 
-in highp vec2 vUV0;
+in vec2 vUV0;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;

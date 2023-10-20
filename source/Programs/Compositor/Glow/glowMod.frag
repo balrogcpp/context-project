@@ -35,7 +35,7 @@ vec3 Upscale9(sampler2D tex, const vec2 uv, const vec2 tsize)
     return c1 + c2 + c3;
 }
 
-in highp vec2 vUV0;
+in vec2 vUV0;
 void main()
 {
     vec3 rt = texture2D(RT, vUV0).rgb;

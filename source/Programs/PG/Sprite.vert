@@ -27,7 +27,7 @@ in highp vec4 vertex;
 in highp vec4 normal;
 in highp vec4 colour;
 in highp vec4 uv0;
-out highp vec4 oUV;
+out vec4 oUV;
 out vec4 oColour;
 out float oFogCoord;
 void main()

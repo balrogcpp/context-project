@@ -256,17 +256,14 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
-      shadowTechnique(Ogre::SHADOWTYPE_NONE),
       pssmSplitCount(2),
       shadowFarDistance(400.0),
-      shadowTexSize(512),
-      gamepadSupport(true),
-      keyboardSupport(true) {
-#if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE==OGRE_ARCHITECTURE_32
+      shadowTexSize(512) {
+#if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");
 #endif
 #if OGRE_CPU == OGRE_CPU_X86
-  //OgreAssert(can_use_intel_core_4th_gen_features(), "AVX2 support required");
+  // OgreAssert(can_use_intel_core_4th_gen_features(), "AVX2 support required");
 #endif
 }
 
@@ -350,7 +347,7 @@ void VideoManager::InitSDL() {
     if (result == -1) LogError("gamecontrollerdb.txt not found", SDL_GetError());
     ASSERTION(result != -1, "gamecontrollerdb.txt not found");
   } else {
-    //SetGameControllerMapping();
+    // SetGameControllerMapping();
   }
 #endif
 }
@@ -460,7 +457,6 @@ void VideoManager::MakeWindow() {
   mainWindow->Create("Demo0", ogreCamera, 0, 1270, 720, 0);
   ogreCamera->setNearClipDistance(0.1);
   ogreCamera->setFarClipDistance(1000.0);
-  ogreViewport = mainWindow->ogreViewport;
   InputSequencer::GetInstance().RegWindowListener(mainWindow);
 }
 
@@ -827,13 +823,11 @@ ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, co
 void VideoManager::EnableGamepadNav(bool enable) {
   ImGuiIO &io = ImGui::GetIO();
   enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableGamepad;
-  gamepadSupport = enable;
 }
 
 void VideoManager::EnableKeyboardNav(bool enable) {
   ImGuiIO &io = ImGui::GetIO();
   enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
-  keyboardSupport = enable;
 }
 
 void VideoManager::InitOgreRTSS() {

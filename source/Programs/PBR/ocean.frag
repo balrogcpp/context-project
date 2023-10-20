@@ -24,7 +24,7 @@ uniform sampler2D RefractionTex;
 uniform sampler2D CameraDepthTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
-uniform highp vec4 Time;
+uniform vec4 Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform vec4 WorldSpaceLightPos0;

@@ -19,7 +19,7 @@ uniform sampler2D texTex;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 
-in highp vec4 oUV;
+in vec4 oUV;
 in vec4 oColour;
 in float oFogCoord;
 void main()

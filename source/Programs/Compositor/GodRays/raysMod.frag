@@ -15,7 +15,7 @@
 uniform sampler2D RT;
 uniform sampler2D FBO;
 
-in highp vec2 vUV0;
+in vec2 vUV0;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;

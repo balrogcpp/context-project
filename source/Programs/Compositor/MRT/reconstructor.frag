@@ -36,8 +36,8 @@ vec2 RestoreTexCoord(const vec3 viewPos, const mat4 invViewMatrix, const mat4 vi
     return nuv.xy;
 }
 
-in highp vec2 vUV0;
-in highp vec3 vRay;
+in vec2 vUV0;
+in vec3 vRay;
 void main()
 {
     // pixel was rendered this frame = use it
@@ -55,23 +55,23 @@ void main()
     vec3 D = texture2D(MRT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).rgb;
 
     // pixel was render prev frame, reconstruct it's position in prev frame
-    highp vec2 velocity = texture2D(VelocityTex, vUV0).xy;
-    highp float depth1 = texture2D(DepthTex, vUV0).x;
+    vec2 velocity = texture2D(VelocityTex, vUV0).xy;
+    float depth1 = texture2D(DepthTex, vUV0).x;
 
     if (Null(velocity)) {
-        highp vec3 viewPos = vRay * depth1;
-        highp vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
+        vec3 viewPos = vRay * depth1;
+        vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
         worldPos.xyz /= worldPos.w;
-        highp vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
+        vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
         nuv.xy /= nuv.w;
         velocity = (nuv.xy - vUV0.xy);
     }
 
-    highp float speed = length(velocity * TexSize0);
+    float speed = length(velocity * TexSize0);
     velocity = TexelSize0 * floor(velocity * TexSize0);
-    highp vec2 uv2 = vUV0 - velocity;
-    highp float depth2 = texture2D(DepthOldTex, uv2).x;
-    highp float diff = abs(depth2 - depth1);
+    vec2 uv2 = vUV0 - velocity;
+    float depth2 = texture2D(DepthOldTex, uv2).x;
+    float diff = abs(depth2 - depth1);
 
     if (speed < 0.01 && diff < 0.01) {
         FragColor.rgb = SafeHDR(texture2D(RT, vUV0).rgb);

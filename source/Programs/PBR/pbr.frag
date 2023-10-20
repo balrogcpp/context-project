@@ -80,7 +80,6 @@ uniform sampler2D ShadowTex7;
 uniform vec3 iblSH[9];
 uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
-uniform highp vec4 Time;
 uniform float LightCount;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
@@ -347,7 +346,7 @@ highp vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 
 in highp vec3 vWorldPosition;
 in highp mat3 vTBN;
-in highp vec2 vUV0;
+in vec2 vUV0;
 in vec4 vColor;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;

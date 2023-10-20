@@ -10,36 +10,36 @@ float GoldNoise(const vec2 xy, const float seed)
     return fract(tan(distance(xy * PHI, xy) * seed) * xy.x);
 }
 
-highp float GoldNoiseHp(const highp vec2 xy, const highp float seed)
-{
-    #define PHI 1.61803398874989484820459  //  PHI = Golden Ratio
+//highp float GoldNoiseHp(const highp vec2 xy, const highp float seed)
+//{
+//    #define PHI 1.61803398874989484820459  //  PHI = Golden Ratio
+//
+//    return fract(tan(distance(xy * PHI, xy) * seed) * xy.x);
+//}
 
-    return fract(tan(distance(xy * PHI, xy) * seed) * xy.x);
-}
+//float Random(const vec2 x)
+//{
+//    return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
+//}
 
-float Random(const vec2 x)
-{
-    return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
-}
+//highp float RandomHp(const highp vec2 x)
+//{
+//    return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
+//}
 
-highp float RandomHp(const highp vec2 x)
-{
-    return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
-}
+//float BetterRandom(const vec2 x)
+//{
+//    float dt = dot(x, vec2(12.9898, 78.233));
+//    float sn = mod(dt, 3.14159265359); // M_PI
+//    return fract(sin(sn) * 43758.5453);
+//}
 
-float BetterRandom(const vec2 x)
-{
-    float dt = dot(x, vec2(12.9898, 78.233));
-    float sn = mod(dt, 3.14159265359); // M_PI
-    return fract(sin(sn) * 43758.5453);
-}
-
-highp float BetterRandomHp(const highp vec2 x)
-{
-    highp float dt = dot(x, vec2(12.9898, 78.233));
-    highp float sn = mod(dt, 3.14159265359); // M_PI
-    return fract(sin(sn) * 43758.5453);
-}
+//highp float BetterRandomHp(const highp vec2 x)
+//{
+//    highp float dt = dot(x, vec2(12.9898, 78.233));
+//    highp float sn = mod(dt, 3.14159265359); // M_PI
+//    return fract(sin(sn) * 43758.5453);
+//}
 
 float InterleavedGradientNoise(const vec2 position_screen)
 {

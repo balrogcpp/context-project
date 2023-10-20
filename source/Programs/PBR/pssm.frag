@@ -17,7 +17,7 @@ uniform sampler2D AlbedoTex;
 #endif
 
 #ifdef SHADOWCASTER_ALPHA
-in highp vec2 vUV0;
+in vec2 vUV0;
 #endif
 void main()
 {

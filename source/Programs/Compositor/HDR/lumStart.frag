@@ -52,7 +52,7 @@ float Downscale4x4(sampler2D tex, const vec2 uv, const vec2 tsize)
     return c1 + c2 + c3 + c4;
 }
 
-in highp vec2 vUV0;
+in vec2 vUV0;
 void main()
 {
     //Compute how many pixels we have to skip because we can't sample them all
