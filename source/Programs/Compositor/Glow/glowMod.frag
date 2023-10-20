@@ -16,21 +16,21 @@ uniform sampler2D RT;
 uniform sampler2D RT0;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
-mediump vec3 Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+vec3 Upscale9(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    mediump vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
-    mediump vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;
-    mediump vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).xyz;
-    mediump vec3 D = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).xyz;
-    mediump vec3 E = texture2D(tex, uv + tsize                   ).xyz;
-    mediump vec3 F = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).xyz;
-    mediump vec3 G = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).xyz;
-    mediump vec3 H = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).xyz;
-    mediump vec3 I = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).xyz;
+    vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
+    vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;
+    vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).xyz;
+    vec3 D = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).xyz;
+    vec3 E = texture2D(tex, uv + tsize                   ).xyz;
+    vec3 F = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).xyz;
+    vec3 G = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).xyz;
+    vec3 H = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).xyz;
+    vec3 I = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).xyz;
 
-    mediump vec3 c1 = E * 0.25;
-    mediump vec3 c2 = (B + D + F + H) * 0.125;
-    mediump vec3 c3 = (A + C + G + I) * 0.0625;
+    vec3 c1 = E * 0.25;
+    vec3 c2 = (B + D + F + H) * 0.125;
+    vec3 c3 = (A + C + G + I) * 0.0625;
 
     return c1 + c2 + c3;
 }
@@ -38,10 +38,10 @@ mediump vec3 Upscale9(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
 in highp vec2 vUV0;
 void main()
 {
-    mediump vec3 rt = texture2D(RT, vUV0).rgb;
-    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT0, 0));
-    mediump vec3 rt0 = Upscale9(RT0, vUV0, TexelSize0);
-    const mediump float w = 1.0 / 8.0;
+    vec3 rt = texture2D(RT, vUV0).rgb;
+    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT0, 0));
+    vec3 rt0 = Upscale9(RT0, vUV0, TexelSize0);
+    const float w = 1.0 / 8.0;
 
     FragColor.rgb = SafeHDR(rt + rt0 * w);
 }

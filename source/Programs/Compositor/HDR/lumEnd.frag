@@ -13,31 +13,36 @@
 #include "header.glsl"
 #include "tonemap.glsl"
 
-mediump float Downscale2x2(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
-{
-    mediump float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
-    mediump float B = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;
-    mediump float C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x;
-    mediump float D = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).x;
+uniform sampler2D RT;
+uniform sampler2D Lum;
+uniform vec3 Exposure;
+uniform float timeSinceLast;
 
-    mediump float c1 = (A + B + C + D) * 0.25;
+float Downscale2x2(sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+    float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
+    float B = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;
+    float C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x;
+    float D = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).x;
+
+    float c1 = (A + B + C + D) * 0.25;
 
     return c1;
 }
 
-uniform sampler2D RT;
-uniform sampler2D Lum;
-uniform mediump vec3 Exposure;
-uniform mediump float timeSinceLast;
+highp float expose(const highp float color, const highp vec3 exposure)
+{
+    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
+}
 
 in highp vec2 vUV0;
 void main()
 {
-    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    mediump float newLum = Downscale2x2(RT, vUV0, TexelSize0);
-    newLum = expose2(newLum, Exposure);
-    mediump float oldLum = texture2D(Lum, vec2(0.0, 0.0)).r;
-    mediump float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
+    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
+    float newLum = Downscale2x2(RT, vUV0, TexelSize0);
+    newLum = expose(newLum, Exposure);
+    float oldLum = texture2D(Lum, vec2(0.0, 0.0)).r;
+    float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 
     FragColor.r = SafeHDR(lum);
 }

@@ -23,12 +23,12 @@ uniform sampler2D blendTex;
 #if SMAA_REPROJECTION
 uniform sampler2D velocityTex;
 #endif
-uniform mediump vec4 ViewportSize;
+uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
 in highp vec2 vUV0;
-in mediump vec4 offset;
+in vec4 offset;
 void main()
 {
 #if SMAA_REPROJECTION

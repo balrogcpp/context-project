@@ -14,11 +14,11 @@
 #include "header.glsl"
 #include "srgb.glsl"
 #include "fog.glsl"
-uniform mediump vec3 SunColor;
+uniform vec3 SunColor;
 uniform highp vec3 SunDirection;
 uniform highp float SunSize;
-uniform mediump vec4 FogColour;
-uniform mediump vec4 FogParams;
+uniform vec4 FogColour;
+uniform vec4 FogParams;
 
 #ifdef GPU_HOSEK
 #include "hosek.glsl"
@@ -59,9 +59,9 @@ void main()
     highp float cos_gamma = dot(V, N);
     highp float gamma = acos(cos_gamma);
 #ifdef GPU_HOSEK
-    mediump vec3 color = sample_sky(cos_theta, gamma, N.y, N.x);
+    vec3 color = sample_sky(cos_theta, gamma, N.y, N.x);
 #else
-    mediump vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
+    vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 #endif
 
     if (gamma <= SunSize && V.y > 0.0) {

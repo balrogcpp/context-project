@@ -16,12 +16,12 @@
 
 uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
-uniform mediump mat4 ProjMatrix;
-uniform mediump float ClipDistance;
+uniform mat4 ProjMatrix;
+uniform float ClipDistance;
 
-mediump vec3 hash(const mediump vec3 a)
+vec3 hash(const vec3 a)
 {
-    mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
+    vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
 }
@@ -33,7 +33,7 @@ void main()
     #define MAX_RAND_SAMPLES 14
     #define RADIUS 0.105
 
-    const mediump vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+    const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
         vec3(1.0, 0.0, 0.0),
         vec3(-1.0, 0.0, 0.0),
@@ -60,14 +60,14 @@ void main()
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    mediump float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
-    mediump float pixelDepth = clampedPixelDepth * ClipDistance;
-    mediump vec3 viewPos = vRay * clampedPixelDepth;
-    mediump vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedPixelDepth);
+    float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
+    float pixelDepth = clampedPixelDepth * ClipDistance;
+    vec3 viewPos = vRay * clampedPixelDepth;
+    vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedPixelDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    mediump vec3 normal = texture2D(NormalTex, vUV0).xyz;
+    vec3 normal = texture2D(NormalTex, vUV0).xyz;
 
     if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
         FragColor.r = 1.0;
@@ -75,22 +75,22 @@ void main()
     }
 
     // Accumulated occlusion factor
-    mediump float occ = 0.0;
+    float occ = 0.0;
     for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
         // Reflected direction to move in for the sphere
         // (based on random samples and a random texture sample)
         // bias the random direction away from the normal
         // this tends to minimize self occlusion
-        mediump vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + normal;
+        vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + normal;
 
-        mediump vec3 oSample = viewPos + randomDir * RADIUS;
-        mediump vec4 nuv = mul(ProjMatrix, vec4(oSample, 1.0));
+        vec3 oSample = viewPos + randomDir * RADIUS;
+        vec4 nuv = mul(ProjMatrix, vec4(oSample, 1.0));
         nuv.xy /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        mediump float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
-        mediump float sampleDepth = clampedSampleDepth * ClipDistance;
-        mediump float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(clampedSampleDepth, oSample.z);
+        float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
+        float sampleDepth = clampedSampleDepth * ClipDistance;
+        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(clampedSampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff

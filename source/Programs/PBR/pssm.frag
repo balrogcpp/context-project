@@ -22,9 +22,7 @@ in highp vec2 vUV0;
 void main()
 {
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) {
-        discard;
-    }
+    if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) discard;
 #endif
 
     FragColor.r = map_0(gl_FragCoord.z, 0.1, 100.0);

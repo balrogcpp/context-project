@@ -11,22 +11,22 @@
 #endif
 
 
-mediump float toSRGB(const mediump float x)
+float toSRGB(const float x)
 {
 	return (x < 0.0031308 ? x * 12.92 : 1.055 * pow(x, 0.41666 ) - 0.055);
 }
 
-mediump float fromSRGB(const mediump float x)
+float fromSRGB(const float x)
 {
 	return (x <= 0.040449907) ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);
 }
 
-mediump vec4 toSRGB(const mediump vec4 x)
+vec4 toSRGB(const vec4 x)
 {
 	return vec4(toSRGB(x.x), toSRGB(x.y), toSRGB(x.z), x.w);
 }
 
-mediump vec4 fromSRGB(const mediump vec4 x)
+vec4 fromSRGB(const vec4 x)
 {
 	return vec4(fromSRGB(x.x ), fromSRGB(x.y), fromSRGB(x.z), x.w);
 }

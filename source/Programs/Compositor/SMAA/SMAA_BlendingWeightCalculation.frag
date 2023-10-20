@@ -19,13 +19,13 @@
 uniform sampler2D edgeTex;
 uniform sampler2D areaTex;
 uniform sampler2D searchTex;
-uniform mediump vec4 ViewportSize;
+uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
 in highp vec2 vUV0;
-in mediump vec2 pixcoord0;
-in mediump mat4 offset;
+in vec2 pixcoord0;
+in mat4 offset;
 void main()
 {
 	FragColor = SMAABlendingWeightCalculationPS(vUV0, pixcoord0, offset, edgeTex, areaTex, searchTex, vec4(0.0, 0.0, 0.0, 0.0));

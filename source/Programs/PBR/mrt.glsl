@@ -13,7 +13,7 @@ uniform highp float NearClipDistance;
 #include "tonemap.glsl"
 #endif
 
-void EvaluateBuffer(mediump vec3 color, const mediump float alpha)
+void EvaluateBuffer(vec3 color, const float alpha)
 {
 #ifdef HAS_MRT
     FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
@@ -26,7 +26,7 @@ void EvaluateBuffer(mediump vec3 color, const mediump float alpha)
 #endif
 }
 
-void EvaluateBuffer(mediump vec3 color)
+void EvaluateBuffer(vec3 color)
 {
 #ifdef HAS_MRT
     FragData[MRT_COLOR].rgb = SafeHDR(color);

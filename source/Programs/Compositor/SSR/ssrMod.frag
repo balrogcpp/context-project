@@ -19,10 +19,10 @@ uniform sampler2D SsrTex2;
 in highp vec2 vUV0;
 void main()
 {
-    mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump vec3 ssr = max(texture2D(SsrTex1, vUV0).rgb, texture2D(SsrTex2, vUV0).rgb);
-    mediump vec2 uv = ssr.xy;
-    mediump float fresnel = ssr.z;
+    vec3 color = texture2D(RT, vUV0).rgb;
+    vec3 ssr = max(texture2D(SsrTex1, vUV0).rgb, texture2D(SsrTex2, vUV0).rgb);
+    vec2 uv = ssr.xy;
+    float fresnel = ssr.z;
 
     if (Any(uv)) {
         color = mix(color, texture2D(RT, uv).rgb, fresnel);

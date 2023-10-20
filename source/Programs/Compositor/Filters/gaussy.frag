@@ -14,15 +14,15 @@
 
 uniform sampler2D RT;
 
-mediump vec3 Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+vec3 Gauss9V(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    mediump vec3 A = texture2D(tex, uv).xyz;
-    mediump vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).xyz;
-    mediump vec3 C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).xyz;
-    mediump vec3 D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).xyz;
-    mediump vec3 E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).xyz;
+    vec3 A = texture2D(tex, uv).xyz;
+    vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).xyz;
+    vec3 C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).xyz;
+    vec3 D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).xyz;
+    vec3 E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).xyz;
 
-    mediump vec3 c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+    vec3 c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
 
     return c1;
 }
@@ -30,6 +30,6 @@ mediump vec3 Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 ts
 in highp vec2 vUV0;
 void main()
 {
-    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
+    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
     FragColor.rgb = Gauss9V(RT, vUV0, TexelSize0);
 }

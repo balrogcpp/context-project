@@ -52,19 +52,19 @@ mat4 transpose(const mat4 m)
 #define float4x3 mat3x4
 #define float4x4 mat4x4
 #define matrix mat4x4
-#define half mediump float
-#define half4 mediump vec4
-#define half3 mediump vec3
-#define half2 mediump vec2
-#define half2x2 mediump mat2x2
-#define half2x3 mediump mat3x2
-#define half2x4 mediump mat4x2
-#define half3x2 mediump mat2x3
-#define half3x3 mediump mat3x3
-#define half3x4 mediump mat4x3
-#define half4x2 mediump mat2x4
-#define half4x3 mediump mat3x4
-#define half4x4 mediump mat4x4
+#define half float
+#define half4 vec4
+#define half3 vec3
+#define half2 vec2
+#define half2x2 mat2x2
+#define half2x3 mat3x2
+#define half2x4 mat4x2
+#define half3x2 mat2x3
+#define half3x3 mat3x3
+#define half3x4 mat4x3
+#define half4x2 mat2x4
+#define half4x3 mat3x4
+#define half4x4 mat4x4
 #define fixed lowp float
 #define fixed4 lowp vec4
 #define fixed3 lowp vec3

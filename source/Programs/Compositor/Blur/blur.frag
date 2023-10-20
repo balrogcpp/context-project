@@ -19,35 +19,35 @@
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
 uniform sampler2D VelocityTex;
-uniform mediump mat4 InvViewMatrix;
-uniform mediump mat4 ViewProjPrev;
-uniform mediump float FrameTime;
+uniform mat4 InvViewMatrix;
+uniform mat4 ViewProjPrev;
+uniform float FrameTime;
 
 in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump float clampedDepth = texture2D(DepthTex, vUV0).x;
-    mediump vec2 velocity = 0.5 * (FrameTime / 0.01666667) * texture2D(VelocityTex, vUV0).xy;
+    vec3 color = texture2D(RT, vUV0).rgb;
+    float clampedDepth = texture2D(DepthTex, vUV0).x;
+    vec2 velocity = 0.5 * (FrameTime / 0.01666667) * texture2D(VelocityTex, vUV0).xy;
 
     if (Null(velocity)) {
-        mediump vec3 viewPos = vRay * clampedDepth;
-        mediump vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
+        vec3 viewPos = vRay * clampedDepth;
+        vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
         worldPos.xyz /= worldPos.w;
-        mediump vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
+        vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
         nuv.xy /= nuv.w;
         velocity = 0.5 * (nuv.xy - vUV0.xy);
     }
 
-    mediump float speed = length(velocity * vec2(textureSize(VelocityTex, 0)));
-    mediump float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
-    mediump float invSamples = 1.0 / nSamples;
+    float speed = length(velocity * vec2(textureSize(VelocityTex, 0)));
+    float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
+    float invSamples = 1.0 / nSamples;
 
     for (int i = 1; i < MAX_SAMPLES; ++i) {
         if (int(nSamples) <= i) break;
 
-        mediump vec2 offset = (float(i) * invSamples - 0.5) * velocity;
+        vec2 offset = (float(i) * invSamples - 0.5) * velocity;
         color += texture2D(RT, vUV0 + offset).rgb;
     }
 

@@ -16,16 +16,16 @@
 #define SMAA_INCLUDE_VS 1
 #define SMAA_INCLUDE_PS 0
 
-uniform mediump mat4 worldViewProj;
-uniform mediump vec4 ViewportSize;
+uniform mat4 worldViewProj;
+uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
 in highp vec4 vertex;
 in highp vec4 uv0;
 out highp vec2 vUV0;
-out mediump vec2 pixcoord0;
-out mediump mat4 offset;
+out vec2 pixcoord0;
+out mat4 offset;
 void main()
 {
 	gl_Position = worldViewProj * vertex;

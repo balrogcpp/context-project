@@ -4,7 +4,7 @@
 #define MOSAIC_GLSL
 #ifdef OGRE_FRAGMENT_SHADER
 
-uniform mediump float IsEven;
+uniform float IsEven;
 
 bool ExcludePixel()
 {

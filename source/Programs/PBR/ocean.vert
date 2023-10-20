@@ -19,8 +19,8 @@ uniform highp mat4 TextureProjMatrix;
 
 in highp vec4 vertex;
 out highp vec3 vWorldPosition;
-out mediump vec4 vScreenPosition;
-out mediump vec4 vProjectionCoord;
+out vec4 vScreenPosition;
+out vec4 vProjectionCoord;
 void main()
 {
     highp vec4 world = mul(WorldMatrix, vertex);

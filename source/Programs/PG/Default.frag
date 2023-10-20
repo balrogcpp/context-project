@@ -16,17 +16,17 @@
 #include "srgb.glsl"
 
 uniform sampler2D texTex;
-uniform mediump vec4 FogColour;
-uniform mediump vec4 FogParams;
+uniform vec4 FogColour;
+uniform vec4 FogParams;
 
 in highp vec4 oUV;
-in mediump vec4 oColour;
-in mediump float oFogCoord;
+in vec4 oColour;
+in float oFogCoord;
 void main()
 {
-    mediump vec4 s = texture2D(texTex, oUV.xy);
-    mediump vec3 color = s.rgb;
-    mediump float alpha = s.a;
+    vec4 s = texture2D(texTex, oUV.xy);
+    vec3 color = s.rgb;
+    float alpha = s.a;
 
 #ifdef ALPHA_TEST
     if(alpha < 0.5 || oColour.a < 0.5)  {

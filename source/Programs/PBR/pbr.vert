@@ -59,9 +59,9 @@ in highp vec4 uv2;
 out highp vec3 vWorldPosition;
 out highp mat3 vTBN;
 out highp vec2 vUV0;
-out mediump vec4 vColor;
-out mediump vec4 vScreenPosition;
-out mediump vec4 vPrevScreenPosition;
+out vec4 vColor;
+out vec4 vScreenPosition;
+out vec4 vPrevScreenPosition;
 #if MAX_SHADOW_TEXTURES > 0
 out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif

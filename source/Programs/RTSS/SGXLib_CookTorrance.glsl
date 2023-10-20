@@ -75,7 +75,7 @@ float V_SmithGGXCorrelated(float roughness, float NoV, float NoL) {
     float v = 0.5 / (lambdaV + lambdaL);
     // a2=0 => v = 1 / 4*NoL*NoV   => min=1/4, max=+inf
     // a2=1 => v = 1 / 2*(NoL+NoV) => min=1/4, max=+inf
-    // clamp to the maximum value representable in mediump
+    // clamp to the maximum value representable in
     return saturateMediump(v);
 }
 
@@ -83,7 +83,7 @@ float V_SmithGGXCorrelated(float roughness, float NoV, float NoL) {
 float D_GGX(float roughness, float NoH, const vec3 h, const vec3 n) {
     // Walter et al. 2007, "Microfacet Models for Refraction through Rough Surfaces"
 
-    // In mediump, there are two problems computing 1.0 - NoH^2
+    // In, there are two problems computing 1.0 - NoH^2
     // 1) 1.0 - NoH^2 suffers floating point cancellation when NoH^2 is close to 1 (highlights)
     // 2) NoH doesn't have enough precision around 1.0
     // Both problem can be fixed by computing 1-NoH^2 in highp and providing NoH in highp as well
@@ -93,7 +93,7 @@ float D_GGX(float roughness, float NoH, const vec3 h, const vec3 n) {
     // since N and H are unit vectors: ||N x H||^2 = 1.0 - NoH^2
     // This computes 1.0 - NoH^2 directly (which is close to zero in the highlights and has
     // enough precision).
-    // Overall this yields better performance, keeping all computations in mediump
+    // Overall this yields better performance, keeping all computations in
 #ifdef OGRE_GLSLES
     vec3 NxH = cross(n, h);
     float oneMinusNoHSquared = dot(NxH, NxH);

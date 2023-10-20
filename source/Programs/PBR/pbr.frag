@@ -77,37 +77,37 @@ uniform sampler2D ShadowTex7;
 #endif
 #endif // MAX_SHADOW_TEXTURES > 0
 
-uniform mediump vec3 iblSH[9];
+uniform vec3 iblSH[9];
 uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
 uniform highp vec4 Time;
-uniform mediump float LightCount;
+uniform float LightCount;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
-uniform mediump vec4 LightDirectionArray[MAX_LIGHTS];
-uniform mediump vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
-uniform mediump vec4 LightAttenuationArray[MAX_LIGHTS];
-uniform mediump vec4 LightSpotParamsArray[MAX_LIGHTS];
+uniform vec4 LightDirectionArray[MAX_LIGHTS];
+uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
+uniform vec4 LightAttenuationArray[MAX_LIGHTS];
+uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #endif // MAX_LIGHTS > 0
-uniform mediump vec4 AmbientLightColour;
-uniform mediump vec4 SurfaceAmbientColour;
-uniform mediump vec4 SurfaceDiffuseColour;
-uniform mediump vec4 SurfaceSpecularColour;
-uniform mediump float SurfaceShininessColour;
-uniform mediump vec4 SurfaceEmissiveColour;
-uniform mediump vec4 FogColour;
-uniform mediump vec4 FogParams;
-uniform mediump float TexScale;
+uniform vec4 AmbientLightColour;
+uniform vec4 SurfaceAmbientColour;
+uniform vec4 SurfaceDiffuseColour;
+uniform vec4 SurfaceSpecularColour;
+uniform float SurfaceShininessColour;
+uniform vec4 SurfaceEmissiveColour;
+uniform vec4 FogColour;
+uniform vec4 FogParams;
+uniform float TexScale;
 #ifdef HAS_NORMALMAP
 #ifdef HAS_PARALLAXMAP
-uniform mediump float OffsetScale;
+uniform float OffsetScale;
 #endif // HAS_PARALLAXMAP
 #endif // HAS_NORMALMAP
 #if MAX_SHADOW_TEXTURES > 0
-uniform mediump vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
-uniform mediump float LightCastsShadowsArray[MAX_LIGHTS];
-uniform mediump vec4 PssmSplitPoints;
-uniform mediump vec4 ShadowColour;
+uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
+uniform float LightCastsShadowsArray[MAX_LIGHTS];
+uniform vec4 PssmSplitPoints;
+uniform vec4 ShadowColour;
 #endif // MAX_SHADOW_TEXTURES > 0
 
 #if MAX_SHADOW_TEXTURES > 0
@@ -118,14 +118,14 @@ uniform mediump vec4 ShadowColour;
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
-mediump vec3 Diffuse(const mediump vec3 diffuseColor)
+vec3 Diffuse(const vec3 diffuseColor)
 {
     return diffuseColor / M_PI;
 }
 
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
-mediump vec3 SpecularReflection(const mediump vec3 reflectance0, const mediump vec3 reflectance90, const mediump float VdotH)
+vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const float VdotH)
 {
     return reflectance0 + (reflectance90 - reflectance0) * pow5(1.0 - VdotH);
 }
@@ -134,12 +134,12 @@ mediump vec3 SpecularReflection(const mediump vec3 reflectance0, const mediump v
 // where rougher material will reflect less light back to the viewer.
 // This implementation is based on [1] Equation 4, and we adopt their modifications to
 // alphaRoughness as input as originally proposed in [2].
-mediump float GeometricOcclusion(const mediump float NdotL, const mediump float NdotV, const mediump float r)
+float GeometricOcclusion(const float NdotL, const float NdotV, const float r)
 {
-    mediump float r2 = (r * r);
-    mediump float r3 = (1.0 - r2);
-    mediump float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
-    mediump float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
+    float r2 = (r * r);
+    float r3 = (1.0 - r2);
+    float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
+    float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
     return attenuationL * attenuationV;
 }
 
@@ -154,34 +154,34 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
 }
 
 // Chan 2018, "Material Advances in Call of Duty: WWII"
-mediump float ComputeMicroShadowing(mediump float NdotL, mediump float visibility) {
-    mediump float aperture = inversesqrt(1.0 - visibility);
-    mediump float microShadow = saturate(NdotL * aperture);
+float ComputeMicroShadowing(float NdotL, float visibility) {
+    float aperture = inversesqrt(1.0 - visibility);
+    float microShadow = saturate(NdotL * aperture);
     return microShadow * microShadow;
 }
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-mediump vec3 EnvBRDFApprox(const mediump vec3 specularColor, const mediump float roughness, const mediump float NdotV)
+vec3 EnvBRDFApprox(const vec3 specularColor, const float roughness, const float NdotV)
 {
-    const mediump vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
-    const mediump vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
-    mediump vec4 r = roughness * c0 + c1;
-    mediump float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
-    mediump vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
+    const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
+    const vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
+    vec4 r = roughness * c0 + c1;
+    float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
+    vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
     return specularColor * AB.x + AB.y;
 }
 
-mediump float EnvBRDFApproxNonmetal(const mediump float roughness, const mediump float NdotV)
+float EnvBRDFApproxNonmetal(const float roughness, const float NdotV)
 {
     // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
-    const mediump vec2 c0 = vec2(-1.0, -0.0275);
-    const mediump vec2 c1 = vec2(1.0, 0.0425);
-    mediump vec2 r = roughness * c0 + c1;
+    const vec2 c0 = vec2(-1.0, -0.0275);
+    const vec2 c1 = vec2(1.0, 0.0425);
+    vec2 r = roughness * c0 + c1;
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
-mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const mediump vec3 n) {
+vec3 Irradiance_SphericalHarmonics(const vec3 iblSH[9], const vec3 n) {
     return max(
     iblSH[0]
 #if SPHERICAL_HARMONICS_BANDS >= 2
@@ -199,7 +199,7 @@ mediump vec3 Irradiance_SphericalHarmonics(const mediump vec3 iblSH[9], const me
     , 0.0);
 }
 
-mediump vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const mediump vec3 n) {
+vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const vec3 n) {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
 #ifndef GL_ES
     return textureCubeLod(SpecularEnvTex, n, 9.0).rgb;
@@ -209,7 +209,7 @@ mediump vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const mediump v
 }
 
 #ifdef HAS_IBL
-mediump vec3 DiffuseIrradiance(const mediump vec3 n)
+vec3 DiffuseIrradiance(const vec3 n)
 {
     if (iblSH[0].r >= HALF_MAX_MINUS1) {
 #ifndef GL_ES
@@ -222,7 +222,7 @@ mediump vec3 DiffuseIrradiance(const mediump vec3 n)
     }
 }
 
-mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump float perceptualRoughness)
+vec3 GetIblSpeculaColor(const vec3 reflection, const float perceptualRoughness)
 {
 #ifdef HAS_MRT
 #ifndef GL_ES
@@ -244,28 +244,28 @@ mediump vec3 GetIblSpeculaColor(const mediump vec3 reflection, const mediump flo
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-mediump vec3 GetIBL(const mediump vec3 diffuseColor, const mediump vec3 specularColor, const mediump float perceptualRoughness, const mediump float NdotV, const mediump vec3 reflection)
+vec3 GetIBL(const vec3 diffuseColor, const vec3 specularColor, const float perceptualRoughness, const float NdotV, const vec3 reflection)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
-    mediump vec3 brdf = EnvBRDFApprox(specularColor, perceptualRoughness, NdotV);
+    vec3 brdf = EnvBRDFApprox(specularColor, perceptualRoughness, NdotV);
 
 #ifdef HAS_IBL
-    mediump vec3 diffuseLight = DiffuseIrradiance(reflection);
-    mediump vec3 specularLight = GetIblSpeculaColor(reflection, perceptualRoughness);
+    vec3 diffuseLight = DiffuseIrradiance(reflection);
+    vec3 specularLight = GetIblSpeculaColor(reflection, perceptualRoughness);
 #else
-    mediump vec3 diffuseLight = Irradiance_SphericalHarmonics(iblSH, reflection);
-    mediump vec3 specularLight = diffuseLight;
+    vec3 diffuseLight = Irradiance_SphericalHarmonics(iblSH, reflection);
+    vec3 specularLight = diffuseLight;
 #endif
 
-    mediump vec3 diffuse = diffuseLight * diffuseColor;
-    mediump vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
+    vec3 diffuse = diffuseLight * diffuseColor;
+    vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
     return diffuse + specular;
 }
 
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const mediump vec2 uv1)
+highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -296,9 +296,9 @@ highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const mediump vec2 uv1
 }
 
 // Sampler helper functions
-mediump vec4 GetAlbedo(const highp vec2 uv, const mediump vec4 color)
+vec4 GetAlbedo(const highp vec2 uv, const vec4 color)
 {
-    mediump vec4 albedo = SurfaceDiffuseColour * color;
+    vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
     if (textureSize(AlbedoTex, 0).x > 1) albedo *= texture2D(AlbedoTex, uv);
 #endif
@@ -309,23 +309,23 @@ mediump vec4 GetAlbedo(const highp vec2 uv, const mediump vec4 color)
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-mediump vec3 GetEmission(const highp vec2 uv)
+vec3 GetEmission(const highp vec2 uv)
 {
-    mediump vec3 emission = SurfaceEmissiveColour.rgb;
+    vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
      if (textureSize(EmissiveTex, 0).x > 1) emission += SurfaceSpecularColour.b * SRGBtoLINEAR(texture2D(EmissiveTex, uv).rgb);
 #endif
     return emission;
 }
 
-mediump vec3 GetORM(const highp vec2 uv, const mediump float spec)
+vec3 GetORM(const highp vec2 uv, const float spec)
 {
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
 #ifndef TERRA_NORMALMAP
-    mediump vec3 orm = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+    vec3 orm = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
-    mediump vec3 orm = vec3(1.0, SurfaceSpecularColour.r * (1.0 - 0.25 * pow(spec, 0.2)), 0.0);
+    vec3 orm = vec3(1.0, SurfaceSpecularColour.r * (1.0 - 0.25 * pow(spec, 0.2)), 0.0);
 #endif
 #ifdef HAS_ORM
     if (textureSize(OrmTex, 0).x > 1) orm *= texture2D(OrmTex, uv).rgb;
@@ -348,9 +348,9 @@ highp vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 in highp vec3 vWorldPosition;
 in highp mat3 vTBN;
 in highp vec2 vUV0;
-in mediump vec4 vColor;
-in mediump vec4 vScreenPosition;
-in mediump vec4 vPrevScreenPosition;
+in vec4 vColor;
+in vec4 vScreenPosition;
+in vec4 vPrevScreenPosition;
 #if MAX_SHADOW_TEXTURES > 0
 in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -359,35 +359,35 @@ void main()
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
     highp vec2 uv = GetParallaxCoord(vUV0, v);
 
-    mediump vec4 colour = GetAlbedo(uv, vColor);
-    mediump vec3 orm = GetORM(uv, colour.a);
-    mediump vec3 emission = GetEmission(uv);
+    vec4 colour = GetAlbedo(uv, vColor);
+    vec3 orm = GetORM(uv, colour.a);
+    vec3 emission = GetEmission(uv);
     highp vec3 n = GetNormal(uv, vTBN, vUV0);
 
-    mediump vec3 albedo = colour.rgb;
-    mediump float alpha = colour.a;
-    mediump float roughness = orm.g;
-    mediump float metallic = orm.b;
-    mediump float occlusion = orm.r;
+    vec3 albedo = colour.rgb;
+    float alpha = colour.a;
+    float roughness = orm.g;
+    float metallic = orm.b;
+    float occlusion = orm.r;
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    mediump vec3 diffuseColor = albedo * ((1.0 - F0) * (1.0 - metallic));
-    mediump vec3 specularColor = mix(vec3(F0, F0, F0), albedo, metallic);
+    vec3 diffuseColor = albedo * ((1.0 - F0) * (1.0 - metallic));
+    vec3 specularColor = mix(vec3(F0, F0, F0), albedo, metallic);
 
     // Compute reflectance.
-    mediump float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
+    float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
 
     // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.
     // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.
-    mediump vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
-    mediump vec3 reflectance0 = specularColor.rgb;
+    vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
+    vec3 reflectance0 = specularColor.rgb;
 
-    mediump float NdotV = clamp(dot(n, v), 0.001, 1.0);
-    mediump vec3 color = vec3(0.0, 0.0, 0.0);
+    float NdotV = clamp(dot(n, v), 0.001, 1.0);
+    vec3 color = vec3(0.0, 0.0, 0.0);
 
     // Calculate lighting contribution from image based lighting source (IBL)
-    mediump vec3 reflection = -normalize(reflect(v, n));
+    vec3 reflection = -normalize(reflect(v, n));
     color += SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(diffuseColor, specularColor, roughness, NdotV, reflection));
 
     // Apply optional PBR terms for additional (optional) shading
@@ -406,46 +406,46 @@ void main()
 
         // attenuation is property of spot and point light
         highp vec4 vLightPositionArray = LightPositionArray[i];
-        mediump float attenuation = 1.0;
+        float attenuation = 1.0;
         if (vLightPositionArray.w != 0.0) {
-            mediump vec4 vAttParams = LightAttenuationArray[i];
+            vec4 vAttParams = LightAttenuationArray[i];
             highp float range = vAttParams.x;
             highp vec3 vLightViewH = vLightPositionArray.xyz - vWorldPosition;
             highp float fLightD = length(vLightViewH);
             highp float fLightD2 = fLightD * fLightD;
             highp vec3 vLightView = normalize(vLightViewH);
-            mediump float attenuation_const = vAttParams.y;
-            mediump float attenuation_linear = vAttParams.z;
-            mediump float attenuation_quad = vAttParams.w;
+            float attenuation_const = vAttParams.y;
+            float attenuation_linear = vAttParams.z;
+            float attenuation_quad = vAttParams.w;
             attenuation = biggerhp(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
 
             // spotlight
-            mediump vec4 vSpotParams = LightSpotParamsArray[i];
+            vec4 vSpotParams = LightSpotParamsArray[i];
             if (vSpotParams.w != 0.0) {
-                mediump float outerRadius = vSpotParams.z;
-                mediump float fallof = vSpotParams.x;
-                mediump float innerRadius = vSpotParams.y;
+                float outerRadius = vSpotParams.z;
+                float fallof = vSpotParams.x;
+                float innerRadius = vSpotParams.y;
 
-                mediump float rho = dot(l, vLightView);
-                mediump float fSpotE = clamp((rho - innerRadius) / (fallof - innerRadius), 0.0, 1.0);
+                float rho = dot(l, vLightView);
+                float fSpotE = clamp((rho - innerRadius) / (fallof - innerRadius), 0.0, 1.0);
                 attenuation *= pow(fSpotE, outerRadius);
             }
         }
 
-        mediump float light = NdotL * attenuation * ComputeMicroShadowing(NdotL, occlusion);
+        float light = NdotL * attenuation * ComputeMicroShadowing(NdotL, occlusion);
         highp float alphaRoughness = roughness * roughness;
         highp float NdotH = clamp(dot(n, h), 0.0, 1.0);
-        mediump float LdotH = clamp(dot(l, h), 0.0, 1.0);
-        mediump float VdotH = clamp(dot(v, h), 0.0, 1.0);
+        float LdotH = clamp(dot(l, h), 0.0, 1.0);
+        float VdotH = clamp(dot(v, h), 0.0, 1.0);
 
         // Calculate the shading terms for the microfacet specular shading model
-        mediump vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
-        mediump vec3 diffuseContrib = (1.0 - F) * Diffuse(diffuseColor);
+        vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
+        vec3 diffuseContrib = (1.0 - F) * Diffuse(diffuseColor);
 
         // Calculation of analytical lighting contribution
-        mediump float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
-        mediump float D = MicrofacetDistribution(alphaRoughness, NdotH);
-        mediump vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
+        float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
+        float D = MicrofacetDistribution(alphaRoughness, NdotH);
+        vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
 
 #ifdef TERRA_LIGHTMAP
         if (i == 0) {

@@ -60,7 +60,7 @@ float biggerhp(highp float x, highp float y)
     return saturate((x - y - HALF_EPSILON) * FLT_MAX);
 }
 
-float bigger(mediump float x, mediump float y)
+float bigger(float x, float y)
 {
     return saturate((x - y - HALF_EPSILON) * HALF_MAX);
 }
@@ -70,7 +70,7 @@ float biggerhp(highp float x)
     return saturate((x - FLT_EPSILON) * FLT_MAX);
 }
 
-float bigger(mediump float x)
+float bigger(float x)
 {
     return saturate((x - FLT_EPSILON) * HALF_MAX);
 }
@@ -95,22 +95,22 @@ vec4 fsinghp(highp vec4 x)
     return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
 }
 
-float fsign(mediump float x)
+float fsign(float x)
 {
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec2 fsign(mediump vec2 x)
+vec2 fsign(vec2 x)
 {
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec3 fsign(mediump vec3 x)
+vec3 fsign(vec3 x)
 {
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-vec4 fsign(mediump vec4 x)
+vec4 fsign(vec4 x)
 {
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }

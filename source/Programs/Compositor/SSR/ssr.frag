@@ -24,49 +24,49 @@
 uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
 uniform sampler2D GlossTex;
-uniform mediump mat4 ProjMatrix;
-uniform mediump float ClipDistance;
+uniform mat4 ProjMatrix;
+uniform float ClipDistance;
 
-mediump vec3 hash(const mediump vec3 a)
+vec3 hash(const vec3 a)
 {
-    mediump vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
+    vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b. zyx);
 }
 
-mediump vec2 BinarySearch(inout mediump vec3 position, mediump vec3 direction)
+vec2 BinarySearch(inout vec3 position, vec3 direction)
 {
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
-        mediump vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
+        vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
         nuv.xy /= nuv.w;
 
-        mediump float depth = texture2D(DepthTex, nuv.xy).x;
-        mediump float delta = -position.z / ClipDistance - depth;
+        float depth = texture2D(DepthTex, nuv.xy).x;
+        float delta = -position.z / ClipDistance - depth;
 
         direction *= 0.5;
 
         position += delta < 0.0 ? direction : -direction;
     }
 
-    mediump vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
+    vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
     nuv.xy /= nuv.w;
 
     return nuv.xy;
 }
 
-mediump vec2 RayCast(inout mediump vec3 position, mediump vec3 direction)
+vec2 RayCast(inout vec3 position, vec3 direction)
 {
     direction *= STEP;
 
-    mediump vec4 nuv;
+    vec4 nuv;
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         position += direction;
 
         nuv = mul(ProjMatrix, vec4(position, 1.0));
         nuv.xy /= nuv.w;
 
-        mediump float depth = texture2D(DepthTex, nuv.xy).x;
-        mediump float delta = -position.z / ClipDistance - depth;
+        float depth = texture2D(DepthTex, nuv.xy).x;
+        float delta = -position.z / ClipDistance - depth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
         // We don't want to sample too far from the starting position.
@@ -79,12 +79,12 @@ mediump vec2 RayCast(inout mediump vec3 position, mediump vec3 direction)
 }
 
 // source: https://www.standardabweichung.de/code/javascript/webgl-glsl-fresnel-schlick-approximation
-mediump float Fresnel(const mediump vec3 direction, const mediump vec3 normal)
+float Fresnel(const vec3 direction, const vec3 normal)
 {
-    mediump vec3 halfDirection = normalize(normal + direction);
-    mediump float cosine = dot(halfDirection, direction);
-    mediump float product = max(cosine, 0.0);
-    mediump float factor = 1.0 - pow(product, 5.0);
+    vec3 halfDirection = normalize(normal + direction);
+    float cosine = dot(halfDirection, direction);
+    float product = max(cosine, 0.0);
+    float factor = 1.0 - pow(product, 5.0);
 
     return factor;
 }
@@ -93,28 +93,28 @@ in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    mediump vec2 gloss = texture2D(GlossTex, vUV0).rg;
-    mediump float metallic = gloss.r;
-    mediump float roughness = gloss.g;
-    mediump float clampedDepth = texture2D(DepthTex, vUV0).x;
-    mediump vec3 normal = texture2D(NormalTex, vUV0).xyz;
+    vec2 gloss = texture2D(GlossTex, vUV0).rg;
+    float metallic = gloss.r;
+    float roughness = gloss.g;
+    float clampedDepth = texture2D(DepthTex, vUV0).x;
+    vec3 normal = texture2D(NormalTex, vUV0).xyz;
 
     if (metallic < 0.04 || clampedDepth > 0.5 || clampedDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
         return;
     }
 
-    mediump vec3 viewPos = vRay * clampedDepth;
-    mediump vec3 jitt = hash(gl_FragCoord.xyz) * roughness * JITT_SCALE;
+    vec3 viewPos = vRay * clampedDepth;
+    vec3 jitt = hash(gl_FragCoord.xyz) * roughness * JITT_SCALE;
 
     // Reflection vector
-    mediump vec3 position = viewPos.xyz;
-    mediump vec3 reflected = normalize(reflect(normalize(position), normalize(normal)));
-    mediump vec2 uv = RayCast(position, reflected + jitt);
+    vec3 position = viewPos.xyz;
+    vec3 reflected = normalize(reflect(normalize(position), normalize(normal)));
+    vec2 uv = RayCast(position, reflected + jitt);
 
-    mediump float L = length(viewPos - position);
+    float L = length(viewPos - position);
     L = clamp(L * LLIMITER, 0.0, 1.0);
-    mediump float error = 1.0 - L;
-    mediump float fresnel = Fresnel(reflected, normal);
+    float error = 1.0 - L;
+    float fresnel = Fresnel(reflected, normal);
 
     if (uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0) {
         FragColor.rgb = vec3(uv, metallic * fresnel * error);

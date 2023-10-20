@@ -16,7 +16,7 @@ uniform highp mat4 WorldViewProj;
 
 in highp vec3 vertex;
 in highp vec3 normal;
-in mediump vec2 uv0;
+in vec2 uv0;
 
 out highp vec2 vUV0;
 out highp vec3 vRay;

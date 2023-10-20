@@ -25,12 +25,12 @@ uniform sampler2D rt_input;
 #if SMAA_PREDICATION
 uniform sampler2D depthTex;
 #endif
-uniform mediump vec4 ViewportSize;
+uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
 in highp vec2 vUV0;
-in mediump mat4 offset;
+in mat4 offset;
 void main()
 {
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2

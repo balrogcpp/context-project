@@ -14,17 +14,17 @@
 
 uniform sampler2D RT;
 uniform sampler2D SsaoTex;
-uniform mediump vec4 ShadowColour;
+uniform vec4 ShadowColour;
 
-mediump float Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 tsize)
+float Gauss9V(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    mediump float A = texture2D(tex, uv).x;
-    mediump float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).x;
-    mediump float C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).x;
-    mediump float D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).x;
-    mediump float E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).x;
+    float A = texture2D(tex, uv).x;
+    float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).x;
+    float C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).x;
+    float D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).x;
+    float E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).x;
 
-    mediump float c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+    float c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
 
     return c1;
 }
@@ -32,9 +32,9 @@ mediump float Gauss9V(sampler2D tex, const mediump vec2 uv, const mediump vec2 t
 in highp vec2 vUV0;
 void main()
 {
-    mediump vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    mediump vec3 color = texture2D(RT, vUV0).rgb;
-    mediump float ssao = Gauss9V(SsaoTex, vUV0, TexelSize0);
+    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
+    vec3 color = texture2D(RT, vUV0).rgb;
+    float ssao = Gauss9V(SsaoTex, vUV0, TexelSize0);
 
     color *= clamp(ssao + ShadowColour.g, 0.0, 1.0);
     FragColor.rgb = SafeHDR(color);

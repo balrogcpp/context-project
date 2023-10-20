@@ -6,7 +6,7 @@
 
 #if defined(OGRE_FRAGMENT_SHADER) && defined(OGRE_GLSLES)
 // define default precisions for ES fragement shaders
-precision mediump float;
+precision float;
 
 #if __VERSION__ > 100
 //precision lowp sampler2DArray;

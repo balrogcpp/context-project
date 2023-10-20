@@ -10,43 +10,6 @@ highp float luminance(const highp vec3 color)
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
-// https://www.w3.org/TR/AERT/#color-contrast
-highp float luminance2(const highp vec3 color)
-{
-    return dot(color, vec3(0.299, 0.587, 0.114));
-}
-
-// https://alienryderflex.com/hsp.html
-highp float luminance3(const highp vec3 color)
-{
-    return sqrt(dot(color * color, vec3(0.2126, 0.7152, 0.0722)));
-}
-
-highp float luminance4(const highp vec3 color)
-{
-    return sqrt(dot(color * color, vec3(0.2126, 0.7152, 0.0722)));
-}
-
-highp vec3 expose(const highp vec3 color, const highp float exposure)
-{
-    return vec3(1.0, 1.0, 1.0) - exp(-color * exposure);
-}
-
-highp float expose(const highp float color, const highp float exposure)
-{
-    return 1.0 - exp(-color * exposure);
-}
-
-highp vec3 expose2(const highp vec3 color, const highp vec3 exposure)
-{
-    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
-}
-
-highp float expose2(const highp float color, const highp vec3 exposure)
-{
-    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
-}
-
 // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
 highp vec3 aces(const highp vec3 x)
 {

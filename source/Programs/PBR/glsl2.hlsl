@@ -57,7 +57,7 @@
 #define noinline
 #define precision
 #define highp
-#define mediump
+#define
 #define lowp
 #define dFdx ddx
 #define dFdy ddy
