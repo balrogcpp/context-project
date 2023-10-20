@@ -27,6 +27,15 @@ mediump float ColorBlendWeight(const mediump vec3 a, const mediump vec3 b)
     return 1.0 / max(length(a - b), 0.001);
 }
 
+mediump vec2 RestoreTexCoord(const mediump vec3 viewPos, const mediump mat4 invViewMatrix, const mediump mat4 viewProjPrev)
+{
+    mediump vec4 worldPos = vec4(invViewMatrix * vec4(viewPos, 1.0));
+    worldPos.xyz /= worldPos.w;
+    mediump vec4 nuv = mul(viewProjPrev, vec4(worldPos.xyz, 1.0));
+    nuv.xy /= nuv.w;
+    return nuv.xy;
+}
+
 in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()

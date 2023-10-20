@@ -44,9 +44,9 @@ highp vec3 HosekWilkie(const highp float cos_theta, const highp float gamma, con
 #endif
 
 // Clamps color between 0 and 1 smoothly
-highp vec3 SkyLightExpose(const highp vec3 color, const highp float exposure)
+highp vec3 SkyLightExpose(const highp vec3 color)
 {
-    return vec3(2.0, 2.0, 2.0) / (vec3(1.0, 1.0, 1.0) + exp(-exposure * color)) - vec3(1.0, 1.0, 1.0);
+    return vec3(2.0, 2.0, 2.0) / (vec3(1.0, 1.0, 1.0) + exp(-0.1 * color)) - vec3(1.0, 1.0, 1.0);
 }
 
 in highp vec3 vPosition;
@@ -68,6 +68,6 @@ void main()
         color = SunColor;
     }
 
-    color = SRGBtoLINEAR(SkyLightExpose(color, 0.1));
+    color = SRGBtoLINEAR(SkyLightExpose(color));
     EvaluateBuffer(color, 1.0);
 }

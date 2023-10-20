@@ -30,10 +30,10 @@ void EvaluateBuffer(mediump vec3 color)
 {
 #ifdef HAS_MRT
     FragData[MRT_COLOR].rgb = SafeHDR(color);
+    FragData[MRT_DEPTH].r = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
     FragData[MRT_VELOCITY].rg = vec2(0.0, 0.0);
     FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
     FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
-    FragData[MRT_DEPTH].r = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
 #else
     FragColor.rgb = SafeHDR(unreal(color));
 #endif

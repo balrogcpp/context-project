@@ -13,7 +13,7 @@ mediump vec3 SRGBtoLINEAR(const mediump vec3 linear)
   return linear * linear;
 #else
   return linear;
-#endif //SRGB_FAST_APPROXIMATION
+#endif
 }
 
 mediump vec3 LINEARtoSRGB(const mediump vec3 linear)

@@ -304,9 +304,9 @@ mediump vec4 GetAlbedo(const highp vec2 uv, const mediump vec4 color)
 
 mediump vec3 GetEmission(const highp vec2 uv)
 {
-    mediump vec3 emission = SRGBtoLINEAR(SurfaceEmissiveColour.rgb);
+    mediump vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
-     if (textureSize(EmissiveTex, 0).x > 1) emission += SRGBtoLINEAR(SurfaceSpecularColour.b * texture2D(EmissiveTex, uv).rgb);
+     if (textureSize(EmissiveTex, 0).x > 1) emission += SurfaceSpecularColour.b * SRGBtoLINEAR(texture2D(EmissiveTex, uv).rgb);
 #endif
     return emission;
 }
