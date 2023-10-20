@@ -264,7 +264,7 @@ vec3 GetIBL(const vec3 diffuseColor, const vec3 specularColor, const float perce
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const vec2 uv1)
+highp vec3 GetNormal(const vec2 uv, highp mat3 tbn, const vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -274,8 +274,7 @@ highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const vec2 uv1)
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
-    return normalize(mul(tbn, (2.0 * n - 1.0)));
+    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz - 1.0)));
 #else
     return tbn[2].xyz;
 #endif // HAS_NORMALMAP
@@ -283,8 +282,7 @@ highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const vec2 uv1)
 
 #ifdef HAS_NORMALMAP
     if (textureSize(NormalTex, 0).x > 1) {
-        highp vec3 n = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
-        return normalize(mul(tbn, ((2.0 * n - 1.0))));
+        return normalize(mul(tbn, ((2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz - 1.0))));
     } else {
         return tbn[2].xyz;
     }
@@ -295,7 +293,7 @@ highp vec3 GetNormal(const highp vec2 uv, highp mat3 tbn, const vec2 uv1)
 }
 
 // Sampler helper functions
-vec4 GetAlbedo(const highp vec2 uv, const vec4 color)
+vec4 GetAlbedo(const vec2 uv, const vec4 color)
 {
     vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
@@ -308,7 +306,7 @@ vec4 GetAlbedo(const highp vec2 uv, const vec4 color)
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-vec3 GetEmission(const highp vec2 uv)
+vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
@@ -317,7 +315,7 @@ vec3 GetEmission(const highp vec2 uv)
     return emission;
 }
 
-vec3 GetORM(const highp vec2 uv, const float spec)
+vec3 GetORM(const vec2 uv, const float spec)
 {
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
@@ -334,10 +332,10 @@ vec3 GetORM(const highp vec2 uv, const float spec)
     return clamp(orm, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
 }
 
-highp vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
+vec2 GetParallaxCoord(const vec2 uv0, const highp vec3 v)
 {
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
-    highp vec2 uv = uv0 * (1.0 + TexScale);
+    vec2 uv = uv0 * (1.0 + TexScale);
     return uv - (vec2(v.x, -v.y) * (OffsetScale * texture2D(NormalTex, uv).a));
 #else
     return uv0;
@@ -356,7 +354,7 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 void main()
 {
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
-    highp vec2 uv = GetParallaxCoord(vUV0, v);
+    vec2 uv = GetParallaxCoord(vUV0, v);
 
     vec4 colour = GetAlbedo(uv, vColor);
     vec3 orm = GetORM(uv, colour.a);

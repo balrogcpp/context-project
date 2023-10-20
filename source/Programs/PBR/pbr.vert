@@ -75,10 +75,10 @@ void main()
 
 #ifndef VERTEX_COMPRESSION
     highp vec4 position = vec4(vertex, 1.0);
-    highp vec2 uv = uv0;
+    vec2 uv = uv0;
 #else
     highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0, 1.0);
-    highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
+    vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
 #ifdef HAS_UV
