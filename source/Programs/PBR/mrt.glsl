@@ -22,7 +22,7 @@ void EvaluateBuffer(vec3 color, const float alpha)
     FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
     FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
 #else
-    FragColor = vec4(SafeHDR(unreal(color)), alpha);
+    FragColor = vec4(SafeHDR(unreal(expose(color, 3.0))), alpha);
 #endif
 }
 
