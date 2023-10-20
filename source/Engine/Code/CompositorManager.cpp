@@ -88,7 +88,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", true);
   AddCompositor("SMAA", false);
   AddCompositor("Blur", false);
-  AddCompositor("HDR", true);
+  AddCompositor("HDR", !RenderSystemIsGLES2());
   AddCompositor("Glow", false);
   AddCompositor("Paused", false);
 
@@ -246,7 +246,6 @@ void CompositorManager::InitMRT(bool enable) {
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 
-  // AddCompositor("Reconstructor", true);
   AddCompositor("DepthHalved", false);
 }
 

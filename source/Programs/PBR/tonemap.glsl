@@ -3,9 +3,19 @@
 #ifndef TONEMAP_GLSL
 #define TONEMAP_GLSL
 
-// https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
-// https://en.wikipedia.org/wiki/Relative_luminance
-highp float luminance(const highp vec3 color)
+float expose(const float color, const vec3 exposure)
+{
+    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
+}
+
+// Clamps color between 0 and 1 smoothly
+vec3 expose(const vec3 color, const float exposure)
+{
+    return vec3(2.0, 2.0, 2.0) / (vec3(1.0, 1.0, 1.0) + exp(-exposure * color)) - vec3(1.0, 1.0, 1.0);
+}
+
+
+float luminance(const vec3 color)
 {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
@@ -45,7 +55,7 @@ highp vec3 uncharted2(const highp vec3 color)
 // Unreal 3, Documentation: "Color Grading"
 // Adapted to be close to Tonemap_ACES, with similar range
 // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-highp vec3 unreal(const highp vec3 x)
+vec3 unreal(const vec3 x)
 {
     return x / (x + 0.155) * 1.019;
 }
@@ -53,9 +63,9 @@ highp vec3 unreal(const highp vec3 x)
 // Hable 2010, "Filmic Tonemapping Operators"
 // Based on Duiker's curve, optimized by Hejl and Burgess-Dawson
 // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-highp vec3 filmic(const highp vec3 x)
+vec3 filmic(const vec3 x)
 {
-    highp vec3 c = max(vec3(0.0), x - 0.004);
+    vec3 c = max(vec3(0.0), x - 0.004);
     return (c * (c * 6.2 + 0.5)) / (c * (c * 6.2 + 1.7) + 0.06);
 }
 

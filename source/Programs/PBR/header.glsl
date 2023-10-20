@@ -23,6 +23,9 @@ precision lowp sampler2D;
 precision lowp samplerCube;
 #endif
 
+#ifdef GL_ES
+#undef HAS_MRT
+#endif
 #ifdef HAS_MRT
 #define MRT_COLOR 0
 #define MRT_DEPTH 1

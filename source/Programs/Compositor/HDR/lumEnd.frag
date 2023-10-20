@@ -30,11 +30,6 @@ float Downscale2x2(sampler2D tex, const vec2 uv, const vec2 tsize)
     return c1;
 }
 
-highp float expose(const highp float color, const highp vec3 exposure)
-{
-    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
-}
-
 in vec2 vUV0;
 void main()
 {

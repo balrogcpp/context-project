@@ -516,11 +516,11 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 
 void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
-  shadowEnabled = true;
-  shadowTexSize = 1024;
+  shadowEnabled = !RenderSystemIsGLES2();
+  shadowTexSize = 2048;
 #else
   shadowEnabled = false;
-  shadowTexSize = 512;
+  shadowTexSize = 1024;
 #endif
 
   if (shadowEnabled) {
