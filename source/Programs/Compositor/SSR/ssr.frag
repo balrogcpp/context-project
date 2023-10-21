@@ -117,6 +117,6 @@ void main()
     float fresnel = Fresnel(reflected, normal);
 
     if (uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0) {
-        FragColor.rgb = vec3(uv, metallic * fresnel * error);
+        FragColor.rgb = vec3(uv, fresnel * error);
     }
 }

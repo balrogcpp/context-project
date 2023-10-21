@@ -46,6 +46,46 @@ material SSR : RayCast
     }
 }
 
+fragment_program ssrRec glsl glsles hlsl
+{
+	source ssrRec.frag
+}
+
+material ssrRec : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref ssrRec
+            {
+                param_named RT int 0
+                param_named SsrTex1 int 1
+                param_named SsrTex2 int 2
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit SSR
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+            texture_unit SSR2
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
 fragment_program ssrMod glsl glsles hlsl
 {
 	source ssrMod.frag
@@ -60,8 +100,7 @@ material ssrMod : STD
             fragment_program_ref ssrMod
             {
                 param_named RT int 0
-                param_named SsrTex1 int 1
-                param_named SsrTex2 int 2
+                param_named SsrTex int 1
             }
 
             texture_unit RT
@@ -76,7 +115,7 @@ material ssrMod : STD
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit SSR2
+            texture_unit Gloss
             {
                 texture black.dds
                 tex_address_mode clamp

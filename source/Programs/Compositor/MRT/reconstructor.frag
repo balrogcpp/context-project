@@ -47,12 +47,12 @@ void main()
     }
 
     // neighbors
-    vec2 TexSize0 = vec2(textureSize(MRT, 0));
-    vec2 TexelSize0 = 1.0 / TexSize0;
-    vec3 A = texture2D(MRT, vUV0 + TexelSize0 * vec2(0.0, 1.0)).rgb;
-    vec3 B = texture2D(MRT, vUV0 + TexelSize0 * vec2(0.0, -1.0)).rgb;
-    vec3 C = texture2D(MRT, vUV0 + TexelSize0 * vec2(-1.0, 0.0)).rgb;
-    vec3 D = texture2D(MRT, vUV0 + TexelSize0 * vec2(1.0, 0.0)).rgb;
+    vec2 texSize0 = vec2(textureSize(MRT, 0));
+    vec2 texelSize0 = 1.0 / texSize0;
+    vec3 A = texture2D(MRT, vUV0 + texelSize0 * vec2(0.0, 1.0)).rgb;
+    vec3 B = texture2D(MRT, vUV0 + texelSize0 * vec2(0.0, -1.0)).rgb;
+    vec3 C = texture2D(MRT, vUV0 + texelSize0 * vec2(-1.0, 0.0)).rgb;
+    vec3 D = texture2D(MRT, vUV0 + texelSize0 * vec2(1.0, 0.0)).rgb;
 
     // pixel was render prev frame, reconstruct it's position in prev frame
     vec2 velocity = texture2D(VelocityTex, vUV0).xy;
@@ -67,8 +67,8 @@ void main()
         velocity = (nuv.xy - vUV0.xy);
     }
 
-    float speed = length(velocity * TexSize0);
-    velocity = TexelSize0 * floor(velocity * TexSize0);
+    float speed = length(velocity * texSize0);
+    velocity = texelSize0 * floor(velocity * texSize0);
     vec2 uv2 = vUV0 - velocity;
     float depth2 = texture2D(DepthOldTex, uv2).x;
     float diff = abs(depth2 - depth1);

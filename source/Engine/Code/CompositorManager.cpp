@@ -409,11 +409,6 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ClipDistance", ogreCamera->getFarClipDistance() - ogreCamera->getNearClipDistance());
     fp->setNamedConstant("IsEven", Ogre::Real(isEven = !isEven));
 
-  } else if (pass_id == 12) {  // 12 = SSR
-    static bool isEven = false;
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setNamedConstant("IsEven", Ogre::Real(isEven = !isEven));
-
   } else if (pass_id == 14) {  // 14 = Motion Blur
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
