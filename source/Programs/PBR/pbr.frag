@@ -284,6 +284,7 @@ vec3 GetDirectionalLight(const highp vec3 v, const highp vec3 n, const highp vec
     vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * pbr.NdotV));
 
     light *= pbr.attenuation;
+
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
         light *= saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
@@ -379,7 +380,7 @@ highp vec3 GetNormal(const vec2 uv, highp mat3 tbn, const vec2 uv1)
 #else
 
 #ifdef HAS_NORMALMAP
-    return textureSize(NormalTex, 0).x > 1 ? normalize(mul(tbn, ((2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz - 1.0)))) : tbn[2].xyz;
+    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz - 1.0)));
 #else
     return tbn[2].xyz;
 #endif // HAS_NORMALMAP
@@ -391,7 +392,7 @@ vec4 GetAlbedo(const vec2 uv, const vec4 color)
 {
     vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
-    if (textureSize(AlbedoTex, 0).x > 1) albedo *= texture2D(AlbedoTex, uv);
+    albedo *= texture2D(AlbedoTex, uv);
 #endif
 #ifdef HAS_ALPHA
     if (albedo.a < 0.5) discard;
@@ -491,7 +492,6 @@ void main()
 #endif
 
     vec3 color = vec3(0.0, 0.0, 0.0);
-
     vec3 reflection = -normalize(reflect(v, n));
     color += SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(pbr, reflection));
     color += GetDirectionalLight(v, n, vLightSpacePosArray, pbr);

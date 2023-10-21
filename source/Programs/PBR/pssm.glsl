@@ -4,6 +4,30 @@
 #define PSSM_GLSL
 #include "math.glsl"
 
+#if MAX_SHADOW_TEXTURES > 0
+#ifndef PSSM_SPLIT_COUNT
+#define PSSM_SPLIT_COUNT 2
+#endif
+#ifndef PSSM_FILTER_RADIUS
+#define PSSM_FILTER_RADIUS 12
+#define PSSM_FILTER_RADIUS0 1.0
+#define PSSM_FILTER_RADIUS1 0.3
+#define PSSM_FILTER_RADIUS2 0.2
+#define PSSM_FILTER_RADIUS3 0.1
+#endif
+#ifndef PSSM_FILTER_SIZE
+#define PSSM_FILTER_SIZE 12
+#endif
+#ifndef PENUMBRA_FILTER_RADIUS
+#define PENUMBRA_FILTER_RADIUS 12
+#endif
+#ifndef PENUMBRA_FILTER_SIZE
+#define PENUMBRA_FILTER_SIZE 12
+#endif
+#ifndef PENUMBRA_LIGHT_SIZE
+#define PENUMBRA_LIGHT_SIZE 50.0
+#endif
+
 float InterleavedGradientNoise()
 {
     vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
@@ -36,31 +60,6 @@ float FetchTerraShadow(sampler2D shadowTex, vec2 uv)
     return shadow;
 }
 #endif
-
-#if MAX_SHADOW_TEXTURES > 0
-#ifndef PSSM_SPLIT_COUNT
-    #define PSSM_SPLIT_COUNT 2
-#endif
-#ifndef PSSM_FILTER_RADIUS
-    #define PSSM_FILTER_RADIUS 12
-    #define PSSM_FILTER_RADIUS0 1.0
-    #define PSSM_FILTER_RADIUS1 0.3
-    #define PSSM_FILTER_RADIUS2 0.2
-    #define PSSM_FILTER_RADIUS3 0.1
-#endif
-#ifndef PSSM_FILTER_SIZE
-    #define PSSM_FILTER_SIZE 12
-#endif
-#ifndef PENUMBRA_FILTER_RADIUS
-    #define PENUMBRA_FILTER_RADIUS 12
-#endif
-#ifndef PENUMBRA_FILTER_SIZE
-    #define PENUMBRA_FILTER_SIZE 12
-#endif
-#ifndef PENUMBRA_LIGHT_SIZE
-    #define PENUMBRA_LIGHT_SIZE 50.0
-#endif
-
 
 float AvgBlockersDepthToPenumbra(const float depth, const float avgBlockersDepth)
 {

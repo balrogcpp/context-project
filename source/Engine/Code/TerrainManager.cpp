@@ -57,8 +57,6 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
     if (isVertexCompressionSupported() && Ogre::TerrainGlobalOptions::getSingletonPtr()->getUseVertexCompressionWhenAvailable()) {
       if (pass->hasVertexProgram()) {
         const auto &vp = pass->getVertexProgramParameters();
-        vp->setIgnoreMissingParams(true);
-
         Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
         vp->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
         Real baseUVScale = 1.0f / (terrain->getSize() - 1);
@@ -81,7 +79,6 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
     string materialName = "TerrainCustom";
     static unsigned long long generator = 0;
     string newName = materialName + "Comp" + std::to_string(generator++);
-
     return MaterialManager::getSingleton().getByName(materialName)->clone(newName);
   }
 
@@ -98,11 +95,6 @@ namespace gge {
 TerrainManager::TerrainManager() {}
 TerrainManager::~TerrainManager() {
   OnClean();
-
-  auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
-  if (terrainGlobalOptions) {
-    delete terrainGlobalOptions;
-  }
 }
 
 void TerrainManager::OnSetUp() {
