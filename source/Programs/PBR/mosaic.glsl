@@ -8,20 +8,20 @@ uniform float IsEven;
 
 bool ExcludePixel()
 {
-    return mod(floor(gl_FragCoord.y) + floor(gl_FragCoord.x), 2.0) == IsEven;
+    return mod(floor(gl_FragCoord.x) + floor(gl_FragCoord.y), 2.0) == IsEven;
 }
 
-bool PixelWasRenderedThisFrame(const vec2 uv, const vec2 tex_size)
+bool PixelWasRenderedThisFrame()
 {
-    return mod(floor(uv.y * tex_size.y) + floor(uv.x * tex_size.x), 2.0) != IsEven;
+    return !ExcludePixel();
 }
 
-bool PixelWasRenderedPrevFrame(const vec2 uv, const vec2 tex_size)
+bool PixelWasRenderedPrevFrame()
 {
-    return mod(floor(uv.y * tex_size.y) + floor(uv.x * tex_size.x), 2.0) == IsEven;
+    return ExcludePixel();
 }
 
-bool PixelIsInsideViewport(const  vec2 uv)
+bool PixelIsInsideViewport(const vec2 uv)
 {
     return uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0;
 }

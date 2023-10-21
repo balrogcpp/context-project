@@ -41,7 +41,7 @@ in vec3 vRay;
 void main()
 {
     // pixel was rendered this frame = use it
-    if (PixelWasRenderedThisFrame(vUV0, vec2(textureSize(MRT, 0)))) {
+    if (PixelWasRenderedThisFrame()) {
         FragColor.rgb = SafeHDR(texture2D(MRT, vUV0).rgb);
         return;
     }
@@ -78,7 +78,7 @@ void main()
         return;
     }
 
-    if (speed > 0.5 && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame(uv2, TexSize0) && diff < 0.01) {
+    if (speed > 0.5 && PixelIsInsideViewport(uv2) && PixelWasRenderedPrevFrame() && diff < 0.01) {
         vec3 color2 = texture2D(RT, uv2).rgb;
         vec3 minColor = min(min(A, B), min(C, D));
         vec3 maxColor = max(max(A, B), max(C, D));

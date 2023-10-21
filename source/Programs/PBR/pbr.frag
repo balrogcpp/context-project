@@ -216,12 +216,12 @@ struct Light
 
 struct PBRInfo
 {
+    vec2 uv;
     float NdotV;                  // cos angle between normal and view direction
     vec3 reflection;
     float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
     float metalness;              // metallic value at the surface
     float occlusion;
-    float attenuation;
     vec3 reflectance0;            // full reflectance color (normal incidence angle)
     vec3 reflectance90;           // reflectance color at grazing angle
     float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
@@ -262,7 +262,7 @@ vec3 SurfaceShading(const Light light, const PBRInfo pbr)
     float D = MicrofacetDistribution(pbr.alphaRoughness, light.NdotH);
     vec3 specContrib = (F * (G * D)) / (4.0 * (light.NdotL * pbr.NdotV));
 
-    return (diffuseContrib + specContrib) * pbr.attenuation;
+    return diffuseContrib + specContrib;
 }
 
 vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
@@ -278,6 +278,9 @@ vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp
     light.NdotL = NdotL;
     light.VdotH = dot(v, h);
     vec3 color = SurfaceShading(light, pbr) * NdotL * ComputeMicroShadowing(NdotL, pbr.occlusion);
+#ifdef TERRA_LIGHTMAP
+    color *= FetchTerraShadow(TerraLightTex, pbr.uv);
+#endif
 
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
@@ -322,7 +325,7 @@ vec3 EvaluateLocalLights(const PBRInfo pbr, const highp vec3 v, const highp vec3
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     for (int i = 1; i < MAX_LIGHTS; ++i) {
-        if (int(LightCount) <= i) break;\
+        if (int(LightCount) <= i) break;
 
         highp vec4 lightPosition = lightSpacePosArray[i];
         if (lightPosition.w == 0.0) continue;
@@ -445,12 +448,10 @@ void main()
 {
     highp vec3 v = normalize(CameraPosition - vWorldPosition);
     vec2 uv = GetParallaxCoord(vUV0, v);
-
     vec4 colour = GetAlbedo(uv, vColor);
     vec3 orm = GetORM(uv, colour.a);
     vec3 emission = GetEmission(uv);
     highp vec3 n = GetNormal(uv, vTBN, vUV0);
-
     vec3 albedo = colour.rgb;
     float alpha = colour.a;
     float roughness = orm.g;
@@ -459,35 +460,26 @@ void main()
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    vec3 diffuseColor = albedo * ((1.0 - F0) * (1.0 - metallic));
+    vec3 diffuseColor = albedo * (1.0 - F0) * (1.0 - metallic);
     vec3 specularColor = mix(vec3(F0, F0, F0), albedo, metallic);
-
-    // Compute reflectance.
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
 
     // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.
     // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.
-    vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
-    vec3 reflectance0 = specularColor.rgb;
-    float NdotV = clamp(dot(n, v), 0.001, 1.0);
-
     PBRInfo pbr;
-    pbr.NdotV = NdotV;
+    pbr.uv = vUV0;
+    pbr.NdotV = abs(dot(n, v)) + 0.001;
     pbr.diffuseColor = diffuseColor;
     pbr.specularColor = specularColor;
     pbr.metalness = metallic;
     pbr.occlusion = occlusion;
     pbr.perceptualRoughness = roughness;
     pbr.alphaRoughness = roughness * roughness;
-    pbr.reflectance0 = reflectance0;
-    pbr.reflectance90 = reflectance90;
-    pbr.attenuation = 1.0;
-#ifdef TERRA_LIGHTMAP
-    pbr.attenuation = FetchTerraShadow(TerraLightTex, vUV0);
-#endif
+    pbr.reflectance0 = specularColor.rgb;
+    pbr.reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
+    pbr.reflection = -normalize(reflect(v, n));
 
     vec3 color = vec3(0.0, 0.0, 0.0);
-    pbr.reflection = -normalize(reflect(v, n));
     color += SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * EvaluateIBL(pbr));
     color += EvaluateDirectionalLight(pbr, v, n, vLightSpacePosArray);
     color += EvaluateLocalLights(pbr, v, n, vWorldPosition, vLightSpacePosArray);

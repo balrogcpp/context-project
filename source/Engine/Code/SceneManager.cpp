@@ -178,30 +178,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
 
   static unsigned long long generator = 0;
   for (auto &it : entity->getSubEntities()) {
-    const auto &old = it->getMaterial();
-    const auto &mat = old->clone(std::to_string(generator++));
-
-    auto *pass = mat->getTechnique(0)->getPass(0);
-    const auto &vp = pass->getVertexProgramParameters();
-    const auto &fp = pass->getFragmentProgramParameters();
-    string vpDefines = pass->getVertexProgram()->getParameter("preprocessor_defines");
-    string fpDefines = pass->getFragmentProgram()->getParameter("preprocessor_defines");
-
-    if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-      auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
-      pssmCount = pssm->getSplitCount();
-      if (fpDefines.find("PSSM_SPLIT_COUNT") == string::npos) fpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
-      if (vpDefines.find("PSSM_SPLIT_COUNT") == string::npos) vpDefines.append(",PSSM_SPLIT_COUNT=").append(to_string(pssmCount));
-    } else {
-      if (auto i = vpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) vpDefines[i] = 'X';
-      if (auto i = fpDefines.find("MAX_SHADOW_TEXTURES"); i != string::npos) fpDefines[i] = 'X';
-    }
-
-    pass->getVertexProgram()->setParameter("preprocessor_defines", vpDefines);
-    pass->getFragmentProgram()->setParameter("preprocessor_defines", fpDefines);
-    pass->getVertexProgram()->reload();
-    pass->getFragmentProgram()->reload();
-    it->setMaterial(mat);
+    it->setMaterial(it->getMaterial()->clone(std::to_string(generator++)));
   }
 
   if (entity->hasSkeleton()) {
