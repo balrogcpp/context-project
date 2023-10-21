@@ -29,6 +29,7 @@ uniform highp vec3 CameraPosition;
 uniform highp float FadeRange;
 #endif // PAGED_GEOMETRY
 #if MAX_SHADOW_TEXTURES > 0
+uniform float LightCount;
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
 
@@ -113,6 +114,7 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
+        if (max(int(LightCount), PSSM_SPLIT_COUNT) <= i) break;
         vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], position);
     }
 #endif

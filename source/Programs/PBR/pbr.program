@@ -28,6 +28,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
+        param_named_auto LightCount light_count
     }
 }
 

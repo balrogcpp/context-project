@@ -12,6 +12,9 @@
 #ifndef MAX_MRT_TEXTURES
 #define MAX_MRT_TEXTURES 5
 #endif
+#ifndef PSSM_SPLIT_COUNT
+#define PSSM_SPLIT_COUNT 2
+#endif
 
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300

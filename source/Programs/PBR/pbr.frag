@@ -42,7 +42,6 @@ uniform sampler2D TerraNormalTex;
 uniform sampler2D TerraLightTex;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
-#if MAX_SHADOW_TEXTURES > 0
 uniform sampler2D ShadowTex0;
 #endif
 #if MAX_SHADOW_TEXTURES > 1
@@ -66,7 +65,6 @@ uniform sampler2D ShadowTex6;
 #if MAX_SHADOW_TEXTURES > 7
 uniform sampler2D ShadowTex7;
 #endif
-#endif // MAX_SHADOW_TEXTURES > 0
 
 uniform vec3 iblSH[9];
 uniform highp mat4 ViewMatrix;
@@ -96,12 +94,9 @@ uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 uniform vec4 PssmSplitPoints;
 uniform vec4 ShadowColour;
-#endif // MAX_SHADOW_TEXTURES > 0
 
-#if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
 #endif
-
 
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
@@ -204,11 +199,7 @@ vec3 DiffuseIrradiance(const vec3 n)
 
 vec3 GetIblSpeculaColor(const vec3 reflection, const float perceptualRoughness)
 {
-//#ifdef HAS_MRT
     return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb));
-//#else
-//    return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb);
-//#endif
 }
 #endif // HAS_IBL
 
@@ -226,6 +217,7 @@ struct Light
 struct PBRInfo
 {
     float NdotV;                  // cos angle between normal and view direction
+    vec3 reflection;
     float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
     float metalness;              // metallic value at the surface
     float occlusion;
@@ -241,16 +233,16 @@ struct PBRInfo
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-vec3 GetIBL(const PBRInfo pbr, const vec3 reflection)
+vec3 EvaluateIBL(const PBRInfo pbr)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     vec3 brdf = EnvBRDFApprox(pbr.specularColor, pbr.perceptualRoughness, pbr.NdotV);
 
 #ifdef HAS_IBL
-    vec3 diffuseLight = DiffuseIrradiance(reflection);
-    vec3 specularLight = GetIblSpeculaColor(reflection, pbr.perceptualRoughness);
+    vec3 diffuseLight = DiffuseIrradiance(pbr.reflection);
+    vec3 specularLight = GetIblSpeculaColor(pbr.reflection, pbr.perceptualRoughness);
 #else
-    vec3 diffuseLight = Irradiance_SphericalHarmonics(iblSH, reflection);
+    vec3 diffuseLight = Irradiance_SphericalHarmonics(iblSH, pbr.reflection);
     vec3 specularLight = diffuseLight;
 #endif
 
@@ -259,103 +251,106 @@ vec3 GetIBL(const PBRInfo pbr, const vec3 reflection)
     return diffuse + specular;
 }
 
-vec3 GetDirectionalLight(const highp vec3 v, const highp vec3 n, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES], const PBRInfo pbr)
+vec3 SurfaceShading(const Light light, const PBRInfo pbr)
+{
+    // Calculate the shading terms for the microfacet specular shading model
+    vec3 F = SpecularReflection(pbr.reflectance0, pbr.reflectance90, light.VdotH);
+    vec3 diffuseContrib = (1.0 - F) * Diffuse(pbr.diffuseColor);
+
+    // Calculation of analytical lighting contribution
+    float G = GeometricOcclusion(light.NdotL, pbr.NdotV, pbr.alphaRoughness);
+    float D = MicrofacetDistribution(pbr.alphaRoughness, light.NdotH);
+    vec3 specContrib = (F * (G * D)) / (4.0 * (light.NdotL * pbr.NdotV));
+
+    return (diffuseContrib + specContrib) * pbr.attenuation;
+}
+
+vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
 {
     highp vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
     highp float NdotL = saturate(dot(n, l));
     if (NdotL < 0.001) return vec3(0.0, 0.0, 0.0);
-
     highp vec3 h = normalize(l + v); // Half vector between both l and v
 
-    // attenuation is property of spot and point light
-    highp vec4 vLightPositionArray = LightPositionArray[0];
-    float light = NdotL * ComputeMicroShadowing(NdotL, pbr.occlusion);
-    highp float NdotH = dot(n, h);
-    float LdotH = dot(l, h);
-    float VdotH = dot(v, h);
-
-    // Calculate the shading terms for the microfacet specular shading model
-    vec3 F = SpecularReflection(pbr.reflectance0, pbr.reflectance90, VdotH);
-    vec3 diffuseContrib = (1.0 - F) * Diffuse(pbr.diffuseColor);
-
-    // Calculation of analytical lighting contribution
-    float G = GeometricOcclusion(NdotL, pbr.NdotV, pbr.alphaRoughness);
-    float D = MicrofacetDistribution(pbr.alphaRoughness, NdotH);
-    vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * pbr.NdotV));
-
-    light *= pbr.attenuation;
+    Light light;
+    light.LdotH = dot(l, h);
+    light.NdotH = dot(n, h);
+    light.NdotL = NdotL;
+    light.VdotH = dot(v, h);
+    vec3 color = SurfaceShading(light, pbr) * NdotL * ComputeMicroShadowing(NdotL, pbr.occlusion);
 
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        light *= saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
+        color *= saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
     }
 #endif
 
-    return LightDiffuseScaledColourArray[0].xyz * (light * (diffuseContrib + specContrib));
+    return LightDiffuseScaledColourArray[0].xyz * color;
 }
 
-vec3 GetLocalLights(const highp vec3 v, const highp vec3 n, const vec3 vWorldPosition, const highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], const PBRInfo pbr)
+float GetAttenuation(const int index, const vec3 lightView)
+{
+    vec4 attParams = LightAttenuationArray[index];
+    vec4 spotParams = LightSpotParamsArray[index];
+    highp float range = attParams.x;
+    highp float fLightD = length(lightView);
+    if (fLightD > range) return 0.0;
+
+    highp float fLightD2 = fLightD * fLightD;
+    highp vec3 vLightView = normalize(lightView);
+    float attenuationConst = attParams.y;
+    float attenuationLinear = attParams.z;
+    float attenuationQuad = attParams.w;
+    float attenuation = 1.0 / (attenuationConst + (attenuationLinear * fLightD) + (attenuationQuad * fLightD2));
+
+    // spotlight
+    if (spotParams.w != 0.0) {
+        float outerRadius = spotParams.z;
+        float fallof = spotParams.x;
+        float innerRadius = spotParams.y;
+
+        highp vec3 l = -normalize(LightDirectionArray[index].xyz); // Vector from surface point to light
+        float rho = dot(l, vLightView);
+        float fSpotE = saturate((rho - innerRadius) / (fallof - innerRadius));
+        attenuation *= pow(fSpotE, outerRadius);
+    }
+
+    return attenuation;
+}
+
+vec3 EvaluateLocalLights(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const vec3 worldPosition, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     for (int i = 1; i < MAX_LIGHTS; ++i) {
-        if (int(LightCount) <= i) break;
+        if (int(LightCount) <= i) break;\
 
-        highp vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
-        highp float NdotL = saturate(dot(n, l));
-        if (NdotL < 0.001) continue;
+        highp vec4 lightPosition = lightSpacePosArray[i];
+        if (lightPosition.w == 0.0) continue;
+
+        highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
+        highp float NdotL = dot(n, l);
+        if (NdotL <= 0.001) continue;
+
+        // attenuation is property of spot and point light
+        float attenuation = GetAttenuation(i, lightPosition.xyz - worldPosition);
+        if (attenuation == 0.0) continue;
 
         highp vec3 h = normalize(l + v); // Half vector between both l and v
 
-        // attenuation is property of spot and point light
-        highp vec4 vLightPositionArray = LightPositionArray[i];
-        float attenuation = 1.0;
-        if (vLightPositionArray.w != 0.0) {
-            vec4 vAttParams = LightAttenuationArray[i];
-            highp float range = vAttParams.x;
-            highp vec3 vLightViewH = vLightPositionArray.xyz - vWorldPosition;
-            highp float fLightD = length(vLightViewH);
-            highp float fLightD2 = fLightD * fLightD;
-            highp vec3 vLightView = normalize(vLightViewH);
-            float attenuation_const = vAttParams.y;
-            float attenuation_linear = vAttParams.z;
-            float attenuation_quad = vAttParams.w;
-            attenuation = biggerhp(range, fLightD) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * fLightD2));
+        Light light;
+        light.LdotH = dot(l, h);
+        light.NdotH = dot(n, h);
+        light.NdotL = NdotL;
+        light.VdotH = dot(v, h);
+        vec3 color = SurfaceShading(light, pbr) * NdotL * attenuation * ComputeMicroShadowing(NdotL, pbr.occlusion);
 
-            // spotlight
-            vec4 vSpotParams = LightSpotParamsArray[i];
-            if (vSpotParams.w != 0.0) {
-                float outerRadius = vSpotParams.z;
-                float fallof = vSpotParams.x;
-                float innerRadius = vSpotParams.y;
-
-                float rho = dot(l, vLightView);
-                float fSpotE = saturate((rho - innerRadius) / (fallof - innerRadius));
-                attenuation *= pow(fSpotE, outerRadius);
-            }
-        }
-
-        float light = NdotL;
-        highp float NdotH = dot(n, h);
-        float LdotH = dot(l, h);
-        float VdotH = dot(v, h);
-
-        // Calculate the shading terms for the microfacet specular shading model
-        vec3 F = SpecularReflection(pbr.reflectance0, pbr.reflectance90, VdotH);
-        vec3 diffuseContrib = (1.0 - F) * Diffuse(pbr.diffuseColor);
-
-        // Calculation of analytical lighting contribution
-        float G = GeometricOcclusion(NdotL, pbr.NdotV, pbr.alphaRoughness);
-        float D = MicrofacetDistribution(pbr.alphaRoughness, NdotH);
-        vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * pbr.NdotV));
-
-        light *= attenuation;
-        #if MAX_SHADOW_TEXTURES > 0
+#if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[0] != 0.0) {
-            light *= saturate(CalcShadow(vLightSpacePosArray[i], i) + ShadowColour.r);
+            color *= saturate(CalcShadow(lightSpacePosArray[i], i) + ShadowColour.r);
         }
-        #endif
+#endif
 
-        color += LightDiffuseScaledColourArray[0].xyz * (light * (diffuseContrib + specContrib));
+        color += LightDiffuseScaledColourArray[0].xyz * color;
     }
 
     return color;
@@ -492,10 +487,10 @@ void main()
 #endif
 
     vec3 color = vec3(0.0, 0.0, 0.0);
-    vec3 reflection = -normalize(reflect(v, n));
-    color += SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * GetIBL(pbr, reflection));
-    color += GetDirectionalLight(v, n, vLightSpacePosArray, pbr);
-    color += GetLocalLights(v, n, vWorldPosition, vLightSpacePosArray, pbr);
+    pbr.reflection = -normalize(reflect(v, n));
+    color += SurfaceAmbientColour.rgb * (AmbientLightColour.rgb * EvaluateIBL(pbr));
+    color += EvaluateDirectionalLight(pbr, v, n, vLightSpacePosArray);
+    color += EvaluateLocalLights(pbr, v, n, vWorldPosition, vLightSpacePosArray);
 
     // Apply optional PBR terms for additional (optional) shading
     color += emission;
