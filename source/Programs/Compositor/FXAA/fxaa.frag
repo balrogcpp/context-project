@@ -24,46 +24,6 @@
 
 uniform sampler2D RT;
 
-// https://github.com/mattdesl/glsl-fxaa/blob/master/fxaa.glsl
-vec3 FastFxaa(sampler2D tex, const vec2 uv, const vec2 tsize)
-{
-    vec3 rgbNW = texture2D(tex, uv + vec2(-1.0, -1.0) * tsize).xyz;
-    vec3 rgbNE = texture2D(tex, uv + vec2( 1.0, -1.0) * tsize).xyz;
-    vec3 rgbSW = texture2D(tex, uv + vec2(-1.0,  1.0) * tsize).xyz;
-    vec3 rgbSE = texture2D(tex, uv + vec2( 1.0,  1.0) * tsize).xyz;
-    vec3 rgbM  = texture2D(tex, uv                           ).xyz;
-
-    const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
-    
-    float lumaNW = dot(rgbNW, luma);
-    float lumaNE = dot(rgbNE, luma);
-    float lumaSW = dot(rgbSW, luma);
-    float lumaSE = dot(rgbSE, luma);
-    float lumaM  = dot(rgbM,  luma);
-
-    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
-    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
-
-    vec2 dir;
-    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
-    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
-
-    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);
-    float rcpDirMin = 1.0/(min(abs(dir.x), abs(dir.y)) + dirReduce);
-    dir = min(vec2(FXAA_SPAN_MAX,  FXAA_SPAN_MAX), max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX), dir * rcpDirMin)) * tsize;
-
-    vec3 rgbA = 0.5 * (texture2D(tex, uv + dir * (1.0/3.0 - 0.5)).xyz + texture2D(tex, uv + dir * (2.0/3.0 - 0.5)).xyz);
-    vec3 rgbB = rgbA * 0.5 + 0.25 * (texture2D(tex,  uv + dir * -0.5).xyz + texture2D(tex,  uv + dir * 0.5).xyz);
-    float lumaB = dot(rgbB, luma);
-
-    if((lumaB < lumaMin) || (lumaB > lumaMax)) {
-        return rgbA;
-    } else {
-        return rgbB;
-    }
-}
-
-
 //https://github.com/libretro/glsl-shaders/blob/master/anti-aliasing/shaders/fxaa.glsl
 
 /*

@@ -196,9 +196,6 @@ void VideoManager::LoadResources() {
   Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
 
-  ///
-  // CreateProceduralTextures();
-
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   const char *APKZIP = "APKZip";

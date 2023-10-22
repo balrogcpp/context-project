@@ -405,8 +405,8 @@ vec3 GetORM(const vec2 uv, const float spec)
 #ifndef TERRA_NORMALMAP
     vec3 orm = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
-    //vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
-    vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - 0.25 * pow(spec, 0.2)), 0.0);
+    vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
+    // vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - 0.25 * pow(spec, 0.2)), 0.0);
 #endif
 #ifdef HAS_ORM
     if (textureSize(OrmTex, 0).x > 1) orm *= texture2D(OrmTex, uv).rgb;

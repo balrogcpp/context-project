@@ -7,13 +7,15 @@
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 
-#ifndef HAS_MRT
-#include "srgb.glsl"
+#ifdef HAS_TONEMAP
 #include "tonemap.glsl"
 #endif
 
 void EvaluateBuffer(vec3 color, const float alpha)
 {
+#ifdef HAS_TONEMAP
+    color = unreal(expose(color, 8.0));
+#endif
 #ifdef HAS_MRT
     FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
     FragData[MRT_DEPTH].r = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
@@ -21,12 +23,15 @@ void EvaluateBuffer(vec3 color, const float alpha)
     FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
     FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
 #else
-    FragColor = vec4(SafeHDR(unreal(expose(color, 3.0))), alpha);
+    FragColor = vec4(SafeHDR(color), alpha);
 #endif
 }
 
 void EvaluateBuffer(vec3 color)
 {
+#ifdef HAS_TONEMAP
+    color = unreal(expose(color, 8.0));
+#endif
 #ifdef HAS_MRT
     FragData[MRT_COLOR].rgb = SafeHDR(color);
     FragData[MRT_DEPTH].r = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
@@ -34,7 +39,7 @@ void EvaluateBuffer(vec3 color)
     FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
     FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
 #else
-    FragColor.rgb = SafeHDR(unreal(expose(color, 3.0)));
+    FragColor.rgb = SafeHDR(color);
 #endif
 }
 
