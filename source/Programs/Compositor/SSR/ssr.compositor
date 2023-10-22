@@ -10,9 +10,9 @@ compositor SSR : STD
     technique
     {
         texture_ref depth DepthHalved depth
-        texture ssr target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture ssr1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB no_fsaa depth_pool 0
-        texture ssr2 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB no_fsaa depth_pool 0
+        texture ssr target_width_scaled 1 target_height_scaled 1 PF_FLOAT16_RGB no_fsaa depth_pool 0
+        texture ssr1 target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_RGB no_fsaa depth_pool 0
+        texture ssr2 target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_RGB no_fsaa depth_pool 0
 
         target ssr1
         {
@@ -32,9 +32,8 @@ compositor SSR : STD
             pass render_quad
             {
                 material ssrRec
-                input 0 rt
-                input 1 ssr1
-                input 2 ssr2
+                input 0 ssr1
+                input 1 ssr2
             }
         }
 

@@ -59,17 +59,10 @@ material ssrRec : STD
         {
             fragment_program_ref ssrRec
             {
-                param_named RT int 0
-                param_named SsrTex1 int 1
-                param_named SsrTex2 int 2
+                param_named SsrTex1 int 0
+                param_named SsrTex2 int 1
             }
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
             texture_unit SSR
             {
                 texture black.dds
@@ -80,7 +73,7 @@ material ssrRec : STD
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
         }
     }
@@ -107,7 +100,7 @@ material ssrMod : STD
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
             texture_unit SSR
             {
@@ -119,7 +112,7 @@ material ssrMod : STD
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
         }
     }
