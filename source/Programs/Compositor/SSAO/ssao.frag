@@ -26,6 +26,19 @@ vec3 hash(const vec3 a)
     return fract((b.xxy + b.yxx) * b.zyx);
 }
 
+float pow5(const float x)
+{
+    float x2 = x * x;
+    return x2 * x2 * x;
+}
+
+float pow10(const float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x4 * x2;
+}
+
 in vec2 vUV0;
 in vec3 vRay;
 void main()
@@ -75,7 +88,7 @@ void main()
     }
 
     // Accumulated occlusion factor
-    float occ = 0.0;
+    float occlusion = 0.0;
     for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
         // Reflected direction to move in for the sphere
         // (based on random samples and a random texture sample)
@@ -94,12 +107,12 @@ void main()
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
+        occlusion += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
     }
 
     // normalise
-    occ /= float(NUM_BASE_SAMPLES);
+    occlusion /= float(NUM_BASE_SAMPLES);
 
     // amplify and saturate if necessary
-    FragColor.r = occ;
+    FragColor.r = occlusion;
 }

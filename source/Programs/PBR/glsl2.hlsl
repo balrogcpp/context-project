@@ -83,7 +83,6 @@
 #define texture3D tex3D
 #define textureCube texCube
 
-
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/OgreUnifiedShader.h
 #define mod(a, b) ( a - b * floor(a / b) )
 #define vec2_splat(x) ( vec2(x, x) )
@@ -95,21 +94,6 @@
 #define mtxFromCols4x4(a, b, c, d) ( mat4(a, b, c, d) )
 #define mtx3x3(a1, a2, a3, a4, a5, a6, a7, a8, a9) ( transpose(mat3(a1, a2, a3, a4, a5, a6, a7, a8, a9)) )
 #define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( transpose(mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)) )
-
-#define OGRE_UNIFORMS_BEGIN
-#define OGRE_UNIFORMS_END
-#define OGRE_UNIFORMS(params) OGRE_UNIFORMS_BEGIN params OGRE_UNIFORMS_END
-#define MAIN_PARAMETERS void main(
-
-#ifdef OGRE_VERTEX_SHADER
-#define MAIN_DECLARATION out float4 gl_Position : POSITION)
-#endif
-#ifdef OGRE_FRAGMENT_SHADER
-#define MAIN_DECLARATION in float4 gl_FragCoord : POSITION, out float4 FragColor : COLOR)
-#endif
-
-#define IN(decl, sem) in decl : sem,
-#define OUT(decl, sem) out decl : sem,
 
 #endif // OGRE_HLSL
 #endif // HLSL2_GLSL

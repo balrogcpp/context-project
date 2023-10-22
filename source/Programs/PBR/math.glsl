@@ -3,13 +3,6 @@
 #ifndef MATH_GLSL
 #define MATH_GLSL
 
-#if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
-#include "hlsl2.glsl"
-#endif
-#ifdef OGRE_HLSL
-#include "glsl2.hlsl"
-#endif
-
 #define HALF_MAX        65504.0 // (2 - 2^-10) * 2^15
 #define HALF_MAX_MINUS1 65472.0 // (2 - 2^-9) * 2^15
 #define HALF_EPSILON    1.0e-4
@@ -21,17 +14,25 @@
 #define INV_FOUR_PI     0.07957747155
 #define HALF_PI         1.57079632679
 #define INV_HALF_PI     0.636619772367
-
 #define FLT_EPSILON     1.192092896e-07 // Smallest positive number, such that 1.0 + FLT_EPSILON != 1.0
 #define FLT_MIN         1.175494351e-38 // Minimum representable positive floating-point number
 #define FLT_MAX         3.402823466e+38 // Maximum representable floating-point number
-
 #define M_PI PI
-#ifdef OGRE_GLSLES
+#ifdef GL_ES
 #define F0 0.089
 #else
 #define F0 0.045
 #endif
+
+float map_0(float x, float v0, float v1)
+{
+    return (x - v0) / (v1 - v0);
+}
+
+float map_1(float x, float v0, float v1)
+{
+    return x * (v1 - v0) + v0;
+}
 
 // extra optimized functions
 float min3(float a, float b, float c)
@@ -55,19 +56,9 @@ float max3(vec3 a)
 }
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float biggerhp(highp float x, highp float y)
-{
-    return saturate((x - y - HALF_EPSILON) * FLT_MAX);
-}
-
 float bigger(float x, float y)
 {
-    return saturate((x - y - HALF_EPSILON) * HALF_MAX);
-}
-
-float biggerhp(highp float x)
-{
-    return saturate((x - FLT_EPSILON) * FLT_MAX);
+    return saturate(((x - y) - HALF_EPSILON) * HALF_MAX);
 }
 
 float bigger(float x)
@@ -75,126 +66,9 @@ float bigger(float x)
     return saturate((x - FLT_EPSILON) * HALF_MAX);
 }
 
-float fsinghp(highp float x)
-{
-    return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
-}
-
-vec2 fsinghp(highp vec2 x)
-{
-    return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
-}
-
-vec3 fsinghp(highp vec3 x)
-{
-    return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
-}
-
-vec4 fsinghp(highp vec4 x)
-{
-    return saturate(x * FLT_MAX + 0.5) * 2.0 - 1.0;
-}
-
 float fsign(float x)
 {
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
-}
-
-vec2 fsign(vec2 x)
-{
-    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
-}
-
-vec3 fsign(vec3 x)
-{
-    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
-}
-
-vec4 fsign(vec4 x)
-{
-    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
-}
-
-float pow2(const float x)
-{
-    return x * x;
-}
-
-float pow3(const float x)
-{
-    float x2 = x * x;
-    return x2 * x;
-}
-
-float pow4(const float x)
-{
-    float x2 = x * x;
-    return x2 * x2;
-}
-
-float pow5(const float x)
-{
-    float x2 = x * x;
-    return x2 * x2 * x;
-}
-
-float pow6(const float x)
-{
-    float x2 = x * x;
-    return x2 * x2 * x2;
-}
-
-float pow7(const float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x2 * x;
-}
-
-float pow8(const float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x4;
-}
-
-float pow9(const float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x4 * x;
-}
-
-float pow10(const float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x4 * x2;
-}
-
-float pow11(const float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x4 * x2 * x;
-}
-
-float pow12(const float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x4 * x4;
-}
-
-highp float map_0(const highp float x, const highp float v0, const highp float v1)
-{
-    return (x - v0) / (v1 - v0);
-}
-
-
-highp float map_1(const highp float x, const highp float v0, const highp float v1)
-{
-    return x * (v1 - v0) + v0;
 }
 
 bool Any(vec2 x)
@@ -237,17 +111,17 @@ bool IsNan(float x)
     return (x < 0.0 || x > 0.0 || x == 0.0) ? false : true;
 }
 
-bool AnyIsNan(vec2 x)
+bool IsNan(vec2 x)
 {
     return IsNan(x.x) || IsNan(x.y);
 }
 
-bool AnyIsNan(vec3 x)
+bool IsNan(vec3 x)
 {
     return IsNan(x.x) || IsNan(x.y) || IsNan(x.z);
 }
 
-bool AnyIsNan(vec4 x)
+bool IsNan(vec4 x)
 {
     return IsNan(x.x) || IsNan(x.y) || IsNan(x.z) || IsNan(x.w);
 }

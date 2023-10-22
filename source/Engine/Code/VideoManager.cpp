@@ -256,7 +256,7 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
-      pssmSplitCount(2),
+      pssmSplitCount(1),
       shadowFarDistance(400.0),
       shadowTexSize(512) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
@@ -329,8 +329,6 @@ void VideoManager::CheckGPU() {
   }
 }
 
-void SetGameControllerMapping();
-
 void VideoManager::InitSDL() {
 #ifdef _MSC_VER
   SDL_SetMainReady();
@@ -346,8 +344,6 @@ void VideoManager::InitSDL() {
     result = SDL_GameControllerAddMappingsFromFile(path.c_str());
     if (result == -1) LogError("gamecontrollerdb.txt not found", SDL_GetError());
     ASSERTION(result != -1, "gamecontrollerdb.txt not found");
-  } else {
-    // SetGameControllerMapping();
   }
 #endif
 }
@@ -529,7 +525,6 @@ void VideoManager::InitOgreSceneManager() {
 
     // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();
-    pssmSplitCount = 2;
 
     // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);

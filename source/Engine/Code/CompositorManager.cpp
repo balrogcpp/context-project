@@ -88,7 +88,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", false);
   AddCompositor("SMAA", false);
   AddCompositor("Blur", false);
-  AddCompositor("HDR", !RenderSystemIsGLES2());
+  AddCompositor("HDR", true);
   AddCompositor("Glow", false);
   AddCompositor("Paused", false);
 

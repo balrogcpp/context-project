@@ -13,7 +13,14 @@
 #define MAX_MRT_TEXTURES 5
 #endif
 #ifndef PSSM_SPLIT_COUNT
-#define PSSM_SPLIT_COUNT 2
+#define PSSM_SPLIT_COUNT 1
+#endif
+#ifdef HAS_MRT
+#define MRT_COLOR 0
+#define MRT_DEPTH 1
+#define MRT_VELOCITY 2
+#define MRT_NORMALS 3
+#define MRT_GLOSS 4
 #endif
 
 #ifdef OGRE_GLSLES
@@ -24,17 +31,6 @@ precision mediump float;
 precision highp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
-#endif
-
-#ifdef GL_ES
-#undef HAS_MRT
-#endif
-#ifdef HAS_MRT
-#define MRT_COLOR 0
-#define MRT_DEPTH 1
-#define MRT_VELOCITY 2
-#define MRT_NORMALS 3
-#define MRT_GLOSS 4
 #endif
 
 #if (defined(OGRE_GLSL) && __VERSION__ >= 150) || (defined(OGRE_GLSLES) && __VERSION__ >= 300)
@@ -70,10 +66,8 @@ out vec4 FragColor;
 
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 #include "hlsl2.glsl"
-#endif
-#ifdef OGRE_HLSL
+#elif defined(OGRE_HLSL)
 #include "glsl2.hlsl"
-#include "HLSL_SM4Support.hlsl"
 #endif
 #include "math.glsl"
 #include "mrt.glsl"

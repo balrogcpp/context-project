@@ -90,11 +90,7 @@ float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
     uv.z = uv.z * 0.5 + 0.5;
     vec2 tsize = 1.0 / vec2(textureSize(shadowTex, 0));
     float shadow = 0.0;
-#ifndef GL_ES
     float currentDepth = uv.z - 2.0 * HALF_EPSILON;
-#else
-    float currentDepth = uv.z - 13.0 * HALF_EPSILON;
-#endif
     float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
     float penumbra = Penumbra(shadowTex, uv.xy, tsize, currentDepth);

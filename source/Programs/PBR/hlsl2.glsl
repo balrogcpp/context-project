@@ -28,7 +28,6 @@ mat4 transpose(const mat4 m)
 }
 #endif
 
-
 // some hlsl functions as macros
 #define float4 vec4
 #define float3 vec3
@@ -110,7 +109,6 @@ mat4 transpose(const mat4 m)
 #define tex3D texture3D
 #define texCube textureCube
 
-
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/OgreUnifiedShader.h
 #define vec2_splat(x) vec2(x)
 #define vec3_splat(x) vec3(x)
@@ -121,75 +119,6 @@ mat4 transpose(const mat4 m)
 #define mtxFromCols4x4(a, b, c, d) ( mat4(a, b, c, d) )
 #define mtx3x3(a1, a2, a3, a4, a5, a6, a7, a8, a9) ( mat3(a1, a2, a3, a4, a5, a6, a7, a8, a9) )
 #define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) )
-
-#define OGRE_UNIFORMS_BEGIN
-#define OGRE_UNIFORMS_END
-#define OGRE_UNIFORMS(params) OGRE_UNIFORMS_BEGIN params OGRE_UNIFORMS_END
-#define MAIN_PARAMETERS
-#define MAIN_DECLARATION void main()
-
-#if __VERSION__ > 120 || defined(OGRE_GLSLANG)
-
-#if defined(OGRE_GLSLANG) || (__VERSION__ > 150 && defined(OGRE_VERTEX_SHADER)) || __VERSION__ >= 410
-#define IN(decl, loc) layout(location = loc) in decl;
-#else
-#define IN(decl, loc) in decl;
-#endif
-
-#if defined(OGRE_GLSLANG) || (__VERSION__ > 150 && defined(OGRE_FRAGMENT_SHADER)) || __VERSION__ >= 410
-#define OUT(decl, loc) layout(location = loc) out decl;
-#else
-#define OUT(decl, loc) out decl;
-#endif
-
-#else
-
-#ifdef OGRE_VERTEX_SHADER
-#define IN(decl, loc) attribute decl;
-#define OUT(decl, loc) varying decl;
-#else
-#define IN(decl, loc) varying decl;
-#define OUT(decl, loc) out decl;
-#endif
-
-#endif
-
-#if __VERSION__ >= 420
-#define _UNIFORM_BINDING(b) layout(binding = b) uniform
-#else
-#define _UNIFORM_BINDING(b) uniform
-#endif
-
-#define SAMPLER1D(name, reg) _UNIFORM_BINDING(reg) sampler1D name
-#define SAMPLER2D(name, reg) _UNIFORM_BINDING(reg) sampler2D name
-#define SAMPLER3D(name, reg) _UNIFORM_BINDING(reg) sampler3D name
-#define SAMPLER2DARRAY(name, reg) _UNIFORM_BINDING(reg) sampler2DArray name
-#define SAMPLERCUBE(name, reg) _UNIFORM_BINDING(reg) samplerCube name
-#define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2D name
-
-// semantics as aliases for attribute locations
-#ifdef OGRE_VERTEX_SHADER
-#if !defined(OGRE_HLSL) && !defined(OGRE_CG)
-#define POSITION    0
-#define BLENDWEIGHT 1
-#define NORMAL      2
-#define COLOR0      3
-#define COLOR1      4
-#define COLOR COLOR0
-#define FOG         5
-#define BLENDINDICES 7
-#define TEXCOORD0   8
-#define TEXCOORD1   9
-#define TEXCOORD2  10
-#define TEXCOORD3  11
-#define TEXCOORD4  12
-#define TEXCOORD5  13
-#define TEXCOORD6  14
-#define TEXCOORD7  15
-#define TEXCOORD8  16
-#define TANGENT    14
-#endif
-#endif
 
 #endif // OGRE_GLSL
 #endif // HLSL2_GLSL

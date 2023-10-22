@@ -4,11 +4,10 @@
 #define MRT_HELPER_GLSL
 #ifdef OGRE_FRAGMENT_SHADER
 
-uniform highp float FarClipDistance;
-uniform highp float NearClipDistance;
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 
 #ifndef HAS_MRT
-#include "math.glsl"
 #include "srgb.glsl"
 #include "tonemap.glsl"
 #endif
@@ -35,7 +34,7 @@ void EvaluateBuffer(vec3 color)
     FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
     FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
 #else
-    FragColor.rgb = SafeHDR(unreal(color));
+    FragColor.rgb = SafeHDR(unreal(expose(color, 3.0)));
 #endif
 }
 

@@ -92,6 +92,12 @@ vec3 Diffuse(const vec3 diffuseColor)
     return diffuseColor / M_PI;
 }
 
+float pow5(float x)
+{
+    float x2 = x * x;
+    return x2 * x2 * x;
+}
+
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
 vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const float VdotH)
@@ -251,32 +257,6 @@ vec3 SurfaceShading(const Light light, const PBRInfo pbr)
     return diffuseContrib + specContrib;
 }
 
-vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
-{
-    highp vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
-    highp float NdotL = saturate(dot(n, l));
-    if (NdotL < 0.001) return vec3(0.0, 0.0, 0.0);
-    highp vec3 h = normalize(l + v); // Half vector between both l and v
-
-    Light light;
-    light.LdotH = dot(l, h);
-    light.NdotH = dot(n, h);
-    light.NdotL = NdotL;
-    light.VdotH = dot(v, h);
-    vec3 color = SurfaceShading(light, pbr) * NdotL * ComputeMicroShadowing(NdotL, pbr.occlusion);
-#ifdef TERRA_LIGHTMAP
-    color *= FetchTerraShadow(TerraLightTex, pbr.uv);
-#endif
-
-#if MAX_SHADOW_TEXTURES > 0
-    if (LightCastsShadowsArray[0] != 0.0) {
-        color *= saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
-    }
-#endif
-
-    return LightDiffuseScaledColourArray[0].xyz * color;
-}
-
 float GetAttenuation(const int index, const vec3 lightView)
 {
     vec4 attParams = LightAttenuationArray[index];
@@ -307,39 +287,63 @@ float GetAttenuation(const int index, const vec3 lightView)
     return attenuation;
 }
 
+vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
+{
+    highp vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
+    highp float NdotL = saturate(dot(n, l));
+    if (NdotL <= 0.001) return vec3(0.0, 0.0, 0.0);
+    highp vec3 h = normalize(l + v); // Half vector between both l and v
+
+    Light light;
+    light.LdotH = dot(l, h);
+    light.NdotH = dot(n, h);
+    light.NdotL = NdotL;
+    light.VdotH = dot(v, h);
+    vec3 color = SurfaceShading(light, pbr) * NdotL * ComputeMicroShadowing(NdotL, pbr.occlusion);
+#ifdef TERRA_LIGHTMAP
+    color *= FetchTerraShadow(TerraLightTex, pbr.uv);
+#endif
+
+#if MAX_SHADOW_TEXTURES > 0
+    if (LightCastsShadowsArray[0] != 0.0) {
+        color *= saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
+    }
+#endif
+
+    return LightDiffuseScaledColourArray[0].xyz * color;
+}
+
 vec3 EvaluateLocalLights(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const vec3 worldPosition, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
-    for (int i = 1; i < MAX_LIGHTS; ++i) {
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
         highp vec4 lightPosition = LightPositionArray[i];
         if (lightPosition.w == 0.0) continue;
-
         highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
-        highp float NdotL = dot(n, l);
+        highp float NdotL = saturate(dot(n, l));
         if (NdotL <= 0.001) continue;
 
         // attenuation is property of spot and point light
         float attenuation = GetAttenuation(i, lightPosition.xyz - worldPosition);
         if (attenuation == 0.0) continue;
 
-        highp vec3 h = normalize(l + v); // Half vector between both l and v
-
         Light light;
+        highp vec3 h = normalize(l + v); // Half vector between both l and v
         light.LdotH = dot(l, h);
         light.NdotH = dot(n, h);
         light.NdotL = NdotL;
         light.VdotH = dot(v, h);
-        vec3 color = SurfaceShading(light, pbr) * NdotL * attenuation * ComputeMicroShadowing(NdotL, pbr.occlusion);
+        vec3 c = SurfaceShading(light, pbr) * NdotL * attenuation * ComputeMicroShadowing(NdotL, pbr.occlusion);
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[0] != 0.0) {
-            color *= saturate(CalcShadow(lightSpacePosArray[i], i) + ShadowColour.r);
+            c *= saturate(CalcShadow(lightSpacePosArray[i], i) + ShadowColour.r);
         }
 #endif
 
-        color += LightDiffuseScaledColourArray[0].xyz * color;
+        color += LightDiffuseScaledColourArray[0].xyz * c;
     }
 
     return color;
@@ -414,7 +418,7 @@ vec3 GetORM(const vec2 uv, const float spec)
 
 vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 {
-    highp vec2 uv = uv0 * (1.0 + TexScale);
+    vec2 uv = uv0 * (1.0 + TexScale);
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
     uv = uv - (vec2(v.x, -v.y) * OffsetScale * texture2D(NormalTex, uv).a);
 #endif
@@ -423,7 +427,7 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 
 in highp vec3 vWorldPosition;
 in highp mat3 vTBN;
-in highp vec2 vUV0;
+in vec2 vUV0;
 in vec4 vColor;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
@@ -475,10 +479,7 @@ void main()
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
     EvaluateBuffer(color, alpha);
-
-#ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
     if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = (vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-#endif
 }
