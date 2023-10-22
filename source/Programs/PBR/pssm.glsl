@@ -86,33 +86,33 @@ float Penumbra(sampler2D shadowTex, const vec2 uv, const vec2 tsize, const float
 
 float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
 {
-  uv /= uv.w;
-  uv.z = uv.z * 0.5 + 0.5;
-  vec2 tsize = 1.0 / vec2(textureSize(shadowTex, 0));
-  float shadow = 0.0;
+    uv /= uv.w;
+    uv.z = uv.z * 0.5 + 0.5;
+    vec2 tsize = 1.0 / vec2(textureSize(shadowTex, 0));
+    float shadow = 0.0;
 #ifndef GL_ES
-  float currentDepth = uv.z - 2.0 * HALF_EPSILON;
+    float currentDepth = uv.z - 2.0 * HALF_EPSILON;
 #else
-  float currentDepth = uv.z - 13.0 * HALF_EPSILON;
+    float currentDepth = uv.z - 13.0 * HALF_EPSILON;
 #endif
-  float phi = InterleavedGradientNoise();
+    float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
-  float penumbra = Penumbra(shadowTex, uv.xy, tsize, currentDepth);
+    float penumbra = Penumbra(shadowTex, uv.xy, tsize, currentDepth);
 #else
-  const float penumbra = 1.0;
+    const float penumbra = 1.0;
 #endif
 
-  for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
-    vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
+    for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
+        vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
 
-    uv.xy += offset;
-    float depth = map_1(texture2D(shadowTex, uv.xy).x, 0.1, 100.0);
-    shadow += bigger(depth, currentDepth);
-  }
+        uv.xy += offset;
+        float depth = map_1(texture2D(shadowTex, uv.xy).x, 0.1, 100.0);
+        shadow += bigger(depth, currentDepth);
+    }
 
-  shadow /= float(PSSM_FILTER_SIZE);
+    shadow /= float(PSSM_FILTER_SIZE);
 
-  return shadow;
+    return shadow;
 }
 
 #if PSSM_SPLIT_COUNT > 0
@@ -134,7 +134,7 @@ float CalcPSSMShadow(const vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
 #endif
 
 
-float CalcShadow(const highp vec4 lightSpacePos, const int index)
+float CalcShadow(const vec4 lightSpacePos, const int index)
 {
 #if MAX_SHADOW_TEXTURES > 0
     if (index == 0) return CalcDepthShadow(ShadowTex0, lightSpacePos);
@@ -161,7 +161,7 @@ float CalcShadow(const highp vec4 lightSpacePos, const int index)
     else if (index == 7) return CalcDepthShadow(ShadowTex7, lightSpacePos);
 #endif
 #if MAX_SHADOW_TEXTURES > 0
-    else  return 1.0;
+    else return 1.0;
 #endif
 }
 

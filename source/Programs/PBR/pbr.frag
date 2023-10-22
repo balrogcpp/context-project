@@ -22,47 +22,33 @@
 
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;
-#endif // HAS_BASECOLORMAP
+#endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D NormalTex;
-#endif // HAS_NORMALMAP
+#endif
 #ifdef HAS_ORM
 uniform sampler2D OrmTex;
-#endif // HAS_ORM
+#endif
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D EmissiveTex;
-#endif // HAS_EMISSIVEMAP
+#endif
 #ifdef HAS_IBL
 uniform samplerCube SpecularEnvTex;
-#endif // HAS_IBL
+#endif
 #ifdef TERRA_NORMALMAP
 uniform sampler2D TerraNormalTex;
-#endif // TERRA_NORMALMAP
+#endif
 #ifdef TERRA_LIGHTMAP
 uniform sampler2D TerraLightTex;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
 uniform sampler2D ShadowTex0;
-#endif
-#if MAX_SHADOW_TEXTURES > 1
 uniform sampler2D ShadowTex1;
-#endif
-#if MAX_SHADOW_TEXTURES > 2
 uniform sampler2D ShadowTex2;
-#endif
-#if MAX_SHADOW_TEXTURES > 3
 uniform sampler2D ShadowTex3;
-#endif
-#if MAX_SHADOW_TEXTURES > 4
 uniform sampler2D ShadowTex4;
-#endif
-#if MAX_SHADOW_TEXTURES > 5
 uniform sampler2D ShadowTex5;
-#endif
-#if MAX_SHADOW_TEXTURES > 6
 uniform sampler2D ShadowTex6;
-#endif
-#if MAX_SHADOW_TEXTURES > 7
 uniform sampler2D ShadowTex7;
 #endif
 
@@ -327,7 +313,7 @@ vec3 EvaluateLocalLights(const PBRInfo pbr, const highp vec3 v, const highp vec3
     for (int i = 1; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
-        highp vec4 lightPosition = lightSpacePosArray[i];
+        highp vec4 lightPosition = LightPositionArray[i];
         if (lightPosition.w == 0.0) continue;
 
         highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
