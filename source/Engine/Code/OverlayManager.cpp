@@ -80,7 +80,7 @@ void OverlayManager::OnSetUp() {
   ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
   // ImGuiB::SetupImGuiStyle_Unreal();
-  ImGuiB::SetupImGuiStyle_SpectrumDark();
+  SetupImGuiStyle_SpectrumDark();
 
   float diag0 = 100000.0;
   float diag = min(x, y);
