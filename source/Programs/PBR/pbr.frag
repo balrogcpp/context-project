@@ -306,7 +306,11 @@ vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp
 
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
+#if PSSM_SPLIT_COUNT == 1
+        color *= saturate(CalcShadow(lightSpacePosArray[0], 0) + ShadowColour.r);
+#elif PSSM_SPLIT_COUNT > 1
         color *= saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
+#endif
     }
 #endif
 
@@ -479,7 +483,9 @@ void main()
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
     EvaluateBuffer(color, alpha);
+#ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
     if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = (vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w);
+#endif
 }

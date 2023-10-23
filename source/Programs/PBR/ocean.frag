@@ -185,5 +185,7 @@ void main()
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
     EvaluateBuffer(color, 1.0);
+#ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(lNormal, 0.0))).xyz;
+#endif
 }

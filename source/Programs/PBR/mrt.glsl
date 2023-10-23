@@ -14,7 +14,7 @@ uniform float NearClipDistance;
 void EvaluateBuffer(vec3 color, const float alpha)
 {
 #ifdef HAS_TONEMAP
-    color = unreal(expose(color, 8.0));
+    color = unreal(expose(color, 6.0));
 #endif
 #ifdef HAS_MRT
     FragData[MRT_COLOR] = vec4(SafeHDR(color), alpha);
@@ -30,7 +30,7 @@ void EvaluateBuffer(vec3 color, const float alpha)
 void EvaluateBuffer(vec3 color)
 {
 #ifdef HAS_TONEMAP
-    color = unreal(expose(color, 8.0));
+    color = unreal(expose(color, 6.0));
 #endif
 #ifdef HAS_MRT
     FragData[MRT_COLOR].rgb = SafeHDR(color);
