@@ -3,7 +3,7 @@
 #ifndef HEADER_GLSL
 #define HEADER_GLSL
 
-#define HAS_TONEMAP
+//#define HAS_TONEMAP
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
 #endif

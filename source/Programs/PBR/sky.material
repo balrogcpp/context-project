@@ -3,7 +3,6 @@
 vertex_program SkyBoxVp glsl glsles hlsl
 {
 	source sky.vert
-    target vs_2_0
 
     default_params
     {

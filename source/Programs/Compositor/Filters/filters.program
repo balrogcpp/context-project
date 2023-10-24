@@ -34,8 +34,3 @@ fragment_program linear glsl glsles hlsl
 {
 	source linear.frag
 }
-
-fragment_program copy glsl glsles hlsl
-{
-	source linear.frag
-}

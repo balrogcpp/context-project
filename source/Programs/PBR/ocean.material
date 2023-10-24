@@ -3,7 +3,6 @@
 vertex_program Ocean_vs glsl glsles hlsl
 {
     source ocean.vert
-    target vs_2_0
 
     default_params
     {

@@ -87,3 +87,18 @@ compositor HDR
         }
     }
 }
+
+compositor Tonemap : STD
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Tonemap
+                input 0 rt
+            }
+        }
+    }
+}

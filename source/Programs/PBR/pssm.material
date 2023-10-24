@@ -6,7 +6,6 @@
 vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 {
 	source pssm.vert
-    target vs_2_0
 
 	preprocessor_defines SHADOWCASTER_ALPHA
 
@@ -31,7 +30,6 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 {
 	source pssm.vert
-    target vs_2_0
 
 	default_params
 	{

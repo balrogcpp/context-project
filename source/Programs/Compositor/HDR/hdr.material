@@ -105,11 +105,31 @@ material HDR : STD
                 tex_address_mode clamp
                 filtering none
             }
-            texture_unit Bloom
+		}
+	}
+}
+
+fragment_program Tonemap glsl glsles hlsl
+{
+    source tonemap.frag
+}
+
+material Tonemap : STD
+{
+	technique
+	{
+		pass
+		{
+            fragment_program_ref Tonemap
+			{
+                param_named RT int 0
+			}
+
+			texture_unit RT
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
 		}
 	}

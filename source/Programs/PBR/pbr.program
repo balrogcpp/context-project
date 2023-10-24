@@ -19,7 +19,6 @@ shared_params IBL_Shared_frag
 abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
-    target vs_2_0
     preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR
 
     default_params

@@ -11,17 +11,11 @@
 #endif
 
 #include "header.glsl"
-#include "tonemap.glsl"
 
-uniform sampler2D RT;
-uniform sampler2D Lum;
+uniform highp mat4 WorldViewProj;
 
-in vec2 vUV0;
+in highp vec4 vertex;
 void main()
 {
-    vec3 color = texture2D(RT, vUV0).rgb;
-    float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
-
-    color *= lum;
-    FragColor.rgb = SafeHDR(unreal(color));
+    gl_Position = mul(WorldViewProj, vertex);
 }

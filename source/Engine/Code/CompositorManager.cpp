@@ -88,8 +88,9 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", false);
   AddCompositor("SMAA", false);
   AddCompositor("Blur", false);
-  AddCompositor("HDR", false);
   AddCompositor("Glow", false);
+//  AddCompositor("HDR", true);
+  AddCompositor("Tonemap", true);
   AddCompositor("Paused", false);
 
   // reg as viewport listener

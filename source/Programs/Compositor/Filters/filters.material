@@ -79,21 +79,6 @@ material Downscale2x2 : Filter
     }
 }
 
-
-material Copy : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref copy
-            {
-                param_named RT int 0
-            }
-        }
-    }
-}
-
 material Upscale9 : Filter
 {
     technique

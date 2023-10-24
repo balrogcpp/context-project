@@ -4,7 +4,6 @@
 vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 {
 	source SMAA_EdgeDetection.vert
-    target vs_2_0
 
 	default_params
 	{
@@ -63,7 +62,6 @@ material SMAA/EdgeDetection
 vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 {
 	source SMAA_BlendingWeightCalculation.vert
-    target vs_2_0
 
 	default_params
 	{
@@ -133,7 +131,6 @@ material SMAA/BlendingWeightCalculation
 vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 {
 	source SMAA_NeighborhoodBlending.vert
-    target vs_2_0
 
 	default_params
 	{

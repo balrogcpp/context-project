@@ -3,7 +3,6 @@
 vertex_program StdQuad glsl glsles hlsl
 {
 	source stdquad.vert
-    target vs_2_0
 
 	default_params
 	{
@@ -14,10 +13,24 @@ vertex_program StdQuad glsl glsles hlsl
 vertex_program RayCast glsl glsles hlsl
 {
 	source raycast.vert
-    target vs_2_0
 
 	default_params
 	{
 		param_named_auto WorldViewProj worldviewproj_matrix
 	}
+}
+
+vertex_program CopyVert glsl glsles hlsl
+{
+	source copy.vert
+
+	default_params
+	{
+		param_named_auto WorldViewProj worldviewproj_matrix
+	}
+}
+
+fragment_program CopyFrag glsl glsles hlsl
+{
+	source copy.frag
 }
