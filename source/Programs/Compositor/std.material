@@ -17,7 +17,7 @@ abstract material STD
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
 		}
 	}
@@ -40,7 +40,7 @@ abstract material RayCast
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
 		}
 	}

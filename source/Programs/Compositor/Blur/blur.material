@@ -28,12 +28,6 @@ material Blur : RayCast
                 param_named VelocityTex int 2
 			}
 
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
             texture_unit Depth
             {
                 texture black.dds

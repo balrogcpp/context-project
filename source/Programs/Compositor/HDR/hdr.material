@@ -83,12 +83,6 @@ material HDR : STD
                 param_named Lum int 1
 			}
 
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
 			texture_unit Lum
             {
                 texture black.dds
@@ -114,13 +108,6 @@ material Tonemap : STD
 			{
                 param_named RT int 0
 			}
-
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
 		}
 	}
 }

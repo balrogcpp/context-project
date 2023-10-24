@@ -24,12 +24,6 @@ material FBO : STD
                 param_named DepthTex int 2
             }
 
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
             texture_unit Lum
             {
                 texture black.dds
