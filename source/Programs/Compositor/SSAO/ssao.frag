@@ -1,16 +1,6 @@
 // created by Andrey Vasiliev
 // based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
 
-#ifndef __VERSION__
-#if defined(OGRE_GLSL)
-#version 330 core
-#define __VERSION__ 330
-#elif defined(OGRE_GLSLES)
-#version 300 es
-#define __VERSION__ 300
-#endif
-#endif
-
 #include "header.glsl"
 #include "mosaic.glsl"
 

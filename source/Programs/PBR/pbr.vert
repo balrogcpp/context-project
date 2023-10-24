@@ -1,15 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef __VERSION__
-#if defined(OGRE_GLSL)
-#version 330 core
-#define __VERSION__ 330
-#elif defined(OGRE_GLSLES)
-#version 300 es
-#define __VERSION__ 300
-#endif
-#endif
-
 #define HAS_MRT
 #include "header.glsl"
 #ifdef PAGED_GEOMETRY

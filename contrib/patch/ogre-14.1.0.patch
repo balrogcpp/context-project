@@ -375,10 +375,10 @@ index e4988cfe7..bcf00ca82 100644
              verStr = "150";
  #endif
 -
-+        if (getLanguage() == "glsles" && mShaderVersion >= 300 && mSource.find("#ifndef __VERSION__") != String::npos) mSource = String("#version 300 es\n") + mSource;
++        if (getLanguage() == "glsles" && mSource.find("#version") == String::npos) mSource = String("#version 300 es\n#define __VERSION__ 330\n") + mSource;
          cpp.Define("__VERSION__", 11, verStr.c_str(), verStr.size());
 -
-+        if (getLanguage() == "glsl" && mShaderVersion >= 300 && mSource.find("#ifndef __VERSION__") != String::npos) mSource = String("#version 330 core\n") + mSource;
++        if (getLanguage() == "glsl" && mSource.find("#version") == String::npos) mSource = String("#version 330 core\n#define __VERSION__ 300\n") + mSource;
          String defines = appendBuiltinDefines(mPreprocessorDefines);
  
          for(const auto& def : parseDefines(defines))

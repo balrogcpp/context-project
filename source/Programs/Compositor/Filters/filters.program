@@ -29,8 +29,3 @@ fragment_program upscale9 glsl glsles hlsl
 {
 	source upscale9.frag
 }
-
-fragment_program linear glsl glsles hlsl
-{
-	source linear.frag
-}

@@ -108,17 +108,3 @@ material Downscale13 : Filter
         }
     }
 }
-
-material Linear : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref linear
-            {
-                param_named RT int 0
-            }
-        }
-    }
-}
