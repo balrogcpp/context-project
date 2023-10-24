@@ -10,14 +10,9 @@ fragment_program gaussx glsl glsles hlsl
 	source gaussx.frag
 }
 
-fragment_program downscale4x4 glsl glsles hlsl
+fragment_program linear glsl glsles hlsl
 {
-	source downscale4x4.frag
-}
-
-fragment_program downscale2x2 glsl glsles hlsl
-{
-	source downscale2x2.frag
+	source linear.frag
 }
 
 fragment_program downscale13 glsl glsles hlsl

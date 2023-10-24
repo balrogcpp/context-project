@@ -51,27 +51,13 @@ material FilterX : Filter
 	}
 }
 
-material Downscale4x4 : Filter
+material Linear : Filter
 {
     technique
     {
         pass
         {
-            fragment_program_ref downscale4x4
-            {
-                param_named RT int 0
-            }
-        }
-    }
-}
-
-material Downscale2x2 : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref downscale2x2
+            fragment_program_ref linear
             {
                 param_named RT int 0
             }

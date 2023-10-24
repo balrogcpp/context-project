@@ -46,7 +46,7 @@ abstract material RayCast
 	}
 }
 
-abstract material Copy
+abstract material CopyI
 {
     technique
     {
