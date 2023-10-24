@@ -2,6 +2,14 @@ import TERRA from pbr.material
 
 material TerrainCustom : TERRA
 {
-    set $Albedo Rock20_diffspec.dds
-    set $Normal Rock20_normheight.dds
+
+    //set $Albedo Rock20_diffspec.dds
+    //set $Normal Rock20_normheight.dds
+    //set $Albedo used-stainless-steel2_albedo.dds
+    //set $Normal used-stainless-steel2_normal-ogl.dds
+    technique {
+        pass {
+            diffuse 0.282 0.435 0.220
+        }
+        }
 }

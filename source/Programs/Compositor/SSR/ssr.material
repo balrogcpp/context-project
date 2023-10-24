@@ -96,12 +96,7 @@ material ssrMod : STD
                 param_named SsrTex int 1
             }
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
             texture_unit SSR
             {
                 texture black.dds

@@ -38,12 +38,7 @@ material HdrStart : STD
                 param_named_auto TexSize0 packed_texture_size 0
             }
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
         }
     }
 }
@@ -60,12 +55,7 @@ material HdrEnd : STD
                 param_named Lum int 1
             }
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
             texture_unit Lum
             {
                 texture grey.dds

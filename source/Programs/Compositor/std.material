@@ -12,6 +12,13 @@ abstract material STD
             polygon_mode_overrideable false
 
 			vertex_program_ref StdQuad {}
+
+			texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
 		}
 	}
 }
@@ -28,6 +35,13 @@ abstract material RayCast
             polygon_mode_overrideable false
 
 			vertex_program_ref RayCast {}
+
+			texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
 		}
 	}
 }

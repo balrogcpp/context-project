@@ -91,12 +91,7 @@ material ssaoMod : STD
                 param_named_auto ShadowColour shadow_colour
             }
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
             texture_unit SSAO
             {
                 texture white.dds
@@ -128,12 +123,7 @@ material SSAOX : STD
                 param_named RT int 0
 			}
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
         }
     }
 }
@@ -148,12 +138,7 @@ material SSAOY : STD
                 param_named RT int 0
 			}
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
         }
     }
 }

@@ -60,12 +60,6 @@ material GlowMod : STD
                 param_named RT0 int 1
 			}
 
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
             texture_unit RT0
             {
                 texture black.dds
@@ -97,12 +91,7 @@ material GlowFeat : STD
                 param_named RT int 0
             }
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
         }
     }
 }

@@ -73,12 +73,7 @@ material Rays : STD
                 param_named FBO int 0
             }
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
+
         }
     }
 }
@@ -104,12 +99,6 @@ material RaysMod : STD
         {
             fragment_program_ref raysMod {}
 
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
             texture_unit FBO
             {
                 texture black.dds
