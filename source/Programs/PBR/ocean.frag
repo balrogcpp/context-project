@@ -36,7 +36,7 @@ uniform vec3 SunTransmittance;
 uniform float SunFade;
 uniform float ScatterFade;
 
-float fresnelDielectric(const vec3 incoming, const vec3 normal, const float eta)
+float fresnelDielectric(vec3 incoming, vec3 normal, float eta)
 {
     // compute fresnel reflectance without explicitly computing
     // the refracted direction

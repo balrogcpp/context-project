@@ -6,7 +6,7 @@ uniform sampler2D RT;
 uniform float ChromaticRadius;
 uniform int FeaturesCount;
 
-vec3 SampleChromatic(sampler2D tex, const vec2 uv, const float radius)
+vec3 SampleChromatic(sampler2D tex, vec2 uv, float radius)
 {
     vec2 offset = normalize(vec2(0.5, 0.5) - uv) * radius;
 
@@ -21,13 +21,13 @@ vec3 SampleChromatic(sampler2D tex, const vec2 uv, const float radius)
 
 // https://john-chapman.github.io/2017/11/05/pseudo-lens-flare.html
 // Cubic window; map [0, radius] in [1, 0] as a cubic falloff from center.
-float WindowCubic(const float x, const float center, const float radius)
+float WindowCubic(float x, float center, float radius)
 {
     float y = min(abs(x - center) / radius, 1.0);
     return 1.0 - y * y * (3.0 - 2.0 * y);
 }
 
-vec3 GhostFeatures(sampler2D tex, const vec2 uv, const vec2 texel, const int counter, const float radius)
+vec3 GhostFeatures(sampler2D tex, vec2 uv, vec2 texel, int counter, float radius)
 {
     vec2 nuv = vec2(1.0, 1.0) - uv;
     vec2 ghostVec = (vec2(0.5, 0.5) - nuv) * 0.44;
@@ -49,7 +49,7 @@ vec3 GhostFeatures(sampler2D tex, const vec2 uv, const vec2 texel, const int cou
     return color;
 }
 
-vec3 HaloFeatures(sampler2D tex, const vec2 uv, const vec2 texel, const int counter, const float radius)
+vec3 HaloFeatures(sampler2D tex, vec2 uv, vec2 texel, int counter, float radius)
 {
     vec2 nuv = vec2(1.0, 1.0) - uv;
     vec2 haloVec = vec2(0.5, 0.5) - nuv;

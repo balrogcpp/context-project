@@ -21,7 +21,7 @@ bool PixelWasRenderedPrevFrame()
     return ExcludePixel();
 }
 
-bool PixelIsInsideViewport(const vec2 uv)
+bool PixelIsInsideViewport(vec2 uv)
 {
     return uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0;
 }

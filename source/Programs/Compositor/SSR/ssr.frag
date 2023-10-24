@@ -17,7 +17,7 @@ uniform sampler2D GlossTex;
 uniform mat4 ProjMatrix;
 uniform float ClipDistance;
 
-vec3 hash(const vec3 a)
+vec3 hash(vec3 a)
 {
     vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
@@ -69,7 +69,7 @@ vec2 RayCast(inout vec3 position, vec3 direction)
 }
 
 // source: https://www.standardabweichung.de/code/javascript/webgl-glsl-fresnel-schlick-approximation
-float Fresnel(const vec3 direction, const vec3 normal)
+float Fresnel(vec3 direction, vec3 normal)
 {
     vec3 halfDirection = normalize(normal + direction);
     float cosine = dot(halfDirection, direction);

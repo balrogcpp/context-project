@@ -24,7 +24,7 @@ uniform highp vec3 H;
 uniform highp vec3 I;
 uniform highp vec3 Z;
 
-highp vec3 HosekWilkie(const highp float cos_theta, const highp float gamma, const highp float cos_gamma)
+highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos_gamma)
 {
     highp float cos_gamma2 = cos_gamma * cos_gamma;
     highp vec3 I2 = I * I;
@@ -34,7 +34,7 @@ highp vec3 HosekWilkie(const highp float cos_theta, const highp float gamma, con
 #endif
 
 // Clamps color between 0 and 1 smoothly
-highp vec3 SkyLightExpose(const highp vec3 color)
+highp vec3 SkyLightExpose(highp vec3 color)
 {
     return vec3(2.0, 2.0, 2.0) / (vec3(1.0, 1.0, 1.0) + exp(-0.1 * color)) - vec3(1.0, 1.0, 1.0);
 }

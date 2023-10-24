@@ -8,7 +8,7 @@ uniform sampler2D Lum;
 uniform vec3 Exposure;
 uniform float timeSinceLast;
 
-float Downscale2x2(sampler2D tex, const vec2 uv, const vec2 tsize)
+float Downscale2x2(sampler2D tex, vec2 uv, vec2 tsize)
 {
     float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
     float B = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;

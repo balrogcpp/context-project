@@ -11,7 +11,7 @@ uniform float Density;
 uniform float Weight;
 uniform float Exposure;
 
-vec3 GodRays(sampler2D tex, const vec2 uv, const vec2 lightPos, const int counter, const float density, const float weight, const float decay, const float exposure)
+vec3 GodRays(sampler2D tex, vec2 uv, vec2 lightPos, int counter, float density, float weight, float decay, float exposure)
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     vec2 suv = uv;

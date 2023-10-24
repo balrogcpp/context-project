@@ -63,7 +63,7 @@ const float kHosekRadZ[] = float[](
 );
 #endif
 
-float sample_coeff(const int channel, const int quintic_coeff, const int coeff)
+float sample_coeff(int channel, int quintic_coeff, int coeff)
 {
 #if ALBEDO > 0
     int index = 9 * quintic_coeff + coeff;
@@ -75,7 +75,7 @@ float sample_coeff(const int channel, const int quintic_coeff, const int coeff)
     else if (channel == CIE_Z) return kHosekCoeffsZ[index];
 }
 
-float sample_radiance(const int channel, const int quintic_coeff)
+float sample_radiance(int channel, int quintic_coeff)
 {
     int index = quintic_coeff;
     if (channel == CIE_X) return kHosekRadX[index];
@@ -83,7 +83,7 @@ float sample_radiance(const int channel, const int quintic_coeff)
     else if (channel == CIE_Z) return kHosekRadZ[index];
 }
 
-float eval_quintic_bezier(const float[6] control_points, const float t)
+float eval_quintic_bezier(float[6] control_points, float t)
 {
     float t2 = t * t;
     float t3 = t2 * t;
@@ -106,23 +106,23 @@ float eval_quintic_bezier(const float[6] control_points, const float t)
     );
 }
 
-float transform_sun_zenith(const float sun_zenith)
+float transform_sun_zenith(float sun_zenith)
 {
     float elevation = M_PI / 2.0 - sun_zenith;
     return pow(elevation / (M_PI / 2.0), 0.333333);
 }
 
-void get_control_points(const int channel, const int coeff, out float[6] control_points)
+void get_control_points(int channel, int coeff, out float[6] control_points)
 {
     for (int i = 0; i < 6; ++i) control_points[i] = sample_coeff(channel, i, coeff);
 }
 
-void get_control_points_radiance(const int channel, out float[6] control_points)
+void get_control_points_radiance(int channel, out float[6] control_points)
 {
     for (int i = 0; i < 6; ++i) control_points[i] = sample_radiance(channel, i);
 }
 
-void get_coeffs(const int channel, const float sun_zenith, out float[9] coeffs)
+void get_coeffs(int channel, float sun_zenith, out float[9] coeffs)
 {
     float t = transform_sun_zenith(sun_zenith);
     for (int i = 0; i < 9; ++i) {
@@ -132,7 +132,7 @@ void get_coeffs(const int channel, const float sun_zenith, out float[9] coeffs)
     }
 }
 
-vec3 mean_spectral_radiance(const float sun_zenith)
+vec3 mean_spectral_radiance(float sun_zenith)
 {
     vec3 spectral_radiance;
     for (int i = 0; i < 3; ++i) {
@@ -144,7 +144,7 @@ vec3 mean_spectral_radiance(const float sun_zenith)
     return spectral_radiance;
 }
 
-float HosekWilkie(const highp float cos_theta, const highp float gamma, const in highp float[9] coeffs)
+float HosekWilkie(highp float cos_theta, highp float gamma, highp float[9] coeffs)
 {
     highp float A = coeffs[0];
     highp float B = coeffs[1];
@@ -164,7 +164,7 @@ float HosekWilkie(const highp float cos_theta, const highp float gamma, const in
     );
 }
 
-highp vec3 spectral_radiance(const highp float cos_theta, const highp float gamma, const highp float sun_zenith)
+highp vec3 spectral_radiance(highp float cos_theta, highp float gamma, highp float sun_zenith)
 {
     highp vec3 XYZ;
     for (int i = 0; i < 3; ++i) {
@@ -176,14 +176,14 @@ highp vec3 spectral_radiance(const highp float cos_theta, const highp float gamm
 }
 
 // Returns angle between two directions defined by zentih and azimuth angles
-float angle(const float z1, const float a1, const float z2, const float a2) {
+float angle(float z1, float a1, float z2, float a2) {
     return acos(
     sin(z1) * cos(a1) * sin(z2) * cos(a2) +
     sin(z1) * sin(a1) * sin(z2) * sin(a2) +
     cos(z1) * cos(z2));
 }
 
-vec3 XYZtoRGB(const vec3 xyz)
+vec3 XYZtoRGB(vec3 xyz)
 {
     return mtx3x3(
     3.240812398895283, -0.9692430170086407, 0.055638398436112804,
@@ -192,7 +192,7 @@ vec3 XYZtoRGB(const vec3 xyz)
     ) * xyz;
 }
 
-highp vec3 sample_sky(const highp float cos_theta, const highp float gamma, const highp float sun_zenith, const highp float sun_azimuth)
+highp vec3 sample_sky(highp float cos_theta, highp float gamma, highp float sun_zenith, highp float sun_azimuth)
 {
     return XYZtoRGB(spectral_radiance(cos_theta, gamma, sun_zenith) * mean_spectral_radiance(sun_zenith));
 }

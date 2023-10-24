@@ -9,20 +9,20 @@ uniform sampler2D NormalTex;
 uniform mat4 ProjMatrix;
 uniform float ClipDistance;
 
-vec3 hash(const vec3 a)
+vec3 hash(vec3 a)
 {
     vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
 }
 
-float pow5(const float x)
+float pow5(float x)
 {
     float x2 = x * x;
     return x2 * x2 * x;
 }
 
-float pow10(const float x)
+float pow10(float x)
 {
     float x2 = x * x;
     float x4 = x2 * x2;
@@ -36,7 +36,7 @@ void main()
     #define MAX_RAND_SAMPLES 14
     #define RADIUS 0.105
 
-    const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+    vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
         vec3(1.0, 0.0, 0.0),
         vec3(-1.0, 0.0, 0.0),

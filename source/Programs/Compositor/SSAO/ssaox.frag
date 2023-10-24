@@ -4,7 +4,7 @@
 
 uniform sampler2D RT;
 
-float Gauss9H(sampler2D tex, const vec2 uv, const vec2 tsize)
+float Gauss9H(sampler2D tex, vec2 uv, vec2 tsize)
 {
     float A = texture2D(tex, uv).x;
     float B = texture2D(tex, uv + tsize * vec2(1.3846153846, 0.0)).x;

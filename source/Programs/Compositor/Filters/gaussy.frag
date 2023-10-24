@@ -4,7 +4,7 @@
 
 uniform sampler2D RT;
 
-vec3 Gauss9V(sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 Gauss9V(sampler2D tex, vec2 uv, vec2 tsize)
 {
     vec3 A = texture2D(tex, uv).xyz;
     vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).xyz;

@@ -86,16 +86,16 @@ FXAA_SUBPIX_CAP - Insures fine detail is not completely removed.
 // This approximates luma using one FMA instruction,
 // skipping normalization and tossing out blue.
 // FxaaLuma() will range 0.0 to 2.963210702.
-float FxaaLuma(const vec3 rgb) {
+float FxaaLuma(vec3 rgb) {
     //return rgb.y * (0.587/0.299) + rgb.x;
     return dot(rgb, vec3(0.2126, 0.7152, 0.0722));
 }
 
-vec3 FxaaLerp3(const vec3 a, const vec3 b, const float amountOfA) {
+vec3 FxaaLerp3(vec3 a, vec3 b, float amountOfA) {
     return (vec3(-amountOfA, -amountOfA, -amountOfA) * b) + ((a * vec3(amountOfA, amountOfA, amountOfA)) + b);
 }
 
-vec4 FxaaTexOff(sampler2D tex, const vec2 pos, const vec2 off, const vec2 rcpFrame) {
+vec4 FxaaTexOff(sampler2D tex, vec2 pos, vec2 off, vec2 rcpFrame) {
     float x = pos.x + off.x * rcpFrame.x;
     float y = pos.y + off.y * rcpFrame.y;
     return texture2D(tex, vec2(x, y));
@@ -104,7 +104,7 @@ vec4 FxaaTexOff(sampler2D tex, const vec2 pos, const vec2 off, const vec2 rcpFra
 // pos is the output of FxaaVertexShader interpolated across screen.
 // xy -> actual texture position {0.0 to 1.0}
 // rcpFrame should be a uniform equal to  {1.0/frameWidth, 1.0/frameHeight}
-vec3 FxaaPixelShader(const vec2 pos, sampler2D tex, const vec2 rcpFrame)
+vec3 FxaaPixelShader(vec2 pos, sampler2D tex, vec2 rcpFrame)
 {
     vec3 rgbN = FxaaTexOff(tex, pos.xy, vec2( 0.0, -1.0), rcpFrame).xyz;
     vec3 rgbW = FxaaTexOff(tex, pos.xy, vec2(-1.0,  0.0), rcpFrame).xyz;

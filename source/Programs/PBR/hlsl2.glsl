@@ -6,20 +6,20 @@
 
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/GLSL_GL3Support.glsl
 #if __VERSION__ == 100
-mat2 transpose(const mat2 m)
+mat2 transpose(mat2 m)
 {
   return mat2(m[0][0], m[1][0],
               m[0][1], m[1][1]);
 }
 
-mat3 transpose(const mat3 m)
+mat3 transpose(mat3 m)
 {
   return mat3(m[0][0], m[1][0], m[2][0],
               m[0][1], m[1][1], m[2][1],
               m[0][2], m[1][2], m[2][2]);
 }
 
-mat4 transpose(const mat4 m)
+mat4 transpose(mat4 m)
 {
   return mat4(m[0][0], m[1][0], m[2][0], m[3][0],
               m[0][1], m[1][1], m[2][1], m[3][1],

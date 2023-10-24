@@ -588,11 +588,25 @@ SamplerState PointSampler { Filter = MIN_MAG_MIP_POINT; AddressU = Clamp; Addres
 #define SMAASampleOffset(tex, coord, offset) texture(tex, coord, offset)
 #define SMAA_FLATTEN
 #define SMAA_BRANCH
+#define lerp(a, b, t) mix(a, b, t)
+#define saturate(a) clamp(a, 0.0, 1.0)
 #if defined(SMAA_GLSL_4)
-#define SMAAGather(tex, coord) textureGather(tex, coord)
+#define mad(a, b, c) fma(a, b, c)
+#define SMAAGather(tex, coord) textureGather(vkSampler2D(tex, LinearSampler), coord)
+#else
+#define mad(a, b, c) (a * b + c)
 #endif
 #define SMAA_INOUT(type, varname) inout type varname
 #define SMAA_OUT(type, varname) out type varname
+#define float2 vec2
+#define float3 vec3
+#define float4 vec4
+#define int2 ivec2
+#define int3 ivec3
+#define int4 ivec4
+#define bool2 bvec2
+#define bool3 bvec3
+#define bool4 bvec4
 #endif
 #if defined(SMAA_METAL)
 constexpr sampler LinearSampler = sampler( coord::normalized,
@@ -638,8 +652,8 @@ constexpr sampler PointSampler = sampler( coord::normalized,
 /**
  * Gathers current pixel, and the top-left neighbors.
  */
-SMAA_INLINE vec3 SMAAGatherNeighbours(const vec2 texcoord,
-                                        const mat4 offset,
+SMAA_INLINE vec3 SMAAGatherNeighbours(vec2 texcoord,
+                                        mat4 offset,
                                         SMAATexture2D(tex)
                                         SMAA_EXTRA_PARAM_ARG_DECL) {
     #ifdef SMAAGather
@@ -655,8 +669,8 @@ SMAA_INLINE vec3 SMAAGatherNeighbours(const vec2 texcoord,
 /**
  * Adjusts the threshold by means of predication.
  */
-SMAA_INLINE vec2 SMAACalculatePredicatedThreshold(const vec2 texcoord,
-                                                    const mat4 offset,
+SMAA_INLINE vec2 SMAACalculatePredicatedThreshold(vec2 texcoord,
+                                                    mat4 offset,
                                                     SMAATexture2D(predicationTex)
                                                     SMAA_EXTRA_PARAM_ARG_DECL) {
     vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(predicationTex)
@@ -669,12 +683,12 @@ SMAA_INLINE vec2 SMAACalculatePredicatedThreshold(const vec2 texcoord,
 /**
  * Conditional move:
  */
-SMAA_INLINE void SMAAMovc(const bvec2 cond, SMAA_INOUT( vec2, variable ), const vec2 value) {
+SMAA_INLINE void SMAAMovc(bvec2 cond, SMAA_INOUT( vec2, variable ), vec2 value) {
     SMAA_FLATTEN if (cond.x) variable.x = value.x;
     SMAA_FLATTEN if (cond.y) variable.y = value.y;
 }
 
-SMAA_INLINE void SMAAMovc(const bvec4 cond, SMAA_INOUT( vec4, variable ), const vec4 value) {
+SMAA_INLINE void SMAAMovc(bvec4 cond, SMAA_INOUT( vec4, variable ), vec4 value) {
 #if SMAA_NO_RVALUE_REFERENCE
     SMAA_FLATTEN if (cond.x) variable.x = value.x;
     SMAA_FLATTEN if (cond.y) variable.y = value.y;
@@ -694,7 +708,7 @@ SMAA_INLINE void SMAAMovc(const bvec4 cond, SMAA_INOUT( vec4, variable ), const 
 /**
  * Edge Detection Vertex Shader
  */
-SMAA_INLINE void SMAAEdgeDetectionVS(const vec2 texcoord,
+SMAA_INLINE void SMAAEdgeDetectionVS(vec2 texcoord,
                                      SMAA_OUT( mat4, offset )
                                      SMAA_EXTRA_PARAM_ARG_DECL) {
     offset[0] = mad(SMAA_RT_METRICS.xyxy, vec4(-1.0, 0.0, 0.0, -1.0), texcoord.xyxy);
@@ -705,7 +719,7 @@ SMAA_INLINE void SMAAEdgeDetectionVS(const vec2 texcoord,
 /**
  * Blend Weight Calculation Vertex Shader
  */
-SMAA_INLINE void SMAABlendingWeightCalculationVS(const vec2 texcoord,
+SMAA_INLINE void SMAABlendingWeightCalculationVS(vec2 texcoord,
                                                  SMAA_OUT( vec2, pixcoord ),
                                                  SMAA_OUT( mat4, offset )
                                                  SMAA_EXTRA_PARAM_ARG_DECL) {
@@ -724,7 +738,7 @@ SMAA_INLINE void SMAABlendingWeightCalculationVS(const vec2 texcoord,
 /**
  * Neighborhood Blending Vertex Shader
  */
-SMAA_INLINE void SMAANeighborhoodBlendingVS(const vec2 texcoord,
+SMAA_INLINE void SMAANeighborhoodBlendingVS(vec2 texcoord,
                                             SMAA_OUT( vec4, offset )
                                             SMAA_EXTRA_PARAM_ARG_DECL) {
     offset = mad(SMAA_RT_METRICS.xyxy, vec4( 1.0, 0.0, 0.0,  1.0), texcoord.xyxy);
@@ -741,8 +755,8 @@ SMAA_INLINE void SMAANeighborhoodBlendingVS(const vec2 texcoord,
  * IMPORTANT NOTICE: luma edge detection requires gamma-corrected colors, and
  * thus 'colorTex' should be a non-sRGB texture.
  */
-SMAA_INLINE vec2 SMAALumaEdgeDetectionPS(const vec2 texcoord,
-                                           const mat4 offset,
+SMAA_INLINE vec2 SMAALumaEdgeDetectionPS(vec2 texcoord,
+                                           mat4 offset,
                                            SMAATexture2D(colorTex)
                                            #if SMAA_PREDICATION
                                            , SMAATexture2D(predicationTex)
@@ -758,7 +772,7 @@ SMAA_INLINE vec2 SMAALumaEdgeDetectionPS(const vec2 texcoord,
     #endif
 
     // Calculate lumas:
-    const vec3 weights = vec3(0.2126, 0.7152, 0.0722);
+    vec3 weights = vec3(0.2126, 0.7152, 0.0722);
     float L = dot(SMAASamplePoint(colorTex, texcoord).rgb, weights);
 
     float Lleft = dot(SMAASamplePoint(colorTex, offset[0].xy).rgb, weights);
@@ -802,8 +816,8 @@ SMAA_INLINE vec2 SMAALumaEdgeDetectionPS(const vec2 texcoord,
  * IMPORTANT NOTICE: color edge detection requires gamma-corrected colors, and
  * thus 'colorTex' should be a non-sRGB texture.
  */
-SMAA_INLINE vec2 SMAAColorEdgeDetectionPS(const vec2 texcoord,
-                                            const mat4 offset,
+SMAA_INLINE vec2 SMAAColorEdgeDetectionPS(vec2 texcoord,
+                                            mat4 offset,
                                             SMAATexture2D(colorTex)
                                             #if SMAA_PREDICATION
                                             , SMAATexture2D(predicationTex)
@@ -871,8 +885,8 @@ SMAA_INLINE vec2 SMAAColorEdgeDetectionPS(const vec2 texcoord,
 /**
  * Depth Edge Detection
  */
-SMAA_INLINE vec2 SMAADepthEdgeDetectionPS(const vec2 texcoord,
-                                            const mat4 offset,
+SMAA_INLINE vec2 SMAADepthEdgeDetectionPS(vec2 texcoord,
+                                            mat4 offset,
                                             SMAATexture2D(depthTex)
                                             SMAA_EXTRA_PARAM_ARG_DECL ) {
     vec3 neighbours = SMAAGatherNeighbours(texcoord, offset, SMAATexturePass2D(depthTex)
@@ -920,8 +934,8 @@ SMAA_INLINE vec4 SMAADecodeDiagBilinearAccess(vec4 e) {
 /**
  * These functions allows to perform diagonal pattern searches.
  */
-SMAA_INLINE vec2 SMAASearchDiag1(SMAATexture2D(edgesTex), const vec2 texcoord,
-                                   const vec2 dir, SMAA_OUT( vec2, e ) SMAA_EXTRA_PARAM_ARG_DECL) {
+SMAA_INLINE vec2 SMAASearchDiag1(SMAATexture2D(edgesTex), vec2 texcoord,
+                                   vec2 dir, SMAA_OUT( vec2, e ) SMAA_EXTRA_PARAM_ARG_DECL) {
     vec4 coord = vec4(texcoord, -1.0, 1.0);
     vec3 t = vec3(SMAA_RT_METRICS.xy, 1.0);
     while (coord.z < float(SMAA_MAX_SEARCH_STEPS_DIAG - 1) &&
@@ -933,8 +947,8 @@ SMAA_INLINE vec2 SMAASearchDiag1(SMAATexture2D(edgesTex), const vec2 texcoord,
     return coord.zw;
 }
 
-SMAA_INLINE vec2 SMAASearchDiag2(SMAATexture2D(edgesTex), const vec2 texcoord,
-                                   const vec2 dir, SMAA_OUT( vec2, e ) SMAA_EXTRA_PARAM_ARG_DECL) {
+SMAA_INLINE vec2 SMAASearchDiag2(SMAATexture2D(edgesTex), vec2 texcoord,
+                                   vec2 dir, SMAA_OUT( vec2, e ) SMAA_EXTRA_PARAM_ARG_DECL) {
     vec4 coord = vec4(texcoord, -1.0, 1.0);
     coord.x += 0.25 * SMAA_RT_METRICS.x; // See @SearchDiag2Optimization
     vec3 t = vec3(SMAA_RT_METRICS.xy, 1.0);
@@ -980,8 +994,8 @@ SMAA_INLINE vec2 SMAAAreaDiag(SMAATexture2D(areaTex), vec2 dist, vec2 e, float o
  * This searches for diagonal patterns and returns the corresponding weights.
  */
 SMAA_INLINE vec2 SMAACalculateDiagWeights(SMAATexture2D(edgesTex), SMAATexture2D(areaTex),
-                                            const vec2 texcoord, const vec2 e,
-                                            const vec4 subsampleIndices SMAA_EXTRA_PARAM_ARG_DECL) {
+                                            vec2 texcoord, vec2 e,
+                                            vec4 subsampleIndices SMAA_EXTRA_PARAM_ARG_DECL) {
     vec2 weights = vec2(0.0, 0.0);
 
     // Search for the line ends:
@@ -1059,7 +1073,7 @@ SMAA_INLINE vec2 SMAACalculateDiagWeights(SMAATexture2D(edgesTex), SMAATexture2D
  * @PSEUDO_GATHER4), and adds 0, 1 or 2, depending on which edges and
  * crossing edges are active.
  */
-SMAA_INLINE float SMAASearchLength(SMAATexture2D(searchTex), const vec2 e, float offset) {
+SMAA_INLINE float SMAASearchLength(SMAATexture2D(searchTex), vec2 e, float offset) {
     // The texture is flipped vertically, with left and right cases taking half
     // of the space horizontally:
     vec2 scale = SMAA_SEARCHTEX_SIZE * vec2(0.5, -1.0);
@@ -1082,7 +1096,7 @@ SMAA_INLINE float SMAASearchLength(SMAATexture2D(searchTex), const vec2 e, float
  * Horizontal/vertical search functions for the 2nd pass.
  */
 SMAA_INLINE float SMAASearchXLeft(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                  vec2 texcoord, const float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                  vec2 texcoord, float end SMAA_EXTRA_PARAM_ARG_DECL) {
     /**
      * @PSEUDO_GATHER4
      * This texcoord has been offset by (-0.25, -0.125) in the vertex shader to
@@ -1115,7 +1129,7 @@ SMAA_INLINE float SMAASearchXLeft(SMAATexture2D(edgesTex), SMAATexture2D(searchT
 }
 
 SMAA_INLINE float SMAASearchXRight(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                   vec2 texcoord, const float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                   vec2 texcoord, float end SMAA_EXTRA_PARAM_ARG_DECL) {
     vec2 e = vec2(0.0, 1.0);
     while (texcoord.x < end &&
            e.g > 0.8281 && // Is there some edge not activated?
@@ -1128,7 +1142,7 @@ SMAA_INLINE float SMAASearchXRight(SMAATexture2D(edgesTex), SMAATexture2D(search
 }
 
 SMAA_INLINE float SMAASearchYUp(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                vec2 texcoord, const float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                vec2 texcoord, float end SMAA_EXTRA_PARAM_ARG_DECL) {
     vec2 e = vec2(1.0, 0.0);
     while (texcoord.y > end &&
            e.r > 0.8281 && // Is there some edge not activated?
@@ -1141,7 +1155,7 @@ SMAA_INLINE float SMAASearchYUp(SMAATexture2D(edgesTex), SMAATexture2D(searchTex
 }
 
 SMAA_INLINE float SMAASearchYDown(SMAATexture2D(edgesTex), SMAATexture2D(searchTex),
-                                  vec2 texcoord, const float end SMAA_EXTRA_PARAM_ARG_DECL) {
+                                  vec2 texcoord, float end SMAA_EXTRA_PARAM_ARG_DECL) {
     vec2 e = vec2(1.0, 0.0);
     while (texcoord.y < end &&
            e.r > 0.8281 && // Is there some edge not activated?
@@ -1214,13 +1228,13 @@ SMAA_INLINE void SMAADetectVerticalCornerPattern(SMAATexture2D(edgesTex), SMAA_I
 //-----------------------------------------------------------------------------
 // Blending Weight Calculation Pixel Shader (Second Pass)
 
-SMAA_INLINE vec4 SMAABlendingWeightCalculationPS(const vec2 texcoord,
-                                                   const vec2 pixcoord,
-                                                   const mat4 offset,
+SMAA_INLINE vec4 SMAABlendingWeightCalculationPS(vec2 texcoord,
+                                                   vec2 pixcoord,
+                                                   mat4 offset,
                                                    SMAATexture2D(edgesTex),
                                                    SMAATexture2D(areaTex),
                                                    SMAATexture2D(searchTex),
-                                                   const vec4 subsampleIndices
+                                                   vec4 subsampleIndices
                                                    SMAA_EXTRA_PARAM_ARG_DECL ) { // Just pass zero for SMAA 1x, see @SUBSAMPLE_INDICES.
     vec4 weights = vec4(0.0, 0.0, 0.0, 0.0);
 
@@ -1334,8 +1348,8 @@ SMAA_INLINE vec4 SMAABlendingWeightCalculationPS(const vec2 texcoord,
 //-----------------------------------------------------------------------------
 // Neighborhood Blending Pixel Shader (Third Pass)
 
-SMAA_INLINE vec4 SMAANeighborhoodBlendingPS(const vec2 texcoord,
-                                              const vec4 offset,
+SMAA_INLINE vec4 SMAANeighborhoodBlendingPS(vec2 texcoord,
+                                              vec4 offset,
                                               SMAATexture2D(colorTex),
                                               SMAATexture2D(blendTex)
                                               #if SMAA_REPROJECTION
@@ -1396,7 +1410,7 @@ SMAA_INLINE vec4 SMAANeighborhoodBlendingPS(const vec2 texcoord,
 //-----------------------------------------------------------------------------
 // Temporal Resolve Pixel Shader (Optional Pass)
 
-SMAA_INLINE vec4 SMAAResolvePS(const vec2 texcoord,
+SMAA_INLINE vec4 SMAAResolvePS(vec2 texcoord,
                                  SMAATexture2D(currentColorTex),
                                  SMAATexture2D(previousColorTex)
                                  #if SMAA_REPROJECTION
@@ -1433,8 +1447,8 @@ SMAA_INLINE vec4 SMAAResolvePS(const vec2 texcoord,
 // Separate Multisamples Pixel Shader (Optional Pass)
 
 #ifdef SMAALoad
-SMAA_INLINE void SMAASeparatePS(const vec4 position,
-                                const vec2 texcoord,
+SMAA_INLINE void SMAASeparatePS(vec4 position,
+                                vec2 texcoord,
                                 SMAA_OUT( vec4, target0 ),
                                 SMAA_OUT( vec4, target1 ),
                                 SMAATexture2DMS2(colorTexMS)

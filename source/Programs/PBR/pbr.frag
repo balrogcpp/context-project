@@ -77,7 +77,7 @@ uniform vec4 ShadowColour;
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
-vec3 Diffuse(const vec3 diffuseColor)
+vec3 Diffuse(vec3 diffuseColor)
 {
     return diffuseColor / M_PI;
 }
@@ -90,7 +90,7 @@ float pow5(float x)
 
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
-vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const float VdotH)
+vec3 SpecularReflection(vec3 reflectance0, vec3 reflectance90, float VdotH)
 {
     return reflectance0 + (reflectance90 - reflectance0) * pow5(1.0 - VdotH);
 }
@@ -99,7 +99,7 @@ vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const
 // where rougher material will reflect less light back to the viewer.
 // This implementation is based on [1] Equation 4, and we adopt their modifications to
 // alphaRoughness as input as originally proposed in [2].
-float GeometricOcclusion(const float NdotL, const float NdotV, const float r)
+float GeometricOcclusion(float NdotL, float NdotV, float r)
 {
     float r2 = (r * r);
     float r3 = (1.0 - r2);
@@ -111,7 +111,7 @@ float GeometricOcclusion(const float NdotL, const float NdotV, const float r)
 // The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
 // Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
 // Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-highp float MicrofacetDistribution(const highp float alphaRoughness, const highp float NdotH)
+highp float MicrofacetDistribution(highp float alphaRoughness, highp float NdotH)
 {
     highp float roughnessSq = alphaRoughness * alphaRoughness;
     highp float f = (NdotH * roughnessSq - NdotH) * NdotH + 1.0;
@@ -119,34 +119,34 @@ highp float MicrofacetDistribution(const highp float alphaRoughness, const highp
 }
 
 // Chan 2018, "Material Advances in Call of Duty: WWII"
-float ComputeMicroShadowing(const float NdotL, const float visibility) {
+float ComputeMicroShadowing(float NdotL, float visibility) {
     float aperture = inversesqrt(1.0 - visibility);
     float microShadow = saturate(NdotL * aperture);
     return microShadow * microShadow;
 }
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-vec3 EnvBRDFApprox(const vec3 specularColor, const float roughness, const float NdotV)
+vec3 EnvBRDFApprox(vec3 specularColor, float roughness, float NdotV)
 {
-    const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
-    const vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
+    vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
+    vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
     vec4 r = roughness * c0 + c1;
     float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
     vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
     return specularColor * AB.x + AB.y;
 }
 
-float EnvBRDFApproxNonmetal(const float roughness, const float NdotV)
+float EnvBRDFApproxNonmetal(float roughness, float NdotV)
 {
     // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
-    const vec2 c0 = vec2(-1.0, -0.0275);
-    const vec2 c1 = vec2(1.0, 0.0425);
+    vec2 c0 = vec2(-1.0, -0.0275);
+    vec2 c1 = vec2(1.0, 0.0425);
     vec2 r = roughness * c0 + c1;
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
-vec3 Irradiance_SphericalHarmonics(const vec3 iblSH[9], const vec3 n) {
+vec3 Irradiance_SphericalHarmonics(vec3 iblSH[9], vec3 n) {
     return max(
     iblSH[0]
 #if SPHERICAL_HARMONICS_BANDS >= 2
@@ -164,13 +164,13 @@ vec3 Irradiance_SphericalHarmonics(const vec3 iblSH[9], const vec3 n) {
     , 0.0);
 }
 
-vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, const vec3 n) {
+vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, vec3 n) {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
     return textureCubeLod(SpecularEnvTex, n, 9.0).rgb;
 }
 
 #ifdef HAS_IBL
-vec3 DiffuseIrradiance(const vec3 n)
+vec3 DiffuseIrradiance(vec3 n)
 {
     if (iblSH[0].r >= HALF_MAX_MINUS1) {
         return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, n, 9.0).rgb);
@@ -179,7 +179,7 @@ vec3 DiffuseIrradiance(const vec3 n)
     }
 }
 
-vec3 GetIblSpeculaColor(const vec3 reflection, const float perceptualRoughness)
+vec3 GetIblSpeculaColor(vec3 reflection, float perceptualRoughness)
 {
     return LINEARtoSRGB(LINEARtoSRGB(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb));
 }
@@ -215,7 +215,7 @@ struct PBRInfo
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-vec3 EvaluateIBL(const PBRInfo pbr)
+vec3 EvaluateIBL(PBRInfo pbr)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     vec3 brdf = EnvBRDFApprox(pbr.specularColor, pbr.perceptualRoughness, pbr.NdotV);
@@ -233,7 +233,7 @@ vec3 EvaluateIBL(const PBRInfo pbr)
     return diffuse + specular;
 }
 
-vec3 SurfaceShading(const Light light, const PBRInfo pbr)
+vec3 SurfaceShading(Light light, PBRInfo pbr)
 {
     // Calculate the shading terms for the microfacet specular shading model
     vec3 F = SpecularReflection(pbr.reflectance0, pbr.reflectance90, light.VdotH);
@@ -247,7 +247,7 @@ vec3 SurfaceShading(const Light light, const PBRInfo pbr)
     return diffuseContrib + specContrib;
 }
 
-float GetAttenuation(const int index, const vec3 lightView)
+float GetAttenuation(int index, vec3 lightView)
 {
     vec4 attParams = LightAttenuationArray[index];
     vec4 spotParams = LightSpotParamsArray[index];
@@ -277,7 +277,7 @@ float GetAttenuation(const int index, const vec3 lightView)
     return attenuation;
 }
 
-vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
+vec3 EvaluateDirectionalLight(PBRInfo pbr, highp vec3 v, highp vec3 n, highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
 {
     highp vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
     highp float NdotL = saturate(dot(n, l));
@@ -307,7 +307,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo pbr, const highp vec3 v, const highp
     return LightDiffuseScaledColourArray[0].xyz * color;
 }
 
-vec3 EvaluateLocalLights(const PBRInfo pbr, const highp vec3 v, const highp vec3 n, const vec3 worldPosition, const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
+vec3 EvaluateLocalLights(PBRInfo pbr, highp vec3 v, highp vec3 n, vec3 worldPosition, highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -345,7 +345,7 @@ vec3 EvaluateLocalLights(const PBRInfo pbr, const highp vec3 v, const highp vec3
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(const vec2 uv, highp mat3 tbn, const vec2 uv1)
+highp vec3 GetNormal(vec2 uv, highp mat3 tbn, vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -370,7 +370,7 @@ highp vec3 GetNormal(const vec2 uv, highp mat3 tbn, const vec2 uv1)
 }
 
 // Sampler helper functions
-vec4 GetAlbedo(const vec2 uv, const vec4 color)
+vec4 GetAlbedo(vec2 uv, vec4 color)
 {
     vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
@@ -383,7 +383,7 @@ vec4 GetAlbedo(const vec2 uv, const vec4 color)
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-vec3 GetEmission(const vec2 uv)
+vec3 GetEmission(vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
@@ -392,7 +392,7 @@ vec3 GetEmission(const vec2 uv)
     return emission;
 }
 
-vec3 GetORM(const vec2 uv, const float spec)
+vec3 GetORM(vec2 uv, float spec)
 {
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to pbr roughness
@@ -410,7 +410,7 @@ vec3 GetORM(const vec2 uv, const float spec)
     return clamp(orm, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
 }
 
-vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
+vec2 GetParallaxCoord(highp vec2 uv0, highp vec3 v)
 {
     vec2 uv = uv0 * (1.0 + TexScale);
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)

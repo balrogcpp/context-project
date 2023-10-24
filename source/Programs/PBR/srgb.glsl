@@ -5,7 +5,7 @@
 #define SRGB_FAST_APPROXIMATION
 //#define SRGB_VERY_FAST_APPROXIMATION
 
-vec3 SRGBtoLINEAR(const vec3 linear)
+vec3 SRGBtoLINEAR(vec3 linear)
 {
 #if defined(SRGB_FAST_APPROXIMATION)
   return pow(linear, vec3(2.2, 2.2, 2.2));
@@ -16,7 +16,7 @@ vec3 SRGBtoLINEAR(const vec3 linear)
 #endif
 }
 
-vec3 LINEARtoSRGB(const vec3 linear)
+vec3 LINEARtoSRGB(vec3 linear)
 {
 #if defined(SRGB_FAST_APPROXIMATION)
   return pow(linear, vec3(0.45454545, 0.45454545, 0.45454545));

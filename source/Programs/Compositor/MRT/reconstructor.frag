@@ -12,12 +12,12 @@ uniform mat4 InvViewMatrix;
 uniform mat4 ViewProjPrev;
 
 // https://github.com/pezcode/mosaiikki/blob/e434b4dda52eba7c821591a5a4ac2de409e56244/src/Shaders/ReconstructionShader.frag#L242
-float ColorBlendWeight(const vec3 a, const vec3 b)
+float ColorBlendWeight(vec3 a, vec3 b)
 {
     return 1.0 / max(length(a - b), 0.001);
 }
 
-vec2 RestoreTexCoord(const vec3 viewPos, const mat4 invViewMatrix, const mat4 viewProjPrev)
+vec2 RestoreTexCoord(vec3 viewPos, mat4 invViewMatrix, mat4 viewProjPrev)
 {
     vec4 worldPos = vec4(invViewMatrix * vec4(viewPos, 1.0));
     worldPos.xyz /= worldPos.w;

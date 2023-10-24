@@ -11,7 +11,7 @@ uniform float NearClipDistance;
 #include "tonemap.glsl"
 #endif
 
-void EvaluateBuffer(vec3 color, const float alpha)
+void EvaluateBuffer(vec3 color, float alpha)
 {
 #ifdef HAS_TONEMAP
     color = unreal(expose(color, 6.0));
