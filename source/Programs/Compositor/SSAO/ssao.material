@@ -28,7 +28,7 @@ material SSAO : RayCast
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit NormalTex
             {

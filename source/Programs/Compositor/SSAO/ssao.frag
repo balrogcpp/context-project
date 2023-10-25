@@ -36,7 +36,7 @@ void main()
     #define MAX_RAND_SAMPLES 14
     #define RADIUS 0.105
 
-    vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+    const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
         vec3(1.0, 0.0, 0.0),
         vec3(-1.0, 0.0, 0.0),

@@ -26,6 +26,6 @@ void main()
     vec3 color = texture2D(RT, uv).rgb;
     float ssao = Gauss9V(SsaoTex, uv, texelSize0);
 
-    color *= clamp(ssao + ShadowColour.g, 0.0, 1.0);
+    color *= saturate(ssao + ShadowColour.g);
     FragColor.rgb = SafeHDR(color);
 }
