@@ -12,13 +12,13 @@ uniform vec4 ViewportSize;
 #include "smaa.glsl"
 
 in highp vec4 vertex;
-in highp vec4 uv0;
+in vec2 uv0;
 out vec2 vUV0;
 out vec2 pixcoord0;
-out mat4 offset;
+out vec4 offset[3];
 void main()
 {
 	gl_Position = worldViewProj * vertex;
-	vUV0 = uv0.xy;
-	SMAABlendingWeightCalculationVS( uv0.xy, pixcoord0, offset);
+	vUV0 = uv0;
+	SMAABlendingWeightCalculationVS(uv0, pixcoord0, offset);
 }

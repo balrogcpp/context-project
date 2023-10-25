@@ -15,7 +15,7 @@ uniform vec4 ViewportSize;
 
 in vec2 vUV0;
 in vec2 pixcoord0;
-in mat4 offset;
+in vec4 offset[3];
 void main()
 {
 	FragColor = SMAABlendingWeightCalculationPS(vUV0, pixcoord0, offset, edgeTex, areaTex, searchTex, vec4(0.0, 0.0, 0.0, 0.0));

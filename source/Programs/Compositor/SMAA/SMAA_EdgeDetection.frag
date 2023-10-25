@@ -20,20 +20,20 @@ uniform vec4 ViewportSize;
 #include "smaa.glsl"
 
 in vec2 vUV0;
-in mat4 offset;
+in vec4 offset[3];
 void main()
 {
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2
 	#if SMAA_PREDICATION
-		FragColor.rg = SMAAColorEdgeDetectionPS( vUV0, offset, rt_input, depthTex );
+		FragColor.rg = SMAAColorEdgeDetectionPS(vUV0, offset, rt_input, depthTex);
 	#else
-		FragColor.rg = SMAAColorEdgeDetectionPS( vUV0, offset, rt_input );
+		FragColor.rg = SMAAColorEdgeDetectionPS(vUV0, offset, rt_input);
 	#endif
 #else
 	#if SMAA_PREDICATION
-		FragColor.rg = SMAALumaEdgeDetectionPS( vUV0, offset, rt_input, depthTex );
+		FragColor.rg = SMAALumaEdgeDetectionPS(vUV0, offset, rt_input, depthTex);
 	#else
-		FragColor.rg = SMAALumaEdgeDetectionPS( vUV0, offset, rt_input );
+		FragColor.rg = SMAALumaEdgeDetectionPS(vUV0, offset, rt_input);
 	#endif
 #endif
 }
