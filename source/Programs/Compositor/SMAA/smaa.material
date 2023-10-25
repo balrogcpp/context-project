@@ -50,7 +50,7 @@ material SMAA/EdgeDetection
 			{
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
 			}
 		}
 	}
@@ -134,8 +134,8 @@ vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto worldViewProj	worldviewproj_matrix
-		param_named_auto ViewportSize	viewport_size
+		param_named_auto worldViewProj worldviewproj_matrix
+		param_named_auto ViewportSize viewport_size
 	}
 }
 
@@ -145,7 +145,7 @@ fragment_program SMAA/NeighborhoodBlending_ps glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto ViewportSize	viewport_size
+		param_named_auto ViewportSize viewport_size
 	}
 }
 

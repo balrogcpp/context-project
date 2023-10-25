@@ -12,12 +12,12 @@ uniform vec4 ViewportSize;
 #include "smaa.glsl"
 
 in highp vec4 vertex;
-in highp vec4 uv0;
 out vec2 vUV0;
 out vec4 offset;
 void main()
 {
 	gl_Position = worldViewProj * vertex;
-	vUV0 = uv0.xy;
-	SMAANeighborhoodBlendingVS( uv0.xy, offset );
+	vec2 inPos = sign(vertex.xy);
+	vUV0 = vec2(inPos.x, -inPos.y) * 0.5 + 0.5;
+	SMAANeighborhoodBlendingVS(vUV0, offset);
 }
