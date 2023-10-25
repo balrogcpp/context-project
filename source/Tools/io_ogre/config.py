@@ -27,7 +27,7 @@ CONFIG_FILEPATH = os.path.join(CONFIG_PATH, CONFIG_FILENAME)
 
 _CONFIG_DEFAULTS_ALL = {
     # General
-    'SWAP_AXIS' : 'xyz', # ogre standard is 'xz-y', but swapping is currently broken
+    'SWAP_AXIS' : 'xz-y', # ogre standard is 'xz-y', but swapping is currently broken
     'MESH_TOOL_VERSION' : 'v2',
     'XML_DELETE' : True,
 
@@ -68,17 +68,17 @@ _CONFIG_DEFAULTS_ALL = {
     'ARRAY' : True,
     'EXTREMITY_POINTS' : 0,
     'GENERATE_EDGE_LISTS' : False,
-    'GENERATE_TANGENTS' : "0",
+    'GENERATE_TANGENTS' : "3",
     'OPTIMISE_ANIMATIONS' : True,
     'INTERFACE_TOGGLE': False,
     'OPTIMISE_VERTEX_BUFFERS' : True,
     'OPTIMISE_VERTEX_BUFFERS_OPTIONS' : 'puqs',
 
     # LOD
-    'LOD_LEVELS' : 0,
+    'LOD_LEVELS' : 32,
     'LOD_DISTANCE' : 300,
     'LOD_PERCENT' : 40,
-    'LOD_MESH_TOOLS' : False,
+    'LOD_MESH_TOOLS' : True,
 
     # Pose Animation
     'SHAPE_ANIMATIONS' : True,

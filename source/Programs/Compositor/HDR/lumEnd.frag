@@ -20,11 +20,11 @@ float Downscale2x2(sampler2D tex, vec2 uv, vec2 tsize)
     return c1;
 }
 
-in vec2 vUV0;
 void main()
 {
-    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    float newLum = Downscale2x2(RT, vUV0, TexelSize0);
+    vec2 texelSize0 = 1.0 / vec2(textureSize(RT, 0));
+    vec2 uv = gl_FragCoord.xy * texelSize0;
+    float newLum = Downscale2x2(RT, uv, texelSize0);
     newLum = expose(newLum, Exposure);
     float oldLum = texture2D(Lum, vec2(0.0, 0.0)).r;
     float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));

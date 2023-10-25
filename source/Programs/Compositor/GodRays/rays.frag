@@ -33,17 +33,18 @@ vec3 GodRays(sampler2D tex, vec2 uv, vec2 lightPos, int counter, float density, 
     return color;
 }
 
-in vec2 vUV0;
+//in vec2 vUV0;
 void main()
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (LightCount <= i) break;
 
         vec4 point = LightPositionViewSpace[i];
         float w = Weight * point.w;
-        color += GodRays(FBO, vUV0, point.xy, RayCount, Density, w, Decay, Exposure);
+        color += GodRays(FBO, uv, point.xy, RayCount, Density, w, Decay, Exposure);
     }
 
     FragColor.rgb = SafeHDR(color);

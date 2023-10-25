@@ -32,14 +32,14 @@ vec3 Downscale13(sampler2D tex, vec2 uv, vec2 tsize)
     return c1 + c2 + c3 + c4 + c5;
 }
 
-in vec2 vUV0;
+//in vec2 vUV0;
 void main()
 {
-    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    vec3 color = Downscale13(RT, vUV0, TexelSize0).rgb;
+    vec2 texelSize0 = 1.0 / vec2(textureSize(RT, 0));
+    vec2 uv = gl_FragCoord.xy * texelSize0;
+    vec3 color = Downscale13(RT, uv, texelSize0).rgb;
     float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
-    float depth = texture2D(DepthTex, vUV0).x;
+    float depth = texture2D(DepthTex, uv).x;
 
-    //color *= lum;
     FragColor = vec4(bigger(depth, 0.5) * color, 1.0);
 }

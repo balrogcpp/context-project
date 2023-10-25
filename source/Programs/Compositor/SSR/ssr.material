@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
 import RayCast from std.material
-import CopyI from std.material
+import STD from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSR
@@ -34,13 +34,13 @@ material SSR : RayCast
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit Gloss
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
         }
     }
@@ -51,7 +51,7 @@ fragment_program ssrRec glsl glsles hlsl
 	source ssrRec.frag
 }
 
-material ssrRec : CopyI
+material ssrRec : STD
 {
     technique
     {
@@ -67,13 +67,13 @@ material ssrRec : CopyI
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit SSR2
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
         }
     }
@@ -84,7 +84,7 @@ fragment_program ssrMod glsl glsles hlsl
 	source ssrMod.frag
 }
 
-material ssrMod : CopyI
+material ssrMod : STD
 {
     technique
     {
@@ -96,7 +96,6 @@ material ssrMod : CopyI
                 param_named SsrTex int 1
             }
 
-
             texture_unit SSR
             {
                 texture black.dds
@@ -107,7 +106,7 @@ material ssrMod : CopyI
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
         }
     }

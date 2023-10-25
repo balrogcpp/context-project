@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
 import RayCast from std.material
-import CopyI from std.material
+import STD from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSAO
@@ -45,7 +45,7 @@ fragment_program ssaoRec glsl glsles hlsl
 	source ssaoRec.frag
 }
 
-material ssaoRec : CopyI
+material ssaoRec : STD
 {
     technique
     {
@@ -78,7 +78,7 @@ fragment_program ssaoMod glsl glsles hlsl
 	source ssaoMod.frag
 }
 
-material ssaoMod : CopyI
+material ssaoMod : STD
 {
     technique
     {
@@ -111,7 +111,7 @@ fragment_program ssaoy glsl glsles hlsl
 	source ssaoy.frag
 }
 
-material SSAOX : CopyI
+material SSAOX : STD
 {
     technique
     {
@@ -126,7 +126,7 @@ material SSAOX : CopyI
         }
     }
 }
-material SSAOY : CopyI
+material SSAOY : STD
 {
     technique
     {

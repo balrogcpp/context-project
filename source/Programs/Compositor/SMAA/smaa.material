@@ -187,7 +187,7 @@ material SMAA/NeighborhoodBlending
 			{
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
 			}
 		}
 	}
