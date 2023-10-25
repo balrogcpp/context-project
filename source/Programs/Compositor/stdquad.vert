@@ -11,5 +11,5 @@ void main()
     gl_Position = mul(WorldViewProj, vertex);
 
     vec2 inPos = sign(vertex.xy);
-    vUV0 = (vec2(inPos.x, -inPos.y) + 1.0) * 0.5;
+    vUV0 = vec2(inPos.x, -inPos.y) * 0.5 + 0.5;
 }

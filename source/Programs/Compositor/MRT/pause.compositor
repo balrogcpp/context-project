@@ -1,0 +1,70 @@
+// created by Andrey Vasiliev
+
+compositor Paused
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rtx target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rty target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rtx1 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rty2 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target rt
+        {
+            only_initial on
+            input previous
+        }
+
+        target rtx
+        {
+            only_initial on
+            pass render_quad
+            {
+                material FilterX
+                input 0 rt
+            }
+        }
+
+        target rty
+        {
+            only_initial on
+            pass render_quad
+            {
+                material FilterY
+                input 0 rtx
+            }
+        }
+
+        target rtx1
+        {
+            only_initial on
+            pass render_quad
+            {
+                material FilterX
+                input 0 rty
+            }
+        }
+
+        target rty1
+        {
+            only_initial on
+            pass render_quad
+            {
+                material FilterY
+                input 0 rtx1
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                identifier 1000
+                material Copy
+                input 0 rty1
+            }
+        }
+    }
+}

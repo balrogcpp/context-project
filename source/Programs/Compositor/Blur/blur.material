@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
 
-import STD from std.material
 import RayCast from std.material
 
 fragment_program Blur glsl glsles hlsl

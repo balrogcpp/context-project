@@ -6,9 +6,9 @@
 uniform sampler2D SsrTex1;
 uniform sampler2D SsrTex2;
 
-in vec2 vUV0;
 void main()
 {
-    vec3 ssr = max(texture2D(SsrTex1, vUV0).rgb, texture2D(SsrTex2, vUV0).rgb);
+    ivec2 uv = ivec2(gl_FragCoord.xy * vec2(0.5, 1.0));
+    vec3 ssr = max(texelFetch(SsrTex1, uv, 0).rgb, texelFetch(SsrTex2, uv, 0).rgb);
     if (Any(ssr)) FragColor.rgb = ssr;
 }

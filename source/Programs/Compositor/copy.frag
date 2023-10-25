@@ -6,5 +6,6 @@ uniform sampler2D RT;
 
 void main()
 {
-    FragColor = texelFetch(RT, ivec2(gl_FragCoord.xy), 0);
+    ivec2 uv = ivec2(gl_FragCoord.xy);
+    FragColor = texelFetch(RT,  uv, 0);
 }

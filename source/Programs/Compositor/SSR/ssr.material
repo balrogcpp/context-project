@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
 import RayCast from std.material
-import STD from std.material
+import CopyI from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSR
@@ -51,7 +51,7 @@ fragment_program ssrRec glsl glsles hlsl
 	source ssrRec.frag
 }
 
-material ssrRec : STD
+material ssrRec : CopyI
 {
     technique
     {
@@ -84,7 +84,7 @@ fragment_program ssrMod glsl glsles hlsl
 	source ssrMod.frag
 }
 
-material ssrMod : STD
+material ssrMod : CopyI
 {
     technique
     {

@@ -104,7 +104,7 @@ vec4 FxaaTexOff(sampler2D tex, vec2 pos, vec2 off, vec2 rcpFrame) {
 // pos is the output of FxaaVertexShader interpolated across screen.
 // xy -> actual texture position {0.0 to 1.0}
 // rcpFrame should be a uniform equal to  {1.0/frameWidth, 1.0/frameHeight}
-vec3 FxaaPixelShader(vec2 pos, sampler2D tex, vec2 rcpFrame)
+vec3 FxaaPixelShader(sampler2D tex, vec2 pos, vec2 rcpFrame)
 {
     vec3 rgbN = FxaaTexOff(tex, pos.xy, vec2( 0.0, -1.0), rcpFrame).xyz;
     vec3 rgbW = FxaaTexOff(tex, pos.xy, vec2(-1.0,  0.0), rcpFrame).xyz;
@@ -238,9 +238,9 @@ vec3 FxaaPixelShader(vec2 pos, sampler2D tex, vec2 rcpFrame)
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
 
-in vec2 vUV0;
 void main()
 {
-    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    FragColor.rgb = SafeHDR(FxaaPixelShader(vUV0, RT, TexelSize0));
+    vec2 texelSize0 = 1.0 / vec2(textureSize(RT, 0));
+    vec2 uv = gl_FragCoord.xy * texelSize0;
+    FragColor.rgb = SafeHDR(FxaaPixelShader(RT, uv, texelSize0));
 }

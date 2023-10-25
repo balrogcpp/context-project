@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-import STD from std.material
 import RayCast from std.material
+import CopyI from std.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSAO
@@ -34,7 +34,7 @@ material SSAO : RayCast
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
         }
     }
@@ -45,7 +45,7 @@ fragment_program ssaoRec glsl glsles hlsl
 	source ssaoRec.frag
 }
 
-material ssaoRec : STD
+material ssaoRec : CopyI
 {
     technique
     {
@@ -53,21 +53,21 @@ material ssaoRec : STD
         {
             fragment_program_ref ssaoRec
             {
-                param_named SsaoTex int 0
-                param_named SsaoTex2 int 1
+                param_named Ssao1Tex int 0
+                param_named Ssao2Tex int 1
             }
 
-            texture_unit SSAO
+            texture_unit SSAO1
             {
                 texture white.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit SSAO2
             {
                 texture white.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
         }
     }
@@ -78,7 +78,7 @@ fragment_program ssaoMod glsl glsles hlsl
 	source ssaoMod.frag
 }
 
-material ssaoMod : STD
+material ssaoMod : CopyI
 {
     technique
     {
@@ -90,7 +90,6 @@ material ssaoMod : STD
                 param_named SsaoTex int 1
                 param_named_auto ShadowColour shadow_colour
             }
-
 
             texture_unit SSAO
             {
@@ -112,7 +111,7 @@ fragment_program ssaoy glsl glsles hlsl
 	source ssaoy.frag
 }
 
-material SSAOX : STD
+material SSAOX : CopyI
 {
     technique
     {
@@ -127,7 +126,7 @@ material SSAOX : STD
         }
     }
 }
-material SSAOY : STD
+material SSAOY : CopyI
 {
     technique
     {

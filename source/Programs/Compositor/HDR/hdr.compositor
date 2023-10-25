@@ -34,7 +34,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material Downscale2x2
+                material Linear
                 input 0 rt1
             }
         }
@@ -43,7 +43,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material Downscale2x2
+                material Linear
                 input 0 rt2
             }
         }
@@ -52,7 +52,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material Downscale2x2
+                material Linear
                 input 0 rt3
             }
         }

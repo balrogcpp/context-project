@@ -1,13 +1,12 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
-#include "mosaic.glsl"
 
-uniform sampler2D SsaoTex;
-uniform sampler2D SsaoTex2;
+uniform sampler2D Ssao1Tex;
+uniform sampler2D Ssao2Tex;
 
-in vec2 vUV0;
 void main()
 {
-    FragColor.r = SafeHDR(min(texture2D(SsaoTex, vUV0).r, texture2D(SsaoTex2, vUV0).r));
+    ivec2 uv = ivec2(gl_FragCoord.xy);
+    FragColor.r = SafeHDR(min(texelFetch(Ssao1Tex, uv, 0).r, texelFetch(Ssao2Tex, uv, 0).r));
 }

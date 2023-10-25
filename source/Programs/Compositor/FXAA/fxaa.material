@@ -1,13 +1,13 @@
 // created by Andrey Vasiliev
 
-import STD from std.material
+import CopyI from std.material
 
 fragment_program fxaa glsl glsles hlsl
 {
     source fxaa.frag
 }
 
-material FXAA : STD
+material FXAA : CopyI
 {
 	technique
 	{
