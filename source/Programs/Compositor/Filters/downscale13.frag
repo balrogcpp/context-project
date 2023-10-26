@@ -33,5 +33,5 @@ vec3 Downscale13(sampler2D tex, vec2 uv, vec2 tsize)
 in vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Downscale13(RT, vUV0, 1.0 / vec2(textureSize(tex, 0)));
+    FragColor.rgb = Downscale13(RT, vUV0, 1.0 / vec2(textureSize(RT, 0)));
 }

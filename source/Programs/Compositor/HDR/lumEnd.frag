@@ -23,7 +23,7 @@ float Downscale2x2(sampler2D tex, vec2 uv, vec2 tsize)
 in vec2 vUV0;
 void main()
 {
-    float newLum = Downscale2x2(RT, vUV0, 1.0 / vec2(textureSize(tex, 0)));
+    float newLum = Downscale2x2(RT, vUV0, 1.0 / vec2(textureSize(RT, 0)));
     newLum = expose(newLum, Exposure);
     float oldLum = texture2D(Lum, vec2(0.0, 0.0)).r;
     float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
