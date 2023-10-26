@@ -13,8 +13,11 @@ uniform sampler2D RT;
 //vec2( 2, 2 ), vec2( 3, 2 ), vec2( 2, 3 ), vec2( 3, 3 )
 //);
 //  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale01_SumLumStart_ps.glsl5
-float Downscale4x4(sampler2D tex, vec2 uv, vec2 tsize)
+float Downscale4x4(sampler2D tex, vec2 uv)
 {
+    vec2 texSize = vec2(textureSize(tex, 0));
+    vec2 ratio = (texSize / vec2(256.0, 256.0)) * 0.25;
+    vec2 tsize = ratio / texSize;
     float A = luminance(texture2D(tex, uv                         ).rgb) + 0.0001;
     float B = luminance(texture2D(tex, uv + tsize * vec2(1.0, 0.0)).rgb) + 0.0001;
     float C = luminance(texture2D(tex, uv + tsize * vec2(0.0, 1.0)).rgb) + 0.0001;
@@ -48,9 +51,6 @@ void main()
     //We would need 64x64 samples, but we only sample 4x4, therefore we sample one
     //pixel and skip 15, then repeat. We perform:
     //(ViewportResolution / TargetResolution) / 4
-    vec2 texSize0 = vec2(textureSize(RT, 0));
-    vec2 texelSize0 = 1.0 / texSize0;
-    vec2 ratio = (texSize0 / vec2(256.0, 256.0)) * 0.25;
-    float lum = Downscale4x4(RT, vUV0, texelSize0 * ratio);
+    float lum = Downscale4x4(RT, vUV0);
     FragColor.r = SafeHDR(lum);
 }

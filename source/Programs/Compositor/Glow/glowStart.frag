@@ -7,8 +7,9 @@ uniform sampler2D Lum;
 uniform vec2 BrightThreshold;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
-vec3 Downscale13(sampler2D tex, vec2 uv, vec2 tsize)
+vec3 Downscale13(sampler2D tex, vec2 uv)
 {
+    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
     vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
     vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;
     vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).xyz;
@@ -35,8 +36,7 @@ vec3 Downscale13(sampler2D tex, vec2 uv, vec2 tsize)
 in vec2 vUV0;
 void main()
 {
-    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    vec3 color = Downscale13(RT, vUV0, TexelSize0);
+    vec3 color = Downscale13(RT, vUV0);
     float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
 
     color *= lum;

@@ -4,8 +4,9 @@
 
 uniform sampler2D RT;
 
-float Gauss9V(sampler2D tex, vec2 uv, vec2 tsize)
+float Gauss9V(sampler2D tex, vec2 uv)
 {
+    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
     float A = texture2D(tex, uv).x;
     float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).x;
     float C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).x;
@@ -20,5 +21,5 @@ float Gauss9V(sampler2D tex, vec2 uv, vec2 tsize)
 in vec2 vUV0;
 void main()
 {
-    FragColor.r = Gauss9V(RT, vUV0, 1.0 / vec2(textureSize(RT, 0)));
+    FragColor.r = Gauss9V(RT, vUV0);
 }

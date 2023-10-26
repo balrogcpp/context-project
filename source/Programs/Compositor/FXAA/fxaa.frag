@@ -240,5 +240,6 @@ vec3 FxaaPixelShader(sampler2D tex, vec2 pos, vec2 rcpFrame)
 in vec2 vUV0;
 void main()
 {
-    FragColor.rgb = SafeHDR(FxaaPixelShader(RT, vUV0, 1.0 / vec2(textureSize(RT, 0))));
+    vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));
+    FragColor.rgb = SafeHDR(FxaaPixelShader(RT, vUV0, texelSize));
 }
