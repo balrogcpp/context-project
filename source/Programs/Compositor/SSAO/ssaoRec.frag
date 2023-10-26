@@ -5,8 +5,8 @@
 uniform sampler2D Ssao1Tex;
 uniform sampler2D Ssao2Tex;
 
+in vec2 vUV0;
 void main()
 {
-    ivec2 uv = ivec2(gl_FragCoord.xy);
-    FragColor.r = SafeHDR(min(texelFetch(Ssao1Tex, uv, 0).r, texelFetch(Ssao2Tex, uv, 0).r));
+    FragColor.r = SafeHDR(min(texture2D(Ssao1Tex, vUV0).r, texture2D(Ssao2Tex, vUV0).r));
 }

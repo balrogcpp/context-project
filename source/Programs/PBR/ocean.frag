@@ -174,7 +174,7 @@ void main()
     color += LightColor0.xyz * specular;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
-    EvaluateBuffer(color, 1.0);
+    EvaluateBuffer(color);
 #ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(lNormal, 0.0))).xyz;
 #endif

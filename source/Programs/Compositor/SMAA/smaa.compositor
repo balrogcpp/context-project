@@ -19,7 +19,7 @@ compositor SMAA : STD
 			{
 				material SMAA/EdgeDetection
 				input 0 rt
-				input 1 mrt 1
+				//input 1 mrt 1
 			}
 		}
 
@@ -39,7 +39,7 @@ compositor SMAA : STD
 				material SMAA/NeighborhoodBlending
 				input 0 rt
 				input 1 blend
-				input 2 mrt 2
+				//input 2 mrt 2
 			}
 		}
 	}

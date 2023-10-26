@@ -509,10 +509,8 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 
 void VideoManager::InitOgreSceneManager() {
 #ifdef DESKTOP
-  shadowEnabled = !RenderSystemIsGLES2();
   shadowTexSize = 2048;
 #else
-  shadowEnabled = false;
   shadowTexSize = 1024;
 #endif
 
@@ -536,7 +534,7 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
-    ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
+    ogreSceneManager->setShadowTextureCount(4);
     Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigList().at(0);
     ogreSceneManager->setShadowTextureConfig(0, texConfig);
     ogreSceneManager->setShadowTextureConfig(1, texConfig);
@@ -544,10 +542,6 @@ void VideoManager::InitOgreSceneManager() {
     texConfig.width /= 2;
     ogreSceneManager->setShadowTextureConfig(2, texConfig);
     ogreSceneManager->setShadowTextureConfig(3, texConfig);
-    ogreSceneManager->setShadowTextureConfig(4, texConfig);
-    ogreSceneManager->setShadowTextureConfig(5, texConfig);
-    ogreSceneManager->setShadowTextureConfig(6, texConfig);
-    ogreSceneManager->setShadowTextureConfig(7, texConfig);
 
     // pssm stuf
     pssmSetup->setSplitPadding(0.5);
@@ -575,7 +569,7 @@ void VideoManager::EnableShadows(bool enable) {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
-    ogreSceneManager->setShadowTextureCount(OGRE_MAX_SIMULTANEOUS_LIGHTS);
+    ogreSceneManager->setShadowTextureCount(4);
 
   } else {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);

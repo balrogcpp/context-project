@@ -1,6 +1,6 @@
-import IBL from pbr.material
+import PBR from pbr.material
 
-material DamagedHelmet : IBL
+material DamagedHelmet : PBR
 {
     set $Albedo Default_albedo.dds
     set $Normal Default_normal.dds

@@ -4,11 +4,7 @@
 #include "header.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
-#ifndef GL_ES
-#define SPHERICAL_HARMONICS_BANDS 8
-#else
 #define SPHERICAL_HARMONICS_BANDS 3
-#endif
 
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;

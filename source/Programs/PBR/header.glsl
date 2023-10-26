@@ -8,7 +8,7 @@
 #define MAX_LIGHTS 8
 #endif
 #ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 8
+#define MAX_SHADOW_TEXTURES 4
 #endif
 #ifndef MAX_MRT_TEXTURES
 #define MAX_MRT_TEXTURES 5

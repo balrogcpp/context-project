@@ -227,7 +227,6 @@ vec3 FxaaPixelShader(sampler2D tex, vec2 pos, vec2 rcpFrame)
     {
         lengthSign = 0.0;
     }
- 
 
     float spanLength = (dstP + dstN);
     dstN = directionN ? dstN : dstP;
@@ -238,9 +237,8 @@ vec3 FxaaPixelShader(sampler2D tex, vec2 pos, vec2 rcpFrame)
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
 
+in vec2 vUV0;
 void main()
 {
-    vec2 texelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    vec2 uv = gl_FragCoord.xy * texelSize0;
-    FragColor.rgb = SafeHDR(FxaaPixelShader(RT, uv, texelSize0));
+    FragColor.rgb = SafeHDR(FxaaPixelShader(RT, vUV0, 1.0 / vec2(textureSize(RT, 0))));
 }

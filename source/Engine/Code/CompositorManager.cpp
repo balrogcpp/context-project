@@ -81,17 +81,18 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
-  AddCubeCamera();
-  InitMRT(true);
-  AddCompositor("SSAO", false);
-  AddCompositor("SSR", false);
-  AddCompositor("FXAA", false);
-  AddCompositor("Blur", false);
-  AddCompositor("Glow", false);
-//  AddCompositor("HDR", true);
-  AddCompositor("Tonemap", true);
-  AddCompositor("SMAA", false);
-  AddCompositor("Paused", false);
+    AddCubeCamera();
+    InitMRT(true);
+//    AddCompositor("RTT", true);
+    AddCompositor("SSAO", false);
+    AddCompositor("SSR", false);
+    AddCompositor("FXAA", false);
+    AddCompositor("Blur", false);
+//    AddCompositor("Glow", false);
+//    AddCompositor("HDR", false);
+    AddCompositor("Tonemap", true);
+    AddCompositor("SMAA", false);
+    AddCompositor("Paused", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);
@@ -420,21 +421,16 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
     static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
 
-    int directionals = 0;  // count directional light
     for (int i = 0; i < lightList.size(); i++) {
-      Ogre::Light *light = lightList[i];
-      if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
-        directionals++;
-        Ogre::Vector4 point = GetLightScreenSpaceCoords(lightList[i], ogreCamera);
-        LightPositionViewSpace[4 * i] = point.x;
-        LightPositionViewSpace[4 * i + 1] = point.y;
-        LightPositionViewSpace[4 * i + 2] = point.z;
-        LightPositionViewSpace[4 * i + 3] = point.w;
-      }
+      Ogre::Vector4 point = GetLightScreenSpaceCoords(lightList[i], ogreCamera);
+      LightPositionViewSpace[4 * i] = point.x;
+      LightPositionViewSpace[4 * i + 1] = point.y;
+      LightPositionViewSpace[4 * i + 2] = point.z;
+      LightPositionViewSpace[4 * i + 3] = point.w;
     }
 
-    fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
-    fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(directionals));
+    fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, lightList.size());
+    fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(lightList.size()));
 
   } else if (pass_id == 100) {  // paused
 

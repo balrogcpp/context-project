@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import STD from std.material
+import STD from stdquad.material
 
 fragment_program fxaa glsl glsles hlsl
 {

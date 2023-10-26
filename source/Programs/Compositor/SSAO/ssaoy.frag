@@ -17,9 +17,8 @@ float Gauss9V(sampler2D tex, vec2 uv, vec2 tsize)
     return c1;
 }
 
+in vec2 vUV0;
 void main()
 {
-    vec2 texelSize0 = 1.0 / vec2(textureSize(RT, 0));
-    vec2 uv = gl_FragCoord.xy * texelSize0;
-    FragColor.r = Gauss9V(RT, uv, texelSize0);
+    FragColor.r = Gauss9V(RT, vUV0, 1.0 / vec2(textureSize(RT, 0)));
 }

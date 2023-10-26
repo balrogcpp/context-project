@@ -59,5 +59,5 @@ void main()
     }
 
     color = SRGBtoLINEAR(SkyLightExpose(color));
-    EvaluateBuffer(color, 1.0);
+    EvaluateBuffer(color);
 }

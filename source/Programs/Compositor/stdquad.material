@@ -34,7 +34,7 @@ abstract material STD
             depth_write off
             polygon_mode_overrideable false
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             texture_unit RT
             {
@@ -57,7 +57,7 @@ material Copy
             depth_write off
             polygon_mode_overrideable false
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref CopyFrag
             {

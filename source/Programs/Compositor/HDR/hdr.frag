@@ -6,12 +6,11 @@
 uniform sampler2D RT;
 uniform sampler2D Lum;
 
+in vec2 vUV0;
 void main()
 {
-    ivec2 uv = ivec2(gl_FragCoord.xy);
-    vec3 color = texelFetch(RT, uv, 0).rgb;
+    vec3 color = texture2D(RT, vUV0).rgb;
     float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
-
     color *= lum;
     FragColor.rgb = SafeHDR(unreal(color));
 }

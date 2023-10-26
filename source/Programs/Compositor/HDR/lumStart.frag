@@ -40,6 +40,7 @@ float Downscale4x4(sampler2D tex, vec2 uv, vec2 tsize)
     return c1 + c2 + c3 + c4;
 }
 
+in vec2 vUV0;
 void main()
 {
     //Compute how many pixels we have to skip because we can't sample them all
@@ -49,9 +50,7 @@ void main()
     //(ViewportResolution / TargetResolution) / 4
     vec2 texSize0 = vec2(textureSize(RT, 0));
     vec2 texelSize0 = 1.0 / texSize0;
-    vec2 uv = gl_FragCoord.xy * texelSize0;
     vec2 ratio = (texSize0 / vec2(256.0, 256.0)) * 0.25;
-    float lum = Downscale4x4(RT, uv, texelSize0 * ratio);
-
+    float lum = Downscale4x4(RT, vUV0, texelSize0 * ratio);
     FragColor.r = SafeHDR(lum);
 }

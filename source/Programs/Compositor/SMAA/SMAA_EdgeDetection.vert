@@ -11,12 +11,12 @@ uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
-in highp vec4 vertex;
+in highp vec3 vertex;
 out vec2 vUV0;
 out vec4 offset[3];
 void main()
 {
-	gl_Position = worldViewProj * vertex;
+	gl_Position = worldViewProj * vec4(vertex, 1.0);
 	vec2 inPos = sign(vertex.xy);
 	vUV0 = vec2(inPos.x, -inPos.y) * 0.5 + 0.5;
 	SMAAEdgeDetectionVS(vUV0, offset);

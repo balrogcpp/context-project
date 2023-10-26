@@ -28,6 +28,33 @@ compositor MRT
     }
 }
 
+compositor RTT
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa
+
+        target rt
+        {
+            pass clear {}
+            pass render_scene
+            {
+                identifier 0
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 rt
+            }
+        }
+    }
+}
+
 compositor DepthHalved
 {
     technique

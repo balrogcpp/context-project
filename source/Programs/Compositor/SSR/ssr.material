@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-import RayCast from std.material
-import STD from std.material
+import RayCast from stdquad.material
+import STD from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // SSR

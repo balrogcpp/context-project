@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import RayCast from std.material
+import RayCast from stdquad.material
 
 fragment_program Reconstructor glsl glsles hlsl
 {

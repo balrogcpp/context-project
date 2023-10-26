@@ -15,9 +15,6 @@ vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
 {
 	source SMAA_EdgeDetection.frag
-    default_params
-    {
-    }
 }
 
 material SMAA/EdgeDetection
@@ -36,7 +33,7 @@ material SMAA/EdgeDetection
 			fragment_program_ref SMAA/EdgeDetection_ps
 			{
 				param_named rt_input	int 0
-				param_named depthTex	int 1
+				//param_named depthTex	int 1
 			}
 
 			texture_unit rt_input
@@ -76,7 +73,7 @@ fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles hlsl
 
 	default_params
 	{
-		param_named_auto ViewportSize	viewport_size
+		param_named_auto ViewportSize viewport_size
 	}
 }
 
@@ -166,7 +163,7 @@ material SMAA/NeighborhoodBlending
 			{
 				param_named rt_input		int 0
 				param_named blendTex		int 1
-				param_named velocityTex		int 2
+				//param_named velocityTex		int 2
 			}
 
 			texture_unit rt_input
