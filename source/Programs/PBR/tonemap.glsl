@@ -11,9 +11,8 @@ float expose(float color, vec3 exposure)
 // Clamps color between 0 and 1 smoothly
 vec3 expose(vec3 color, float exposure)
 {
-    return vec3(2.0, 2.0, 2.0) / (vec3(1.0, 1.0, 1.0) + exp(-exposure * color)) - vec3(1.0, 1.0, 1.0);
+    return 2.0 / (1.0 + exp(-exposure * color)) - 1.0;
 }
-
 
 float luminance(vec3 color)
 {
@@ -21,34 +20,34 @@ float luminance(vec3 color)
 }
 
 // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
-highp vec3 aces(highp vec3 x)
+highp vec3 aces(vec3 x)
 {
-    const highp float a = 2.51;
-    const highp float b = 0.03;
-    const highp float c = 2.43;
-    const highp float d = 0.59;
-    const highp float e = 0.14;
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
     return (x * (a * x + b)) / (x * (c * x + d) + e);
 }
 
-highp vec3 uncharted2Tonemap(highp vec3 x)
+highp vec3 uncharted2Tonemap(vec3 x)
 {
-    const highp float A = 0.22;
-    const highp float B = 0.3;
-    const highp float C = 0.10;
-    const highp float D = 0.20;
-    const highp float E = 0.01;
-    const highp float F = 0.30;
-    const highp float W = 11.2;
+    const float A = 0.22;
+    const float B = 0.3;
+    const float C = 0.10;
+    const float D = 0.20;
+    const float E = 0.01;
+    const float F = 0.30;
+    const float W = 11.2;
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
 
-highp vec3 uncharted2(highp vec3 color)
+highp vec3 uncharted2(vec3 color)
 {
-    const highp float W = 11.2;
-    const highp float exposureBias = 1.0;
+    const float W = 11.2;
+    const float exposureBias = 1.0;
 
-    highp vec3 curr = uncharted2Tonemap(exposureBias * color);
+    vec3 curr = uncharted2Tonemap(exposureBias * color);
     return curr / uncharted2Tonemap(vec3(W, W, W));
 }
 
