@@ -10,6 +10,11 @@ fragment_program lumStart glsl glsles hlsl
 	source lumStart.frag
 }
 
+fragment_program lumIt glsl glsles hlsl
+{
+	source lumIt.frag
+}
+
 fragment_program lumEnd glsl glsles hlsl
 {
 	source lumEnd.frag
@@ -31,8 +36,20 @@ material HdrStart : STD
             {
                 param_named RT int 0
             }
+        }
+    }
+}
 
-
+material HdrIt : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref lumIt
+            {
+                param_named RT int 0
+            }
         }
     }
 }
@@ -89,6 +106,10 @@ material HDR : STD
 fragment_program Tonemap glsl glsles hlsl
 {
     source tonemap.frag
+    default_params
+    {
+        param_named Exposure float 2.5
+    }
 }
 
 material Tonemap : STD

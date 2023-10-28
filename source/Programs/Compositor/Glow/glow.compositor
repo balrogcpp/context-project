@@ -1,27 +1,19 @@
 // created by Andrey Vasiliev
 
-compositor Glow
+import STD from std.compositor
+
+compositor Glow : STD
 {
     technique
     {
-        compositor_logic DeferredLogic
-        texture_ref  mrt MRT mrt
-        texture_ref  rt HDR rt
-        texture_ref  lum HDR lum
-        // texture rt1_ target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt1  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt2  target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt3  target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt4  target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt5  target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt6  target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt7  target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt8  target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-
-        texture fbo  target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fbo1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fb0x target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture fb0y target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt7 target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt8 target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
 
         target rt1
         {
@@ -29,67 +21,9 @@ compositor Glow
             {
                 material GlowStart
                 input 0 rt
-                input 1 lum
+                //input 1 lum
             }
         }
-
-        target fbo
-        {
-            pass render_quad
-            {
-                material FBO
-                input 0 rt
-                input 1 lum
-                input 2 mrt 1
-            }
-        }
-
-        // target fbo1
-        // {
-        //     pass render_quad
-        //     {
-        //         identifier 12
-        //         material Rays
-        //         input 0 fbo
-        //     }
-        // }
-
-        // target fb0x
-        // {
-        //     pass render_quad
-        //     {
-        //         material FilterX
-        //         input 0 fbo1
-        //     }
-        // }
-
-        // target fb0y
-        // {
-        //     pass render_quad
-        //     {
-        //         material FilterY
-        //         input 0 fb0x
-        //     }
-        // }
-
-        // target rt0
-        // {
-        //     pass render_quad
-        //     {
-        //         material RaysMod
-        //         input 0 rt0
-        //         input 1 fb0y
-        //     }
-        // }
-
-        // target rt1
-        // {
-        //     pass render_quad
-        //     {
-        //         material GlowFeat
-        //         input 0 rt1_
-        //     }
-        // }
 
         target rt2
         {
@@ -166,15 +100,15 @@ abstract compositor GlowIt
 {
     technique
     {
-        texture rt  target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture_ref rt1  Glow rt1
-        texture_ref rt2  Glow rt2
-        texture_ref rt3  Glow rt3
-        texture_ref rt4  Glow rt4
-        texture_ref rt5  Glow rt5
-        texture_ref rt6  Glow rt6
-        texture_ref rt7  Glow rt7
-        texture_ref rt8  Glow rt8
+        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture_ref rt1 Glow rt1
+        texture_ref rt2 Glow rt2
+        texture_ref rt3 Glow rt3
+        texture_ref rt4 Glow rt4
+        texture_ref rt5 Glow rt5
+        texture_ref rt6 Glow rt6
+        texture_ref rt7 Glow rt7
+        texture_ref rt8 Glow rt8
 
         target rt
         {

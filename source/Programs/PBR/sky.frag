@@ -11,7 +11,7 @@ uniform vec4 FogColour;
 uniform vec4 FogParams;
 
 #ifdef GPU_HOSEK
-#include "hosek.glsl"
+//#include "hosek.glsl"
 #else
 uniform highp vec3 A;
 uniform highp vec3 B;
@@ -36,7 +36,7 @@ highp vec3 HosekWilkie(highp float cos_theta, highp float gamma, highp float cos
 // Clamps color between 0 and 1 smoothly
 highp vec3 SkyLightExpose(highp vec3 color)
 {
-    return vec3(2.0, 2.0, 2.0) / (vec3(1.0, 1.0, 1.0) + exp(-0.1 * color)) - vec3(1.0, 1.0, 1.0);
+    return 2.0 / (1.0 + exp(-0.1 * color)) - 1.0;
 }
 
 in highp vec3 vPosition;
@@ -49,7 +49,7 @@ void main()
     highp float cos_gamma = dot(V, N);
     highp float gamma = acos(cos_gamma);
 #ifdef GPU_HOSEK
-    vec3 color = sample_sky(cos_theta, gamma, N.y, N.x);
+    //vec3 color = sample_sky(cos_theta, gamma, N.y, N.x);
 #else
     vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 #endif

@@ -4,7 +4,7 @@
 
 uniform sampler2D RT;
 
-vec3 Gauss9V(sampler2D tex, vec2 uv)
+vec3 Gauss9(sampler2D tex, vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
     vec3 A = texture2D(tex, uv).xyz;
@@ -21,5 +21,5 @@ vec3 Gauss9V(sampler2D tex, vec2 uv)
 in vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Gauss9V(RT, vUV0);
+    FragColor.rgb = Gauss9(RT, vUV0);
 }

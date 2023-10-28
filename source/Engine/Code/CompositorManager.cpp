@@ -88,8 +88,8 @@ void CompositorManager::OnSetUp() {
     AddCompositor("SSR", false);
     AddCompositor("FXAA", false);
     AddCompositor("Blur", false);
-//    AddCompositor("Glow", false);
-//    AddCompositor("HDR", false);
+//    AddCompositor("Glow", true);
+//    AddCompositor("HDR", true);
     AddCompositor("Tonemap", true);
     AddCompositor("SMAA", false);
     AddCompositor("Paused", false);
@@ -162,9 +162,9 @@ void CompositorManager::AddCubeCamera() {
     cubeCamera = ogreSceneManager->createCamera("CubeCamera");
     cubeCamera->setFOVy(Ogre::Degree(90.0));
     cubeCamera->setAspectRatio(1.0);
-    cubeCamera->setNearClipDistance(50.0);
+    cubeCamera->setNearClipDistance(1.0);
     cubeCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
-    ogreSceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * 5.0)->attachObject(cubeCamera);
+    ogreSceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * 2.0)->attachObject(cubeCamera);
   }
 
   if (!IsCompositorInChain("CubeMap")) {

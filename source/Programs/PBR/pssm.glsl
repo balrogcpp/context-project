@@ -16,7 +16,7 @@
 #define PSSM_FILTER_RADIUS3 0.1
 #endif
 #ifndef PSSM_FILTER_SIZE
-#define PSSM_FILTER_SIZE 12
+#define PSSM_FILTER_SIZE 8
 #endif
 #ifndef PENUMBRA_FILTER_RADIUS
 #define PENUMBRA_FILTER_RADIUS 12
@@ -90,7 +90,7 @@ float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
     uv.z = uv.z * 0.5 + 0.5;
     vec2 tsize = 1.0 / vec2(textureSize(shadowTex, 0));
     float shadow = 0.0;
-    float currentDepth = uv.z - 2.0 * HALF_EPSILON;
+    float currentDepth = uv.z - HALF_EPSILON;
     float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
     float penumbra = Penumbra(shadowTex, uv.xy, tsize, currentDepth);
@@ -103,7 +103,7 @@ float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
 
         uv.xy += offset;
         float depth = map_1(texture2D(shadowTex, uv.xy).x, 0.1, 100.0);
-        shadow += bigger(depth, currentDepth);
+        shadow += fstep(depth, currentDepth);
     }
 
     shadow /= float(PSSM_FILTER_SIZE);

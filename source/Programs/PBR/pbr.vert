@@ -79,7 +79,7 @@ void main()
 #endif // HAS_UV
 
 #ifdef PAGED_GEOMETRY
-     position +=  uv2.x == 0.0 ? bigger(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
+     position +=  uv2.x == 0.0 ? fstep(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
 #endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS

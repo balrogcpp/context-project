@@ -16,7 +16,7 @@ uniform sampler2D RT;
 float Downscale4x4(sampler2D tex, vec2 uv)
 {
     vec2 texSize = vec2(textureSize(tex, 0));
-    vec2 ratio = (texSize / vec2(256.0, 256.0)) * 0.25;
+    vec2 ratio = (texSize / vec2(64.0, 64.0)) * 0.25;
     vec2 tsize = ratio / texSize;
     float A = luminance(texture2D(tex, uv                         ).rgb) + 0.0001;
     float B = luminance(texture2D(tex, uv + tsize * vec2(1.0, 0.0)).rgb) + 0.0001;

@@ -34,36 +34,10 @@ float map_1(float x, float v0, float v1)
     return x * (v1 - v0) + v0;
 }
 
-// extra optimized functions
-float min3(float a, float b, float c)
-{
-    return min(a, min(b, c));
-}
-
-float max3(float a, float b, float c)
-{
-    return max(a, max(b, c));
-}
-
-float min3(vec3 a)
-{
-    return min3(a.x, a.y, a.z);
-}
-
-float max3(vec3 a)
-{
-    return max3(a.x, a.y, a.z);
-}
-
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float bigger(float x, float y)
+float fstep(float x, float y)
 {
     return saturate(((x - y) - HALF_EPSILON) * HALF_MAX);
-}
-
-float bigger(float x)
-{
-    return saturate((x - FLT_EPSILON) * HALF_MAX);
 }
 
 float fsign(float x)

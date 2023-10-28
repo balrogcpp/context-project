@@ -93,7 +93,7 @@ void main()
         // Compute occlusion based on the (scaled) Z difference
         float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
         float sampleDepth = clampedSampleDepth * ClipDistance;
-        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * bigger(clampedSampleDepth, oSample.z);
+        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * fstep(clampedSampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff

@@ -30,9 +30,6 @@ in vec2 vUV0;
 void main()
 {
     vec3 rt = texture2D(RT, vUV0).rgb;
-    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT0, 0));
     vec3 rt0 = Upscale9(RT0, vUV0);
-    const float w = 1.0 / 8.0;
-
-    FragColor.rgb = SafeHDR(rt + rt0 * w);
+    FragColor.rgb = SafeHDR(rt + rt0 / 8.0);
 }

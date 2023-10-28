@@ -1,19 +1,16 @@
 // created by Andrey Vasiliev
+
 import STD from std.compositor
 
-//----------------------------------------------------------------------------------------------------------------------
-// HDR
-//----------------------------------------------------------------------------------------------------------------------
 compositor HDR
 {
     technique
     {
         texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt1 256 256 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture rt2 64 64 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture rt3 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture rt4 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture lum0 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt1 64 64 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt2 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture rt3 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lumOld 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
 
         target rt
@@ -34,7 +31,7 @@ compositor HDR
         {
             pass render_quad
             {
-                material Linear
+                material HdrIt
                 input 0 rt1
             }
         }
@@ -43,17 +40,8 @@ compositor HDR
         {
             pass render_quad
             {
-                material Linear
+                material HdrIt
                 input 0 rt2
-            }
-        }
-
-        target rt4
-        {
-            pass render_quad
-            {
-                material Linear
-                input 0 rt3
             }
         }
 
@@ -62,12 +50,12 @@ compositor HDR
             pass render_quad
             {
                 material HdrEnd
-                input 0 rt4
-                input 1 lum0
+                input 0 rt3
+                input 1 lumOld
             }
         }
 
-        target lum0
+        target lumOld
         {
             pass render_quad
             {
