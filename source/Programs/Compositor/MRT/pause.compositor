@@ -9,7 +9,7 @@ compositor Paused
         texture rtx target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rty target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rtx1 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture rty2 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rty1 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target rt
         {

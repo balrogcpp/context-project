@@ -1,11 +1,9 @@
 // created by Andrey Vasiliev
-
-shared_params PBR_Shared_vert {}
-shared_params PSSM_Shared_frag {}
 shared_params IBL_Shared_frag
 {
     shared_param_named iblSH float3 [9] 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 }
+
 
 abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
@@ -14,7 +12,6 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
 
     default_params
     {
-        shared_params_ref PBR_Shared_vert
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 1
@@ -22,6 +19,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
     }
 }
 
+vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
 vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 
 abstract fragment_program PBR_I_fs glsl glsles hlsl
@@ -31,7 +29,6 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
     
     default_params
     {
-        shared_params_ref PSSM_Shared_frag
         shared_params_ref IBL_Shared_frag
         param_named_auto LightPositionArray light_position_array 8
         param_named_auto LightDirectionArray light_direction_array 8
@@ -58,7 +55,13 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
     }
 }
 
+abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
+{
+    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_IBL
+}
+
 fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
+fragment_program IBL_fs glsl glsles hlsl : IBL_I_fs {}
 
 vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 {
@@ -99,9 +102,4 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs
 {
     preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
-
-    default_params
-    {
-        param_named OffsetScale float 0.01
-    }
 }

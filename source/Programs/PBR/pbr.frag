@@ -106,6 +106,26 @@ float ComputeMicroShadowing(float NdotL, float visibility)
     return microShadow * microShadow;
 }
 
+float computeSpecularAO(float NdotV, float visibility, float roughness)
+{
+    return saturate(pow(NdotV + visibility, exp2(-16.0 * roughness - 1.0)) - 1.0 + visibility);
+}
+
+/**
+ * Returns a color ambient occlusion based on a pre-computed visibility term.
+ * The albedo term is meant to be the diffuse color or f0 for the diffuse and
+ * specular terms respectively.
+ */
+vec3 gtaoMultiBounce(float visibility, const vec3 albedo)
+{
+    // Jimenez et al. 2016, "Practical Realtime Strategies for Accurate Indirect Occlusion"
+    vec3 a =  2.0404 * albedo - 0.3324;
+    vec3 b = -4.7951 * albedo + 0.6417;
+    vec3 c =  2.7552 * albedo + 0.6903;
+
+    return max(vec3(visibility), ((visibility * a + b) * visibility + c) * visibility);
+}
+
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
 vec3 EnvBRDFApprox(vec3 specularColor, float roughness, float NdotV)
 {
@@ -126,22 +146,30 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
-// https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
-vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, vec3 n)
-{
-    // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
-    return pow(textureCubeLod(SpecularEnvTex, n, 9.0).rgb, vec3(4.84, 4.84, 4.84));
-}
-
 #ifdef HAS_IBL
-vec3 DiffuseIrradiance(vec3 n)
-{
-    return pow(textureCubeLod(SpecularEnvTex, n, 9.0).rgb, vec3(4.84, 4.84, 4.84));
+// https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
+vec3 Irradiance_SphericalHarmonics(const vec3 n) {
+    return max(
+        iblSH[0]
+        + iblSH[1] * (n.y)
+        + iblSH[2] * (n.z)
+        + iblSH[3] * (n.x)
+        + iblSH[4] * (n.y * n.x)
+        + iblSH[5] * (n.y * n.z)
+        + iblSH[6] * (3.0 * n.z * n.z - 1.0)
+        + iblSH[7] * (n.z * n.x)
+        + iblSH[8] * (n.x * n.x - n.y * n.y)
+        , 0.0);
 }
 
-vec3 GetIblSpeculaColor(vec3 reflection, float perceptualRoughness)
+vec3 DiffuseIrradiance(const vec3 n)
 {
-    return pow(textureCubeLod(SpecularEnvTex, reflection, perceptualRoughness * 9.0).rgb, vec3(4.84, 4.84, 4.84));
+    return textureCube(SpecularEnvTex, n).rgb;
+}
+
+vec3 GetIblSpecularColor(const vec3 n)
+{
+    return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, n).rgb));
 }
 #endif // HAS_IBL
 
@@ -179,10 +207,13 @@ vec3 EvaluateIBL(PBRInfo material)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     vec3 brdf = EnvBRDFApprox(material.specularColor, material.perceptualRoughness, material.NdotV);
+    const float ssao = 1.0;
+    float diffuseAO = min(material.occlusion, ssao);
+    float specularAO = computeSpecularAO(material.NdotV, diffuseAO, material.perceptualRoughness);
 
 #ifdef HAS_IBL
-    vec3 diffuseLight = DiffuseIrradiance(material.reflection);
-    vec3 specularLight = GetIblSpeculaColor(material.reflection, material.perceptualRoughness);
+    vec3 diffuseLight = Irradiance_SphericalHarmonics(material.reflection);
+    vec3 specularLight = GetIblSpecularColor(material.reflection);
 #else
     const vec3 diffuseLight = vec3(1.0, 1.0, 1.0);
     vec3 specularLight = diffuseLight;
@@ -190,7 +221,8 @@ vec3 EvaluateIBL(PBRInfo material)
 
     vec3 diffuse = diffuseLight * material.diffuseColor;
     vec3 specular = specularLight * (material.specularColor * brdf.x + brdf.y);
-    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuse + specular);
+    if (diffuseAO == 1.0) return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuse + specular);
+    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuse * gtaoMultiBounce(diffuseAO, material.diffuseColor) + specular * gtaoMultiBounce(specularAO, vec3(F0, F0, F0)));
 }
 
 vec3 SurfaceShading(Light light, PBRInfo material)
@@ -266,7 +298,7 @@ vec3 EvaluateDirectionalLight(PBRInfo material, highp vec3 v, highp vec3 n, high
     light.NdotH = dot(n, h);
     light.NdotL = NdotL;
     light.VdotH = dot(v, h);
-    vec3 color = SurfaceShading(light, material) * NdotL * ComputeMicroShadowing(NdotL, material.occlusion);
+    vec3 color = SurfaceShading(light, material) * ComputeMicroShadowing(NdotL, material.occlusion) * NdotL;
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
@@ -377,7 +409,7 @@ vec2 GetParallaxCoord(highp vec2 uv0, highp vec3 v)
 {
     vec2 uv = uv0 * (1.0 + TexScale);
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
-    uv = uv - (vec2(v.x, -v.y) * OffsetScale * texture2D(NormalTex, uv).a);
+    uv = uv - (vec2(v.x, -v.y) * (OffsetScale + 0.01) * texture2D(NormalTex, uv).a);
 #endif
     return uv;
 }

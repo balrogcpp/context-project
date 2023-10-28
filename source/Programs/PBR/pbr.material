@@ -30,6 +30,8 @@ abstract material PBR
 
     technique
     {
+        shadow_caster_material PSSM/shadow_caster
+
         pass
         {
             diffuse 1 1 1
@@ -63,11 +65,6 @@ abstract material PBR
                 content_type shadow
                 sampler_ref ShadowTex
             }
-            texture_unit IBL
-            {
-                texture $IBL cubic
-                sampler_ref CubeTex
-            }
 
             vertex_program_ref PBR_vs {}
 
@@ -78,64 +75,44 @@ abstract material PBR
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
                 param_named ShadowTex0     int 4
+            }
+        }
+    }
+}
+
+abstract material IBL : PBR
+{
+    technique
+    {
+        pass
+        {
+            texture_unit IBL
+            {
+                content_type compositor CubeMap cube
+                //texture $IBL cubic
+                sampler_ref CubeTex
+            }
+
+            vertex_program_ref IBL_vs {}
+
+            fragment_program_ref IBL_fs
+            {
                 param_named SpecularEnvTex int 5
             }
         }
     }
 }
 
-abstract material PG
+abstract material PG : PBR
 {
-    transparency_casts_shadows on
-    receive_shadows on
-
-    set $Albedo white.dds
-    set $Normal normal.dds
-    set $ORM yellow.dds
-
     technique
     {
         shadow_caster_material PSSM/shadow_caster_alpha
 
         pass
         {
-            diffuse 1 1 1
-            specular 1 1 1 1 1
-            ambient 1 1 1
-            emissive 0 0 0
-            alpha_rejection greater_equal 127
-
-            texture_unit Albedo
-            {
-                texture $Albedo
-                sampler_ref PbrTex
-            }
-            texture_unit Normal
-            {
-                texture $Normal
-                sampler_ref PbrTex
-            }
-            texture_unit ORM
-            {
-                texture $ORM
-                sampler_ref PbrTex
-            }
-
-            texture_unit ShadowTex0
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-
             vertex_program_ref PG_vs {}
-
-            fragment_program_ref PG_fs 
-            {
-                param_named AlbedoTex      int 0
-                param_named NormalTex      int 1
-                param_named OrmTex         int 2
-                param_named ShadowTex0     int 3
-            }
+            fragment_program_ref PG_fs {}
         }
     }
 }
@@ -150,9 +127,7 @@ abstract material PG0 : PG
         pass
         {
             cull_hardware none
-
             vertex_program_ref PG0_vs {}
-
             fragment_program_ref PG0_fs {}
         }
     }
@@ -162,7 +137,6 @@ abstract material PG0 : PG
 abstract material TERRA
 {
     receive_shadows on
-
     set $Albedo white.dds
     set $Normal normal.dds
 
