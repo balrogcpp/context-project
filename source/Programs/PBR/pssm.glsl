@@ -9,7 +9,7 @@
 #define PSSM_SPLIT_COUNT 1
 #endif
 #ifndef PSSM_FILTER_RADIUS
-#define PSSM_FILTER_RADIUS 12
+#define PSSM_FILTER_RADIUS 4
 #define PSSM_FILTER_RADIUS0 1.0
 #define PSSM_FILTER_RADIUS1 0.3
 #define PSSM_FILTER_RADIUS2 0.2
@@ -74,7 +74,7 @@ float Penumbra(sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, float depth)
 
     for (int i = 0; i < PENUMBRA_FILTER_SIZE; ++i) {
         vec2 offsetUV = VogelDiskSample(i, PENUMBRA_FILTER_SIZE, phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
-        float sampleDepth = map_1(texture2D(shadowTex, uv + offsetUV).x, 0.1, 100.0);
+        float sampleDepth = texture2D(shadowTex, uv + offsetUV).x;
 
         float depthTest = clamp((depth - sampleDepth), 0.0, 1.0);
         avgBlockersDepth += depthTest * sampleDepth;
@@ -102,7 +102,7 @@ float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
 
         uv.xy += offset;
-        float depth = map_1(texture2D(shadowTex, uv.xy).x, 0.1, 100.0);
+        float depth = texture2D(shadowTex, uv.xy).x * 1000.0 + 1.0;
         shadow += fstep(depth, currentDepth);
     }
 

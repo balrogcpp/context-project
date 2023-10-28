@@ -253,9 +253,9 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
-      pssmSplitCount(1),
-      shadowFarDistance(400.0),
-      shadowTexSize(512) {
+      pssmSplitCount(2),
+      shadowFarDistance(100.0),
+      shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");
 #endif
@@ -508,20 +508,9 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 };
 
 void VideoManager::InitOgreSceneManager() {
-#ifdef DESKTOP
-  shadowTexSize = 2048;
-#else
-  shadowTexSize = 1024;
-#endif
-
   if (shadowEnabled) {
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
-    shadowFarDistance = 99;
-
-    // pssm stuff
     pssmSetup = make_shared<DPSMCameraSetup>();
-
-    // shadow tex
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowColour(Ogre::ColourValue::Black);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
@@ -538,8 +527,6 @@ void VideoManager::InitOgreSceneManager() {
     Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigList().at(0);
     ogreSceneManager->setShadowTextureConfig(0, texConfig);
     ogreSceneManager->setShadowTextureConfig(1, texConfig);
-    texConfig.height /= 2;
-    texConfig.width /= 2;
     ogreSceneManager->setShadowTextureConfig(2, texConfig);
     ogreSceneManager->setShadowTextureConfig(3, texConfig);
 

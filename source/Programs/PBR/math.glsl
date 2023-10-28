@@ -24,16 +24,6 @@
 #define F0 0.045
 #endif
 
-float map_0(float x, float v0, float v1)
-{
-    return (x - v0) / (v1 - v0);
-}
-
-float map_1(float x, float v0, float v1)
-{
-    return x * (v1 - v0) + v0;
-}
-
 // https://twitter.com/SebAaltonen/status/878250919879639040
 float fstep(float x, float y)
 {

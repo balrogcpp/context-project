@@ -1,4 +1,4 @@
-// created by Andrey Vasiliev
+//// created by Andrey Vasiliev
 
 #include "header.glsl"
 
@@ -15,5 +15,5 @@ void main()
     if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) discard;
 #endif
 
-    FragColor.r = map_0(gl_FragCoord.z, 0.1, 100.0);
+    FragColor.r = (gl_FragCoord.z - 1.0) / 1000.0;
 }

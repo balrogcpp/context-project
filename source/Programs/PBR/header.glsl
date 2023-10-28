@@ -14,7 +14,7 @@
 #define MAX_MRT_TEXTURES 5
 #endif
 #ifndef PSSM_SPLIT_COUNT
-#define PSSM_SPLIT_COUNT 1
+#define PSSM_SPLIT_COUNT 2
 #endif
 #ifdef HAS_MRT
 #define MRT_COLOR 0
