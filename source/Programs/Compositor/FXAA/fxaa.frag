@@ -1,15 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef FXAA_REDUCE_MIN
-#define FXAA_REDUCE_MIN   (1.0/ 128.0)
-#endif
-#ifndef FXAA_REDUCE_MUL
-#define FXAA_REDUCE_MUL   (1.0 / 8.0)
-#endif
-#ifndef FXAA_SPAN_MAX
-#define FXAA_SPAN_MAX     8.0
-#endif
-
 #include "header.glsl"
 
 uniform sampler2D RT;
@@ -53,7 +43,7 @@ FXAA_SUBPIX_CAP - Insures fine detail is not completely removed.
 */
 
 #ifndef FXAA_PRESET
-    #define FXAA_PRESET 4
+    #define FXAA_PRESET 5
 #endif
 #if (FXAA_PRESET == 3)
     #define FXAA_EDGE_THRESHOLD      (1.0/8.0)
@@ -237,9 +227,13 @@ vec3 FxaaPixelShader(sampler2D tex, vec2 pos, vec2 rcpFrame)
     return FxaaLerp3(rgbL, rgbF, blendL); 
 }
 
+#include "tonemap.glsl"
+
 in vec2 vUV0;
 void main()
 {
     vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));
-    FragColor.rgb = SafeHDR(FxaaPixelShader(RT, vUV0, texelSize));
+    vec3 color = FxaaPixelShader(RT, vUV0, texelSize);
+    color = unreal(expose(color, 2.5));
+    FragColor.rgb = SafeHDR(color);
 }

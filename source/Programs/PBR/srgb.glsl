@@ -22,8 +22,7 @@ vec3 SRGBtoLINEAR(vec3 srgb)
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
     return srgb * srgb;
 #else
-    vec3 bLess = step(vec3(0.04045, 0.04045, 0.04045), srgb);
-    return mix(srgb / 12.92, pow(srgb + 0.055/1.055, vec3(2.4, 2.4, 2.4)), bLess);
+    return vec3(fromSRGB(srgb.x), fromSRGB(srgb.y), fromSRGB(srgb.z));
 #endif
 }
 

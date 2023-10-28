@@ -16,14 +16,17 @@ uniform sampler2D velocityTex;
 uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
+#include "tonemap.glsl"
 
 in vec2 vUV0;
 in vec4 offset;
 void main()
 {
 #if SMAA_REPROJECTION
-	FragColor = SafeHDR(SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex, velocityTex));
+	vec3 color = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex, velocityTex).rgb;
 #else
-	FragColor = SafeHDR(SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex));
+	vec3 color = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex).rgb;
 #endif
+	color = unreal(expose(color, 2.5));
+	FragColor.rgb = SafeHDR(color);
 }

@@ -81,18 +81,15 @@ void CompositorManager::OnSetUp() {
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
-    AddCubeCamera();
-    InitMRT(true);
-//    AddCompositor("RTT", true);
-    AddCompositor("SSAO", false);
-    AddCompositor("SSR", false);
-    AddCompositor("FXAA", false);
-    AddCompositor("Blur", false);
-//    AddCompositor("Glow", true);
-//    AddCompositor("HDR", true);
-    AddCompositor("Tonemap", true);
-    AddCompositor("SMAA", false);
-    AddCompositor("Paused", false);
+  AddCubeCamera();
+  InitMRT(true);
+  AddCompositor("SSAO", false);
+  AddCompositor("SSR", false);
+  //    AddCompositor("HDR", true);
+  AddCompositor("FXAA", true);
+  //    AddCompositor("SMAA", true);
+  AddCompositor("Blur", false);
+  AddCompositor("Paused", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);

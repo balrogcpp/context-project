@@ -324,28 +324,16 @@ void OverlayManager::OnUpdate(float time) {
   }
 
   static bool compositorFlags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-  if (ImGui::Checkbox("Glow", &compositorFlags[0])) {
-    GetComponent<CompositorManager>().EnableCompositor("Glow", compositorFlags[0]);
+  if (ImGui::Checkbox("Blur", &compositorFlags[0])) {
+    GetComponent<CompositorManager>().EnableCompositor("Blur", compositorFlags[0]);
   }
 
-  if (ImGui::Checkbox("Blur", &compositorFlags[1])) {
-    GetComponent<CompositorManager>().EnableCompositor("Blur", compositorFlags[1]);
+  if (ImGui::Checkbox("SSAO", &compositorFlags[1])) {
+    GetComponent<CompositorManager>().EnableCompositor("SSAO", compositorFlags[1]);
   }
 
-  if (ImGui::Checkbox("SSAO", &compositorFlags[2])) {
-    GetComponent<CompositorManager>().EnableCompositor("SSAO", compositorFlags[2]);
-  }
-
-  if (ImGui::Checkbox("FXAA", &compositorFlags[3])) {
-    GetComponent<CompositorManager>().EnableCompositor("FXAA", compositorFlags[3]);
-  }
-
-  if (ImGui::Checkbox("SMAA", &compositorFlags[4])) {
-    GetComponent<CompositorManager>().EnableCompositor("SMAA", compositorFlags[4]);
-  }
-
-  if (ImGui::Checkbox("SSR", &compositorFlags[5])) {
-    GetComponent<CompositorManager>().EnableCompositor("SSR", compositorFlags[5]);
+  if (ImGui::Checkbox("SSR", &compositorFlags[2])) {
+    GetComponent<CompositorManager>().EnableCompositor("SSR", compositorFlags[2]);
   }
 
   ImGui::EndChild();
