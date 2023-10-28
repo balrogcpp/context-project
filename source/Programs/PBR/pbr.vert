@@ -15,7 +15,7 @@ uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
-uniform highp vec3 CameraPosition;
+//uniform highp vec3 CameraPosition;
 uniform highp float FadeRange;
 #endif // PAGED_GEOMETRY
 #if MAX_SHADOW_TEXTURES > 0
@@ -49,7 +49,7 @@ in highp vec4 uv2;
 
 out highp vec3 vWorldPosition;
 out highp mat3 vTBN;
-out vec2 vUV0;
+out highp vec2 vUV0;
 out vec4 vColor;
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;
@@ -66,10 +66,10 @@ void main()
 
 #ifndef VERTEX_COMPRESSION
     highp vec4 position = vec4(vertex, 1.0);
-    vec2 uv = uv0;
+    highp vec2 uv = uv0;
 #else
     highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0, 1.0);
-    vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
+    highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
 #ifdef HAS_UV

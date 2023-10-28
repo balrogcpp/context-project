@@ -15,5 +15,5 @@ void main()
     if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) discard;
 #endif
 
-    FragColor.r = (gl_FragCoord.z - 1.0) / 1000.0;
+    FragColor.r = (gl_FragCoord.z - 1.0) / 64.0;
 }

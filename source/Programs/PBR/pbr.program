@@ -1,16 +1,7 @@
 // created by Andrey Vasiliev
 
-//----------------------------------------------------------------------------------------------------------------------
-// PBR
-//----------------------------------------------------------------------------------------------------------------------
-shared_params PBR_Shared_vert
-{
-}
-
-shared_params PSSM_Shared_frag
-{
-}
-
+shared_params PBR_Shared_vert {}
+shared_params PSSM_Shared_frag {}
 shared_params IBL_Shared_frag
 {
     shared_param_named iblSH float3 [9] 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -26,12 +17,11 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
         shared_params_ref PBR_Shared_vert
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
+        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 1
         param_named_auto LightCount light_count
     }
 }
 
-vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
 vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 
 abstract fragment_program PBR_I_fs glsl glsles hlsl
@@ -46,10 +36,10 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto LightPositionArray light_position_array 8
         param_named_auto LightDirectionArray light_direction_array 8
         param_named_auto LightDiffuseScaledColourArray light_diffuse_colour_power_scaled_array 8
-        param_named_auto LightAttenuationArray light_attenuation_array 4
-        param_named_auto LightSpotParamsArray spotlight_params_array 4
-        param_named_auto LightCastsShadowsArray light_casts_shadows_array 4
-        //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 4
+        param_named_auto LightAttenuationArray light_attenuation_array 1
+        param_named_auto LightSpotParamsArray spotlight_params_array 1
+        param_named_auto LightCastsShadowsArray light_casts_shadows_array 1
+        //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 1
         param_named_auto LightCount light_count
         param_named_auto AmbientLightColour ambient_light_colour
         param_named_auto ShadowColour shadow_colour
@@ -68,18 +58,8 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
     }
 }
 
-abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
-{
-    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_IBL
-}
-
 fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
-fragment_program IBL_fs glsl glsles hlsl : IBL_I_fs {}
 
-
-//----------------------------------------------------------------------------------------------------------------------
-// PAGED_GEOMETRY
-//----------------------------------------------------------------------------------------------------------------------
 vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 {
     preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY
@@ -111,9 +91,6 @@ fragment_program PG0_fs glsl glsles hlsl : PG_fs
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
-// TERRA
-//----------------------------------------------------------------------------------------------------------------------
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 {
     preprocessor_defines HAS_UV,VERTEX_COMPRESSION

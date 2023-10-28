@@ -127,21 +127,6 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
 }
 
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
-vec3 Irradiance_SphericalHarmonics(vec3 n)
-{
-    return max(
-    iblSH[0]
-    + iblSH[1] * (n.y)
-    + iblSH[2] * (n.z)
-    + iblSH[3] * (n.x)
-    + iblSH[4] * (n.y * n.x)
-    + iblSH[5] * (n.y * n.z)
-    + iblSH[6] * (3.0 * n.z * n.z - 1.0)
-    + iblSH[7] * (n.z * n.x)
-    + iblSH[8] * (n.x * n.x - n.y * n.y)
-    , 0.0);
-}
-
 vec3 Irradiance_RoughnessOne(samplerCube SpecularEnvTex, vec3 n)
 {
     // note: lod used is always integer, hopefully the hardware skips tri-linear filtering
@@ -199,7 +184,7 @@ vec3 EvaluateIBL(PBRInfo material)
     vec3 diffuseLight = DiffuseIrradiance(material.reflection);
     vec3 specularLight = GetIblSpeculaColor(material.reflection, material.perceptualRoughness);
 #else
-    vec3 diffuseLight = Irradiance_SphericalHarmonics(material.reflection);
+    const vec3 diffuseLight = vec3(1.0, 1.0, 1.0);
     vec3 specularLight = diffuseLight;
 #endif
 
@@ -257,6 +242,23 @@ vec3 EvaluateDirectionalLight(PBRInfo material, highp vec3 v, highp vec3 n, high
     highp vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
     highp float NdotL = saturate(dot(n, l));
     if (NdotL <= 0.001) return vec3(0.0, 0.0, 0.0);
+    float attenuation = 1.0;
+
+#ifdef TERRA_LIGHTMAP
+    attenuation = saturate(FetchTerraShadow(TerraLightTex, material.uv) + ShadowColour.r);
+    if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
+#endif
+#if MAX_SHADOW_TEXTURES > 0
+    if (LightCastsShadowsArray[0] != 0.0) {
+#if PSSM_SPLIT_COUNT <= 1
+        attenuation = saturate(CalcShadow(lightSpacePosArray[0], 0) + ShadowColour.r);
+#elif PSSM_SPLIT_COUNT > 1
+        attenuation = saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
+#endif
+        if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
+    }
+#endif
+
     highp vec3 h = normalize(l + v); // Half vector between both l and v
 
     Light light;
@@ -265,21 +267,7 @@ vec3 EvaluateDirectionalLight(PBRInfo material, highp vec3 v, highp vec3 n, high
     light.NdotL = NdotL;
     light.VdotH = dot(v, h);
     vec3 color = SurfaceShading(light, material) * NdotL * ComputeMicroShadowing(NdotL, material.occlusion);
-#ifdef TERRA_LIGHTMAP
-    color *= FetchTerraShadow(TerraLightTex, material.uv);
-#endif
-
-#if MAX_SHADOW_TEXTURES > 0
-    if (LightCastsShadowsArray[0] != 0.0) {
-#if PSSM_SPLIT_COUNT <= 1
-        color *= saturate(CalcShadow(lightSpacePosArray[0], 0) + ShadowColour.r);
-#elif PSSM_SPLIT_COUNT > 1
-        color *= saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
-#endif
-    }
-#endif
-
-    return LightDiffuseScaledColourArray[0].xyz * color;
+    return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
 vec3 EvaluateLocalLights(PBRInfo material, highp vec3 v, highp vec3 n, vec3 worldPosition, highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
@@ -300,19 +288,20 @@ vec3 EvaluateLocalLights(PBRInfo material, highp vec3 v, highp vec3 n, vec3 worl
 
         Light light;
         highp vec3 h = normalize(l + v); // Half vector between both l and v
-        light.LdotH = dot(l, h);
-        light.NdotH = dot(n, h);
+        light.LdotH = saturate(dot(l, h));
+        light.NdotH = saturate(dot(n, h));
         light.NdotL = NdotL;
-        light.VdotH = dot(v, h);
-        vec3 c = SurfaceShading(light, material) * NdotL * attenuation * ComputeMicroShadowing(NdotL, material.occlusion);
+        light.VdotH = saturate(dot(v, h));
+        vec3 c = SurfaceShading(light, material) * NdotL * ComputeMicroShadowing(NdotL, material.occlusion);
 
-#if MAX_SHADOW_TEXTURES > 0
+#if MAX_SHADOW_TEXTURES > 1
         if (LightCastsShadowsArray[0] != 0.0) {
-            c *= saturate(CalcShadow(lightSpacePosArray[i], i) + ShadowColour.r);
+            attenuation *= saturate(CalcShadow(lightSpacePosArray[i], i) + ShadowColour.r);
+            if (attenuation == 0.0) continue;
         }
 #endif
 
-        color += LightDiffuseScaledColourArray[0].xyz * c;
+        color += LightDiffuseScaledColourArray[0].xyz * c * attenuation;
     }
 
     return color;
@@ -375,7 +364,6 @@ vec3 GetORM(vec2 uv, float spec)
     vec3 orm = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
     vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
-    // vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - 0.25 * pow(spec, 0.2)), 0.0);
 #endif
 #ifdef HAS_ORM
     if (textureSize(OrmTex, 0).x > 1) orm *= texture2D(OrmTex, uv).rgb;
@@ -396,7 +384,7 @@ vec2 GetParallaxCoord(highp vec2 uv0, highp vec3 v)
 
 in highp vec3 vWorldPosition;
 in highp mat3 vTBN;
-in vec2 vUV0;
+in highp vec2 vUV0;
 in vec4 vColor;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
@@ -442,8 +430,6 @@ void main()
     color += EvaluateIBL(material);
     color += EvaluateDirectionalLight(material, v, n, vLightSpacePosArray);
     color += EvaluateLocalLights(material, v, n, vWorldPosition, vLightSpacePosArray);
-
-    // Apply optional PBR terms for additional (optional) shading
     color += emission;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 

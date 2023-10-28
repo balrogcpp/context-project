@@ -1,15 +1,21 @@
 // created by Andrey Vasiliev
 
-//----------------------------------------------------------------------------------------------------------------------
-// PBR
-//----------------------------------------------------------------------------------------------------------------------
 sampler ShadowTex
 {
-    filtering none
+    filtering bilinear
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
-
+sampler PbrTex
+{
+    filtering anisotropic
+    max_anisotropy 1
+}
+sampler CubeTex
+{
+    filtering bilinear
+    tex_address_mode clamp
+}
 
 abstract material PBR
 {
@@ -35,61 +41,44 @@ abstract material PBR
             texture_unit Albedo
             {
                 texture $Albedo
+                sampler_ref PbrTex
             }
             texture_unit Normal
             {
                 texture $Normal
+                sampler_ref PbrTex
             }
             texture_unit ORM
             {
                 texture $ORM
+                sampler_ref PbrTex
             }
             texture_unit Emissive
             {
                 texture $Emissive
+                sampler_ref PbrTex
             }
-            texture_unit IBL
-            {
-                texture $IBL cubic
-                //content_type compositor CubeMap cube
-                filtering bilinear
-                tex_address_mode clamp
-            }
-
             texture_unit ShadowTex0
             {
                 content_type shadow
                 sampler_ref ShadowTex
             }
-            texture_unit ShadowTex1
+            texture_unit IBL
             {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowTex2
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowTex3
-            {
-                content_type shadow
-                sampler_ref ShadowTex
+                texture $IBL cubic
+                sampler_ref CubeTex
             }
 
-            vertex_program_ref IBL_vs {}
+            vertex_program_ref PBR_vs {}
 
-            fragment_program_ref IBL_fs
+            fragment_program_ref PBR_fs
             {
                 param_named AlbedoTex      int 0
                 param_named NormalTex      int 1
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
-                param_named SpecularEnvTex int 4
-                param_named ShadowTex0 int 5
-                param_named ShadowTex1 int 6
-                param_named ShadowTex2 int 7
-                param_named ShadowTex3 int 8
+                param_named ShadowTex0     int 4
+                param_named SpecularEnvTex int 5
             }
         }
     }
@@ -119,32 +108,20 @@ abstract material PG
             texture_unit Albedo
             {
                 texture $Albedo
+                sampler_ref PbrTex
             }
             texture_unit Normal
             {
                 texture $Normal
+                sampler_ref PbrTex
             }
             texture_unit ORM
             {
                 texture $ORM
+                sampler_ref PbrTex
             }
 
             texture_unit ShadowTex0
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowTex1
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowTex2
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowTex3
             {
                 content_type shadow
                 sampler_ref ShadowTex
@@ -157,10 +134,7 @@ abstract material PG
                 param_named AlbedoTex      int 0
                 param_named NormalTex      int 1
                 param_named OrmTex         int 2
-                param_named ShadowTex0 int 3
-                param_named ShadowTex1 int 4
-                param_named ShadowTex2 int 5
-                param_named ShadowTex3 int 6
+                param_named ShadowTex0     int 3
             }
         }
     }
@@ -204,10 +178,12 @@ abstract material TERRA
             texture_unit Albedo
             {
                 texture $Albedo
+                sampler_ref PbrTex
             }
             texture_unit Normal
             {
                 texture $Normal
+                sampler_ref PbrTex
             }
             texture_unit TerraNormal
             {
@@ -227,21 +203,6 @@ abstract material TERRA
                 content_type shadow
                 sampler_ref ShadowTex
             }
-            texture_unit ShadowTex1
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowTex2
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowTex3
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
 
             vertex_program_ref TERRA_vs {}
 
@@ -251,20 +212,8 @@ abstract material TERRA
                 param_named NormalTex      int 1
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
-                param_named ShadowTex0 int 4
-                param_named ShadowTex1 int 5
-                param_named ShadowTex2 int 6
-                param_named ShadowTex3 int 7
+                param_named ShadowTex0     int 4
             }
         }
     }
 }
-
-
-//----------------------------------------------------------------------------------------------------------------------
-// IMPL for abstract materials
-//----------------------------------------------------------------------------------------------------------------------
-material ImplPBR : PBR {}
-material ImplPG : PG {}
-material ImplPG0 : PG0 {}
-material ImplTERRA : TERRA {}

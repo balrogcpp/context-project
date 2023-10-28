@@ -253,7 +253,8 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
-      pssmSplitCount(2),
+      shadowTexCount(1),
+      pssmSplitCount(1),
       shadowFarDistance(100.0),
       shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
@@ -518,17 +519,14 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureSelfShadow(true);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 2);
+    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
-    ogreSceneManager->setShadowTextureCount(4);
+    ogreSceneManager->setShadowTextureCount(shadowTexCount);
     Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigList().at(0);
-    ogreSceneManager->setShadowTextureConfig(0, texConfig);
-    ogreSceneManager->setShadowTextureConfig(1, texConfig);
-    ogreSceneManager->setShadowTextureConfig(2, texConfig);
-    ogreSceneManager->setShadowTextureConfig(3, texConfig);
+    for (int i = 0; i < shadowTexCount; i++ ) ogreSceneManager->setShadowTextureConfig(i, texConfig);
 
     // pssm stuf
     pssmSetup->setSplitPadding(0.5);

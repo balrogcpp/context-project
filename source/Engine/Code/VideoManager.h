@@ -74,6 +74,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   unsigned short shadowTexSize;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<Ogre::Real> pssmSplitPointList;
+  int shadowTexCount;
   int pssmSplitCount;
 
   Ogre::Root* ogreRoot = nullptr;
