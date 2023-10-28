@@ -2,7 +2,21 @@
 
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
-#include "math.glsl"
+
+#if MAX_SHADOW_TEXTURES > 0
+uniform mediump sampler2D ShadowTex0;
+uniform mediump sampler2D ShadowTex1;
+uniform mediump sampler2D ShadowTex2;
+uniform mediump sampler2D ShadowTex3;
+uniform mediump sampler2D ShadowTex4;
+uniform mediump sampler2D ShadowTex5;
+uniform mediump sampler2D ShadowTex6;
+uniform mediump sampler2D ShadowTex7;
+#endif
+uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
+uniform float LightCastsShadowsArray[MAX_LIGHTS];
+uniform highp vec4 PssmSplitPoints;
+uniform vec4 ShadowColour;
 
 #if MAX_SHADOW_TEXTURES > 0
 #ifndef PSSM_SPLIT_COUNT
@@ -50,7 +64,6 @@ float FetchTerraShadow(sampler2D shadowTex, vec2 uv)
 
     for (int i = 0; i < 4; ++i) {
       vec2 offset = VogelDiskSample(i, 4, phi) * 2.0 * tsize;
-
       uv += offset;
       shadow += texture2D(shadowTex, uv).x;
     }
@@ -67,15 +80,14 @@ float AvgBlockersDepthToPenumbra(float depth, float avgBlockersDepth)
     return clamp(80.0 * penumbra * penumbra, 0.0, 1.0);
 }
 
-float Penumbra(sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, float depth)
+float Penumbra(mediump sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, float depth)
 {
     float avgBlockersDepth = 0.0;
     float blockersCount = 0.0;
 
     for (int i = 0; i < PENUMBRA_FILTER_SIZE; ++i) {
         vec2 offsetUV = VogelDiskSample(i, PENUMBRA_FILTER_SIZE, phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
-        float sampleDepth = texture2D(shadowTex, uv + offsetUV).x;
-
+        float sampleDepth = texture2D(shadowTex, uv + offsetUV).x * 1000.0 + 1.0;
         float depthTest = clamp((depth - sampleDepth), 0.0, 1.0);
         avgBlockersDepth += depthTest * sampleDepth;
         blockersCount += depthTest;
@@ -84,13 +96,13 @@ float Penumbra(sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, float depth)
     return AvgBlockersDepthToPenumbra(depth, avgBlockersDepth / blockersCount);
 }
 
-float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
+float CalcDepthShadow(mediump sampler2D shadowTex, highp vec4 uv)
 {
     uv /= uv.w;
     uv.z = uv.z * 0.5 + 0.5;
     vec2 tsize = 1.0 / vec2(textureSize(shadowTex, 0));
     float shadow = 0.0;
-    float currentDepth = uv.z - HALF_EPSILON;
+    highp float currentDepth = uv.z - 5.0 * HALF_EPSILON;
     float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
     float penumbra = Penumbra(shadowTex, uv.xy, tsize, currentDepth);
@@ -100,9 +112,8 @@ float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
 
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
-
         uv.xy += offset;
-        float depth = texture2D(shadowTex, uv.xy).x * 1000.0 + 1.0;
+        highp float depth = texture2D(shadowTex, uv.xy).x * 1000.0 + 1.0;
         shadow += fstep(depth, currentDepth);
     }
 
@@ -112,8 +123,8 @@ float CalcDepthShadow(sampler2D shadowTex, vec4 uv)
 }
 
 #if PSSM_SPLIT_COUNT > 0
-float CalcPSSMShadow(vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
-    float depth = gl_FragCoord.z / gl_FragCoord.w;
+float CalcPSSMShadow(highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
+    highp float depth = gl_FragCoord.z / gl_FragCoord.w;
 
     if (depth <= PssmSplitPoints.x) return CalcDepthShadow(ShadowTex0, lightSpacePosArray[0]);
 #if PSSM_SPLIT_COUNT > 1
@@ -130,7 +141,7 @@ float CalcPSSMShadow(vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
 #endif
 
 
-float CalcShadow(vec4 lightSpacePos, int index)
+float CalcShadow(highp vec4 lightSpacePos, int index)
 {
 #if MAX_SHADOW_TEXTURES > 0
     if (index == 0) return CalcDepthShadow(ShadowTex0, lightSpacePos);

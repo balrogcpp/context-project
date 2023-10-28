@@ -26,16 +26,6 @@ uniform sampler2D TerraNormalTex;
 #ifdef TERRA_LIGHTMAP
 uniform sampler2D TerraLightTex;
 #endif
-#if MAX_SHADOW_TEXTURES > 0
-uniform sampler2D ShadowTex0;
-uniform sampler2D ShadowTex1;
-uniform sampler2D ShadowTex2;
-uniform sampler2D ShadowTex3;
-uniform sampler2D ShadowTex4;
-uniform sampler2D ShadowTex5;
-uniform sampler2D ShadowTex6;
-uniform sampler2D ShadowTex7;
-#endif
 
 uniform vec3 iblSH[9];
 uniform highp mat4 ViewMatrix;
@@ -61,11 +51,6 @@ uniform float TexScale;
 uniform float OffsetScale;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
-uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
-uniform float LightCastsShadowsArray[MAX_LIGHTS];
-uniform vec4 PssmSplitPoints;
-uniform vec4 ShadowColour;
-
 #include "pssm.glsl"
 #endif
 
