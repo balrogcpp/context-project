@@ -56,7 +56,7 @@ void FFP_TransformTexCoord(in mat4 m, in vec3 v, out vec3 vOut)
 }
 
 //-----------------------------------------------------------------------------
-void FFP_GenerateTexCoord_EnvTex_Normal(in mat3 mWorldIT,
+void FFP_GenerateTexCoord_EnvMap_Normal(in mat3 mWorldIT,
 						   in vec3 vNormal,
 						   out vec3 vOut)
 {
@@ -64,7 +64,7 @@ void FFP_GenerateTexCoord_EnvTex_Normal(in mat3 mWorldIT,
 }
 
 //-----------------------------------------------------------------------------
-void FFP_GenerateTexCoord_EnvTex_Sphere(in 	mat4 mWorldView,
+void FFP_GenerateTexCoord_EnvMap_Sphere(in 	mat4 mWorldView,
 										in 	mat3 mWorldIT,
 										in 	vec4 vPos,
 										in 	vec3 vNormal,
@@ -79,7 +79,7 @@ void FFP_GenerateTexCoord_EnvTex_Sphere(in 	mat4 mWorldView,
 }
 
 //-----------------------------------------------------------------------------
-void FFP_GenerateTexCoord_EnvTex_Reflect(in mat4 mWorld,
+void FFP_GenerateTexCoord_EnvMap_Reflect(in mat4 mWorld, 
 							in mat4 mWorldIT, 
 						   in vec3 vCamPos,
 						   in vec3 vNormal,
