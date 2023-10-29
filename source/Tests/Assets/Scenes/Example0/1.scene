@@ -2,10 +2,17 @@
 <scene author="balrog" formatVersion="1.1">
     <nodes>
         <node name="Sun">
-			<position x="40.659888" y="-20.704975" z="-30.950829"/>
-            <direction x="40.659888" y="-20.704975" z="-30.950829"/>
+            <direction x="40.659888" y="-60.704975" z="-30.950829"/>
             <light name="Sun" powerScale="2" type="directional" castShadows="true"/>
         </node>
+<!--        <node name="Light0">-->
+<!--            <position x="0" y="5" z="06"/>-->
+<!--            <direction x="0" y="-1" z="0"/>-->
+<!--            <light name="Spot" powerScale="1.0" type="spot" castShadows="true">-->
+<!--                <lightRange falloff="1.0" inner="0.0" outer="1" />-->
+<!--                <lightAttenuation constant="0.0" linear="0.040000" quadratic="0.0" range="30" />-->
+<!--            </light>-->
+<!--        </node>-->
         <node name="Camera">
             <position x="0" y="2" z="0"/>
             <direction x="0.0" y="0.0" z="-1"/>
@@ -25,23 +32,36 @@
                 </userData>
             </entity>
         </node>
-<!--        <node name="Plane">-->
-<!--            <plane name="Plane0" material="Plane" width="100" height="100" distance="0.0" castsShadows="false"/>-->
-<!--        </node>-->
+        <node name="Cube.mesh">
+            <position x="0" y="10.0" z="5.0"/>
+            <scale x="5" y="5" z="5"/>
+            <entity meshFile="Cube.mesh" name="Cube">
+                <userData>
+                    <property data="0.0" name="mass" type="float"/>
+                    <property data="3" name="proxy" type="int"/>
+                </userData>
+            </entity>
+        </node>
+        <node name="Plane1">
+            <plane name="Plane1" material="Plane" width="200" height="200" distance="-1.0" castShadows="true"/>
+        </node>
+        <node name="Plane">
+            <plane name="Plane" material="Plane" width="200" height="200" distance="0.0" castShadows="true"/>
+        </node>
         <node name="Plane2">
-            <plane name="Plane2" material="Ocean" width="500" height="500" distance="-3.0"/>
+            <plane name="Plane2" material="Ocean" width="200" height="200" distance="1.0" castShadows="false" flag="0xF00"/>
         </node>
     </nodes>
     <environment>
-        <colourAmbient r="60" g="60" b="60"/>
+        <colourAmbient r="20" g="20" b="20"/>
         <skyBox active="true" material="SkyBox" distance="300"/>
         <fog mode="exp" density="0.001">
             <colour r="155" g="171" b="187"/>
         </fog>
     </environment>
-    <terrainGroupLegacy>
-        <terrain x="0" y="0" file="terrain.cfg"/>
-    </terrainGroupLegacy>
+<!--    <terrainGroupLegacy>-->
+<!--        <terrain x="0" y="0" file="terrain.cfg"/>-->
+<!--    </terrainGroupLegacy>-->
 <!--    <terrainGroupLegacy>-->
 <!--        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" density="0.4" density_map="terrain2.png" trees="fir05_30.mesh"/>-->
 <!--    </terrainGroupLegacy>-->
