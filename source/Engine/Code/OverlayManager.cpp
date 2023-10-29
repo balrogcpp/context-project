@@ -145,7 +145,7 @@ void OverlayManager::OnUpdate(float time) {
   ImGui::PushFont(font);
   ImGui::BeginChild("ScrollingRegion1", ImVec2(ImGetWidth(), ImGetHeight()), false);
 
-  static bool flags[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  static bool flags[10] = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0};
   static int combos[10] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #ifdef MOBILE
@@ -177,20 +177,8 @@ void OverlayManager::OnUpdate(float time) {
     window.SetResizable(flags[1]);
   }
 
-  if (ImGui::Checkbox("Always on top", &flags[3])) {
-    window.SetAlwaysOnTop(flags[3]);
-  }
-
   if (ImGui::Checkbox("Hide border", &flags[4])) {
     window.SetBordered(!flags[4]);
-  }
-
-  if (ImGui::Checkbox("Grab mouse", &flags[5])) {
-    window.SetGrabMouse(flags[5]);
-  }
-
-  if (ImGui::Checkbox("Hide mouse", &flags[6])) {
-    window.SetMouseRelativeMode(flags[6]);
   }
 
   if (ImGui::Checkbox("Enable shadows", &flags[7])) {

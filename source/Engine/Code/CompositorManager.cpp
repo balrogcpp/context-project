@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "CompositorManager.h"
-#include <OgreCompositorLogic.h>
 
 using namespace std;
 
@@ -18,61 +17,34 @@ void CompositorManager::OnUpdate(float time) {
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
 
-class DeferredLogic final : public Ogre::CompositorLogic {
- public:
-  void compositorInstanceCreated(Ogre::CompositorInstance *newInstance) override { newInstance->addListener(GetComponentPtr<CompositorManager>()); }
+void CompositorManager::compositorInstanceCreated(Ogre::CompositorInstance *newInstance) { newInstance->addListener(this); }
 
-  void compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) override {
-    destroyedInstance->removeListener(GetComponentPtr<CompositorManager>());
+void CompositorManager::compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) { destroyedInstance->removeListener(this); }
+
+void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+  string name = evt.source->getName();
+  if (name.find("reflection") != string::npos) {
+    ogreCamera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
+    ogreCamera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
+  } else if (name.find("refraction") != string::npos) {
+    ogreCamera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, plane.d));
   }
-};
+}
 
-void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {}
-
-void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {}
-
-class ReflTexListener : public Ogre::RenderTargetListener {
- public:
-  ReflTexListener(Ogre::Camera *camera, Ogre::Plane plane) {
-    ogreCamera = camera;
-    ogrePlane = plane;
-  }
-
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-    ogreCamera->enableCustomNearClipPlane(ogrePlane);
-    ogreCamera->enableReflection(ogrePlane);
-  }
-
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+  string name = evt.source->getName();
+  if (name.find("reflection") != string::npos) {
     ogreCamera->disableCustomNearClipPlane();
     ogreCamera->disableReflection();
+  } else if (name.find("refraction") != string::npos) {
+    ogreCamera->disableCustomNearClipPlane();
   }
-
- private:
-  Ogre::Camera *ogreCamera = nullptr;
-  Ogre::Plane ogrePlane;
-};
-
-class RefrTexListener : public Ogre::RenderTargetListener {
- public:
-  RefrTexListener(Ogre::Camera *camera, Ogre::Plane plane) {
-    ogreCamera = camera;
-    ogrePlane = plane;
-  }
-
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override { ogreCamera->enableCustomNearClipPlane(ogrePlane); }
-
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override { ogreCamera->disableCustomNearClipPlane(); }
-
- private:
-  Ogre::Camera *ogreCamera = nullptr;
-  Ogre::Plane ogrePlane;
-};
+}
 
 void CompositorManager::OnSetUp() {
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
-  compositorManager->registerCompositorLogic("DeferredLogic", new DeferredLogic());
+  compositorManager->registerCompositorLogic("DeferredLogic", this);
   ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
   ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   ASSERTION(ogreSceneManager, "[CompositorManager] ogreSceneManager not initialised");
@@ -85,9 +57,11 @@ void CompositorManager::OnSetUp() {
   InitMRT(true);
   AddCompositor("SSAO", false);
   AddCompositor("SSR", false);
-  //    AddCompositor("HDR", true);
+  AddCompositor("Glow", !RenderSystemIsGLES2());
+  AddCompositor("HDR", !RenderSystemIsGLES2());
   AddCompositor("FXAA", true);
-  //    AddCompositor("SMAA", true);
+  AddCompositor("SMAA", false);
+  AddCompositor("Tonemap", false);
   AddCompositor("Blur", false);
   AddCompositor("Paused", false);
 
@@ -108,28 +82,11 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
   ASSERTION(compositor, "[CompositorManager] Failed to add MRT compositor");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
-
-  if (name == BLOOM_COMPOSITOR) {
-    AddCompositor("GlowIt4", enable);
-    AddCompositor("GlowIt7", enable);
-  }
 }
 
 void CompositorManager::EnableCompositor(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
-
-  if (name == "SSAO" || name == "SSR") {
-    compositorManager->setCompositorEnabled(ogreViewport, "DepthHalved", enable);
-  } else if (name == "HDR") {
-    EnableCompositor("HDR", true);
-  }
-
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
-
-  if (name == BLOOM_COMPOSITOR) {
-    EnableCompositor("GlowIt4", enable);
-    EnableCompositor("GlowIt7", enable);
-  }
 }
 
 void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
@@ -140,9 +97,9 @@ void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
     ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
     compositorManager->setCompositorEnabled(ogreViewport, "Fresnel", true);
     auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-    rt1->addListener(new ReflTexListener(ogreCamera, Ogre::Plane(plane.normal, -plane.d)));
+    rt1->addListener(this);
     auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
-    rt2->addListener(new RefrTexListener(ogreCamera, Ogre::Plane(-plane.normal, plane.d)));
+    rt2->addListener(this);
   }
 }
 
@@ -244,8 +201,6 @@ void CompositorManager::InitMRT(bool enable) {
   ASSERTION(tech->getTextureDefinition("mrt"), "[CompositorManager] mrt texture failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
-
-  AddCompositor("DepthHalved", false);
 }
 
 void CompositorManager::CacheCompositorChain() {
@@ -386,29 +341,12 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 0) {         // 0 = mrt render
-  } else if (pass_id == 1) {  // 1 = Reconstructor
-    static bool isEven = false;
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setNamedConstant("IsEven", Ogre::Real(isEven = !isEven));
-    fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
-    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
-
-  } else if (pass_id == 10) {  // 10 = SSAO
-    static bool isEven = false;
+  if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
     fp->setNamedConstant("ClipDistance", ogreCamera->getFarClipDistance() - ogreCamera->getNearClipDistance());
-    fp->setNamedConstant("IsEven", Ogre::Real(isEven = !isEven));
 
-  } else if (pass_id == 11) {  // 11 = SSR
-    static bool isEven = false;
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("ClipDistance", ogreCamera->getFarClipDistance() - ogreCamera->getNearClipDistance());
-    fp->setNamedConstant("IsEven", Ogre::Real(isEven = !isEven));
-
-  } else if (pass_id == 14) {  // 14 = Motion Blur
+  } else if (pass_id == 30) {  // 14 = Motion Blur
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
@@ -427,11 +365,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     }
 
     fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, lightList.size());
-    fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(lightList.size()));
-
-  } else if (pass_id == 100) {  // paused
-
-  } else if (pass_id == 99) {  // end render
+    fp->setNamedConstant("LightCount", Ogre::int32(lightList.size()));
   }
 }
 

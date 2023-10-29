@@ -2,7 +2,7 @@
 
 sampler ShadowTex
 {
-    filtering bilinear
+    filtering none
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
@@ -26,6 +26,7 @@ abstract material PBR
     set $Normal normal.dds
     set $ORM yellow.dds
     set $Emissive black.dds
+    set $AO white.dds
     set $IBL specular.dds
 
     technique
@@ -35,7 +36,7 @@ abstract material PBR
         pass
         {
             diffuse 1 1 1
-            specular 1 1 1 1 1
+            specular 1 1 3 1 1
             ambient 1 1 1
             emissive 0 0 0
             alpha_rejection greater_equal 127
@@ -60,6 +61,12 @@ abstract material PBR
                 texture $Emissive
                 sampler_ref PbrTex
             }
+            texture_unit AO
+            {
+                //texture $AO
+                content_type compositor MRT ao
+                sampler_ref ShadowTex
+            }
             texture_unit ShadowTex0
             {
                 content_type shadow
@@ -74,7 +81,8 @@ abstract material PBR
                 param_named NormalTex      int 1
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
-                param_named ShadowTex0     int 4
+                param_named OcclusionTex   int 4
+                param_named ShadowTex0     int 5
             }
         }
     }
@@ -88,8 +96,8 @@ abstract material IBL : PBR
         {
             texture_unit IBL
             {
-                content_type compositor CubeMap cube
                 //texture $IBL cubic
+                content_type compositor CubeMap cube
                 sampler_ref CubeTex
             }
 
@@ -97,7 +105,7 @@ abstract material IBL : PBR
 
             fragment_program_ref IBL_fs
             {
-                param_named SpecularEnvTex int 5
+                param_named SpecularEnvTex int 6
             }
         }
     }
@@ -132,7 +140,6 @@ abstract material PG0 : PG
         }
     }
 }
-
 
 abstract material TERRA
 {
@@ -171,7 +178,6 @@ abstract material TERRA
                 filtering bilinear
                 tex_address_mode clamp
             }
-
             texture_unit ShadowTex0
             {
                 content_type shadow

@@ -4,18 +4,28 @@ import STD from std.compositor
 //----------------------------------------------------------------------------------------------------------------------
 // SSAO
 //----------------------------------------------------------------------------------------------------------------------
-compositor SSAO : STD
+compositor SSAO
 {
     technique
     {
-        texture_ref depth DepthHalved depth
-        texture ssao1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssao2 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssao  target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssaox target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssaoy target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        compositor_logic DeferredLogic
+        texture_ref mrt MRT mrt
+        texture_ref ssao MRT ao
+        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssaoOld target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssaox target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssaoy target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
 
-        target ssao1
+        target depth
+        {
+            pass render_quad
+            {
+                material Linear
+                input 0 mrt 1
+            }
+        }
+
+        target ssaoOld
         {
             pass render_quad
             {
@@ -27,51 +37,27 @@ compositor SSAO : STD
             }
         }
 
-        target ssao
-        {
-            pass render_quad
-            {
-                material ssaoRec
-                input 0 ssao1
-                input 1 ssao2
-            }
-        }
-
         target ssaox
         {
             pass render_quad
             {
-                material SSAOX
-                input 0 ssao
+                material FilterX
+                input 0 ssaoOld
             }
         }
 
-        target ssaoy
+        target ssao
         {
             pass render_quad
             {
-                material SSAOY
+                material FilterY
                 input 0 ssaox
-            }
-        }
-
-        target ssao2
-        {
-            pass render_quad
-            {
-                material Copy
-                input 0 ssao1
             }
         }
 
         target_output
         {
-            pass render_quad
-            {
-                material ssaoMod
-                input 0 rt
-                input 1 ssaoy
-            }
+            input previous
         }
     }
 }

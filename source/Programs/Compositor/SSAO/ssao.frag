@@ -2,7 +2,6 @@
 // based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
 
 #include "header.glsl"
-#include "mosaic.glsl"
 
 uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
@@ -66,13 +65,13 @@ void main()
     float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
     float pixelDepth = clampedPixelDepth * ClipDistance;
     vec3 viewPos = vRay * clampedPixelDepth;
-    vec3 randN = hash(gl_FragCoord.xyz) * pow5(1.0 - clampedPixelDepth);
+    vec3 randN = hash(vec3(gl_FragCoord.xyz)) * sq(1.0 - clampedPixelDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
     vec3 normal = texture2D(NormalTex, vUV0).xyz;
 
-    if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
+    if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal)) {
         FragColor.r = 1.0;
         return;
     }
@@ -102,6 +101,7 @@ void main()
 
     // normalise
     occlusion /= float(NUM_BASE_SAMPLES);
+    occlusion = sqrt(occlusion * occlusion * occlusion);
 
     // amplify and saturate if necessary
     FragColor.r = occlusion;

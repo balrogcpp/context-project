@@ -6,14 +6,20 @@ compositor Glow : STD
 {
     technique
     {
-        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt7 target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt8 target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        texture _rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture _rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture _rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture _rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture _rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+
 
         target rt1
         {
@@ -21,7 +27,6 @@ compositor Glow : STD
             {
                 material GlowStart
                 input 0 rt
-                //input 1 lum
             }
         }
 
@@ -70,234 +75,7 @@ compositor Glow : STD
             }
         }
 
-        target rt7
-        {
-            pass render_quad
-            {
-                material Downscale13
-                input 0 rt6
-            }
-        }
-
-        target rt8
-        {
-            pass render_quad
-            {
-                material Downscale13
-                input 0 rt7
-            }
-        }
-
-        target_output
-        {
-            input previous
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-abstract compositor GlowIt
-{
-    technique
-    {
-        texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture_ref rt1 Glow rt1
-        texture_ref rt2 Glow rt2
-        texture_ref rt3 Glow rt3
-        texture_ref rt4 Glow rt4
-        texture_ref rt5 Glow rt5
-        texture_ref rt6 Glow rt6
-        texture_ref rt7 Glow rt7
-        texture_ref rt8 Glow rt8
-
-        target rt
-        {
-            input previous
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt0 : GlowIt
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt1 : GlowIt
-{
-    technique
-    {
-        target rt1
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt2
-            }
-        }
-
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt2 : GlowIt
-{
-    technique
-    {
-        target rt2
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt3
-            }
-        }
-
-        target rt1
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt2
-            }
-        }
-
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt3 : GlowIt
-{
-    technique
-    {
-        target rt3
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt4
-            }
-        }
-
-        target rt2
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt3
-            }
-        }
-
-        target rt1
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt2
-            }
-        }
-
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt4 : GlowIt
-{
-    technique
-    {
-        target rt4
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt5
-            }
-        }
-
-        target rt3
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt4
-            }
-        }
-
-        target rt2
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt3
-            }
-        }
-
-        target rt1
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt2
-            }
-        }
-
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt5 : GlowIt
-{
-    technique
-    {
-        target rt5
+        target _rt5
         {
             pass render_quad
             {
@@ -306,39 +84,39 @@ compositor GlowIt5 : GlowIt
             }
         }
 
-        target rt4
+        target _rt4
         {
             pass render_quad
             {
                 material Upscale9
-                input 0 rt5
+                input 0 _rt5
             }
         }
 
-        target rt3
+        target _rt3
         {
             pass render_quad
             {
                 material Upscale9
-                input 0 rt4
+                input 0 _rt4
             }
         }
 
-        target rt2
+        target _rt2
         {
             pass render_quad
             {
                 material Upscale9
-                input 0 rt3
+                input 0 _rt3
             }
         }
 
-        target rt1
+        target _rt1
         {
             pass render_quad
             {
                 material Upscale9
-                input 0 rt2
+                input 0 _rt2
             }
         }
 
@@ -348,220 +126,7 @@ compositor GlowIt5 : GlowIt
             {
                 material GlowMod
                 input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt6 : GlowIt
-{
-    technique
-    {
-        target rt5
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt6
-            }
-        }
-
-        target rt4
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt5
-            }
-        }
-
-        target rt3
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt4
-            }
-        }
-
-        target rt2
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt3
-            }
-        }
-
-        target rt1
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt2
-            }
-        }
-
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt7 : GlowIt
-{
-    technique
-    {
-        target rt6
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt7
-            }
-        }
-
-        target rt5
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt6
-            }
-        }
-
-        target rt4
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt5
-            }
-        }
-
-        target rt3
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt4
-            }
-        }
-
-        target rt2
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt3
-            }
-        }
-
-        target rt1
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt2
-            }
-        }
-
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-compositor GlowIt8 : GlowIt
-{
-    technique
-    {
-        target rt7
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt8
-            }
-        }
-
-        target rt6
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt7
-            }
-        }
-
-        target rt5
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt6
-            }
-        }
-
-        target rt4
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt5
-            }
-        }
-
-        target rt3
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt4
-            }
-        }
-
-        target rt2
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt3
-            }
-        }
-
-        target rt1
-        {
-            pass render_quad
-            {
-                material Upscale9
-                input 0 rt2
-            }
-        }
-
-        target_output
-        {
-            pass render_quad
-            {
-                material GlowMod
-                input 0 rt
-                input 1 rt1
+                input 1 _rt1
             }
         }
     }

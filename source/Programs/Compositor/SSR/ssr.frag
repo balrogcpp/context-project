@@ -4,7 +4,6 @@
 // https://gitlab.com/congard/algine/-/blob/v1.6-alpha/src/resources/shaders/ssr/fragment.glsl
 
 #include "header.glsl"
-#include "mosaic.glsl"
 #define MAX_BIN_SEARCH_COUNT 10
 #define MAX_RAY_MARCH_COUNT 30
 #define STEP 0.1
@@ -29,6 +28,7 @@ vec2 BinarySearch(inout vec3 position, vec3 direction)
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
         vec4 nuv = mul(ProjMatrix, vec4(position, 1.0));
         nuv.xy /= nuv.w;
+        if (nuv.x < 0.0 || nuv.y < 0.0 || nuv.x > 1.0 || nuv.y > 1.0) return vec2(-1.0, -1.0);
 
         float depth = texture2D(DepthTex, nuv.xy).x;
         float delta = -position.z / ClipDistance - depth;
@@ -54,6 +54,8 @@ vec2 RayCast(inout vec3 position, vec3 direction)
 
         nuv = mul(ProjMatrix, vec4(position, 1.0));
         nuv.xy /= nuv.w;
+
+        if (nuv.x < 0.0 || nuv.y < 0.0 || nuv.x > 1.0 || nuv.y > 1.0) return vec2(-1.0, -1.0);
 
         float depth = texture2D(DepthTex, nuv.xy).x;
         float delta = -position.z / ClipDistance - depth;
@@ -89,7 +91,7 @@ void main()
     float clampedDepth = texture2D(DepthTex, vUV0).x;
     vec3 normal = texture2D(NormalTex, vUV0).xyz;
 
-    if (metallic < 0.04 || clampedDepth > 0.5 || clampedDepth < HALF_EPSILON || Null(normal) || ExcludePixel()) {
+    if (metallic < 0.04 || clampedDepth > 0.5 || clampedDepth < HALF_EPSILON || Null(normal)) {
         return;
     }
 

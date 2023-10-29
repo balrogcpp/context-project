@@ -1,10 +1,11 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
+#include "tonemap.glsl"
 
 uniform sampler2D RT;
 //uniform sampler2D Lum;
-uniform vec2 BrightThreshold;
+//uniform vec2 BrightThreshold;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 vec3 Downscale13(sampler2D tex, vec2 uv)
@@ -36,8 +37,9 @@ vec3 Downscale13(sampler2D tex, vec2 uv)
 in vec2 vUV0;
 void main()
 {
-    vec3 color = Downscale13(RT, vUV0);
-	vec3 w = clamp((color - BrightThreshold.xxx) * BrightThreshold.yyy, 0.0, 1.0);
-	color *= w * w * (3.0 - 2.0 * w);
-    FragColor.rgb = color;
+    vec3 color = texture2D(RT, vUV0).rgb;
+    float lum = luminance(color);
+    if (lum > 9.0) lum = 0.0;
+    lum = max(0.0, lum - 0.5);
+    FragColor.rgb = color * sign(lum);
 }

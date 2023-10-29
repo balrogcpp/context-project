@@ -7,13 +7,19 @@ compositor MRT
         compositor_logic DeferredLogic
         // 0 color; 1 depth; 2 velocity; 3 normals; 4 gloss;
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R PF_R8G8 PF_R11G11B10_FLOAT PF_R8G8 no_fsaa chain_scope
+        texture ao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
 
         target mrt
         {
             pass clear {}
-            pass render_scene
+            pass render_scene {}
+        }
+
+        target ao
+        {
+            pass clear
             {
-                identifier 0
+                colour_value 1 1 1 1
             }
         }
 
@@ -51,30 +57,6 @@ compositor RTT
                 material Copy
                 input 0 rt
             }
-        }
-    }
-}
-
-compositor DepthHalved
-{
-    technique
-    {
-        compositor_logic DeferredLogic
-        texture_ref mrt MRT mrt
-        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-
-        target depth
-        {
-            pass render_quad
-            {
-                material Linear
-                input 0 mrt 1
-            }
-        }
-
-        target_output
-        {
-            input previous
         }
     }
 }

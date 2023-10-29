@@ -199,7 +199,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
         auto* trees = new Forests::PagedGeometry(pCamera, 15);
 
         trees->addDetailLevel<Forests::WindBatchPage>(125, 0);
-        trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
+        //trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
 
         auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
 

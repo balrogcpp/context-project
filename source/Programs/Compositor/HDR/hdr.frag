@@ -12,5 +12,5 @@ void main()
     vec3 color = texture2D(RT, vUV0).rgb;
     float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
     color *= lum;
-    FragColor.rgb = SafeHDR(unreal(color));
+    FragColor.rgb = SafeHDR(color);
 }

@@ -32,7 +32,7 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
   void setLightmapEnabled(bool enabled) override { enableLightmap = enabled; }
 
   void requestOptions(Terrain *terrain) override {
-    terrain->_setMorphRequired(true);
+    terrain->_setMorphRequired(false);
     terrain->_setNormalMapRequired(enableNormalmap);
     terrain->_setLightMapRequired(enableLightmap, true);
     terrain->_setCompositeMapRequired(enableCompositeMap);
@@ -111,11 +111,11 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
   terrainGlobalOptions->setMaxPixelError(8);
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-  terrainGlobalOptions->setCompositeMapDistance(500.0);
+  terrainGlobalOptions->setCompositeMapDistance(100.0);
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
   terrainGlobalOptions->setLightMapSize(256);
-  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
+  //terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
 }
 
 float TerrainManager::GetHeight(float x, float z) { return ogreTerrainGroup ? ogreTerrainGroup->getHeightAtWorldPosition(x, 10000.0, z) : 0.0; }

@@ -1,7 +1,6 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
-#include "mosaic.glsl"
 
 uniform sampler2D RT;
 uniform sampler2D SsrTex;

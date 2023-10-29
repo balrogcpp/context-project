@@ -17,6 +17,9 @@ uniform sampler2D OrmTex;
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D EmissiveTex;
 #endif
+#ifdef HAS_AO
+uniform sampler2D OcclusionTex;
+#endif
 #ifdef HAS_IBL
 uniform samplerCube SpecularEnvTex;
 #endif
@@ -44,6 +47,7 @@ uniform vec4 SurfaceDiffuseColour;
 uniform vec4 SurfaceSpecularColour;
 uniform float SurfaceShininessColour;
 uniform vec4 SurfaceEmissiveColour;
+uniform vec4 ViewportSize;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform float TexScale;
@@ -207,8 +211,9 @@ vec3 EvaluateIBL(PBRInfo material)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     vec3 brdf = EnvBRDFApprox(material.specularColor, material.perceptualRoughness, material.NdotV);
-    const float ssao = 1.0;
-    float diffuseAO = min(material.occlusion, ssao);
+//    const float ssao = 1.0;
+//    float diffuseAO = min(material.occlusion, ssao);
+    float diffuseAO = material.occlusion;
     float specularAO = computeSpecularAO(material.NdotV, diffuseAO, material.perceptualRoughness);
 
 #ifdef HAS_IBL
@@ -436,6 +441,11 @@ void main()
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
+#ifdef HAS_AO
+    vec2 ssUV = gl_FragCoord.xy * ViewportSize.zw;
+    float ao = textureSize(OcclusionTex, 0).x > 1 ? texture2D(OcclusionTex, ssUV).r : 1.0;
+    occlusion = min(occlusion, ao);
+#endif
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].

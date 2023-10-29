@@ -3,10 +3,6 @@
 import RayCast from stdquad.material
 import STD from stdquad.material
 
-//----------------------------------------------------------------------------------------------------------------------
-// SSAO
-//----------------------------------------------------------------------------------------------------------------------
-
 fragment_program ssao glsl glsles hlsl
 {
 	source ssao.frag
@@ -27,117 +23,15 @@ material SSAO : RayCast
             texture_unit DepthTex
             {
                 texture black.dds
-                tex_address_mode clamp
+                tex_address_mode mirror
                 filtering none
             }
             texture_unit NormalTex
             {
                 texture black.dds
-                tex_address_mode clamp
+                tex_address_mode mirror
                 filtering none
             }
-        }
-    }
-}
-
-fragment_program ssaoRec glsl glsles hlsl
-{
-	source ssaoRec.frag
-}
-
-material ssaoRec : STD
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref ssaoRec
-            {
-                param_named Ssao1Tex int 0
-                param_named Ssao2Tex int 1
-            }
-
-            texture_unit SSAO1
-            {
-                texture white.dds
-                tex_address_mode clamp
-                filtering none
-            }
-            texture_unit SSAO2
-            {
-                texture white.dds
-                tex_address_mode clamp
-                filtering none
-            }
-        }
-    }
-}
-
-fragment_program ssaoMod glsl glsles hlsl
-{
-	source ssaoMod.frag
-}
-
-material ssaoMod : STD
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref ssaoMod
-            {
-                param_named RT int 0
-                param_named SsaoTex int 1
-                param_named_auto ShadowColour shadow_colour
-            }
-
-            texture_unit SSAO
-            {
-                texture white.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
-        }
-    }
-}
-
-fragment_program ssaox glsl glsles hlsl
-{
-	source ssaox.frag
-}
-
-fragment_program ssaoy glsl glsles hlsl
-{
-	source ssaoy.frag
-}
-
-material SSAOX : STD
-{
-    technique
-    {
-        pass
-        {
-			fragment_program_ref ssaox
-			{
-                param_named RT int 0
-			}
-
-
-        }
-    }
-}
-material SSAOY : STD
-{
-    technique
-    {
-        pass
-        {
-			fragment_program_ref ssaoy
-			{
-                param_named RT int 0
-			}
-
-
         }
     }
 }

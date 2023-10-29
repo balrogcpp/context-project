@@ -21,9 +21,9 @@ compositor Fresnel
         target refraction
         {
             visibility_mask 0x0F0 // SUBMERGED objects
-            shadows off
+            shadows on
             pass clear {}
-            pass render_scene {}
+            //pass render_scene {}
         }
 
         target_output

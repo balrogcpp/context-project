@@ -3,11 +3,13 @@
 #pragma once
 #include "System.h"
 #include <Ogre.h>
+#include <OgreCompositorLogic.h>
 #include <queue>
 
 namespace gge {
 class CompositorManager : public System<CompositorManager>,
                           public Ogre::CompositorInstance::Listener,
+                          public Ogre::CompositorLogic,
                           public Ogre::Viewport::Listener,
                           public Ogre::RenderTargetListener {
  public:
@@ -40,8 +42,8 @@ class CompositorManager : public System<CompositorManager>,
   void OnClean() override;
   void OnUpdate(float time) override;
   void SetSleep(bool sleep) override;
- protected:
 
+ protected:
   void InitMRT(bool enable = true);
 
   /// Ogre::Viewport::Listener impl
@@ -51,6 +53,10 @@ class CompositorManager : public System<CompositorManager>,
   /// Ogre::CompositorInstance::Listener impl
   void notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
   void notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
+
+  /// Ogre::CompositorLogic impl
+  void compositorInstanceCreated(Ogre::CompositorInstance* newInstance) override;
+  void compositorInstanceDestroyed(Ogre::CompositorInstance* destroyedInstance) override;
 
   /// Ogre::RenderTargetListener impl
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent& evt) override;

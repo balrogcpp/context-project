@@ -1,6 +1,7 @@
 import PBR from pbr.material
+import IBL from pbr.material
 
-material Cube : PBR
+material Cube : IBL
 {
     set $Albedo used-stainless-steel2_albedo.dds
     set $Normal used-stainless-steel2_normal-ogl.dds

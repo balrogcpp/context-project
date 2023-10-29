@@ -7,13 +7,13 @@
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 
-#ifdef HAS_TONEMAP
+#ifdef FORCE_TONEMAP
 #include "tonemap.glsl"
 #endif
 
 void EvaluateBuffer(vec3 color)
 {
-#ifdef HAS_TONEMAP
+#ifdef FORCE_TONEMAP
     color = unreal(expose(color, 2.5));
 #endif
 

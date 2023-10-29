@@ -89,6 +89,7 @@ mat4 transpose(mat4 m)
 #define ddy_fine dFdy
 #define mad(a, b, c) ((a) * (b) + (c))
 #define mul(a, b) ((a) * (b))
+#define sq(a) ((a) * (a))
 #define round(a) floor(a + 0.5)
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define rcp(x) (1.0 / x)

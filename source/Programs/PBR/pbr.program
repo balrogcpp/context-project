@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 shared_params IBL_Shared_frag
 {
-    shared_param_named iblSH float3 [9] 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    shared_param_named iblSH float3 [9] 0.5 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 }
 
 
@@ -25,7 +25,7 @@ vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM
+    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO
     
     default_params
     {
@@ -52,12 +52,13 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto CameraPosition camera_position
         param_named_auto ViewMatrix view_matrix
+        param_named_auto ViewportSize viewport_size
     }
 }
 
 abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_IBL
+    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL
 }
 
 fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
@@ -75,7 +76,7 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
+    //preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM,HAS_AO
 }
 
 vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
@@ -90,7 +91,7 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program PG0_fs glsl glsles hlsl : PG_fs
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
+    //preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
 }
 
 

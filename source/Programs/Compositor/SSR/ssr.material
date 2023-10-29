@@ -46,39 +46,6 @@ material SSR : RayCast
     }
 }
 
-fragment_program ssrRec glsl glsles hlsl
-{
-	source ssrRec.frag
-}
-
-material ssrRec : STD
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref ssrRec
-            {
-                param_named SsrTex1 int 0
-                param_named SsrTex2 int 1
-            }
-
-            texture_unit SSR
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
-            texture_unit SSR2
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
-        }
-    }
-}
-
 fragment_program ssrMod glsl glsles hlsl
 {
 	source ssrMod.frag

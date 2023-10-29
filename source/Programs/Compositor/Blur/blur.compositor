@@ -1,9 +1,6 @@
 // created by Andrey Vasiliev
 import STD from std.compositor
 
-//----------------------------------------------------------------------------------------------------------------------
-// Motion blur
-//----------------------------------------------------------------------------------------------------------------------
 compositor Blur : STD
 {
     technique
@@ -12,7 +9,7 @@ compositor Blur : STD
         {
             pass render_quad
             {
-                identifier 14
+                identifier 30
                 quad_normals camera_far_corners_view_space
                 material Blur
                 input 0 rt

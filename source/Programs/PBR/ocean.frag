@@ -135,11 +135,12 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
+    float refractedDepth = (texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).x) * FarClipDistance;
     highp float surfaceDepth = vScreenPosition.w;
 
-    highp vec3 refraction = vec3(0.0, 0.0, 0.0);
-    float refractedDepth = (texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).x + surfaceDepth) * FarClipDistance;
-    float distortFade = saturate(refractedDepth * 4.0);
+    float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
+
+    highp vec3 refraction;
     refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
     refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
     refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;

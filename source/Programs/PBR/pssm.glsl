@@ -3,6 +3,7 @@
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
 
+//#define PENUMBRA
 #if MAX_SHADOW_TEXTURES > 0
 uniform mediump sampler2D ShadowTex0;
 #endif
@@ -33,9 +34,6 @@ uniform highp vec4 PssmSplitPoints;
 uniform vec4 ShadowColour;
 
 #if MAX_SHADOW_TEXTURES > 0
-#ifndef PSSM_SPLIT_COUNT
-#define PSSM_SPLIT_COUNT 1
-#endif
 #ifndef PSSM_FILTER_RADIUS
 #define PSSM_FILTER_RADIUS 4
 #define PSSM_FILTER_RADIUS0 1.0
@@ -47,13 +45,13 @@ uniform vec4 ShadowColour;
 #define PSSM_FILTER_SIZE 8
 #endif
 #ifndef PENUMBRA_FILTER_RADIUS
-#define PENUMBRA_FILTER_RADIUS 12
+#define PENUMBRA_FILTER_RADIUS 12.0
 #endif
 #ifndef PENUMBRA_FILTER_SIZE
-#define PENUMBRA_FILTER_SIZE 12
+#define PENUMBRA_FILTER_SIZE 8
 #endif
 #ifndef PENUMBRA_LIGHT_SIZE
-#define PENUMBRA_LIGHT_SIZE 50.0
+#define PENUMBRA_LIGHT_SIZE 10.0
 #endif
 
 float InterleavedGradientNoise()
@@ -91,7 +89,7 @@ float FetchTerraShadow(sampler2D shadowTex, vec2 uv)
 float AvgBlockersDepthToPenumbra(float depth, float avgBlockersDepth)
 {
     float penumbra = PENUMBRA_LIGHT_SIZE * (depth - avgBlockersDepth) / avgBlockersDepth;
-    return clamp(80.0 * penumbra * penumbra, 0.0, 1.0);
+    return saturate(penumbra * penumbra);
 }
 
 float Penumbra(mediump sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, float depth)
@@ -100,9 +98,10 @@ float Penumbra(mediump sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, floa
     float blockersCount = 0.0;
 
     for (int i = 0; i < PENUMBRA_FILTER_SIZE; ++i) {
-        vec2 offsetUV = VogelDiskSample(i, PENUMBRA_FILTER_SIZE, phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
-        float sampleDepth = texture2D(shadowTex, uv + offsetUV).x * 1000.0 + 1.0;
-        float depthTest = clamp((depth - sampleDepth), 0.0, 1.0);
+        vec2 offset = VogelDiskSample(i, PENUMBRA_FILTER_SIZE, phi) * tsize * float(PENUMBRA_FILTER_RADIUS);
+        uv.xy += offset;
+        float sampleDepth = texture2D(shadowTex, uv).x * 64.0 + 1.0;
+        float depthTest = saturate(depth - sampleDepth);
         avgBlockersDepth += depthTest * sampleDepth;
         blockersCount += depthTest;
     }
@@ -119,7 +118,7 @@ float CalcDepthShadow(mediump sampler2D shadowTex, highp vec4 uv)
     highp float currentDepth = uv.z - 4.0 * HALF_EPSILON;
     float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
-    float penumbra = Penumbra(shadowTex, uv.xy, tsize, currentDepth);
+    float penumbra = Penumbra(shadowTex, uv.xy, tsize, phi, currentDepth);
 #else
     const float penumbra = 1.0;
 #endif
