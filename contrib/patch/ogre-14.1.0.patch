@@ -11,7 +11,7 @@ index 7f6a28ce2..861009898 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e04c61bcc..6113ccf90 100644
+index 8c3bd52ae..689067242 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -263,12 +263,12 @@ elseif(EMSCRIPTEN)
@@ -101,7 +101,7 @@ index e0d5d7716..1650982ba 100644
              sz += sizeof(float) * 2;
          }
 diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
-index 85379fc21..130b6f6a2 100644
+index 1093d6bc6..75cbc9544 100644
 --- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 +++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 @@ -178,7 +178,7 @@ namespace Ogre
@@ -311,7 +311,7 @@ index 663dc69bf..cf41e9b1f 100644
              mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
  
 diff --git a/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp b/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp
-index 8c875176a..bd4f143af 100644
+index 8c875176a..e809baf54 100644
 --- a/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp
 +++ b/RenderSystems/GLSupport/src/EGL/Android/OgreAndroidEGLWindow.cpp
 @@ -127,6 +127,7 @@ namespace Ogre {
@@ -349,21 +349,23 @@ index 0c5d9323e..209508bf9 100644
          mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
  
 diff --git a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
-index e4988cfe7..bcf00ca82 100644
+index e4988cfe7..07002d06b 100644
 --- a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
 +++ b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
-@@ -79,9 +79,9 @@ namespace Ogre {
-         if(mShaderVersion < 150 && getLanguage() == "glsl" && rsc->isShaderProfileSupported("glsl150"))
-             verStr = "150";
- #endif
--
-+        if (getLanguage() == "glsles" && mSource.find("#version") == String::npos) mSource = String("#version 300 es\n#define __VERSION__ 330\n") + mSource;
-         cpp.Define("__VERSION__", 11, verStr.c_str(), verStr.size());
--
-+        if (getLanguage() == "glsl" && mSource.find("#version") == String::npos) mSource = String("#version 330 core\n#define __VERSION__ 300\n") + mSource;
-         String defines = appendBuiltinDefines(mPreprocessorDefines);
+@@ -61,11 +61,11 @@ namespace Ogre {
  
-         for(const auto& def : parseDefines(defines))
+         // Preprocess the GLSL shader in order to get a clean source
+         CPreprocessor cpp;
+-
++        if (getLanguage() == "glsles" && mSource.find("#version") == String::npos) mSource = String("#version 300 es\n#define __VERSION__ 300\n") + mSource;
+         // Define "predefined" macros.
+         if(getLanguage() == "glsles")
+             cpp.Define("GL_ES", 5, "1", 1);
+-
++        if (getLanguage() == "glsl" && mSource.find("#version") == String::npos) mSource = String("#version 330 core\n#define __VERSION__ 330\n") + mSource;
+         size_t versionPos = mSource.find("#version");
+         if(versionPos != String::npos)
+         {
 diff --git a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm b/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
 index 85d62c04e..bad25d424 100644
 --- a/RenderSystems/GLSupport/src/OSX/OgreOSXCocoaWindow.mm
