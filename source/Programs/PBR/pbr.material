@@ -10,6 +10,7 @@ sampler PbrTex
 {
     filtering anisotropic
     max_anisotropy 1
+    tex_address_mode wrap
 }
 sampler CubeTex
 {
@@ -22,6 +23,7 @@ abstract material PBR
     transparency_casts_shadows on
     receive_shadows on
 
+    set $Atlas atlas.dds
     set $Albedo white.dds
     set $Normal normal.dds
     set $ORM yellow.dds
@@ -32,7 +34,6 @@ abstract material PBR
     technique
     {
         shadow_caster_material PSSM/shadow_caster
-
         pass
         {
             diffuse 1 1 1
@@ -41,6 +42,11 @@ abstract material PBR
             emissive 0 0 0
             alpha_rejection greater_equal 127
 
+            /*texture_unit Atlas
+            {
+                texture $Atlas
+                sampler_ref PbrTex
+            }*/
             texture_unit Albedo
             {
                 texture $Albedo
@@ -116,7 +122,6 @@ abstract material PG : PBR
     technique
     {
         shadow_caster_material PSSM/shadow_caster_alpha
-
         pass
         {
             vertex_program_ref PG_vs {}
@@ -131,7 +136,6 @@ abstract material PG0 : PG
     technique
     {
         shadow_caster_material PSSM/shadow_caster_alpha
-
         pass
         {
             cull_hardware none
@@ -149,6 +153,7 @@ abstract material TERRA
 
     technique
     {
+        shadow_caster_material PSSM/shadow_caster
         pass
         {
             diffuse 1 1 1

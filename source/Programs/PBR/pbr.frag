@@ -5,6 +5,9 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 
+#ifdef HAS_ATLAS
+uniform sampler2D AtlasTex;
+#endif
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;
 #endif
@@ -41,6 +44,7 @@ uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
 uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #endif // MAX_LIGHTS > 0
+uniform float SurfaceAlphaRejection;
 uniform vec4 AmbientLightColour;
 uniform vec4 SurfaceAmbientColour;
 uniform vec4 SurfaceDiffuseColour;
@@ -364,7 +368,7 @@ vec3 EvaluateLocalLights(PBRInfo material, const vec3 worldPosition, const vec4 
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 GetNormal(const vec2 uv, const highp mat3 tbn, const vec2 uv1)
+vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -374,14 +378,24 @@ vec3 GetNormal(const vec2 uv, const highp mat3 tbn, const vec2 uv1)
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz - 1.0)));
+#ifdef HAS_ATLAS
+    vec3 normal = texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.5, 0.0)).rgb;
+#else
+    vec3 normal = texture2D(NormalTex, uv).xyz;
+#endif
+    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
 #else
     return tbn[2].xyz;
 #endif // HAS_NORMALMAP
 #else
 
 #ifdef HAS_NORMALMAP
-    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz - 1.0)));
+#ifdef HAS_ATLAS
+    vec3 normal = texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.5, 0.0)).rgb;
+#else
+    vec3 normal = texture2D(NormalTex, uv).xyz;
+#endif
+    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
 #else
     return tbn[2].xyz;
 #endif // HAS_NORMALMAP
@@ -393,12 +407,14 @@ vec4 GetAlbedo(const vec2 uv, const vec4 color)
 {
     vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
+#ifdef HAS_ATLAS
+    albedo *= texture2D(AtlasTex, fract(uv) * 0.5);
+#else
     albedo *= texture2D(AlbedoTex, uv);
 #endif
-#ifdef HAS_ALPHA
-    if (albedo.a < 0.5) discard;
 #endif
 
+    if (albedo.a < SurfaceAlphaRejection) discard;
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
@@ -406,7 +422,11 @@ vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
-     if (textureSize(EmissiveTex, 0).x > 1) emission += texture2D(EmissiveTex, uv).rgb;
+#ifdef HAS_ATLAS
+    emission += texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.5, 0.5)).rgb;
+#else
+    if (textureSize(EmissiveTex, 0).x > 1) emission += texture2D(EmissiveTex, uv).rgb;
+#endif
 #endif
     return SRGBtoLINEAR(emission) * SurfaceSpecularColour.b;
 }
@@ -421,8 +441,12 @@ vec3 GetORM(const vec2 uv, float spec)
     vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
 #endif
 #ifdef HAS_ORM
+#ifdef HAS_ATLAS
+    orm *= texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.0, 0.5)).rgb;
+#else
     if (textureSize(OrmTex, 0).x > 1) orm *= texture2D(OrmTex, uv).rgb;
     else orm.b = 0.0;
+#endif
 #endif
 
     return clamp(orm, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
@@ -453,7 +477,7 @@ void main()
     vec4 colour = GetAlbedo(uv, vColor);
     vec3 orm = GetORM(uv, colour.a);
     vec3 emission = GetEmission(uv);
-    n = GetNormal(uv, vTBN, vUV0);
+    n = GetNormal(vTBN, uv, vUV0);
     vec3 albedo = colour.rgb;
     float alpha = colour.a;
     float roughness = orm.g;
