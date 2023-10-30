@@ -5,7 +5,7 @@
 
 uniform sampler2D RT;
 
-float Downscale2x2(sampler2D tex, vec2 uv)
+float Downscale2x2(sampler2D tex, const vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
     float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;

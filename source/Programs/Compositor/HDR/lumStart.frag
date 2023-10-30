@@ -13,7 +13,7 @@ uniform sampler2D RT;
 //vec2( 2, 2 ), vec2( 3, 2 ), vec2( 2, 3 ), vec2( 3, 3 )
 //);
 //  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale01_SumLumStart_ps.glsl
-float Downscale4x4(sampler2D tex, vec2 uv)
+float Downscale4x4(sampler2D tex, const vec2 uv)
 {
     vec2 texSize = vec2(textureSize(tex, 0));
     vec2 ratio = (texSize / vec2(64.0, 64.0)) * 0.25;

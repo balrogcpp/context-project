@@ -6,7 +6,7 @@ uniform sampler2D RT;
 uniform float ChromaticRadius;
 uniform int FeaturesCount;
 
-vec3 SampleChromatic(sampler2D tex, vec2 uv, float radius)
+vec3 SampleChromatic(sampler2D tex, const vec2 uv, float radius)
 {
     vec2 offset = normalize(vec2(0.5, 0.5) - uv) * radius;
 
@@ -27,7 +27,7 @@ float WindowCubic(float x, float center, float radius)
     return 1.0 - y * y * (3.0 - 2.0 * y);
 }
 
-vec3 GhostFeatures(sampler2D tex, vec2 uv, vec2 texel, int counter, float radius)
+vec3 GhostFeatures(sampler2D tex, const vec2 uv, vec2 texel, int counter, float radius)
 {
     vec2 nuv = vec2(1.0, 1.0) - uv;
     vec2 ghostVec = (vec2(0.5, 0.5) - nuv) * 0.44;
@@ -49,7 +49,7 @@ vec3 GhostFeatures(sampler2D tex, vec2 uv, vec2 texel, int counter, float radius
     return color;
 }
 
-vec3 HaloFeatures(sampler2D tex, vec2 uv, vec2 texel, int counter, float radius)
+vec3 HaloFeatures(sampler2D tex, const vec2 uv, vec2 texel, int counter, float radius)
 {
     vec2 nuv = vec2(1.0, 1.0) - uv;
     vec2 haloVec = vec2(0.5, 0.5) - nuv;
