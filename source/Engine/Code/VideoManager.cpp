@@ -400,7 +400,7 @@ void VideoManager::InitOgreRoot() {
 
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
-  InitOgreRenderSystemGLES2();
+  InitOgreRenderSystemGL3();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
   InitOgreRenderSystemGLES2();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
