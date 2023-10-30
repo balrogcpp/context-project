@@ -4,7 +4,6 @@ shared_params IBL_Shared_frag
     shared_param_named iblSH float3 [9] 0.5 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 }
 
-
 abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
@@ -73,10 +72,7 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
     }
 }
 
-fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
-{
-    //preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM,HAS_AO
-}
+fragment_program PG_fs glsl glsles hlsl : PBR_I_fs {}
 
 vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 {
@@ -88,11 +84,7 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
     }
 }
 
-fragment_program PG0_fs glsl glsles hlsl : PG_fs
-{
-    //preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_NORMALMAP,HAS_ORM
-}
-
+fragment_program PG0_fs glsl glsles hlsl : PG_fs {}
 
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 {

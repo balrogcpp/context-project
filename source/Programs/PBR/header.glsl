@@ -30,9 +30,9 @@
 #extension GL_OES_standard_derivatives : enable
 #endif
 precision mediump float;
-precision highp int;
-precision lowp sampler2D;
-precision lowp samplerCube;
+precision mediump int;
+precision mediump sampler2D;
+precision mediump samplerCube;
 #endif
 
 #if (defined(OGRE_GLSL) && __VERSION__ >= 150) || (defined(OGRE_GLSLES) && __VERSION__ >= 300)

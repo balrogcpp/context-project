@@ -73,7 +73,7 @@ float pow5(float x)
 
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
-vec3 SpecularReflection(vec3 reflectance0, vec3 reflectance90, float VdotH)
+vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, float VdotH)
 {
     return reflectance0 + (reflectance90 - reflectance0) * pow5(1.0 - VdotH);
 }
@@ -94,11 +94,12 @@ float GeometricOcclusion(float NdotL, float NdotV, float r)
 // The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
 // Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
 // Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-highp float MicrofacetDistribution(highp float alphaRoughness, highp float NdotH)
+float MicrofacetDistribution(float roughness, float NdotH, float oneMinusNoHSquared)
 {
-    highp float roughnessSq = alphaRoughness * alphaRoughness;
-    highp float f = (NdotH * roughnessSq - NdotH) * NdotH + 1.0;
-    return roughnessSq / (M_PI * (f * f));
+    float a = NdotH * roughness;
+    float k = roughness / (oneMinusNoHSquared + a * a);
+    float d = k * k * (1.0 / M_PI);
+    return SafeHDR(d);
 }
 
 // Chan 2018, "Material Advances in Call of Duty: WWII"
@@ -130,7 +131,7 @@ vec3 gtaoMultiBounce(float visibility, const vec3 albedo)
 }
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-vec3 EnvBRDFApprox(vec3 specularColor, float roughness, float NdotV)
+vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NdotV)
 {
     vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
     vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
@@ -150,7 +151,7 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
 }
 
 #ifdef HAS_AO
-float Gauss9(sampler2D tex, vec2 uv)
+float Gauss9(sampler2D tex, const vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
     float A = texture2D(tex, uv).x;
@@ -199,6 +200,7 @@ struct Light
 {
     float NdotL;                  // cos angle between normal and light direction
     float NdotH;                  // cos angle between normal and half vector
+    float NxH;
     float LdotH;                  // cos angle between light direction and half vector
     float VdotH;                  // cos angle between view direction and half vector
 };
@@ -218,11 +220,12 @@ struct PBRInfo
     vec3 specularColor;           // color contribution from specular lighting
 };
 
+vec3 v, n;
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-vec3 EvaluateIBL(PBRInfo material)
+vec3 EvaluateIBL(const PBRInfo material)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     vec3 brdf = EnvBRDFApprox(material.specularColor, material.perceptualRoughness, material.NdotV);
@@ -240,10 +243,10 @@ vec3 EvaluateIBL(PBRInfo material)
     vec3 diffuse = diffuseLight * material.diffuseColor;
     vec3 specular = specularLight * (material.specularColor * brdf.x + brdf.y);
     if (diffuseAO == 1.0) return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuse + specular);
-    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuse * gtaoMultiBounce(diffuseAO, material.diffuseColor) + specular * gtaoMultiBounce(specularAO, vec3(F0, F0, F0)));
+    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuse * gtaoMultiBounce(diffuseAO, material.diffuseColor) + specular * gtaoMultiBounce(specularAO, material.reflectance0));
 }
 
-vec3 SurfaceShading(Light light, PBRInfo material)
+vec3 SurfaceShading(const Light light, const PBRInfo material)
 {
     // Calculate the shading terms for the microfacet specular shading model
     vec3 F = SpecularReflection(material.reflectance0, material.reflectance90, light.VdotH);
@@ -251,13 +254,13 @@ vec3 SurfaceShading(Light light, PBRInfo material)
 
     // Calculation of analytical lighting contribution
     float G = GeometricOcclusion(light.NdotL, material.NdotV, material.alphaRoughness);
-    float D = MicrofacetDistribution(material.alphaRoughness, light.NdotH);
-    vec3 specContrib = (F * (G * D)) / (4.0 * (light.NdotL * material.NdotV));
+    float D = MicrofacetDistribution(material.alphaRoughness, light.NdotH, light.NxH);
+    vec3 specContrib = (F * G * D) / (4.0 * light.NdotL * material.NdotV);
 
     return diffuseContrib + specContrib;
 }
 
-float GetAttenuation(int index, vec3 lightView)
+float GetAttenuation(int index, const vec3 lightView)
 {
     vec4 attParams = LightAttenuationArray[index];
     vec4 spotParams = LightSpotParamsArray[index];
@@ -287,10 +290,10 @@ float GetAttenuation(int index, vec3 lightView)
     return attenuation;
 }
 
-vec3 EvaluateDirectionalLight(PBRInfo material, highp vec3 v, highp vec3 n, highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
+vec3 EvaluateDirectionalLight(const PBRInfo material, const vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
 {
-    highp vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
-    highp float NdotL = saturate(dot(n, l));
+    vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
+    float NdotL = saturate(dot(n, l));
     if (NdotL <= 0.001) return vec3(0.0, 0.0, 0.0);
     float attenuation = 1.0;
 
@@ -309,18 +312,20 @@ vec3 EvaluateDirectionalLight(PBRInfo material, highp vec3 v, highp vec3 n, high
     }
 #endif
 
-    highp vec3 h = normalize(l + v); // Half vector between both l and v
+    vec3 h = normalize(l + v); // Half vector between both l and v
 
     Light light;
     light.LdotH = dot(l, h);
     light.NdotH = dot(n, h);
+    vec3 NxH = cross(n, h);
+    light.NxH = dot(NxH, NxH);
     light.NdotL = NdotL;
     light.VdotH = dot(v, h);
     vec3 color = SurfaceShading(light, material) * ComputeMicroShadowing(NdotL, material.occlusion) * NdotL;
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
-vec3 EvaluateLocalLights(PBRInfo material, highp vec3 v, highp vec3 n, vec3 worldPosition, highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
+vec3 EvaluateLocalLights(PBRInfo material, const vec3 worldPosition, const vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -328,8 +333,8 @@ vec3 EvaluateLocalLights(PBRInfo material, highp vec3 v, highp vec3 n, vec3 worl
 
         highp vec4 lightPosition = LightPositionArray[i];
         if (lightPosition.w == 0.0) continue;
-        highp vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
-        highp float NdotL = saturate(dot(n, l));
+        vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
+        float NdotL = saturate(dot(n, l));
         if (NdotL <= 0.001) continue;
 
         // attenuation is property of spot and point light
@@ -337,7 +342,7 @@ vec3 EvaluateLocalLights(PBRInfo material, highp vec3 v, highp vec3 n, vec3 worl
         if (attenuation == 0.0) continue;
 
         Light light;
-        highp vec3 h = normalize(l + v); // Half vector between both l and v
+        vec3 h = normalize(l + v); // Half vector between both l and v
         light.LdotH = saturate(dot(l, h));
         light.NdotH = saturate(dot(n, h));
         light.NdotL = NdotL;
@@ -359,7 +364,7 @@ vec3 EvaluateLocalLights(PBRInfo material, highp vec3 v, highp vec3 n, vec3 worl
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-highp vec3 GetNormal(vec2 uv, highp mat3 tbn, vec2 uv1)
+vec3 GetNormal(const vec2 uv, const highp mat3 tbn, const vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
     highp vec3 t = vec3(1.0, 0.0, 0.0);
@@ -384,7 +389,7 @@ highp vec3 GetNormal(vec2 uv, highp mat3 tbn, vec2 uv1)
 }
 
 // Sampler helper functions
-vec4 GetAlbedo(vec2 uv, vec4 color)
+vec4 GetAlbedo(const vec2 uv, const vec4 color)
 {
     vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
@@ -397,7 +402,7 @@ vec4 GetAlbedo(vec2 uv, vec4 color)
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-vec3 GetEmission(vec2 uv)
+vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
@@ -406,7 +411,7 @@ vec3 GetEmission(vec2 uv)
     return SRGBtoLINEAR(emission) * SurfaceSpecularColour.b;
 }
 
-vec3 GetORM(vec2 uv, float spec)
+vec3 GetORM(const vec2 uv, float spec)
 {
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to material roughness
@@ -423,7 +428,7 @@ vec3 GetORM(vec2 uv, float spec)
     return clamp(orm, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));
 }
 
-vec2 GetParallaxCoord(highp vec2 uv0, highp vec3 v)
+vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 {
     vec2 uv = uv0 * (1.0 + TexScale);
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
@@ -443,12 +448,12 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 void main()
 {
-    highp vec3 v = normalize(CameraPosition - vWorldPosition);
+    v = normalize(CameraPosition - vWorldPosition);
     vec2 uv = GetParallaxCoord(vUV0, v);
     vec4 colour = GetAlbedo(uv, vColor);
     vec3 orm = GetORM(uv, colour.a);
     vec3 emission = GetEmission(uv);
-    highp vec3 n = GetNormal(uv, vTBN, vUV0);
+    n = GetNormal(uv, vTBN, vUV0);
     vec3 albedo = colour.rgb;
     float alpha = colour.a;
     float roughness = orm.g;
@@ -484,8 +489,8 @@ void main()
 
     vec3 color = vec3(0.0, 0.0, 0.0);
     color += EvaluateIBL(material);
-    color += EvaluateDirectionalLight(material, v, n, vLightSpacePosArray);
-    color += EvaluateLocalLights(material, v, n, vWorldPosition, vLightSpacePosArray);
+    color += EvaluateDirectionalLight(material, vLightSpacePosArray);
+    color += EvaluateLocalLights(material, vWorldPosition, vLightSpacePosArray);
     color += emission;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
