@@ -47,7 +47,6 @@ uniform vec4 SurfaceDiffuseColour;
 uniform vec4 SurfaceSpecularColour;
 uniform float SurfaceShininessColour;
 uniform vec4 SurfaceEmissiveColour;
-uniform vec4 ViewportSize;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform float TexScale;
@@ -150,6 +149,22 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
+#ifdef HAS_AO
+float Gauss9(sampler2D tex, vec2 uv)
+{
+    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
+    float A = texture2D(tex, uv).x;
+    float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).x;
+    float C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).x;
+    float D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).x;
+    float E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).x;
+
+    float c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+
+    return c1;
+}
+#endif
+
 #ifdef HAS_IBL
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
 vec3 Irradiance_SphericalHarmonics(const vec3 n) {
@@ -211,8 +226,6 @@ vec3 EvaluateIBL(PBRInfo material)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     vec3 brdf = EnvBRDFApprox(material.specularColor, material.perceptualRoughness, material.NdotV);
-//    const float ssao = 1.0;
-//    float diffuseAO = min(material.occlusion, ssao);
     float diffuseAO = material.occlusion;
     float specularAO = computeSpecularAO(material.NdotV, diffuseAO, material.perceptualRoughness);
 
@@ -442,8 +455,9 @@ void main()
     float metallic = orm.b;
     float occlusion = orm.r;
 #ifdef HAS_AO
-    vec2 ssUV = gl_FragCoord.xy * ViewportSize.zw;
-    float ao = textureSize(OcclusionTex, 0).x > 1 ? texture2D(OcclusionTex, ssUV).r : 1.0;
+    vec2 viewportSize = 1.0 / vec2(textureSize(OcclusionTex, 0) * ivec2(2, 1));
+    vec2 ssUV = gl_FragCoord.xy * viewportSize;
+    float ao = Gauss9(OcclusionTex, ssUV);
     occlusion = min(occlusion, ao);
 #endif
 

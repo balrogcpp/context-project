@@ -76,10 +76,10 @@ vec3 HaloFeatures(sampler2D tex, vec2 uv, vec2 texel, int counter, float radius)
 in vec2 vUV0;
 void main()
 {
-    vec2 TexelSize0 = 1.0 / vec2(textureSize(RT, 0));
+    vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));
     vec3 color = texture2D(RT, vUV0).rgb;
 
-    //color += GhostFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius) * 0.5;
-    color += HaloFeatures(RT, vUV0, TexelSize0, FeaturesCount, ChromaticRadius);
-    FragColor.rgb = color;
+    //color += GhostFeatures(RT, vUV0, texelSize, FeaturesCount, ChromaticRadius) * 0.5;
+    color += HaloFeatures(RT, vUV0, texelSize, FeaturesCount, ChromaticRadius);
+    FragColor.rgb = SafeHDR(color);
 }

@@ -234,6 +234,6 @@ void main()
 {
     vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));
     vec3 color = FxaaPixelShader(RT, vUV0, texelSize);
-    color = unreal(expose(color, 2.5));
+    color = unreal(expose(color, 2.0));
     FragColor.rgb = SafeHDR(color);
 }

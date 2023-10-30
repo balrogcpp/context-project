@@ -55,7 +55,7 @@ void CompositorManager::OnSetUp() {
 
   AddCubeCamera();
   InitMRT(true);
-  AddCompositor("SSAO", false);
+  AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   AddCompositor("Glow", !RenderSystemIsGLES2());
   AddCompositor("HDR", !RenderSystemIsGLES2());
@@ -63,7 +63,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SMAA", false);
   AddCompositor("Tonemap", false);
   AddCompositor("Blur", false);
-  AddCompositor("Paused", false);
+  AddCompositor("FullScreenBlur", false);
 
   // reg as viewport listener
   ogreViewport->addListener(this);
@@ -351,21 +351,14 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
 
-  } else if (pass_id == 13) {  // 12 = Rays
+  } else if (pass_id == -1) {  // 12 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
-    static Ogre::Real LightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
-
-    for (int i = 0; i < lightList.size(); i++) {
-      Ogre::Vector4 point = GetLightScreenSpaceCoords(lightList[i], ogreCamera);
-      LightPositionViewSpace[4 * i] = point.x;
-      LightPositionViewSpace[4 * i + 1] = point.y;
-      LightPositionViewSpace[4 * i + 2] = point.z;
-      LightPositionViewSpace[4 * i + 3] = point.w;
+    if (!lightList.empty()) {
+      Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(lightList[0], ogreCamera);
+      fp->setNamedConstant("LightPositionViewSpace", lightPos);
     }
-
-    fp->setNamedConstant("LightPositionViewSpace", LightPositionViewSpace, lightList.size());
-    fp->setNamedConstant("LightCount", Ogre::int32(lightList.size()));
+  } else if (pass_id == 99) {  // 99 = FullScreenBlur
   }
 }
 

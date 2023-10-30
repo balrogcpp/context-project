@@ -10,7 +10,7 @@ compositor SSAO
     {
         compositor_logic DeferredLogic
         texture_ref mrt MRT mrt
-        texture_ref ssao MRT ao
+        texture_ref ao MRT ao
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaoOld target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaox target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
@@ -37,21 +37,12 @@ compositor SSAO
             }
         }
 
-        target ssaox
+        target ao
         {
             pass render_quad
             {
                 material FilterX
                 input 0 ssaoOld
-            }
-        }
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material FilterY
-                input 0 ssaox
             }
         }
 

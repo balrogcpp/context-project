@@ -8,11 +8,6 @@ import STD from stdquad.material
 fragment_program glowStart glsl glsles hlsl
 {
 	source glowStart.frag
-
-    default_params
-    {
-        param_named BrightThreshold float2 3.0 0.5
-    }
 }
 
 material GlowStart : STD

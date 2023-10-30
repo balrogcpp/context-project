@@ -44,10 +44,7 @@ compositor RTT
         target rt
         {
             pass clear {}
-            pass render_scene
-            {
-                identifier 0
-            }
+            pass render_scene {}
         }
 
         target_output

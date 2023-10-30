@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-compositor Paused
+compositor FullScreenBlur
 {
     technique
     {
@@ -61,7 +61,7 @@ compositor Paused
         {
             pass render_quad
             {
-                identifier 1000
+                identifier 99
                 material Copy
                 input 0 rty1
             }
