@@ -5,9 +5,6 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 
-#ifdef HAS_ATLAS
-uniform sampler2D AtlasTex;
-#endif
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;
 #endif
@@ -378,11 +375,7 @@ vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
     tbn = mtxFromCols3x3(t, b, ng);
 
 #ifdef HAS_NORMALMAP
-#ifdef HAS_ATLAS
-    vec3 normal = texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.5, 0.0)).rgb;
-#else
     vec3 normal = texture2D(NormalTex, uv).xyz;
-#endif
     return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
 #else
     return tbn[2].xyz;
@@ -390,11 +383,7 @@ vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 #else
 
 #ifdef HAS_NORMALMAP
-#ifdef HAS_ATLAS
-    vec3 normal = texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.5, 0.0)).rgb;
-#else
     vec3 normal = texture2D(NormalTex, uv).xyz;
-#endif
     return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
 #else
     return tbn[2].xyz;
@@ -407,11 +396,7 @@ vec4 GetAlbedo(const vec2 uv, const vec4 color)
 {
     vec4 albedo = SurfaceDiffuseColour * color;
 #ifdef HAS_BASECOLORMAP
-#ifdef HAS_ATLAS
-    albedo *= texture2D(AtlasTex, fract(uv) * 0.5);
-#else
     albedo *= texture2D(AlbedoTex, uv);
-#endif
 #endif
 
     if (albedo.a < SurfaceAlphaRejection) discard;
@@ -422,11 +407,7 @@ vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
-#ifdef HAS_ATLAS
-    emission += texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.5, 0.5)).rgb;
-#else
     if (textureSize(EmissiveTex, 0).x > 1) emission += texture2D(EmissiveTex, uv).rgb;
-#endif
 #endif
     return SRGBtoLINEAR(emission) * SurfaceSpecularColour.b;
 }
