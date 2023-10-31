@@ -37,12 +37,21 @@ compositor SSAO
             }
         }
 
-        target ao
+        target ssaox
         {
             pass render_quad
             {
                 material FilterX
                 input 0 ssaoOld
+            }
+        }
+
+        target ao
+        {
+            pass render_quad
+            {
+                material FilterY
+                input 0 ssaox
             }
         }
 

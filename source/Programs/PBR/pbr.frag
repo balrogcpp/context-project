@@ -151,22 +151,6 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
-#ifdef HAS_AO
-float Gauss9(sampler2D tex, const vec2 uv)
-{
-    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
-    float A = texture2D(tex, uv).x;
-    float B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).x;
-    float C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).x;
-    float D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).x;
-    float E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).x;
-
-    float c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
-
-    return c1;
-}
-#endif
-
 #ifdef HAS_IBL
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
 vec3 Irradiance_SphericalHarmonics(const vec3 n) {
@@ -465,9 +449,9 @@ void main()
     float metallic = orm.b;
     float occlusion = orm.r;
 #ifdef HAS_AO
-    vec2 viewportSize = 1.0 / vec2(textureSize(OcclusionTex, 0) * ivec2(2, 1));
+    vec2 viewportSize = vec2(0.5, 1.0) / vec2(textureSize(OcclusionTex, 0));
     vec2 ssUV = gl_FragCoord.xy * viewportSize;
-    float ao = Gauss9(OcclusionTex, ssUV);
+    float ao = texture2D(OcclusionTex, ssUV).r;
     occlusion = min(occlusion, ao);
 #endif
 
