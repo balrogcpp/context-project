@@ -18,7 +18,7 @@ float Downscale2x2(sampler2D tex, const vec2 uv)
     return c1;
 }
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     float lum = Downscale2x2(RT, vUV0);

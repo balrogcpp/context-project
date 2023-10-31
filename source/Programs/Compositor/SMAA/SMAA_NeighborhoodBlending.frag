@@ -18,7 +18,7 @@ uniform vec4 ViewportSize;
 #include "smaa.glsl"
 #include "tonemap.glsl"
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 in vec4 offset;
 void main()
 {

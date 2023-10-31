@@ -26,7 +26,7 @@ vec2 RestoreTexCoord(vec3 viewPos, mat4 invViewMatrix, mat4 viewProjPrev)
     return nuv.xy;
 }
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 in vec3 vRay;
 void main()
 {

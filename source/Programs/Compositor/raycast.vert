@@ -7,7 +7,7 @@ uniform mat4 WorldViewProj;
 in highp vec3 vertex;
 in highp vec3 normal;
 
-out vec2 vUV0;
+out  highp vec2 vUV0;
 out vec3 vRay;
 void main()
 {

@@ -13,7 +13,7 @@ uniform mat4 InvViewMatrix;
 uniform mat4 ViewProjPrev;
 uniform float FrameTime;
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 in vec3 vRay;
 void main()
 {

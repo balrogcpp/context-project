@@ -229,7 +229,7 @@ vec3 FxaaPixelShader(sampler2D tex, const vec2 pos, const vec2 rcpFrame)
 
 #include "tonemap.glsl"
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));

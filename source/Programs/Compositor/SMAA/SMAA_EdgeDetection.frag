@@ -19,7 +19,7 @@ uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 in vec4 offset[3];
 void main()
 {

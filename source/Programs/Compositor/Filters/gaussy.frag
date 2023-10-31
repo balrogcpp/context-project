@@ -18,7 +18,7 @@ vec3 Gauss9(sampler2D tex, const vec2 uv)
     return c1;
 }
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     FragColor.rgb = Gauss9(RT, vUV0);

@@ -81,7 +81,7 @@ float Fresnel(vec3 direction, vec3 normal)
     return factor;
 }
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 in vec3 vRay;
 void main()
 {

@@ -73,7 +73,7 @@ vec3 HaloFeatures(sampler2D tex, const vec2 uv, vec2 texel, int counter, float r
     return color;
 }
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));

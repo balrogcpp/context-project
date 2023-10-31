@@ -34,7 +34,7 @@ vec3 Downscale13(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3 + c4 + c5;
 }
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;

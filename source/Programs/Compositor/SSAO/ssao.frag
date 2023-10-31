@@ -28,7 +28,7 @@ float pow10(float x)
     return x4 * x4 * x2;
 }
 
-in vec2 vUV0;
+in highp vec2 vUV0;
 in vec3 vRay;
 void main()
 {
