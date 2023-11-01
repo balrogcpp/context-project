@@ -92,7 +92,7 @@ float AvgBlockersDepthToPenumbra(float depth, float avgBlockersDepth)
     return saturate(penumbra * penumbra);
 }
 
-float Penumbra(mediump sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, float depth)
+float Penumbra(mediump sampler2D shadowTex, vec2 uv, const vec2 tsize, float phi, float depth)
 {
     float avgBlockersDepth = 0.0;
     float blockersCount = 0.0;
@@ -109,7 +109,7 @@ float Penumbra(mediump sampler2D shadowTex, vec2 uv, vec2 tsize, float phi, floa
     return AvgBlockersDepthToPenumbra(depth, avgBlockersDepth / blockersCount);
 }
 
-float CalcDepthShadow(mediump sampler2D shadowTex, highp vec4 uv)
+float CalcDepthShadow(mediump sampler2D shadowTex, vec4 uv)
 {
     uv /= uv.w;
     uv.z = uv.z * 0.5 + 0.5;
@@ -136,7 +136,7 @@ float CalcDepthShadow(mediump sampler2D shadowTex, highp vec4 uv)
 }
 
 #if PSSM_SPLIT_COUNT > 0
-float CalcPSSMShadow(highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
+float CalcPSSMShadow(const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
     highp float depth = gl_FragCoord.z / gl_FragCoord.w;
 
     if (depth <= PssmSplitPoints.x) return CalcDepthShadow(ShadowTex0, lightSpacePosArray[0]);
@@ -154,7 +154,7 @@ float CalcPSSMShadow(highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
 #endif
 
 
-float CalcShadow(highp vec4 lightSpacePos, int index)
+float CalcShadow(const vec4 lightSpacePos, int index)
 {
 #if MAX_SHADOW_TEXTURES > 0
     if (index == 0) return CalcDepthShadow(ShadowTex0, lightSpacePos);

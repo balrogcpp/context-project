@@ -1,0 +1,24 @@
+// created by Andrey Vasiliev
+
+compositor ShadowMap
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        texture shadowmap 2048 2048 PF_FLOAT16_R no_fsaa depth_pool 0
+
+        target shadowmap
+        {
+            pass render_quad
+            {
+                identifier 2
+                material ShadowMap
+            }
+        }
+
+        target_output
+        {
+            input previous
+        }
+    }
+}

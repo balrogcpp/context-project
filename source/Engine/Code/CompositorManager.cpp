@@ -12,7 +12,7 @@ CompositorManager::~CompositorManager() = default;
 
 void CompositorManager::OnUpdate(float time) {
   viewProjPrev = viewProj;
-  viewProj = ogreCamera->getProjectionMatrix() * ogreCamera->getViewMatrix();
+  viewProj = camera->getProjectionMatrix() * camera->getViewMatrix();
 }
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
@@ -24,20 +24,20 @@ void CompositorManager::compositorInstanceDestroyed(Ogre::CompositorInstance *de
 void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   string name = evt.source->getName();
   if (name.find("reflection") != string::npos) {
-    ogreCamera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
-    ogreCamera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
+    camera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
+    camera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
   } else if (name.find("refraction") != string::npos) {
-    ogreCamera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, plane.d));
+    camera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, plane.d));
   }
 }
 
 void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   string name = evt.source->getName();
   if (name.find("reflection") != string::npos) {
-    ogreCamera->disableCustomNearClipPlane();
-    ogreCamera->disableReflection();
+    camera->disableCustomNearClipPlane();
+    camera->disableReflection();
   } else if (name.find("refraction") != string::npos) {
-    ogreCamera->disableCustomNearClipPlane();
+    camera->disableCustomNearClipPlane();
   }
 }
 
@@ -46,97 +46,66 @@ void CompositorManager::OnSetUp() {
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
   compositorManager->registerCompositorLogic("DeferredLogic", this);
   ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
-  ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
-  ASSERTION(ogreSceneManager, "[CompositorManager] ogreSceneManager not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Camera");
-  ASSERTION(ogreCamera, "[CompositorManager] ogreCamera not initialised");
-  ogreViewport = ogreCamera->getViewport();
-  compositorChain = compositorManager->getCompositorChain(ogreViewport);
+  sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
+  ASSERTION(sceneManager, "[CompositorManager] ogreSceneManager not initialised");
+  camera = sceneManager->getCamera("Camera");
+  ASSERTION(camera, "[CompositorManager] ogreCamera not initialised");
+  viewport = camera->getViewport();
+  compositorChain = compositorManager->getCompositorChain(viewport);
+  cubeCamera = sceneManager->createCamera("CubeCamera");
+  cubeCamera->setFOVy(Ogre::Degree(90.0));
+  cubeCamera->setAspectRatio(1.0);
+  cubeCamera->setNearClipDistance(1.0);
+  cubeCamera->setFarClipDistance(camera->getFarClipDistance());
+  sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * 2.0)->attachObject(cubeCamera);
+  AddCompositor("CubeMap", true);
+  auto *rt = compositorChain->getCompositor("CubeMap")->getRenderTarget("cube");
+  rt->removeAllViewports();
+  rt->addViewport(cubeCamera);
+  rt->addListener(this);
 
-  AddCubeCamera();
-  InitMRT(true);
+  //AddCompositor("ShadowMap", true);
+  AddCompositor("MRT", true);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
-  AddCompositor("Glow", !RenderSystemIsGLES2());
-  AddCompositor("HDR", !RenderSystemIsGLES2());
+  if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   AddCompositor("FXAA", true);
-  AddCompositor("SMAA", false);
+  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("Tonemap", false);
   AddCompositor("Blur", false);
   AddCompositor("FullScreenBlur", false);
 
   // reg as viewport listener
-  ogreViewport->addListener(this);
+  viewport->addListener(this);
   fixedViewportSize = false;
-  viewportDimensionsChanged(ogreViewport);
+  viewportDimensionsChanged(viewport);
 }
 
-void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
+void CompositorManager::OnClean() { viewport->removeListener(this); }
 
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
-  if (name == "Fresnel") {
-    AddFresnelCompositor(plane);
-    return;
-  }
-
-  auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
+  auto *compositor = compositorManager->addCompositor(viewport, name, position);
   ASSERTION(compositor, "[CompositorManager] Failed to add MRT compositor");
-  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+  compositorManager->setCompositorEnabled(viewport, name, enable);
 }
 
 void CompositorManager::EnableCompositor(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
-  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+  compositorManager->setCompositorEnabled(viewport, name, enable);
 }
 
-void CompositorManager::AddFresnelCompositor(Ogre::Plane plane) {
+void CompositorManager::AddReflectionPlane(Ogre::Plane plane) {
   this->plane = plane;
 
   if (!IsCompositorInChain("Fresnel")) {
-    auto *compositor = compositorManager->addCompositor(ogreViewport, "Fresnel", 0);
+    auto *compositor = compositorManager->addCompositor(viewport, "Fresnel", 0);
     ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
-    compositorManager->setCompositorEnabled(ogreViewport, "Fresnel", true);
+    compositorManager->setCompositorEnabled(viewport, "Fresnel", true);
     auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
     rt1->addListener(this);
     auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
     rt2->addListener(this);
-  }
-}
-
-void CompositorManager::RemoveFresnelCompositor() {
-  if (IsCompositorInChain("Fresnel")) {
-    compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection")->removeAllListeners();
-    compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction")->removeAllListeners();
-    compositorChain->removeCompositor(compositorChain->getCompositorPosition("Fresnel"));
-  }
-}
-
-void CompositorManager::AddCubeCamera() {
-  if (!ogreSceneManager->hasCamera("CubeCamera")) {
-    cubeCamera = ogreSceneManager->createCamera("CubeCamera");
-    cubeCamera->setFOVy(Ogre::Degree(90.0));
-    cubeCamera->setAspectRatio(1.0);
-    cubeCamera->setNearClipDistance(1.0);
-    cubeCamera->setFarClipDistance(ogreCamera->getFarClipDistance());
-    ogreSceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * 2.0)->attachObject(cubeCamera);
-  }
-
-  if (!IsCompositorInChain("CubeMap")) {
-    AddCompositor("CubeMap", true);
-    auto *rt = compositorChain->getCompositor("CubeMap")->getRenderTarget("cube");
-    rt->removeAllViewports();
-    rt->addViewport(cubeCamera);
-  }
-}
-
-void CompositorManager::DestroyCubeCamera() {
-  if (ogreSceneManager->hasCamera("CubeCamera")) {
-    if (IsCompositorInChain("CubeMap")) {
-      compositorChain->getCompositor("CubeMap")->getRenderTarget("cube")->removeAllViewports();
-      compositorChain->removeCompositor(compositorChain->getCompositorPosition("CubeMap"));
-    }
-
-    ogreSceneManager->destroyCamera(cubeCamera);
   }
 }
 
@@ -187,20 +156,8 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
       }
     }
 
-    compositorManager->setCompositorEnabled(ogreViewport, compositorName, enabled);
+    compositorManager->setCompositorEnabled(viewport, compositorName, enabled);
   }
-}
-
-void CompositorManager::InitMRT(bool enable) {
-  auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR);
-  ASSERTION(mrtCompositor, "[CompositorManager] Failed to add MRT compositor");
-
-  // check textures
-  auto *tech = mrtCompositor->getTechnique();
-
-  ASSERTION(tech->getTextureDefinition("mrt"), "[CompositorManager] mrt texture failed to create");
-
-  compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, enable);
 }
 
 void CompositorManager::CacheCompositorChain() {
@@ -221,7 +178,7 @@ void CompositorManager::EnableRendering() {
   compositorChain->_markDirty();
 }
 
-Ogre::Camera *CompositorManager::GetOgreCamera() { return ogreCamera; }
+Ogre::Camera *CompositorManager::GetOgreCamera() { return camera; }
 
 void CompositorManager::ApplyCachedCompositorChain() {
   // compositors are automatically resized according to actual viewport size when added to chain
@@ -239,11 +196,11 @@ void CompositorManager::ApplyCachedCompositorChain() {
       }
     }
 
-    compositorManager->setCompositorEnabled(ogreViewport, compositorName, enabled);
+    compositorManager->setCompositorEnabled(viewport, compositorName, enabled);
   }
 }
 
-void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) { ogreCamera = viewport->getCamera(); }
+void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) { camera = viewport->getCamera(); }
 void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   // don't update if viewport size handled manually
   if (fixedViewportSize) {
@@ -341,21 +298,33 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO
+  if (pass_id == 2) {  // 2 = ShadowMap
+    auto *pass = mat->getTechnique(0)->getPass(0);
+    auto *context = sceneManager->_pauseRendering();
+    sceneManager->prepareShadowTextures(camera, viewport);
+    sceneManager->_resumeRendering(context);
+    const auto &shadowTex = sceneManager->getShadowTexture(0);
+    auto *tus = pass->getTextureUnitState("ShadowMap0");
+    const auto &ll = sceneManager->_getLightsAffectingFrustum();
+    if (tus->_getTexturePtr() != shadowTex) {
+      tus->setTexture(shadowTex);
+    }
+
+  } else if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * ogreCamera->getProjectionMatrix());
-    fp->setNamedConstant("ClipDistance", ogreCamera->getFarClipDistance() - ogreCamera->getNearClipDistance());
+    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
+    fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
 
   } else if (pass_id == 30) {  // 14 = Motion Blur
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
-    fp->setNamedConstant("InvViewMatrix", ogreCamera->getViewMatrix().inverse());
+    fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
-  } else if (pass_id == -1) {  // 12 = Rays
+  } else if (pass_id == 99999) {  // 12 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    const auto &lightList = ogreSceneManager->_getLightsAffectingFrustum();
-    if (!lightList.empty()) {
-      Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(lightList[0], ogreCamera);
+    const auto &ll = sceneManager->_getLightsAffectingFrustum();
+    if (!ll.empty()) {
+      Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(ll[0], camera);
       fp->setNamedConstant("LightPositionViewSpace", lightPos);
     }
   } else if (pass_id == 99) {  // 99 = FullScreenBlur

@@ -1,7 +1,6 @@
 // created by Andrey Vasiliev
 
 import RayCast from stdquad.material
-import STD from stdquad.material
 
 fragment_program ssao glsl glsles hlsl
 {

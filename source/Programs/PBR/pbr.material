@@ -69,6 +69,7 @@ abstract material PBR
             }
             texture_unit ShadowTex0
             {
+                //content_type compositor ShadowMap shadowmap
                 content_type shadow
                 sampler_ref ShadowTex
             }

@@ -11,6 +11,7 @@ compositor MRT
 
         target mrt
         {
+            shadows on
             pass clear {}
             pass render_scene {}
         }

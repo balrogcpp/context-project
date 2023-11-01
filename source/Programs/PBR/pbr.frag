@@ -33,6 +33,7 @@ uniform sampler2D TerraLightTex;
 uniform vec3 iblSH[9];
 uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
+uniform vec4 ViewportSize;
 uniform float LightCount;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
@@ -449,9 +450,7 @@ void main()
     float metallic = orm.b;
     float occlusion = orm.r;
 #ifdef HAS_AO
-    vec2 viewportSize = vec2(0.5, 1.0) / vec2(textureSize(OcclusionTex, 0));
-    vec2 ssUV = gl_FragCoord.xy * viewportSize;
-    float ao = texture2D(OcclusionTex, ssUV).r;
+    float ao = texture2D(OcclusionTex, gl_FragCoord.xy * ViewportSize.zw).r;
     occlusion = min(occlusion, ao);
 #endif
 

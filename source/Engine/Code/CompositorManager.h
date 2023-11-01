@@ -18,6 +18,7 @@ class CompositorManager : public System<CompositorManager>,
 
   void AddCompositor(const std::string& name, bool enable, int position = -1);
   void EnableCompositor(const std::string& name, bool enable);
+  void AddReflectionPlane(Ogre::Plane plane);
 
   void SetFixedViewportSize(int x, int y);
   void SetFixedViewport(bool fixed);
@@ -32,11 +33,6 @@ class CompositorManager : public System<CompositorManager>,
   void EnableRendering();
   Ogre::Camera* GetOgreCamera();
 
-  void AddFresnelCompositor(Ogre::Plane plane);
-  void RemoveFresnelCompositor();
-  void AddCubeCamera();
-  void DestroyCubeCamera();
-
   /// System impl
   void OnSetUp() override;
   void OnClean() override;
@@ -44,8 +40,6 @@ class CompositorManager : public System<CompositorManager>,
   void SetSleep(bool sleep) override;
 
  protected:
-  void InitMRT(bool enable = true);
-
   /// Ogre::Viewport::Listener impl
   void viewportCameraChanged(Ogre::Viewport* viewport) override;
   void viewportDimensionsChanged(Ogre::Viewport* viewport) override;
@@ -72,9 +66,9 @@ class CompositorManager : public System<CompositorManager>,
 
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
-  Ogre::SceneManager* ogreSceneManager = nullptr;
-  Ogre::Camera* ogreCamera = nullptr;
+  Ogre::SceneManager* sceneManager = nullptr;
+  Ogre::Camera* camera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
-  Ogre::Viewport* ogreViewport = nullptr;
+  Ogre::Viewport* viewport = nullptr;
 };
 }  // namespace gge

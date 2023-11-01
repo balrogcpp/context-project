@@ -31,8 +31,8 @@
 #endif
 precision mediump float;
 precision mediump int;
-precision mediump sampler2D;
-precision mediump samplerCube;
+precision lowp sampler2D;
+precision lowp samplerCube;
 #endif
 
 #if (defined(OGRE_GLSL) && __VERSION__ >= 150) || (defined(OGRE_GLSLES) && __VERSION__ >= 300)
