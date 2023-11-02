@@ -290,7 +290,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material, const vec4 lightSpacePosAr
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
 #if PSSM_SPLIT_COUNT <= 1
-        attenuation = saturate(CalcShadow(lightSpacePosArray[0], 0) + ShadowColour.r);
+        attenuation = saturate(CalcShadow(vec4(lightSpacePosArray[0].xy * 0.5, lightSpacePosArray[0].zw), 0) + ShadowColour.r);
 #elif PSSM_SPLIT_COUNT > 1
         attenuation = saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
 #endif

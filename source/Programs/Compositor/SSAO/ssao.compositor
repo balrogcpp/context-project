@@ -10,7 +10,6 @@ compositor SSAO
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaoOld target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssaox target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssaoy target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
 
         target depth
         {

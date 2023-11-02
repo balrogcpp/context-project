@@ -30,27 +30,31 @@ material ShadowMap
 
             texture_unit ShadowMap0
             {
-                texture black.dds
+                content_type shadow
                 filtering bilinear
-                tex_address_mode clamp
+                tex_address_mode border
+                tex_border_colour 1 1 1 1
             }
             texture_unit ShadowMap1
             {
-                texture black.dds
+                content_type shadow
                 filtering bilinear
-                tex_address_mode clamp
+                tex_address_mode border
+                tex_border_colour 1 1 1 1
             }
             texture_unit ShadowMap2
             {
-                texture black.dds
+                content_type shadow
                 filtering bilinear
-                tex_address_mode clamp
+                tex_address_mode border
+                tex_border_colour 1 1 1 1
             }
             texture_unit ShadowMap3
             {
-                texture black.dds
+                content_type shadow
                 filtering bilinear
                 tex_address_mode border
+                tex_border_colour 1 1 1 1
             }
         }
     }

@@ -2,10 +2,41 @@
 
 #include "pch.h"
 #include "CompositorManager.h"
+#include <OgreCustomCompositionPass.h>
 
 using namespace std;
 
 namespace gge {
+
+class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
+ public:
+  RenderShadows(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) {
+    viewport = instance->getChain()->getViewport();
+  }
+
+  void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
+    Ogre::Camera *camera = viewport->getCamera();
+    auto *context = sm->_pauseRendering();
+    sm->prepareShadowTextures(camera, viewport);
+    sm->_resumeRendering(context);
+  }
+
+  virtual ~RenderShadows() {}
+
+ private:
+  Ogre::Viewport *viewport = nullptr;
+};
+
+class RenderShadowsPass : public Ogre::CustomCompositionPass {
+ public:
+  Ogre::CompositorInstance::RenderSystemOperation *createOperation(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) override {
+    return OGRE_NEW RenderShadows(instance, pass);
+  }
+
+ protected:
+  virtual ~RenderShadowsPass() {}
+};
+
 CompositorManager::CompositorManager() : fixedViewportSize(false), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow") {}
 
 CompositorManager::~CompositorManager() = default;
@@ -50,6 +81,8 @@ void CompositorManager::OnSetUp() {
   ASSERTION(sceneManager, "[CompositorManager] ogreSceneManager not initialised");
   camera = sceneManager->getCamera("Camera");
   ASSERTION(camera, "[CompositorManager] ogreCamera not initialised");
+  compositorManager->registerCustomCompositionPass("RenderShadowMap", OGRE_NEW RenderShadowsPass);
+
   viewport = camera->getViewport();
   compositorChain = compositorManager->getCompositorChain(viewport);
   cubeCamera = sceneManager->createCamera("CubeCamera");
@@ -64,7 +97,7 @@ void CompositorManager::OnSetUp() {
   rt->addViewport(cubeCamera);
   rt->addListener(this);
 
-  //AddCompositor("ShadowMap", true);
+  // create compositor chain
   AddCompositor("MRT", true);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
@@ -299,18 +332,8 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   if (pass_id == 2) {  // 2 = ShadowMap
-    auto *pass = mat->getTechnique(0)->getPass(0);
-    auto *context = sceneManager->_pauseRendering();
-    sceneManager->prepareShadowTextures(camera, viewport);
-    sceneManager->_resumeRendering(context);
-    const auto &shadowTex = sceneManager->getShadowTexture(0);
-    auto *tus = pass->getTextureUnitState("ShadowMap0");
-    const auto &ll = sceneManager->_getLightsAffectingFrustum();
-    if (tus->_getTexturePtr() != shadowTex) {
-      tus->setTexture(shadowTex);
-    }
 
-  } else if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO
+  } else if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO, 20 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());

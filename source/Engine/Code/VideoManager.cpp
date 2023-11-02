@@ -255,7 +255,7 @@ VideoManager::VideoManager()
       shadowEnabled(true),
       shadowTexCount(1),
       pssmSplitCount(1),
-      shadowFarDistance(100.0),
+      shadowFarDistance(150.0),
       shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");
@@ -480,20 +480,12 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
   DPSMCameraSetup() {}
   virtual ~DPSMCameraSetup() {}
 
-  static Ogre::ShadowCameraSetupPtr create() { return std::make_shared<DPSMCameraSetup>(); }
+  static Ogre::ShadowCameraSetupPtr create() { return make_shared<DPSMCameraSetup>(); }
 
   /// Default shadow camera setup
   void getShadowCamera(const Ogre::SceneManager *sm, const Ogre::Camera *cam, const Ogre::Viewport *vp, const Ogre::Light *light,
                        Ogre::Camera *texCam, size_t iteration) const override {
-    const auto &pssmCaster = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-    const auto &dpsmCaster = Ogre::MaterialManager::getSingleton().getByName("DPSM/shadow_caster");
-
     if (light->getType() == Ogre::Light::LT_POINT) {
-      if (iteration == 0)
-        texCam->getParentSceneNode()->setDirection(Ogre::Vector3::UNIT_Y);
-      else if (iteration == 1)
-        texCam->getParentSceneNode()->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
-
       Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
 
     } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
@@ -515,6 +507,7 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowColour(Ogre::ColourValue::Black);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
+    ogreSceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance / 2.0f);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
     ogreSceneManager->setShadowTextureSelfShadow(true);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
@@ -526,6 +519,7 @@ void VideoManager::InitOgreSceneManager() {
     ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
     ogreSceneManager->setShadowTextureCount(shadowTexCount);
     Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigList().at(0);
+    texConfig.depthBufferPoolId = 2;
     for (int i = 0; i < shadowTexCount; i++) ogreSceneManager->setShadowTextureConfig(i, texConfig);
 
     // pssm stuf
