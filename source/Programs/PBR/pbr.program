@@ -13,7 +13,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
     {
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 1
+        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
         param_named_auto LightCount light_count
     }
 }
@@ -24,7 +24,7 @@ vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO
+    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO
     
     default_params
     {
@@ -32,17 +32,17 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto LightPositionArray light_position_array 8
         param_named_auto LightDirectionArray light_direction_array 8
         param_named_auto LightDiffuseScaledColourArray light_diffuse_colour_power_scaled_array 8
-        param_named_auto LightAttenuationArray light_attenuation_array 1
-        param_named_auto LightSpotParamsArray spotlight_params_array 1
-        param_named_auto LightCastsShadowsArray light_casts_shadows_array 1
-        //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 1
+        param_named_auto LightAttenuationArray light_attenuation_array 4
+        param_named_auto LightSpotParamsArray spotlight_params_array 4
+        param_named_auto LightCastsShadowsArray light_casts_shadows_array 4
+        //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 4
         param_named_auto LightCount light_count
         param_named_auto AmbientLightColour ambient_light_colour
         param_named_auto ShadowColour shadow_colour
         param_named_auto SurfaceAmbientColour surface_ambient_colour
         param_named_auto SurfaceDiffuseColour surface_diffuse_colour
         param_named_auto SurfaceSpecularColour surface_specular_colour
-        //param_named_auto SurfaceShininessColour surface_shininess
+        param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
         param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
         param_named_auto FogColour fog_colour
@@ -94,5 +94,5 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP
+    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO
 }

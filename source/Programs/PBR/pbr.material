@@ -67,7 +67,7 @@ abstract material PBR
                 content_type compositor MRT ao
                 sampler_ref ShadowTex
             }
-            texture_unit ShadowTex0
+            texture_unit ShadowTex
             {
                 content_type compositor MRT shadowmap
                 sampler_ref ShadowTex
@@ -82,7 +82,7 @@ abstract material PBR
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
                 param_named OcclusionTex   int 4
-                param_named ShadowTex0     int 5
+                param_named ShadowTex      int 5
             }
         }
     }
@@ -177,9 +177,15 @@ abstract material TERRA
                 filtering bilinear
                 tex_address_mode clamp
             }
-            texture_unit ShadowTex0
+            texture_unit AO
             {
-                content_type shadow
+                //texture $AO
+                content_type compositor MRT ao
+                sampler_ref ShadowTex
+            }
+            texture_unit ShadowTex
+            {
+                content_type compositor MRT shadowmap
                 sampler_ref ShadowTex
             }
 
@@ -191,7 +197,8 @@ abstract material TERRA
                 param_named NormalTex      int 1
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
-                param_named ShadowTex0     int 4
+                param_named OcclusionTex   int 4
+                param_named ShadowTex      int 5
             }
         }
     }

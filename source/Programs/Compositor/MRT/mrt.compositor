@@ -23,6 +23,7 @@ compositor MRT
             pass clear { colour_value 1 1 1 1 }
             pass render_quad
             {
+                identifier 2
                 material ShadowMap
             }
         }

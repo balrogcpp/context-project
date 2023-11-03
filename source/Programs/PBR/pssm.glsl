@@ -3,37 +3,14 @@
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
 
-//#define PENUMBRA
 #if MAX_SHADOW_TEXTURES > 0
-uniform mediump sampler2D ShadowTex0;
-#endif
-#if MAX_SHADOW_TEXTURES > 1
-uniform mediump sampler2D ShadowTex1;
-#endif
-#if MAX_SHADOW_TEXTURES > 2
-uniform mediump sampler2D ShadowTex2;
-#endif
-#if MAX_SHADOW_TEXTURES > 3
-uniform mediump sampler2D ShadowTex3;
-#endif
-#if MAX_SHADOW_TEXTURES > 4
-uniform mediump sampler2D ShadowTex4;
-#endif
-#if MAX_SHADOW_TEXTURES > 5
-uniform mediump sampler2D ShadowTex5;
-#endif
-#if MAX_SHADOW_TEXTURES > 6
-uniform mediump sampler2D ShadowTex6;
-#endif
-#if MAX_SHADOW_TEXTURES > 7
-uniform mediump sampler2D ShadowTex7;
-#endif
+//#define PENUMBRA
+uniform mediump sampler2D ShadowTex;
 uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 uniform highp vec4 PssmSplitPoints;
 uniform vec4 ShadowColour;
 
-#if MAX_SHADOW_TEXTURES > 0
 #ifndef PSSM_FILTER_RADIUS
 #define PSSM_FILTER_RADIUS 4
 #define PSSM_FILTER_RADIUS0 1.0
@@ -113,7 +90,7 @@ float CalcDepthShadow(mediump sampler2D shadowTex, vec4 uv)
 {
     uv /= uv.w;
     uv.z = uv.z * 0.5 + 0.5;
-    vec2 tsize = 1.0 / vec2(textureSize(shadowTex, 0));
+    vec2 tsize = 0.5 / vec2(textureSize(shadowTex, 0));
     float shadow = 0.0;
     highp float currentDepth = uv.z - 4.0 * HALF_EPSILON;
     float phi = InterleavedGradientNoise();
@@ -135,54 +112,18 @@ float CalcDepthShadow(mediump sampler2D shadowTex, vec4 uv)
     return shadow;
 }
 
-#if PSSM_SPLIT_COUNT > 0
-float CalcPSSMShadow(const highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES]) {
+float CalcPSSMShadow(const highp vec4 lightSpacePos0, const highp vec4 lightSpacePos1, const highp vec4 lightSpacePos2)
+{
     highp float depth = gl_FragCoord.z / gl_FragCoord.w;
-
-    if (depth <= PssmSplitPoints.x) return CalcDepthShadow(ShadowTex0, lightSpacePosArray[0]);
-#if PSSM_SPLIT_COUNT > 1
-    else if (depth <= PssmSplitPoints.y) return CalcDepthShadow(ShadowTex1, lightSpacePosArray[1]);
-#endif
-#if PSSM_SPLIT_COUNT > 2
-    else if (depth <= PssmSplitPoints.z) return CalcDepthShadow(ShadowTex2, lightSpacePosArray[2]);
-#endif
-#if PSSM_SPLIT_COUNT > 3
-    else if (depth <= PssmSplitPoints.w) return CalcDepthShadow(ShadowTex3, lightSpacePosArray[3]);
-#endif
+    if (depth <= PssmSplitPoints.x) return CalcDepthShadow(ShadowTex, vec4(lightSpacePos0.xy * 0.5, lightSpacePos0.zw));
+    else if (depth <= PssmSplitPoints.y) return CalcDepthShadow(ShadowTex, vec4(lightSpacePos1.xy * 0.5 + vec2(0.5, 0.0), lightSpacePos1.zw));
+    else if (depth <= PssmSplitPoints.z) return CalcDepthShadow(ShadowTex, vec4(lightSpacePos2.xy * 0.5 + vec2(0.0, 0.5), lightSpacePos2.zw));
     else return 1.0;
 }
-#endif
-
 
 float CalcShadow(const vec4 lightSpacePos, int index)
 {
-#if MAX_SHADOW_TEXTURES > 0
-    if (index == 0) return CalcDepthShadow(ShadowTex0, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 1
-    else if (index == 1) return CalcDepthShadow(ShadowTex1, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 2
-    else if (index == 2) return CalcDepthShadow(ShadowTex2, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 3
-    else if (index == 3) return CalcDepthShadow(ShadowTex3, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 4
-    else if (index == 4) return CalcDepthShadow(ShadowTex4, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 5
-    else if (index == 5) return CalcDepthShadow(ShadowTex5, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 6
-    else if (index == 6) return CalcDepthShadow(ShadowTex6, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 7
-    else if (index == 7) return CalcDepthShadow(ShadowTex7, lightSpacePos);
-#endif
-#if MAX_SHADOW_TEXTURES > 0
-    else return 1.0;
-#endif
+    return CalcDepthShadow(ShadowTex, lightSpacePos);
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0

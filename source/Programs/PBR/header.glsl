@@ -9,13 +9,10 @@
 #define MAX_LIGHTS 8
 #endif
 #ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 1
+#define MAX_SHADOW_TEXTURES 4
 #endif
 #ifndef MAX_MRT_TEXTURES
 #define MAX_MRT_TEXTURES 5
-#endif
-#ifndef PSSM_SPLIT_COUNT
-#define PSSM_SPLIT_COUNT 1
 #endif
 #ifdef HAS_MRT
 #define MRT_COLOR 0

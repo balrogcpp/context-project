@@ -104,11 +104,7 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
-#if PSSM_SPLIT_COUNT > 1
-        if (max(int(LightCount), PSSM_SPLIT_COUNT) <= i) break;
-#else
-        if (int(LightCount) <= i) break;
-#endif
+        if (max(int(LightCount), 3) <= i) break;
         vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], position);
     }
 #endif

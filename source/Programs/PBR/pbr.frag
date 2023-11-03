@@ -289,11 +289,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material, const vec4 lightSpacePosAr
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-#if PSSM_SPLIT_COUNT <= 1
-        attenuation = saturate(CalcShadow(vec4(lightSpacePosArray[0].xy * 0.5, lightSpacePosArray[0].zw), 0) + ShadowColour.r);
-#elif PSSM_SPLIT_COUNT > 1
-        attenuation = saturate(CalcPSSMShadow(lightSpacePosArray) + ShadowColour.r);
-#endif
+        attenuation *= saturate(CalcPSSMShadow(lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2]) + ShadowColour.r);
         if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -402,17 +398,13 @@ vec3 GetORM(const vec2 uv, float spec)
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to material roughness
 #ifndef TERRA_NORMALMAP
-    vec3 orm = vec3(1.0, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
-    vec3 orm = vec3(1.0, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
 #endif
 #ifdef HAS_ORM
-#ifdef HAS_ATLAS
-    orm *= texture2D(AtlasTex, fract(uv) * 0.5 + vec2(0.0, 0.5)).rgb;
-#else
     if (textureSize(OrmTex, 0).x > 1) orm *= texture2D(OrmTex, uv).rgb;
     else orm.b = 0.0;
-#endif
 #endif
 
     return clamp(orm, vec3(0.0, F0, 0.0), vec3(1.0, 1.0, 1.0));

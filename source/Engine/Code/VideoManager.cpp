@@ -253,8 +253,8 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
-      shadowTexCount(1),
-      pssmSplitCount(1),
+      shadowTexCount(4),
+      pssmSplitCount(3),
       shadowFarDistance(150.0),
       shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
