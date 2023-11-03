@@ -7,48 +7,6 @@
 
 using namespace std;
 
-namespace {
-inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
-  bool hasNormals = false;
-  bool hasTangents = false;
-  bool hasUVs = false;
-  auto &elementList = vertex_declaration->getElements();
-  auto it = elementList.begin();
-  auto end = elementList.end();
-
-  while (it != end && !hasTangents) {
-    const auto &vertexElem = *it;
-    if (vertexElem.getSemantic() == Ogre::VES_TANGENT) hasTangents = true;
-    if (vertexElem.getSemantic() == Ogre::VES_NORMAL) hasNormals = true;
-    if (vertexElem.getSemantic() == Ogre::VES_TEXTURE_COORDINATES) hasUVs = true;
-    ++it;
-  }
-
-  return !hasTangents && hasUVs && hasNormals;
-}
-
-inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
-  bool generateTangents = false;
-
-  if (mesh->sharedVertexData) {
-    auto *vertexDecl = mesh->sharedVertexData->vertexDeclaration;
-    generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
-  }
-
-  for (int i = 0; i < mesh->getNumSubMeshes(); ++i) {
-    auto *subMesh = mesh->getSubMesh(i);
-    if (subMesh->vertexData) {
-      auto *vertexDecl = subMesh->vertexData->vertexDeclaration;
-      generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
-    }
-  }
-
-  if (generateTangents) {
-    mesh->buildTangentVectors();
-  }
-}
-}  // namespace
-
 namespace gge {
 SceneManager::SceneManager()
     : viewProj(Ogre::Matrix4::IDENTITY), viewProjPrev(Ogre::Matrix4::IDENTITY), pssmPoints(Ogre::Vector4::ZERO), isEven(false) {}
@@ -128,9 +86,9 @@ void SceneManager::LoadFromFile(const std::string &filename) {
       terrainGlobalOptions->setLightMapDirection(ogreSceneManager->getLight("Sun")->getDerivedDirection());
     }
 
-//    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
-//      auto *terrain = it.getNext()->instance;
-//    }
+    //    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
+    //      auto *terrain = it.getNext()->instance;
+    //    }
 
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
@@ -164,17 +122,16 @@ void SceneManager::ScanLight(Ogre::Light *light) {
 void SceneManager::ScanEntity(const std::string &name) { ScanEntity(ogreSceneManager->getEntity(name)); }
 
 void SceneManager::ScanEntity(Ogre::Entity *entity) {
-  EnsureHasTangents(entity->getMesh());
-
   if (entity->getName().rfind("GrassLDR", 0)) {
     Ogre::SceneNode *node = entity->getParentSceneNode();
     Ogre::Vector3 position = node->getPosition();
     node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
   }
 
-  if (!entity->getMesh()->isReloadable()) {
-    return;
-  }
+  if (!entity->getMesh()->isReloadable()) return;
+
+  unsigned short src;
+  if (!entity->getMesh()->suggestTangentVectorBuildParams(src)) entity->getMesh()->buildTangentVectors(src);
 
   static unsigned long long generator = 0;
   for (auto &it : entity->getSubEntities()) {
@@ -256,7 +213,9 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
 
-  if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) fp->setNamedConstant("PssmSplitPoints", pssmPoints);
+  if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+    fp->setNamedConstant("PssmSplitPoints", pssmPoints);
+  }
 
   // apply for dynamic entities only
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {

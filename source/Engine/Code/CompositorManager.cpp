@@ -329,17 +329,7 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 2) {  // 2 = ShadowMap
-    auto *pass = mat->getTechnique(0)->getPass(0);
-    for (int i = 0; i < sceneManager->getShadowTextureConfigList().size(); i++) {
-      const auto &shadowTex = sceneManager->getShadowTexture(i);
-      auto *tus = pass->getTextureUnitState(string("ShadowMap") + to_string(i));
-      if (tus->_getTexturePtr() != shadowTex) {
-        tus->_setTexturePtr(shadowTex);
-      }
-    }
-
-  } else if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO, 20 = SSR
+  if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO, 20 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());

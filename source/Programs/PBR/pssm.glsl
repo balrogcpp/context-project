@@ -12,7 +12,7 @@ uniform highp vec4 PssmSplitPoints;
 uniform vec4 ShadowColour;
 
 #ifndef PSSM_FILTER_RADIUS
-#define PSSM_FILTER_RADIUS 4
+#define PSSM_FILTER_RADIUS 8
 #define PSSM_FILTER_RADIUS0 1.0
 #define PSSM_FILTER_RADIUS1 0.3
 #define PSSM_FILTER_RADIUS2 0.2
@@ -86,24 +86,22 @@ float Penumbra(mediump sampler2D shadowTex, vec2 uv, const vec2 tsize, float phi
     return AvgBlockersDepthToPenumbra(depth, avgBlockersDepth / blockersCount);
 }
 
-float CalcDepthShadow(mediump sampler2D shadowTex, vec4 uv)
+float CalcDepthShadow(vec2 uv, float depth, const vec2 tsize)
 {
-    uv /= uv.w;
-    uv.z = uv.z * 0.5 + 0.5;
-    vec2 tsize = 0.5 / vec2(textureSize(shadowTex, 0));
+    depth = depth * 0.5 + 0.5;
     float shadow = 0.0;
-    highp float currentDepth = uv.z - 4.0 * HALF_EPSILON;
+    highp float currentDepth = depth - 4.0 * HALF_EPSILON;
     float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
-    float penumbra = Penumbra(shadowTex, uv.xy, tsize, phi, currentDepth);
+    float penumbra = Penumbra(shadowTex, uv, tsize, phi, currentDepth);
 #else
     const float penumbra = 1.0;
 #endif
 
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
-        uv.xy += offset;
-        highp float depth = texture2D(shadowTex, uv.xy).x * 64.0 + 1.0;
+        uv += offset;
+        highp float depth = texture2D(S hadowTex, uv).x * 64.0 + 1.0;
         shadow += fstep(depth, currentDepth);
     }
 
@@ -115,15 +113,17 @@ float CalcDepthShadow(mediump sampler2D shadowTex, vec4 uv)
 float CalcPSSMShadow(const highp vec4 lightSpacePos0, const highp vec4 lightSpacePos1, const highp vec4 lightSpacePos2)
 {
     highp float depth = gl_FragCoord.z / gl_FragCoord.w;
-    if (depth <= PssmSplitPoints.x) return CalcDepthShadow(ShadowTex, vec4(lightSpacePos0.xy * 0.5, lightSpacePos0.zw));
-    else if (depth <= PssmSplitPoints.y) return CalcDepthShadow(ShadowTex, vec4(lightSpacePos1.xy * 0.5 + vec2(0.5, 0.0), lightSpacePos1.zw));
-    else if (depth <= PssmSplitPoints.z) return CalcDepthShadow(ShadowTex, vec4(lightSpacePos2.xy * 0.5 + vec2(0.0, 0.5), lightSpacePos2.zw));
+    vec2 tsize = 0.5 / vec2(textureSize(ShadowTex, 0));
+    if (depth <= PssmSplitPoints.x) return CalcDepthShadow(saturate(lightSpacePos0.xy / lightSpacePos0.w) * 0.5, lightSpacePos0.z / lightSpacePos0.w, tsize * PSSM_FILTER_RADIUS0);
+    else if (depth <= PssmSplitPoints.y) return CalcDepthShadow(saturate(lightSpacePos1.xy / lightSpacePos1.w) * 0.5 + vec2(0.5, 0.0), lightSpacePos1.z / lightSpacePos1.w, tsize * PSSM_FILTER_RADIUS1);
+    else if (depth <= PssmSplitPoints.z) return CalcDepthShadow(saturate(lightSpacePos2.xy / lightSpacePos2.w) * 0.5 + vec2(0.0, 0.5), lightSpacePos2.z / lightSpacePos2.w, tsize * PSSM_FILTER_RADIUS2);
     else return 1.0;
 }
 
 float CalcShadow(const vec4 lightSpacePos, int index)
 {
-    return CalcDepthShadow(ShadowTex, lightSpacePos);
+    vec2 tsize = 0.5 / vec2(textureSize(ShadowTex, 0));
+    return CalcDepthShadow(lightSpacePos.xy / lightSpacePos.w, lightSpacePos.z / lightSpacePos.w, tsize);
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0
