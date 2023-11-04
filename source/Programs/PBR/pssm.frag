@@ -17,6 +17,7 @@ void main()
     if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) discard;
 #endif
 
-    const highp float K = 1.0;
-    FragColor.r = exp(K * (gl_FragCoord.z - DepthRange.x) * DepthRange.w);
+    highp float linearDepth = gl_FragCoord.z;
+    highp float clampedDepth = (linearDepth - DepthRange.x) * DepthRange.w;
+    FragColor.r = exp(PSSM_ESM_K * clampedDepth);
 }

@@ -255,7 +255,7 @@ VideoManager::VideoManager()
       shadowEnabled(true),
       shadowTexCount(4),
       pssmSplitCount(3),
-      shadowFarDistance(200.0),
+      shadowFarDistance(140.0),
       shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");
@@ -502,13 +502,13 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 
 void VideoManager::InitOgreSceneManager() {
   if (shadowEnabled) {
-    if (!RenderSystemIsGLES2()) shadowTexSize = 2048;
+    //if (!RenderSystemIsGLES2()) shadowTexSize = 2048;
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     pssmSetup = make_shared<DPSMCameraSetup>();
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowColour(Ogre::ColourValue::Black);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
-    ogreSceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance / 2.0f);
+    ogreSceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
     ogreSceneManager->setShadowTextureSelfShadow(true);
     ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
@@ -528,7 +528,7 @@ void VideoManager::InitOgreSceneManager() {
     for (int i = 0; i < pssmSplitCount; i++) {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     }
-    pssmSetup->calculateSplitPoints(pssmSplitCount, ogreCamera->getNearClipDistance() * 10.0f, ogreSceneManager->getShadowFarDistance());
+    pssmSetup->calculateSplitPoints(pssmSplitCount, ogreCamera->getNearClipDistance(), ogreSceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
 

@@ -11,7 +11,11 @@ uniform highp vec4 PssmSplitPoints;
 uniform vec4 ShadowColour;
 
 #ifndef PSSM_FILTER_SIZE
-#define PSSM_FILTER_SIZE 8
+#ifndef GL_ES
+#define PSSM_FILTER_SIZE 6
+#else
+#define PSSM_FILTER_SIZE 4
+#endif
 #endif
 #ifndef PSSM_FILTER_RADIUS
 #define PSSM_FILTER_RADIUS 2
@@ -61,22 +65,23 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
 float CalcDepthShadow(vec2 uv, float currentDepth, const vec2 tsize)
 {
     currentDepth = currentDepth * 0.5 + 0.5;
-    //currentDepth -= 2.0 * HALF_EPSILON;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise();
-    const float K = 1.0;
-    const float ESM_SCALE = 1.3;
 #ifdef PENUMBRA
     float penumbra = Penumbra(uv, tsize, phi, currentDepth);
 #else
     const float penumbra = 1.0;
 #endif
 
+//    float texDepth = texture2D(ShadowTex, uv).x;
+//    float sampled = saturate(texDepth * exp(-PSSM_ESM_K * currentDepth));
+//    shadow = 1.0 - (PSSM_ESM_SCALE * (1.0 - sampled));
+
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
-        highp float texDepth = texture2D(ShadowTex, uv + offset).x;
-        float sampled = texDepth * exp(-K * currentDepth);
-        sampled = 1.0 - (ESM_SCALE * (1.0 - sampled));
+        float texDepth = texture2D(ShadowTex, uv + offset).x;
+        float sampled = saturate(texDepth * exp(-PSSM_ESM_K * currentDepth));
+        sampled = 1.0 - (PSSM_ESM_SCALE * (1.0 - sampled));
         shadow += sampled;
     }
     shadow /= float(PSSM_FILTER_SIZE);
@@ -88,6 +93,7 @@ float CalcPSSMShadow(const highp vec4 lightSpacePos0, const highp vec4 lightSpac
 {
     highp float depth = gl_FragCoord.z / gl_FragCoord.w;
     vec2 tsize = 1.0 / vec2(textureSize(ShadowTex, 0));
+
     if (depth <= PssmSplitPoints.x) return CalcDepthShadow(saturate(lightSpacePos0.xy / lightSpacePos0.w) * 0.5, (lightSpacePos0.z / lightSpacePos0.w - ShadowDepthRangeArray[0].x) * ShadowDepthRangeArray[0].w, tsize);
     else if (depth <= PssmSplitPoints.y) return CalcDepthShadow(saturate(lightSpacePos1.xy / lightSpacePos1.w) * 0.5 + vec2(0.5, 0.0), (lightSpacePos1.z / lightSpacePos1.w - ShadowDepthRangeArray[1].x) * ShadowDepthRangeArray[1].w, tsize);
     else if (depth <= PssmSplitPoints.z) return CalcDepthShadow(saturate(lightSpacePos2.xy / lightSpacePos2.w) * 0.5 + vec2(0.0, 0.5), (lightSpacePos2.z / lightSpacePos2.w - ShadowDepthRangeArray[2].x) * ShadowDepthRangeArray[2].w, tsize);

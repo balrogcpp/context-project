@@ -2,12 +2,14 @@ import PBR from pbr.material
 
 material Plane : PBR
 {
-    set $Albedo used-stainless-steel2_albedo.dds
-    set $Normal used-stainless-steel2_normal-ogl.dds
-    set $ORM used-stainless-steel2_orm.dds
+
+    //set $Albedo hard-edged-rock7_albedo.dds
+    //set $Normal hard-edged-rock7_nmap-ogl.dds
+    //set $ORM hard-edged-rock7_orm.dds
 
     technique {
         pass {
+            alpha_rejection greater_equal 0
             diffuse 0.6 0.753 0.796
         }
     }

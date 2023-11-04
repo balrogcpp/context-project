@@ -22,7 +22,7 @@ compositor FullScreenBlur
             only_initial on
             pass render_quad
             {
-                material FilterX
+                material Filter9X
                 input 0 rt
             }
         }
@@ -32,7 +32,7 @@ compositor FullScreenBlur
             only_initial on
             pass render_quad
             {
-                material FilterY
+                material Filter9Y
                 input 0 rtx
             }
         }
@@ -42,7 +42,7 @@ compositor FullScreenBlur
             only_initial on
             pass render_quad
             {
-                material FilterX
+                material Filter9X
                 input 0 rty
             }
         }
@@ -52,7 +52,7 @@ compositor FullScreenBlur
             only_initial on
             pass render_quad
             {
-                material FilterY
+                material Filter9Y
                 input 0 rtx1
             }
         }

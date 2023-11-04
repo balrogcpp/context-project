@@ -73,8 +73,8 @@ void main()
         FragColor.r = Downscale13(ShadowMap1, (vUV0 - vec2(0.5, 0.0)) * 2.0);
     else if (vUV0.x <= 0.5 && vUV0.y > 0.5)
         FragColor.r = Downscale13(ShadowMap2, (vUV0 - vec2(0.0, 0.5)) * 2.0);
-//    else if (vUV0.x > 0.5 && vUV0.y > 0.5)
-//        FragColor.r = Downscale13(ShadowMap3, (vUV0 - vec2(0.5, 0.5)) * 2.0);
+    else if (vUV0.x > 0.5 && vUV0.y > 0.5)
+        FragColor.r = Downscale13(ShadowMap3, (vUV0 - vec2(0.5, 0.5)) * 2.0);
     else
         FragColor.r = 1.0;
 }

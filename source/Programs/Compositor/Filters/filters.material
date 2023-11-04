@@ -23,13 +23,13 @@ abstract material Filter
 	}
 }
 
-material FilterY : Filter
+material Filter5Y : Filter
 {
 	technique
 	{
 		pass
 		{
-			fragment_program_ref gaussy
+			fragment_program_ref gauss5y
 			{
                 param_named RT int 0
 			}
@@ -37,13 +37,69 @@ material FilterY : Filter
 	}
 }
 
-material FilterX : Filter
+material Filter5X : Filter
 {
 	technique
 	{
 		pass
 		{
-			fragment_program_ref gaussx
+			fragment_program_ref gauss5x
+            {
+                param_named RT int 0
+            }
+		}
+	}
+}
+
+material Filter9Y : Filter
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref gauss9y
+			{
+                param_named RT int 0
+			}
+		}
+	}
+}
+
+material Filter9X : Filter
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref gauss9x
+            {
+                param_named RT int 0
+            }
+		}
+	}
+}
+
+material Filter13Y : Filter
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref gauss13y
+			{
+                param_named RT int 0
+			}
+		}
+	}
+}
+
+material Filter13X : Filter
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref gauss13x
             {
                 param_named RT int 0
             }

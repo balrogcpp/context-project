@@ -1,13 +1,33 @@
 // created by Andrey Vasiliev
 
-fragment_program gaussy glsl glsles hlsl
+fragment_program gauss5y glsl glsles hlsl
 {
-	source gaussy.frag
+	source gauss5y.frag
 }
 
-fragment_program gaussx glsl glsles hlsl
+fragment_program gauss5x glsl glsles hlsl
 {
-	source gaussx.frag
+	source gauss5x.frag
+}
+
+fragment_program gauss9y glsl glsles hlsl
+{
+	source gauss9y.frag
+}
+
+fragment_program gauss9x glsl glsles hlsl
+{
+	source gauss9x.frag
+}
+
+fragment_program gauss13y glsl glsles hlsl
+{
+	source gauss13y.frag
+}
+
+fragment_program gauss13x glsl glsles hlsl
+{
+	source gauss13x.frag
 }
 
 fragment_program linear glsl glsles hlsl
