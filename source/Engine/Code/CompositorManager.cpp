@@ -104,7 +104,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("Tonemap", false);
-  AddCompositor("Blur", false);
+  AddCompositor("Blur", !RenderSystemIsGLES2());
   AddCompositor("FullScreenBlur", false);
 
   // reg as viewport listener
