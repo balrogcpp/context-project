@@ -1,14 +1,9 @@
 // created by Andrey Vasiliev
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PSSM
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 {
 	source pssm.vert
-
 	preprocessor_defines SHADOWCASTER_ALPHA
-
 	default_params
 	{
 		param_named_auto WorldViewProjMatrix worldviewproj_matrix
@@ -23,6 +18,7 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 
 	default_params
 	{
+	    param_named_auto DepthRange scene_depth_range
 	    param_named AlbedoTex int 0
 	}
 }
@@ -30,7 +26,6 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 {
 	source pssm.vert
-
 	default_params
 	{
 		param_named_auto WorldViewProjMatrix worldviewproj_matrix
@@ -40,9 +35,9 @@ vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 fragment_program PSSM/shadow_caster_fs glsl glsles hlsl
 {
 	source pssm.frag
-
 	default_params
 	{
+	    param_named_auto DepthRange scene_depth_range
 	}
 }
 

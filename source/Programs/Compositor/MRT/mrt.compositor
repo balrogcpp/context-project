@@ -20,7 +20,6 @@ compositor MRT
 
         target shadowmap
         {
-            pass clear { colour_value 1 1 1 1 }
             pass render_quad
             {
                 identifier 2

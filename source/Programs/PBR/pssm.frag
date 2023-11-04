@@ -1,6 +1,8 @@
-//// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #include "header.glsl"
+
+uniform vec4 DepthRange;
 
 #ifdef SHADOWCASTER_ALPHA
 uniform sampler2D AlbedoTex;
@@ -15,5 +17,5 @@ void main()
     if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) discard;
 #endif
 
-    FragColor.r = (gl_FragCoord.z - 1.0) / 64.0;
+    FragColor.r = (gl_FragCoord.z - DepthRange.x) * DepthRange.w;
 }

@@ -2,7 +2,7 @@
 
 sampler ShadowTex
 {
-    filtering none
+    filtering bilinear
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }

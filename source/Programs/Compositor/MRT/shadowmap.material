@@ -7,6 +7,13 @@ fragment_program shadowmap glsl glsles hlsl
 	source shadowmap.frag
 }
 
+sampler ShadowMap
+{
+    filtering bilinear
+    tex_address_mode border
+    tex_border_colour 1 1 1 1
+}
+
 material ShadowMap
 {
     technique
@@ -31,30 +38,22 @@ material ShadowMap
             texture_unit ShadowMap0
             {
                 content_type shadow
-                filtering bilinear
-                tex_address_mode border
-                tex_border_colour 1 1 1 1
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap1
             {
                 content_type shadow
-                filtering bilinear
-                tex_address_mode border
-                tex_border_colour 1 1 1 1
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap2
             {
                 content_type shadow
-                filtering bilinear
-                tex_address_mode border
-                tex_border_colour 1 1 1 1
+                sampler_ref ShadowMap
             }
             texture_unit ShadowMap3
             {
                 content_type shadow
-                filtering bilinear
-                tex_address_mode border
-                tex_border_colour 1 1 1 1
+                sampler_ref ShadowMap
             }
         }
     }
