@@ -14,7 +14,7 @@
 #ifndef MAX_MRT_TEXTURES
 #define MAX_MRT_TEXTURES 5
 #endif
-#define PSSM_ESM_K 1
+#define PSSM_ESM_K 1.0
 #define PSSM_ESM_SCALE 1.1
 #define PSSM_ESM_MIN -0.5
 #ifdef HAS_MRT
