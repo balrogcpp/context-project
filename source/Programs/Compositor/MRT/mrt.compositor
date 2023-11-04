@@ -22,7 +22,6 @@ compositor MRT
         {
             pass render_quad
             {
-                identifier 2
                 material ShadowMap
             }
         }

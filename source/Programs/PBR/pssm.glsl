@@ -11,7 +11,7 @@ uniform highp vec4 PssmSplitPoints;
 uniform vec4 ShadowColour;
 
 #ifndef PSSM_FILTER_SIZE
-#define PSSM_FILTER_SIZE 4
+#define PSSM_FILTER_SIZE 8
 #endif
 #ifndef PSSM_FILTER_RADIUS
 #define PSSM_FILTER_RADIUS 2
@@ -61,9 +61,11 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
 float CalcDepthShadow(vec2 uv, float currentDepth, const vec2 tsize)
 {
     currentDepth = currentDepth * 0.5 + 0.5;
-    currentDepth -= 0.001;
+    //currentDepth -= 2.0 * HALF_EPSILON;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise();
+    const float K = 1.0;
+    const float ESM_SCALE = 1.3;
 #ifdef PENUMBRA
     float penumbra = Penumbra(uv, tsize, phi, currentDepth);
 #else
@@ -73,8 +75,8 @@ float CalcDepthShadow(vec2 uv, float currentDepth, const vec2 tsize)
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
         highp float texDepth = texture2D(ShadowTex, uv + offset).x;
-        float sampled = exp(0.5 * texDepth) * exp(-0.5 * currentDepth);
-        sampled = 1.0 - (1.7 * (1.0 - sampled));
+        float sampled = texDepth * exp(-K * currentDepth);
+        sampled = 1.0 - (ESM_SCALE * (1.0 - sampled));
         shadow += sampled;
     }
     shadow /= float(PSSM_FILTER_SIZE);
