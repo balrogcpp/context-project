@@ -44,3 +44,8 @@ fragment_program upscale9 glsl glsles hlsl
 {
 	source upscale9.frag
 }
+
+fragment_program box4 glsl glsles hlsl
+{
+	source box4.frag
+}

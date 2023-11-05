@@ -8,13 +8,15 @@ uniform sampler2D RT;
 vec3 Gauss5(sampler2D tex, const vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
-    vec3 A = texture2D(tex, uv).xyz;
-    vec3 B = texture2D(tex, uv + tsize * vec2(1.3333333333333333, 0.0)).xyz;
-    vec3 C = texture2D(tex, uv - tsize * vec2(1.3333333333333333, 0.0)).xyz;
 
-    vec3 c1 = A * 0.29411764705882354 + (B + C) * 0.35294117647058826 + (D + E) * 0.35294117647058826;
+    vec3 A = texture2D(tex, uv).rgb;
+    vec3 B = texture2D(tex, uv + tsize * vec2(1.3333333333333333, 0.0)).rgb;
+    vec3 C = texture2D(tex, uv - tsize * vec2(1.3333333333333333, 0.0)).rgb;
 
-    return c1;
+    vec3 c1 = A * 0.29411764705882354;
+    vec3 c2 = (B + C) * 0.35294117647058826;
+
+    return c1 + c2;
 }
 
 in highp vec2 vUV0;

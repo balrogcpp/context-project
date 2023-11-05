@@ -8,19 +8,20 @@ uniform sampler2D RT;
 vec3 Downscale13(sampler2D tex, const vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
-    vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
-    vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;
-    vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).xyz;
-    vec3 D = texture2D(tex, uv + tsize * vec2(-0.5, -0.5)).xyz;
-    vec3 E = texture2D(tex, uv + tsize * vec2( 0.5, -0.5)).xyz;
-    vec3 F = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).xyz;
-    vec3 G = texture2D(tex, uv                           ).xyz;
-    vec3 H = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).xyz;
-    vec3 I = texture2D(tex, uv + tsize * vec2(-0.5,  0.5)).xyz;
-    vec3 J = texture2D(tex, uv + tsize * vec2( 0.5,  0.5)).xyz;
-    vec3 K = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).xyz;
-    vec3 L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).xyz;
-    vec3 M = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).xyz;
+
+    vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
+    vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;
+    vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).rgb;
+    vec3 D = texture2D(tex, uv + tsize * vec2(-0.5, -0.5)).rgb;
+    vec3 E = texture2D(tex, uv + tsize * vec2( 0.5, -0.5)).rgb;
+    vec3 F = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).rgb;
+    vec3 G = texture2D(tex, uv                           ).rgb;
+    vec3 H = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).rgb;
+    vec3 I = texture2D(tex, uv + tsize * vec2(-0.5,  0.5)).rgb;
+    vec3 J = texture2D(tex, uv + tsize * vec2( 0.5,  0.5)).rgb;
+    vec3 K = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).rgb;
+    vec3 L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).rgb;
+    vec3 M = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).rgb;
 
     vec3 c1 = (D + E + I + J) * 0.125;
     vec3 c2 = (A + B + G + F) * 0.03125;

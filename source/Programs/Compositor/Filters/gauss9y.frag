@@ -8,15 +8,18 @@ uniform sampler2D RT;
 vec3 Gauss9(sampler2D tex, const vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
-    vec3 A = texture2D(tex, uv).xyz;
-    vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).xyz;
-    vec3 C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).xyz;
-    vec3 D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).xyz;
-    vec3 E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).xyz;
 
-    vec3 c1 = A * 0.2270270270 + (B + C) * 0.3162162162 + (D + E) * 0.0702702703;
+    vec3 A = texture2D(tex, uv).rgb;
+    vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).rgb;
+    vec3 C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).rgb;
+    vec3 D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).rgb;
+    vec3 E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).rgb;
 
-    return c1;
+    vec3 c1 = A * 0.2270270270;
+    vec3 c2 = (B + C) * 0.3162162162;
+    vec3 c3 = (D + E) * 0.0702702703;
+
+    return c1 + c2 + c3;
 }
 
 in highp vec2 vUV0;

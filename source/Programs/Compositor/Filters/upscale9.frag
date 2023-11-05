@@ -8,15 +8,16 @@ uniform sampler2D RT;
 vec3 Upscale9(sampler2D tex, const vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
-    vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).xyz;
-    vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).xyz;
-    vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).xyz;
-    vec3 D = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).xyz;
-    vec3 E = texture2D(tex, uv + tsize                   ).xyz;
-    vec3 F = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).xyz;
-    vec3 G = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).xyz;
-    vec3 H = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).xyz;
-    vec3 I = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).xyz;
+
+    vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
+    vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;
+    vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).rgb;
+    vec3 D = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).rgb;
+    vec3 E = texture2D(tex, uv + tsize                   ).rgb;
+    vec3 F = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).rgb;
+    vec3 G = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).rgb;
+    vec3 H = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).rgb;
+    vec3 I = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).rgb;
 
     vec3 c1 = E * 0.25;
     vec3 c2 = (B + D + F + H) * 0.125;

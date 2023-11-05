@@ -150,3 +150,19 @@ material Downscale13 : Filter
         }
     }
 }
+
+material Box4 : Filter
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref StdQuad {}
+
+            fragment_program_ref box4
+            {
+                param_named RT int 0
+            }
+        }
+    }
+}
