@@ -38,27 +38,6 @@ float Downscale13(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3 + c4 + c5;
 }
 
-float Upscale9(sampler2D tex, const vec2 uv)
-{
-    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
-
-    float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
-    float B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).x;
-    float C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x;
-    float D = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).x;
-    float E = texture2D(tex, uv + tsize                   ).x;
-    float F = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).x;
-    float G = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;
-    float H = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).x;
-    float I = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).x;
-
-    float c1 = E * 0.25;
-    float c2 = (B + D + F + H) * 0.125;
-    float c3 = (A + C + G + I) * 0.0625;
-
-    return c1 + c2 + c3;
-}
-
 float FetchDepth(sampler2D tex, const vec2 uv)
 {
     return texture2D(tex, uv).x;

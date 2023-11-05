@@ -69,6 +69,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   unsigned short ogreMinLogLevel;
   std::unique_ptr<Ogre::LogManager> ogreLogManager;
   std::unique_ptr<ShaderResolver> shaderResolver;
+  Ogre::Real shadowNearDistance;
   Ogre::Real shadowFarDistance;
   bool shadowEnabled;
   unsigned short shadowTexSize;

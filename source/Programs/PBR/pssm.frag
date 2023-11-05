@@ -19,5 +19,9 @@ void main()
 
     highp float linearDepth = gl_FragCoord.z;
     highp float clampedDepth = (linearDepth - DepthRange.x) * DepthRange.w;
+#ifdef PSSM_ESM_SHADOWMAP
     FragColor.r = exp(PSSM_ESM_K * clampedDepth);
+#else
+    FragColor.r = clampedDepth;
+#endif
 }

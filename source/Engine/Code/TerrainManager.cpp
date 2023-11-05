@@ -112,9 +112,9 @@ void TerrainManager::OnSetUp() {
   terrainGlobalOptions->setMaxPixelError(8);
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
   terrainGlobalOptions->setCompositeMapDistance(100.0);
-  terrainGlobalOptions->setCastsDynamicShadows(false);
+  terrainGlobalOptions->setCastsDynamicShadows(true);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
-  terrainGlobalOptions->setLightMapSize(256);
+  terrainGlobalOptions->setLightMapSize(512);
   //terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(40.659888, -20.704975, -30.950829).normalisedCopy());
 }
 

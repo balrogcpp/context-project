@@ -76,8 +76,12 @@ float CalcDepthShadow(vec2 uv, float currentDepth, const vec2 tsize)
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS) * penumbra;
         float texDepth = texture2D(ShadowTex, uv + offset).x;
+#ifdef PSSM_ESM_SHADOWMAP
         float sampled = saturate(texDepth * exp(-PSSM_ESM_K * currentDepth));
         sampled = 1.0 - (PSSM_ESM_SCALE * (1.0 - sampled));
+#else
+        float sampled = fstep(texDepth, currentDepth);
+#endif
         shadow += sampled;
     }
     shadow /= float(PSSM_FILTER_SIZE);
