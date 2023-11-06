@@ -147,6 +147,8 @@ float CalcPSSMShadow(const highp vec4 lightSpacePos0, const highp vec4 lightSpac
     highp float depth = gl_FragCoord.z / gl_FragCoord.w;
     vec2 tsize = 1.0 / vec2(textureSize(ShadowTex, 0));
 
+    if (depth > PssmSplitPoints.w) return 1.0;
+
     if (depth <= PssmSplitPoints.x) {
         vec2 uv = lightSpacePos0.xy / lightSpacePos0.w;
         if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
