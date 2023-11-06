@@ -2,8 +2,12 @@
 
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
-#if MAX_SHADOW_TEXTURES > 0
 
+#ifdef TERRA_LIGHTMAP
+uniform sampler2D TerraLightTex;
+#endif
+
+#if MAX_SHADOW_TEXTURES > 0
 uniform mediump sampler2D ShadowTex;
 uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
@@ -174,6 +178,8 @@ float CalcShadow(const vec4 lightSpacePos, int index)
     return CalcDepthShadow(lightSpacePos.xy / lightSpacePos.w, lightSpacePos.z / lightSpacePos.w, index);
 }
 
+#endif // MAX_SHADOW_TEXTURES > 0
+
 #ifdef TERRA_LIGHTMAP
 float FetchTerraShadow(const vec2 uv)
 {
@@ -192,5 +198,4 @@ float FetchTerraShadow(const vec2 uv)
 }
 #endif
 
-#endif // MAX_SHADOW_TEXTURES > 0
 #endif // PSSM_GLSL

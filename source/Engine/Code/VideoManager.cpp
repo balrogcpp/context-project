@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "VideoManager.h"
+#include "CompositorManager.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "Platform.h"
 #include "imgui_impl_sdl2.h"
@@ -504,7 +505,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 
 void VideoManager::InitOgreSceneManager() {
   if (shadowEnabled) {
-    //if (!RenderSystemIsGLES2()) shadowTexSize = 2048;
+    // if (!RenderSystemIsGLES2()) shadowTexSize = 2048;
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     pssmSetup = make_shared<DPSMCameraSetup>();
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
@@ -555,6 +556,7 @@ void VideoManager::EnableShadows(bool enable) {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
     ogreSceneManager->setShadowTextureCount(shadowTexCount);
+    GetComponent<CompositorManager>().EnableCompositor("ShadowAtlas", shadowEnabled);
     InitOgreSceneManager();
   } else {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
@@ -563,6 +565,7 @@ void VideoManager::EnableShadows(bool enable) {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     ogreSceneManager->setShadowTextureCount(0);
+    GetComponent<CompositorManager>().EnableCompositor("ShadowAtlas", shadowEnabled);
   }
 }
 

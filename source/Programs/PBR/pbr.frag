@@ -26,9 +26,6 @@ uniform samplerCube SpecularEnvTex;
 #ifdef TERRA_NORMALMAP
 uniform sampler2D TerraNormalTex;
 #endif
-#ifdef TERRA_LIGHTMAP
-uniform sampler2D TerraLightTex;
-#endif
 
 uniform vec3 iblSH[9];
 uniform highp mat4 ViewMatrix;

@@ -110,7 +110,7 @@ void TerrainManager::OnSetUp() {
 
   terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
   terrainGlobalOptions->setMaxPixelError(8);
-  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
+  terrainGlobalOptions->setUseRayBoxDistanceCalculation(false);
   terrainGlobalOptions->setCompositeMapDistance(150.0);
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);

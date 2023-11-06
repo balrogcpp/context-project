@@ -99,6 +99,7 @@ void CompositorManager::OnSetUp() {
 
   // create compositor chain
   AddCompositor("MRT", true);
+  AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
