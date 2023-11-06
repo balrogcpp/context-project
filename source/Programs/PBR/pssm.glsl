@@ -174,7 +174,7 @@ float CalcShadow(const vec4 lightSpacePos, int index)
     return CalcDepthShadow(lightSpacePos.xy / lightSpacePos.w, lightSpacePos.z / lightSpacePos.w, index);
 }
 
-#ifdef TERRA_NORMALMAP
+#ifdef TERRA_LIGHTMAP
 float FetchTerraShadow(const vec2 uv)
 {
     float shadow = 0.0;

@@ -55,6 +55,19 @@ uniform float TexScale;
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
 uniform float OffsetScale;
 #endif
+
+#if MAX_SHADOW_TEXTURES > 0
+in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+#endif
+in highp vec3 vWorldPosition;
+in highp vec2 vUV0;
+in mediump vec3 vNormal;
+in mediump vec3 vTangent;
+in mediump vec3 vBitangent;
+in mediump vec4 vColor;
+in mediump vec4 vScreenPosition;
+in mediump vec4 vPrevScreenPosition;
+
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
 #endif
@@ -276,7 +289,7 @@ float GetAttenuation(int index, const vec3 lightView)
     return attenuation;
 }
 
-vec3 EvaluateDirectionalLight(const PBRInfo material, const vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
+vec3 EvaluateDirectionalLight(const PBRInfo material)
 {
     vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
     float NdotL = saturate(dot(n, l));
@@ -289,7 +302,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material, const vec4 lightSpacePosAr
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        attenuation *= saturate(CalcPSSMShadow(lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2]) + ShadowColour.r);
+        attenuation *= saturate(CalcPSSMShadow(vLightSpacePosArray[0], vLightSpacePosArray[1], vLightSpacePosArray[2]) + ShadowColour.r);
         if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -307,7 +320,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material, const vec4 lightSpacePosAr
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
-vec3 EvaluateLocalLights(PBRInfo material, const vec3 worldPosition, const vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES])
+vec3 EvaluateLocalLights(PBRInfo material)
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -320,7 +333,7 @@ vec3 EvaluateLocalLights(PBRInfo material, const vec3 worldPosition, const vec4 
         if (NdotL <= 0.001) continue;
 
         // attenuation is property of spot and point light
-        float attenuation = GetAttenuation(i, lightPosition.xyz - worldPosition);
+        float attenuation = GetAttenuation(i, lightPosition.xyz - vWorldPosition);
         if (attenuation == 0.0) continue;
 
         Light light;
@@ -333,7 +346,7 @@ vec3 EvaluateLocalLights(PBRInfo material, const vec3 worldPosition, const vec4 
 
 #if MAX_SHADOW_TEXTURES > 1
         if (LightCastsShadowsArray[0] != 0.0) {
-            attenuation *= saturate(CalcShadow(lightSpacePosArray[i], i) + ShadowColour.r);
+            attenuation *= saturate(CalcShadow(vLightSpacePosArray[i], i) + ShadowColour.r);
             if (attenuation == 0.0) continue;
         }
 #endif
@@ -346,27 +359,29 @@ vec3 EvaluateLocalLights(PBRInfo material, const vec3 worldPosition, const vec4 
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
+vec3 GetNormal(const vec2 uv, const vec2 uv1)
 {
 #ifdef TERRA_NORMALMAP
-    highp vec3 t = vec3(1.0, 0.0, 0.0);
-    highp vec3 ng = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
-    highp vec3 b = normalize(cross(ng, t));
-    t = normalize(cross(ng ,b));
-    tbn = mtxFromCols3x3(t, b, ng);
+    vec3 t = vec3(1.0, 0.0, 0.0);
+    vec3 n = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
+    vec3 b = normalize(cross(n, t));
+    t = normalize(cross(n ,b));
+    highp mat3 terraTBN = mtxFromCols3x3(t, b, n);
 
 #ifdef HAS_NORMALMAP
     vec3 normal = texture2D(NormalTex, uv).xyz;
-    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
+    return normalize(mul(terraTBN, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
 #else
-    return tbn[2].xyz;
+    return terraTBN[2].xyz;
 #endif // HAS_NORMALMAP
 #else
 
 #ifdef HAS_NORMALMAP
+    highp mat3 tbn = mtxFromCols3x3(vTangent, vBitangent, vNormal);
     vec3 normal = texture2D(NormalTex, uv).xyz;
     return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
 #else
+    highp mat3 tbn = mtxFromCols3x3(vTangent, vBitangent, vNormal);
     return tbn[2].xyz;
 #endif // HAS_NORMALMAP
 #endif // TERRA_NORMALMAP
@@ -419,15 +434,6 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
     return uv;
 }
 
-in highp vec3 vWorldPosition;
-in highp mat3 vTBN;
-in highp vec2 vUV0;
-in vec4 vColor;
-in vec4 vScreenPosition;
-in vec4 vPrevScreenPosition;
-#if MAX_SHADOW_TEXTURES > 0
-in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
 void main()
 {
     v = normalize(CameraPosition - vWorldPosition);
@@ -435,7 +441,7 @@ void main()
     vec4 colour = GetAlbedo(uv, vColor);
     vec3 orm = GetORM(uv, colour.a);
     vec3 emission = GetEmission(uv);
-    n = GetNormal(vTBN, uv, vUV0);
+    n = GetNormal(uv, vUV0);
     vec3 albedo = colour.rgb;
     float alpha = colour.a;
     float roughness = orm.g;
@@ -469,8 +475,8 @@ void main()
 
     vec3 color = vec3(0.0, 0.0, 0.0);
     color += EvaluateIBL(material);
-    color += EvaluateDirectionalLight(material, vLightSpacePosArray);
-    color += EvaluateLocalLights(material, vWorldPosition, vLightSpacePosArray);
+    color += EvaluateDirectionalLight(material);
+    color += EvaluateLocalLights(material);
     color += emission;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 

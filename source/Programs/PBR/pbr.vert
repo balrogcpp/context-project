@@ -47,15 +47,17 @@ in highp vec4 uv2;
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
-out highp vec3 vWorldPosition;
-out highp mat3 vTBN;
-out highp vec2 vUV0;
-out vec4 vColor;
-out vec4 vScreenPosition;
-out vec4 vPrevScreenPosition;
 #if MAX_SHADOW_TEXTURES > 0
 out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
+out highp vec3 vWorldPosition;
+out highp vec2 vUV0;
+out mediump vec3 vNormal;
+out mediump vec3 vTangent;
+out mediump vec3 vBitangent;
+out mediump vec4 vColor;
+out mediump vec4 vScreenPosition;
+out mediump vec4 vPrevScreenPosition;
 void main()
 {
 #ifdef HAS_VERTEXCOLOR
@@ -83,15 +85,13 @@ void main()
 #endif // PAGED_GEOMETRY
 
 #ifdef HAS_NORMALS
-    highp vec3 n = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
-    highp vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
-    highp vec3 b = cross(n, t) * tangent.w;
-    vTBN = mtxFromCols3x3(t, b, n);
+    vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+    vTangent = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
+    vBitangent = cross(vNormal, vTangent) * tangent.w;
 #else
-    const highp vec3 n = vec3(0.0, 1.0, 0.0);
-    const highp vec3 t = vec3(1.0, 0.0, 0.0);
-    const highp vec3 b = normalize(cross(n, t));
-    vTBN = mtxFromCols3x3(t, b, n);
+    vNormal = vec3(0.0, 1.0, 0.0);
+    vTangent = vec3(1.0, 0.0, 0.0);
+    vBitangent = normalize(cross(vNormal, vTangent));
 #endif // HAS_NORMALS
 
     highp vec4 world = mul(WorldMatrix, position);
