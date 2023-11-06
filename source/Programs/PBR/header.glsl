@@ -14,10 +14,9 @@
 #ifndef MAX_MRT_TEXTURES
 #define MAX_MRT_TEXTURES 5
 #endif
-#define PSSM_ESM_SHADOWMAP 1
-#define PSSM_ESM_K 1.0
-#define PSSM_ESM_SCALE 1.1
-#define PSSM_ESM_MIN -0.5
+#define PSSM_ESM_SHADOWMAP
+#define PSSM_GLOBAL_MIN_DEPTH 1.0
+#define PSSM_GLOBAL_RANGE 64.0
 #ifdef HAS_MRT
 #define MRT_COLOR 0
 #define MRT_DEPTH 1

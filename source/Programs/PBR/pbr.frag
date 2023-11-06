@@ -284,7 +284,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material, const vec4 lightSpacePosAr
     float attenuation = 1.0;
 
 #ifdef TERRA_LIGHTMAP
-    attenuation = saturate(FetchTerraShadow(TerraLightTex, material.uv) + ShadowColour.r);
+    attenuation = saturate(FetchTerraShadow(material.uv) + ShadowColour.r);
     if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
 #endif
 #if MAX_SHADOW_TEXTURES > 0
@@ -474,6 +474,7 @@ void main()
     color += emission;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
+    //color.r = texture2D(ShadowTex, gl_FragCoord.xy * ViewportSize.zw).r;
     EvaluateBuffer(color, alpha);
 #ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);

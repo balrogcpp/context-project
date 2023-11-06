@@ -11,6 +11,34 @@ uniform mediump sampler2D ShadowMap3;
 //uniform mediump sampler2D ShadowMap6;
 //uniform mediump sampler2D ShadowMap7;
 
+float Downscale13_Log(sampler2D tex, const vec2 uv)
+{
+    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
+    float W = 13.0;
+
+    float G = texture2D(tex, uv).x;
+    float A = exp(W * (texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x - G));
+    float B = exp(W * (texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).x - G));
+    float C = exp(W * (texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x - G));
+    float D = exp(W * (texture2D(tex, uv + tsize * vec2(-0.5, -0.5)).x - G));
+    float E = exp(W * (texture2D(tex, uv + tsize * vec2( 0.5, -0.5)).x - G));
+    float F = exp(W * (texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).x - G));
+    float H = exp(W * (texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).x - G));
+    float I = exp(W * (texture2D(tex, uv + tsize * vec2(-0.5,  0.5)).x - G));
+    float J = exp(W * (texture2D(tex, uv + tsize * vec2( 0.5,  0.5)).x - G));
+    float K = exp(W * (texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x - G));
+    float L = exp(W * (texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).x - G));
+    float M = exp(W * (texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).x - G));
+
+    float c1 = (D + E + I + J) * 0.125;
+    float c2 = (A + B + G + F) * 0.03125;
+    float c3 = (B + C + H + 1.0) * 0.03125;
+    float c4 = (F + G + L + K) * 0.03125;
+    float c5 = (G + H + M + L) * 0.03125;
+
+    return G + log(c1 + c2 + c3 + c4 + c5) / W;
+}
+
 float Downscale13(sampler2D tex, const vec2 uv)
 {
     vec2 tsize = 1.0 / vec2(textureSize(tex, 0));

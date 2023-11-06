@@ -134,8 +134,11 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
   if (!entity->getMesh()->suggestTangentVectorBuildParams(src)) entity->getMesh()->buildTangentVectors(src);
 
   static unsigned long long generator = 0;
-  for (auto &it : entity->getSubEntities()) {
-    it->setMaterial(it->getMaterial()->clone(std::to_string(generator++)));
+  auto mass = entity->getUserObjectBindings().getUserAny("mass");
+  if (mass.has_value() && entity->getMesh()->isReloadable()) {
+    if (Ogre::any_cast<Ogre::Real>(mass) > 0.0) {
+      for (auto &it : entity->getSubEntities()) it->setMaterial(it->getMaterial()->clone(std::to_string(generator++)));
+    }
   }
 
   if (entity->hasSkeleton()) {

@@ -77,6 +77,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   std::vector<Ogre::Real> pssmSplitPointList;
   int shadowTexCount;
   int pssmSplitCount;
+  float pssmSplitPadding;
 
   Ogre::Root* ogreRoot = nullptr;
   Ogre::SceneManager* ogreSceneManager = nullptr;

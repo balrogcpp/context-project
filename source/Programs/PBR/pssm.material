@@ -18,7 +18,7 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 
 	default_params
 	{
-	    param_named_auto DepthRange scene_depth_range
+	    //param_named_auto DepthRange scene_depth_range
 	    param_named AlbedoTex int 0
 	}
 }
@@ -37,7 +37,7 @@ fragment_program PSSM/shadow_caster_fs glsl glsles hlsl
 	source pssm.frag
 	default_params
 	{
-	    param_named_auto DepthRange scene_depth_range
+	    //param_named_auto DepthRange scene_depth_range
 	}
 }
 
