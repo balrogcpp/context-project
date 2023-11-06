@@ -13,10 +13,12 @@ class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
   RenderShadows(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport(); }
 
   void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
-    Ogre::Camera *camera = viewport->getCamera();
-    auto *context = sm->_pauseRendering();
-    sm->prepareShadowTextures(camera, viewport);
-    sm->_resumeRendering(context);
+    if (sm->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+      Ogre::Camera *camera = viewport->getCamera();
+      auto *context = sm->_pauseRendering();
+      sm->prepareShadowTextures(camera, viewport);
+      sm->_resumeRendering(context);
+    }
   }
 
   virtual ~RenderShadows() {}
