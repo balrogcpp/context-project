@@ -250,6 +250,19 @@ index dc4684669..17bf6854c 100644
          PluginLibList::iterator i;
  
          for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
+diff --git a/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp b/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp
+index 46123b457..25a22eede 100644
+--- a/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp
++++ b/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp
+@@ -236,7 +236,7 @@ namespace Ogre
+ 
+         // calculate the intersection body B
+         mPointListBodyB.reset();
+-        calculateB(*sm, *cam, *light, sceneBB, receiverAABB, &mPointListBodyB);
++        calculateB(*sm, (cam->getDerivedDirection().dotProduct(light->getDerivedDirection()) < 0.0 || iteration == 1) ? *cam : *texCam, *light, sceneBB, receiverAABB, &mPointListBodyB);
+ 
+         // in case the bodyB is empty (e.g. nothing visible to the light or the cam)
+         // simply return the standard shadow mapping matrix
 diff --git a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp b/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
 index 560ac60b0..539c2e820 100644
 --- a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
