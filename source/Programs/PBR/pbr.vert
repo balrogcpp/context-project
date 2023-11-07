@@ -15,7 +15,7 @@ uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
-//uniform highp vec3 CameraPosition;
+uniform highp vec3 CameraPosition;
 uniform highp float FadeRange;
 #endif // PAGED_GEOMETRY
 #if MAX_SHADOW_TEXTURES > 0
@@ -51,19 +51,23 @@ in highp vec4 uv2;
 out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 out highp vec3 vWorldPosition;
+#ifdef HAS_UV
 out highp vec2 vUV0;
+#endif
+#ifdef HAS_NORMALS
 out mediump vec3 vNormal;
 out mediump vec3 vTangent;
 out mediump vec3 vBitangent;
-out mediump vec4 vColor;
+#endif
+#ifdef HAS_VERTEXCOLOR
+out mediump vec3 vColor;
+#endif
 out mediump vec4 vScreenPosition;
 out mediump vec4 vPrevScreenPosition;
 void main()
 {
 #ifdef HAS_VERTEXCOLOR
-    vColor = Any(colour) ? vec4(colour, 1.0) : vec4(1.0, 1.0, 1.0, 1.0);
-#else
-    vColor = vec4(1.0, 1.0, 1.0, 1.0);
+    vColor = Any(colour) ? colour : vec3(1.0, 1.0, 1.0);
 #endif // HAS_VERTEXCOLOR
 
 #ifndef VERTEX_COMPRESSION
@@ -75,9 +79,7 @@ void main()
 #endif
 
 #ifdef HAS_UV
-    vUV0.xy = uv.xy;
-#else
-    vUV0.xy = vec2(0.0, 0.0);
+    vUV0 = uv;
 #endif // HAS_UV
 
 #ifdef PAGED_GEOMETRY
@@ -88,10 +90,6 @@ void main()
     vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
     vTangent = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     vBitangent = cross(vNormal, vTangent) * tangent.w;
-#else
-    vNormal = vec3(0.0, 1.0, 0.0);
-    vTangent = vec3(1.0, 0.0, 0.0);
-    vBitangent = normalize(cross(vNormal, vTangent));
 #endif // HAS_NORMALS
 
     highp vec4 world = mul(WorldMatrix, position);

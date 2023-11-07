@@ -3,8 +3,7 @@
 sampler ShadowTex
 {
     filtering bilinear
-    tex_address_mode border
-    tex_border_colour 1 1 1 1
+    tex_address_mode clamp
 }
 sampler PbrTex
 {

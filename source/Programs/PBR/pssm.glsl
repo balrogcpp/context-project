@@ -7,41 +7,7 @@
 uniform sampler2D TerraLightTex;
 #endif
 
-#if MAX_SHADOW_TEXTURES > 0
-uniform mediump sampler2D ShadowTex;
-uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
-uniform float LightCastsShadowsArray[MAX_LIGHTS];
-uniform highp vec4 PssmSplitPoints;
-uniform vec4 ShadowColour;
-
-#ifndef PSSM_FILTER_SIZE
-#ifndef GL_ES
-#define PSSM_FILTER_SIZE 8
-#else
-#define PSSM_FILTER_SIZE 4
-#endif
-#endif
-#ifndef PSSM_FILTER_RADIUS
-#define PSSM_FILTER_RADIUS 2
-#endif
-#ifndef PENUMBRA_LIGHT_SIZE
-#define PENUMBRA_LIGHT_SIZE 1
-#endif
-//#define PENUMBRA
-
-float InterleavedGradientNoise()
-{
-    vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
-    return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
-}
-
-vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
-{
-    float r = sqrt((float(sampleIndex) + 0.5) / float(samplesCount));
-    float theta = float(sampleIndex) * 2.4 + phi;
-    return vec2(r * cos(theta), r * sin(theta));
-}
-
+// https://drdesten.github.io/web/tools/vogel_disk/
 const vec2 vogel_disk_4[4] = vec2[](
     vec2(0.21848650099008202, -0.09211370200809937),
     vec2(-0.5866112654782878, 0.32153793477769893),
@@ -79,11 +45,45 @@ const vec2 vogel_disk_16[16] = vec2[](
     vec2(-0.1133270115046468, -0.9490025827627441)
 );
 
+#if MAX_SHADOW_TEXTURES > 0
+uniform mediump sampler2D ShadowTex;
+uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
+uniform float LightCastsShadowsArray[MAX_LIGHTS];
+uniform highp vec4 PssmSplitPoints;
+uniform vec4 ShadowColour;
+
+#ifndef PSSM_FILTER_SIZE
+#ifndef GL_ES
+#define PSSM_FILTER_SIZE 8
+#else
+#define PSSM_FILTER_SIZE 4
+#endif
+#endif
+#ifndef PSSM_FILTER_RADIUS
+#define PSSM_FILTER_RADIUS 2
+#endif
+#ifndef PENUMBRA_LIGHT_SIZE
+#define PENUMBRA_LIGHT_SIZE 1
+#endif
+//#define PENUMBRA
+
+float InterleavedGradientNoise()
+{
+    vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
+}
+
+vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
+{
+    float r = sqrt((float(sampleIndex) + 0.5) / float(samplesCount));
+    float theta = float(sampleIndex) * 2.4 + phi;
+    return vec2(r * cos(theta), r * sin(theta));
+}
+
 #ifdef PENUMBRA
 float AvgBlockersDepthToPenumbra(float depth, float avgBlockersDepth)
 {
-    float penumbra = float(PENUMBRA_LIGHT_SIZE) * (depth - avgBlockersDepth) / avgBlockersDepth;
-    return penumbra;
+    return float(PENUMBRA_LIGHT_SIZE) * (depth - avgBlockersDepth) / avgBlockersDepth;
 }
 
 float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
@@ -105,15 +105,30 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
 }
 #endif
 
-float CalcDepthShadow(const vec2 uv, float currentDepth, int index)
+float CalcShadow(int index)
 {
+    vec4 lightSpacePos = vLightSpacePosArray[index];
+    lightSpacePos.xyz /= lightSpacePos.w;
+    vec2 uv = lightSpacePos.xy;
+    float depth = lightSpacePos.z;
+    if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
+
+    if (index == 0)
+        uv = uv * 0.5;
+    else if (index == 1)
+        uv = uv * 0.5 + vec2(0.5, 0.0);
+    else if (index == 2)
+        uv = uv * 0.5 + vec2(0.0, 0.5);
+    else if (index == 3)
+        return 1.0;
+
+    depth = depth * 0.5 + 0.5;
     vec2 tsize = 1.0 / vec2(textureSize(ShadowTex, 0));
-    currentDepth = currentDepth * 0.5 + 0.5;
-    currentDepth -= 0.001;
+    //depth -= 0.001;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise();
 #ifdef PENUMBRA
-    float penumbra = Penumbra(uv, tsize, phi, currentDepth);
+    float penumbra = Penumbra(uv, tsize, phi, depth);
 #endif
 
     #define PSSM_ESM_K 13.0
@@ -126,19 +141,20 @@ float CalcDepthShadow(const vec2 uv, float currentDepth, int index)
 #elif PSSM_FILTER_SIZE == 4
         vec2 offset = vogel_disk_4[int(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * float(PSSM_FILTER_RADIUS);
 #elif PSSM_FILTER_SIZE == 1
-        vec2 offset = vec2(0.0, 0.0);
+        const vec2 offset = vec2(0.0, 0.0);
 #else
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS);
 #endif
         float texDepth = texture2D(ShadowTex, uv + offset).x;
+        if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
 #ifdef PSSM_ESM_SHADOWMAP
-        float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - currentDepth))));
+        float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
         sampled = (1.0 - (4.0 * (1.0 - sampled)));
         texDepth = texDepth * PSSM_GLOBAL_RANGE + PSSM_GLOBAL_MIN_DEPTH;
-        shadow += max(sampled, fstep(texDepth, currentDepth));
+        shadow += max(sampled, fstep(texDepth, depth));
 #else
         texDepth = texDepth * PSSM_GLOBAL_RANGE + PSSM_GLOBAL_MIN_DEPTH;
-        shadow += fstep(texDepth, currentDepth);
+        shadow += fstep(texDepth, depth);
 #endif
     }
     shadow /= float(PSSM_FILTER_SIZE);
@@ -146,36 +162,18 @@ float CalcDepthShadow(const vec2 uv, float currentDepth, int index)
     return shadow;
 }
 
-float CalcPSSMShadow(const highp vec4 lightSpacePos0, const highp vec4 lightSpacePos1, const highp vec4 lightSpacePos2)
+float CalcPSSMShadow()
 {
-    highp float depth = gl_FragCoord.z / gl_FragCoord.w;
-    vec2 tsize = 1.0 / vec2(textureSize(ShadowTex, 0));
-
-    if (depth > PssmSplitPoints.w) return 1.0;
-
-    if (depth <= PssmSplitPoints.x) {
-        vec2 uv = lightSpacePos0.xy / lightSpacePos0.w;
-        if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
-        return CalcDepthShadow(uv * 0.5, lightSpacePos0.z / lightSpacePos0.w, 0);
-    }
-    else if (depth <= PssmSplitPoints.y) {
-        vec2 uv = lightSpacePos1.xy / lightSpacePos1.w;
-        if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
-        return CalcDepthShadow(uv * 0.5 + vec2(0.5, 0.0), lightSpacePos1.z / lightSpacePos1.w, 1);
-    }
-    else if (depth <= PssmSplitPoints.z) {
-        vec2 uv = lightSpacePos2.xy / lightSpacePos2.w;
-        if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
-        return CalcDepthShadow(uv * 0.5 + vec2(0.0, 0.5), lightSpacePos2.z / lightSpacePos2.w, 2);
-    }
-    else {
+    float depth = gl_FragCoord.z / gl_FragCoord.w;
+    
+    if (depth <= PssmSplitPoints.x)
+        return CalcShadow(0);
+    else if (depth <= PssmSplitPoints.y)
+        return CalcShadow(1);
+    else if (depth <= PssmSplitPoints.z)
+        return CalcShadow(2);
+    else
         return 1.0;
-    }
-}
-
-float CalcShadow(const vec4 lightSpacePos, int index)
-{
-    return CalcDepthShadow(lightSpacePos.xy / lightSpacePos.w, lightSpacePos.z / lightSpacePos.w, index);
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0

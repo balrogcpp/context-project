@@ -57,11 +57,17 @@ uniform float OffsetScale;
 in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 in highp vec3 vWorldPosition;
+#ifdef HAS_UV
 in highp vec2 vUV0;
+#endif
+#ifdef HAS_NORMALS
 in mediump vec3 vNormal;
 in mediump vec3 vTangent;
 in mediump vec3 vBitangent;
-in mediump vec4 vColor;
+#endif
+#ifdef HAS_VERTEXCOLOR
+in mediump vec3 vColor;
+#endif
 in mediump vec4 vScreenPosition;
 in mediump vec4 vPrevScreenPosition;
 
@@ -209,6 +215,7 @@ struct PBRInfo
     float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
     float metalness;              // metallic value at the surface
     float occlusion;
+    float ao;
     vec3 reflectance0;            // full reflectance color (normal incidence angle)
     vec3 reflectance90;           // reflectance color at grazing angle
     float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
@@ -225,7 +232,7 @@ vec3 EvaluateIBL(const PBRInfo material)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     vec3 brdf = EnvBRDFApprox(material.specularColor, material.perceptualRoughness, material.NdotV);
-    float diffuseAO = material.occlusion;
+    float diffuseAO = min(material.occlusion, material.ao);
     float specularAO = computeSpecularAO(material.NdotV, diffuseAO, material.perceptualRoughness);
 
 #ifdef HAS_IBL
@@ -299,7 +306,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material)
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        attenuation *= saturate(CalcPSSMShadow(vLightSpacePosArray[0], vLightSpacePosArray[1], vLightSpacePosArray[2]) + ShadowColour.r);
+        attenuation *= saturate(CalcPSSMShadow() + ShadowColour.r);
         if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -343,7 +350,7 @@ vec3 EvaluateLocalLights(PBRInfo material)
 
 #if MAX_SHADOW_TEXTURES > 1
         if (LightCastsShadowsArray[0] != 0.0) {
-            attenuation *= saturate(CalcShadow(vLightSpacePosArray[i], i) + ShadowColour.r);
+            attenuation *= saturate(CalcShadow(i) + ShadowColour.r);
             if (attenuation == 0.0) continue;
         }
 #endif
@@ -358,41 +365,45 @@ vec3 EvaluateLocalLights(PBRInfo material)
 // or from the interpolated mesh normal and tangent attributes.
 vec3 GetNormal(const vec2 uv, const vec2 uv1)
 {
+#ifdef HAS_NORMALS
+    vec3 n = vNormal;
+    vec3 t = vTangent;
+    vec3 b = vBitangent;
+#else
 #ifdef TERRA_NORMALMAP
     vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 n = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, t));
     t = normalize(cross(n ,b));
-    highp mat3 terraTBN = mtxFromCols3x3(t, b, n);
+#else
+    vec3 n = vec3(0.0, 1.0, 0.0);
+    vec3 t = vec3(1.0, 0.0, 0.0);
+    vec3 b = normalize(cross(n, t));
+    t = normalize(cross(n ,b));
+#endif
+#endif
 
 #ifdef HAS_NORMALMAP
-    vec3 normal = texture2D(NormalTex, uv).xyz;
-    return normalize(mul(terraTBN, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
-#else
-    return terraTBN[2].xyz;
-#endif // HAS_NORMALMAP
-#else
-
-#ifdef HAS_NORMALMAP
-    highp mat3 tbn = mtxFromCols3x3(vTangent, vBitangent, vNormal);
+    highp mat3 tbn = mtxFromCols3x3(t, b, n);
     vec3 normal = texture2D(NormalTex, uv).xyz;
     return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
 #else
-    highp mat3 tbn = mtxFromCols3x3(vTangent, vBitangent, vNormal);
-    return tbn[2].xyz;
-#endif // HAS_NORMALMAP
-#endif // TERRA_NORMALMAP
+    return n;
+#endif
+//#endif // TERRA_NORMALMAP
 }
 
 // Sampler helper functions
-vec4 GetAlbedo(const vec2 uv, const vec4 color)
+vec4 GetAlbedo(const vec2 uv, const vec3 color)
 {
-    vec4 albedo = SurfaceDiffuseColour * color;
+    vec4 albedo = vec4(SurfaceDiffuseColour.rgb * color, 1.0);
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(AlbedoTex, uv);
 #endif
 
-    if (albedo.a < SurfaceAlphaRejection) discard;
+#ifdef HAS_ALPHA
+    if (albedo.a < 0.5) discard;
+#endif
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
@@ -424,8 +435,9 @@ vec3 GetORM(const vec2 uv, float spec)
 
 vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 {
-    vec2 uv = uv0 * (1.0 + TexScale);
+    vec2 uv = uv0;
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
+    uv *= (1.0 + TexScale);
     uv = uv - (vec2(v.x, -v.y) * (OffsetScale + 0.01) * texture2D(NormalTex, uv).a);
 #endif
     return uv;
@@ -434,19 +446,31 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 void main()
 {
     v = normalize(CameraPosition - vWorldPosition);
+#ifdef HAS_UV
     vec2 uv = GetParallaxCoord(vUV0, v);
-    vec4 colour = GetAlbedo(uv, vColor);
-    vec3 orm = GetORM(uv, colour.a);
-    vec3 emission = GetEmission(uv);
-    n = GetNormal(uv, vUV0);
+    vec2 uv1 = vUV0;
+#else
+    const vec2 uv = vec2(0.0, 0.0);
+    const vec2 uv1 = vec2(0.0, 0.0);
+#endif
+#ifdef HAS_VERTEXCOLOR
+    vec3 vertexColor = vColor;
+#else
+    const vec3 vertexColor = vec3(1.0, 1.0, 1.0);
+#endif
+    vec4 colour = GetAlbedo(uv, vertexColor);
     vec3 albedo = colour.rgb;
     float alpha = colour.a;
+    vec3 orm = GetORM(uv, alpha);
+    vec3 emission = GetEmission(uv);
+    n = GetNormal(uv, uv1);
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
 #ifdef HAS_AO
     float ao = texture2D(OcclusionTex, gl_FragCoord.xy * ViewportSize.zw).r;
-    occlusion = min(occlusion, ao);
+#else
+    float ao = 1.0;
 #endif
 
     // Roughness is authored as perceptual roughness; as is convention,
@@ -464,6 +488,7 @@ void main()
     material.specularColor = specularColor;
     material.metalness = metallic;
     material.occlusion = occlusion;
+    material.ao = ao;
     material.perceptualRoughness = roughness;
     material.alphaRoughness = roughness * roughness;
     material.reflectance0 = specularColor.rgb;

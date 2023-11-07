@@ -28,37 +28,36 @@ float pow10(float x)
     return x4 * x4 * x2;
 }
 
-in highp vec2 vUV0;
-in vec3 vRay;
-void main()
-{
-    #define MAX_RAND_SAMPLES 14
-    #define RADIUS 0.105
+#define MAX_RAND_SAMPLES 14
+#define RADIUS 0.105
 
-    const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
-        vec3[](
-        vec3(1.0, 0.0, 0.0),
-        vec3(-1.0, 0.0, 0.0),
-        vec3(0.0, 1.0, 0.0),
-        vec3(0.0, -1.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-        vec3(0.0, 0.0, -1.0),
-        normalize(vec3(1.0, 1.0, 1.0)),
-        normalize(vec3(-1.0, 1.0, 1.0)),
-        normalize(vec3(1.0, -1.0, 1.0)),
-        normalize(vec3(1.0, 1.0, -1.0)),
-        normalize(vec3(-1.0, -1.0, 1.0)),
-        normalize(vec3(-1.0, 1.0, -1.0)),
-        normalize(vec3(1.0, -1.0, -1.0)),
-        normalize(vec3(-1.0, -1.0, -1.0)));
-
-    // constant expression != const int :(
 #ifndef GL_ES
     #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
 #else
     #define NUM_BASE_SAMPLES 6
 #endif
 
+const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+    vec3[](
+    vec3(1.0, 0.0, 0.0),
+    vec3(-1.0, 0.0, 0.0),
+    vec3(0.0, 1.0, 0.0),
+    vec3(0.0, -1.0, 0.0),
+    vec3(0.0, 0.0, 1.0),
+    vec3(0.0, 0.0, -1.0),
+    normalize(vec3(1.0, 1.0, 1.0)),
+    normalize(vec3(-1.0, 1.0, 1.0)),
+    normalize(vec3(1.0, -1.0, 1.0)),
+    normalize(vec3(1.0, 1.0, -1.0)),
+    normalize(vec3(-1.0, -1.0, 1.0)),
+    normalize(vec3(-1.0, 1.0, -1.0)),
+    normalize(vec3(1.0, -1.0, -1.0)),
+    normalize(vec3(-1.0, -1.0, -1.0)));
+
+in highp vec2 vUV0;
+in vec3 vRay;
+void main()
+{
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here

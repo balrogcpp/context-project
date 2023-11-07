@@ -24,7 +24,7 @@ vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO
+    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO
     
     default_params
     {
@@ -44,7 +44,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto SurfaceSpecularColour surface_specular_colour
         param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
-        param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
+        //param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance
@@ -57,7 +57,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 
 abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL
+    preprocessor_defines HAS_NORMALS,HAS_UV,HAS_VERTEXCOLOR,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL
 }
 
 fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
@@ -85,7 +85,9 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
     }
 }
 
-fragment_program PG0_fs glsl glsles hlsl : PG_fs {}
+fragment_program PG0_fs glsl glsles hlsl : PG_fs
+{
+}
 
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 {
@@ -94,5 +96,5 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO
 }

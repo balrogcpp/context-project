@@ -256,7 +256,7 @@ VideoManager::VideoManager()
       shadowEnabled(true),
       shadowTexCount(4),
       pssmSplitCount(3),
-      pssmSplitPadding(0.1),
+      pssmSplitPadding(0.7),
       shadowNearDistance(1.0),
       shadowFarDistance(70.0),
       shadowTexSize(1024) {
