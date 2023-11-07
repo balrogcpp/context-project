@@ -259,7 +259,7 @@ index 46123b457..25a22eede 100644
          // calculate the intersection body B
          mPointListBodyB.reset();
 -        calculateB(*sm, *cam, *light, sceneBB, receiverAABB, &mPointListBodyB);
-+        calculateB(*sm, (cam->getDerivedDirection().dotProduct(light->getDerivedDirection()) < 0.0 || iteration == 1) ? *cam : *texCam, *light, sceneBB, receiverAABB, &mPointListBodyB);
++        calculateB(*sm, (cam->getDerivedDirection().dotProduct(light->getDerivedDirection()) < 0.0 || iteration < 2) ? *cam : *texCam, *light, sceneBB, receiverAABB, &mPointListBodyB);
  
          // in case the bodyB is empty (e.g. nothing visible to the light or the cam)
          // simply return the standard shadow mapping matrix
