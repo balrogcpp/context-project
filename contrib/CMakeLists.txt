@@ -813,55 +813,6 @@ externalproject_add(Target_GoogleBenchmark
 )
 
 
-check_stamp(Target_asio)
-externalproject_add(Target_asio
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
-        GIT_REPOSITORY https://github.com/boostorg/asio.git
-        GIT_TAG boost-1.82.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/include/boost/asio ${DEPS_INCLUDE_DIR}/asio
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/include/boost/asio.hpp ${DEPS_INCLUDE_DIR}
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-)
-
-
-check_stamp(Target_beast)
-externalproject_add(Target_beast
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS Target_asio
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_beast
-        GIT_REPOSITORY https://github.com/boostorg/beast.git
-        GIT_TAG boost-1.82.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_beast/include/boost/beast ${DEPS_INCLUDE_DIR}/beast
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_beast/include/boost/beast.hpp ${DEPS_INCLUDE_DIR}
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-)
-
-
 check_stamp(Target_LibreSSL)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
