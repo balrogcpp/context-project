@@ -60,7 +60,7 @@ uniform vec4 ShadowColour;
 #endif
 #endif
 #ifndef PSSM_FILTER_RADIUS
-#define PSSM_FILTER_RADIUS 2
+#define PSSM_FILTER_RADIUS 2.0
 #endif
 #ifndef PENUMBRA_LIGHT_SIZE
 #define PENUMBRA_LIGHT_SIZE 1
@@ -69,7 +69,7 @@ uniform vec4 ShadowColour;
 
 float InterleavedGradientNoise()
 {
-    vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    const vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
     return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
 }
 
@@ -92,7 +92,7 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
     float blockersCount = 0.0;
 
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
-        vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS);
+        vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * PSSM_FILTER_RADIUS;
         float sampleDepth = texture2D(ShadowTex, uv + offset).x;
         float depthTest = fstep(sampleDepth, depth);
         avgBlockersDepth += depthTest * sampleDepth;
@@ -119,7 +119,7 @@ float CalcShadow(int index)
         uv = uv * 0.5 + vec2(0.5, 0.0);
     else if (index == 2)
         uv = uv * 0.5 + vec2(0.0, 0.5);
-    else if (index == 3)
+    else
         return 1.0;
 
     depth = depth * 0.5 + 0.5;
@@ -135,18 +135,18 @@ float CalcShadow(int index)
     #define PSSM_ESM_MIN -0.2
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
 #if PSSM_FILTER_SIZE == 16
-        vec2 offset = vogel_disk_16[int(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * float(PSSM_FILTER_RADIUS);
+        vec2 offset = vogel_disk_16[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 8
-        vec2 offset = vogel_disk_8[int(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * float(PSSM_FILTER_RADIUS);
+        vec2 offset = vogel_disk_8[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 4
-        vec2 offset = vogel_disk_4[int(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * float(PSSM_FILTER_RADIUS);
+        vec2 offset = vogel_disk_4[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 1
         const vec2 offset = vec2(0.0, 0.0);
 #else
-        vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * float(PSSM_FILTER_RADIUS);
+        vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * PSSM_FILTER_RADIUS;
 #endif
         float texDepth = texture2D(ShadowTex, uv + offset).x;
-        if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
+        //if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
 #ifdef PSSM_ESM_SHADOWMAP
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
         sampled = (1.0 - (4.0 * (1.0 - sampled)));

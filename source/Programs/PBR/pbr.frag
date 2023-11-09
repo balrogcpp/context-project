@@ -153,8 +153,8 @@ vec3 gtaoMultiBounce(float visibility, const vec3 albedo)
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
 vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NdotV)
 {
-    vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
-    vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
+    const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
+    const vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
     vec4 r = roughness * c0 + c1;
     float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
     vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
@@ -164,8 +164,8 @@ vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NdotV)
 float EnvBRDFApproxNonmetal(float roughness, float NdotV)
 {
     // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
-    vec2 c0 = vec2(-1.0, -0.0275);
-    vec2 c1 = vec2(1.0, 0.0425);
+    const vec2 c0 = vec2(-1.0, -0.0275);
+    const vec2 c1 = vec2(1.0, 0.0425);
     vec2 r = roughness * c0 + c1;
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
@@ -379,15 +379,22 @@ vec3 GetNormal(const vec2 uv, const vec2 uv1)
     vec3 b = normalize(cross(n, t));
     t = normalize(cross(n ,b));
 #elif defined(PAGED_GEOMETRY)
-    vec3 n = vec3(0.0, 1.0, 0.0);
-    vec3 t = vec3(1.0, 0.0, 0.0);
+    const vec3 n = vec3(0.0, 1.0, 0.0);
+    const vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 b = normalize(cross(n, t));
 #else
     vec3 pos_dx = dFdx(vPosition);
     vec3 pos_dy = dFdy(vPosition);
-    vec3 tex_dx = dFdx(vec3(vUV0, 0.0));
-    vec3 tex_dy = dFdy(vec3(vUV0, 0.0));
+#ifdef HAS_UV
+    vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+    vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+#else
+    vec3 tex_dx = vec3(0.001, 0.001, 0.001);
+    vec3 tex_dy = vec3(0.001, 0.001, 0.001);
+#endif
+#ifndef HAS_NORMALS
     vec3 n = cross(pos_dx, pos_dy);
+#endif
     vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
     t = normalize(t - n * dot(n, t));
     vec3 b = normalize(cross(n, t));
@@ -491,7 +498,11 @@ void main()
     // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.
     // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.
     PBRInfo material;
+#ifdef HAS_UV
     material.uv = vUV0;
+#else
+    material.uv = vec2(0.0, 0.0);
+#endif
     material.NdotV = abs(dot(n, v)) + 0.001;
     material.diffuseColor = diffuseColor;
     material.specularColor = specularColor;

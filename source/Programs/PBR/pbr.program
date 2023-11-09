@@ -7,7 +7,7 @@ shared_params IBL_Shared_frag
 abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
 
     default_params
     {
@@ -17,14 +17,13 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
         param_named_auto LightCount light_count
     }
 }
-
-vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
 vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
+vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
 
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO
     
     default_params
     {
@@ -57,7 +56,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 
 abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL
 }
 
 fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
