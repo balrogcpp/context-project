@@ -154,7 +154,7 @@ float CalcShadow(int index)
         shadow += max(sampled, fstep(texDepth, depth));
 #else
         texDepth = texDepth * PSSM_GLOBAL_RANGE + PSSM_GLOBAL_MIN_DEPTH;
-        shadow += fstep(texDepth, depth);
+        shadow += step(texDepth, depth);
 #endif
     }
     shadow /= float(PSSM_FILTER_SIZE);

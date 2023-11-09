@@ -254,11 +254,11 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
-      shadowTexCount(4),
-      pssmSplitCount(3),
+      shadowTexCount(8),
+      pssmSplitCount(2),
       pssmSplitPadding(0.7),
       shadowNearDistance(1.0),
-      shadowFarDistance(70.0),
+      shadowFarDistance(60.0),
       shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");
@@ -526,13 +526,12 @@ void VideoManager::InitOgreSceneManager() {
     texConfig.depthBufferPoolId = 2;
     for (int i = 0; i < shadowTexCount; i++) ogreSceneManager->setShadowTextureConfig(i, texConfig);
 
-    // pssm stuf
+    // pssm stuff
     shadowNearDistance = ogreCamera->getNearClipDistance();
-    pssmSplitPadding = shadowNearDistance * 10;
     pssmSetup->setSplitPadding(pssmSplitPadding);
-    /*for (int i = 0; i < pssmSplitCount; i++) {
+    for (int i = 0; i < pssmSplitCount; i++) {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
-    }*/
+    }
     pssmSetup->calculateSplitPoints(pssmSplitCount, shadowNearDistance, ogreSceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
