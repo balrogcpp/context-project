@@ -30,6 +30,8 @@ in highp vec2 vertex;
 #endif // VERTEX_COMPRESSION
 #ifdef HAS_NORMALS
 in highp vec4 normal;
+#endif
+#ifdef HAS_TANGENTS
 in highp vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
@@ -50,12 +52,14 @@ in highp vec4 uv2;
 #if MAX_SHADOW_TEXTURES > 0
 out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
-out highp vec3 vWorldPosition;
+out highp vec3 vPosition;
 #ifdef HAS_UV
 out highp vec2 vUV0;
 #endif
 #ifdef HAS_NORMALS
 out mediump vec3 vNormal;
+#endif
+#ifdef HAS_TANGENTS
 out mediump vec3 vTangent;
 out mediump vec3 vBitangent;
 #endif
@@ -68,7 +72,7 @@ void main()
 {
 #ifdef HAS_VERTEXCOLOR
     vColor = Any(colour) ? colour : vec3(1.0, 1.0, 1.0);
-#endif // HAS_VERTEXCOLOR
+#endif
 
 #ifndef VERTEX_COMPRESSION
     highp vec4 position = vec4(vertex, 1.0);
@@ -80,21 +84,22 @@ void main()
 
 #ifdef HAS_UV
     vUV0 = uv;
-#endif // HAS_UV
+#endif
 
 #ifdef PAGED_GEOMETRY
      position +=  uv2.x == 0.0 ? fstep(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
-#endif // PAGED_GEOMETRY
+#endif
 
 #ifdef HAS_NORMALS
     vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+#endif
+#ifdef HAS_TANGENTS
     vTangent = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     vBitangent = cross(vNormal, vTangent) * tangent.w;
-#endif // HAS_NORMALS
+#endif
 
     highp vec4 world = mul(WorldMatrix, position);
-    vWorldPosition = world.xyz / world.w;
-
+    vPosition = world.xyz / world.w;
     gl_Position = mul(WorldViewProjMatrix, position);
     vScreenPosition = gl_Position;
     vPrevScreenPosition = mul(WorldViewProjPrev, position);

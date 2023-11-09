@@ -56,12 +56,14 @@ uniform float OffsetScale;
 #if MAX_SHADOW_TEXTURES > 0
 in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
-in highp vec3 vWorldPosition;
+in highp vec3 vPosition;
 #ifdef HAS_UV
 in highp vec2 vUV0;
 #endif
 #ifdef HAS_NORMALS
 in mediump vec3 vNormal;
+#endif
+#ifdef HAS_TANGENTS
 in mediump vec3 vTangent;
 in mediump vec3 vBitangent;
 #endif
@@ -337,7 +339,7 @@ vec3 EvaluateLocalLights(PBRInfo material)
         if (NdotL <= 0.001) continue;
 
         // attenuation is property of spot and point light
-        float attenuation = GetAttenuation(i, lightPosition.xyz - vWorldPosition);
+        float attenuation = GetAttenuation(i, lightPosition.xyz - vPosition);
         if (attenuation == 0.0) continue;
 
         Light light;
@@ -367,20 +369,28 @@ vec3 GetNormal(const vec2 uv, const vec2 uv1)
 {
 #ifdef HAS_NORMALS
     vec3 n = vNormal;
+#endif
+#ifdef HAS_TANGENTS
     vec3 t = vTangent;
     vec3 b = vBitangent;
-#else
-#ifdef TERRA_NORMALMAP
+#elif defined(TERRA_NORMALMAP)
     vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 n = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, t));
     t = normalize(cross(n ,b));
-#else
+#elif defined(PAGED_GEOMETRY)
     vec3 n = vec3(0.0, 1.0, 0.0);
     vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 b = normalize(cross(n, t));
-    t = normalize(cross(n ,b));
-#endif
+#else
+    vec3 pos_dx = dFdx(vPosition);
+    vec3 pos_dy = dFdy(vPosition);
+    vec3 tex_dx = dFdx(vec3(vUV0, 0.0));
+    vec3 tex_dy = dFdy(vec3(vUV0, 0.0));
+    vec3 n = cross(pos_dx, pos_dy);
+    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+    t = normalize(t - n * dot(n, t));
+    vec3 b = normalize(cross(n, t));
 #endif
 
 #ifdef HAS_NORMALMAP
@@ -390,7 +400,6 @@ vec3 GetNormal(const vec2 uv, const vec2 uv1)
 #else
     return n;
 #endif
-//#endif // TERRA_NORMALMAP
 }
 
 // Sampler helper functions
@@ -445,7 +454,7 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 
 void main()
 {
-    v = normalize(CameraPosition - vWorldPosition);
+    v = normalize(CameraPosition - vPosition);
 #ifdef HAS_UV
     vec2 uv = GetParallaxCoord(vUV0, v);
     vec2 uv1 = vUV0;
