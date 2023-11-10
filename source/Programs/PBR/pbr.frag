@@ -527,7 +527,7 @@ void main()
     color += EvaluateDirectionalLight(material);
     color += EvaluateLocalLights(material);
 #else
-    color += 2.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
+    color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
 #endif
     color += emission;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
