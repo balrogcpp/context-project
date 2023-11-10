@@ -251,14 +251,23 @@ index dc4684669..17bf6854c 100644
  
          for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
 diff --git a/OgreMain/src/OgreShadowCameraSetupFocused.cpp b/OgreMain/src/OgreShadowCameraSetupFocused.cpp
-index 9a76f0291..621699d37 100644
+index 9a76f0291..9ac3ae468 100644
 --- a/OgreMain/src/OgreShadowCameraSetupFocused.cpp
 +++ b/OgreMain/src/OgreShadowCameraSetupFocused.cpp
-@@ -106,6 +106,7 @@ namespace Ogre
+@@ -106,6 +106,16 @@ namespace Ogre
          {
              // For directional lights, all we care about is projecting the receivers
              // backwards towards the light, clipped by the camera region
-+            if (cam.getDerivedDirection().dotProduct(light.getDerivedDirection()) > 0.0) mBodyB.extend(-light.getDerivedDirection() * cam.getNearClipDistance() * 0.5);
++            if (float dot = cam.getDerivedDirection().dotProduct(light.getDerivedDirection()) > 0.0) {
++                mBodyB.extend(-light.getDerivedDirection()*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_X)*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_Y)*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_Z)*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection()*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_X)*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_Y)*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_Z)*0.3*dot*cam.getFarClipDistance());
++            }
              mBodyB.clip(receiverBB.intersection(sceneBB));
  
              // Also clip based on shadow far distance if appropriate
