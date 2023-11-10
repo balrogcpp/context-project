@@ -5,12 +5,6 @@
 
 //#undef HAS_MRT
 //#define FORCE_TONEMAP
-#ifndef MAX_LIGHTS
-#define MAX_LIGHTS 8
-#endif
-#ifndef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 8
-#endif
 #ifndef MAX_MRT_TEXTURES
 #define MAX_MRT_TEXTURES 5
 #endif

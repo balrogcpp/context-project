@@ -165,6 +165,7 @@ float CalcShadow(int index)
 float CalcPSSMShadow()
 {
     float depth = gl_FragCoord.z / gl_FragCoord.w;
+    if (depth >= PssmSplitPoints.w) return 1.0;
     
     if (depth <= PssmSplitPoints.x)
         return CalcShadow(0);
@@ -186,10 +187,9 @@ float FetchTerraShadow(const vec2 uv)
     vec2 tsize = 1.0 / vec2(textureSize(TerraLightTex, 0));
 
     for (int i = 0; i < 4; ++i) {
-        vec2 offset = vogel_disk_4[int(i + int(phi)) % 4] * 2.0 * tsize;
+        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * tsize;
         shadow += texture2D(TerraLightTex, uv + offset).x;
     }
-
     shadow *= 0.25;
 
     return shadow;

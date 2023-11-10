@@ -17,6 +17,57 @@ sampler CubeTex
     tex_address_mode clamp
 }
 
+abstract material Unlit
+{
+    transparency_casts_shadows on
+    receive_shadows off
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM yellow.dds
+    set $Emissive black.dds
+    set $AO white.dds
+    set $IBL specular.dds
+
+    technique
+    {
+        shadow_caster_material PSSM/shadow_caster
+        pass
+        {
+            diffuse 1 1 1
+            specular 1 1 3 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+                sampler_ref PbrTex
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
+                sampler_ref PbrTex
+            }
+            texture_unit AO
+            {
+                content_type compositor MRT ao
+                sampler_ref ShadowTex
+            }
+
+            vertex_program_ref Unlit_vs {}
+
+            fragment_program_ref Unlit_fs
+            {
+                param_named AlbedoTex      int 0
+                param_named EmissiveTex    int 1
+                param_named OcclusionTex   int 2
+            }
+        }
+    }
+}
+
 abstract material PBR
 {
     transparency_casts_shadows on
@@ -64,7 +115,7 @@ abstract material PBR
             {
                 //texture $AO
                 content_type compositor MRT ao
-                sampler_ref ShadowTex
+                filtering none
             }
             texture_unit ShadowTex
             {
@@ -123,7 +174,7 @@ abstract material PG : PBR
     }
 }
 
-abstract material PG0 : PG
+abstract material PG0 : Unlit
 {
     technique
     {

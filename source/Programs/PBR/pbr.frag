@@ -251,6 +251,7 @@ vec3 EvaluateIBL(const PBRInfo material)
     return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuse * gtaoMultiBounce(diffuseAO, material.diffuseColor) + specular * gtaoMultiBounce(specularAO, material.reflectance0));
 }
 
+#if MAX_LIGHTS > 0
 vec3 SurfaceShading(const Light light, const PBRInfo material)
 {
     // Calculate the shading terms for the microfacet specular shading model
@@ -362,6 +363,7 @@ vec3 EvaluateLocalLights(PBRInfo material)
 
     return color;
 }
+#endif
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
@@ -401,9 +403,13 @@ vec3 GetNormal(const vec2 uv, const vec2 uv1)
 #endif
 
 #ifdef HAS_NORMALMAP
-    highp mat3 tbn = mtxFromCols3x3(t, b, n);
-    vec3 normal = texture2D(NormalTex, uv).xyz;
-    return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
+    if (textureSize(NormalTex, 0).x > 1) {
+        highp mat3 tbn = mtxFromCols3x3(t, b, n);
+        vec3 normal = texture2D(NormalTex, uv).xyz;
+        return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
+    } else {
+        return n;
+    }
 #else
     return n;
 #endif
@@ -516,9 +522,13 @@ void main()
     material.reflection = -normalize(reflect(v, n));
 
     vec3 color = vec3(0.0, 0.0, 0.0);
+#if MAX_LIGHTS > 0
     color += EvaluateIBL(material);
     color += EvaluateDirectionalLight(material);
     color += EvaluateLocalLights(material);
+#else
+    color += 2.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
+#endif
     color += emission;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
