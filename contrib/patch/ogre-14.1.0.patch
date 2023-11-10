@@ -250,21 +250,18 @@ index dc4684669..17bf6854c 100644
          PluginLibList::iterator i;
  
          for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
-diff --git a/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp b/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp
-index 46123b457..16164e130 100644
---- a/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp
-+++ b/OgreMain/src/OgreShadowCameraSetupLiSPSM.cpp
-@@ -235,8 +235,8 @@ namespace Ogre
-         }
+diff --git a/OgreMain/src/OgreShadowCameraSetupFocused.cpp b/OgreMain/src/OgreShadowCameraSetupFocused.cpp
+index 9a76f0291..621699d37 100644
+--- a/OgreMain/src/OgreShadowCameraSetupFocused.cpp
++++ b/OgreMain/src/OgreShadowCameraSetupFocused.cpp
+@@ -106,6 +106,7 @@ namespace Ogre
+         {
+             // For directional lights, all we care about is projecting the receivers
+             // backwards towards the light, clipped by the camera region
++            if (cam.getDerivedDirection().dotProduct(light.getDerivedDirection()) > 0.0) mBodyB.extend(-light.getDerivedDirection() * cam.getNearClipDistance() * 0.5);
+             mBodyB.clip(receiverBB.intersection(sceneBB));
  
-         // calculate the intersection body B
--        mPointListBodyB.reset();
--        calculateB(*sm, *cam, *light, sceneBB, receiverAABB, &mPointListBodyB);
-+        mPointListBodyB.reset(); float opt = cam->getDerivedDirection().dotProduct(light->getDerivedDirection()); if (opt > 0.0) sceneBB.scale({1.0f+1.7f*opt,1.0f+1.7f*opt,1.0f+1.7f*opt});
-+        calculateB(*sm, true ? *cam : *texCam, *light, sceneBB, receiverAABB, &mPointListBodyB);
- 
-         // in case the bodyB is empty (e.g. nothing visible to the light or the cam)
-         // simply return the standard shadow mapping matrix
+             // Also clip based on shadow far distance if appropriate
 diff --git a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp b/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
 index 560ac60b0..539c2e820 100644
 --- a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
