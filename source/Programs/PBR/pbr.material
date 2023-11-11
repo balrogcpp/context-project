@@ -163,6 +163,7 @@ abstract material IBL : PBR
 
 abstract material PG : PBR
 {
+    receive_shadows off
     technique
     {
         shadow_caster_material PSSM/shadow_caster_alpha
@@ -176,6 +177,7 @@ abstract material PG : PBR
 
 abstract material PG0 : Unlit
 {
+    receive_shadows off
     technique
     {
         shadow_caster_material PSSM/shadow_caster_alpha
