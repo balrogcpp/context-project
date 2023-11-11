@@ -904,7 +904,8 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     MeshPtr res = MeshManager::getSingletonPtr()->createPlane(name, m_sGroupName, plane, width, height, xSegments,
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, res);
-
+    const auto &mat = MaterialManager::getSingleton().getByName(material);
+    mat->setReceiveShadows(false);
     ent->setMaterialName(material);
     ent->setVisibilityFlags(flag);
     ent->setCastShadows(castShadows);

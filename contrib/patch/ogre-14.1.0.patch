@@ -259,14 +259,14 @@ index 9a76f0291..9ac3ae468 100644
              // For directional lights, all we care about is projecting the receivers
              // backwards towards the light, clipped by the camera region
 +            if (float dot = cam.getDerivedDirection().dotProduct(light.getDerivedDirection()) > 0.0) {
-+                mBodyB.extend(-light.getDerivedDirection()*0.3*dot*cam.getFarClipDistance());
-+                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_X)*0.3*dot*cam.getFarClipDistance());
-+                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_Y)*0.3*dot*cam.getFarClipDistance());
-+                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_Z)*0.3*dot*cam.getFarClipDistance());
-+                mBodyB.extend(light.getDerivedDirection()*0.3*dot*cam.getFarClipDistance());
-+                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_X)*0.3*dot*cam.getFarClipDistance());
-+                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_Y)*0.3*dot*cam.getFarClipDistance());
-+                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_Z)*0.3*dot*cam.getFarClipDistance());
++                mBodyB.extend(-light.getDerivedDirection()*0.3*cam.getFarClipDistance());
++                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_X)*0.3*cam.getFarClipDistance());
++                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_Y)*0.3*cam.getFarClipDistance());
++                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_Z)*0.3*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection()*0.3*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_X)*0.3*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_Y)*0.3*cam.getFarClipDistance());
++                mBodyB.extend(light.getDerivedDirection().crossProduct(Vector3::UNIT_Z)*0.3*cam.getFarClipDistance());
 +            }
              mBodyB.clip(receiverBB.intersection(sceneBB));
  

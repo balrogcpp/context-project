@@ -255,10 +255,10 @@ VideoManager::VideoManager()
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
       shadowTexCount(8),
-      pssmSplitCount(2),
-      pssmSplitPadding(0.1),
+      pssmSplitCount(3),
+      pssmSplitPadding(1.0),
       shadowNearDistance(1.0),
-      shadowFarDistance(25.0),
+      shadowFarDistance(60.0),
       shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");

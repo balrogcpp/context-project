@@ -20,7 +20,7 @@ sampler CubeTex
 abstract material Unlit
 {
     transparency_casts_shadows on
-    receive_shadows off
+    receive_shadows on
 
     set $Albedo white.dds
     set $Normal normal.dds
@@ -190,7 +190,7 @@ abstract material PG0 : Unlit
 
 abstract material TERRA
 {
-    receive_shadows on
+    receive_shadows off
     set $Albedo white.dds
     set $Normal normal.dds
 

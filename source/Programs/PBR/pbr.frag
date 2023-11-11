@@ -532,7 +532,9 @@ void main()
     color += emission;
     color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
 
+#if MAX_LIGHTS > 0
     //color.r = texture2D(ShadowTex, gl_FragCoord.xy * ViewportSize.zw).r;
+#endif
     EvaluateBuffer(color, alpha);
 #ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);
