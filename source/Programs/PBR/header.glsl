@@ -5,8 +5,9 @@
 
 //#undef HAS_MRT
 //#define FORCE_TONEMAP
-#ifndef MAX_MRT_TEXTURES
-#define MAX_MRT_TEXTURES 5
+
+#ifdef GL_ES
+#define MAX_SHADOW_TEXTURES 0
 #endif
 #define PSSM_ESM_SHADOWMAP
 #define PSSM_GLOBAL_MIN_DEPTH 1.0
@@ -14,9 +15,12 @@
 #ifdef HAS_MRT
 #define MRT_COLOR 0
 #define MRT_DEPTH 1
+#ifndef GL_ES
 #define MRT_VELOCITY 2
+#endif
 #define MRT_NORMALS 3
 #define MRT_GLOSS 4
+#define MAX_MRT_TEXTURES 5
 #endif
 
 #ifdef OGRE_GLSLES

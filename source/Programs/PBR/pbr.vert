@@ -49,9 +49,6 @@ in highp vec4 uv2;
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
-#if MAX_SHADOW_TEXTURES > 0
-out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
 out highp vec3 vPosition;
 #ifdef HAS_UV
 out highp vec2 vUV0;
@@ -66,8 +63,13 @@ out mediump vec3 vBitangent;
 #ifdef HAS_VERTEXCOLOR
 out mediump vec3 vColor;
 #endif
+#ifdef MRT_VELOCITY
 out mediump vec4 vScreenPosition;
 out mediump vec4 vPrevScreenPosition;
+#endif
+#if MAX_SHADOW_TEXTURES > 0
+out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+#endif
 void main()
 {
 #ifdef HAS_VERTEXCOLOR
@@ -101,8 +103,11 @@ void main()
     highp vec4 world = mul(WorldMatrix, position);
     vPosition = world.xyz / world.w;
     gl_Position = mul(WorldViewProjMatrix, position);
+
+#ifdef MRT_VELOCITY
     vScreenPosition = gl_Position;
     vPrevScreenPosition = mul(WorldViewProjPrev, position);
+#endif
 
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space

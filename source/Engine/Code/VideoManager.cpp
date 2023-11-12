@@ -504,6 +504,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 };
 
 void VideoManager::InitOgreSceneManager() {
+  shadowEnabled = !RenderSystemIsGLES2();
   if (shadowEnabled) {
     // if (!RenderSystemIsGLES2()) shadowTexSize = 2048;
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;

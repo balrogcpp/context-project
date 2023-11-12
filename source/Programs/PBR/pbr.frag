@@ -53,9 +53,6 @@ uniform float TexScale;
 uniform float OffsetScale;
 #endif
 
-#if MAX_SHADOW_TEXTURES > 0
-in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
 in highp vec3 vPosition;
 #ifdef HAS_UV
 in highp vec2 vUV0;
@@ -70,8 +67,13 @@ in mediump vec3 vBitangent;
 #ifdef HAS_VERTEXCOLOR
 in mediump vec3 vColor;
 #endif
+#ifdef MRT_VELOCITY
 in mediump vec4 vScreenPosition;
 in mediump vec4 vPrevScreenPosition;
+#endif
+#if MAX_SHADOW_TEXTURES > 0
+in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+#endif
 
 #if MAX_SHADOW_TEXTURES > 0
 #include "pssm.glsl"
@@ -385,21 +387,21 @@ vec3 GetNormal(const vec2 uv, const vec2 uv1)
     const vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 b = normalize(cross(n, t));
 #else
-    vec3 pos_dx = dFdx(vPosition);
-    vec3 pos_dy = dFdy(vPosition);
+    highp vec3 pos_dx = dFdx(vPosition);
+    highp vec3 pos_dy = dFdy(vPosition);
 #ifdef HAS_UV
-    vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
-    vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+    highp vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+    highp vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
 #else
-    vec3 tex_dx = vec3(0.001, 0.001, 0.001);
-    vec3 tex_dy = vec3(0.001, 0.001, 0.001);
+    highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
+    highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
 #endif
 #ifndef HAS_NORMALS
     vec3 n = cross(pos_dx, pos_dy);
 #endif
-    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+    highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
     t = normalize(t - n * dot(n, t));
-    vec3 b = normalize(cross(n, t));
+    highp vec3 b = normalize(cross(n, t));
 #endif
 
 #ifdef HAS_NORMALMAP
@@ -530,7 +532,7 @@ void main()
     color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
 #endif
     color += emission;
-    color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
+    color = ApplyFog(color, FogParams, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w);
 
 #if MAX_LIGHTS > 0
     //color.r = texture2D(ShadowTex, gl_FragCoord.xy * ViewportSize.zw).r;
@@ -539,6 +541,8 @@ void main()
 #ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
+#ifdef MRT_VELOCITY
     if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = (vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w);
+#endif
 #endif
 }
