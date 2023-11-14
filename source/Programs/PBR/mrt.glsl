@@ -11,7 +11,7 @@ uniform float NearClipDistance;
 #include "tonemap.glsl"
 #endif
 
-void EvaluateBuffer(vec3 color)
+void EvaluateBuffer(const vec3 color)
 {
 #ifdef FORCE_TONEMAP
     color = unreal(expose(color, 2.5));
@@ -28,7 +28,7 @@ void EvaluateBuffer(vec3 color)
 #endif
 }
 
-void EvaluateBuffer(vec3 color, float alpha)
+void EvaluateBuffer(const vec3 color, float alpha)
 {
     EvaluateBuffer(color);
     FragColor.a = alpha;

@@ -35,32 +35,32 @@ float fsign(float x)
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-bool Any(vec2 x)
+bool Any(const vec2 x)
 {
     return x.x > 0.0 || x.y > 0.0;
 }
 
-bool Any(vec3 x)
+bool Any(const vec3 x)
 {
     return x.x > 0.0 || x.y > 0.0 || x.z > 0.0;
 }
 
-bool Any(vec4 x)
+bool Any(const vec4 x)
 {
     return x.x > 0.0 || x.y > 0.0 || x.z > 0.0 || x.w > 0.0;
 }
 
-bool Null(vec2 x)
+bool Null(const vec2 x)
 {
     return x.x == 0.0 && x.y == 0.0;
 }
 
-bool Null(vec3 x)
+bool Null(const vec3 x)
 {
     return x.x == 0.0 && x.y == 0.0 && x.z == 0.0;
 }
 
-bool Null(vec4 x)
+bool Null(const vec4 x)
 {
     return x.x == 0.0 && x.y == 0.0 && x.z == 0.0 && x.w == 0.0;
 }
@@ -75,17 +75,17 @@ bool IsNan(float x)
     return (x < 0.0 || x > 0.0 || x == 0.0) ? false : true;
 }
 
-bool IsNan(vec2 x)
+bool IsNan(const vec2 x)
 {
     return IsNan(x.x) || IsNan(x.y);
 }
 
-bool IsNan(vec3 x)
+bool IsNan(const vec3 x)
 {
     return IsNan(x.x) || IsNan(x.y) || IsNan(x.z);
 }
 
-bool IsNan(vec4 x)
+bool IsNan(const vec4 x)
 {
     return IsNan(x.x) || IsNan(x.y) || IsNan(x.z) || IsNan(x.w);
 }
@@ -96,17 +96,17 @@ float SafeHDR(float c)
     return min(c, HALF_MAX);
 }
 
-vec2 SafeHDR(vec2 c)
+vec2 SafeHDR(const vec2 c)
 {
     return min(c, HALF_MAX);
 }
 
-vec3 SafeHDR(vec3 c)
+vec3 SafeHDR(const vec3 c)
 {
     return min(c, HALF_MAX);
 }
 
-vec4 SafeHDR(vec4 c)
+vec4 SafeHDR(const vec4 c)
 {
     return min(c, HALF_MAX);
 }

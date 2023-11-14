@@ -83,7 +83,7 @@ float sample_radiance(int channel, int quintic_coeff)
     else if (channel == CIE_Z) return kHosekRadZ[index];
 }
 
-float eval_quintic_bezier(float[6] control_points, float t)
+float eval_quintic_bezier(const float[6] control_points, float t)
 {
     float t2 = t * t;
     float t3 = t2 * t;
@@ -144,7 +144,7 @@ vec3 mean_spectral_radiance(float sun_zenith)
     return spectral_radiance;
 }
 
-float HosekWilkie(highp float cos_theta, highp float gamma, highp float[9] coeffs)
+float HosekWilkie(highp float cos_theta, highp float gamma, const highp float[9] coeffs)
 {
     highp float A = coeffs[0];
     highp float B = coeffs[1];
@@ -183,7 +183,7 @@ float angle(float z1, float a1, float z2, float a2) {
     cos(z1) * cos(z2));
 }
 
-vec3 XYZtoRGB(vec3 xyz)
+vec3 XYZtoRGB(const vec3 xyz)
 {
     return mtx3x3(
     3.240812398895283, -0.9692430170086407, 0.055638398436112804,

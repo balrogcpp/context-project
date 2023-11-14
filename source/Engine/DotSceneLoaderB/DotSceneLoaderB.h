@@ -20,6 +20,7 @@ namespace Ogre
 {
 class SceneManager;
 class SceneNode;
+class TerrainGroup;
 
 /** \addtogroup Plugins Plugins
 *  @{
@@ -50,6 +51,8 @@ protected:
     void processEnvironment(pugi::xml_node& XMLNode);
     void processTerrainGroup(pugi::xml_node& XMLNode);
     void processTerrainGroupLegacy(pugi::xml_node& XMLNode);
+    void processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long id);
+    void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long id);
     void processBlendmaps(pugi::xml_node& XMLNode);
     void processUserData(pugi::xml_node& XMLNode, Ogre::UserObjectBindings& userData);
     void processLight(pugi::xml_node& XMLNode, Ogre::SceneNode* pParent = 0);
@@ -76,6 +79,7 @@ protected:
 
     Ogre::SceneManager* mSceneMgr;
     Ogre::SceneNode* mAttachNode;
+    Ogre::Camera *mCamera;
     Ogre::String m_sGroupName;
     Ogre::ColourValue mBackgroundColour;
 };

@@ -144,90 +144,6 @@ struct DotSceneCodecB : public Codec
         loader.exportScene(any_cast<SceneNode*>(input), outFileName);
     }
 };
-
-void processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long long id) {
-    static TerrainGroup* terrainGroupLocal = terrainGroup;
-    int x = StringConverter::parseInt(XMLNode.attribute("x").value());
-    int y = StringConverter::parseInt(XMLNode.attribute("y").value());
-    Real density = StringConverter::parseReal(XMLNode.attribute("density").value(), 1.0);
-    Real maxSize = StringConverter::parseReal(XMLNode.attribute("maxSize").value(), 2.0);
-    std::string grassMaterial = XMLNode.attribute("grass").value();
-    std::string densityMap = XMLNode.attribute("densityMap").value();
-    std::string colorMap = XMLNode.attribute("colorMap").value();
-    SceneManager* sceneManager = pCamera->getSceneManager();
-
-    if (!grassMaterial.empty())
-    {
-        AxisAlignedBox box = terrainGroup->getTerrain(x, y)->getWorldAABB();
-        auto minimum = box.getMinimum();
-        auto maximum = box.getMaximum();
-
-        auto* grass = new Forests::PagedGeometry(pCamera, 15);
-
-        grass->addDetailLevel<Forests::GrassPage>(60, 0);
-
-        auto* grassLoader = new Forests::GrassLoader(grass);
-
-        grass->setPageLoader(grassLoader);
-        grassLoader->setHeightFunction([](float x, float z, void*) { return terrainGroupLocal->getHeightAtWorldPosition(x, 10000.0, z); });
-        Forests::GrassLayer* layer = grassLoader->addLayer(grassMaterial);
-        layer->setFadeTechnique(Forests::FADETECH_ALPHA);
-        layer->setRenderTechnique(Forests::GRASSTECH_CROSSQUADS);
-        layer->setMapBounds(Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
-        layer->setDensityMap(densityMap);
-        layer->setColorMap(colorMap);
-        layer->setDensity(density);
-        layer->setMaximumSize(maxSize, maxSize);
-
-        sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("GrassPage" + std::to_string(id++), grass);
-    }
-}
-
-void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long long id) {
-    int x = StringConverter::parseInt(XMLNode.attribute("x").value());
-    int y = StringConverter::parseInt(XMLNode.attribute("y").value());
-    std::string treeMeshName = XMLNode.attribute("trees").value();
-    SceneManager* sceneManager = pCamera->getSceneManager();
-    static unsigned long long generator = 0;
-
-    if (!treeMeshName.empty())
-    {
-        AxisAlignedBox box = terrainGroup->getTerrain(x, y)->getWorldAABB();
-        auto minimum = box.getMinimum();
-        auto maximum = box.getMaximum();
-
-        auto* trees = new Forests::PagedGeometry(pCamera, 15);
-
-        trees->addDetailLevel<Forests::WindBatchPage>(125, 0);
-        //trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
-
-        auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
-
-        trees->setPageLoader(treeLoader);
-        std::string newName = treeMeshName + std::to_string(generator++);
-        Entity* treeEntity = sceneManager->createEntity(newName, treeMeshName);
-        trees->setCustomParam(newName, "windFactorX", 30);
-        trees->setCustomParam(newName, "windFactorY", 0.01);
-
-        for (int i = 0; i < 23; i++)
-        {
-            float x = 0, y = 0, z = 0, yaw = 0.0, scale = 1.0;
-            yaw = Ogre::Math::RangeRandom(0, 360);
-            x = Ogre::Math::RangeRandom(minimum.x, maximum.x);
-            z = Ogre::Math::RangeRandom(minimum.z, maximum.z);
-            y = terrainGroup->getHeightAtWorldPosition(x, 10000.0, z) - 0.2;
-
-            Ogre::Quaternion quat;
-            scale = 0.2 * Ogre::Math::RangeRandom(0.9f, 1.1f);
-            quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
-
-            treeLoader->addTree(treeEntity, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
-        }
-
-    sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("BatchPage" + std::to_string(id), trees);
-    }
-}
-
 } // namespace
 
 DotSceneLoaderB::DotSceneLoaderB() : mSceneMgr(0), mBackgroundColour(ColourValue::Black) {}
@@ -394,6 +310,89 @@ void DotSceneLoaderB::processEnvironment(pugi::xml_node& XMLNode)
         mSceneMgr->setShadowColour(parseColour(pElement));
 }
 
+void DotSceneLoaderB::processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long id) {
+    static TerrainGroup* terrainGroupLocal = terrainGroup;
+    int x = StringConverter::parseInt(XMLNode.attribute("x").value());
+    int y = StringConverter::parseInt(XMLNode.attribute("y").value());
+    Real density = StringConverter::parseReal(XMLNode.attribute("density").value(), 1.0);
+    Real maxSize = StringConverter::parseReal(XMLNode.attribute("maxSize").value(), 2.0);
+    std::string grassMaterial = XMLNode.attribute("grass").value();
+    std::string densityMap = XMLNode.attribute("densityMap").value();
+    std::string colorMap = XMLNode.attribute("colorMap").value();
+    SceneManager* sceneManager = pCamera->getSceneManager();
+
+    if (!grassMaterial.empty())
+    {
+        AxisAlignedBox box = terrainGroup->getTerrain(x, y)->getWorldAABB();
+        auto minimum = box.getMinimum();
+        auto maximum = box.getMaximum();
+
+        auto* grass = new Forests::PagedGeometry(pCamera, 15);
+
+        grass->addDetailLevel<Forests::GrassPage>(60, 0);
+
+        auto* grassLoader = new Forests::GrassLoader(grass);
+
+        grass->setPageLoader(grassLoader);
+        grassLoader->setHeightFunction([](float x, float z, void*) { return terrainGroupLocal->getHeightAtWorldPosition(x, 10000.0, z); });
+        Forests::GrassLayer* layer = grassLoader->addLayer(grassMaterial);
+        layer->setFadeTechnique(Forests::FADETECH_ALPHA);
+        layer->setRenderTechnique(Forests::GRASSTECH_CROSSQUADS);
+        layer->setMapBounds(Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
+        layer->setDensityMap(densityMap);
+        layer->setColorMap(colorMap);
+        layer->setDensity(density);
+        layer->setMaximumSize(maxSize, maxSize);
+
+        sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("GrassPage" + std::to_string(id++), grass);
+    }
+}
+
+void DotSceneLoaderB::processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long id) {
+    int x = StringConverter::parseInt(XMLNode.attribute("x").value());
+    int y = StringConverter::parseInt(XMLNode.attribute("y").value());
+    std::string treeMeshName = XMLNode.attribute("trees").value();
+    SceneManager* sceneManager = pCamera->getSceneManager();
+    static unsigned long generator = 0;
+
+    if (!treeMeshName.empty())
+    {
+        AxisAlignedBox box = terrainGroup->getTerrain(x, y)->getWorldAABB();
+        auto minimum = box.getMinimum();
+        auto maximum = box.getMaximum();
+
+        auto* trees = new Forests::PagedGeometry(pCamera, 15);
+
+        trees->addDetailLevel<Forests::WindBatchPage>(125, 0);
+        //trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
+
+        auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
+
+        trees->setPageLoader(treeLoader);
+        std::string newName = treeMeshName + std::to_string(generator++);
+        Entity* treeEntity = sceneManager->createEntity(newName, treeMeshName);
+        trees->setCustomParam(newName, "windFactorX", 30);
+        trees->setCustomParam(newName, "windFactorY", 0.01);
+
+        for (int i = 0; i < 23; i++)
+        {
+          float x = 0, y = 0, z = 0, yaw = 0.0, scale = 1.0;
+          yaw = Ogre::Math::RangeRandom(0, 360);
+          x = Ogre::Math::RangeRandom(minimum.x, maximum.x);
+          z = Ogre::Math::RangeRandom(minimum.z, maximum.z);
+          y = terrainGroup->getHeightAtWorldPosition(x, 10000.0, z) - 0.2;
+
+          Ogre::Quaternion quat;
+          scale = 0.2 * Ogre::Math::RangeRandom(0.9f, 1.1f);
+          quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
+
+          treeLoader->addTree(treeEntity, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
+        }
+
+        sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("BatchPage" + std::to_string(id), trees);
+    }
+}
+
 void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
@@ -413,7 +412,7 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 
     OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
     auto* defaultCamera = mSceneMgr->getCamera("Camera");
-    unsigned long long generator = 0;
+    unsigned long generator = 0;
 
     for (auto &pPageElement : XMLNode.children("terrain"))
     {
@@ -462,7 +461,7 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
 
     OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
     auto* defaultCamera = mSceneMgr->getCamera("Camera");
-    unsigned long long generator = 0;
+    unsigned long generator = 0;
 
     for (auto& pPageElement : XMLNode.children("terrain"))
     {
