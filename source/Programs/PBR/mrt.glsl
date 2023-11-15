@@ -20,11 +20,11 @@ void EvaluateBuffer(const vec3 color)
     FragColor.rgb = SafeHDR(color);
 #ifdef HAS_MRT
     FragData[MRT_DEPTH].r = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
-#ifdef MRT_VELOCITY
-    FragData[MRT_VELOCITY].rg = vec2(0.0, 0.0);
-#endif
-    FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
-    FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
+//#ifdef MRT_VELOCITY
+//    FragData[MRT_VELOCITY].rg = vec2(0.0, 0.0);
+//#endif
+//    FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
+//    FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
 #endif
 }
 

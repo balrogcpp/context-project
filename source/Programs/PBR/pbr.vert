@@ -29,7 +29,7 @@ in highp vec3 vertex;
 in highp vec2 vertex;
 #endif // VERTEX_COMPRESSION
 #ifdef HAS_NORMALS
-in highp vec4 normal;
+in highp vec3 normal;
 #endif
 #ifdef HAS_TANGENTS
 in highp vec4 tangent;
@@ -93,7 +93,7 @@ void main()
 #endif
 
 #ifdef HAS_NORMALS
-    vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+    vNormal = normalize(mul(WorldMatrix, vec4(normal, 0.0)).xyz);
 #endif
 #ifdef HAS_TANGENTS
     vTangent = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);

@@ -539,8 +539,12 @@ void main()
 #endif
     EvaluateBuffer(color, alpha);
 #ifdef HAS_MRT
+#ifdef MRT_NORMALS
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);
+#endif
+#ifdef MRT_GLOSS
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
+#endif
 #ifdef MRT_VELOCITY
     if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = (vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w);
 #endif
