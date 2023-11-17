@@ -368,38 +368,6 @@ externalproject_add(Target_zlib
 )
 
 
-check_stamp(Target_json)
-externalproject_add(Target_json
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.2
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DJSON_BuildTests=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-)
-
-
 check_stamp_patch(Target_assimp assimp-5.3.1.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
@@ -716,103 +684,6 @@ externalproject_add(Target_sol2
 )
 
 
-check_stamp(Target_filesystem)
-externalproject_add(Target_filesystem
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_filesystem
-        GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-        GIT_TAG v1.5.14
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DGHC_FILESYSTEM_BUILD_TESTING=OFF
-        -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-)
-
-
-check_stamp(Target_GoogleTest)
-externalproject_add(Target_GoogleTest
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleTest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.13.0
-        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -Dgtest_force_shared_crt=ON
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-)
-
-
-check_stamp(Target_GoogleBenchmark)
-externalproject_add(Target_GoogleBenchmark
-        EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleBenchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.8.3
-        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DBENCHMARK_ENABLE_TESTING=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
-)
-
-
 check_stamp(Target_LibreSSL)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
@@ -891,7 +762,6 @@ if (NOT EMSCRIPTEN)
     add_dependencies(Contrib Target_OpenAL)
     add_dependencies(Contrib Target_Theora)
 endif ()
-add_dependencies(Contrib Target_GoogleTest)
 add_dependencies(Contrib Target_cpr)
 add_dependencies(Contrib Target_sol2)
 add_dependencies(Contrib Target_Vorbis)

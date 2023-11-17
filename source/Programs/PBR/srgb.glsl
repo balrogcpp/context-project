@@ -7,7 +7,7 @@
 
 float toSRGB(float x)
 {
-    return (x < 0.0031308 ? x * 12.92 : 1.055 * pow(x, 0.41666 ) - 0.055);
+    return (x < 0.0031308 ? x * 12.92 : 1.055 * pow(x, 0.41666) - 0.055);
 }
 
 float fromSRGB(float x)
