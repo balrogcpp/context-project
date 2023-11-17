@@ -361,6 +361,8 @@ externalproject_add(Target_zlib
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_DEBUG_POSTFIX=
+        -DAMD64=OFF
+        -DASM686=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -rf
         lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
@@ -400,6 +402,7 @@ externalproject_add(Target_assimp
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DASSIMP_HUNTER_ENABLED=OFF
         -DASSIMP_BUILD_ZLIB=OFF
         -DASSIMP_BUILD_MINIZIP=OFF
         -DASSIMP_WARNINGS_AS_ERRORS=OFF
