@@ -28,7 +28,7 @@ material SSR : RayCast
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit Normal
             {
@@ -67,7 +67,7 @@ material ssrMod : STD
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
             texture_unit Gloss
             {
