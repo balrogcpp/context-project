@@ -224,7 +224,7 @@ vec3 FxaaPixelShader(sampler2D tex, const vec2 pos, const vec2 rcpFrame)
     vec3 rgbF = texture2D(tex, vec2(
         pos.x + (horzSpan ? 0.0 : subPixelOffset),
         pos.y + (horzSpan ? subPixelOffset : 0.0))).xyz;
-    return FxaaLerp3(rgbL, rgbF, blendL); 
+    return FxaaLerp3(rgbL, rgbF, blendL);
 }
 
 #include "tonemap.glsl"
@@ -234,11 +234,12 @@ void main()
 {
     vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));
     vec3 color = FxaaPixelShader(RT, vUV0, texelSize);
+#ifndef FORCE_TONEMAP
 #ifndef GL_ES
-    color = expose(color, 2.0);
+    color = unreal(expose(color, 2.5));
 #else
-    color = expose(color, 4.0);
+    color = unreal(expose(color, 4.0));
 #endif
-    color = unreal(color);
+#endif
     FragColor.rgb = SafeHDR(color);
 }

@@ -27,6 +27,12 @@ void main()
 #else
 	vec3 color = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex).rgb;
 #endif
+#ifndef FORCE_TONEMAP
+#ifndef GL_ES
 	color = unreal(expose(color, 2.5));
+#else
+	color = unreal(expose(color, 4.0));
+#endif
+#endif
 	FragColor.rgb = SafeHDR(color);
 }

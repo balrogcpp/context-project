@@ -12,14 +12,22 @@
 
 #include "srgb.glsl"
 
-vec4 toSRGB(vec4 linear)
+vec4 toSRGB(const vec4 linear)
 {
+#ifndef FORCE_TONEMAP
 	return vec4(LINEARtoSRGB(linear.rgb), linear.a);
+#else
+	return linear;
+#endif
 }
 
-vec4 fromSRGB(vec4 srgb)
+vec4 fromSRGB(const vec4 srgb)
 {
+#ifndef FORCE_TONEMAP
 	return vec4(SRGBtoLINEAR(srgb.rgb), srgb.a);
+#else
+	return srgb;
+#endif
 }
 
 #endif // SMAA_GLSL

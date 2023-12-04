@@ -108,7 +108,7 @@ fragment_program Tonemap glsl glsles hlsl
     source tonemap.frag
     default_params
     {
-        param_named Exposure float 2.5
+        //param_named Exposure float 2.5
     }
 }
 

@@ -345,10 +345,19 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   } else if (pass_id == 99999) {  // 12 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &ll = sceneManager->_getLightsAffectingFrustum();
-    if (!ll.empty()) {
-      Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(ll[0], camera);
-      fp->setNamedConstant("LightPositionViewSpace", lightPos);
+    Ogre::Real lightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
+
+    for (int i = 0; i < ll.size(); i++) {
+      Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(ll[i], camera);
+      lightPositionViewSpace[4 * i] = lightPos.x;
+      lightPositionViewSpace[4 * i + 1] = lightPos.y;
+      lightPositionViewSpace[4 * i + 2] = lightPos.z;
+      lightPositionViewSpace[4 * i + 3] = lightPos.w;
     }
+
+    fp->setNamedConstant("LightPositionViewSpaceList", lightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
+    fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(ll.size()));
+
   } else if (pass_id == 99) {  // 99 = FullScreenBlur
   }
 }

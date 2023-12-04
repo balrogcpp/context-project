@@ -11,10 +11,10 @@ uniform float NearClipDistance;
 #include "tonemap.glsl"
 #endif
 
-void EvaluateBuffer(const vec3 color)
+void EvaluateBuffer(vec3 color)
 {
 #ifdef FORCE_TONEMAP
-    color = unreal(expose(color, 2.5));
+    color = unreal(expose(color, 4.0));
 #endif
 
     FragColor.rgb = SafeHDR(color);
