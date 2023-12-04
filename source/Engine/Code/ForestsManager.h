@@ -26,7 +26,7 @@ class ForestsManager final : public System<ForestsManager> {
   std::vector<Forests::PagedGeometry *> pagedGeometryList;
 
   Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *ogreSceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::SceneManager *sceneManager = nullptr;
+  Ogre::Camera *camera = nullptr;
 };
 }  // namespace gge

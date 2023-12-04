@@ -23,7 +23,7 @@ class TerrainManager final : public System<TerrainManager> {
  protected:
   std::unique_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
   Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *ogreSceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::SceneManager *sceneManager = nullptr;
+  Ogre::Camera *camera = nullptr;
 };
 }  // namespace gge

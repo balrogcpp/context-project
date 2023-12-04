@@ -81,6 +81,6 @@ class Window : public WindowListener {
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::RenderTarget* renderTarget = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
-  Ogre::Camera* ogreCamera = nullptr;
+  Ogre::Camera* camera = nullptr;
 };
 }  // namespace gge

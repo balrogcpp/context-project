@@ -21,10 +21,10 @@ void AudioManager::OnSetUp() {
 #endif
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "[AudioManager] ogreRoot is not initialised");
-  ogreSceneManager = ogreRoot->getSceneManager("Default");
-  ASSERTION(ogreSceneManager, "[AudioManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[AudioManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Camera");
+  sceneManager = ogreRoot->getSceneManager("Default");
+  ASSERTION(sceneManager, "[AudioManager] sceneManager is not initialised");
+  ASSERTION(sceneManager->hasCamera("Camera"), "[AudioManager] camera is not initialised");
+  camera = sceneManager->getCamera("Camera");
 
   audioRoot = make_unique<OgreOggSound::Root>();
   audioRoot->initialise();
@@ -33,8 +33,8 @@ void AudioManager::OnSetUp() {
   oggSoundManager->init();
   oggSoundManager->setResourceGroupName(Ogre::RGN_AUTODETECT);
 
-  if (ogreCamera->getParentSceneNode()) {
-    AddListener(ogreCamera->getParentSceneNode());
+  if (camera->getParentSceneNode()) {
+    AddListener(camera->getParentSceneNode());
   }
 }
 

@@ -80,8 +80,8 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   float pssmSplitPadding;
 
   Ogre::Root* ogreRoot = nullptr;
-  Ogre::SceneManager* ogreSceneManager = nullptr;
-  Ogre::Camera* ogreCamera = nullptr;
+  Ogre::SceneManager* sceneManager = nullptr;
+  Ogre::Camera* camera = nullptr;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
 };
 }  // namespace gge

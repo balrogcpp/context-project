@@ -25,7 +25,7 @@ class SkyManager final : public System<SkyManager> {
   std::array<Ogre::Vector3, 10> hosekParams;
 
   Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *ogreSceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::SceneManager *sceneManager = nullptr;
+  Ogre::Camera *camera = nullptr;
 };
 }  // namespace gge

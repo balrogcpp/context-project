@@ -290,8 +290,8 @@ void VideoManager::OnEvent(const SDL_Event &event) {
 
 void VideoManager::OnClean() {
   InputSequencer::GetInstance().UnregWindowListener(this);
-  ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  ogreSceneManager->clearScene();
+  sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  sceneManager->clearScene();
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
 }
 
@@ -419,9 +419,9 @@ void VideoManager::InitOgreRoot() {
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
-  ogreSceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
+  sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
-  ogreSceneManager = OgreRoot->createSceneManager(Ogre::SMT_DEFAULT, "Default");
+  sceneManager = OgreRoot->createSceneManager(Ogre::SMT_DEFAULT, "Default");
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
@@ -450,10 +450,10 @@ void VideoManager::InitOgreRoot() {
 void VideoManager::MakeWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
-  ogreCamera = ogreSceneManager->createCamera("Camera");
-  mainWindow->Create("Demo0", ogreCamera, 0, 1270, 720, 0);
-  ogreCamera->setNearClipDistance(0.1);
-  ogreCamera->setFarClipDistance(1000.0);
+  camera = sceneManager->createCamera("Camera");
+  mainWindow->Create("Demo0", camera, 0, 1270, 720, 0);
+  camera->setNearClipDistance(0.1);
+  camera->setFarClipDistance(1000.0);
   InputSequencer::GetInstance().RegWindowListener(mainWindow);
 }
 
@@ -467,7 +467,7 @@ void VideoManager::InitOgreOverlay() {
   ImGui::GetStyle().ScaleAllSizes(vpScale);
   imguiOverlay->setZOrder(300);
   Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
-  ogreSceneManager->addRenderQueueListener(ogreOverlay);
+  sceneManager->addRenderQueueListener(ogreOverlay);
 
   ImGuiIO &io = ImGui::GetIO();
   io.IniFilename = nullptr;
@@ -509,69 +509,69 @@ void VideoManager::InitOgreSceneManager() {
     // if (!RenderSystemIsGLES2()) shadowTexSize = 2048;
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     pssmSetup = make_shared<DPSMCameraSetup>();
-    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    ogreSceneManager->setShadowColour(Ogre::ColourValue::Black);
-    ogreSceneManager->setShadowFarDistance(shadowFarDistance);
-    ogreSceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance);
-    ogreSceneManager->setShadowTextureSize(shadowTexSize);
-    ogreSceneManager->setShadowTextureSelfShadow(true);
-    ogreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    sceneManager->setShadowColour(Ogre::ColourValue::Black);
+    sceneManager->setShadowFarDistance(shadowFarDistance);
+    sceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance);
+    sceneManager->setShadowTextureSize(shadowTexSize);
+    sceneManager->setShadowTextureSelfShadow(true);
+    sceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-    ogreSceneManager->setShadowTextureCasterMaterial(casterMaterial);
-    ogreSceneManager->setShadowTextureCount(shadowTexCount);
-    Ogre::ShadowTextureConfig texConfig = ogreSceneManager->getShadowTextureConfigList().at(0);
+    sceneManager->setShadowTextureCasterMaterial(casterMaterial);
+    sceneManager->setShadowTextureCount(shadowTexCount);
+    Ogre::ShadowTextureConfig texConfig = sceneManager->getShadowTextureConfigList().at(0);
     texConfig.depthBufferPoolId = 2;
-    for (int i = 0; i < shadowTexCount; i++) ogreSceneManager->setShadowTextureConfig(i, texConfig);
+    for (int i = 0; i < shadowTexCount; i++) sceneManager->setShadowTextureConfig(i, texConfig);
 
     // pssm stuff
-    shadowNearDistance = ogreCamera->getNearClipDistance();
+    shadowNearDistance = camera->getNearClipDistance();
     pssmSetup->setSplitPadding(pssmSplitPadding);
     for (int i = 0; i < pssmSplitCount; i++) {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     }
-    pssmSetup->calculateSplitPoints(pssmSplitCount, shadowNearDistance, ogreSceneManager->getShadowFarDistance());
+    pssmSetup->calculateSplitPoints(pssmSplitCount, shadowNearDistance, sceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
-    ogreSceneManager->setShadowCameraSetup(pssmSetup);
+    sceneManager->setShadowCameraSetup(pssmSetup);
 
   } else {
-    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
-    ogreSceneManager->setShadowTextureCount(0);
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+    sceneManager->setShadowTextureCount(0);
   }
 }
 
 void VideoManager::EnableShadows(bool enable) {
   shadowEnabled = enable;
   if (shadowEnabled) {
-    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
-    ogreSceneManager->setShadowTextureCount(shadowTexCount);
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
+    sceneManager->setShadowTextureCount(shadowTexCount);
     GetComponent<CompositorManager>().EnableCompositor("ShadowAtlas", shadowEnabled);
     InitOgreSceneManager();
   } else {
-    ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
-    ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
-    ogreSceneManager->setShadowTextureCount(0);
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+    sceneManager->setShadowTextureCount(0);
     GetComponent<CompositorManager>().EnableCompositor("ShadowAtlas", shadowEnabled);
   }
 }
 
-bool VideoManager::IsShadowEnabled() { return ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE; }
-void VideoManager::SetShadowTexSize(unsigned short size) { ogreSceneManager->setShadowTextureSize(size); }
-unsigned short VideoManager::GetShadowTexSize() { return IsShadowEnabled() ? ogreSceneManager->getShadowTextureConfigList()[0].height : 0; }
+bool VideoManager::IsShadowEnabled() { return sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE; }
+void VideoManager::SetShadowTexSize(unsigned short size) { sceneManager->setShadowTextureSize(size); }
+unsigned short VideoManager::GetShadowTexSize() { return IsShadowEnabled() ? sceneManager->getShadowTextureConfigList()[0].height : 0; }
 
 void VideoManager::SetTexFiltering(unsigned int type, int anisotropy) {
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(static_cast<Ogre::TextureFilterOptions>(type));
@@ -612,13 +612,13 @@ float VideoManager::GetDisplayVDPI(int index) {
 }
 
 void VideoManager::ClearScene() {
-  ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  ogreSceneManager->clearScene();
+  sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  sceneManager->clearScene();
 }
 
 void VideoManager::UnloadResources() {
-  ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  ogreSceneManager->clearScene();
+  sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  sceneManager->clearScene();
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
 }
 
@@ -808,7 +808,7 @@ void VideoManager::InitOgreRTSS() {
   bool result = Ogre::RTShader::ShaderGenerator::initialize();
   ASSERTION(result, "[VideoManager] OGRE RTSS init failed");
   auto &shaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
-  shaderGen.addSceneManager(ogreSceneManager);
+  shaderGen.addSceneManager(sceneManager);
   shaderGen.setShaderCachePath("");
   shaderResolver = make_unique<ShaderResolver>(&shaderGen);
   auto *schemRenderState = shaderGen.getRenderState(Ogre::MSN_SHADERGEN);

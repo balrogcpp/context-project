@@ -78,9 +78,9 @@ void CompositorManager::OnSetUp() {
   compositorManager->registerCompositorLogic("DeferredLogic", this);
   ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
   sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
-  ASSERTION(sceneManager, "[CompositorManager] ogreSceneManager not initialised");
+  ASSERTION(sceneManager, "[CompositorManager] sceneManager not initialised");
   camera = sceneManager->getCamera("Camera");
-  ASSERTION(camera, "[CompositorManager] ogreCamera not initialised");
+  ASSERTION(camera, "[CompositorManager] camera not initialised");
   compositorManager->registerCustomCompositionPass("RenderShadowMap", OGRE_NEW RenderShadowsPass);
 
   viewport = camera->getViewport();

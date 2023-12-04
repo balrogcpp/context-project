@@ -14,10 +14,10 @@ ForestsManager::~ForestsManager() {}
 void ForestsManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "[ForestsManager] ogreRoot is not initialised");
-  ogreSceneManager = ogreRoot->getSceneManager("Default");
-  ASSERTION(ogreSceneManager, "[ForestsManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[ForestsManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Camera");
+  sceneManager = ogreRoot->getSceneManager("Default");
+  ASSERTION(sceneManager, "[ForestsManager] sceneManager is not initialised");
+  ASSERTION(sceneManager->hasCamera("Camera"), "[ForestsManager] camera is not initialised");
+  camera = sceneManager->getCamera("Camera");
 }
 
 void ForestsManager::RegPagedGeometry(Forests::PagedGeometry *pagedGeometry) {

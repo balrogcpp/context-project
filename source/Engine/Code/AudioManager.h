@@ -36,7 +36,7 @@ class AudioManager final : public System<AudioManager> {
   std::unique_ptr<OgreOggSound::Root> audioRoot;
   OgreOggSound::OgreOggSoundManager *oggSoundManager = nullptr;
   Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *ogreSceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::SceneManager *sceneManager = nullptr;
+  Ogre::Camera *camera = nullptr;
 };
 }  // namespace gge

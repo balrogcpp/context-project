@@ -40,7 +40,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   this->title = title;
   this->sizeX = width;
   this->sizeY = height;
-  this->ogreCamera = camera;
+  this->camera = camera;
   sdlFlags = flags;
   SDL_DisplayMode displayMode;
   int screenWidth = 0, screenHeight = 0;
@@ -146,15 +146,15 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   ogreWindow->setVSyncInterval(vsyncInt);
 #endif
   renderTarget = ogreRoot->getRenderTarget("Main");
-  ogreViewport = renderTarget->addViewport(ogreCamera);
+  ogreViewport = renderTarget->addViewport(camera);
 
   // android is not completely ok without it
 #ifdef ANDROID
   SetSize(sizeX, sizeY);
 #endif
 
-  ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
-  ogreCamera->setAutoAspectRatio(true);
+  camera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
+  camera->setAutoAspectRatio(true);
   id = SDL_GetWindowID(sdlWindow);
 }
 

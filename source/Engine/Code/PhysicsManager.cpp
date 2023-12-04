@@ -44,9 +44,9 @@ void PhysicsManager::SetDebugView(bool debug) { this->debugView = debug; }
 void PhysicsManager::OnSetUp() {
   auto *ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "[PhysicsManager] ogreRoot is not initialised");
-  auto *ogreSceneManager = ogreRoot->getSceneManager("Default");
-  ASSERTION(ogreSceneManager, "[PhysicsManager] ogreSceneManager is not initialised");
-  auto *rootNode = ogreSceneManager->getRootSceneNode();
+  auto *sceneManager = ogreRoot->getSceneManager("Default");
+  ASSERTION(sceneManager, "[PhysicsManager] sceneManager is not initialised");
+  auto *rootNode = sceneManager->getRootSceneNode();
 
   dynamicWorld = make_unique<BtOgre::DynamicsWorld>(Ogre::Vector3(0.0, -9.8, 0.0));
   dynamicWorld->getBtWorld()->setInternalTickCallback(OnTick);

@@ -10,22 +10,22 @@ using namespace std;
 namespace gge {
 SceneManager::SceneManager()
     : viewProj(Ogre::Matrix4::IDENTITY), viewProjPrev(Ogre::Matrix4::IDENTITY), pssmPoints(Ogre::Vector4::ZERO), isEven(false) {}
-SceneManager::~SceneManager() { ogreSceneManager->removeRenderObjectListener(this); }
+SceneManager::~SceneManager() { sceneManager->removeRenderObjectListener(this); }
 
 void SceneManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "[SceneManager] ogreRoot is not initialised");
-  ogreSceneManager = ogreRoot->getSceneManager("Default");
-  ASSERTION(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[SceneManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Camera");
+  sceneManager = ogreRoot->getSceneManager("Default");
+  ASSERTION(sceneManager, "[SceneManager] sceneManager is not initialised");
+  ASSERTION(sceneManager->hasCamera("Camera"), "[SceneManager] camera is not initialised");
+  camera = sceneManager->getCamera("Camera");
 
-  ogreSceneManager->addRenderObjectListener(this);
+  sceneManager->addRenderObjectListener(this);
 }
 
 void SceneManager::OnClean() {
-  ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  ogreSceneManager->clearScene();
+  sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  sceneManager->clearScene();
   InputSequencer::GetInstance().UnregDeviceListener(sinbad.get());
   sinbad.reset();
 }
@@ -34,19 +34,19 @@ void SceneManager::OnUpdate(float time) {
   if (sinbad) sinbad->Update(time);
 
   viewProjPrev = viewProj;
-  viewProj = ogreCamera->getProjectionMatrix() * ogreCamera->getViewMatrix();
+  viewProj = camera->getProjectionMatrix() * camera->getViewMatrix();
   isEven = !isEven;
 
-  if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-    auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ogreSceneManager->getShadowCameraSetup().get());
+  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+    auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get());
     pssmCount = pssm->getSplitCount();
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-    pssmPoints.w = ogreSceneManager->getShadowFarDistance();
+    pssmPoints.w = sceneManager->getShadowFarDistance();
     for (unsigned int i = 0; i < Ogre::Math::Clamp<Ogre::uint32>(pssmCount, 0, 4); i++) {
       pssmPoints[i] = splitPointList[i + 1];
     }
   } else {
-    pssmPoints = Ogre::Vector4(0.0, 0.0, 0.0, ogreSceneManager->getShadowFarDistance());
+    pssmPoints = Ogre::Vector4(0.0, 0.0, 0.0, sceneManager->getShadowFarDistance());
   }
 }
 
@@ -64,26 +64,26 @@ static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::
 }
 
 void SceneManager::LoadFromFile(const std::string &filename) {
-  auto *rootNode = ogreSceneManager->getRootSceneNode();
+  auto *rootNode = sceneManager->getRootSceneNode();
   rootNode->loadChildren(filename);
 
   for (auto it : rootNode->getChildren()) {
     ScanNode(dynamic_cast<Ogre::SceneNode *>(it));
   }
 
-  if (!sinbad && ogreSceneManager->hasCamera("Camera")) {
-    sinbad = make_unique<SinbadCharacterController>(ogreSceneManager->getCamera("Camera"));
+  if (!sinbad && sceneManager->hasCamera("Camera")) {
+    sinbad = make_unique<SinbadCharacterController>(sceneManager->getCamera("Camera"));
     InputSequencer::GetInstance().RegDeviceListener(sinbad.get());
   }
 
   // search for TerrainGroup
-  const auto &objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
+  const auto &objBindings = sceneManager->getRootSceneNode()->getUserObjectBindings();
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
     auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
     auto *terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
 
-    if (ogreSceneManager->hasLight("Sun")) {
-      terrainGlobalOptions->setLightMapDirection(ogreSceneManager->getLight("Sun")->getDerivedDirection());
+    if (sceneManager->hasLight("Sun")) {
+      terrainGlobalOptions->setLightMapDirection(sceneManager->getLight("Sun")->getDerivedDirection());
     }
 
     //    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
@@ -119,7 +119,7 @@ void SceneManager::ScanLight(Ogre::Light *light) {
   node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
 }
 
-void SceneManager::ScanEntity(const std::string &name) { ScanEntity(ogreSceneManager->getEntity(name)); }
+void SceneManager::ScanEntity(const std::string &name) { ScanEntity(sceneManager->getEntity(name)); }
 
 void SceneManager::ScanEntity(Ogre::Entity *entity) {
   if (entity->getName().rfind("GrassLDR", 0)) {
@@ -216,7 +216,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
 
-  if (ogreSceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);
   }
 

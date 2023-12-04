@@ -20,7 +20,7 @@ class OverlayManager final : public DeviceListener, public WindowListener, publi
 
  protected:
   Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *ogreSceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::SceneManager *sceneManager = nullptr;
+  Ogre::Camera *camera = nullptr;
 };
 }  // namespace gge

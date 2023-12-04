@@ -32,8 +32,8 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   std::vector<Ogre::Entity *> entityList;
 
   Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *ogreSceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::SceneManager *sceneManager = nullptr;
+  Ogre::Camera *camera = nullptr;
 
   bool isEven;
   Ogre::Matrix4 viewProj;

@@ -17,8 +17,8 @@ class TemplateManager final : public System<TemplateManager> {
 
  protected:
   Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *ogreSceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
+  Ogre::SceneManager *sceneManager = nullptr;
+  Ogre::Camera *camera = nullptr;
 };
 
 }  // namespace gge

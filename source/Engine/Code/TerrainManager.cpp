@@ -100,10 +100,10 @@ TerrainManager::~TerrainManager() {
 void TerrainManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "[TerrainManager] ogreRoot is not initialised");
-  ogreSceneManager = ogreRoot->getSceneManager("Default");
-  ASSERTION(ogreSceneManager, "[TerrainManager] ogreSceneManager is not initialised");
-  ASSERTION(ogreSceneManager->hasCamera("Camera"), "[TerrainManager] ogreCamera is not initialised");
-  ogreCamera = ogreSceneManager->getCamera("Camera");
+  sceneManager = ogreRoot->getSceneManager("Default");
+  ASSERTION(sceneManager, "[TerrainManager] sceneManager is not initialised");
+  ASSERTION(sceneManager->hasCamera("Camera"), "[TerrainManager] camera is not initialised");
+  camera = sceneManager->getCamera("Camera");
 
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
