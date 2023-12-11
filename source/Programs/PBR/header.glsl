@@ -4,7 +4,9 @@
 #define HEADER_GLSL
 
 //#undef HAS_MRT
-//#define FORCE_TONEMAP
+#ifdef GL_ES
+#define FORCE_TONEMAP
+#endif
 
 #ifdef GL_ES
 #define MAX_SHADOW_TEXTURES 0

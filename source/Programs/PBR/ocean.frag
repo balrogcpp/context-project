@@ -173,7 +173,7 @@ void main()
     }
 
     color += LightColor0.xyz * specular;
-    color = ApplyFog(color, FogParams, FogColour.rgb, vScreenPosition.z);
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, vVec, WorldSpaceLightPos0.xyz, CameraPosition);
 
     EvaluateBuffer(color);
 #ifdef HAS_MRT

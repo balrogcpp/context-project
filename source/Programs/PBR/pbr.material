@@ -19,8 +19,8 @@ sampler CubeTex
 
 abstract material Unlit
 {
-    transparency_casts_shadows on
-    receive_shadows on
+    transparency_casts_shadows off
+    receive_shadows off
 
     set $Albedo white.dds
     set $Normal normal.dds
@@ -31,7 +31,6 @@ abstract material Unlit
 
     technique
     {
-        shadow_caster_material PSSM/shadow_caster
         pass
         {
             diffuse 1 1 1
@@ -50,11 +49,6 @@ abstract material Unlit
                 texture $Emissive
                 sampler_ref PbrTex
             }
-            texture_unit AO
-            {
-                content_type compositor MRT ao
-                sampler_ref ShadowTex
-            }
 
             vertex_program_ref Unlit_vs {}
 
@@ -62,7 +56,6 @@ abstract material Unlit
             {
                 param_named AlbedoTex      int 0
                 param_named EmissiveTex    int 1
-                param_named OcclusionTex   int 2
             }
         }
     }
@@ -117,9 +110,24 @@ abstract material PBR
                 content_type compositor MRT ao
                 filtering none
             }
-            texture_unit ShadowTex
+            texture_unit ShadowMap0
             {
-                content_type compositor MRT shadowmap
+                content_type shadow
+                sampler_ref ShadowTex
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowTex
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowTex
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
                 sampler_ref ShadowTex
             }
 
@@ -132,7 +140,10 @@ abstract material PBR
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
                 param_named OcclusionTex   int 4
-                param_named ShadowTex      int 5
+                param_named ShadowMap0     int 5
+                param_named ShadowMap1     int 6
+                param_named ShadowMap2     int 7
+                param_named ShadowMap3     int 8
             }
         }
     }
@@ -155,7 +166,7 @@ abstract material IBL : PBR
 
             fragment_program_ref IBL_fs
             {
-                param_named SpecularEnvTex int 6
+                param_named SpecularEnvTex int 9
             }
         }
     }
@@ -175,7 +186,7 @@ abstract material PG : PBR
     }
 }
 
-abstract material PG0 : Unlit
+abstract material PG0 : PBR
 {
     receive_shadows off
     technique
@@ -234,11 +245,27 @@ abstract material TERRA
                 content_type compositor MRT ao
                 sampler_ref ShadowTex
             }
-            texture_unit ShadowTex
+            texture_unit ShadowMap0
             {
-                content_type compositor MRT shadowmap
+                content_type shadow
                 sampler_ref ShadowTex
             }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowTex
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowTex
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
+                sampler_ref ShadowTex
+            }
+
 
             vertex_program_ref TERRA_vs {}
 
@@ -249,7 +276,10 @@ abstract material TERRA
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
                 param_named OcclusionTex   int 4
-                param_named ShadowTex      int 5
+                param_named ShadowMap0     int 5
+                param_named ShadowMap1     int 6
+                param_named ShadowMap2     int 7
+                param_named ShadowMap3     int 8
             }
         }
     }

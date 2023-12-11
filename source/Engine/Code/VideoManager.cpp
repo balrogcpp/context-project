@@ -255,10 +255,10 @@ VideoManager::VideoManager()
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
       shadowTexCount(8),
-      pssmSplitCount(3),
+      pssmSplitCount(2),
       pssmSplitPadding(1.0),
       shadowNearDistance(1.0),
-      shadowFarDistance(60.0),
+      shadowFarDistance(30.0),
       shadowTexSize(1024) {
 #if OGRE_CPU == OGRE_CPU_X86 && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
   OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2), "SSE2 support required");
@@ -504,9 +504,9 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 };
 
 void VideoManager::InitOgreSceneManager() {
+  sceneManager->setFog(Ogre::FOG_EXP, Ogre::ColourValue(0.5, 0.6 ,0.7), 0.003);
   shadowEnabled = !RenderSystemIsGLES2();
   if (shadowEnabled) {
-    // if (!RenderSystemIsGLES2()) shadowTexSize = 2048;
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     pssmSetup = make_shared<DPSMCameraSetup>();
     sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);

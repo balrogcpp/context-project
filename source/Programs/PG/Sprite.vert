@@ -19,7 +19,7 @@ in highp vec4 colour;
 in highp vec4 uv0;
 out vec4 oUV;
 out vec4 oColour;
-out float oFogCoord;
+//out float oFogCoord;
 void main()
 {
     //Face the camera
@@ -43,5 +43,5 @@ void main()
 	oUV.y += vScroll;
 
     //Fog
-	oFogCoord = gl_Position.z;
+	//oFogCoord = gl_Position.z;
 }

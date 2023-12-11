@@ -532,10 +532,14 @@ void main()
     color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
 #endif
     color += emission;
-    color = ApplyFog(color, FogParams, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w);
+#if MAX_LIGHTS > 0
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, v, LightDirectionArray[0].xyz, CameraPosition);
+#else
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, v, vec3(0.0, 0.0, 0.0), CameraPosition);
+#endif
 
 #if MAX_LIGHTS > 0
-    //color.r = texture2D(ShadowTex, gl_FragCoord.xy * ViewportSize.zw).r;
+    //color.r = texture2D(ShadowMap0, gl_FragCoord.xy * ViewportSize.zw).r;
 #endif
     EvaluateBuffer(color, alpha);
 #ifdef HAS_MRT

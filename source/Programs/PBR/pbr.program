@@ -15,27 +15,10 @@ abstract vertex_program Unlit_I_vs glsl glsles hlsl
     }
 }
 
-abstract vertex_program PBR_I_vs glsl glsles hlsl
-{
-	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
-    default_params
-    {
-        param_named_auto WorldMatrix world_matrix
-        param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
-        param_named_auto LightCount light_count
-    }
-}
-
-vertex_program Unlit_vs glsl glsles hlsl : Unlit_I_vs {}
-vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
-vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
-
 abstract fragment_program Unlit_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_AO,MAX_LIGHTS=0,MAX_SHADOW_TEXTURES=0
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,MAX_LIGHTS=0,MAX_SHADOW_TEXTURES=0
     
     default_params
     {
@@ -52,7 +35,20 @@ abstract fragment_program Unlit_I_fs glsl glsles hlsl
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto CameraPosition camera_position
         param_named_auto ViewMatrix view_matrix
-        param_named_auto ViewportSize viewport_size
+    }
+}
+
+
+abstract vertex_program PBR_I_vs glsl glsles hlsl
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    default_params
+    {
+        param_named_auto WorldMatrix world_matrix
+        param_named_auto WorldViewProjMatrix worldviewproj_matrix
+        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
+        param_named_auto LightCount light_count
     }
 }
 
@@ -94,8 +90,11 @@ abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
 }
 
+vertex_program Unlit_vs glsl glsles hlsl : Unlit_I_vs {}
 fragment_program Unlit_fs glsl glsles hlsl : Unlit_I_fs {}
+vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
 fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
+vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
 fragment_program IBL_fs glsl glsles hlsl : IBL_I_fs {}
 
 vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
@@ -113,9 +112,9 @@ fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA
 }
 
-vertex_program PG0_vs glsl glsles hlsl : Unlit_I_vs
+vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY,MAX_LIGHTS=0,MAX_SHADOW_TEXTURES=0
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,PAGED_GEOMETRY
     default_params
     {
         param_named_auto Time time_0_x_packed 100
@@ -123,9 +122,9 @@ vertex_program PG0_vs glsl glsles hlsl : Unlit_I_vs
     }
 }
 
-fragment_program PG0_fs glsl glsles hlsl : Unlit_I_fs
+fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,HAS_BASECOLORMAP,HAS_ALPHA,HAS_EMISSIVEMAP,HAS_AO,PAGED_GEOMETRY,MAX_LIGHTS=0,MAX_SHADOW_TEXTURES=0
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
 }
 
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs

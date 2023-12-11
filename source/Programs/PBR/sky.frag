@@ -3,11 +3,11 @@
 #define HAS_MRT
 #include "header.glsl"
 #include "srgb.glsl"
-//#include "fog.glsl"
+#include "fog.glsl"
 
 uniform vec3 SunColor;
-uniform highp vec3 SunDirection;
-uniform highp float SunSize;
+uniform highp vec4 LightDirection;
+uniform float SunSize;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 
@@ -34,8 +34,9 @@ vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 }
 #endif
 
+
 // Clamps color between 0 and 1 smoothly
-vec3 SkyLightExpose(vec3 color)
+vec3 SkyLightExpose(const vec3 color)
 {
     return 2.0 / (1.0 + exp(-0.1 * color)) - 1.0;
 }
@@ -44,7 +45,7 @@ in vec3 vUV0;
 void main()
 {
     vec3 V = normalize(vUV0);
-    vec3 N = normalize(-SunDirection);
+    vec3 N = normalize(-LightDirection.xyz);
     float cos_theta = clamp(abs(V.y), 0.0, 1.0);
     float cos_gamma = dot(V, N);
     float gamma = acos(cos_gamma);
@@ -59,5 +60,8 @@ void main()
     }
 
     color = SRGBtoLINEAR(SkyLightExpose(color));
+
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, 300.0 * pow(1 - V.y, 3.0), V, LightDirection.xyz, vec3(0.0, 0.0, 0.0));
+
     EvaluateBuffer(color);
 }

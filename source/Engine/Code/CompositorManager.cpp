@@ -99,16 +99,16 @@ void CompositorManager::OnSetUp() {
 
   // create compositor chain
   AddCompositor("MRT", true);
-  AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
+//  AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
-  AddCompositor("FXAA", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
+  AddCompositor("FXAA", true);
   AddCompositor("Tonemap", false);
   AddCompositor("Blur", !RenderSystemIsGLES2());
-  AddCompositor("FullScreenBlur", false);
+//  AddCompositor("FullScreenBlur", false);
 
   // reg as viewport listener
   viewport->addListener(this);
@@ -348,6 +348,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     Ogre::Real lightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
 
     for (int i = 0; i < ll.size(); i++) {
+      if (ll[i]->getType() != Ogre::Light::LT_DIRECTIONAL) break;
       Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(ll[i], camera);
       lightPositionViewSpace[4 * i] = lightPos.x;
       lightPositionViewSpace[4 * i + 1] = lightPos.y;

@@ -46,7 +46,11 @@ const vec2 vogel_disk_16[16] = vec2[](
 );
 
 #if MAX_SHADOW_TEXTURES > 0
-uniform mediump sampler2D ShadowTex;
+//uniform mediump sampler2D ShadowTex;
+uniform mediump sampler2D ShadowMap0;
+uniform mediump sampler2D ShadowMap1;
+uniform mediump sampler2D ShadowMap2;
+uniform mediump sampler2D ShadowMap3;
 uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 uniform highp vec4 PssmSplitPoints;
@@ -54,7 +58,7 @@ uniform vec4 ShadowColour;
 
 #ifndef PSSM_FILTER_SIZE
 #ifndef GL_ES
-#define PSSM_FILTER_SIZE 8
+#define PSSM_FILTER_SIZE 16
 #else
 #define PSSM_FILTER_SIZE 4
 #endif
@@ -105,7 +109,7 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
 }
 #endif
 
-float CalcShadow(int index)
+float CalcShadow(sampler2D shadowMap, int index)
 {
     vec4 lightSpacePos = vLightSpacePosArray[index];
     lightSpacePos.xyz /= lightSpacePos.w;
@@ -113,6 +117,7 @@ float CalcShadow(int index)
     float depth = lightSpacePos.z;
     if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
 
+#ifdef SHADOWMAP_ATLAS
     if (index == 0)
         uv = uv * 0.5;
     else if (index == 1)
@@ -121,9 +126,10 @@ float CalcShadow(int index)
         uv = uv * 0.5 + vec2(0.0, 0.5);
     else
         return 1.0;
+#endif
 
     depth = depth * 0.5 + 0.5;
-    vec2 tsize = 1.0 / vec2(textureSize(ShadowTex, 0));
+    vec2 tsize = 1.0 / vec2(textureSize(shadowMap, 0));
     //depth -= 0.001;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise();
@@ -145,7 +151,7 @@ float CalcShadow(int index)
 #else
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * PSSM_FILTER_RADIUS;
 #endif
-        float texDepth = texture2D(ShadowTex, uv + offset).x;
+        float texDepth = texture2D(shadowMap, uv + offset).x;
         //if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
 #ifdef PSSM_ESM_SHADOWMAP
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
@@ -162,17 +168,31 @@ float CalcShadow(int index)
     return shadow;
 }
 
+float CalcShadow(int index)
+{
+    if (index == 0)
+        return CalcShadow(ShadowMap0, 0);
+    else if (index == 1)
+        return CalcShadow(ShadowMap1, 1);
+    else if (index == 2)
+        return CalcShadow(ShadowMap2, 2);
+    else if (index == 3)
+        return CalcShadow(ShadowMap3, 3);
+    else
+        return 1.0;
+}
+
 float CalcPSSMShadow()
 {
     float depth = gl_FragCoord.z / gl_FragCoord.w;
     if (depth >= PssmSplitPoints.w) return 1.0;
     
     if (depth <= PssmSplitPoints.x)
-        return CalcShadow(0);
+        return CalcShadow(ShadowMap0, 0);
     else if (depth <= PssmSplitPoints.y)
-        return CalcShadow(1);
+        return CalcShadow(ShadowMap1, 1);
     else if (depth <= PssmSplitPoints.z)
-        return CalcShadow(2);
+        return CalcShadow(ShadowMap2, 2);
     else
         return 1.0;
 }

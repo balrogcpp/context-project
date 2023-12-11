@@ -3,7 +3,6 @@
 #include "header.glsl"
 
 uniform highp mat4 WorldViewProjMatrix;
-uniform highp mat4 WorldViewProjPrev;
 
 in highp vec3 vertex;
 in vec3 uv0;
