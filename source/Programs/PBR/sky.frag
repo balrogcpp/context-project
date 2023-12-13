@@ -60,8 +60,8 @@ void main()
     }
 
     color = SRGBtoLINEAR(SkyLightExpose(color));
-
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, 300.0 * pow(1 - V.y, 3.0), V, LightDirection.xyz, vec3(0.0, 0.0, 0.0));
+    float h = 1.0 - sign(V.y) * V.y;
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(h), V, LightDirection.xyz, vec3(0.0, 0.0, 0.0));
 
     EvaluateBuffer(color);
 }

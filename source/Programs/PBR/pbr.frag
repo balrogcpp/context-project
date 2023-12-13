@@ -206,7 +206,7 @@ struct Light
 {
     float NdotL;                  // cos angle between normal and light direction
     float NdotH;                  // cos angle between normal and half vector
-    float NxH;
+    float oneMinusNoHSquared;
     float LdotH;                  // cos angle between light direction and half vector
     float VdotH;                  // cos angle between view direction and half vector
 };
@@ -262,7 +262,7 @@ vec3 SurfaceShading(const Light light, const PBRInfo material)
 
     // Calculation of analytical lighting contribution
     float G = GeometricOcclusion(light.NdotL, material.NdotV, material.alphaRoughness);
-    float D = MicrofacetDistribution(material.alphaRoughness, light.NdotH, light.NxH);
+    float D = MicrofacetDistribution(material.alphaRoughness, light.NdotH, light.oneMinusNoHSquared);
     vec3 specContrib = (F * G * D) / (4.0 * light.NdotL * material.NdotV);
 
     return diffuseContrib + specContrib;
@@ -321,8 +321,13 @@ vec3 EvaluateDirectionalLight(const PBRInfo material)
     Light light;
     light.LdotH = dot(l, h);
     light.NdotH = dot(n, h);
+    // https://github.com/google/filament/blob/d273838e07c76be86a3521d32d8f51f3588e4292/shaders/src/brdf.fs#L54
+#ifdef GL_ES
     vec3 NxH = cross(n, h);
-    light.NxH = dot(NxH, NxH);
+    light.oneMinusNoHSquared = dot(NxH, NxH);
+#else
+    light.oneMinusNoHSquared = 1.0 - light.NdotH * light.NdotH;
+#endif
     light.NdotL = NdotL;
     light.VdotH = dot(v, h);
     vec3 color = SurfaceShading(light, material) * ComputeMicroShadowing(NdotL, material.occlusion) * NdotL;
@@ -349,6 +354,13 @@ vec3 EvaluateLocalLights(PBRInfo material)
         vec3 h = normalize(l + v); // Half vector between both l and v
         light.LdotH = saturate(dot(l, h));
         light.NdotH = saturate(dot(n, h));
+        // https://github.com/google/filament/blob/d273838e07c76be86a3521d32d8f51f3588e4292/shaders/src/brdf.fs#L54
+#ifdef GL_ES
+        vec3 NxH = cross(n, h);
+        light.oneMinusNoHSquared = dot(NxH, NxH);
+#else
+        light.oneMinusNoHSquared = 1.0 - light.NdotH * light.NdotH;
+#endif
         light.NdotL = NdotL;
         light.VdotH = saturate(dot(v, h));
         vec3 c = SurfaceShading(light, material) * NdotL * ComputeMicroShadowing(NdotL, material.occlusion);
@@ -494,7 +506,7 @@ void main()
 #ifdef HAS_AO
     float ao = texture2D(OcclusionTex, gl_FragCoord.xy * ViewportSize.zw).r;
 #else
-    float ao = 1.0;
+    const float ao = 1.0;
 #endif
 
     // Roughness is authored as perceptual roughness; as is convention,

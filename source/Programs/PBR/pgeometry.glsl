@@ -34,12 +34,7 @@ highp vec4 WaveTree(const highp vec4 position, highp float time, const vec4 para
     highp float factorX = params1.z;
     highp float factorY = params1.w;
 
-    return vec4(
-        sin(time + params2.z) * heightCoeff2 * factorX,
-        sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY,
-        0.0,
-        0.0
-        );
+    return vec4(sin(time + params2.z) * heightCoeff2 * factorX, sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY, 0.0, 0.0);
 }
 
 #endif // PGEOMETRY_GLSL

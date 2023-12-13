@@ -27,7 +27,6 @@ abstract fragment_program Unlit_I_fs glsl glsles hlsl
         param_named_auto SurfaceAmbientColour surface_ambient_colour
         param_named_auto SurfaceDiffuseColour surface_diffuse_colour
         param_named_auto SurfaceSpecularColour surface_specular_colour
-        param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
@@ -102,7 +101,7 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,PAGED_GEOMETRY
     default_params
     {
-        param_named_auto Time time_0_x_packed 100
+        param_named_auto Time time
         //param_named_auto CameraPosition camera_position
     }
 }
@@ -117,7 +116,7 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
     preprocessor_defines HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,PAGED_GEOMETRY
     default_params
     {
-        param_named_auto Time time_0_x_packed 100
+        param_named_auto Time time
         //param_named_auto CameraPosition camera_position
     }
 }
