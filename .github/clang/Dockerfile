@@ -22,7 +22,7 @@ ARG GNU_MIRROR=https://ftp.gnu.org/gnu
 # 2.38;2.39;2.40 are broken
 ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=11.0.0
-ARG GCC_VERSION=13.1.0
+ARG GCC_VERSION=13.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=10
 RUN apt-get update \
@@ -129,7 +129,7 @@ RUN apt-get update \
 
 
 # clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
-ARG CLANG_MAJOR=16
+ARG CLANG_MAJOR=17
 ARG STDLIB_APT_MAJOR=7
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
@@ -146,7 +146,7 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 # apple
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG OSXCROSS_GIT_HASH=27499bce6f512bf5ed81fff81ed5db800b9c7cb7
+ARG OSXCROSS_GIT_HASH=ff8d100f3f026b4ffbe4ce96d8aac4ce06f1278b
 RUN apt-get update \
     && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
