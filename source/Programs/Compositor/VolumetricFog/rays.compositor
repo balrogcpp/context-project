@@ -1,0 +1,41 @@
+// created by Andrey Vasiliev
+
+import STD from std.compositor
+
+compositor Rays : STD
+{
+    technique
+    {
+        texture fbo target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture scattering target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target fbo
+        {
+            pass render_quad
+            {
+                material FBO
+                input 0 rt
+            }
+        }
+
+        target scattering
+        {
+            pass render_quad
+            {
+                identifier 12
+                material Rays
+                input 0 fbo
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material RaysMod
+                input 0 rt
+                input 1 scattering
+            }
+        }
+    }
+}

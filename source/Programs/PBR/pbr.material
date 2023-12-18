@@ -106,8 +106,8 @@ abstract material PBR
             }
             texture_unit AO
             {
-                //texture $AO
-                content_type compositor MRT ao
+                texture $AO
+                //content_type compositor MRT ao
                 filtering none
             }
             texture_unit ShadowMap0
@@ -241,8 +241,8 @@ abstract material TERRA
             }
             texture_unit AO
             {
-                //texture $AO
-                content_type compositor MRT ao
+                texture $AO
+                //content_type compositor MRT ao
                 sampler_ref ShadowTex
             }
             texture_unit ShadowMap0

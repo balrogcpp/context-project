@@ -1,0 +1,83 @@
+// created by Andrey Vasiliev
+
+import STD from stdquad.material
+
+fragment_program fbo glsl glsles hlsl
+{
+	source fbo.frag
+}
+
+material FBO : STD
+{
+	technique
+	{
+		pass
+		{
+            fragment_program_ref fbo
+			{
+                param_named RT int 0
+            }
+		}
+	}
+}
+
+fragment_program rays glsl glsles hlsl
+{
+	source rays.frag
+
+    default_params
+    {
+        param_named Decay float 0.96815
+        param_named Exposure float 0.0034
+        param_named Density float 0.84
+        param_named Weight float 5.65
+    }
+}
+
+material Rays : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref rays
+            {
+                param_named FBO int 0
+            }
+
+            texture_unit FBO
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+
+fragment_program raysMod glsl glsles hlsl
+{
+	source mod.frag
+}
+
+material RaysMod : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref raysMod
+            {
+                param_named RT int 0
+                param_named FBO int 1
+            }
+
+            texture_unit FBO
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}

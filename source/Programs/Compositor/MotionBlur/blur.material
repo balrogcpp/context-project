@@ -10,7 +10,7 @@ fragment_program Blur glsl glsles hlsl
 
     default_params
     {
-        param_named_auto FrameTime frame_time 1
+        param_named_auto FPS fps
     }
 }
 

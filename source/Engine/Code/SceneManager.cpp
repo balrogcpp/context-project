@@ -9,7 +9,12 @@ using namespace std;
 
 namespace gge {
 SceneManager::SceneManager()
-    : viewProj(Ogre::Matrix4::IDENTITY), viewProjPrev(Ogre::Matrix4::IDENTITY), pssmPoints(Ogre::Vector4::ZERO), isEven(false) {}
+    : viewProj(Ogre::Matrix4::IDENTITY),
+      viewProjPrev(Ogre::Matrix4::IDENTITY),
+      pssmPoints(Ogre::Vector4::ZERO),
+      pssmPointsPrev(Ogre::Vector4::ZERO),
+      pssmChanged(false),
+      isEven(false) {}
 SceneManager::~SceneManager() { sceneManager->removeRenderObjectListener(this); }
 
 void SceneManager::OnSetUp() {
@@ -48,6 +53,9 @@ void SceneManager::OnUpdate(float time) {
   } else {
     pssmPoints = Ogre::Vector4(0.0, 0.0, 0.0, sceneManager->getShadowFarDistance());
   }
+
+  pssmChanged = pssmPointsPrev != pssmPoints;
+  pssmPointsPrev = pssmPoints;
 }
 
 static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
@@ -216,7 +224,7 @@ void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
 
-  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);
   }
 

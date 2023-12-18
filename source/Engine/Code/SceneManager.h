@@ -40,5 +40,7 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   Ogre::Matrix4 viewProjPrev;
   Ogre::uint32 pssmCount;
   Ogre::Vector4 pssmPoints;
+  Ogre::Vector4 pssmPointsPrev;
+  bool pssmChanged;
 };
 }  // namespace gge

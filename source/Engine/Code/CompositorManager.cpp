@@ -11,6 +11,7 @@ namespace gge {
 class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
  public:
   RenderShadows(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport(); }
+  virtual ~RenderShadows() {}
 
   void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
     if (sm->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
@@ -21,8 +22,6 @@ class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
     }
   }
 
-  virtual ~RenderShadows() {}
-
  private:
   Ogre::Viewport *viewport = nullptr;
 };
@@ -32,9 +31,6 @@ class RenderShadowsPass : public Ogre::CustomCompositionPass {
   Ogre::CompositorInstance::RenderSystemOperation *createOperation(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) override {
     return OGRE_NEW RenderShadows(instance, pass);
   }
-
- protected:
-  virtual ~RenderShadowsPass() {}
 };
 
 CompositorManager::CompositorManager() : fixedViewportSize(false), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow") {}
@@ -90,7 +86,7 @@ void CompositorManager::OnSetUp() {
   cubeCamera->setAspectRatio(1.0);
   cubeCamera->setNearClipDistance(1.0);
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
-  sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * 2.0)->attachObject(cubeCamera);
+  sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y)->attachObject(cubeCamera);
   AddCompositor("CubeMap", true);
   auto *rt = compositorChain->getCompositor("CubeMap")->getRenderTarget("cube");
   rt->removeAllViewports();
@@ -103,12 +99,13 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("Rays", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);
   AddCompositor("Tonemap", false);
   AddCompositor("Blur", !RenderSystemIsGLES2());
-//  AddCompositor("FullScreenBlur", false);
+  AddCompositor("FullScreenBlur", false);
 
   // reg as viewport listener
   viewport->addListener(this);
@@ -211,8 +208,6 @@ void CompositorManager::EnableRendering() {
   compositorChain->getCompositor(0)->getTechnique()->getTargetPass(0)->getPass(1)->setType(Ogre::CompositionPass::PT_RENDERSCENE);
   compositorChain->_markDirty();
 }
-
-Ogre::Camera *CompositorManager::GetOgreCamera() { return camera; }
 
 void CompositorManager::ApplyCachedCompositorChain() {
   // compositors are automatically resized according to actual viewport size when added to chain
@@ -342,7 +337,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
-  } else if (pass_id == 99999) {  // 12 = Rays
+  } else if (pass_id == 12) {  // 12 = Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &ll = sceneManager->_getLightsAffectingFrustum();
     Ogre::Real lightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
@@ -356,7 +351,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
       lightPositionViewSpace[4 * i + 3] = lightPos.w;
     }
 
-    fp->setNamedConstant("LightPositionViewSpaceList", lightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
+    fp->setNamedConstant("LightPositionList", lightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
     fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(ll.size()));
 
   } else if (pass_id == 99) {  // 99 = FullScreenBlur

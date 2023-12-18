@@ -31,7 +31,6 @@ class CompositorManager : public System<CompositorManager>,
   void RemoveAllCompositors();
   void DisableRendering();
   void EnableRendering();
-  Ogre::Camera* GetOgreCamera();
 
   /// System impl
   void OnSetUp() override;
