@@ -13,17 +13,13 @@ compositor Fresnel
         target reflection
         {
             visibility_mask 0x00F // SURFACE objects
-            shadows off
-            pass clear {}
-            pass render_scene {}
+            input previous
         }
 
         target refraction
         {
             visibility_mask 0x0F0 // SUBMERGED objects
-            shadows on
-            pass clear {}
-            //pass render_scene {}
+            input previous
         }
 
         target_output

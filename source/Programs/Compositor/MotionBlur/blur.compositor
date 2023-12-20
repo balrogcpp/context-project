@@ -2,7 +2,7 @@
 
 import STD from std.compositor
 
-compositor Blur : STD
+compositor MotionBlur : STD
 {
     technique
     {

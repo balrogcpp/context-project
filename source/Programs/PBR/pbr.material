@@ -1,10 +1,5 @@
 // created by Andrey Vasiliev
 
-sampler ShadowTex
-{
-    filtering bilinear
-    tex_address_mode clamp
-}
 sampler PbrTex
 {
     filtering anisotropic
@@ -106,30 +101,36 @@ abstract material PBR
             }
             texture_unit AO
             {
-                texture $AO
-                //content_type compositor MRT ao
+                content_type compositor MRT ao
                 filtering none
             }
-            texture_unit ShadowMap0
+            /*texture_unit ShadowAtlas
             {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
+                content_type compositor MRT shadowmap
+                filtering bilinear
+            }*/
+                        texture_unit ShadowMap0
+                        {
+                            content_type shadow
+                            filtering bilinear
+                        }
+                        texture_unit ShadowMap1
+                        {
+                            content_type shadow
+                            filtering bilinear
+                        }
+                        texture_unit ShadowMap2
+                        {
+                            content_type shadow
+                            filtering bilinear
+                        }
+                        texture_unit ShadowMap3
+                        {
+                            content_type shadow
+                            filtering bilinear
+                        }
+
+
 
             vertex_program_ref PBR_vs {}
 
@@ -140,10 +141,12 @@ abstract material PBR
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
                 param_named OcclusionTex   int 4
-                param_named ShadowMap0     int 5
-                param_named ShadowMap1     int 6
-                param_named ShadowMap2     int 7
-                param_named ShadowMap3     int 8
+                //param_named ShadowTex      int 5
+                                param_named ShadowMap0     int 5
+                                param_named ShadowMap1     int 6
+                                param_named ShadowMap2     int 7
+                                param_named ShadowMap3     int 8
+
             }
         }
     }
@@ -206,6 +209,7 @@ abstract material TERRA
     receive_shadows off
     set $Albedo white.dds
     set $Normal normal.dds
+    set $AO white.dds
 
     technique
     {
@@ -241,30 +245,35 @@ abstract material TERRA
             }
             texture_unit AO
             {
-                texture $AO
-                //content_type compositor MRT ao
-                sampler_ref ShadowTex
+                content_type compositor MRT ao
+                filtering none
             }
-            texture_unit ShadowMap0
+            /*texture_unit ShadowAtlas
             {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
+                content_type compositor MRT shadowmap
+                filtering bilinear
+            }*/
+                                    texture_unit ShadowMap0
+                                    {
+                                        content_type shadow
+                                        filtering bilinear
+                                    }
+                                    texture_unit ShadowMap1
+                                    {
+                                        content_type shadow
+                                        filtering bilinear
+                                    }
+                                    texture_unit ShadowMap2
+                                    {
+                                        content_type shadow
+                                        filtering bilinear
+                                    }
+                                    texture_unit ShadowMap3
+                                    {
+                                        content_type shadow
+                                        filtering bilinear
+                                    }
+
 
 
             vertex_program_ref TERRA_vs {}
@@ -276,10 +285,12 @@ abstract material TERRA
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
                 param_named OcclusionTex   int 4
-                param_named ShadowMap0     int 5
-                param_named ShadowMap1     int 6
-                param_named ShadowMap2     int 7
-                param_named ShadowMap3     int 8
+                //param_named ShadowTex      int 5
+                                param_named ShadowMap0     int 5
+                                param_named ShadowMap1     int 6
+                                param_named ShadowMap2     int 7
+                                param_named ShadowMap3     int 8
+
             }
         }
     }

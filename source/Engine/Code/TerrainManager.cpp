@@ -134,6 +134,7 @@ void TerrainManager::LoadTerrainGroupLegacy(int x, int y, const string &filename
   ogreTerrainGroup->loadLegacyTerrain(filename, x, y, true);
   ogreTerrainGroup->setOrigin(Ogre::Vector3::ZERO);
   ogreTerrainGroup->freeTemporaryResources();
+  ogreTerrainGroup->getTerrain(x, y)->setVisibilityFlags(0x0F0);
 }
 
 void TerrainManager::OnUpdate(float time) {}

@@ -14,6 +14,7 @@
 #ifdef GL_ES
 #define MAX_SHADOW_TEXTURES 0
 #endif
+//#define SHADOWMAP_ATLAS
 #define PSSM_ESM_SHADOWMAP
 #define PSSM_GLOBAL_MIN_DEPTH 1.0
 #define PSSM_GLOBAL_RANGE 64.0

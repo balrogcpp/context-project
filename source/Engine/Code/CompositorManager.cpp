@@ -44,7 +44,16 @@ void CompositorManager::OnUpdate(float time) {
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
 
-void CompositorManager::compositorInstanceCreated(Ogre::CompositorInstance *newInstance) { newInstance->addListener(this); }
+void CompositorManager::compositorInstanceCreated(Ogre::CompositorInstance *newInstance) {
+  newInstance->addListener(this);
+
+  if (newInstance->getCompositor()->getName() == "Fresnel") {
+    auto *rt1 = newInstance->getCompositor()->getRenderTarget("reflection");
+    rt1->addListener(this);
+    auto *rt2 = newInstance->getCompositor()->getRenderTarget("refraction");
+    rt2->addListener(this);
+  }
+}
 
 void CompositorManager::compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) { destroyedInstance->removeListener(this); }
 
@@ -53,8 +62,12 @@ void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt
   if (name.find("reflection") != string::npos) {
     camera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
     camera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
+    shadowTechnique = sceneManager->getShadowTechnique();
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   } else if (name.find("refraction") != string::npos) {
-    camera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, plane.d));
+    //camera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, plane.d));
+    shadowTechnique = sceneManager->getShadowTechnique();
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   }
 }
 
@@ -63,8 +76,10 @@ void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &ev
   if (name.find("reflection") != string::npos) {
     camera->disableCustomNearClipPlane();
     camera->disableReflection();
+    sceneManager->setShadowTechnique(shadowTechnique);
   } else if (name.find("refraction") != string::npos) {
     camera->disableCustomNearClipPlane();
+    sceneManager->setShadowTechnique(shadowTechnique);
   }
 }
 
@@ -95,22 +110,21 @@ void CompositorManager::OnSetUp() {
 
   // create compositor chain
   AddCompositor("MRT", true);
-//  AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
+  //AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
-  if (!RenderSystemIsGLES2()) AddCompositor("Rays", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("Rays", false);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);
   AddCompositor("Tonemap", false);
-  AddCompositor("Blur", !RenderSystemIsGLES2());
+  AddCompositor("MotionBlur", !RenderSystemIsGLES2());
   AddCompositor("FullScreenBlur", false);
 
   // reg as viewport listener
   viewport->addListener(this);
   fixedViewportSize = false;
-  viewportDimensionsChanged(viewport);
 }
 
 void CompositorManager::OnClean() { viewport->removeListener(this); }
@@ -128,16 +142,11 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
 
 void CompositorManager::AddReflectionPlane(Ogre::Plane plane) {
   this->plane = plane;
-
-  if (!IsCompositorInChain("Fresnel")) {
-    auto *compositor = compositorManager->addCompositor(viewport, "Fresnel", 0);
-    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
-    compositorManager->setCompositorEnabled(viewport, "Fresnel", true);
-    auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-    rt1->addListener(this);
-    auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
-    rt2->addListener(this);
-  }
+  AddCompositor("Fresnel", true, 0);
+  auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+  rt1->addListener(this);
+  auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
+  rt2->addListener(this);
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {

@@ -69,5 +69,6 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Camera* camera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
   Ogre::Viewport* viewport = nullptr;
+  Ogre::ShadowTechnique shadowTechnique;
 };
 }  // namespace gge

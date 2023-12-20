@@ -3,10 +3,6 @@
 #ifndef PSSM_GLSL
 #define PSSM_GLSL
 
-#ifdef TERRA_LIGHTMAP
-uniform sampler2D TerraLightTex;
-#endif
-
 // https://drdesten.github.io/web/tools/vogel_disk/
 const vec2 vogel_disk_4[4] = vec2[](
     vec2(0.21848650099008202, -0.09211370200809937),
@@ -45,12 +41,19 @@ const vec2 vogel_disk_16[16] = vec2[](
     vec2(-0.1133270115046468, -0.9490025827627441)
 );
 
+#ifdef TERRA_LIGHTMAP
+uniform sampler2D TerraLightTex;
+#endif
+
 #if MAX_SHADOW_TEXTURES > 0
-//uniform mediump sampler2D ShadowTex;
+#ifdef SHADOWMAP_ATLAS
+uniform mediump sampler2D ShadowTex;
+#else
 uniform mediump sampler2D ShadowMap0;
 uniform mediump sampler2D ShadowMap1;
 uniform mediump sampler2D ShadowMap2;
 uniform mediump sampler2D ShadowMap3;
+#endif
 uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 uniform highp vec4 PssmSplitPoints;
@@ -170,6 +173,18 @@ float CalcShadow(sampler2D shadowMap, int index)
 
 float CalcShadow(int index)
 {
+#ifdef SHADOWMAP_ATLAS
+    if (index == 0)
+        return CalcShadow(ShadowTex, 0);
+    else if (index == 1)
+        return CalcShadow(ShadowTex, 1);
+    else if (index == 2)
+        return CalcShadow(ShadowTex, 2);
+    else if (index == 3)
+        return CalcShadow(ShadowTex, 3);
+    else
+        return 1.0;
+#else
     if (index == 0)
         return CalcShadow(ShadowMap0, 0);
     else if (index == 1)
@@ -180,6 +195,7 @@ float CalcShadow(int index)
         return CalcShadow(ShadowMap3, 3);
     else
         return 1.0;
+#endif
 }
 
 float CalcPSSMShadow()
@@ -187,6 +203,16 @@ float CalcPSSMShadow()
     float depth = gl_FragCoord.z / gl_FragCoord.w;
     if (depth >= PssmSplitPoints.w) return 1.0;
     
+#ifdef SHADOWMAP_ATLAS
+    if (depth <= PssmSplitPoints.x)
+        return CalcShadow(ShadowTex, 0);
+    else if (depth <= PssmSplitPoints.y)
+        return CalcShadow(ShadowTex, 1);
+    else if (depth <= PssmSplitPoints.z)
+        return CalcShadow(ShadowTex, 2);
+    else
+        return 1.0;
+#else
     if (depth <= PssmSplitPoints.x)
         return CalcShadow(ShadowMap0, 0);
     else if (depth <= PssmSplitPoints.y)
@@ -195,6 +221,7 @@ float CalcPSSMShadow()
         return CalcShadow(ShadowMap2, 2);
     else
         return 1.0;
+#endif
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0

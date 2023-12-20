@@ -408,6 +408,7 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
         std::string filename = pPageElement.attribute("file").value();
         terrainGroup->loadLegacyTerrain(filename, x, y, true);
         terrainGroup->setOrigin(Vector3::ZERO);
+        terrainGroup->getTerrain(x, y)->setVisibilityFlags(0x00F);
     }
 
     OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
@@ -456,6 +457,7 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
         int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
 
         terrainGroup->defineTerrain(pageX, pageY, pPageElement.attribute("dataFile").value());
+        terrainGroup->getTerrain(pageX, pageY)->setVisibilityFlags(0x00F);
     }
     terrainGroup->loadAllTerrains(true);
 
