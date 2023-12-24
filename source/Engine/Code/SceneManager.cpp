@@ -133,7 +133,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
   if (entity->getName().rfind("GrassLDR", 0)) {
     Ogre::SceneNode *node = entity->getParentSceneNode();
     Ogre::Vector3 position = node->getPosition();
-    node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
+    //node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
   }
 
   if (!entity->getMesh()->isReloadable()) return;

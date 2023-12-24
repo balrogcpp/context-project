@@ -3,17 +3,6 @@
 #ifndef TONEMAP_GLSL
 #define TONEMAP_GLSL
 
-float expose(float color, const vec3 exposure)
-{
-    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
-}
-
-// Clamps color between 0 and 1 smoothly
-vec3 expose(const vec3 color, float exposure)
-{
-    return 2.0 / (1.0 + exp(-exposure * color)) - 1.0;
-}
-
 float luminance(const vec3 linear)
 {
     return dot(linear, vec3(0.2126, 0.7152, 0.0722));
@@ -54,7 +43,7 @@ vec3 uncharted2(const vec3 color)
 // Unreal 3, Documentation: "Color Grading"
 // Adapted to be close to Tonemap_ACES, with similar range
 // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-vec3 unreal(const vec3 x)
+highp vec3 unreal(const highp vec3 x)
 {
     return x / (x + 0.155) * 1.019;
 }

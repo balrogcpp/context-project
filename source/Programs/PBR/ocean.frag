@@ -5,7 +5,7 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 #ifndef MAX_WATER_OCTAVES
-    #define MAX_WATER_OCTAVES 3
+    #define MAX_WATER_OCTAVES 2
 #endif
 
 uniform sampler2D NormapTex;
@@ -36,7 +36,7 @@ uniform vec3 SunTransmittance;
 uniform float SunFade;
 uniform float ScatterFade;
 
-float fresnelDielectric(vec3 incoming, vec3 normal, float eta)
+float fresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
 {
     // compute fresnel reflectance without explicitly computing
     // the refracted direction
@@ -55,13 +55,12 @@ float fresnelDielectric(vec3 incoming, vec3 normal, float eta)
 }
 
 in highp vec3 vWorldPosition;
-in vec4 vScreenPosition;
 in vec4 vProjectionCoord;
 void main()
 {
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
-
-    float normalFade = 1.0 - min(exp(-vScreenPosition.w / 40.0), 1.0);
+    float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
+    float normalFade = 1.0 - min(exp(-surfaceDepth / 40.0), 1.0);
 
     vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
     highp vec3 normal0 = 2.0 * texture2D(NormapTex, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
@@ -122,7 +121,10 @@ void main()
     // texture edge bleed removal is handled by clip plane offset
     vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
     fragCoord = clamp(fragCoord, 0.002, 0.998);
-    vec3 reflection = LINEARtoSRGB(texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount)).rgb);
+    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount)).rgb;
+#ifdef FORCE_TONEMAP
+    reflection = SRGBtoLINEAR(reflection);
+#endif
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
@@ -136,16 +138,19 @@ void main()
 
     // depth of potential refracted fragment
     float refractedDepth = (texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).x) * FarClipDistance;
-    highp float surfaceDepth = vScreenPosition.w;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
-    highp vec3 refraction;
-    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
-    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
-    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
+//    highp vec3 refraction;
+//    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
+//    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
+//    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
+    vec3 refraction = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
+#ifdef FORCE_TONEMAP
+    refraction = SRGBtoLINEAR(refraction);
+#endif
 
-    highp float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
+    float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  
     vec3 waterSunColor = vec3(0.0, 1.0, 0.85) * waterSunGradient;
     waterSunColor *= aboveWater ? 0.25 : 0.5;

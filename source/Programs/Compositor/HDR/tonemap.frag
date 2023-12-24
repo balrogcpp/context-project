@@ -11,11 +11,7 @@ void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;
 #ifndef FORCE_TONEMAP
-#ifndef GL_ES
-    color = unreal(expose(color, 2.5));
-#else
-    color = unreal(expose(color, 4.0));
-#endif
+    color = unreal(color);
 #endif
     FragColor.rgb = SafeHDR(color);
 }

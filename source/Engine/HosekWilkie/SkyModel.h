@@ -3,8 +3,6 @@
 #include <OgreVector.h>
 
 
-enum class ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
-
 // Useful shader functions
 inline float Deg2Rad(float deg) { return deg * (1.0f / 180.0f) * Ogre::Math::PI; }
 inline float Rad2Deg(float rad) { return rad * (1.0f / Ogre::Math::PI) * 180.0f; }
@@ -29,12 +27,10 @@ class SkyModel {
   float Turbidity = 0.0f;
   Ogre::Vector3 Albedo;
   float Elevation = 0.0f;
-  ColorSpace Colorspace;
 
   void Shutdown();
   ~SkyModel() { Shutdown(); };
-  void SetupSky(const Ogre::Vector3 &_sunDir, float _sunSize, Ogre::Vector3 _sunRenderColor, const Ogre::Vector3 _groundAlbedo, float _turbidity,
-                ColorSpace _colorspace);
+  void SetupSky(const Ogre::Vector3 &_sunDir, float _sunSize, Ogre::Vector3 _sunRenderColor, const Ogre::Vector3 _groundAlbedo, float _turbidity);
   bool Initialized() const { return StateX != nullptr; }
   Ogre::Vector3 Sample(Ogre::Vector3 _sampleDir, bool _bEnableSun, Ogre::Vector3 _skyTint, Ogre::Vector3 _sunTint) const;
 };

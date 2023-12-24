@@ -6,8 +6,8 @@
 // https://www.shadertoy.com/view/wslfD7
 // https://www.shadertoy.com/view/wdlBRS
 // Ground albedo and turbidy are baked into the lookup tables
-#define ALBEDO 0
-#define TURBIDITY 4
+#define ALBEDO 1
+#define TURBIDITY 3
 #define M_PI 3.1415926535897932384626433832795
 #define CIE_X 0
 #define CIE_Y 1
@@ -65,6 +65,7 @@ const float kHosekRadZ[] = float[](
 
 float sample_coeff(int channel, int quintic_coeff, int coeff)
 {
+    // int index = 540 * albedo + 54 * turbidity + 9 * quintic_coeff + coeff;
 #if ALBEDO > 0
     int index = 9 * quintic_coeff + coeff;
 #else
@@ -73,14 +74,17 @@ float sample_coeff(int channel, int quintic_coeff, int coeff)
     if (channel == CIE_X) return kHosekCoeffsX[index];
     else if (channel == CIE_Y) return kHosekCoeffsY[index];
     else if (channel == CIE_Z) return kHosekCoeffsZ[index];
+    return 0.0;
 }
 
 float sample_radiance(int channel, int quintic_coeff)
 {
+    //int index = 60 * albedo + 6 * turbidity + quintic_coeff;
     int index = quintic_coeff;
     if (channel == CIE_X) return kHosekRadX[index];
     else if (channel == CIE_Y) return kHosekRadY[index];
     else if (channel == CIE_Z) return kHosekRadZ[index];
+    return 0.0;
 }
 
 float eval_quintic_bezier(const float[6] control_points, float t)
@@ -144,19 +148,18 @@ vec3 mean_spectral_radiance(float sun_zenith)
     return spectral_radiance;
 }
 
-float HosekWilkie(highp float cos_theta, highp float gamma, const highp float[9] coeffs)
+float F(float gamma, float cos_gamma, float cos_theta, const float[9] coeffs)
 {
-    highp float A = coeffs[0];
-    highp float B = coeffs[1];
-    highp float C = coeffs[2];
-    highp float D = coeffs[3];
-    highp float E = coeffs[4];
-    highp float F = coeffs[5];
-    highp float G = coeffs[6];
-    highp float H = coeffs[8];
-    highp float I = coeffs[7];
-    highp float cos_gamma = cos(gamma);
-    highp float chi = (1.0 + pow(cos_gamma, 2.0)) / pow(1.0 + H*H - 2.0 * H * cos_gamma, 1.5);
+    float A = coeffs[0];
+    float B = coeffs[1];
+    float C = coeffs[2];
+    float D = coeffs[3];
+    float E = coeffs[4];
+    float F = coeffs[5];
+    float G = coeffs[6];
+    float I = coeffs[7];
+    float H = coeffs[8];
+    float chi = (1.0 + pow(cos_gamma, 2.0)) / pow(1.0 + H*H - 2.0 * H * cos_gamma, 1.5);
 
     return (
     (1.0 + A * exp(B / (cos_theta + 0.01))) *
@@ -164,23 +167,15 @@ float HosekWilkie(highp float cos_theta, highp float gamma, const highp float[9]
     );
 }
 
-highp vec3 spectral_radiance(highp float cos_theta, highp float gamma, highp float sun_zenith)
+vec3 spectral_radiance(float gamma, float cos_gamma, float cos_theta, float sun_zenith)
 {
-    highp vec3 XYZ;
+    vec3 XYZ;
     for (int i = 0; i < 3; ++i) {
-        highp float coeffs[9];
+        float coeffs[9];
         get_coeffs(i, sun_zenith, coeffs);
-        XYZ[i] = HosekWilkie(cos_theta, gamma, coeffs);
+        XYZ[i] = F(gamma, cos_gamma, cos_theta, coeffs);
     }
     return XYZ;
-}
-
-// Returns angle between two directions defined by zentih and azimuth angles
-float angle(float z1, float a1, float z2, float a2) {
-    return acos(
-    sin(z1) * cos(a1) * sin(z2) * cos(a2) +
-    sin(z1) * sin(a1) * sin(z2) * sin(a2) +
-    cos(z1) * cos(z2));
 }
 
 vec3 XYZtoRGB(const vec3 xyz)
@@ -192,9 +187,10 @@ vec3 XYZtoRGB(const vec3 xyz)
     ) * xyz;
 }
 
-highp vec3 sample_sky(highp float cos_theta, highp float gamma, highp float sun_zenith, highp float sun_azimuth)
+// Sky is rendered using Hosek-Wilkie skylight model
+vec3 HosekWilkie(float gamma, float cos_gamma, float cos_theta, float sun_zenith)
 {
-    return XYZtoRGB(spectral_radiance(cos_theta, gamma, sun_zenith) * mean_spectral_radiance(sun_zenith));
+    return XYZtoRGB(spectral_radiance(gamma, cos_gamma, cos_theta, sun_zenith) * mean_spectral_radiance(sun_zenith));
 }
 
 #endif // HOSEK_GLSL

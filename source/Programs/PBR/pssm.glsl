@@ -41,9 +41,31 @@ const vec2 vogel_disk_16[16] = vec2[](
     vec2(-0.1133270115046468, -0.9490025827627441)
 );
 
+float InterleavedGradientNoise()
+{
+    const vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
+}
+
 #ifdef TERRA_LIGHTMAP
 uniform sampler2D TerraLightTex;
+
+float FetchTerraShadow(const vec2 uv)
+{
+    float shadow = 0.0;
+    float phi = InterleavedGradientNoise();
+    vec2 tsize = 1.0 / vec2(textureSize(TerraLightTex, 0));
+
+    for (int i = 0; i < 4; ++i) {
+        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * tsize;
+        shadow += texture2D(TerraLightTex, uv + offset).x;
+    }
+    shadow *= 0.25;
+
+    return shadow;
+}
 #endif
+
 
 #if MAX_SHADOW_TEXTURES > 0
 #ifdef SHADOWMAP_ATLAS
@@ -73,12 +95,6 @@ uniform vec4 ShadowColour;
 #define PENUMBRA_LIGHT_SIZE 1
 #endif
 //#define PENUMBRA
-
-float InterleavedGradientNoise()
-{
-    const vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
-    return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
-}
 
 vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
@@ -225,22 +241,5 @@ float CalcPSSMShadow()
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0
-
-#ifdef TERRA_LIGHTMAP
-float FetchTerraShadow(const vec2 uv)
-{
-    float shadow = 0.0;
-    float phi = InterleavedGradientNoise();
-    vec2 tsize = 1.0 / vec2(textureSize(TerraLightTex, 0));
-
-    for (int i = 0; i < 4; ++i) {
-        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * tsize;
-        shadow += texture2D(TerraLightTex, uv + offset).x;
-    }
-    shadow *= 0.25;
-
-    return shadow;
-}
-#endif
 
 #endif // PSSM_GLSL

@@ -2,7 +2,7 @@
 #include "SkyModel.h"
 #include "ArHosekSkyModel.h"
 
-void SkyModel::SetupSky(const Ogre::Vector3f &_sunDir, float _sunSize, Ogre::Vector3f _sunRenderColor, const Ogre::Vector3f _groundAlbedo, float _turbidity, ColorSpace _colorspace)
+void SkyModel::SetupSky(const Ogre::Vector3f &_sunDir, float _sunSize, Ogre::Vector3f _sunRenderColor, const Ogre::Vector3f _groundAlbedo, float _turbidity)
 {
 	Ogre::Vector3f sunDir = _sunDir;
 	Ogre::Vector3f groundAlbedo = _groundAlbedo;
@@ -11,8 +11,6 @@ void SkyModel::SetupSky(const Ogre::Vector3f &_sunDir, float _sunSize, Ogre::Vec
 	_turbidity = Clamp(_turbidity, 1.0f, 32.0f);
 	groundAlbedo = Ogre::Vector3f(Clamp(groundAlbedo.x, 0.0, 1.0), Clamp(groundAlbedo.y, 0.0, 1.0), Clamp(groundAlbedo.z, 0.0, 1.0));
 	_sunSize = std::max(_sunSize, 0.01f);
-
-	Colorspace = _colorspace;
 
 	Shutdown();
 

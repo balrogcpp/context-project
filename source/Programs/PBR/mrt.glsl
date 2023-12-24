@@ -11,20 +11,16 @@ uniform float NearClipDistance;
 #include "tonemap.glsl"
 #endif
 
-void EvaluateBuffer(vec3 color)
+void EvaluateBuffer(const vec3 color)
 {
 #ifdef FORCE_TONEMAP
-    color = unreal(expose(color, 4.0));
+    FragColor.rgb = SafeHDR(unreal(color));
+#else
+    FragColor.rgb = SafeHDR(color);
 #endif
 
-    FragColor.rgb = SafeHDR(color);
 #ifdef HAS_MRT
     FragData[MRT_DEPTH].r = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
-//#ifdef MRT_VELOCITY
-//    FragData[MRT_VELOCITY].rg = vec2(0.0, 0.0);
-//#endif
-//    FragData[MRT_GLOSS].rgb = vec3(0.0, 0.0, 0.0);
-//    FragData[MRT_NORMALS].rgb = vec3(0.0, 0.0, 0.0);
 #endif
 }
 

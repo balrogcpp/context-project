@@ -17,8 +17,7 @@ fragment_program SkyBoxFp glsl glsles hlsl
     default_params
     {
         param_named_auto LightDirection light_direction 0
-        param_named SunSize float 0.03
-        param_named SunColor float3 30 30 30
+        param_named_auto LightColor light_diffuse_colour_power_scaled 0
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance
@@ -44,11 +43,6 @@ material SkyBox
 			vertex_program_ref SkyBoxVp {}
 
 			fragment_program_ref SkyBoxFp {}
-
-			texture_unit CubeMap
-			{
-				texture $CubeTex cubic
-			}
 		}
 	}
 }

@@ -3,8 +3,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-//uniform sampler2D Lum;
-//uniform vec2 BrightThreshold;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 vec3 Downscale13(sampler2D tex, const vec2 uv)
@@ -33,16 +31,11 @@ vec3 Downscale13(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3 + c4 + c5;
 }
 
-float luminance(const vec3 linear)
-{
-    return dot(linear, vec3(0.2126, 0.7152, 0.0722));
-}
-
 in highp vec2 vUV0;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;
-    float lum = luminance(color);
+    float lum = dot(color, vec3(0.2126, 0.7152, 0.0722));
     if (lum > 9.0) lum = 0.0;
     lum = max(0.0, lum - 0.5);
     FragColor.rgb = color * sign(lum);

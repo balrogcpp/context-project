@@ -235,11 +235,7 @@ void main()
     vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));
     vec3 color = FxaaPixelShader(RT, vUV0, texelSize);
 #ifndef FORCE_TONEMAP
-#ifndef GL_ES
-    color = unreal(expose(color, 2.0));
-#else
-    color = unreal(expose(color, 4.0));
-#endif
+    color = unreal(color);
 #endif
     FragColor.rgb = SafeHDR(color);
 }

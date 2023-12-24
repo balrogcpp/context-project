@@ -37,9 +37,9 @@ fragment_program Ocean_fs glsl glsles hlsl
         param_named WaveScale float 1.0
         param_named ScatterAmount float 3.5
         param_named ScatterColor float3 0.0 1.0 0.95
-        param_named ReflDistortionAmount float 0.08
-        param_named RefrDistortionAmount float 0.08
-        param_named AberrationAmount float 0.000
+        param_named ReflDistortionAmount float 0.04
+        param_named RefrDistortionAmount float 0.03
+        //param_named AberrationAmount float 0.002
         param_named WaterExtinction float3 0.45 0.55 0.68
         param_named SunTransmittance float3 1.0 0.0 1.0
         param_named SunFade float 0.5
@@ -55,7 +55,7 @@ material Ocean
         {
             cull_hardware none
 
-            vertex_program_ref Ocean_vs  {}
+            vertex_program_ref Ocean_vs {}
 
             fragment_program_ref Ocean_fs
             {
@@ -76,7 +76,7 @@ material Ocean
                 tex_address_mode clamp
                 filtering bilinear
             }
-            texture_unit ReflectionTex
+            texture_unit RefractionTex
             {
                 content_type compositor Fresnel refraction 0
                 tex_address_mode clamp
@@ -86,7 +86,7 @@ material Ocean
             {
                 content_type compositor Fresnel refraction 1
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }
         }
     }

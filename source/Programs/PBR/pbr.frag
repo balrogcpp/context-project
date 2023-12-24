@@ -75,7 +75,7 @@ in mediump vec4 vPrevScreenPosition;
 in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 
-#if MAX_SHADOW_TEXTURES > 0
+#if MAX_SHADOW_TEXTURES > 0 || defined(TERRA_NORMALMAP)
 #include "pssm.glsl"
 #endif
 
@@ -306,7 +306,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material)
     float attenuation = 1.0;
 
 #ifdef TERRA_LIGHTMAP
-    attenuation = saturate(FetchTerraShadow(material.uv) + ShadowColour.r);
+    attenuation = saturate(FetchTerraShadow(material.uv));
     if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
 #endif
 #if MAX_SHADOW_TEXTURES > 0
@@ -471,9 +471,11 @@ vec3 GetORM(const vec2 uv, float spec)
 
 vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 {
-    vec2 uv = uv0;
-#if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
+    highp vec2 uv = uv0;
+#ifdef TERRA_NORMALMAP
     uv *= (1.0 + TexScale);
+#endif
+#if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP) && !defined(GL_ES)
     uv = uv - (vec2(v.x, -v.y) * (OffsetScale + 0.01) * texture2D(NormalTex, uv).a);
 #endif
     return uv;

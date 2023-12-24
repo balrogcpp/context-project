@@ -101,7 +101,8 @@ abstract material PBR
             }
             texture_unit AO
             {
-                content_type compositor MRT ao
+                texture $AO
+                //content_type compositor MRT ao
                 filtering none
             }
             /*texture_unit ShadowAtlas
@@ -245,7 +246,8 @@ abstract material TERRA
             }
             texture_unit AO
             {
-                content_type compositor MRT ao
+                texture $AO
+                //content_type compositor MRT ao
                 filtering none
             }
             /*texture_unit ShadowAtlas

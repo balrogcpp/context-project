@@ -4,7 +4,7 @@
 #include "SkyManager.h"
 #include "Platform.h"
 #include "Astronomy.h"
-#include <SkyModel/SkyModel.h>
+#include <HosekWilkie/SkyModel.h>
 
 namespace gge {
 SkyManager::SkyManager() : needsUpdate(false), hosekParamList({"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"}) {}
@@ -20,15 +20,14 @@ Ogre::Vector3 SkyManager::GetSunPosition() {
 }
 
 void SkyManager::SetUpSky() {
-  auto colorspace = ColorSpace::sRGB;
   float sunSize = 0.27f;
   float turbidity = 4.0f;
-  auto groundAlbedo = Ogre::Vector3(0.0);
-  auto sunColor = Ogre::Vector3(10000);
+  auto groundAlbedo = Ogre::Vector3(0.1);
+  auto sunColor = Ogre::Vector3(100);
   auto sunDir = GetSunPosition();
 
   SkyModel skyModel;
-  skyModel.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
+  skyModel.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity);
 
   const ArHosekSkyModelState *States[3] = {skyModel.StateX, skyModel.StateY, skyModel.StateZ};
 

@@ -62,12 +62,6 @@ void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt
   if (name.find("reflection") != string::npos) {
     camera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
     camera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
-    shadowTechnique = sceneManager->getShadowTechnique();
-    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  } else if (name.find("refraction") != string::npos) {
-    //camera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, plane.d));
-    shadowTechnique = sceneManager->getShadowTechnique();
-    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   }
 }
 
@@ -76,10 +70,6 @@ void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &ev
   if (name.find("reflection") != string::npos) {
     camera->disableCustomNearClipPlane();
     camera->disableReflection();
-    sceneManager->setShadowTechnique(shadowTechnique);
-  } else if (name.find("refraction") != string::npos) {
-    camera->disableCustomNearClipPlane();
-    sceneManager->setShadowTechnique(shadowTechnique);
   }
 }
 
@@ -110,7 +100,7 @@ void CompositorManager::OnSetUp() {
 
   // create compositor chain
   AddCompositor("MRT", true);
-  //AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
+  // AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
