@@ -18,7 +18,6 @@
 #define PSSM_ESM_SHADOWMAP
 #define PSSM_GLOBAL_MIN_DEPTH 1.0
 #define PSSM_GLOBAL_RANGE 64.0
-// #ifdef HAS_MRT
 #define MRT_COLOR 0
 #define MRT_DEPTH 1
 #ifndef GL_ES
@@ -27,7 +26,6 @@
 #define MRT_NORMALS 3
 #define MRT_GLOSS 4
 #define MAX_MRT_TEXTURES 5
-// #endif
 
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300

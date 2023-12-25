@@ -17,7 +17,7 @@ uniform highp mat4 ViewMatrix;
 uniform vec4 Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
-uniform vec4 WorldSpaceLightPos0;
+uniform vec4 LightDir0;
 uniform vec4 LightColor0;
 uniform vec2 BigWaves;
 uniform vec2 MidWaves;
@@ -32,9 +32,10 @@ uniform float ReflDistortionAmount;
 uniform float RefrDistortionAmount;
 uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
-uniform vec3 SunTransmittance;
-uniform float SunFade;
-uniform float ScatterFade;
+uniform vec3 SunExtinction;
+//uniform vec3 SunTransmittance;
+//uniform float SunFade;
+//uniform float ScatterFade;
 
 float fresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
 {
@@ -55,10 +56,18 @@ float fresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
 }
 
 in highp vec3 vWorldPosition;
-in vec4 vProjectionCoord;
+in highp vec4 vProjectionCoord;
 void main()
 {
+    vec3 SunTransmittance = max(1.0 - exp(LightDir0.y * SunExtinction), 0.0);
+    float SunFade = clamp((0.1 - LightDir0.y) * 10.0, 0.0, 1.0);
+    float ScatterFade = clamp((0.15 - LightDir0.y) * 4.0, 0.0, 1.0);
+
+    vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
+    fragCoord = clamp(fragCoord, 0.002, 0.998);
+
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
+
     float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
     float normalFade = 1.0 - min(exp(-surfaceDepth / 40.0), 1.0);
 
@@ -102,7 +111,7 @@ void main()
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vWorldPosition);
-    highp vec3 lVec = WorldSpaceLightPos0.xyz;
+    highp vec3 lVec = LightDir0.xyz;
 
     // normal for light scattering
     lNormal = normalize(lNormal);
@@ -111,17 +120,15 @@ void main()
     highp vec3 lR = reflect(-lVec, lNormal);
 
     highp float s = max(dot(lR, vVec) * 2.0 - 1.2, 0.0);
-    highp float lightScatter = saturate((saturate(dot(-lVec, lNormal) * 0.7 + 0.3) * s) * ScatterAmount) * SunFade * saturate(1.0 - exp(-WorldSpaceLightPos0.y));
-    vec3 scatterColor = mix(ScatterColor * vec3(1.0, 0.4, 0.0), ScatterColor, SunTransmittance);
+    float lightScatter = saturate((saturate(dot(-lVec, lNormal) * 0.7 + 0.3) * s) * ScatterAmount) * SunFade * saturate(1.0 - exp(-LightDir0.y));
+    vec3 scatterColor = mix(SRGBtoLINEAR(ScatterColor * vec3(1.0, 0.4, 0.0)), SRGBtoLINEAR(ScatterColor), SunTransmittance);
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
     float fresnel = fresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
-    fragCoord = clamp(fragCoord, 0.002, 0.998);
-    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount)).rgb;
+    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
 #ifdef FORCE_TONEMAP
     reflection = SRGBtoLINEAR(reflection);
 #endif
@@ -137,48 +144,55 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = (texture2D(CameraDepthTex, fragCoord - refrOffset * 2.0).x) * FarClipDistance;
+    float refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * 0.9).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
+    refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * distortFade).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
 
-//    highp vec3 refraction;
+    vec3 refraction;
+//#ifdef GL_ES
+    refraction.rgb = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
+//#else
 //    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
 //    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
 //    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
-    vec3 refraction = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
+//#endif
 #ifdef FORCE_TONEMAP
     refraction = SRGBtoLINEAR(refraction);
 #endif
 
-    float waterSunGradient = dot(vVec, -WorldSpaceLightPos0.xyz);
+    float waterSunGradient = dot(vVec, -LightDir0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  
-    vec3 waterSunColor = vec3(0.0, 1.0, 0.85) * waterSunGradient;
+    vec3 waterSunColor = SRGBtoLINEAR(vec3(0.0, 1.0, 0.85) * waterSunGradient);
     waterSunColor *= aboveWater ? 0.25 : 0.5;
 
     float waterGradient = dot(vVec, vec3(0.0, -1.0, 0.0));
     waterGradient = clamp((waterGradient * 0.5 + 0.5), 0.2, 1.0);
-    vec3 watercolor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
+    vec3 watercolor = (SRGBtoLINEAR(vec3(0.0078, 0.5176, 0.700) + waterSunColor)) * waterGradient * 1.5;
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
+//    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
+    float fog = aboveWater ? (refractedDepth - surfaceDepth) / Visibility : surfaceDepth / Visibility;
 
     float darkness = Visibility * 2.0;
     darkness = saturate((CameraPosition.y + darkness) / darkness);
 
     refraction = mix(refraction, scatterColor, lightScatter);
+    refraction = mix(refraction, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
 
-    vec3 color = vec3(0.0, 0.0, 0.0);
+    vec3 color;
 
     if (aboveWater) {
         color = mix(refraction, reflection, fresnel * 0.6);
     } else {
+        // scatter and extinction between surface and camera
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }
 
     color += LightColor0.xyz * specular;
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, vVec, WorldSpaceLightPos0.xyz, CameraPosition);
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 
     EvaluateBuffer(color);
 #ifdef HAS_MRT

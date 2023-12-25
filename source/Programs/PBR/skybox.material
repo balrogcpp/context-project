@@ -2,7 +2,7 @@
 
 vertex_program SkyBoxVp glsl glsles hlsl
 {
-	source sky.vert
+	source skybox.vert
 
     default_params
     {
@@ -12,7 +12,7 @@ vertex_program SkyBoxVp glsl glsles hlsl
 
 fragment_program SkyBoxFp glsl glsles hlsl
 {
-	source sky.frag
+	source skybox.frag
 
     default_params
     {

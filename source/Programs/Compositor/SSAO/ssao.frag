@@ -21,6 +21,13 @@ float pow5(float x)
     return x2 * x2 * x;
 }
 
+float pow8(float x)
+{
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return x4 * x4;
+}
+
 float pow10(float x)
 {
     float x2 = x * x;

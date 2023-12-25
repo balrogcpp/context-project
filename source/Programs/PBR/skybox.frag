@@ -10,36 +10,32 @@ uniform vec4 LightDirection;
 uniform float SunSize;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
+uniform vec3 Params[10];
 
-#ifdef GPU_HOSEK
-#include "hosek.glsl"
-#else
-uniform vec3 A;
-uniform vec3 B;
-uniform vec3 C;
-uniform vec3 D;
-uniform vec3 E;
-uniform vec3 F;
-uniform vec3 G;
-uniform vec3 H;
-uniform vec3 I;
-uniform vec3 Z;
-
-vec3 HosekWilkie(float gamma, float cos_gamma, float cos_theta)
+vec3 HosekWilkie(float gamma, float cos_gamma, float cos_theta, const vec3 coeffs[10])
 {
+    vec3 A = coeffs[0];
+    vec3 B = coeffs[1];
+    vec3 C = coeffs[2];
+    vec3 D = coeffs[3];
+    vec3 E = coeffs[4];
+    vec3 F = coeffs[5];
+    vec3 G = coeffs[6];
+    vec3 H = coeffs[7];
+    vec3 I = coeffs[8];
+    vec3 Z = coeffs[9];
+
     float cos_gamma2 = cos_gamma * cos_gamma;
     vec3 I2 = I * I;
     vec3 chi = ((1.0 + cos_gamma2) / pow(1.0 + I2 - 2.0 * (cos_gamma * I), vec3(1.5, 1.5, 1.5)));
     return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * sqrt(cos_theta)));
 }
-#endif
 
 // Clamps color between 0 and 1 smoothly
 vec3 SkyLightExpose(const vec3 color)
 {
     return 1.0 - exp(-0.05 * color);
 }
-
 //vec3 SkyLightExpose(const vec3 color, float exposure)
 //{
 //    return 2.0 / (1.0 + exp(-exposure * color)) - 1.0;
@@ -56,13 +52,7 @@ void main()
     float cos_theta = clamp(V.y, 0.0, 1.0);
     float cos_gamma = dot(V, N);
     float gamma = acos(cos_gamma);
-    vec3 color;
-
-#ifdef GPU_HOSEK
-    color = HosekWilkie(gamma, cos_gamma, cos_theta, N.y);
-#else
-    color = HosekWilkie(gamma, cos_gamma, cos_theta);
-#endif
+    vec3 color = HosekWilkie(gamma, cos_gamma, cos_theta, Params);
 
     if (gamma <= M_PI / 360.0 && sunZenith > 0.0) {
         color = mix(color, LightColor * 100.0, 0.1);

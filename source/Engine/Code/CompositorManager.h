@@ -11,7 +11,8 @@ class CompositorManager : public System<CompositorManager>,
                           public Ogre::CompositorInstance::Listener,
                           public Ogre::CompositorLogic,
                           public Ogre::Viewport::Listener,
-                          public Ogre::RenderTargetListener {
+                          public Ogre::RenderTargetListener,
+                          public Ogre::RenderObjectListener {
  public:
   CompositorManager();
   virtual ~CompositorManager();
@@ -54,6 +55,10 @@ class CompositorManager : public System<CompositorManager>,
   /// Ogre::RenderTargetListener impl
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent& evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent& evt) override;
+
+  /// Ogre::RenderObjectListener impl
+  void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
+                                const Ogre::LightList *pLightList, bool suppressRenderStateChanges) override;
 
   std::string MRT_COMPOSITOR;
   std::string BLOOM_COMPOSITOR;

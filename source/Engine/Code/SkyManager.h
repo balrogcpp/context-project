@@ -21,7 +21,6 @@ class SkyManager final : public System<SkyManager> {
  protected:
   bool needsUpdate;
   Ogre::GpuProgramParametersSharedPtr fpParams;
-  const std::array<const char *, 10> hosekParamList;
   std::array<Ogre::Vector3, 10> hosekParams;
 
   Ogre::Root *ogreRoot = nullptr;

@@ -8,5 +8,4 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #include <PagedGeometry/PagedGeometryAll.h>
 #include <Procedural/Procedural.h>
-#include <HosekWilkie/SkyModel.h>
 #include "Platform.h"

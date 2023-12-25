@@ -906,10 +906,10 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, res);
     const auto &mat = MaterialManager::getSingleton().getByName(material);
-    mat->setReceiveShadows(false);
+    mat->setReceiveShadows(true);
     ent->setMaterialName(material);
     ent->setVisibilityFlags(flag);
-    ent->setCastShadows(castShadows);
+    ent->setCastShadows(false);
     pParent->attachObject(ent);
 
     // Process userDataReference (?)

@@ -50,8 +50,6 @@ void CompositorManager::compositorInstanceCreated(Ogre::CompositorInstance *newI
   if (newInstance->getCompositor()->getName() == "Fresnel") {
     auto *rt1 = newInstance->getCompositor()->getRenderTarget("reflection");
     rt1->addListener(this);
-    auto *rt2 = newInstance->getCompositor()->getRenderTarget("refraction");
-    rt2->addListener(this);
   }
 }
 
@@ -115,6 +113,7 @@ void CompositorManager::OnSetUp() {
   // reg as viewport listener
   viewport->addListener(this);
   fixedViewportSize = false;
+  sceneManager->addRenderObjectListener(this);
 }
 
 void CompositorManager::OnClean() { viewport->removeListener(this); }
@@ -135,8 +134,6 @@ void CompositorManager::AddReflectionPlane(Ogre::Plane plane) {
   AddCompositor("Fresnel", true, 0);
   auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
   rt1->addListener(this);
-  auto *rt2 = compositorChain->getCompositor("Fresnel")->getRenderTarget("refraction");
-  rt2->addListener(this);
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {
@@ -358,4 +355,21 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 }
 
 void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
+
+void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
+                                                 const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
+  if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) return;
+  const auto &vp = pass->getVertexProgramParameters();
+  const auto &fp = pass->getFragmentProgramParameters();
+  vp->setIgnoreMissingParams(true);
+  fp->setIgnoreMissingParams(true);
+
+  // apply for dynamic entities only
+  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
+    auto *entity = subentity->getParent();
+    if (entity->getMesh()->isReloadable()) {
+    }
+  }
+}
+
 }  // namespace gge
