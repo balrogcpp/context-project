@@ -8,13 +8,13 @@
     #define MAX_WATER_OCTAVES 2
 #endif
 
-uniform sampler2D NormapTex;
-uniform sampler2D ReflectionTex;
+uniform sampler2D NormalTex;
 uniform sampler2D RefractionTex;
 uniform sampler2D CameraDepthTex;
+uniform sampler2D ReflectionTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
-uniform vec4 Time;
+uniform float Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform vec4 LightDir0;
@@ -33,9 +33,6 @@ uniform float RefrDistortionAmount;
 uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
 uniform vec3 SunExtinction;
-//uniform vec3 SunTransmittance;
-//uniform float SunFade;
-//uniform float ScatterFade;
 
 float fresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
 {
@@ -68,58 +65,43 @@ void main()
 
     bool aboveWater = CameraPosition.y > vWorldPosition.y;
 
-    float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
+    highp float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
     float normalFade = 1.0 - min(exp(-surfaceDepth / 40.0), 1.0);
 
-    vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time.x * WindSpeed * 0.04;
-    highp vec3 normal0 = 2.0 * texture2D(NormapTex, nCoord + vec2(-Time.x * 0.015, -Time.x * 0.005)).xyz - 1.0;
-    highp vec3 normal = normal0 * BigWaves.x;
-    highp vec3 lNormal = normal0 * BigWaves.x * 0.5;
+    vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
+    vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
+    nCoord = vWorldPosition.xz * WaveScale * 0.1 + WindDirection * Time * WindSpeed * 0.08;
+    vec3 normal1 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015)).xyz - 1.0;
 
-#if MAX_WATER_OCTAVES > 0
-    nCoord = vWorldPosition.xz * WaveScale * 0.1 + WindDirection * Time.x * WindSpeed * 0.08;
-    highp vec3 normal1 = 2.0 * texture2D(NormapTex, nCoord + vec2(Time.x * 0.020, Time.x * 0.015)).xyz - 1.0;
-    normal += normal1 * BigWaves.y;
-    lNormal += normal1 * BigWaves.y * 0.5;
-#endif
-#if MAX_WATER_OCTAVES > 1
-    nCoord = vWorldPosition.xz * WaveScale * 0.25 + WindDirection * Time.x * WindSpeed * 0.07;
-    highp vec3 normal2 = 2.0 * texture2D(NormapTex, nCoord + vec2(-Time.x * 0.04, -Time.x * 0.03)).xyz - 1.0;
-    normal += normal2 * MidWaves.x;
-    lNormal += normal2 * MidWaves.x * 0.1;
-#endif
-#if MAX_WATER_OCTAVES > 2
-    nCoord = vWorldPosition.xz * WaveScale * 0.5 + WindDirection * Time.x * WindSpeed * 0.09;
-    highp vec3 normal3 = 2.0 * texture2D(NormapTex, nCoord + vec2(Time.x * 0.03, Time.x * 0.04)).xyz - 1.0;
-    normal += normal3 * MidWaves.y;
-    lNormal += normal3 * MidWaves.y * 0.1;
-#endif
-#if MAX_WATER_OCTAVES > 3
-    nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time.x * WindSpeed * 0.4;
-    highp vec3 normal4 = 2.0 * texture2D(NormapTex, nCoord + vec2(-Time.x * 0.02, Time.x * 0.1)).xyz - 1.0;
-    normal += normal4 * SmallWaves.x;
-    lNormal += normal4 * SmallWaves.x * 0.1;
-#endif
-#if MAX_WATER_OCTAVES > 4
-    nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time.x * WindSpeed * 0.7;
-    highp vec3 normal5 = 2.0 * texture2D(NormapTex, nCoord + vec2(Time.x * 0.1, -Time.x * 0.06)).xyz - 1.0;
-    normal += normal5 * SmallWaves.y;
-    lNormal += normal5 * SmallWaves.y * 0.1;
-#endif
+    nCoord = vWorldPosition.xz * WaveScale * 0.25 + WindDirection * Time * WindSpeed * 0.07;
+    vec3 normal2 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.04, -Time * 0.03)).xyz - 1.0;
+    nCoord = vWorldPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
+    vec3 normal3 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
 
-    normal = normalize(normal);
+//    nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
+//    vec3 normal4 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;
+//    nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time * WindSpeed * 0.7;
+//    vec3 normal5 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
+
+    vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y
+    + normal2 * MidWaves.x + normal3 * MidWaves.y
+//    + normal4 * SmallWaves.x + normal5 * SmallWaves.y
+    );
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vWorldPosition);
     highp vec3 lVec = LightDir0.xyz;
 
     // normal for light scattering
-    lNormal = normalize(lNormal);
-    lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
+    highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
+                                   + normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1
+//                                   + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1
+    );
+    lNormal = mix(lNormal.xzy, float3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);
 
-    highp float s = max(dot(lR, vVec) * 2.0 - 1.2, 0.0);
+    float s = max(dot(lR, vVec) * 2.0 - 1.2, 0.0);
     float lightScatter = saturate((saturate(dot(-lVec, lNormal) * 0.7 + 0.3) * s) * ScatterAmount) * SunFade * saturate(1.0 - exp(-LightDir0.y));
     vec3 scatterColor = mix(SRGBtoLINEAR(ScatterColor * vec3(1.0, 0.4, 0.0)), SRGBtoLINEAR(ScatterColor), SunTransmittance);
 
@@ -174,6 +156,7 @@ void main()
 
 //    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
     float fog = aboveWater ? (refractedDepth - surfaceDepth) / Visibility : surfaceDepth / Visibility;
+    if (refractedDepth - surfaceDepth > 5.0) fog = 1.0;
 
     float darkness = Visibility * 2.0;
     darkness = saturate((CameraPosition.y + darkness) / darkness);
@@ -197,5 +180,6 @@ void main()
     EvaluateBuffer(color);
 #ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(lNormal, 0.0))).xyz;
+    //FragData[MRT_GLOSS].rgb = vec3(0.1, 0.2, 1.0);
 #endif
 }

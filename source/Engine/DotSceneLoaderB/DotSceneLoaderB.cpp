@@ -895,7 +895,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     if (flag == 0xF00) {
         if (gge::GetComponent<gge::CompositorManager>().IsCompositorInChain("Fresnel")) 
             return;
-
+        xSegments = 2; ySegments = 2; uTile = 2; vTile = 2;
         gge::GetComponent<gge::CompositorManager>().AddReflectionPlane(plane);
         OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
         auto* camera = mSceneMgr->getCamera("Camera");

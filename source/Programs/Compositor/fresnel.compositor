@@ -7,13 +7,13 @@ compositor Fresnel
 {
     technique
     {
-        texture reflection target_width_scaled 0.25 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa
+        texture reflection target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa
 
         target reflection
         {
             visibility_mask 0x00F // SURFACE objects
             shadows off
-            pass clear {}
+            pass clear { colour_value 0.1 0.2 0.8 0 }
             pass render_scene {}
         }
 

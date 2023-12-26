@@ -33,48 +33,44 @@ fragment_program water_fs glsl glsles hlsl
         //param_named SmallWaves float2 0.15 0.1
         param_named WindDirection float2 0.5 -0.8
         param_named WindSpeed float 0.6
-        param_named Visibility float 5.0 // 28.0
+        param_named Visibility float 6.0 // 28.0
         param_named WaveScale float 1.0
         param_named ScatterAmount float 3.5
         param_named ScatterColor float3  0 1 0.95
         param_named RefrDistortionAmount float 0.03
         param_named ReflDistortionAmount float 0.04
-        param_named AberrationAmount float 0.002
-        param_named WaterExtinction float3 0.6 0.8 1 // 0.45 0.55 0.68
+        //param_named AberrationAmount float 0.002
+        param_named WaterExtinction float3 0.6 0.8 1
+        //param_named WaterExtinction float3 0.45 0.55 0.68
         param_named SunExtinction float3 0.45 0.55 0.7
     }
 }
 
-material Ocean
+material Water
 {
+    receive_shadows off
+    transparency_casts_shadows off
+
     technique
     {
         pass
         {
-            receive_shadows off
-            transparency_casts_shadows off
             cull_hardware none
 
             vertex_program_ref water_vs {}
 
             fragment_program_ref water_fs
             {
-                param_named NormapTex int 0
-                param_named ReflectionTex int 1
-                param_named RefractionTex int 2
-                param_named CameraDepthTex int 3
+                param_named NormalTex int 0
+                param_named RefractionTex int 1
+                param_named CameraDepthTex int 2
+                param_named ReflectionTex int 3
             }
 
-            texture_unit Normal
+            texture_unit NormalTex
             {
                 texture WaterNormal.dds
                 filtering bilinear
-            }
-            texture_unit ReflectionTex
-            {
-                content_type compositor Fresnel reflection
-                tex_address_mode clamp
-                filtering none
             }
             texture_unit RefractionTex
             {
@@ -87,6 +83,13 @@ material Ocean
                 content_type compositor MRT mrt 1
                 tex_address_mode clamp
                 filtering none
+            }
+            texture_unit ReflectionTex
+            {
+                //texture blue.dds
+                content_type compositor Fresnel reflection
+                tex_address_mode clamp
+                filtering bilinear
             }
         }
     }
