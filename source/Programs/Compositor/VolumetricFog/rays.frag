@@ -10,7 +10,6 @@ uniform float Density;
 uniform float Weight;
 uniform float Exposure;
 
-
 vec3 GodRays(vec2 uv, const vec4 lightPos)
 {
     #define MAX_RAYS 50

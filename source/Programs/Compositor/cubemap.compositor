@@ -5,7 +5,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 abstract target CubeFace
 {
-    visibility_mask 0xF0
+    visibility_mask 0x0F0
     shadows off
     only_initial on
 
@@ -23,7 +23,7 @@ compositor CubeMap
 {
     technique
     {
-        texture cube 16 16 PF_R11G11B10_FLOAT cubic no_fsaa
+        texture cube 128 128 PF_R11G11B10_FLOAT cubic no_fsaa
 
         target cube 0 : CubeFace {}
         target cube 1 : CubeFace {}

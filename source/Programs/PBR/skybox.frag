@@ -5,15 +5,23 @@
 #include "srgb.glsl"
 #include "fog.glsl"
 
-uniform vec3 LightColor;
-uniform vec3 LightDirection;
+uniform vec3 LightColor0;
+uniform vec3 LightDir0;
 uniform float SunSize;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform vec3 Params[10];
-
-uniform vec4 ViewportSize;
 uniform float Time;
+
+// Clamps color between 0 and 1 smoothly
+vec3 SkyLightExpose(const vec3 color)
+{
+    return 1.0 - exp(-0.05 * color);
+}
+//vec3 SkyLightExpose(const vec3 color, float exposure)
+//{
+//    return 2.0 / (1.0 + exp(-exposure * color)) - 1.0;
+//}
 
 vec3 HosekWilkie(float gamma, float cos_gamma, float cos_theta, const vec3 coeffs[10])
 {
@@ -31,139 +39,40 @@ vec3 HosekWilkie(float gamma, float cos_gamma, float cos_theta, const vec3 coeff
     float cos_gamma2 = cos_gamma * cos_gamma;
     vec3 I2 = I * I;
     vec3 chi = ((1.0 + cos_gamma2) / pow(1.0 + I2 - 2.0 * (cos_gamma * I), vec3(1.5, 1.5, 1.5)));
-    return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * sqrt(cos_theta)));
+    vec3 color =  Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * sqrt(cos_theta)));
+    return SkyLightExpose(color);
 }
 
-// Clamps color between 0 and 1 smoothly
-vec3 SkyLightExpose(const vec3 color)
-{
-    return 1.0 - exp(-0.05 * color);
-}
-//vec3 SkyLightExpose(const vec3 color, float exposure)
-//{
-//    return 2.0 / (1.0 + exp(-exposure * color)) - 1.0;
-//}
+//group_uniforms sky;
+const vec3 day_top_color = vec3( 0.1, 0.6, 1.0 );
+const vec3 day_bottom_color = vec3( 0.4, 0.8, 1.0 );
+const vec3 sunset_top_color = vec3( 0.7, 0.75, 1.0 );
+const vec3 sunset_bottom_color = vec3( 1.0, 0.5, 0.7 );
+const vec3 night_top_color = vec3( 0.02, 0.0, 0.04 );
+const vec3 night_bottom_color = vec3( 0.1, 0.0, 0.2 );
 
-// cloudy skies shader
-// inspired from shadertoy shader made by Drift (https://www.shadertoy.com/view/4tdSWr)
+//group_uniforms horizon;
+const vec3 horizon_color = vec3( 0.0, 0.7, 0.8 );
+const float horizon_blur = 0.05;
 
-//shader_type canvas_item;
+//group_uniforms sun; // First DirectionalLight3D will be the sun
+const vec3 sun_color = vec3( 10.0, 8.0, 1.0 );
+const vec3 sun_sunset_color = vec3( 10.0, 0.0, 0.0 );
+const float sun_size = 0.2;
+const float sun_blur = 10.0;
 
-//const float cloudscale = 1.1;
-//const float speed = 0.01;
-//const float clouddark = 0.5;
-//const float cloudlight = 0.3;
-//const float cloudcover = 0.2;
-//const float cloudalpha = 8.0;
-//const float skytint = 0.5;
-//const vec3 skycolour1 = vec3(0.2, 0.4, 0.6);
-//const vec3 skycolour2 = vec3(0.4, 0.7, 1.0);
-//const mat2 m = mat2(vec2(1.6,1.2),vec2(-1.2,1.6)); // changement
-//
-//// functions
-//
-//vec2 hash(vec2 p) {
-//    p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
-//    return -1.0 + 2.0*fract(sin(p)*43758.5453123);
-//}
-//
-//float noise(const vec2 p) {
-//    float K1 = 0.366025404; // (sqrt(3)-1)/2;
-//    float K2 = 0.211324865; // (3-sqrt(3))/6;
-//    vec2 i = floor(p + (p.x+p.y)*K1);
-//    vec2 a = p - i + (i.x+i.y)*K2;
-//    vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); //vec2 of = 0.5 + 0.5*vec2(sign(a.x-a.y), sign(a.y-a.x));
-//    vec2 b = a - o + K2;
-//    vec2 c = a - 1.0 + 2.0*K2;
-//    vec3 h = max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 );
-//    vec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0)));
-//    return dot(n, vec3(70.0));
-//}
-//
-//float fbm(vec2 n) {
-//    float total = 0.0, amplitude = 0.1;
-//    for (int i = 0; i < 7; i++) {
-//        total += noise(n) * amplitude;
-//        n = m * n;
-//        amplitude *= 0.4;
-//    }
-//    return total;
-//}
-//
-//// fragment shader
-//
-//vec3 fragment() {
-//    //vec2 res = 1.0 / SCREEN_PIXEL_SIZE;
-//    vec2 res = ViewportSize.xy;
-//    //vec2 p = FRAGCOORD.xy / res.xy; // changement
-//    vec2 p = gl_FragCoord.xy / res.xy; // changement
-////    vec2 p = vUV0.xz; // changement
-//    vec2 uv = p*vec2(res.x/res.y,1.0);    // changement
-//    float Time = Time * speed ;
-//    float q = fbm(uv * cloudscale * 0.5);
-//
-//    //ridged noise shape
-//    float r = 0.0;
-//    uv *= cloudscale;
-//    uv += q - Time;
-//    float weight = 0.8;
-//    for (int i=0; i<8; i++){
-//        r += abs(weight*noise( uv ));
-//        uv = m*uv + Time;
-//        weight *= 0.7;
-//    }
-//
-//    //noise shape
-//    float f = 0.0;
-//    uv = p*vec2(res.x/res.y,1.0); // changement
-//    uv *= cloudscale;
-//    uv += q - Time;
-//    weight = 0.7;
-//    for (int i=0; i<8; i++){
-//        f += weight*noise( uv );
-//        uv = m*uv + Time;
-//        weight *= 0.6;
-//    }
-//
-//    f *= r + f;
-//
-//    //noise colour
-//    float c = 0.0;
-//    Time = Time * speed * 2.0;
-//    uv = p*vec2(res.x/res.y,1.0); // changement
-//    uv *= cloudscale*2.0;
-//    uv += q - Time;
-//    weight = 0.4;
-//    for (int i=0; i<7; i++){
-//        c += weight*noise( uv );
-//        uv = m*uv + Time;
-//        weight *= 0.6;
-//    }
-//
-//    //noise ridge colour
-//    float c1 = 0.0;
-//    Time = Time * speed * 3.0;
-//    uv = p*vec2(res.x/res.y,1.0);
-//    uv *= cloudscale*3.0;
-//    uv += q - Time;
-//    weight = 0.4;
-//    for (int i=0; i<7; i++){
-//        c1 += abs(weight*noise( uv ));
-//        uv = m*uv + Time;
-//        weight *= 0.6;
-//    }
-//
-//    c += c1;
-//
-//    vec3 skycolour = mix(skycolour2, skycolour1, p.y);
-//    vec3 cloudcolour = vec3(1.1, 1.1, 0.9) * clamp((clouddark + cloudlight*c), 0.0, 1.0);
-//
-//    f = cloudcover + cloudalpha*f*r;
-//
-//    vec3 result = mix(skycolour, clamp(skytint * skycolour + cloudcolour, 0.0, 1.0), clamp(f + c, 0.0, 1.0));
-//
-//    return result;
-//}
+//group_uniforms moon; // Second DirectionalLight3D will be the moon
+const vec3 moon_color = vec3( 1.0, 0.95, 0.7 );
+const float moon_size = 0.06;
+const float moon_blur = 0.1;
+
+//group_uniforms stars;
+// Stars should be at black background
+uniform sampler2D StarsTex;
+const float stars_speed = 1.0;
+
+//group_uniforms settings;
+//uniform float overwritten_time = 0.0;
 
 // Replaced by noise functions, unncomment if you want to use graphical textures
 //	uniform sampler2D clouds_top_texture : filter_linear_mipmap, hint_default_black;
@@ -181,7 +90,6 @@ const float clouds_fuzziness = 0.5;
 // More weight is simply a darker color, usefull for rain/storm
 const float clouds_weight  = 0.0;
 const float clouds_blur  = 0.25;
-const vec3 sunset_bottom_color = vec3( 1.0, 0.5, 0.7 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function for clouds noises. You can replace using "gen_fractal_ping_pong" with a simple texture reading.
@@ -189,24 +97,28 @@ const vec3 sunset_bottom_color = vec3( 1.0, 0.5, 0.7 );
 // Source: https://github.com/Auburn/FastNoiseLite/tree/master
 const int PRIME_X = 501125321;
 const int PRIME_Y = 1136930381;
-float lerp_( float a, float b, float t )
+float _lerp( float a, float b, float t )
 {
     return a + t * ( b - a );
 }
+
 float cubic_lerp( float a, float b, float c, float d, float t )
 {
     float p = d - c - ( a - b );
     return t * t * t * p + t * t * ( a - b - p ) + t * ( c - a ) + b;
 }
+
 float ping_pong( float t )
 {
     t -= trunc( t * 0.5 ) * 2.0;
     return t < 1.0 ? t : 2.0 - t;
 }
+
 int hash( int seed, int x_primed, int y_primed )
 {
     return ( seed ^ x_primed ^ y_primed ) * 0x27d4eb2d;
 }
+
 float val_coord( int seed, int x_primed, int y_primed )
 {
     int hash = hash( seed, x_primed, y_primed );
@@ -214,6 +126,7 @@ float val_coord( int seed, int x_primed, int y_primed )
     hash ^= hash << 19;
     return float( hash ) * ( 1.0 / 2147483648.0 );
 }
+
 float single_value_cubic( int seed, float x, float y )
 {
     int x1 = int( floor( x ));
@@ -238,6 +151,7 @@ float single_value_cubic( int seed, float x, float y )
     cubic_lerp( val_coord( seed, x0, y3 ), val_coord( seed, x1, y3 ), val_coord( seed, x2, y3 ), val_coord( seed, x3, y3 ), xs ),
     ys ) * ( 1.0 / ( 1.5 * 1.5 ));
 }
+
 // Params can be change in the same way as in noise settings in Godot
 const float FRACTAL_BOUNDING = 1.0 / 1.75;
 const int OCTAVES = 5;
@@ -245,17 +159,17 @@ const float PING_PONG_STRENGTH = 2.0;
 const float WEIGHTED_STRENGTH = 0.0;
 const float GAIN = 0.5;
 const float LACUNARITY = 2.0;
-float gen_fractal_ping_pong( vec2 pos, int seed, float frequency )
+float gen_fractal_ping_pong(const vec2 pos, int seed, float frequency )
 {
     float x = pos.x * frequency;
     float y = pos.y * frequency;
     float sum = 0.0;
     float amp = FRACTAL_BOUNDING;
-    for( int i = 0; i < OCTAVES; i++ )
+    for( int i = 0; i < OCTAVES; ++i )
     {
         float noise = ping_pong(( single_value_cubic( seed++, x, y ) + 1.0 ) * PING_PONG_STRENGTH );
         sum += ( noise - 0.5 ) * 2.0 * amp;
-        amp *= lerp_( 1.0, noise, WEIGHTED_STRENGTH );
+        amp *= _lerp( 1.0, noise, WEIGHTED_STRENGTH );
         x *= LACUNARITY;
         y *= LACUNARITY;
         amp *= GAIN;
@@ -264,10 +178,11 @@ float gen_fractal_ping_pong( vec2 pos, int seed, float frequency )
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vec3 clouds(const vec3 uv, const vec3 _sky_color) {
+vec3 clouds(const vec3 uv, const vec3 _sky_color)
+{
     // Clouds UV movement direction
     vec2 _sky_uv = uv.xz / sqrt( uv.y );
-    vec3 lightDir = -LightDirection;
+    vec3 lightDir = -LightDir0;
     float _sunset_amount = clamp( 0.5 - abs( lightDir.y ), 0.0, 0.5 ) * 2.0;
     float _sun_distance = distance( uv, lightDir.xyz );
     float _night_amount = clamp( -lightDir.y + 0.7, 0.0, 1.0 );
@@ -300,7 +215,7 @@ vec3 clouds(const vec3 uv, const vec3 _sky_color) {
     // The edge color gives a nice smooth edge, you can try turning this off if you need sharper edges
     _clouds_color = mix( clouds_edge_color, _clouds_color, _noise_top );
     // The sun passing through the clouds effect
-    _clouds_color = mix( _clouds_color, clamp( LightColor, 0.0, 1.0 ), pow( 1.0 - clamp( _sun_distance, 0.0, 1.0 ), 5 ));
+    _clouds_color = mix( _clouds_color, clamp( LightColor0, 0.0, 1.0 ), pow( 1.0 - clamp( _sun_distance, 0.0, 1.0 ), 5 ));
     // Color combined with sunset condition
     _clouds_color = mix( _clouds_color, sunset_bottom_color, _sunset_amount * 0.75 );
     // Color depending on the "progress" of the night.
@@ -309,32 +224,102 @@ vec3 clouds(const vec3 uv, const vec3 _sky_color) {
     return mix( _sky_color, _clouds_color, _clouds_amount );
 }
 
+// Function needed to calculate the phase of the moon
+// Source: https://kelvinvanhoorn.com/2022/03/17/skybox-tutorial-part-1/
+float sphere_intersect( const vec3 view_dir, const vec3 sphere_pos, float radius )
+{
+    float b = dot( -sphere_pos, view_dir );
+    float c = dot( -sphere_pos, -sphere_pos ) - pow( radius, 2 );
+    float h = pow( b, 2 ) - c;
+    return h < 0.0 ? -1.0 : -b - sqrt( h );
+}
+
+float _moon_amount = 0.0;
+vec3 sky(const vec3 uv)
+{
+    //float time = overwritten_time != 0.0 ? overwritten_time : TIME;
+    vec3 lightDir = -LightDir0;
+    vec3 color;
+
+    //////////////////// SKY ///////////////////////////////////////////////////////////////////////
+    float _eyedir_y = abs(sin(uv.y * M_PI * 0.5));
+
+    // The day color will be our base color
+    vec3 _sky_color = mix(day_bottom_color, day_top_color, _eyedir_y);
+    _sky_color = mix(_sky_color, vec3(0.0), clamp((0.7 - clouds_cutoff) * clouds_weight, 0.0, 1.0));
+
+    float _sunset_amount = clamp(0.5 - abs(lightDir.y), 0.0, 0.5) * 2.0;
+    // The sky should be more red around the west, on the opposite side you don't see it as much
+    float _sunset_distance = clamp(1.0 - pow(distance(uv, lightDir), 2), 0.0, 1.0);
+    vec3 _sky_sunset_color = mix(sunset_bottom_color, sunset_top_color, _eyedir_y + 0.5);
+    _sky_sunset_color = mix(_sky_sunset_color, sunset_bottom_color, _sunset_amount * _sunset_distance);
+    _sky_color = mix(_sky_color, _sky_sunset_color, _sunset_amount);
+
+    float _night_amount = clamp(-lightDir.y + 0.7, 0.0, 1.0);
+    vec3 _sky_night_color = mix(night_bottom_color, night_top_color, _eyedir_y);
+    _sky_color = mix(_sky_color, _sky_night_color, _night_amount);
+    return _sky_color;
+}
+
+vec3 starfield(const vec3 uv)
+{
+    //float time = overwritten_time != 0.0 ? overwritten_time : TIME;
+    vec3 lightDir = -LightDir0;
+    vec3 color;
+
+    //////////////////// STARS /////////////////////////////////////////////////////////////////
+    vec2 _sky_uv = uv.xz / sqrt(uv.y);
+    if (uv.y > -0.01 && lightDir.y < 0.0)
+    {
+        // Stars UV rotation
+        float _stars_speed_cos = cos(stars_speed * Time * 0.0003);
+        float _stars_speed_sin = sin(stars_speed * Time * 0.0003);
+//        float _stars_speed_cos = cos(stars_speed * 0.005);
+//        float _stars_speed_sin = sin(stars_speed * 0.005);
+        vec2 _stars_uv = vec2(
+        _sky_uv.x * _stars_speed_cos - _sky_uv.y * _stars_speed_sin,
+        _sky_uv.x * _stars_speed_sin + _sky_uv.y * _stars_speed_cos
+        );
+        // Stars texture
+        vec3 _stars_color = texture2D(StarsTex, _stars_uv).rgb;
+        if (max3(_stars_color) < 0.4) return vec3(0.0, 0.0, 0.0);
+        _stars_color *= -lightDir.y;
+        //_stars_color = pow(_stars_color, vec3(0.5));
+        // Hiding stars behind the moon
+        _stars_color *= 1.0 - _moon_amount;
+        color += _stars_color;
+    }
+
+    return color;
+}
+
 in highp vec3 vUV0;
 void main()
 {
     highp vec3 V = normalize(vUV0);
-    vec3 N = normalize(-LightDirection.xyz);
+    vec3 N = normalize(-LightDir0.xyz);
     float sunZenith = V.y;
     V.y = abs(V.y);
     if (abs(V.y) < 0.001) V.y = 0.001;
     float cos_theta = clamp(V.y, 0.0, 1.0);
     float cos_gamma = dot(V, N);
     float gamma = acos(cos_gamma);
+
     vec3 color = HosekWilkie(gamma, cos_gamma, cos_theta, Params);
+//    vec3 color = sky(vUV0);
 
     if (gamma <= M_PI / 360.0 && sunZenith > 0.0) {
-        color = mix(color, LightColor * 100.0, 0.1);
+        color = mix(color, LightColor0, 0.1);
     }
 
     // Apply exposure.
-    color = SkyLightExpose(color);
 
-    //    color = fragment();
+    color += starfield(vUV0);
     color = clouds(vUV0, color);
     color = SRGBtoLINEAR(color);
 
     // Fog
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - sign(V.y) * V.y), V, LightDirection.xyz, vec3(0.0, 0.0, 0.0));
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - sign(V.y) * V.y), V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
     EvaluateBuffer(color);
 }

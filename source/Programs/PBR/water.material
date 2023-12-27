@@ -40,8 +40,8 @@ fragment_program water_fs glsl glsles hlsl
         param_named RefrDistortionAmount float 0.03
         param_named ReflDistortionAmount float 0.04
         //param_named AberrationAmount float 0.002
-        param_named WaterExtinction float3 0.6 0.8 1
-        //param_named WaterExtinction float3 0.45 0.55 0.68
+        //param_named WaterExtinction float3 0.6 0.8 1
+        param_named WaterExtinction float3 0.45 0.55 0.68
         param_named SunExtinction float3 0.45 0.55 0.7
     }
 }
@@ -55,7 +55,7 @@ material Water
     {
         pass
         {
-            cull_hardware none
+            //cull_hardware none
 
             vertex_program_ref water_vs {}
 
@@ -86,7 +86,6 @@ material Water
             }
             texture_unit ReflectionTex
             {
-                //texture blue.dds
                 content_type compositor Fresnel reflection
                 tex_address_mode clamp
                 filtering bilinear

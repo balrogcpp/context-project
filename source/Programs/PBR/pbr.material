@@ -26,6 +26,7 @@ abstract material Unlit
 
     technique
     {
+        shadow_caster_material PSSM/shadow_caster
         pass
         {
             diffuse 1 1 1
@@ -110,28 +111,26 @@ abstract material PBR
                 content_type compositor MRT shadowmap
                 filtering bilinear
             }*/
-                        texture_unit ShadowMap0
-                        {
-                            content_type shadow
-                            filtering bilinear
-                        }
-                        texture_unit ShadowMap1
-                        {
-                            content_type shadow
-                            filtering bilinear
-                        }
-                        texture_unit ShadowMap2
-                        {
-                            content_type shadow
-                            filtering bilinear
-                        }
-                        texture_unit ShadowMap3
-                        {
-                            content_type shadow
-                            filtering bilinear
-                        }
-
-
+            texture_unit ShadowMap0
+            {
+                content_type shadow
+                filtering bilinear
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                filtering bilinear
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                filtering bilinear
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
+                filtering bilinear
+            }
 
             vertex_program_ref PBR_vs {}
 
@@ -143,11 +142,10 @@ abstract material PBR
                 param_named EmissiveTex    int 3
                 param_named OcclusionTex   int 4
                 //param_named ShadowTex      int 5
-                                param_named ShadowMap0     int 5
-                                param_named ShadowMap1     int 6
-                                param_named ShadowMap2     int 7
-                                param_named ShadowMap3     int 8
-
+                param_named ShadowMap0     int 5
+                param_named ShadowMap1     int 6
+                param_named ShadowMap2     int 7
+                param_named ShadowMap3     int 8
             }
         }
     }
@@ -255,28 +253,26 @@ abstract material TERRA
                 content_type compositor MRT shadowmap
                 filtering bilinear
             }*/
-                                    texture_unit ShadowMap0
-                                    {
-                                        content_type shadow
-                                        filtering bilinear
-                                    }
-                                    texture_unit ShadowMap1
-                                    {
-                                        content_type shadow
-                                        filtering bilinear
-                                    }
-                                    texture_unit ShadowMap2
-                                    {
-                                        content_type shadow
-                                        filtering bilinear
-                                    }
-                                    texture_unit ShadowMap3
-                                    {
-                                        content_type shadow
-                                        filtering bilinear
-                                    }
-
-
+            texture_unit ShadowMap0
+            {
+                content_type shadow
+                filtering bilinear
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                filtering bilinear
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                filtering bilinear
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
+                filtering bilinear
+            }
 
             vertex_program_ref TERRA_vs {}
 
@@ -288,11 +284,10 @@ abstract material TERRA
                 param_named TerraLightTex  int 3
                 param_named OcclusionTex   int 4
                 //param_named ShadowTex      int 5
-                                param_named ShadowMap0     int 5
-                                param_named ShadowMap1     int 6
-                                param_named ShadowMap2     int 7
-                                param_named ShadowMap3     int 8
-
+                param_named ShadowMap0     int 5
+                param_named ShadowMap1     int 6
+                param_named ShadowMap2     int 7
+                param_named ShadowMap3     int 8
             }
         }
     }

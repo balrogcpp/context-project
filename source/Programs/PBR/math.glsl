@@ -35,6 +35,11 @@ float fsign(float x)
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
+float max3(const vec3 a)
+{
+    return max(max(a.x, a.y), a.z);
+}
+
 bool Any(const vec2 x)
 {
     return x.x > 0.0 || x.y > 0.0;

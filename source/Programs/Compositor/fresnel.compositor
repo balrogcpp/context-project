@@ -13,7 +13,7 @@ compositor Fresnel
         {
             visibility_mask 0x00F // SURFACE objects
             shadows off
-            pass clear { colour_value 0.1 0.2 0.8 0 }
+            pass clear {}
             pass render_scene {}
         }
 

@@ -97,7 +97,7 @@ void main()
                                    + normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1
 //                                   + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1
     );
-    lNormal = mix(lNormal.xzy, float3(0.0, 1.0, 0.0), normalFade);
+    lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);
 
@@ -144,7 +144,7 @@ void main()
 #endif
 
     float waterSunGradient = dot(vVec, -LightDir0.xyz);
-    waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));  
+    waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));
     vec3 waterSunColor = SRGBtoLINEAR(vec3(0.0, 1.0, 0.85) * waterSunGradient);
     waterSunColor *= aboveWater ? 0.25 : 0.5;
 

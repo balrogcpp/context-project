@@ -16,8 +16,8 @@ fragment_program SkyBoxFp glsl glsles hlsl
 
     default_params
     {
-        param_named_auto LightDirection light_direction 0
-        param_named_auto LightColor light_diffuse_colour_power_scaled 0
+        param_named_auto LightDir0 light_direction 0
+        param_named_auto LightColor0 light_diffuse_colour_power_scaled 0
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance
@@ -44,7 +44,17 @@ material SkyBox
 
 			vertex_program_ref SkyBoxVp {}
 
-			fragment_program_ref SkyBoxFp {}
+			fragment_program_ref SkyBoxFp
+			{
+			    param_named StarsTex int 0
+			}
+
+            texture_unit StarsTex
+            {
+                texture starfield.jpg
+                //texture stars.png
+                filtering none
+            }
 		}
 	}
 }
