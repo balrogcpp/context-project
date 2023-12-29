@@ -4,14 +4,12 @@
 #include "header.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
-#ifndef MAX_WATER_OCTAVES
-    #define MAX_WATER_OCTAVES 2
-#endif
 
 uniform sampler2D NormalTex;
 uniform sampler2D RefractionTex;
 uniform sampler2D CameraDepthTex;
-uniform sampler2D ReflectionTex;
+//uniform sampler2D ReflectionTex;
+uniform samplerCube SpecularEnvTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform float Time;
@@ -45,14 +43,50 @@ float fresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
         g = sqrt(g);
         float a = (g - c) / (g + c);
         float b = (c * (g + c) - 1.0) / (c * (g - c) + 1.0);
-        
+
         return 0.5 * a * a * (1.0 + b * b);
     } else {
         return 1.0; // TIR (no refracted component)
-    }    
+    }
 }
 
-in highp vec3 vWorldPosition;
+vec3 intercept(const vec3 lineP, const vec3 lineN, const vec3 planeN, float planeD)
+{
+    float distance = (planeD - dot(planeN, lineP)) / dot(lineN, planeN);
+    return lineP + lineN * distance;
+}
+
+vec3 perturb(sampler2D tex, const vec2 coords, float bend)
+{
+    vec3 col = vec3(0.0, 0.0, 0.0);
+
+    vec2 windDir = WindDirection;
+    float windSpeed = WindSpeed;
+    float scale = WaveScale;
+
+    // might need to swizzle, not sure
+    vec2 nCoord = coords * (scale * 0.04) + windDir * Time * (windSpeed * 0.03);
+    col += texture2D(tex, nCoord + vec2(-Time * 0.005, -Time * 0.01)).rgb * 0.20;
+
+    nCoord = coords * (scale * 0.1) + windDir * Time * (windSpeed * 0.05) - (col.xy / col.z) * bend;
+    col += texture2D(tex, nCoord + vec2(+Time * 0.01, +Time * 0.005)).rgb * 0.20;
+
+    nCoord = coords * (scale * 0.25) + windDir * Time * (windSpeed * 0.1) - (col.xy / col.z) * bend;
+    col += texture2D(tex, nCoord + vec2(-Time * 0.02, -Time * 0.03)).rgb * 0.20;
+
+    nCoord = coords * (scale * 0.5) + windDir * Time * (windSpeed * 0.2) - (col.xy / col.z) * bend;
+    col += texture2D(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
+
+    nCoord = coords * (scale * 1.0) + windDir * Time * (windSpeed * 1.0) - (col.xy / col.z) * bend;
+    col += texture2D(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
+
+    nCoord = coords * (scale * 2.0) + windDir * Time * (windSpeed * 1.3) - (col.xy / col.z) * bend;
+    col += texture2D(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
+
+    return col;
+}
+
+in highp vec3 vPosition;
 in highp vec4 vProjectionCoord;
 void main()
 {
@@ -63,19 +97,20 @@ void main()
     vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
     fragCoord = clamp(fragCoord, 0.002, 0.998);
 
-    bool aboveWater = CameraPosition.y > vWorldPosition.y;
+    //bool aboveWater = CameraPosition.y > vWorldPosition.y;
+    const bool aboveWater = true;
 
     highp float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
     float normalFade = 1.0 - min(exp(-surfaceDepth / 40.0), 1.0);
 
-    vec2 nCoord = vWorldPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
+    vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
     vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
-    nCoord = vWorldPosition.xz * WaveScale * 0.1 + WindDirection * Time * WindSpeed * 0.08;
+    nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time * WindSpeed * 0.08;
     vec3 normal1 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015)).xyz - 1.0;
 
-    nCoord = vWorldPosition.xz * WaveScale * 0.25 + WindDirection * Time * WindSpeed * 0.07;
+    nCoord = vPosition.xz * WaveScale * 0.25 + WindDirection * Time * WindSpeed * 0.07;
     vec3 normal2 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.04, -Time * 0.03)).xyz - 1.0;
-    nCoord = vWorldPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
+    nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
     vec3 normal3 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
 
 //    nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
@@ -89,7 +124,7 @@ void main()
     );
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
-    highp vec3 vVec = normalize(CameraPosition - vWorldPosition);
+    highp vec3 vVec = normalize(CameraPosition - vPosition);
     highp vec3 lVec = LightDir0.xyz;
 
     // normal for light scattering
@@ -103,14 +138,16 @@ void main()
 
     float s = max(dot(lR, vVec) * 2.0 - 1.2, 0.0);
     float lightScatter = saturate((saturate(dot(-lVec, lNormal) * 0.7 + 0.3) * s) * ScatterAmount) * SunFade * saturate(1.0 - exp(-LightDir0.y));
-    vec3 scatterColor = mix(SRGBtoLINEAR(ScatterColor * vec3(1.0, 0.4, 0.0)), SRGBtoLINEAR(ScatterColor), SunTransmittance);
+    vec3 scatterColor = mix((ScatterColor * vec3(1.0, 0.4, 0.0))/10.0, (ScatterColor), SunTransmittance);
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
     float fresnel = fresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
+//    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
+    vec3 R1 = -normalize(reflect(vVec, nVec));
+    vec3 reflection = textureCube(SpecularEnvTex, vec3(-R1.x, R1.y, R1.z)).rgb;
 #ifdef FORCE_TONEMAP
     reflection = SRGBtoLINEAR(reflection);
 #endif
@@ -143,6 +180,14 @@ void main()
     refraction = SRGBtoLINEAR(refraction);
 #endif
 
+    // caustics
+    float causticdepth = refractedDepth - surfaceDepth;
+    causticdepth = 1.0 - saturate(causticdepth / Visibility);
+    causticdepth = saturate(causticdepth);
+    float causticR = 1.0 - perturb(NormalTex, vPosition.xz, causticdepth).z;
+
+    float caustics = saturate(pow(causticR * 5.5, 5.5 * causticdepth));// * NdotL * SunFade * causticdepth;
+
     float waterSunGradient = dot(vVec, -LightDir0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));
     vec3 waterSunColor = SRGBtoLINEAR(vec3(0.0, 1.0, 0.85) * waterSunGradient);
@@ -150,13 +195,12 @@ void main()
 
     float waterGradient = dot(vVec, vec3(0.0, -1.0, 0.0));
     waterGradient = clamp((waterGradient * 0.5 + 0.5), 0.2, 1.0);
-    vec3 watercolor = (SRGBtoLINEAR(vec3(0.0078, 0.5176, 0.700) + waterSunColor)) * waterGradient * 1.5;
+    vec3 watercolor = ((vec3(0.0078, 0.5176, 0.700) + waterSunColor)/10.0) * waterGradient * 1.5;
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
 //    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
     float fog = aboveWater ? (refractedDepth - surfaceDepth) / Visibility : surfaceDepth / Visibility;
-    if (refractedDepth - surfaceDepth > 5.0) fog = 1.0;
 
     float darkness = Visibility * 2.0;
     darkness = saturate((CameraPosition.y + darkness) / darkness);

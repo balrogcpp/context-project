@@ -2,8 +2,9 @@
 
 #define HAS_MRT
 #include "header.glsl"
-#include "fog.glsl"
 #include "srgb.glsl"
+#include "fog.glsl"
+#include "skymodel.glsl"
 
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;
@@ -27,7 +28,9 @@ uniform samplerCube SpecularEnvTex;
 uniform sampler2D TerraNormalTex;
 #endif
 
-uniform vec3 iblSH[9];
+uniform vec3 IBL[9];
+uniform vec3 HosekParams[10];
+uniform float Time;
 uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
@@ -67,10 +70,10 @@ in mediump vec3 vBitangent;
 #ifdef HAS_VERTEXCOLOR
 in mediump vec3 vColor;
 #endif
-#ifdef MRT_VELOCITY
+//#ifdef MRT_VELOCITY
 in mediump vec4 vScreenPosition;
 in mediump vec4 vPrevScreenPosition;
-#endif
+//#endif
 #if MAX_SHADOW_TEXTURES > 0
 in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -176,26 +179,26 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
 vec3 Irradiance_SphericalHarmonics(const vec3 n) {
     return max(
-        iblSH[0]
-        + iblSH[1] * (n.y)
-        + iblSH[2] * (n.z)
-        + iblSH[3] * (n.x)
-        + iblSH[4] * (n.y * n.x)
-        + iblSH[5] * (n.y * n.z)
-        + iblSH[6] * (3.0 * n.z * n.z - 1.0)
-        + iblSH[7] * (n.z * n.x)
-        + iblSH[8] * (n.x * n.x - n.y * n.y)
+        IBL[0]
+        + IBL[1] * (n.y)
+        + IBL[2] * (n.z)
+        + IBL[3] * (n.x)
+        + IBL[4] * (n.y * n.x)
+        + IBL[5] * (n.y * n.z)
+        + IBL[6] * (3.0 * n.z * n.z - 1.0)
+        + IBL[7] * (n.z * n.x)
+        + IBL[8] * (n.x * n.x - n.y * n.y)
         , 0.0);
 }
 
 vec3 DiffuseIrradiance(const vec3 n)
 {
-    return textureCube(SpecularEnvTex, n).rgb;
+    return textureCube(SpecularEnvTex, vec3(-n.x, n.y, n.z)).rgb;
 }
 
 vec3 GetIblSpecularColor(const vec3 n)
 {
-    return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, n).rgb));
+    return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, vec3(-n.x, n.y, n.z)).rgb));
 }
 #endif // HAS_IBL
 
@@ -438,7 +441,7 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
 #endif
 
 #ifdef HAS_ALPHA
-    if (albedo.a < 0.5) discard;
+    if (albedo.a < SurfaceAlphaRejection) discard;
 #endif
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
@@ -505,8 +508,14 @@ void main()
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
+    vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
+    highp float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
+    vec2 fragPos = vScreenPosition.xz;
+    vec2 fragPosPrev = vPrevScreenPosition.xz;
+    vec2 fragVelocity = (fragPos - fragPosPrev) * ViewportSize.zw;
 #ifdef HAS_AO
-    float ao = texture2D(OcclusionTex, gl_FragCoord.xy * ViewportSize.zw).r;
+    float ao = texture2D(OcclusionTex, fragCoord - fragVelocity).r;
+    occlusion = min(occlusion, ao);
 #else
     const float ao = 1.0;
 #endif
@@ -546,15 +555,18 @@ void main()
     color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
 #endif
     color += emission;
-#if MAX_LIGHTS > 0
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, v, LightDirectionArray[0].xyz, CameraPosition);
-#else
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, v, vec3(0.0, 0.0, 0.0), CameraPosition);
-#endif
+    const float distanceOffset = 25.0;
 
 #if MAX_LIGHTS > 0
-    //color.r = texture2D(ShadowMap0, gl_FragCoord.xy * ViewportSize.zw).r;
+    vec3 fogColor = HosekWilkie(-v, -LightDirectionArray[0].xyz, HosekParams);
+    fogColor = clouds(-v, fogColor, LightDiffuseScaledColourArray[0].rgb, -LightDirectionArray[0].xyz, Time);
+    fogColor = SRGBtoLINEAR(fogColor);
+    fogColor = ApplyFog(fogColor, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - sign(v.y) * v.y), v, LightDirectionArray[0].xyz, vec3(0.0, 0.0, 0.0));
+    color = ApplyFog(color, FogParams.x, fogColor, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition);
+#else
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, vec3(0.0, 0.0, 0.0), CameraPosition);
 #endif
+
     EvaluateBuffer(color, alpha);
 #ifdef HAS_MRT
 #ifdef MRT_NORMALS
@@ -564,7 +576,7 @@ void main()
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
 #endif
 #ifdef MRT_VELOCITY
-    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = (vScreenPosition.xz / vScreenPosition.w) - (vPrevScreenPosition.xz / vPrevScreenPosition.w);
+    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = fragVelocity;
 #endif
 #endif
 }

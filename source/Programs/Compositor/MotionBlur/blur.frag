@@ -32,7 +32,7 @@ void main()
         worldPos.xyz /= worldPos.w;
         vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
         nuv.xy /= nuv.w;
-        velocity = 0.5 * (nuv.xy - vUV0.xy);
+        velocity = (nuv.xy - vUV0.xy);
 #ifdef MRT_VELOCITY
     }
 #endif

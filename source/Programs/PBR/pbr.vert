@@ -63,10 +63,10 @@ out mediump vec3 vBitangent;
 #ifdef HAS_VERTEXCOLOR
 out mediump vec3 vColor;
 #endif
-#ifdef MRT_VELOCITY
+//#ifdef MRT_VELOCITY
 out mediump vec4 vScreenPosition;
 out mediump vec4 vPrevScreenPosition;
-#endif
+//#endif
 #if MAX_SHADOW_TEXTURES > 0
 out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -104,10 +104,10 @@ void main()
     vPosition = world.xyz / world.w;
     gl_Position = mul(WorldViewProjMatrix, position);
 
-#ifdef MRT_VELOCITY
+//#ifdef MRT_VELOCITY
     vScreenPosition = gl_Position;
     vPrevScreenPosition = mul(WorldViewProjPrev, position);
-#endif
+//#endif
 
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space

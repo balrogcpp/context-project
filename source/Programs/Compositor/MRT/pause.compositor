@@ -1,10 +1,151 @@
 // created by Andrey Vasiliev
 
-compositor FullScreenBlur
+import STD from std.compositor
+
+compositor Pause : STD
 {
     technique
     {
-        compositor_logic DeferredLogic
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        texture _rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target rt1
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt
+            }
+        }
+
+        target rt2
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt1
+            }
+        }
+
+        target rt3
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt2
+            }
+        }
+
+        target rt4
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt3
+            }
+        }
+
+        target rt5
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt4
+            }
+        }
+
+        target rt6
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt5
+            }
+        }
+
+        target _rt5
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Upscale9
+                input 0 rt6
+            }
+        }
+
+        target _rt4
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt5
+            }
+        }
+
+        target _rt3
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt4
+            }
+        }
+
+        target _rt2
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt3
+            }
+        }
+
+        target _rt1
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt2
+            }
+        }
+
+        target_output
+        {
+            //only_initial on
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt1
+            }
+        }
+    }
+}
+
+compositor FullScreenBlur_
+{
+    technique
+    {
         texture rt target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rtx target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rty target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
@@ -13,13 +154,13 @@ compositor FullScreenBlur
 
         target rt
         {
-            only_initial on
+            //only_initial on
             input previous
         }
 
         target rtx
         {
-            only_initial on
+            //only_initial on
             pass render_quad
             {
                 material Filter13X
@@ -29,7 +170,7 @@ compositor FullScreenBlur
 
         target rty
         {
-            only_initial on
+            //only_initial on
             pass render_quad
             {
                 material Filter13Y
@@ -39,7 +180,7 @@ compositor FullScreenBlur
 
         target rtx1
         {
-            only_initial on
+            //only_initial on
             pass render_quad
             {
                 material Filter13X
@@ -49,7 +190,7 @@ compositor FullScreenBlur
 
         target rty1
         {
-            only_initial on
+            //only_initial on
             pass render_quad
             {
                 material Filter13Y

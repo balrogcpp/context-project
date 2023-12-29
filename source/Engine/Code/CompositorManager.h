@@ -68,12 +68,17 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Matrix4 viewProj;
   Ogre::Matrix4 viewProjPrev;
 
+  bool needsUpdate;
+  Ogre::GpuProgramParametersSharedPtr fpParams;
+  std::array<Ogre::Vector3, 10> hosekParams;
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
   Ogre::SceneManager* sceneManager = nullptr;
   Ogre::Camera* camera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
   Ogre::Viewport* viewport = nullptr;
-  Ogre::ShadowTechnique shadowTechnique;
+  Ogre::Vector4 pssmPoints;
+  Ogre::Vector4 pssmPointsPrev;
+  bool pssmChanged;
 };
 }  // namespace gge

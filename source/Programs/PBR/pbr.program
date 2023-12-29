@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 shared_params IBL_Shared_frag
 {
-    shared_param_named iblSH float3 [9] 0.5 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    shared_param_named IBL float3 [9] 0.5 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 }
 
 abstract vertex_program Unlit_I_vs glsl glsles hlsl
@@ -73,9 +73,10 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto SurfaceSpecularColour surface_specular_colour
         param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
-        //param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
+        param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
+        param_named_auto Time time
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto CameraPosition camera_position

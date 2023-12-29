@@ -912,6 +912,9 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     ent->setCastShadows(false);
     pParent->attachObject(ent);
 
+    if (flag == 0xF00) {
+      ent->setRenderQueueGroup(Ogre::RENDER_QUEUE_TRANSPARENTS);
+    }
     // Process userDataReference (?)
     if (auto pElement = XMLNode.child("userData"))
         processUserData(pElement, ent->getUserObjectBindings());

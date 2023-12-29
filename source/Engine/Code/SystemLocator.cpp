@@ -52,9 +52,6 @@ void SystemLocator::Init() {
   terrain = make_unique<TerrainManager>();
   RegComponent(terrain.get());
 
-  sky = make_unique<SkyManager>();
-  RegComponent(sky.get());
-
   forests = make_unique<ForestsManager>();
   RegComponent(forests.get());
 }

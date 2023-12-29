@@ -312,8 +312,8 @@ void OverlayManager::OnUpdate(float time) {
   }
 
   static bool compositorFlags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-  if (ImGui::Checkbox("Blur", &compositorFlags[0])) {
-    GetComponent<CompositorManager>().EnableCompositor("Blur", compositorFlags[0]);
+  if (ImGui::Checkbox("Motion Blur", &compositorFlags[0])) {
+    GetComponent<CompositorManager>().EnableCompositor("MotionBlur", compositorFlags[0]);
   }
 
   if (ImGui::Checkbox("SSAO", &compositorFlags[1])) {

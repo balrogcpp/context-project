@@ -8,7 +8,6 @@
 #include "SDLListener.h"
 #include "SceneManager.h"
 #include "Singleton.h"
-#include "SkyManager.h"
 #include "TerrainManager.h"
 #include "VideoManager.h"
 #include "OverlayManager.h"
@@ -61,7 +60,6 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   std::unique_ptr<CompositorManager> compositor;
   std::unique_ptr<PhysicsManager> physics;
   std::unique_ptr<AudioManager> audio;
-  std::unique_ptr<SkyManager> sky;
   std::unique_ptr<TerrainManager> terrain;
   std::unique_ptr<ForestsManager> forests;
   std::unique_ptr<OverlayManager> overlay;

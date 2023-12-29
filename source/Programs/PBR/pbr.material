@@ -11,6 +11,17 @@ sampler CubeTex
     filtering bilinear
     tex_address_mode clamp
 }
+sampler ShadowTex
+{
+    filtering bilinear
+    tex_address_mode border
+    tex_border_colour 1 1 1 1
+}
+sampler AO
+{
+    filtering none
+    tex_address_mode wrap
+}
 
 abstract material Unlit
 {
@@ -102,9 +113,9 @@ abstract material PBR
             }
             texture_unit AO
             {
-                texture $AO
-                //content_type compositor MRT ao
-                filtering none
+                //texture $AO
+                content_type compositor MRT ao
+                sampler_ref AO
             }
             /*texture_unit ShadowAtlas
             {
@@ -114,22 +125,22 @@ abstract material PBR
             texture_unit ShadowMap0
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
             texture_unit ShadowMap1
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
             texture_unit ShadowMap2
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
             texture_unit ShadowMap3
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
 
             vertex_program_ref PBR_vs {}
@@ -244,9 +255,9 @@ abstract material TERRA
             }
             texture_unit AO
             {
-                texture $AO
-                //content_type compositor MRT ao
-                filtering none
+                //texture $AO
+                content_type compositor MRT ao
+                sampler_ref AO
             }
             /*texture_unit ShadowAtlas
             {
@@ -256,22 +267,22 @@ abstract material TERRA
             texture_unit ShadowMap0
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
             texture_unit ShadowMap1
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
             texture_unit ShadowMap2
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
             texture_unit ShadowMap3
             {
                 content_type shadow
-                filtering bilinear
+                sampler_ref ShadowTex
             }
 
             vertex_program_ref TERRA_vs {}

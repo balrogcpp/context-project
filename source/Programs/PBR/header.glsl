@@ -5,7 +5,7 @@
 
 //#undef HAS_MRT
 #ifdef GL_ES
-#define FORCE_TONEMAP
+//#define FORCE_TONEMAP
 #endif
 
 #ifndef MAX_LIGHTS

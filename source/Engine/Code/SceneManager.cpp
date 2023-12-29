@@ -8,14 +8,8 @@
 using namespace std;
 
 namespace gge {
-SceneManager::SceneManager()
-    : viewProj(Ogre::Matrix4::IDENTITY),
-      viewProjPrev(Ogre::Matrix4::IDENTITY),
-      pssmPoints(Ogre::Vector4::ZERO),
-      pssmPointsPrev(Ogre::Vector4::ZERO),
-      pssmChanged(false),
-      isEven(false) {}
-SceneManager::~SceneManager() { sceneManager->removeRenderObjectListener(this); }
+SceneManager::SceneManager() {}
+SceneManager::~SceneManager() {}
 
 void SceneManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
@@ -24,8 +18,6 @@ void SceneManager::OnSetUp() {
   ASSERTION(sceneManager, "[SceneManager] sceneManager is not initialised");
   ASSERTION(sceneManager->hasCamera("Camera"), "[SceneManager] camera is not initialised");
   camera = sceneManager->getCamera("Camera");
-
-  sceneManager->addRenderObjectListener(this);
 }
 
 void SceneManager::OnClean() {
@@ -37,25 +29,6 @@ void SceneManager::OnClean() {
 
 void SceneManager::OnUpdate(float time) {
   if (sinbad) sinbad->Update(time);
-
-  viewProjPrev = viewProj;
-  viewProj = camera->getProjectionMatrix() * camera->getViewMatrix();
-  isEven = !isEven;
-
-  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-    auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get());
-    pssmCount = pssm->getSplitCount();
-    const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-    pssmPoints.w = sceneManager->getShadowFarDistance();
-    for (unsigned int i = 0; i < Ogre::Math::Clamp<Ogre::uint32>(pssmCount, 0, 4); i++) {
-      pssmPoints[i] = splitPointList[i + 1];
-    }
-  } else {
-    pssmPoints = Ogre::Vector4(0.0, 0.0, 0.0, sceneManager->getShadowFarDistance());
-  }
-
-  pssmChanged = pssmPointsPrev != pssmPoints;
-  pssmPointsPrev = pssmPoints;
 }
 
 static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
@@ -105,9 +78,6 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   // search for GrassPage
   ScanForests(objBindings, "GrassPage");
   ScanForests(objBindings, "BatchPage");
-
-  // sky is separate component
-  GetComponent<SkyManager>().SetUpSky();
 
   // scan second time, new objects added during first scan
   for (auto it : rootNode->getChildren()) {
@@ -213,34 +183,6 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
   // recurse
   for (auto it : node->getChildren()) {
     ScanNode(dynamic_cast<Ogre::SceneNode *>(it));
-  }
-}
-
-void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
-                                            const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-  if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) return;
-  const auto &vp = pass->getVertexProgramParameters();
-  const auto &fp = pass->getFragmentProgramParameters();
-  vp->setIgnoreMissingParams(true);
-  fp->setIgnoreMissingParams(true);
-
-  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
-    fp->setNamedConstant("PssmSplitPoints", pssmPoints);
-  }
-
-  // apply for dynamic entities only
-  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    auto *entity = subentity->getParent();
-    auto mass = entity->getUserObjectBindings().getUserAny("mass");
-    if (!mass.has_value()) return;
-    if (Ogre::any_cast<Ogre::Real>(mass) == 0.0) return;
-    if (entity->getMesh()->isReloadable()) {
-      Ogre::Matrix4 MVP;
-      rend->getWorldTransforms(&MVP);
-      Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
-      rend->getUserObjectBindings().setUserAny(viewProj * MVP);
-      if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-    }
   }
 }
 
