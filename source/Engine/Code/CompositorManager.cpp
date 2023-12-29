@@ -165,8 +165,8 @@ void CompositorManager::OnSetUp() {
   // AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
+  if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
-  if (!RenderSystemIsGLES2()) AddCompositor("Rays", false);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);

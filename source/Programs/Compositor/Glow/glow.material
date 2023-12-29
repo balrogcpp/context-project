@@ -61,27 +61,3 @@ material GlowMod : STD
         }
 	}
 }
-
-fragment_program glowFeat glsl glsles hlsl
-{
-	source glowFeat.frag
-
-    default_params
-    {
-        param_named ChromaticRadius float 0.005
-    }
-}
-
-material GlowFeat : STD
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref glowFeat
-            {
-                param_named RT int 0
-            }
-        }
-    }
-}

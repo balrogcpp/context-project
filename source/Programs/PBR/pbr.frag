@@ -555,14 +555,14 @@ void main()
     color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
 #endif
     color += emission;
-    const float distanceOffset = 25.0;
 
 #if MAX_LIGHTS > 0
     vec3 fogColor = HosekWilkie(-v, -LightDirectionArray[0].xyz, HosekParams);
     fogColor = clouds(-v, fogColor, LightDiffuseScaledColourArray[0].rgb, -LightDirectionArray[0].xyz, Time);
     fogColor = SRGBtoLINEAR(fogColor);
     fogColor = ApplyFog(fogColor, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - sign(v.y) * v.y), v, LightDirectionArray[0].xyz, vec3(0.0, 0.0, 0.0));
-    color = ApplyFog(color, FogParams.x, fogColor, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition);
+    color = mix(ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition),
+         ApplyFog(color, FogParams.x, fogColor, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition), saturate((fragDepth - 10.0) / 50.0));
 #else
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, vec3(0.0, 0.0, 0.0), CameraPosition);
 #endif

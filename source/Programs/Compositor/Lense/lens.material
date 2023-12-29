@@ -1,0 +1,68 @@
+// created by Andrey Vasiliev
+
+import STD from stdquad.material
+
+fragment_program Lens glsl glsles hlsl
+{
+	source lens.frag
+}
+
+material Lens : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref Lens
+			{
+                param_named RT int 0
+			}
+        }
+    }
+}
+
+fragment_program fbo glsl glsles hlsl
+{
+	source fbo.frag
+}
+
+material FBO : STD
+{
+	technique
+	{
+		pass
+		{
+            fragment_program_ref fbo
+			{
+                param_named RT int 0
+            }
+		}
+	}
+}
+
+fragment_program Mod glsl glsles hlsl
+{
+	source mod.frag
+}
+
+material Mod : STD
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref Mod
+            {
+                param_named RT int 0
+                param_named FBO int 1
+            }
+
+            texture_unit FBO
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
