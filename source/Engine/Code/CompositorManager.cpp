@@ -194,10 +194,10 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
 }
 
 void CompositorManager::AddReflectionPlane(Ogre::Plane plane) {
-  this->plane = plane;
-  AddCompositor("Fresnel", true, 0);
-  auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-  rt1->addListener(this);
+//  this->plane = plane;
+//  AddCompositor("Fresnel", true, 0);
+//  auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+//  rt1->addListener(this);
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {
