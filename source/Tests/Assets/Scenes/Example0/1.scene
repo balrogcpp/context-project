@@ -2,13 +2,13 @@
 <scene author="balrog" formatVersion="1.1">
     <nodes>
         <node name="Sun">
-            <direction x="40.659888" y="-60.704975" z="-30.950829"/>
+            <direction x="40.659888" y="-40.0" z="-30.950829"/>
             <light name="Sun" powerScale="2" type="directional" castShadows="true"/>
         </node>
 <!--        <node name="Light0">-->
 <!--            <position x="0" y="5" z="06"/>-->
 <!--            <direction x="0" y="-1" z="0"/>-->
-<!--            <light name="Spot" powerScale="1.0" type="spot" castShadows="true">-->
+<!--            <light name="Spot" powerScale="1.0" type="spot" castShadows="false">-->
 <!--                <lightRange falloff="1.0" inner="0.0" outer="1" />-->
 <!--                <lightAttenuation constant="0.0" linear="0.040000" quadratic="0.0" range="30" />-->
 <!--            </light>-->
@@ -17,15 +17,15 @@
             <position x="0" y="2" z="0"/>
             <direction x="0.0" y="0.0" z="-1"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
-            <camera fov="60" name="Camera" projectionType="perspective">
-                <clipping far="500.0" near="0.1"/>
+            <camera fov="45" name="Camera" projectionType="perspective">
+                <clipping far="1000.0" near="0.1"/>
             </camera>
         </node>
         <node name="Helmet">
-            <position x="0" y="1.0" z="2.0"/>
+            <position x="0" y="2" z="2.0"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
-            <scale x="1" y="1" z="1"/>
-            <entity meshFile="DamagedHelmet.mesh" name="Helmet2">
+            <scale x="2" y="2" z="2"/>
+            <entity meshFile="DamagedHelmet.mesh" name="Helmet2" castShadows="true">
                 <userData>
                     <property data="0.0" name="mass" type="float"/>
                     <property data="3" name="proxy" type="int"/>
@@ -42,23 +42,13 @@
                 </userData>
             </entity>
         </node>
-        <node name="Plane1">
-            <plane name="Plane1" material="Plane" width="200" height="200" distance="-1.0" castShadows="true"/>
-        </node>
-        <node name="Plane">
-            <plane name="Plane" material="Plane" width="200" height="200" distance="0.0" castShadows="true"/>
-        </node>
+<!--        <node name="Plane">-->
+<!--            <plane name="Plane" material="Plane" width="100" height="100" distance="-1"/>-->
+<!--        </node>-->
         <node name="Plane2">
-            <plane name="Plane2" material="Ocean" width="200" height="200" distance="1.0" castShadows="false" flag="0xF00"/>
+            <plane name="Plane2" material="Water" width="200" height="200" distance="0" flag="0xF00"/>
         </node>
     </nodes>
-    <environment>
-        <colourAmbient r="20" g="20" b="20"/>
-        <skyBox active="true" material="SkyBox" distance="300"/>
-        <fog mode="exp" density="0.001">
-            <colour r="155" g="171" b="187"/>
-        </fog>
-    </environment>
 <!--    <terrainGroupLegacy>-->
 <!--        <terrain x="0" y="0" file="terrain.cfg"/>-->
 <!--    </terrainGroupLegacy>-->

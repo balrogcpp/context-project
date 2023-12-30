@@ -198,6 +198,7 @@ void CompositorManager::AddReflectionPlane(Ogre::Plane plane) {
 //  AddCompositor("Fresnel", true, 0);
 //  auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
 //  rt1->addListener(this);
+//  mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {

@@ -94,11 +94,11 @@ void main()
     float SunFade = clamp((0.1 - LightDir0.y) * 10.0, 0.0, 1.0);
     float ScatterFade = clamp((0.15 - LightDir0.y) * 4.0, 0.0, 1.0);
 
-    vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
+//    vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
+    vec2 fragCoord = gl_FragCoord.xy / vec2(textureSize(RefractionTex, 0));
     fragCoord = clamp(fragCoord, 0.002, 0.998);
 
-    //bool aboveWater = CameraPosition.y > vWorldPosition.y;
-    const bool aboveWater = true;
+    bool aboveWater = CameraPosition.y > vPosition.y;
 
     highp float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
     float normalFade = 1.0 - min(exp(-surfaceDepth / 40.0), 1.0);
@@ -169,13 +169,9 @@ void main()
     refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * distortFade).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
 
     vec3 refraction;
-//#ifdef GL_ES
-    refraction.rgb = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
-//#else
-//    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
-//    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
-//    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
-//#endif
+    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
+    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
+    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
 #ifdef FORCE_TONEMAP
     refraction = SRGBtoLINEAR(refraction);
 #endif
@@ -185,8 +181,9 @@ void main()
     causticdepth = 1.0 - saturate(causticdepth / Visibility);
     causticdepth = saturate(causticdepth);
     float causticR = 1.0 - perturb(NormalTex, vPosition.xz, causticdepth).z;
+    float NdotL = max(dot(lNormal, -LightDir0.xyz), 0.0);
 
-    float caustics = saturate(pow(causticR * 5.5, 5.5 * causticdepth));// * NdotL * SunFade * causticdepth;
+    float caustics = saturate(pow(causticR * 5.5, 5.5 * causticdepth)) * NdotL * SunFade * causticdepth;
 
     float waterSunGradient = dot(vVec, -LightDir0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));
@@ -199,19 +196,20 @@ void main()
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-//    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
+    //float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
     float fog = aboveWater ? (refractedDepth - surfaceDepth) / Visibility : surfaceDepth / Visibility;
 
     float darkness = Visibility * 2.0;
     darkness = saturate((CameraPosition.y + darkness) / darkness);
 
-    refraction = mix(refraction, scatterColor, lightScatter);
+    //refraction = mix(refraction, scatterColor, lightScatter);
     refraction = mix(refraction, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
 
     vec3 color;
 
     if (aboveWater) {
         color = mix(refraction, reflection, fresnel * 0.6);
+        color *= 1.0 + pow(caustics, 1.50) * SunTransmittance  * 50.0;
     } else {
         // scatter and extinction between surface and camera
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);

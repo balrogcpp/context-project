@@ -889,32 +889,17 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     Vector3 normal = parseVector3(XMLNode.child("normal"), Ogre::Vector3::UNIT_Y);
     Vector3 up = parseVector3(XMLNode.child("upVector"), Ogre::Vector3::UNIT_Z);
     Ogre::uint32 flag = getAttribUInt(XMLNode, "flag", 0xFFF);
-    bool castShadows = getAttribBool(XMLNode, "castShadows", false);
 
     Plane plane(normal, distance);
-    if (flag == 0xF00) {
-        if (gge::GetComponent<gge::CompositorManager>().IsCompositorInChain("Fresnel")) 
-            return;
-        xSegments = 2; ySegments = 2; uTile = 2; vTile = 2;
-        gge::GetComponent<gge::CompositorManager>().AddReflectionPlane(plane);
-        OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
-        auto* camera = mSceneMgr->getCamera("Camera");
-        auto mat = Ogre::MaterialManager::getSingleton().getByName(material);
-        mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
-    }
     MeshPtr res = MeshManager::getSingletonPtr()->createPlane(name, m_sGroupName, plane, width, height, xSegments,
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, res);
     const auto &mat = MaterialManager::getSingleton().getByName(material);
-    mat->setReceiveShadows(true);
     ent->setMaterialName(material);
     ent->setVisibilityFlags(flag);
     ent->setCastShadows(false);
     pParent->attachObject(ent);
 
-    if (flag == 0xF00) {
-      ent->setRenderQueueGroup(Ogre::RENDER_QUEUE_TRANSPARENTS);
-    }
     // Process userDataReference (?)
     if (auto pElement = XMLNode.child("userData"))
         processUserData(pElement, ent->getUserObjectBindings());
