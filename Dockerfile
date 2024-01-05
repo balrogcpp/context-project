@@ -16,7 +16,7 @@ RUN git config --global http.postBuffer 1048576000 \
 ARG CMAKE_VERSION=3.28.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
-ARG UPX_VERSION=4.2.1
+ARG UPX_VERSION=4.2.2
 RUN cd /tmp \
     && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
