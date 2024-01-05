@@ -2,7 +2,6 @@
 
 #pragma once
 #include <BtOgre/BtOgre.h>
-#include <DotSceneLoaderB/DotSceneLoaderB.h>
 #include <OggSound/OgreOggSound.h>
 #include <Ogre.h>
 #include <Overlay/OgreImGuiOverlay.h>

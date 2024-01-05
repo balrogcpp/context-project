@@ -34,9 +34,9 @@ compositor MRT
 
         target mrt
         {
-            //shadows off
             pass clear {}
             pass render_scene {}
+            //shadows off
             //pass render_custom RenderShadowMap {}
         }
 

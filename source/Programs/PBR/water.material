@@ -39,7 +39,7 @@ fragment_program water_fs glsl glsles hlsl
         param_named ScatterColor float3  0 .1 0.095 // 0 1 0.95
         param_named RefrDistortionAmount float 0.03
         //param_named ReflDistortionAmount float 0.04
-        //param_named AberrationAmount float 0.002
+        param_named AberrationAmount float 0.002
         param_named WaterExtinction float3 0.6 0.8 1
         //param_named WaterExtinction float3 0.45 0.55 0.68
         param_named SunExtinction float3 0.45 0.55 0.7
@@ -56,7 +56,9 @@ material Water
         pass
         {
             cull_hardware none
-            scene_blend alpha_blend
+            //scene_blend alpha_blend
+            depth_write off
+            transparent_sorting force
 
             vertex_program_ref water_vs {}
 
@@ -77,13 +79,13 @@ material Water
             }
             texture_unit RefractionTex
             {
-                content_type compositor MRT mrt 0
+                texture black.dds
                 tex_address_mode clamp
                 filtering none
             }
-            texture_unit CameraDepthTex
+            texture_unit DepthTex
             {
-                content_type compositor MRT mrt 1
+                texture black.dds
                 tex_address_mode clamp
                 filtering none
             }
@@ -95,8 +97,7 @@ material Water
             }*/
             texture_unit IBL
             {
-                //texture $IBL cubic
-                content_type compositor CubeMap cube
+                texture specular.dds cubic
                 filtering bilinear
             }
         }

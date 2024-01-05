@@ -113,8 +113,7 @@ abstract material PBR
             }
             texture_unit AO
             {
-                //texture $AO
-                content_type compositor MRT ao
+                texture $AO
                 sampler_ref AO
             }
             /*texture_unit ShadowAtlas
@@ -170,8 +169,7 @@ abstract material IBL : PBR
         {
             texture_unit IBL
             {
-                //texture $IBL cubic
-                content_type compositor CubeMap cube
+                texture $IBL cubic
                 sampler_ref CubeTex
             }
 
@@ -255,8 +253,7 @@ abstract material TERRA
             }
             texture_unit AO
             {
-                //texture $AO
-                content_type compositor MRT ao
+                texture $AO
                 sampler_ref AO
             }
             /*texture_unit ShadowAtlas
