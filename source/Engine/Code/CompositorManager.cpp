@@ -151,7 +151,7 @@ void CompositorManager::OnSetUp() {
   cubeCamera = sceneManager->createCamera("CubeCamera");
   cubeCamera->setFOVy(Ogre::Degree(90.0));
   cubeCamera->setAspectRatio(1.0);
-  cubeCamera->setNearClipDistance(300.0);
+  cubeCamera->setNearClipDistance(camera->getFarClipDistance() / 6.0);
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
   sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y)->attachObject(cubeCamera);
   AddCompositor("CubeMap", true);
@@ -161,6 +161,13 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   // create compositor chain
+  //  this->plane = plane;
+  //    auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+  //    rt1->addListener(this);
+  //    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
+  //   AddCompositor("Fresnel", true);
+  //  sceneManager->getRenderQueue()->setRenderQueueMode( 0, RenderQueue::V1_FAST );
+  //  sceneManager->getRenderQueue()->setRenderQueueMode( 1, RenderQueue::FAST );
   AddCompositor("MRT", true);
   // AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
@@ -194,11 +201,11 @@ void CompositorManager::EnableCompositor(const string &name, bool enable) {
 }
 
 void CompositorManager::AddReflectionPlane(Ogre::Plane plane) {
-//  this->plane = plane;
-//  AddCompositor("Fresnel", true, 0);
-//  auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-//  rt1->addListener(this);
-//  mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
+  //  this->plane = plane;
+  //  AddCompositor("Fresnel", true, 0);
+  //  auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+  //  rt1->addListener(this);
+  //  mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {
@@ -406,10 +413,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     for (int i = 0; i < ll.size(); i++) {
       if (ll[i]->getType() != Ogre::Light::LT_DIRECTIONAL) break;
       Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(ll[i], camera);
-      lightPositionViewSpace[4 * i] = lightPos.x;
-      lightPositionViewSpace[4 * i + 1] = lightPos.y;
-      lightPositionViewSpace[4 * i + 2] = lightPos.z;
-      lightPositionViewSpace[4 * i + 3] = lightPos.w;
+      for (int j = 0; j < 4; j++) lightPositionViewSpace[4 * i + j] = lightPos[j];
     }
 
     fp->setNamedConstant("LightPositionList", lightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
@@ -423,12 +427,52 @@ void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::Material
 
 void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                                  const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-  //if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram() || !pass->getLightingEnabled() || pass->getFogOverride()) return;
   if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram()) return;
+
   const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
+  {
+    Ogre::Real hosekParamsArray[10 * 3];
+    for (int i = 0; i < 10; i++)
+      for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
+    fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
+    needsUpdate = false;
+  }
+
+  if (!pass->getLightingEnabled() || pass->getFogOverride()) return;
+
+  if (auto *tex = pass->getTextureUnitState("IBL")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("CubeMap", "cube");
+    }
+  }
+  if (auto *tex = pass->getTextureUnitState("AO")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "ao");
+    }
+  }
+  if (auto *tex = pass->getTextureUnitState("RefractionTex")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "mrt", 0);
+    }
+  }
+  if (auto *tex = pass->getTextureUnitState("DepthTex")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "mrt", 1);
+    }
+  }
+  if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("Fresnel", "reflection");
+    }
+  }
 
   if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);
@@ -450,15 +494,6 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
     }
   }
-
-  Ogre::Real hosekParamsArray[10 * 3];
-  for (int i = 0; i < 10; i++) {
-    hosekParamsArray[3 * i] = hosekParams[i].x;
-    hosekParamsArray[3 * i + 1] = hosekParams[i].y;
-    hosekParamsArray[3 * i + 2] = hosekParams[i].z;
-  }
-  fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
-  needsUpdate = false;
 }
 
 }  // namespace gge

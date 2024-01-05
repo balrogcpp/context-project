@@ -7,9 +7,6 @@
 #include <OgreTerrainGroup.h>
 #endif
 
-#include <PagedGeometry/PagedGeometryAll.h>
-#include <Code/SystemLocator.h>
-
 #include "pugixml/pugixml.hpp"
 
 using namespace Ogre;
@@ -223,10 +220,6 @@ void DotSceneLoaderB::processScene(pugi::xml_node& XMLRoot)
     // Process terrain (?)
     if (auto pElement = XMLRoot.child("terrainGroup"))
         processTerrainGroup(pElement);
-
-    // Process terrain (?)
-    if (auto pElement = XMLRoot.child("terrainGroupLegacy"))
-        processTerrainGroupLegacy(pElement);
 }
 
 void DotSceneLoaderB::processNodes(pugi::xml_node& XMLNode)
@@ -310,126 +303,6 @@ void DotSceneLoaderB::processEnvironment(pugi::xml_node& XMLNode)
         mSceneMgr->setShadowColour(parseColour(pElement));
 }
 
-void DotSceneLoaderB::processPagedGeometryGrass(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long id) {
-    static TerrainGroup* terrainGroupLocal = terrainGroup;
-    int x = StringConverter::parseInt(XMLNode.attribute("x").value());
-    int y = StringConverter::parseInt(XMLNode.attribute("y").value());
-    Real density = StringConverter::parseReal(XMLNode.attribute("density").value(), 1.0);
-    Real maxSize = StringConverter::parseReal(XMLNode.attribute("maxSize").value(), 2.0);
-    std::string grassMaterial = XMLNode.attribute("grass").value();
-    std::string densityMap = XMLNode.attribute("densityMap").value();
-    std::string colorMap = XMLNode.attribute("colorMap").value();
-    SceneManager* sceneManager = pCamera->getSceneManager();
-
-    if (!grassMaterial.empty())
-    {
-        AxisAlignedBox box = terrainGroup->getTerrain(x, y)->getWorldAABB();
-        auto minimum = box.getMinimum();
-        auto maximum = box.getMaximum();
-
-        auto* grass = new Forests::PagedGeometry(pCamera, 15);
-
-        grass->addDetailLevel<Forests::GrassPage>(60, 0);
-
-        auto* grassLoader = new Forests::GrassLoader(grass);
-
-        grass->setPageLoader(grassLoader);
-        grassLoader->setHeightFunction([](float x, float z, void*) { return terrainGroupLocal->getHeightAtWorldPosition(x, 10000.0, z); });
-        Forests::GrassLayer* layer = grassLoader->addLayer(grassMaterial);
-        layer->setFadeTechnique(Forests::FADETECH_ALPHA);
-        layer->setRenderTechnique(Forests::GRASSTECH_CROSSQUADS);
-        layer->setMapBounds(Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
-        layer->setDensityMap(densityMap);
-        layer->setColorMap(colorMap);
-        layer->setDensity(density);
-        layer->setMaximumSize(maxSize, maxSize);
-
-        sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("GrassPage" + std::to_string(id++), grass);
-    }
-}
-
-void DotSceneLoaderB::processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, TerrainGroup* terrainGroup, unsigned long id) {
-    int x = StringConverter::parseInt(XMLNode.attribute("x").value());
-    int y = StringConverter::parseInt(XMLNode.attribute("y").value());
-    std::string treeMeshName = XMLNode.attribute("trees").value();
-    SceneManager* sceneManager = pCamera->getSceneManager();
-    static unsigned long generator = 0;
-
-    if (!treeMeshName.empty())
-    {
-        AxisAlignedBox box = terrainGroup->getTerrain(x, y)->getWorldAABB();
-        auto minimum = box.getMinimum();
-        auto maximum = box.getMaximum();
-
-        auto* trees = new Forests::PagedGeometry(pCamera, 15);
-
-        trees->addDetailLevel<Forests::WindBatchPage>(125, 0);
-        //trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
-
-        auto* treeLoader = new Forests::TreeLoader3D(trees, Forests::TBounds(minimum.x, minimum.z, maximum.x, maximum.z));
-
-        trees->setPageLoader(treeLoader);
-        std::string newName = treeMeshName + std::to_string(generator++);
-        Entity* treeEntity = sceneManager->createEntity(newName, treeMeshName);
-        trees->setCustomParam(newName, "windFactorX", 30);
-        trees->setCustomParam(newName, "windFactorY", 0.01);
-
-        for (int i = 0; i < 23; i++)
-        {
-          float x = 0, y = 0, z = 0, yaw = 0.0, scale = 1.0;
-          yaw = Ogre::Math::RangeRandom(0, 360);
-          x = Ogre::Math::RangeRandom(minimum.x, maximum.x);
-          z = Ogre::Math::RangeRandom(minimum.z, maximum.z);
-          y = terrainGroup->getHeightAtWorldPosition(x, 10000.0, z) - 0.2;
-
-          Ogre::Quaternion quat;
-          scale = 0.2 * Ogre::Math::RangeRandom(0.9f, 1.1f);
-          quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
-
-          treeLoader->addTree(treeEntity, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
-        }
-
-        sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("BatchPage" + std::to_string(id), trees);
-    }
-}
-
-void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
-{
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
-    LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Terrain Group Legacy...", LML_TRIVIAL);
-
-    auto *terrainGroup = new TerrainGroup(mSceneMgr);
-    terrainGroup->setResourceGroup(m_sGroupName);
-
-    for (auto &pPageElement : XMLNode.children("terrain"))
-    {
-        int x = StringConverter::parseInt(pPageElement.attribute("x").value());
-        int y = StringConverter::parseInt(pPageElement.attribute("y").value());
-        std::string filename = pPageElement.attribute("file").value();
-        terrainGroup->loadLegacyTerrain(filename, x, y, true);
-        terrainGroup->setOrigin(Vector3::ZERO);
-        terrainGroup->getTerrain(x, y)->setVisibilityFlags(0x00F);
-    }
-
-    OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
-    auto* defaultCamera = mSceneMgr->getCamera("Camera");
-    unsigned long generator = 0;
-
-    for (auto &pPageElement : XMLNode.children("terrain"))
-    {
-        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup, generator);
-        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup, generator);
-        generator++;
-    }
-
-    terrainGroup->freeTemporaryResources();
-
-    mAttachNode->getUserObjectBindings().setUserAny("TerrainGroup", terrainGroup);
-#else
-    OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
-#endif
-}
-
 void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
 {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
@@ -456,22 +329,15 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
         int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
         int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
 
-        terrainGroup->defineTerrain(pageX, pageY, pPageElement.attribute("dataFile").value());
-        terrainGroup->getTerrain(pageX, pageY)->setVisibilityFlags(0x00F);
+        String filename = pPageElement.attribute("file").value();
+        if (!filename.empty()) {
+          terrainGroup->loadLegacyTerrain(filename, pageX, pageY, true);
+          terrainGroup->setOrigin(Vector3::ZERO);
+        } else {
+          terrainGroup->defineTerrain(pageX, pageY, pPageElement.attribute("dataFile").value());
+        }
     }
     terrainGroup->loadAllTerrains(true);
-
-    OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
-    auto* defaultCamera = mSceneMgr->getCamera("Camera");
-    unsigned long generator = 0;
-
-    for (auto& pPageElement : XMLNode.children("terrain"))
-    {
-        processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup.get(), generator);
-        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup.get(), generator);
-        generator++;
-    }
-
 
     terrainGroup->freeTemporaryResources();
 
@@ -888,21 +754,18 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     bool hasNormals = getAttribBool(XMLNode, "hasNormals", true);
     Vector3 normal = parseVector3(XMLNode.child("normal"), Ogre::Vector3::UNIT_Y);
     Vector3 up = parseVector3(XMLNode.child("upVector"), Ogre::Vector3::UNIT_Z);
-    Ogre::uint32 flag = getAttribUInt(XMLNode, "flag", 0xFFF);
 
     Plane plane(normal, distance);
-    MeshPtr res = MeshManager::getSingletonPtr()->createPlane(name, m_sGroupName, plane, width, height, xSegments,
+    MeshPtr res =
+        MeshManager::getSingletonPtr()->createPlane(name + "mesh", m_sGroupName, plane, width, height, xSegments,
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
-    Entity* ent = mSceneMgr->createEntity(name, res);
-    const auto &mat = MaterialManager::getSingleton().getByName(material);
-    ent->setMaterialName(material);
-    ent->setVisibilityFlags(flag);
-    ent->setCastShadows(false);
-    pParent->attachObject(ent);
+    Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
 
-    // Process userDataReference (?)
-    if (auto pElement = XMLNode.child("userData"))
-        processUserData(pElement, ent->getUserObjectBindings());
+    ent->setCastShadows(false);
+    ent->setRenderQueueGroup(Ogre::RENDER_QUEUE_TRANSPARENTS);
+    ent->setMaterialName(material);
+
+    pParent->attachObject(ent);
 }
 
 void DotSceneLoaderB::processFog(pugi::xml_node& XMLNode)
@@ -1229,6 +1092,9 @@ void DotSceneLoaderB::writeNode(pugi::xml_node& parentXML, const SceneNode* n)
                 break;
             case Light::LT_SPOTLIGHT:
                 light.append_attribute("type") = "spot";
+                break;
+            case Light::LT_RECTLIGHT:
+                light.append_attribute("type") = "rect";
                 break;
             }
 
