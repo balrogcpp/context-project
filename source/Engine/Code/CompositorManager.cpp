@@ -50,7 +50,7 @@ class RenderShadowsPass : public Ogre::CustomCompositionPass {
   }
 };
 
-CompositorManager::CompositorManager() : fixedViewportSize(false), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Glow") {}
+CompositorManager::CompositorManager() : fixedViewportSize(false) {}
 
 CompositorManager::~CompositorManager() = default;
 
@@ -102,10 +102,13 @@ void CompositorManager::OnUpdate(float time) {
   }
 
   auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
-  auto FpParams = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-  if (FpParams) fpParams = FpParams;
-  FpParams->setIgnoreMissingParams(true);
-  needsUpdate = true;
+  auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+  fp->setIgnoreMissingParams(true);
+  Ogre::Real hosekParamsArray[10 * 3];
+  for (int i = 0; i < 10; i++)
+    for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
+  fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
+  needsUpdate = false;
 }
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
@@ -198,14 +201,6 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
 void CompositorManager::EnableCompositor(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
   compositorManager->setCompositorEnabled(viewport, name, enable);
-}
-
-void CompositorManager::AddReflectionPlane(Ogre::Plane plane) {
-  //  this->plane = plane;
-  //  AddCompositor("Fresnel", true, 0);
-  //  auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-  //  rt1->addListener(this);
-  //  mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
 }
 
 bool CompositorManager::IsCompositorInChain(const std::string &name) {
@@ -433,13 +428,14 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   const auto &fp = pass->getFragmentProgramParameters();
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
-  {
-    Ogre::Real hosekParamsArray[10 * 3];
-    for (int i = 0; i < 10; i++)
-      for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
-    fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
-    needsUpdate = false;
-  }
+
+  //  if (pass->getParent()->getParent()->getName() == "SkyBox") {
+  //    Ogre::Real hosekParamsArray[10 * 3];
+  //    for (int i = 0; i < 10; i++)
+  //      for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
+  //    fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
+  //    needsUpdate = false;
+  //  }
 
   if (!pass->getLightingEnabled() || pass->getFogOverride()) return;
 

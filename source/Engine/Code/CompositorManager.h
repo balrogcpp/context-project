@@ -19,7 +19,6 @@ class CompositorManager : public System<CompositorManager>,
 
   void AddCompositor(const std::string& name, bool enable, int position = -1);
   void EnableCompositor(const std::string& name, bool enable);
-  void AddReflectionPlane(Ogre::Plane plane);
 
   void SetFixedViewportSize(int x, int y);
   void SetFixedViewport(bool fixed);
@@ -60,8 +59,6 @@ class CompositorManager : public System<CompositorManager>,
   void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                 const Ogre::LightList *pLightList, bool suppressRenderStateChanges) override;
 
-  std::string MRT_COMPOSITOR;
-  std::string BLOOM_COMPOSITOR;
   Ogre::Plane plane;
   bool fixedViewportSize;
   std::queue<std::pair<std::string, bool>> compositorList;
@@ -69,7 +66,6 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Matrix4 viewProjPrev;
 
   bool needsUpdate;
-  Ogre::GpuProgramParametersSharedPtr fpParams;
   std::array<Ogre::Vector3, 10> hosekParams;
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
