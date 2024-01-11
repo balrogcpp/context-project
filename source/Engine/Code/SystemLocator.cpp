@@ -14,6 +14,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace gge {
+
 SystemLocator::SystemLocator() : lockFps(true), targetFps(60) {
 #ifdef MOBILE
   lockFps = true;
@@ -166,4 +167,5 @@ void SystemLocator::FrameControl() {
 
   t1 = chrono::steady_clock::now();
 }
+
 }  // namespace gge

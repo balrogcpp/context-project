@@ -13,6 +13,7 @@ ImFont *font = nullptr;
 }  // namespace
 
 namespace gge {
+
 OverlayManager::OverlayManager() {}
 
 OverlayManager::~OverlayManager() {}
@@ -331,4 +332,5 @@ void OverlayManager::OnUpdate(float time) {
 }
 
 void OverlayManager::OnClean() {}
+
 }  // namespace gge

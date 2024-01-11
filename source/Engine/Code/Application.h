@@ -7,6 +7,7 @@
 #include "SystemLocator.h"
 
 namespace gge {
+
 class Application final : public WindowListener, public DynamicSingleton<Application> {
  public:
   /// Constructors
@@ -32,4 +33,5 @@ class Application final : public WindowListener, public DynamicSingleton<Applica
   bool exiting;
   bool sleep;
 };
+
 }  // namespace gge

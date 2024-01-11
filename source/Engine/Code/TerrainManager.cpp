@@ -92,6 +92,7 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
 }  // namespace Ogre
 
 namespace gge {
+
 TerrainManager::TerrainManager() {}
 TerrainManager::~TerrainManager() {
   OnClean();
@@ -145,4 +146,5 @@ void TerrainManager::OnClean() {
     ogreTerrainGroup.reset();
   }
 }
+
 }  // namespace gge

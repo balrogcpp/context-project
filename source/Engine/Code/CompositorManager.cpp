@@ -10,6 +10,7 @@ using namespace Ogre;
 
 namespace gge {
 
+
 namespace {
 // Useful shader functions
 inline float Deg2Rad(float deg) { return deg * (1.0f / 180.0f) * Ogre::Math::PI; }
@@ -169,8 +170,6 @@ void CompositorManager::OnSetUp() {
   //    rt1->addListener(this);
   //    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
   //   AddCompositor("Fresnel", true);
-  //  sceneManager->getRenderQueue()->setRenderQueueMode( 0, RenderQueue::V1_FAST );
-  //  sceneManager->getRenderQueue()->setRenderQueueMode( 1, RenderQueue::FAST );
   AddCompositor("MRT", true);
   // AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
@@ -491,5 +490,6 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     }
   }
 }
+
 
 }  // namespace gge

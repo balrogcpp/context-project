@@ -5,6 +5,7 @@
 #include <Terrain/OgreTerrainGroup.h>
 
 namespace gge {
+
 class TerrainManager final : public System<TerrainManager> {
  public:
   TerrainManager();
@@ -26,4 +27,5 @@ class TerrainManager final : public System<TerrainManager> {
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;
 };
+
 }  // namespace gge

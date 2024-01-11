@@ -2,4 +2,5 @@
 
 #pragma once
 
-namespace gge {}
+namespace gge {
+}

@@ -62,7 +62,7 @@ const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
     normalize(vec3(-1.0, -1.0, -1.0)));
 
 in highp vec2 vUV0;
-in vec3 vRay;
+in highp vec3 vRay;
 void main()
 {
     // random normal lookup from a texture and expand to [-1..1]

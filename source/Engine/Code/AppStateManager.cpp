@@ -6,6 +6,7 @@
 #include <Ogre.h>
 
 namespace gge {
+
 AppStateManager::AppStateManager() {}
 AppStateManager::~AppStateManager() {}
 void AppStateManager::Init() {
@@ -76,4 +77,5 @@ bool AppStateManager::frameEnded(const Ogre::FrameEvent &evt) {
   activeAppState->AfterFrame(evt.timeSinceLastFrame);
   return true;
 };
+
 }  // namespace gge

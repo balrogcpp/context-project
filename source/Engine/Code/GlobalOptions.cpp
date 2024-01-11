@@ -3,4 +3,5 @@
 #include "pch.h"
 #include "GlobalOptions.h"
 
-namespace gge {}
+namespace gge {
+}

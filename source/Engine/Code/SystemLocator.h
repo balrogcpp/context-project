@@ -14,6 +14,7 @@
 #include <OgreFrameListener.h>
 
 namespace gge {
+
 class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, WindowListener {
  public:
   SystemLocator();
@@ -64,4 +65,5 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   std::unique_ptr<ForestsManager> forests;
   std::unique_ptr<OverlayManager> overlay;
 };
+
 }  // namespace gge

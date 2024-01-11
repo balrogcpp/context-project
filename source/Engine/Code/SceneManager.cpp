@@ -8,6 +8,7 @@
 using namespace std;
 
 namespace gge {
+
 SceneManager::SceneManager() {}
 SceneManager::~SceneManager() {}
 
@@ -185,5 +186,6 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
     ScanNode(dynamic_cast<Ogre::SceneNode *>(it));
   }
 }
+
 
 }  // namespace gge

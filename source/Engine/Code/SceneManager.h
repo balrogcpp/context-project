@@ -6,6 +6,7 @@
 #include <Ogre.h>
 
 namespace gge {
+
 class SceneManager final : public System<SceneManager> {
  public:
   SceneManager();
@@ -25,10 +26,10 @@ class SceneManager final : public System<SceneManager> {
 
  protected:
   std::unique_ptr<SinbadCharacterController> sinbad;
-  std::vector<Ogre::Entity *> entityList;
 
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;
 };
+
 }  // namespace gge

@@ -8,6 +8,7 @@
 #include <OgreImGuiOverlay.h>
 
 namespace gge {
+
 class VideoManager final : public WindowListener, public System<VideoManager> {
  protected:
   class ShaderResolver;
@@ -84,4 +85,5 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   Ogre::Camera* camera = nullptr;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
 };
+
 }  // namespace gge

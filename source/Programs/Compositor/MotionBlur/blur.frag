@@ -16,7 +16,7 @@ uniform float FPS;
 #endif
 
 in highp vec2 vUV0;
-in vec3 vRay;
+in highp vec3 vRay;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;

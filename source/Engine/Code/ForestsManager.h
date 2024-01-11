@@ -9,6 +9,7 @@ class PagedGeometry;
 }
 
 namespace gge {
+
 class ForestsManager final : public System<ForestsManager> {
  public:
   ForestsManager();
@@ -29,4 +30,5 @@ class ForestsManager final : public System<ForestsManager> {
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;
 };
+
 }  // namespace gge

@@ -10,6 +10,7 @@ class OgreOggSoundManager;
 }  // namespace OgreOggSound
 
 namespace gge {
+
 class AudioManager final : public System<AudioManager> {
  public:
   AudioManager();
@@ -39,4 +40,5 @@ class AudioManager final : public System<AudioManager> {
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;
 };
+
 }  // namespace gge

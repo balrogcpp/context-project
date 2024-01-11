@@ -7,6 +7,7 @@
 #include <queue>
 
 namespace gge {
+
 class CompositorManager : public System<CompositorManager>,
                           public Ogre::CompositorInstance::Listener,
                           public Ogre::CompositorLogic,
@@ -77,4 +78,5 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Vector4 pssmPointsPrev;
   bool pssmChanged;
 };
+
 }  // namespace gge

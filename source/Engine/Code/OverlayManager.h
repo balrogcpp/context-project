@@ -5,6 +5,7 @@
 #include "SDLListener.h"
 
 namespace gge {
+
 class OverlayManager final : public DeviceListener, public WindowListener, public System<OverlayManager> {
  public:
   OverlayManager();
@@ -23,4 +24,5 @@ class OverlayManager final : public DeviceListener, public WindowListener, publi
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;
 };
+
 }  // namespace gge

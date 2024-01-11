@@ -18,6 +18,7 @@ inline void ParseSDLError(bool result, const char *message = "") {
 }  // namespace
 
 namespace gge {
+
 Window::Window()
     : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI),
       vsyncInt(1),
@@ -419,4 +420,5 @@ void Window::OnSizeChanged(int x, int y, uint32_t id) {
   }
 #endif
 }
+
 }  // namespace gge

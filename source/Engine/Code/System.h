@@ -5,6 +5,7 @@
 #include <OgreFrameListener.h>
 
 namespace gge {
+
 /// @class ComponentI
 /// Component interface. Components are
 class SystemI {
@@ -37,4 +38,5 @@ T& GetComponent() {
   static T& ref = *System<T>::GetInstancePtr();
   return ref;
 }
+
 }  // namespace gge

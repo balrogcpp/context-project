@@ -7,6 +7,7 @@
 using namespace std;
 
 namespace gge {
+
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *camera) : baseAnimID(ANIM_NONE), topAnimID(ANIM_NONE) {
   SetupCamera(camera);
   SetupBody();
@@ -428,4 +429,5 @@ void SinbadCharacterController::SetTopAnimation(AnimID ID, bool reset) {
   // else
   //  GetAudio().StopSound("walk_grass");
 }
+
 }  // namespace gge

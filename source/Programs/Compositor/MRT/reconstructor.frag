@@ -27,7 +27,7 @@ vec2 RestoreTexCoord(vec3 viewPos, mat4 invViewMatrix, mat4 viewProjPrev)
 }
 
 in highp vec2 vUV0;
-in vec3 vRay;
+in highp vec3 vRay;
 void main()
 {
     // pixel was rendered this frame = use it

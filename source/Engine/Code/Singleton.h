@@ -4,6 +4,7 @@
 #include "Assertion.h"
 
 namespace gge {
+
 /// Deletes copy constructor
 class NoCopy {
  public:
@@ -64,4 +65,5 @@ class LazySingleton : public DynamicSingleton<T> {
     return t;
   }
 };
+
 }  // namespace gge

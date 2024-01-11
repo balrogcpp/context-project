@@ -9,6 +9,7 @@
 #include <memory>
 
 namespace gge {
+
 class AppState : public DeviceListener, public WindowListener {
  public:
   virtual std::string GetName() = 0;
@@ -55,4 +56,5 @@ class AppStateManager final : public Ogre::FrameListener, public System<AppState
   std::shared_ptr<AppState> activeAppState;
   std::map<std::string, std::shared_ptr<AppState>> appStateList;
 };
+
 }  // namespace gge

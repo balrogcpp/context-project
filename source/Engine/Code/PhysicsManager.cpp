@@ -36,6 +36,7 @@ void OnTick(btDynamicsWorld *world, btScalar timeStep) {
 }  // namespace
 
 namespace gge {
+
 PhysicsManager::PhysicsManager() : debugView(false), subSteps(4), fixedTimeStep(1.0 / 60.0) {}
 PhysicsManager::~PhysicsManager() {}
 
@@ -170,4 +171,5 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity) {
 
   dynamicWorld->addRigidBody(mass, entity, typeList[proxy], nullptr);
 }
+
 }  // namespace gge

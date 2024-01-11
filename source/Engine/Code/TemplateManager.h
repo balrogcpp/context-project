@@ -5,6 +5,7 @@
 
 namespace gge {
 
+
 class TemplateManager final : public System<TemplateManager> {
  public:
   TemplateManager();
@@ -20,5 +21,6 @@ class TemplateManager final : public System<TemplateManager> {
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;
 };
+
 
 }  // namespace gge

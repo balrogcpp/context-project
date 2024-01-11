@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace gge {
+
 class DeviceListener {
  public:
   /// Callback on keyboard key down
@@ -247,4 +248,5 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     }
   }
 };
+
 }  // namespace gge

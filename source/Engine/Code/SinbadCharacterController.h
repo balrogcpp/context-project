@@ -14,6 +14,7 @@
 #define GRAVITY SCALE * 90.0f     // gravity in downward units per squared second
 
 namespace gge {
+
 class SinbadCharacterController : public DeviceListener {
  public:
   // all the animations our character has, and a null ID
@@ -76,4 +77,5 @@ class SinbadCharacterController : public DeviceListener {
   float verticalVelocity;       // for jumping
   float timer;                  // general timer to see how long animations have been playing
 };
+
 }  // namespace gge

@@ -5,6 +5,7 @@
 #include "AppStateManager.h"
 
 namespace gge {
+
 class Game final : public AppState {
  public:
   std::string GetName() override { return "Game"; }
@@ -12,4 +13,5 @@ class Game final : public AppState {
   void OnUpdate(float time) override;
   void OnClean() override ;
 };
+
 }  // namespace gge

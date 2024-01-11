@@ -82,7 +82,7 @@ float Fresnel(vec3 direction, vec3 normal)
 }
 
 in highp vec2 vUV0;
-in vec3 vRay;
+in highp vec3 vRay;
 void main()
 {
     vec2 gloss = texture2D(GlossTex, vUV0).rg;

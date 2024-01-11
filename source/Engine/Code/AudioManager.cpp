@@ -9,6 +9,7 @@ using namespace std;
 
 namespace gge {
 
+
 AudioManager::AudioManager() {}
 
 AudioManager::~AudioManager() { audioRoot->shutdown(); }
@@ -93,4 +94,5 @@ void AudioManager::SetSoundVolume(const std::string &name, float volume) {
   OgreAssert(sound, "[AudioManager] Sound not found");
   sound->setVolume(volume);
 }
+
 }  // namespace gge

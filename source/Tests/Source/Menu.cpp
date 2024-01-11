@@ -7,6 +7,7 @@
 using namespace std;
 
 namespace gge {
+
 void Menu::OnClean() { GetComponent<SystemLocator>().OnClean(); }
 
 void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {}
@@ -18,4 +19,5 @@ void Menu::OnSetUp() {
 void Menu::OnUpdate(float time) {}
 
 void Menu::OnSizeChanged(int x, int y, uint32_t id) {}
+
 }  // namespace gge
