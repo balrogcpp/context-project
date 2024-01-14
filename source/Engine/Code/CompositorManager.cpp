@@ -109,7 +109,6 @@ void CompositorManager::OnUpdate(float time) {
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
   fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
-  needsUpdate = false;
 }
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }

@@ -66,7 +66,6 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Matrix4 viewProj;
   Ogre::Matrix4 viewProjPrev;
 
-  bool needsUpdate;
   std::array<Ogre::Vector3, 10> hosekParams;
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
