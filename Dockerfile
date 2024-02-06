@@ -1,5 +1,6 @@
 FROM balrogcpp/clang_cross:latest
 
+
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/var/build
 ARG DEPS_DIR=${CONTEXT_HOME}/contrib
@@ -13,7 +14,7 @@ RUN git config --global http.postBuffer 1048576000 \
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.28.1
+ARG CMAKE_VERSION=3.28.3
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=4.2.2

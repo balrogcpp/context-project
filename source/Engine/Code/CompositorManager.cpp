@@ -10,7 +10,6 @@ using namespace Ogre;
 
 namespace gge {
 
-
 namespace {
 // Useful shader functions
 inline float Deg2Rad(float deg) { return deg * (1.0f / 180.0f) * Ogre::Math::PI; }
@@ -20,7 +19,7 @@ inline float Clamp(float val, float min, float max) {
   val = val < min ? min : val > max ? max : val;
   return val;
 }
-inline static float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) {
+inline float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) {
   return std::acos(std::max(dir0.dotProduct(dir1), 0.00001f));
 }
 inline float Mix(float x, float y, float s) { return x + (y - x) * s; }
@@ -489,6 +488,5 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     }
   }
 }
-
 
 }  // namespace gge

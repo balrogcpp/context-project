@@ -1,27 +1,5 @@
 // created by Andrey Vasiliev
 
-compositor ShadowAtlas
-{
-    technique
-    {
-        compositor_logic DeferredLogic
-        texture_ref shadowmap MRT shadowmap
-
-        target shadowmap
-        {
-            pass render_quad
-            {
-                material ShadowMap
-            }
-        }
-
-        target_output
-        {
-            input previous
-        }
-    }
-}
-
 compositor MRT
 {
     technique
@@ -64,7 +42,6 @@ compositor RTT
 {
     technique
     {
-        compositor_logic DeferredLogic
         texture rt target_width target_height PF_FLOAT16_RGB no_fsaa
 
         target rt
@@ -80,6 +57,28 @@ compositor RTT
                 material Copy
                 input 0 rt
             }
+        }
+    }
+}
+
+compositor ShadowAtlas
+{
+    technique
+    {
+        compositor_logic DeferredLogic
+        texture_ref shadowmap MRT shadowmap
+
+        target shadowmap
+        {
+            pass render_quad
+            {
+                material ShadowMap
+            }
+        }
+
+        target_output
+        {
+            input previous
         }
     }
 }

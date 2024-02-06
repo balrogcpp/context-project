@@ -15,8 +15,8 @@ diff --git a/src/joystick/iphoneos/SDL_mfijoystick.m b/src/joystick/iphoneos/SDL
 index 2ffdab5f..6d3c7699 100644
 --- a/src/joystick/iphoneos/SDL_mfijoystick.m
 +++ b/src/joystick/iphoneos/SDL_mfijoystick.m
-@@ -640,7 +640,7 @@ IOS_JoystickInit(void)
- {
+@@ -818,7 +818,7 @@ IOS_JoystickInit(void)
+
  #if defined(__MACOSX__)
  #if _SDL_HAS_BUILTIN(__builtin_available)
 -    if (@available(macOS 10.16, *)) {
