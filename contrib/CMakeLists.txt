@@ -341,7 +341,7 @@ externalproject_add(Target_zlib
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
         GIT_REPOSITORY https://github.com/madler/zlib.git
-        GIT_TAG v1.3
+        GIT_TAG v1.3.1
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
