@@ -12,7 +12,7 @@ include(DateTime)
 
 # assets
 set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
-set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
+set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Android/assets)
 file(MAKE_DIRECTORY ${ASSETS_DIR_ANDROID})
 
 if (RELEASE)
@@ -33,7 +33,7 @@ endif ()
 
 # deps
 if (ANDROID AND ANY_NOT_FOUND)
-    add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
+    add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Android/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy Contrib)
     message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib). Exiting...")
     return()
@@ -152,11 +152,11 @@ if (RELEASE)
 endif ()
 
 
-# android
+# Android
 set(ANDROID_HOME $ENV{ANDROID_HOME})
 set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK_ROOT})
 if ((IS_DIRECTORY ${ANDROID_HOME}) OR (IS_DIRECTORY ${ANDROID_SDK_ROOT}))
-    message(STATUS "Android SDK found. Adding android build targets")
+    message(STATUS "Android SDK found. Adding Android build targets")
 
     if (UNIX)
         find_program(SH sh)
@@ -177,11 +177,11 @@ if ((IS_DIRECTORY ${ANDROID_HOME}) OR (IS_DIRECTORY ${ANDROID_SDK_ROOT}))
         set(GRADLE_BUILD_TYPE "Debug")
     endif ()
     add_custom_target(GradleContrib COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
-            COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets ${ARTIFACT_DIR}/tests-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
+            COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle Android/.cxx Android/build Android/assets ${ARTIFACT_DIR}/tests-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
     add_custom_target(GradleBuild COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=1 ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE})
-    add_custom_target(GradleClean COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle android/.cxx android/build android/assets ${ARTIFACT_DIR}/tests-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
+    add_custom_target(GradleClean COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle Android/.cxx Android/build Android/assets ${ARTIFACT_DIR}/tests-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
 else ()
-    message(STATUS "Android SDK not found. Skipping android build targets")
+    message(STATUS "Android SDK not found. Skipping Android build targets")
 endif ()
 
 
