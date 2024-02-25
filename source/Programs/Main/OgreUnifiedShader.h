@@ -124,17 +124,17 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 #define vec3_splat vec3
 #define vec4_splat vec4
 
-mat4 mtxFromRows(vec4 a, vec4 b, vec4 c, vec4 d)
+mat4 mtxFromRows(const vec4 a, const vec4 b, const vec4 c, const vec4 d)
 {
     return transpose(mat4(a, b, c, d));
 }
 
-mat3 mtxFromRows(vec3 a, vec3 b, vec3 c)
+mat3 mtxFromRows(const vec3 a, const vec3 b, const vec3 c)
 {
     return transpose(mat3(a, b, c));
 }
 
-mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
+mat3 mtxFromCols(const vec3 a, const vec3 b, const vec3 c)
 {
     return mat3(a, b, c);
 }

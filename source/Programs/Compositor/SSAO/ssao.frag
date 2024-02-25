@@ -8,7 +8,7 @@ uniform sampler2D NormalTex;
 uniform mat4 ProjMatrix;
 uniform float ClipDistance;
 
-vec3 hash(vec3 a)
+vec3 hash(const vec3 a)
 {
     vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
