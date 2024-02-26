@@ -825,6 +825,9 @@ void VideoManager::InitOgreRTSS() {
 
   // re-generate shaders to include new SRSs
   shaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
+
+  // Add listener
+  //Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
 }
 
 void VideoManager::OnSetUp() {
