@@ -505,7 +505,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 };
 
 void VideoManager::InitOgreSceneManager() {
-  sceneManager->setFog(Ogre::FOG_EXP, Ogre::ColourValue(0.5, 0.6 ,0.7), 0.003);
+  sceneManager->setFog(Ogre::FOG_EXP, Ogre::ColourValue(0.5, 0.6, 0.7), 0.003);
   sceneManager->setSkyBox(true, "SkyBox", 500, true);
   sceneManager->setAmbientLight(Ogre::ColourValue::White * 0.32);
   shadowEnabled = !RenderSystemIsGLES2();
@@ -632,7 +632,7 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   static bool ResolveMaterial(const std::string &name, const std::string &group = Ogre::RGN_AUTODETECT) {
     static auto &shaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
     static auto &ogreMaterialManager = Ogre::MaterialManager::getSingleton();
-    auto material = ogreMaterialManager.getByName(name);
+    auto material = ogreMaterialManager.getByName(name, group);
     const std::string scheme = Ogre::MSN_SHADERGEN;
 
     if (!material) {
@@ -735,6 +735,7 @@ void VideoManager::ShowOgreProfiler(bool show) {
 #if OGRE_PROFILING == 1
   if (show) {
     Ogre::FontManager::getSingleton().load("SdkTrays/Value", Ogre::RGN_INTERNAL);
+    Ogre::MaterialManager::getSingleton().load("Fonts/SdkTrays/Value", Ogre::RGN_INTERNAL);
     ShaderResolver::ResolveMaterial("Fonts/SdkTrays/Value", Ogre::RGN_INTERNAL);
   }
   Ogre::Profiler::getSingleton().setEnabled(show);
@@ -827,7 +828,7 @@ void VideoManager::InitOgreRTSS() {
   shaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
 
   // Add listener
-  //Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
+  // Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
 }
 
 void VideoManager::OnSetUp() {

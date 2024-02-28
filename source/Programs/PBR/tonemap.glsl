@@ -43,7 +43,7 @@ vec3 uncharted2(const vec3 color)
 // Unreal 3, Documentation: "Color Grading"
 // Adapted to be close to Tonemap_ACES, with similar range
 // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-highp vec3 unreal(const highp vec3 x)
+vec3 unreal(const highp vec3 x)
 {
     return x / (x + 0.155) * 1.019;
 }
