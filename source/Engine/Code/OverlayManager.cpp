@@ -2,8 +2,8 @@
 
 #include "pch.h"
 #include "OverlayManager.h"
-#include "SystemLocator.h"
 #include "ImStyles.h"
+#include "SystemLocator.h"
 
 using namespace std;
 
@@ -78,9 +78,9 @@ void OverlayManager::OnSetUp() {
 #endif
   float dpi = GetComponent<VideoManager>().GetWindow().GetDisplayDPI();
 
-  ImGuiIO &io = ImGui::GetIO();
+  static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
-  // ImGuiB::SetupImGuiStyle_Unreal();
+  //  SetupImGuiStyle_Unreal();
   SetupImGuiStyle_SpectrumDark();
 
   float diag0 = 100000.0;
@@ -99,7 +99,7 @@ void OverlayManager::OnSetUp() {
 }
 
 void OverlayManager::OnUpdate(float time) {
-  ImGuiIO &io = ImGui::GetIO();
+  static ImGuiIO &io = ImGui::GetIO();
   static ImGuiStyle &style = ImGui::GetStyle();
   static auto *viewport = ImGui::GetMainViewport();
   static VideoManager &manager = GetComponent<VideoManager>();
@@ -155,12 +155,27 @@ void OverlayManager::OnUpdate(float time) {
 
 #ifndef ANDROID
   if (ImGui::Checkbox("Fullscreen", &flags[0])) {
+#ifndef WIN32
     window.SetFullscreen(flags[0]);
+#else
+    window.SetBordered(!flags[0]);
+    window.SetResizable(true);
+    std::this_thread::sleep_for(100ms);
+
+    if (flags[0]) {
+      window.SetMaximized();
+      window.SetRefresh();
+    } else {
+      window.SetRestored();
+      window.SetPrevSize();
+      window.SetPositionCentered();
+    }
+#endif
   }
 
-  if (ImGui::Checkbox("Resizable", &flags[1])) {
-    window.SetResizable(flags[1]);
-  }
+  //  if (ImGui::Checkbox("Resizable", &flags[1])) {
+  //    window.SetResizable(flags[1]);
+  //  }
 
   if (ImGui::Checkbox("Maximize", &flags[2])) {
     window.SetResizable(true);
@@ -178,20 +193,22 @@ void OverlayManager::OnUpdate(float time) {
     window.SetResizable(flags[1]);
   }
 
-  if (ImGui::Checkbox("Hide border", &flags[4])) {
-    window.SetBordered(!flags[4]);
-  }
+  //  if (ImGui::Checkbox("Hide border", &flags[4])) {
+  //    window.SetBordered(!flags[4]);
+  //  }
 
   if (ImGui::Checkbox("Enable shadows", &flags[7])) {
     manager.EnableShadows(flags[7]);
   }
 
+#if OGRE_PROFILING == 1
   if (ImGui::Checkbox("Enable profiler", &flags[8])) {
     manager.ShowOgreProfiler(flags[8]);
   }
+#endif
 
-  const char *intervalList = " 0\0 1\0 2\0 3\0 4\0";
-  if (ImGui::Combo("Vsync interval", &combos[0], intervalList)) {
+  constexpr char *INTERVAL_LIST = " 0\0 1\0 2\0 3\0 4\0";
+  if (ImGui::Combo("Vsync interval", &combos[0], INTERVAL_LIST)) {
     if (combos[0] == 0) {
       window.EnableVsync(false);
       combos[1] = 0;
@@ -201,8 +218,8 @@ void OverlayManager::OnUpdate(float time) {
     }
   }
 
-  const char *fpsList = " 0\0 60\0 30\0 20\0 15\0";
-  if (ImGui::Combo("Lock FPS", &combos[1], fpsList)) {
+  constexpr char *FPS_LIST = " 0\0 60\0 30\0 20\0 15\0";
+  if (ImGui::Combo("Lock FPS", &combos[1], FPS_LIST)) {
     switch (combos[1]) {
       case (0): {
         system.EnableFpsLock(false);
@@ -231,16 +248,16 @@ void OverlayManager::OnUpdate(float time) {
     }
   }
 
-  const unsigned short texSizeList[] = {128, 256, 512, 1024, 2048, 4096, 8192};
-  const char *texSizeListStr = " 128\0 256\0 512\0 1024\0 2048\0 4096\0 8192\0";
-  if (ImGui::Combo("Shadow tex size", &combos[2], texSizeListStr)) {
-    manager.SetShadowTexSize(texSizeList[combos[2]]);
+  constexpr unsigned short TEX_SIZE_LIST[] = {128, 256, 512, 1024, 2048, 4096, 8192};
+  constexpr char *TEX_SIZE_LIST_STR = " 128\0 256\0 512\0 1024\0 2048\0 4096\0 8192\0";
+  if (ImGui::Combo("Shadow tex size", &combos[2], TEX_SIZE_LIST_STR)) {
+    manager.SetShadowTexSize(TEX_SIZE_LIST[combos[2]]);
   }
 
-  const unsigned short anisotropyLevel[] = {1, 2, 4, 8, 16};
-  const char *anisotropyLevelStr = " 1\0 2\0 4\0 8\0 16\0";
-  if (ImGui::Combo("Anisotropy lvl", &combos[3], anisotropyLevelStr)) {
-    manager.SetTexFiltering(Ogre::TFO_ANISOTROPIC, anisotropyLevel[combos[4]]);
+  constexpr unsigned short ANI_LVL_LIST[] = {1, 2, 4, 8, 16};
+  constexpr char *ANI_LVL_LIST_STR = " 1\0 2\0 4\0 8\0 16\0";
+  if (ImGui::Combo("Anisotropy lvl", &combos[3], ANI_LVL_LIST_STR)) {
+    manager.SetTexFiltering(Ogre::TFO_ANISOTROPIC, ANI_LVL_LIST[combos[4]]);
   }
 #endif
 
@@ -269,7 +286,7 @@ void OverlayManager::OnUpdate(float time) {
   };
 
   // resolution list
-  constexpr ResolutionItem resList[] = {
+  constexpr ResolutionItem RES_LIST[] = {
       {"640x360", 640, 360},     {"800x600", 800, 600},     {"1024x768", 1024, 768},   {"1280x720", 1280, 720},   {"1280x800", 1280, 800},
       {"1280x1024", 1280, 1024}, {"1360x768", 1360, 768},   {"1366x768", 1366, 768},   {"1440x900", 1440, 900},   {"1536x864", 1536, 864},
       {"1600x900", 1600, 900},   {"1680x1050", 1680, 1050}, {"1920x1080", 1920, 1080}, {"1920x1200", 1920, 1200}, {"2048x1152", 2048, 1152},
@@ -283,7 +300,7 @@ void OverlayManager::OnUpdate(float time) {
   int resListSize = 0;
   std::string resStr = std::string("-") + '\0';
   resStr += std::to_string(sizeX) + "x" + std::to_string(sizeY) + " (native)" + '\0';
-  for (auto it = rbegin(resList); it != rend(resList); ++it) {
+  for (auto it = rbegin(RES_LIST); it != rend(RES_LIST); ++it) {
     if (sizeX > (*it).x && sizeY > (*it).y) {
       resStr += (*it).item;
       resStr += '\0';
@@ -299,8 +316,8 @@ void OverlayManager::OnUpdate(float time) {
         x = sizeX;
         y = sizeY;
       } else {
-        x = resList[resListSize - j - 1].x;
-        y = resList[resListSize - j - 1].y;
+        x = RES_LIST[resListSize - j - 1].x;
+        y = RES_LIST[resListSize - j - 1].y;
       }
 
       if (flags[0]) {
