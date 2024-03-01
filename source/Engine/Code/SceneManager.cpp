@@ -187,5 +187,7 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
   }
 }
 
+  Ogre::SceneManager *SceneManager::GetOgreScene() { return sceneManager; }
+
 
 }  // namespace gge

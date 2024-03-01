@@ -19,6 +19,8 @@ class SceneManager final : public System<SceneManager> {
   void ScanEntity(const std::string &name);
   void ScanNode(Ogre::SceneNode *node);
 
+  Ogre::SceneManager *GetOgreScene();
+
   /// System impl
   void OnSetUp() override;
   void OnClean() override;

@@ -207,7 +207,7 @@ void OverlayManager::OnUpdate(float time) {
   }
 #endif
 
-  constexpr char *INTERVAL_LIST = " 0\0 1\0 2\0 3\0 4\0";
+  constexpr const char *INTERVAL_LIST = " 0\0 1\0 2\0 3\0 4\0";
   if (ImGui::Combo("Vsync interval", &combos[0], INTERVAL_LIST)) {
     if (combos[0] == 0) {
       window.EnableVsync(false);
@@ -218,7 +218,7 @@ void OverlayManager::OnUpdate(float time) {
     }
   }
 
-  constexpr char *FPS_LIST = " 0\0 60\0 30\0 20\0 15\0";
+  constexpr const char *FPS_LIST = " 0\0 60\0 30\0 20\0 15\0";
   if (ImGui::Combo("Lock FPS", &combos[1], FPS_LIST)) {
     switch (combos[1]) {
       case (0): {
@@ -249,13 +249,13 @@ void OverlayManager::OnUpdate(float time) {
   }
 
   constexpr unsigned short TEX_SIZE_LIST[] = {128, 256, 512, 1024, 2048, 4096, 8192};
-  constexpr char *TEX_SIZE_LIST_STR = " 128\0 256\0 512\0 1024\0 2048\0 4096\0 8192\0";
+  const char *TEX_SIZE_LIST_STR = " 128\0 256\0 512\0 1024\0 2048\0 4096\0 8192\0";
   if (ImGui::Combo("Shadow tex size", &combos[2], TEX_SIZE_LIST_STR)) {
     manager.SetShadowTexSize(TEX_SIZE_LIST[combos[2]]);
   }
 
   constexpr unsigned short ANI_LVL_LIST[] = {1, 2, 4, 8, 16};
-  constexpr char *ANI_LVL_LIST_STR = " 1\0 2\0 4\0 8\0 16\0";
+  const char *ANI_LVL_LIST_STR = " 1\0 2\0 4\0 8\0 16\0";
   if (ImGui::Combo("Anisotropy lvl", &combos[3], ANI_LVL_LIST_STR)) {
     manager.SetTexFiltering(Ogre::TFO_ANISOTROPIC, ANI_LVL_LIST[combos[4]]);
   }

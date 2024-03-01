@@ -13,6 +13,15 @@ void Menu::OnClean() { GetComponent<SystemLocator>().OnClean(); }
 void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {}
 
 void Menu::OnSetUp() {
+  //auto *scene = GetComponent<SceneManager>().GetOgreScene();
+  //auto *lNode = scene->getRootSceneNode()->createChildSceneNode("Sun");
+  //auto *light = scene->createLight("Sun");
+  //light->setType(Ogre::Light::LT_DIRECTIONAL);
+  //lNode->attachObject(light);
+  //light->setPowerScale(2);
+  //light->setCastShadows(true);
+  //lNode->setDirection({40.659888, -40.0, -30.950829});
+  //light->name
   GetComponent<SceneManager>().LoadFromFile("1.scene");
 }
 
