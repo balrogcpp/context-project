@@ -758,6 +758,113 @@ externalproject_add(Target_cpr
 )
 
 
+check_stamp(Target_enet)
+externalproject_add(Target_enet
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_enet
+        GIT_REPOSITORY https://github.com/lsalzman/enet.git
+        GIT_TAG v1.3.17
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+)
+
+
+check_stamp(Target_protobuf)
+externalproject_add(Target_protobuf
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
+        GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+        GIT_TAG v25.3
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DABSL_PROPAGATE_CXX_STD=ON
+        -Dprotobuf_BUILD_TESTS=OFF
+        -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
+        -Dprotobuf_BUILD_PROTOC_BINARIES=ON
+        -Dprotobuf_BUILD_SHARED_LIBS=OFF
+        -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+        -Dprotobuf_WITH_ZLIB=OFF
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+)
+
+
+check_stamp_patch(Target_GameNetworkingSockets gns-1.4.1.patch)
+externalproject_add(Target_GameNetworkingSockets
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        DEPENDS Target_LibreSSL Target_protobuf
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GameNetworkingSockets
+        GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
+        GIT_TAG v1.4.1
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DBUILD_SHARED_LIB=OFF
+        -DBUILD_EXAMPLES=OFF
+        -DBUILD_TESTS=OFF
+        -DBUILD_TOOLS=OFF
+        -DENABLE_ICE=OFF
+        -DUSE_CRYPTO25519=Reference
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+)
+
+
 # list of dependency targets
 add_custom_target(Contrib COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PREFIX_LOCATION})
 if (NOT EMSCRIPTEN)

@@ -1,0 +1,11 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d3d4aa8..f1e88f3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -92,3 +92,6 @@ add_library(enet STATIC
+ if (MINGW)
+     target_link_libraries(enet winmm ws2_32)
+ endif()
++
++install(TARGETS enet)
++install(DIRECTORY ${CMAKE_SOURCE_DIR}/${INCLUDE_FILES_PREFIX} TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
