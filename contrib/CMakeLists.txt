@@ -86,7 +86,7 @@ externalproject_add(Target_SDL2
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.30.0
+        GIT_TAG release-2.30.1
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -505,7 +505,7 @@ externalproject_add(Target_OGRE
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-        GIT_TAG v14.2.0
+        GIT_TAG v14.2.1
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -920,6 +920,7 @@ if (NOT EMSCRIPTEN)
     add_dependencies(Contrib Target_Theora)
 endif ()
 add_dependencies(Contrib Target_cpr)
+#add_dependencies(Contrib Target_GameNetworkingSockets)
 add_dependencies(Contrib Target_sol2)
 add_dependencies(Contrib Target_Vorbis)
 add_dependencies(Contrib Target_Bullet)
