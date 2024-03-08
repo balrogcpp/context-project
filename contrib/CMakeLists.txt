@@ -725,17 +725,18 @@ externalproject_add(Target_LibreSSL
 )
 
 
-check_stamp_patch(Target_cpr cpr-1.10.4.patch)
+check_stamp_patch(Target_cpr cpr-1.10.5.patch)
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         DEPENDS Target_LibreSSL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
-        GIT_TAG 1.10.4
+        GIT_TAG 1.10.5
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -758,11 +759,12 @@ externalproject_add(Target_cpr
 )
 
 
-check_stamp(Target_enet)
+check_stamp_patch(Target_enet enet-1.3.17.patch)
 externalproject_add(Target_enet
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_enet
