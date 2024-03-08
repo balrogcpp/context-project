@@ -1,5 +1,5 @@
-project(lua C)
 cmake_minimum_required(VERSION 2.9)
+project(lua C)
 
 
 # installation directories
