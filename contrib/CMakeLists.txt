@@ -1,7 +1,3 @@
-# cmake min version
-cmake_minimum_required(VERSION 3.18.0)
-
-
 # project
 project(CONTRIB)
 
@@ -943,7 +939,7 @@ externalproject_add(Target_GameNetworkingSockets
         -DBUILD_EXAMPLES=OFF
         -DBUILD_TESTS=OFF
         -DBUILD_TOOLS=OFF
-        -DENABLE_ICE=OFF
+        -DENABLE_ICE=ON
         -DUSE_CRYPTO25519=Reference
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
