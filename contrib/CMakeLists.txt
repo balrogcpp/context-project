@@ -31,6 +31,8 @@ set(DEPS_C_FLAGS ${CMAKE_C_FLAGS})
 set(DEPS_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
 set(DEPS_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
 set(DEPS_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
+list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
+list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
 
 # receives target name and defines STAMP_FILE, UPDATE_PLACEHOLDER and PATCH_PLACEHOLDER commands
@@ -41,7 +43,18 @@ macro(check_stamp TARGET)
     set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
     set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
 
+    if (NOT CMAKE_CROSSCOMPILING)
+        set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(BUILD_PLACEHOLDER)
+        unset(CONFIGURE_PLACEHOLDER)
+        unset(INSTALL_PLACEHOLDER)
+    endif ()
+
     if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
         unset(DOWNLOAD_PLACEHOLDER)
@@ -58,6 +71,16 @@ macro(check_stamp_patch TARGET PATCH)
 
     if (NOT EXISTS ${DEPS_PATCH_LOCATION}/${PATCH})
         message(FATAL_ERROR "Patch file ${PATCH} not found")
+    endif ()
+
+    if (NOT CMAKE_CROSSCOMPILING)
+        set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(BUILD_PLACEHOLDER)
+        unset(CONFIGURE_PLACEHOLDER)
+        unset(INSTALL_PLACEHOLDER)
     endif ()
 
     if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
@@ -82,6 +105,7 @@ externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
@@ -126,6 +150,7 @@ externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Bullet
@@ -184,6 +209,7 @@ externalproject_add(Target_OpenAL
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenAL
@@ -337,6 +363,7 @@ externalproject_add(Target_zlib
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
@@ -476,6 +503,7 @@ externalproject_add(Target_imgui
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
@@ -615,6 +643,7 @@ externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
@@ -692,6 +721,7 @@ externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
@@ -796,9 +826,10 @@ externalproject_add(Target_protoc
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protoc
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
         GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
         GIT_TAG v25.3
         GIT_SHALLOW true
@@ -807,6 +838,9 @@ externalproject_add(Target_protoc
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CONFIGURE_COMMAND ${CONFIGURE_PLACEHOLDER}
+        BUILD_COMMAND ${BUILD_PLACEHOLDER}
+        INSTALL_COMMAND ${INSTALL_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -816,7 +850,7 @@ externalproject_add(Target_protoc
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DCMAKE_CXX_STANDARD=14
+        -DCMAKE_CXX_STANDARD=17
         -DABSL_PROPAGATE_CXX_STD=ON
         -Dprotobuf_BUILD_TESTS=OFF
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
@@ -824,16 +858,17 @@ externalproject_add(Target_protoc
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
         -Dprotobuf_WITH_ZLIB=OFF
+        -Dprotobuf_DISABLE_RTTI=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
 if (NOT CMAKE_CROSSCOMPILING)
-    set(PROTOC_BIN 1)
+    set(PROTOC_BIN ON)
     set(PROTOC_TARGET)
 else ()
-    set(PROTOC_BIN 0)
+    set(PROTOC_BIN OFF)
     set(PROTOC_TARGET Target_protoc)
 endif ()
 check_stamp(Target_protobuf)
@@ -841,7 +876,7 @@ externalproject_add(Target_protobuf
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS ${PROTOC_TARGET}
+        DEPENDS Target_protoc
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
@@ -849,7 +884,7 @@ externalproject_add(Target_protobuf
         GIT_TAG v25.3
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
@@ -863,7 +898,7 @@ externalproject_add(Target_protobuf
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DCMAKE_CXX_STANDARD=14
+        -DCMAKE_CXX_STANDARD=17
         -DABSL_PROPAGATE_CXX_STD=ON
         -Dprotobuf_BUILD_TESTS=OFF
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
@@ -871,6 +906,7 @@ externalproject_add(Target_protobuf
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
         -Dprotobuf_WITH_ZLIB=OFF
+        -Dprotobuf_DISABLE_RTTI=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
