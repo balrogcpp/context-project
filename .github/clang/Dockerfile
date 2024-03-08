@@ -8,10 +8,11 @@ WORKDIR /var/build
 # git zip etc.
 RUN apt-get update \
     && apt-get -y install --no-install-recommends wget curl ca-certificates gnupg2 apt-transport-https \
-    && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
+    && apt-get -y install software-properties-common \
+    && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
     && apt-get update \
     && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
+    && apt-get -y purge software-properties-common \
     && apt-get clean
 
 
@@ -24,7 +25,7 @@ ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=11.0.0
 ARG GCC_VERSION=13.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
-ARG GCC_APT_MAJOR=10
+ARG GCC_APT_MAJOR=11
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
@@ -129,7 +130,7 @@ RUN apt-get update \
 
 
 # clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
-ARG CLANG_MAJOR=17
+ARG CLANG_MAJOR=18
 ARG STDLIB_APT_MAJOR=7
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
@@ -147,16 +148,23 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
 ARG OSXCROSS_GIT_HASH=ff8d100f3f026b4ffbe4ce96d8aac4ce06f1278b
+ARG CMAKE_VERSION=3.28.3
+ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
+    && apt-get -y install --no-install-recommends python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
+    && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+    && export PATH="${CMAKE_HOME}/bin:${PATH}" \
     && apt-get clean \
     && git clone https://github.com/tpoechtrager/osxcross.git \
     && cd osxcross \
     && git checkout ${OSXCROSS_GIT_HASH} \
+    && git apply ../tarballs/osxcross.patch \
     && cp -r ../tarballs . && rm -rf ../tarballs \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
     && rm -rf ../osxcross \
-    && apt-get -y purge cmake python lzma-dev libxml2-dev libssl-dev \
+    && rm -rf ${CMAKE_HOME} \
+    && apt-get -y purge python lzma-dev libxml2-dev libssl-dev libbz2-dev \
     && apt-get -y autoremove
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
