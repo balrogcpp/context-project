@@ -844,9 +844,9 @@ externalproject_add(Target_enet
 
 
 find_package(Protobuf QUIET)
-if (Protobuf_PROTOC_EXECUTABLE)
+if (EXISTS Protobuf_PROTOC_EXECUTABLE)
     execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE} --version OUTPUT_VARIABLE PROTOC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if (${PROTOC_VERSION} STREQUAL "libprotoc 25.3")
+    if (PROTOC_VERSION AND ${PROTOC_VERSION} STREQUAL "libprotoc 25.3")
         set(PROTOC_EXE 1)
     endif ()
 endif ()
