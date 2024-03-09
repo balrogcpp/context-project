@@ -34,7 +34,6 @@ list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
 insert_dependency_static(Bullet)
-mark_as_advanced(BULLET_INCLUDE_DIR)
 insert_dependency_static2(Lua LUA_LIBRARY)
 insert_dependency(sol2)
 insert_dependency2(OpenAL OPENAL_FOUND)
