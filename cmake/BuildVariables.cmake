@@ -10,37 +10,37 @@ include(InsertDependency)
 include(Platform)
 
 
-# check dependencies
+# https://stackoverflow.com/questions/54587052/cmake-on-mac-could-not-find-threads-missing-threads-found
 if (APPLE)
-    # https://stackoverflow.com/questions/54587052/cmake-on-mac-could-not-find-threads-missing-threads-found
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
     set(CMAKE_HAVE_THREADS_LIBRARY 1)
     set(CMAKE_USE_WIN32_THREADS_INIT 0)
     set(CMAKE_USE_PTHREADS_INIT 1)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif ()
-insert_dependency(Threads)
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(X11 QUIET)
-endif ()
-if (GLSL)
-    insert_dependency(OpenGL)
-elseif (GLSLES)
-    insert_dependency(OpenGLES2)
-endif ()
 
 
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
+# check dependencies
+
+if (ANDROID OR IOS OR EMSCRIPTEN)
+    insert_dependency(OpenGLES2)
+else ()
+    insert_dependency(OpenGL)
+endif ()
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_package(X11 REQUIRED)
+endif ()
+insert_dependency(Threads)
 insert_dependency_static(Bullet)
 insert_dependency_static2(Lua LUA_LIBRARY)
-insert_dependency(sol2)
+insert_dependency_static(sol2)
 insert_dependency2(OpenAL OPENAL_FOUND)
 insert_dependency_static(Ogg)
 insert_dependency_static(Vorbis)
 insert_dependency_static(SDL2)
-insert_dependency_static(LibreSSL)
 insert_dependency_static(CURL)
 insert_dependency_static(cpr)
 #insert_dependency_static(Protobuf)
@@ -48,8 +48,6 @@ insert_dependency_static(cpr)
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 insert_dependency_static(OGRE)
-set(ZLIB_USE_STATIC_LIBS ON) # works with cmake >3.24
-find_package_static(ZLIB QUIET)
 
 
 # engine
@@ -96,10 +94,9 @@ if (cpr_FOUND)
     list(APPEND ENGINE_LIBRARIES ${cpr_LIBRARY})
     list(APPEND ENGINE_INCLUDE_DIRS ${cpr_INCLUDE_DIR})
 endif ()
+if (CURL_FOUND)
+    list(APPEND ENGINE_LIBRARIES CURL::libcurl)
+endif ()
 if (GameNetworkingSockets_FOUND)
     list(APPEND ENGINE_LIBRARIES GameNetworkingSockets::static)
-endif ()
-if (LIBRESSL_FOUND)
-    list(APPEND ENGINE_LIBRARIES ${LIBRESSL_LIBRARIES})
-    list(APPEND ENGINE_INCLUDE_DIRS ${LIBRESSL_INCLUDE_DIR})
 endif ()

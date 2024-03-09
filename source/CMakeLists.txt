@@ -1,7 +1,3 @@
-# project
-project(COMPILE)
-
-
 # macro insert_dependency and c++ flags, includes and libraries
 include(CppFlags)
 include(Platform)

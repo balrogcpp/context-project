@@ -1,7 +1,3 @@
-# project
-project(CONTRIB)
-
-
 # externalproject_add and c++ flags
 include(ExternalProject)
 include(CppFlags)
