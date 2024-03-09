@@ -28,6 +28,13 @@ RUN cd /tmp \
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
+#protobuf
+ARG PROTOC_VERSION=25.3
+RUN cd /tmp \
+    && wget -q https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip \
+    && unzip -q -p /tmp/protoc-${PROTOC_VERSION}-linux-x86_64.zip bin/protoc > /usr/local/bin/protoc && rm -rf /tmp/protoc-${PROTOC_VERSION}-linux-x86_64.zip \
+    && chmod +x /usr/local/bin/protoc
+
 COPY ./source ./source
 COPY ./contrib ./contrib
 COPY ./CMakeLists.txt ./CMakeLists.txt

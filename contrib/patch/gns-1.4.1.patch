@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 90899a4..4f91d8e 100644
+index 90899a4..f896270 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -116,7 +116,7 @@ if (USE_CRYPTO STREQUAL "OpenSSL")
@@ -11,7 +11,16 @@ index 90899a4..4f91d8e 100644
  		endif()
  	cmake_pop_check_state()
  	cmake_push_check_state()
-@@ -202,7 +202,7 @@ function(set_target_common_gns_properties TGT)
+@@ -159,6 +159,8 @@ function(set_target_common_gns_properties TGT)
+ 
+ 	if(CMAKE_SYSTEM_NAME MATCHES Linux)
+ 		target_compile_definitions(${TGT} PUBLIC LINUX)
++	elseif(ANDROID)
++		target_compile_definitions(${TGT} PUBLIC ANDROID)
+ 	elseif(CMAKE_SYSTEM_NAME MATCHES Darwin)
+ 		target_compile_definitions(${TGT} PUBLIC OSX)
+ 	elseif(CMAKE_SYSTEM_NAME MATCHES FreeBSD)
+@@ -202,7 +204,7 @@ function(set_target_common_gns_properties TGT)
  	endif()
  
  	set_target_properties(${TGT} PROPERTIES
@@ -21,10 +30,18 @@ index 90899a4..4f91d8e 100644
  endfunction()
  
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 6253932..2ed64b5 100644
+index 6253932..92bfc04 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -310,7 +310,7 @@ macro(set_clientlib_target_properties GNS_TARGET)
+@@ -291,6 +291,7 @@ macro(set_clientlib_target_properties GNS_TARGET)
+ 	endif()
+ 
+ 	if(CMAKE_SYSTEM_NAME MATCHES Linux)
++	elseif(ANDROID)
+ 		#if(USE_STEAMWEBRTC AND NOT STEAMWEBRTC_USE_STATIC_LIBS)
+ 		#	target_link_libraries(${GNS_TARGET} PRIVATE dl)
+ 		#endif()
+@@ -310,7 +311,7 @@ macro(set_clientlib_target_properties GNS_TARGET)
  				set_target_properties(${GNS_TARGET} PROPERTIES LINK_FLAGS "/LTCG /SUBSYSTEM:WINDOWS")
  			endif()
  		endif()
@@ -34,10 +51,10 @@ index 6253932..2ed64b5 100644
  			target_link_libraries(${GNS_TARGET} PUBLIC bcrypt)
  		endif()
 diff --git a/src/external/steamwebrtc/CMakeLists.txt b/src/external/steamwebrtc/CMakeLists.txt
-index d790456..2822a9b 100644
+index d790456..5ac0d55 100644
 --- a/src/external/steamwebrtc/CMakeLists.txt
 +++ b/src/external/steamwebrtc/CMakeLists.txt
-@@ -684,7 +684,7 @@ if(WIN32)
+@@ -684,14 +684,14 @@ if(WIN32)
  		crypt32
  		winmm
  		Secur32
@@ -46,3 +63,46 @@ index d790456..2822a9b 100644
  		)
  else(WIN32)
  	target_sources(webrtc-lite PRIVATE
+ 		${webrtc_SOURCE_DIR}/rtc_base/synchronization/rw_lock_posix.cc
+ 		${webrtc_SOURCE_DIR}/rtc_base/synchronization/rw_lock_posix.h
+ 		${webrtc_SOURCE_DIR}/rtc_base/ifaddrs_converter.cc
+-		)
++		)1
+ 	target_link_libraries(webrtc-lite
+ 		pthread
+ 		)
+@@ -708,7 +708,7 @@ function( compile_webrtc_proto SRCPROTO OUTDIR )
+ 		OUTPUT ${OUT_CC} ${OUT_H}
+ 		COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+ 		ARGS --cpp_out ${OUTDIR} -I ${ABS_PATH} ${ABS_FIL}
+-		DEPENDS ${SRCPROTO} ${PROTOBUF_PROTOC_EXECUTABLE}
++#		DEPENDS ${SRCPROTO} ${PROTOBUF_PROTOC_EXECUTABLE}
+ 		COMMENT "Running C++ protocol buffer compiler on ${SRCPROTO}"
+ 		VERBATIM )
+ 	target_sources(webrtc-lite PRIVATE ${OUT_CC} ${OUT_H})
+diff --git a/src/public/minbase/minbase_endian.h b/src/public/minbase/minbase_endian.h
+index f9ad35f..d6867e7 100644
+--- a/src/public/minbase/minbase_endian.h
++++ b/src/public/minbase/minbase_endian.h
+@@ -38,7 +38,7 @@ inline T WordSwapC( T w )
+ template <typename T>
+ inline T DWordSwapC( T dw )
+ {
+-	PLAT_COMPILE_TIME_ASSERT( sizeof( T ) == sizeof(uint32) );
++	//PLAT_COMPILE_TIME_ASSERT( sizeof( T ) == sizeof(uint32) );
+ 	uint32 temp;
+ #if defined( _MSC_VER ) || defined( __ICC )
+ 	temp = _byteswap_ulong( *(uint32*)&dw );
+diff --git a/src/tier0/dbg.cpp b/src/tier0/dbg.cpp
+index dd31cc3..2fb0f2e 100644
+--- a/src/tier0/dbg.cpp
++++ b/src/tier0/dbg.cpp
+@@ -89,7 +89,7 @@ bool Plat_IsInDebugSession()
+ #elif IsNintendoSwitch()
+ 	return false;
+ #else
+-	#error "HALP"
++        return false;
+ #endif
+ }
+ 

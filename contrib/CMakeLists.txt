@@ -58,6 +58,32 @@ macro(check_stamp TARGET)
 endmacro()
 
 
+macro(check_stamp_option TARGET OPTION)
+    set(STAMP_FILE_DOWNLOAD ${DEPS_SOURCE_LOCATION}/${TARGET}_download)
+    set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
+    set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
+
+    if (NOT CMAKE_CROSSCOMPILING OR OPTION)
+        set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(BUILD_PLACEHOLDER)
+        unset(CONFIGURE_PLACEHOLDER)
+        unset(INSTALL_PLACEHOLDER)
+    endif ()
+
+    if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(DOWNLOAD_PLACEHOLDER)
+    endif ()
+endmacro()
+
+
 # same as check_stamp but also applies patch file after update
 macro(check_stamp_patch TARGET PATCH)
     set(STAMP_FILE_DOWNLOAD ${DEPS_SOURCE_LOCATION}/${TARGET}_download)
@@ -817,7 +843,14 @@ externalproject_add(Target_enet
 )
 
 
-check_stamp(Target_protoc)
+find_package(Protobuf QUIET)
+if (Protobuf_PROTOC_EXECUTABLE)
+    execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE} --version OUTPUT_VARIABLE PROTOC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if (${PROTOC_VERSION} STREQUAL "libprotoc 25.3")
+        set(PROTOC_EXE 1)
+    endif ()
+endif ()
+check_stamp_option(Target_protoc PROTOC_EXE)
 externalproject_add(Target_protoc
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -842,10 +875,7 @@ externalproject_add(Target_protoc
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_CXX_STANDARD=17
         -DABSL_PROPAGATE_CXX_STD=ON
         -Dprotobuf_BUILD_TESTS=OFF
@@ -860,12 +890,10 @@ externalproject_add(Target_protoc
 )
 
 
-if (NOT CMAKE_CROSSCOMPILING)
-    set(PROTOC_BIN ON)
-    set(PROTOC_TARGET)
+if (NOT CMAKE_CROSSCOMPILING AND NOT PROTOC_EXE)
+    set(PROTOC_EXE 1)
 else ()
-    set(PROTOC_BIN OFF)
-    set(PROTOC_TARGET Target_protoc)
+    set(PROTOC_EXE 0)
 endif ()
 check_stamp(Target_protobuf)
 externalproject_add(Target_protobuf
@@ -876,10 +904,6 @@ externalproject_add(Target_protobuf
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
-        GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-        GIT_TAG v25.3
-        GIT_SHALLOW true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
@@ -898,11 +922,9 @@ externalproject_add(Target_protobuf
         -DABSL_PROPAGATE_CXX_STD=ON
         -Dprotobuf_BUILD_TESTS=OFF
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
-        -Dprotobuf_BUILD_PROTOC_BINARIES=${PROTOC_BIN}
+        -Dprotobuf_BUILD_PROTOC_BINARIES=${PROTOC_EXE}
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
-        -Dprotobuf_WITH_ZLIB=OFF
-        -Dprotobuf_DISABLE_RTTI=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
@@ -940,6 +962,8 @@ externalproject_add(Target_GameNetworkingSockets
         -DBUILD_TESTS=OFF
         -DBUILD_TOOLS=OFF
         -DENABLE_ICE=ON
+        -DUSE_STEAMWEBRTC=OFF
+        -DLTO=OFF
         -DUSE_CRYPTO25519=Reference
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
@@ -954,7 +978,7 @@ if (NOT EMSCRIPTEN)
     add_dependencies(Contrib Target_Theora)
 endif ()
 add_dependencies(Contrib Target_cpr)
-#add_dependencies(Contrib Target_GameNetworkingSockets)
+add_dependencies(Contrib Target_GameNetworkingSockets)
 add_dependencies(Contrib Target_sol2)
 add_dependencies(Contrib Target_Vorbis)
 add_dependencies(Contrib Target_Bullet)
