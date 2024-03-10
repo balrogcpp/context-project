@@ -875,6 +875,7 @@ externalproject_add(Target_protoc
         -DCMAKE_CXX_STANDARD=17
         -DABSL_PROPAGATE_CXX_STD=ON
         -Dprotobuf_BUILD_TESTS=OFF
+        -Dprotobuf_BUILD_EXAMPLES=OFF
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
         -Dprotobuf_BUILD_PROTOC_BINARIES=ON
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
@@ -917,6 +918,7 @@ externalproject_add(Target_protobuf
         -DCMAKE_CXX_STANDARD=17
         -DABSL_PROPAGATE_CXX_STD=ON
         -Dprotobuf_BUILD_TESTS=OFF
+        -Dprotobuf_BUILD_EXAMPLES=OFF
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
         -Dprotobuf_BUILD_PROTOC_BINARIES=${PROTOC_EXE}
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
@@ -941,6 +943,7 @@ externalproject_add(Target_GameNetworkingSockets
         GIT_TAG de03d74226eb3b9a299e05f5fff93965d3dce2d9
         GIT_SHALLOW false
         GIT_PROGRESS false
+        GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
@@ -965,8 +968,9 @@ externalproject_add(Target_GameNetworkingSockets
         -DENABLE_ICE=ON
         -DUSE_STEAMWEBRTC=OFF
         -DLTO=OFF
-        -DUSE_CRYPTO25519=Reference
+        -DUSE_CRYPTO25519=OpenSSL
         -DMSVC_CRT_STATIC=OFF
+        -DOPENSSL_USE_STATIC_LIBS=ON
         -DProtobuf_USE_STATIC_LIBS=ON
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
