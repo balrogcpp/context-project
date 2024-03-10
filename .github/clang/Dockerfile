@@ -7,8 +7,7 @@ WORKDIR /var/build
 
 # git zip etc.
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends wget curl ca-certificates gnupg2 apt-transport-https \
-    && apt-get -y install software-properties-common \
+    && apt-get -y install --no-install-recommends wget curl ca-certificates gnupg2 apt-transport-https software-properties-common \
     && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
     && apt-get update \
     && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
@@ -168,6 +167,5 @@ RUN apt-get update \
     && apt-get -y autoremove
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
-ENV OSXCROSS_EVAL=`osxcross-conf`
 ENV OSXCROSS_HOST_X86_64=x86_64-apple
 ENV OSXCROSS_HOST_ARM64=aarch64-apple

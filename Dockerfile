@@ -28,12 +28,13 @@ RUN cd /tmp \
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
-#protobuf
+# protobuf
 ARG PROTOC_VERSION=25.3
 RUN cd /tmp \
     && wget -q https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip \
     && unzip -q -p /tmp/protoc-${PROTOC_VERSION}-linux-x86_64.zip bin/protoc > /usr/local/bin/protoc && rm -rf /tmp/protoc-${PROTOC_VERSION}-linux-x86_64.zip \
     && chmod +x /usr/local/bin/protoc
+
 
 COPY ./source ./source
 COPY ./contrib ./contrib
@@ -67,22 +68,18 @@ RUN mkdir build && cd build \
 
 # apple x86_64
 RUN mkdir build && cd build \
-    && export OSXCROSS_HOST=x86_64-apple \
-    && eval $OSXCROSS_EVAL \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x86_64.cmake -G Ninja .. \
     && cmake --build . --target Contrib \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x86_64.cmake -G Ninja .. \
     && cmake --build . --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # apple aarch64
 RUN mkdir build && cd build \
-    && export OSXCROSS_HOST=aarch64-apple \
-    && eval $OSXCROSS_EVAL \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
     && cmake --build . --target Contrib \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
     && cmake --build . --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
