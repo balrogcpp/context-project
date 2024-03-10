@@ -840,7 +840,7 @@ externalproject_add(Target_enet
 
 
 find_package(Protobuf QUIET)
-if (EXISTS Protobuf_PROTOC_EXECUTABLE)
+if (Protobuf_PROTOC_EXECUTABLE)
     execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE} --version OUTPUT_VARIABLE PROTOC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     if (PROTOC_VERSION AND ${PROTOC_VERSION} STREQUAL "libprotoc 25.3")
         set(PROTOC_EXE 1)
@@ -921,12 +921,14 @@ externalproject_add(Target_protobuf
         -Dprotobuf_BUILD_PROTOC_BINARIES=${PROTOC_EXE}
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+        -Dprotobuf_WITH_ZLIB=OFF
+        -Dprotobuf_DISABLE_RTTI=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
-check_stamp_patch(Target_GameNetworkingSockets gns-1.4.1.patch)
+check_stamp_patch(Target_GameNetworkingSockets gns-de03d74.patch)
 externalproject_add(Target_GameNetworkingSockets
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -936,8 +938,8 @@ externalproject_add(Target_GameNetworkingSockets
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GameNetworkingSockets
         GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
-        GIT_TAG v1.4.1
-        GIT_SHALLOW true
+        GIT_TAG de03d74226eb3b9a299e05f5fff93965d3dce2d9
+        GIT_SHALLOW false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -953,6 +955,9 @@ externalproject_add(Target_GameNetworkingSockets
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DCMAKE_CXX_STANDARD=17
+        -DABSL_PROPAGATE_CXX_STD=ON
+        -DBUILD_STATIC_LIB=ON
         -DBUILD_SHARED_LIB=OFF
         -DBUILD_EXAMPLES=OFF
         -DBUILD_TESTS=OFF
@@ -961,6 +966,8 @@ externalproject_add(Target_GameNetworkingSockets
         -DUSE_STEAMWEBRTC=OFF
         -DLTO=OFF
         -DUSE_CRYPTO25519=Reference
+        -DMSVC_CRT_STATIC=OFF
+        -DProtobuf_USE_STATIC_LIBS=ON
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
 )

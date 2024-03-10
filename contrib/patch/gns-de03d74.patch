@@ -26,21 +26,6 @@ diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 index 6253932..4c039ce 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -263,10 +263,10 @@ macro(set_clientlib_target_properties GNS_TARGET)
- 	endif()
- 
- 	## Needs CMake 3.8, then we could get rid of the workaround below it.
--	#target_compile_features(${GNS_TARGET} PUBLIC c_std_99 cxx_std_11)
--	if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
--		target_compile_features(${GNS_TARGET} PUBLIC ${C99_FEATURES} ${CXX11_FEATURES})
--	endif()
-+	target_compile_features(${GNS_TARGET} PUBLIC c_std_99 cxx_std_17)
-+#	if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-+#		target_compile_features(${GNS_TARGET} PUBLIC ${C99_FEATURES} ${CXX11_FEATURES})
-+#	endif()
- 
- 	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU"
- 			OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 @@ -298,7 +298,7 @@ macro(set_clientlib_target_properties GNS_TARGET)
  		#if(USE_STEAMWEBRTC AND NOT STEAMWEBRTC_USE_STATIC_LIBS)
  		#	target_link_libraries(${GNS_TARGET} PRIVATE dl)
