@@ -10,8 +10,9 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends wget curl ca-certificates gnupg2 apt-transport-https software-properties-common \
     && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
     && apt-get update \
-    && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
+    && apt-get -y install --no-install-recommends zip unzip xz-utils make autoconf file patch \
     && apt-get -y purge software-properties-common \
+    && apt-get -y autoremove \
     && apt-get clean
 
 
@@ -135,6 +136,8 @@ RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERS
     && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
     && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-${STDLIB_APT_MAJOR}-dev libstdc++-${STDLIB_APT_MAJOR}-dev \
+    && sed -i '$d' /etc/apt/sources.list \
+    && apt-get update \
     && apt-get clean \
     && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
@@ -150,7 +153,7 @@ ARG OSXCROSS_GIT_HASH=ff8d100f3f026b4ffbe4ce96d8aac4ce06f1278b
 ARG CMAKE_VERSION=3.28.3
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
+    && apt-get -y install --no-install-recommends git python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && export PATH="${CMAKE_HOME}/bin:${PATH}" \
@@ -163,9 +166,8 @@ RUN apt-get update \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
     && rm -rf ../osxcross \
     && rm -rf ${CMAKE_HOME} \
-    && apt-get -y purge python lzma-dev libxml2-dev libssl-dev libbz2-dev \
-    && apt-get -y autoremove
+    && apt-get -y purge git python lzma-dev libxml2-dev libssl-dev libbz2-dev \
+    && apt-get -y autoremove \
+    && apt-get clean
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
-ENV OSXCROSS_HOST_X86_64=x86_64-apple
-ENV OSXCROSS_HOST_ARM64=aarch64-apple
