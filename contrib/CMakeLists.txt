@@ -936,7 +936,7 @@ externalproject_add(Target_protobuf
 )
 
 
-check_stamp_patch(Target_GameNetworkingSockets gns-1.4.1.patch)
+check_stamp_patch(Target_GameNetworkingSockets gns-de03d74.patch)
 externalproject_add(Target_GameNetworkingSockets
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -946,8 +946,8 @@ externalproject_add(Target_GameNetworkingSockets
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GameNetworkingSockets
         GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
-        GIT_TAG v1.4.1
-        GIT_SHALLOW true
+        GIT_TAG de03d74226eb3b9a299e05f5fff93965d3dce2d9
+        GIT_SHALLOW false
         GIT_PROGRESS false
         GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
