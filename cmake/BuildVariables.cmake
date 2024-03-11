@@ -23,11 +23,12 @@ endif ()
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
+
 # check dependencies
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(X11 QUIET)
 endif ()
-insert_dependency(Threads)
+find_package(Threads)
 insert_dependency_static(Bullet)
 insert_dependency_static2(Lua LUA_LIBRARY)
 insert_dependency_static(sol2)
@@ -52,7 +53,7 @@ set(ENGINE_INCLUDE_DIRS
         ${ENGINE_SOURCE_DIR}/Code
         ${CMAKE_BINARY_DIR}
         ${DEPS_ROOT}/include
-        )
+)
 
 set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
 
@@ -90,6 +91,6 @@ endif ()
 if (CURL_FOUND)
     list(APPEND ENGINE_LIBRARIES CURL::libcurl)
 endif ()
-#if (GameNetworkingSockets_FOUND)
-#    list(APPEND ENGINE_LIBRARIES GameNetworkingSockets::static)
-#endif ()
+if (GameNetworkingSockets_FOUND)
+    list(APPEND ENGINE_LIBRARIES GameNetworkingSockets::static)
+endif ()

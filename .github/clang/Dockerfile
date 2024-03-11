@@ -130,7 +130,7 @@ RUN apt-get update \
 
 # clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
 ARG CLANG_MAJOR=18
-ARG STDLIB_APT_MAJOR=7
+ARG STDLIB_APT_MAJOR=11
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \

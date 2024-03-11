@@ -35,7 +35,7 @@ macro(check_stamp TARGET)
     set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
     set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
 
-    if (NOT CMAKE_CROSSCOMPILING)
+    if (CMAKE_CROSSCOMPILING)
         set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
@@ -61,7 +61,7 @@ macro(check_stamp_option TARGET OPTION)
     set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
     set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
 
-    if (NOT CMAKE_CROSSCOMPILING OR OPTION)
+    if (NOT OPTION)
         set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
@@ -91,7 +91,7 @@ macro(check_stamp_patch TARGET PATCH)
         message(FATAL_ERROR "Patch file ${PATCH} not found")
     endif ()
 
-    if (NOT CMAKE_CROSSCOMPILING)
+    if (CMAKE_CROSSCOMPILING)
         set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
@@ -843,10 +843,21 @@ find_package(Protobuf QUIET)
 if (Protobuf_PROTOC_EXECUTABLE)
     execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE} --version OUTPUT_VARIABLE PROTOC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     if (PROTOC_VERSION AND ${PROTOC_VERSION} STREQUAL "libprotoc 25.3")
-        set(PROTOC_EXE 1)
+        set(PROTOC_FOUND 1)
+        message(STATUS "Found protoc")
+    else ()
+        set(PROTOC_FOUND 0)
+        message(STATUS "protoc not found")
     endif ()
 endif ()
-check_stamp_option(Target_protoc PROTOC_EXE)
+if (NOT PROTOC_FOUND)
+    if (CMAKE_CROSSCOMPILING)
+        set(BUILD_PROTOC_CROSS ON)
+    else ()
+        set(BUILD_PROTOC_NATIVE ON)
+    endif ()
+endif ()
+check_stamp_option(Target_protoc BUILD_PROTOC_CROSS)
 externalproject_add(Target_protoc
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -887,11 +898,6 @@ externalproject_add(Target_protoc
 )
 
 
-if (NOT CMAKE_CROSSCOMPILING AND NOT PROTOC_EXE)
-    set(PROTOC_EXE 1)
-else ()
-    set(PROTOC_EXE 0)
-endif ()
 check_stamp(Target_protobuf)
 externalproject_add(Target_protobuf
         EXCLUDE_FROM_ALL true
@@ -920,7 +926,7 @@ externalproject_add(Target_protobuf
         -Dprotobuf_BUILD_TESTS=OFF
         -Dprotobuf_BUILD_EXAMPLES=OFF
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
-        -Dprotobuf_BUILD_PROTOC_BINARIES=${PROTOC_EXE}
+        -Dprotobuf_BUILD_PROTOC_BINARIES=${BUILD_PROTOC_NATIVE}
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
         -Dprotobuf_WITH_ZLIB=OFF
@@ -930,7 +936,7 @@ externalproject_add(Target_protobuf
 )
 
 
-check_stamp_patch(Target_GameNetworkingSockets gns-de03d74.patch)
+check_stamp_patch(Target_GameNetworkingSockets gns-1.4.1.patch)
 externalproject_add(Target_GameNetworkingSockets
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -940,8 +946,8 @@ externalproject_add(Target_GameNetworkingSockets
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GameNetworkingSockets
         GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
-        GIT_TAG de03d74226eb3b9a299e05f5fff93965d3dce2d9
-        GIT_SHALLOW false
+        GIT_TAG v1.4.1
+        GIT_SHALLOW true
         GIT_PROGRESS false
         GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
