@@ -47,7 +47,7 @@ insert_dependency_static(OGRE)
 
 # engine
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
-
+set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
 set(ENGINE_INCLUDE_DIRS
         ${ENGINE_SOURCE_DIR}
         ${ENGINE_SOURCE_DIR}/Code
@@ -55,7 +55,6 @@ set(ENGINE_INCLUDE_DIRS
         ${DEPS_ROOT}/include
 )
 
-set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
 
 if (OGRE_FOUND)
     list(APPEND ENGINE_LIBRARIES ${OGRE_LIBRARIES})

@@ -1,3 +1,10 @@
+# include guard
+if (_cpackpostbuild_included)
+    return()
+endif (_cpackpostbuild_included)
+set(_cpackpostbuild_included true)
+
+
 # clears timestamp to 1 January 1999 00:00:00
 macro(ClearTimeStamp file)
     if (CMAKE_HOST_UNIX)

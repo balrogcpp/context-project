@@ -1,3 +1,10 @@
+# include guard
+if (_cpackprebuild_included)
+    return()
+endif (_cpackprebuild_included)
+set(_cpackprebuild_included true)
+
+
 # clears timestamp to 1 January 1999 00:00:00
 macro(ClearTimeStampDirectory destination)
     if (CMAKE_HOST_UNIX)
