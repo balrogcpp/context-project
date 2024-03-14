@@ -787,8 +787,6 @@ externalproject_add(Target_LibreSSL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
-        #URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.8.0.tar.gz
-        #DOWNLOAD_NO_PROGRESS true
         GIT_REPOSITORY https://github.com/PowerShell/LibreSSL.git
         GIT_TAG V3.8.2.0
         GIT_SHALLOW true
@@ -891,7 +889,7 @@ if (Protobuf_PROTOC_EXECUTABLE)
     execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE} --version OUTPUT_VARIABLE PROTOC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     if (PROTOC_VERSION AND ${PROTOC_VERSION} STREQUAL "libprotoc 25.3")
         set(PROTOC_FOUND 1)
-        message(STATUS "Found protoc")
+        message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE}")
     else ()
         set(PROTOC_FOUND 0)
         message(STATUS "protoc not found")
