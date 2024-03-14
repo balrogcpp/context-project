@@ -385,7 +385,7 @@ externalproject_add(Target_FreeType
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_FreeType
         GIT_REPOSITORY https://github.com/freetype/freetype.git
-        GIT_TAG VER-2-13-0
+        GIT_TAG VER-2-13-2
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -412,6 +412,7 @@ externalproject_add(Target_FreeType
         -DFT_DISABLE_PNG=ON
         -DFT_DISABLE_HARFBUZZ=ON
         -DFT_DISABLE_BROTLI=ON
+        -DFT_ENABLE_ERROR_STRINGS=OFF
         -DBUILD_SHARED_LIBS=OFF
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
