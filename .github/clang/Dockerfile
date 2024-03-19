@@ -171,3 +171,6 @@ RUN apt-get update \
     && apt-get clean
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
+ENV OSXCROSS_EVAL=`osxcross-conf`
+ENV OSXCROSS_HOST_X86_64=x86_64-apple
+ENV OSXCROSS_HOST_ARM64=aarch64-apple
