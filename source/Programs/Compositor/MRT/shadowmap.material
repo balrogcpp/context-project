@@ -9,7 +9,7 @@ fragment_program shadowmap glsl glsles hlsl
 
 sampler ShadowMap
 {
-    filtering bilinear
+    filtering none
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
@@ -20,12 +20,14 @@ material ShadowMap
     {
         pass
         {
-            cull_hardware none
-            depth_check off
+		    cull_hardware none
+			depth_check off
             depth_write off
             polygon_mode_overrideable false
+            lighting off
+            fog_override true
 
-            vertex_program_ref StdQuad {}
+            vertex_program_ref CopyVert {}
 
             fragment_program_ref shadowmap
             {

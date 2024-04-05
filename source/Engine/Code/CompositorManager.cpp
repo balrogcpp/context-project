@@ -19,9 +19,7 @@ inline float Clamp(float val, float min, float max) {
   val = val < min ? min : val > max ? max : val;
   return val;
 }
-inline float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) {
-  return std::acos(std::max(dir0.dotProduct(dir1), 0.00001f));
-}
+inline float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) { return std::acos(std::max(dir0.dotProduct(dir1), 0.00001f)); }
 inline float Mix(float x, float y, float s) { return x + (y - x) * s; }
 }  // namespace
 
@@ -162,14 +160,7 @@ void CompositorManager::OnSetUp() {
   rt->addViewport(cubeCamera);
   rt->addListener(this);
 
-  // create compositor chain
-  //  this->plane = plane;
-  //    auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-  //    rt1->addListener(this);
-  //    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setProjectiveTexturing(true, camera);
-  //   AddCompositor("Fresnel", true);
   AddCompositor("MRT", true);
-  // AddCompositor("ShadowAtlas", sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
@@ -451,13 +442,13 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   if (auto *tex = pass->getTextureUnitState("RefractionTex")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "mrt", 0);
+      tex->setCompositorReference("MRT", "rt", 0);
     }
   }
   if (auto *tex = pass->getTextureUnitState("DepthTex")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "mrt", 1);
+      tex->setCompositorReference("MRT", "rt", 1);
     }
   }
   if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {

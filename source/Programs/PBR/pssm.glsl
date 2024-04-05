@@ -11,6 +11,15 @@ const vec2 vogel_disk_4[4] = vec2[](
     vec2(0.43407555004227927, 0.6502318262968816)
 );
 
+const vec2 vogel_disk_6[6] = vec2[](
+    vec2(0.22264614925077147, 0.06064698166701369),
+    vec2(-0.4347134243832013, 0.39839212879777564),
+    vec2(-0.009595922700891497, -0.5823786602069174),
+    vec2(0.3986738706873504, 0.666769567395017),
+    vec2(-0.9188158790763176, -0.09019901224219073),
+    vec2(0.7418052062222886, -0.4532310054106982)
+);
+
 const vec2 vogel_disk_8[8] = vec2[](
     vec2(0.2921473492144121, 0.03798942536906266),
     vec2(-0.27714274097351554, 0.3304853027892154),
@@ -20,6 +29,21 @@ const vec2 vogel_disk_8[8] = vec2[](
     vec2(0.7417522811565185, -0.4070419658858473),
     vec2(-0.191856808948964, 0.9084732299066597),
     vec2(-0.40412395850181015, -0.8212788214021378)
+);
+
+const vec2 vogel_disk_12[12] = vec2[](
+    vec2(0.1722689015274074, -0.03890781798837625),
+    vec2(-0.2925545106670724, 0.19991406586063373),
+    vec2(0.008048957573572442, -0.4935956098342653),
+    vec2(0.29673929703202895, 0.3896855726102194),
+    vec2(-0.6348666391696282, -0.14557204319639935),
+    vec2(0.5393697912263803, -0.40227442735351937),
+    vec2(-0.2229188387677916, 0.6718392321695309),
+    vec2(-0.39623424062096485, -0.7404974035768233),
+    vec2(0.7587014288733177, 0.24980221089178709),
+    vec2(-0.8542977299379194, 0.3005844845825336),
+    vec2(0.36461638085186754, -0.8861446508288848),
+    vec2(0.26112720207880213, 0.8951663866635635)
 );
 
 const vec2 vogel_disk_16[16] = vec2[](
@@ -83,7 +107,7 @@ uniform vec4 ShadowColour;
 
 #ifndef PSSM_FILTER_SIZE
 #ifndef GL_ES
-#define PSSM_FILTER_SIZE 16
+#define PSSM_FILTER_SIZE 8
 #else
 #define PSSM_FILTER_SIZE 4
 #endif
@@ -161,8 +185,12 @@ float CalcShadow(sampler2D shadowMap, int index)
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
 #if PSSM_FILTER_SIZE == 16
         vec2 offset = vogel_disk_16[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+#elif PSSM_FILTER_SIZE == 12
+        vec2 offset = vogel_disk_12[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 8
         vec2 offset = vogel_disk_8[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+#elif PSSM_FILTER_SIZE == 6
+        vec2 offset = vogel_disk_6[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 4
         vec2 offset = vogel_disk_4[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 1
@@ -175,10 +203,10 @@ float CalcShadow(sampler2D shadowMap, int index)
 #ifdef PSSM_ESM_SHADOWMAP
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
         sampled = (1.0 - (4.0 * (1.0 - sampled)));
-        texDepth = texDepth * PSSM_GLOBAL_RANGE + PSSM_GLOBAL_MIN_DEPTH;
+        texDepth = texDepth * (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH) + PSSM_GLOBAL_MIN_DEPTH;
         shadow += max(sampled, fstep(texDepth, depth));
 #else
-        texDepth = texDepth * PSSM_GLOBAL_RANGE + PSSM_GLOBAL_MIN_DEPTH;
+        texDepth = texDepth * (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH) + PSSM_GLOBAL_MIN_DEPTH;
         shadow += step(texDepth, depth);
 #endif
     }
@@ -218,7 +246,7 @@ float CalcPSSMShadow()
 {
     float depth = gl_FragCoord.z / gl_FragCoord.w;
     if (depth >= PssmSplitPoints.w) return 1.0;
-    
+
 #ifdef SHADOWMAP_ATLAS
     if (depth <= PssmSplitPoints.x)
         return CalcShadow(ShadowTex, 0);

@@ -18,6 +18,6 @@ void main()
 #endif
 
     float linearDepth = gl_FragCoord.z;
-    float clampedDepth = (linearDepth - PSSM_GLOBAL_MIN_DEPTH) / PSSM_GLOBAL_RANGE;
+    float clampedDepth = (linearDepth - PSSM_GLOBAL_MIN_DEPTH) / (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH);
     FragColor.r = clampedDepth;
 }

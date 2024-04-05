@@ -63,7 +63,7 @@ material Copy
             lighting off
             fog_override true
 
-            vertex_program_ref StdQuad {}
+            vertex_program_ref CopyVert {}
 
             fragment_program_ref CopyFrag
             {
@@ -71,6 +71,43 @@ material Copy
             }
 
             texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
+material Copy2x
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+            lighting off
+            fog_override true
+
+            vertex_program_ref CopyVert {}
+
+            fragment_program_ref Copy2x
+            {
+                param_named RT0 int 0
+                param_named RT1 int 1
+            }
+
+            texture_unit RT0
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit RT1
             {
                 texture black.dds
                 tex_address_mode clamp

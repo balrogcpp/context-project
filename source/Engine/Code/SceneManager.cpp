@@ -104,7 +104,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
   if (entity->getName().rfind("GrassLDR", 0)) {
     Ogre::SceneNode *node = entity->getParentSceneNode();
     Ogre::Vector3 position = node->getPosition();
-    //node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
+    // node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
   }
 
   if (!entity->getMesh()->isReloadable()) return;
@@ -114,7 +114,7 @@ void SceneManager::ScanEntity(Ogre::Entity *entity) {
 
   static unsigned long long generator = 0;
   auto mass = entity->getUserObjectBindings().getUserAny("mass");
-  if (mass.has_value() && entity->getMesh()->isReloadable()) {
+  if (mass.has_value()) {
     if (Ogre::any_cast<Ogre::Real>(mass) > 0.0) {
       for (auto &it : entity->getSubEntities()) it->setMaterial(it->getMaterial()->clone(std::to_string(generator++)));
     }
@@ -187,7 +187,6 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
   }
 }
 
-  Ogre::SceneManager *SceneManager::GetOgreScene() { return sceneManager; }
-
+Ogre::SceneManager *SceneManager::GetOgreScene() { return sceneManager; }
 
 }  // namespace gge

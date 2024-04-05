@@ -85,17 +85,18 @@ float FetchDepth(sampler2D tex, const vec2 uv)
     return texture2D(tex, uv).x;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    if (vUV0.x <= 0.5 && vUV0.y <= 0.5)
-        FragColor.r = FetchDepth(ShadowMap0, vUV0 * 2.0);
-    else if (vUV0.x > 0.5 && vUV0.y <= 0.5)
-        FragColor.r = FetchDepth(ShadowMap1, (vUV0 - vec2(0.5, 0.0)) * 2.0);
-    else if (vUV0.x <= 0.5 && vUV0.y > 0.5)
-        FragColor.r = FetchDepth(ShadowMap2, (vUV0 - vec2(0.0, 0.5)) * 2.0);
-    else if (vUV0.x > 0.5 && vUV0.y > 0.5)
-        FragColor.r = FetchDepth(ShadowMap3, (vUV0 - vec2(0.5, 0.5)) * 2.0);
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(ShadowMap0, 0) * 2);
+
+    if (uv.x <= 0.5 && uv.y <= 0.5)
+        FragColor.r = texture2D(ShadowMap0, uv * 2.0).x;
+    else if (uv.x > 0.5 && uv.y <= 0.5)
+        FragColor.r = texture2D(ShadowMap1, (uv - vec2(0.5, 0.0)) * 2.0).x;
+    else if (uv.x <= 0.5 && uv.y > 0.5)
+        FragColor.r = texture2D(ShadowMap2, (uv - vec2(0.0, 0.5)) * 2.0).x;
+    else if (uv.x > 0.5 && uv.y > 0.5)
+        FragColor.r = texture2D(ShadowMap3, (uv - vec2(0.5, 0.5)) * 2.0).x;
     else
         FragColor.r = 1.0;
 }

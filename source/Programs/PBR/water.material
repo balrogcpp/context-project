@@ -55,9 +55,7 @@ material Water
     {
         pass
         {
-            cull_hardware none
-            //scene_blend alpha_blend
-            depth_write off
+            //cull_hardware none
             transparent_sorting force
 
             vertex_program_ref water_vs {}
@@ -73,8 +71,8 @@ material Water
 
             texture_unit NormalTex
             {
-                //texture water-normal.dds
-                texture water-caustic.dds
+                texture water-normal.dds
+                //texture water-caustic.dds
                 filtering bilinear
             }
             texture_unit RefractionTex

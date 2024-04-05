@@ -762,7 +762,6 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
 
     ent->setCastShadows(false);
-    ent->setRenderQueueGroup(Ogre::RENDER_QUEUE_TRANSPARENTS);
     ent->setMaterialName(material);
 
     pParent->attachObject(ent);

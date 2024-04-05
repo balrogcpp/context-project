@@ -17,7 +17,6 @@ uniform float Time;
 in highp vec3 vUV0;
 void main()
 {
-
     vec3 color = HosekWilkie(vUV0, -LightDir0.xyz, HosekParams);
     //vec3 color = sky(vUV0, N);
 
@@ -32,8 +31,8 @@ void main()
     }
 
     // Apply exposure.
-    color += starfield(vUV0, -LightDir0, Time);
-    color = clouds(vUV0, color, LightColor0, -LightDir0, Time);
+//    color += starfield(vUV0, -LightDir0, Time);
+//    color = clouds(vUV0, color, LightColor0, -LightDir0, Time);
     color = SRGBtoLINEAR(color);
 
     // Fog

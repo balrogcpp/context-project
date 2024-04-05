@@ -166,7 +166,6 @@ void main()
     float refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * 0.9).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
-    refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * distortFade).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
 
     vec3 refraction;
     refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
