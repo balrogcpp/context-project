@@ -218,24 +218,26 @@ float CalcShadow(sampler2D shadowMap, int index)
 float CalcShadow(int index)
 {
 #ifdef SHADOWMAP_ATLAS
-    if (index == 0)
-        return CalcShadow(ShadowTex, 0);
-    else if (index == 1)
-        return CalcShadow(ShadowTex, 1);
-    else if (index == 2)
-        return CalcShadow(ShadowTex, 2);
-    else if (index == 3)
+//    if (index == 0)
+//        return CalcShadow(ShadowTex, 0);
+//    else if (index == 1)
+//        return CalcShadow(ShadowTex, 1);
+//    else if (index == 2)
+//        return CalcShadow(ShadowTex, 2);
+//    else
+    if (index == 3)
         return CalcShadow(ShadowTex, 3);
     else
         return 1.0;
 #else
-    if (index == 0)
-        return CalcShadow(ShadowMap0, 0);
-    else if (index == 1)
-        return CalcShadow(ShadowMap1, 1);
-    else if (index == 2)
-        return CalcShadow(ShadowMap2, 2);
-    else if (index == 3)
+//    if (index == 0)
+//        return CalcShadow(ShadowMap0, 0);
+//    else if (index == 1)
+//        return CalcShadow(ShadowMap1, 1);
+//    else if (index == 2)
+//        return CalcShadow(ShadowMap2, 2);
+//    else
+    if (index == 3)
         return CalcShadow(ShadowMap3, 3);
     else
         return 1.0;
@@ -245,7 +247,7 @@ float CalcShadow(int index)
 float CalcPSSMShadow()
 {
     float depth = gl_FragCoord.z / gl_FragCoord.w;
-    if (depth >= PssmSplitPoints.w) return 1.0;
+    if (depth >= PssmSplitPoints.z) return 1.0;
 
 #ifdef SHADOWMAP_ATLAS
     if (depth <= PssmSplitPoints.x)
@@ -254,8 +256,6 @@ float CalcPSSMShadow()
         return CalcShadow(ShadowTex, 1);
     else if (depth <= PssmSplitPoints.z)
         return CalcShadow(ShadowTex, 2);
-    else
-        return 1.0;
 #else
     if (depth <= PssmSplitPoints.x)
         return CalcShadow(ShadowMap0, 0);
@@ -263,8 +263,6 @@ float CalcPSSMShadow()
         return CalcShadow(ShadowMap1, 1);
     else if (depth <= PssmSplitPoints.z)
         return CalcShadow(ShadowMap2, 2);
-    else
-        return 1.0;
 #endif
 }
 

@@ -13,11 +13,11 @@ class SceneManager final : public System<SceneManager> {
   virtual ~SceneManager();
 
   void LoadFromFile(const std::string &filename);
-  void ScanCamera(Ogre::Camera *camera);
-  void ScanLight(Ogre::Light *light);
-  void ScanEntity(Ogre::Entity *entity);
-  void ScanEntity(const std::string &name);
-  void ScanNode(Ogre::SceneNode *node);
+  void ProcessCamera(Ogre::Camera *camera);
+  void ProcessLight(Ogre::Light *light);
+  void ProcessEntity(Ogre::Entity *entity);
+  void ProcessEntity(const std::string &name);
+  void ProcessNode(Ogre::SceneNode *node);
 
   Ogre::SceneManager *GetOgreScene();
 
