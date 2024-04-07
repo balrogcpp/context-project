@@ -49,6 +49,7 @@ in highp vec4 uv2;
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
+
 out highp vec3 vPosition;
 #ifdef HAS_UV
 out highp vec2 vUV0;

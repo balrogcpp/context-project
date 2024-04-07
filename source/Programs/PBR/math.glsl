@@ -24,6 +24,26 @@
 #define F0 0.045
 #endif
 
+#define f3_f(c) (dot(round((c) * 255.0), vec3(65536.0, 256.0, 1.0)))
+#define f_f3(f) (frac((f) / vec3(16777216.0, 65536.0, 256.0)))
+
+vec2 oct_encode(const vec3 n)
+{
+    float p = sqrt(n.z * 8.0 + 8.0);
+    return vec2(n.xy / p + 0.5);
+}
+
+vec3 oct_decode(const vec2 enc)
+{
+    vec2 fenc = enc * 4.0 - 2.0;
+    float f = dot(fenc, fenc);
+    float g = sqrt(1.0 - f * 0.25);
+    vec3 n;
+    n.xy = fenc * g;
+    n.z = 1.0 - f * 0.5;
+    return n;
+}
+
 // https://twitter.com/SebAaltonen/status/878250919879639040
 float fstep(float x, float y)
 {
