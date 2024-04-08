@@ -7,13 +7,14 @@ compositor Fresnel
 {
     technique
     {
+        compositor_logic DeferredLogic
         texture reflection target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa
 
         target reflection
         {
-            visibility_mask 0x00F // SURFACE objects
             shadows off
-            input previous
+            pass clear { colour_value 0.1 0.2 0.8 1.0 }
+            pass render_scene { last_render_queue 90 }
         }
     }
 }

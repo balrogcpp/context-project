@@ -5,18 +5,19 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 
-uniform sampler2D NormalTex;
+uniform sampler2D ReflectionTex;
 uniform sampler2D RefractionTex;
 uniform sampler2D CameraDepthTex;
-//uniform sampler2D ReflectionTex;
-uniform samplerCube SpecularEnvTex;
+uniform sampler2D NormalTex;
+uniform sampler2D CausticTex;
+uniform sampler2D FoamTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform float Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
-uniform vec4 LightDir0;
-uniform vec4 LightColor0;
+uniform vec3 LightDir0;
+uniform vec3 LightColor0;
 uniform vec2 BigWaves;
 uniform vec2 MidWaves;
 uniform vec2 SmallWaves;
@@ -87,21 +88,18 @@ vec3 perturb(sampler2D tex, const vec2 coords, float bend)
 }
 
 in highp vec3 vPosition;
-in highp vec4 vProjectionCoord;
 void main()
 {
     vec3 SunTransmittance = max(1.0 - exp(LightDir0.y * SunExtinction), 0.0);
     float SunFade = clamp((0.1 - LightDir0.y) * 10.0, 0.0, 1.0);
     float ScatterFade = clamp((0.15 - LightDir0.y) * 4.0, 0.0, 1.0);
 
-//    vec2 fragCoord = vProjectionCoord.xy / vProjectionCoord.w;
     vec2 fragCoord = gl_FragCoord.xy / vec2(textureSize(RefractionTex, 0));
     fragCoord = clamp(fragCoord, 0.002, 0.998);
 
-    bool aboveWater = CameraPosition.y > vPosition.y;
+    bool aboveWater = gl_FrontFacing;
 
-    highp float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
-    float normalFade = 1.0 - min(exp(-surfaceDepth / 40.0), 1.0);
+    float normalFade = 1.0 - min(exp(-gl_FragCoord.z / gl_FragCoord.w / 40.0), 1.0);
 
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
     vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
@@ -138,16 +136,14 @@ void main()
 
     float s = max(dot(lR, vVec) * 2.0 - 1.2, 0.0);
     float lightScatter = saturate((saturate(dot(-lVec, lNormal) * 0.7 + 0.3) * s) * ScatterAmount) * SunFade * saturate(1.0 - exp(-LightDir0.y));
-    vec3 scatterColor = mix((ScatterColor * vec3(1.0, 0.4, 0.0))/10.0, (ScatterColor), SunTransmittance);
+    vec3 scatterColor = mix((ScatterColor * vec3(1.0, 0.4, 0.0)), (ScatterColor), SunTransmittance);
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
     float fresnel = fresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-//    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
-    vec3 R1 = -normalize(reflect(vVec, nVec));
-    vec3 reflection = textureCube(SpecularEnvTex, vec3(-R1.x, R1.y, R1.z)).rgb;
+    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
 #ifdef FORCE_TONEMAP
     reflection = SRGBtoLINEAR(reflection);
 #endif
@@ -164,51 +160,126 @@ void main()
 
     // depth of potential refracted fragment
     float refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * 0.9).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    highp float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
     vec3 refraction;
+#if 0
     refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
     refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
     refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
+#else
+    refraction = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
+#endif
 #ifdef FORCE_TONEMAP
     refraction = SRGBtoLINEAR(refraction);
 #endif
 
-    // caustics
-    float causticdepth = refractedDepth - surfaceDepth;
-    causticdepth = 1.0 - saturate(causticdepth / Visibility);
-    causticdepth = saturate(causticdepth);
-    float causticR = 1.0 - perturb(NormalTex, vPosition.xz, causticdepth).z;
-    float NdotL = max(dot(lNormal, -LightDir0.xyz), 0.0);
-
-    float caustics = saturate(pow(causticR * 5.5, 5.5 * causticdepth)) * NdotL * SunFade * causticdepth;
-
     float waterSunGradient = dot(vVec, -LightDir0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));
-    vec3 waterSunColor = SRGBtoLINEAR(vec3(0.0, 1.0, 0.85) * waterSunGradient);
+    vec3 waterSunColor = (vec3(0.0, 1.0, 0.85) * waterSunGradient);
     waterSunColor *= aboveWater ? 0.25 : 0.5;
 
     float waterGradient = dot(vVec, vec3(0.0, -1.0, 0.0));
     waterGradient = clamp((waterGradient * 0.5 + 0.5), 0.2, 1.0);
-    vec3 watercolor = ((vec3(0.0078, 0.5176, 0.700) + waterSunColor)/10.0) * waterGradient * 1.5;
+    vec3 watercolor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-    //float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
-    float fog = aboveWater ? (refractedDepth - surfaceDepth) / Visibility : surfaceDepth / Visibility;
+//    float fog = aboveWater ? saturate((refractedDepth - surfaceDepth) / Visibility) : surfaceDepth / Visibility;
 
-    float darkness = Visibility * 2.0;
-    darkness = saturate((CameraPosition.y + darkness) / darkness);
+//    float darkness = Visibility * 2.0; // 1.5 for underwater (?)
+//    darkness = saturate((CameraPosition.y + darkness) / darkness);
+    refraction = lerp(refraction, scatterColor, lightScatter);
 
-    //refraction = mix(refraction, scatterColor, lightScatter);
-    refraction = mix(refraction, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
+    // underwater
+    vec3 waterColor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
+    float NdotL = max(dot(normal, -LightDir0), 0.0);
+    vec3 sunLight = LightColor0.rgb * NdotL * SunFade;
 
-    vec3 color;
+    // sky illumination
+    float skyBright = max(dot(normal, float3(0.0, 1.0, 0.0)) * 0.5 + 0.5, 0.0);
+    vec3 skyLight = lerp(float3(1.0, 0.5, 0.0) * 0.05, float3(0.2, 0.5, 1.0) * 1.5, SunTransmittance);
+    skyLight *= skyBright;
+
+    // ground illumination
+    float groundBright = max(dot(normal, float3(0.0, -1.0, 0.0)) * 0.5 + 0.5, 0.0);
+    float sunLerp = saturate(1.0 - exp(LightDir0.y));
+    vec3 groundLight = vec3(0.3 * sunLerp);
+    groundLight *= groundBright;
+
+    vec3 EV = vVec;
+    float underwaterFresnel = pow(saturate(1.0 - dot(normal, EV)), 2.0) * sunLerp;
+
+    // water color
+    float topfog = (refractedDepth - surfaceDepth) / Visibility;
+    topfog = saturate(topfog);
+
+    float viewDepth = surfaceDepth; // refractedDepth
+
+    float underfog = viewDepth / Visibility;
+    underfog = saturate(underfog);
+
+    float depth = refractedDepth - surfaceDepth;
+
+    float far = viewDepth / 1000.0;
+    float shorecut = aboveWater ? smoothstep(-0.001, 0.001, depth) : smoothstep(-5.0 * max(far, 0.0001), -4.0 * max(far, 0.0001), depth);
+    float shorewetcut = smoothstep(-0.18, -0.000, depth + 0.01);
+
+    depth /= Visibility;
+    depth = saturate(depth);
+
+    float fog = aboveWater ? topfog : underfog;
+    fog *= shorecut;
+
+    float darkness = Visibility * 1.5;
+    darkness = lerp(1.0, saturate((CameraPosition.y + darkness) / darkness), shorecut);
+
+    float fogdarkness = Visibility * 2.0;
+    fogdarkness = lerp(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
+
+    // caustics
+    float causticdepth = refractedDepth - surfaceDepth; // caustic depth
+    causticdepth = 1.0 - saturate(causticdepth / Visibility);
+    causticdepth = saturate(causticdepth);
+
+//    vec3 normalMap = perturb(CausticTex, causticPos.xz, causticdepth) * 2.0 - 1.0;
+//    normalMap = normalMap.xzy;
+//    normalMap.xz *= -1;
+//    vec3 causticnorm = normalMap;
+
+//    float fresnel = pow(saturate(dot(_WorldSpaceLightPos0.xyz, causticnorm)), 2.0);
+
+    float causticR = 1.0 - perturb(CausticTex, vPosition.xz, causticdepth).z;
+
+    float caustics = saturate(pow(causticR * 5.5, 5.5 * causticdepth)) * NdotL * SunFade * causticdepth;
+
+    // not yet implemented
+    //if(causticFringe)
+    //{
+    //    float causticG = 1.0-perturb(NormalSampler,causticPos.st+(1.0-causticdepth)*aberration,causticdepth).z;
+    //    float causticB = 1.0-perturb(NormalSampler,causticPos.st+(1.0-causticdepth)*aberration*2.0,causticdepth).z;
+    //    caustics = clamp(pow(vec3(causticR,causticG,causticB)*5.5,vec3(5.5*causticdepth)),0.0,1.0)*NdotL*_SunFade*causticdepth;
+    //}
+
+    vec3 underwaterSunLight = saturate((sunLight + 0.9) - (1.0 - caustics)) * causticdepth + (sunLight * caustics);
+
+    underwaterSunLight = lerp(underwaterSunLight, underwaterSunLight * waterColor, saturate((1.0 - causticdepth) / WaterExtinction));
+    vec3 waterPenetration = saturate(depth / WaterExtinction);
+    skyLight = lerp(skyLight, skyLight * waterColor, waterPenetration);
+    groundLight = lerp(groundLight, groundLight * waterColor, waterPenetration);
+
+    sunLight = lerp(sunLight, lerp(underwaterSunLight , (waterColor * 0.8 + 0.4) * SunFade, underwaterFresnel), shorecut);
+
+    vec3 color = refraction * darkness;// * vec3(sunLight + skyLight * 0.7 + groundLight * 0.8);
+
+    waterColor = lerp(waterColor * 0.3 * SunFade, waterColor, SunTransmittance);
+
+    vec3 fogging = lerp((refraction * 0.2 + 0.8) * lerp(vec3(1.2, 0.95, 0.58) * 0.8, vec3(1.1, 0.85, 0.5) * 0.8, shorewetcut) * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
 
     if (aboveWater) {
-        color = mix(refraction, reflection, fresnel * 0.6);
-        color *= 1.0 + pow(caustics, 1.50) * SunTransmittance  * 50.0;
+        color = mix(fogging, reflection, fresnel * 0.6);
     } else {
         // scatter and extinction between surface and camera
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);
@@ -221,6 +292,5 @@ void main()
     EvaluateBuffer(color);
 #ifdef HAS_MRT
     FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(lNormal, 0.0))).xyz;
-    //FragData[MRT_GLOSS].rgb = vec3(0.1, 0.2, 1.0);
 #endif
 }

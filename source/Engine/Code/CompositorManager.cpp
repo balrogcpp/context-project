@@ -48,7 +48,7 @@ class RenderShadowsPass : public Ogre::CustomCompositionPass {
   }
 };
 
-CompositorManager::CompositorManager() : fixedViewportSize(false) {}
+CompositorManager::CompositorManager() : fixedViewportSize(false), plane(Vector3(0, 1, 0), 0) {}
 
 CompositorManager::~CompositorManager() = default;
 
@@ -88,9 +88,7 @@ void CompositorManager::OnUpdate(float time) {
 
   float thetaS = AngleBetween(sunDir, Ogre::Vector3f(0, 1, 0));
   float elevation = Ogre::Math::HALF_PI - thetaS;
-  states[0] = arhosek_rgb_skymodelstate_alloc_init(turbidity, groundAlbedo.x, elevation);
-  states[1] = arhosek_rgb_skymodelstate_alloc_init(turbidity, groundAlbedo.y, elevation);
-  states[2] = arhosek_rgb_skymodelstate_alloc_init(turbidity, groundAlbedo.z, elevation);
+  for (int i = 0; i < 3; i++) states[i] = arhosek_rgb_skymodelstate_alloc_init(turbidity, groundAlbedo[i], elevation);
 
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 3; j++) {
@@ -110,20 +108,14 @@ void CompositorManager::OnUpdate(float time) {
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
 
-void CompositorManager::compositorInstanceCreated(Ogre::CompositorInstance *newInstance) {
-  newInstance->addListener(this);
-
-  if (newInstance->getCompositor()->getName() == "Fresnel") {
-    auto *rt1 = newInstance->getCompositor()->getRenderTarget("reflection");
-    rt1->addListener(this);
-  }
-}
+void CompositorManager::compositorInstanceCreated(Ogre::CompositorInstance *newInstance) { newInstance->addListener(this); }
 
 void CompositorManager::compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) { destroyedInstance->removeListener(this); }
 
 void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   string name = evt.source->getName();
   if (name.find("reflection") != string::npos) {
+    camera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
     camera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
   }
 }
@@ -131,6 +123,7 @@ void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt
 void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   string name = evt.source->getName();
   if (name.find("reflection") != string::npos) {
+    camera->disableCustomNearClipPlane();
     camera->disableReflection();
   }
 }
@@ -163,7 +156,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("MRT", true);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
-  if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
+  // if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
@@ -454,7 +447,11 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      if (!IsCompositorEnabled("Fresnel")) AddCompositor("Fresnel", true, 0);
       tex->setCompositorReference("Fresnel", "reflection");
+      tex->setProjectiveTexturing(true, camera);
+      auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+      rt1->addListener(this);
     }
   }
 

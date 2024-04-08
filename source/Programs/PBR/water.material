@@ -8,7 +8,6 @@ vertex_program water_vs glsl glsles hlsl
     {
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        param_named_auto TextureProjMatrix texture_worldviewproj_matrix
     }
 }
 
@@ -33,15 +32,15 @@ fragment_program water_fs glsl glsles hlsl
         //param_named SmallWaves float2 0.15 0.1
         param_named WindDirection float2 0.5 -0.8
         param_named WindSpeed float 0.6
-        param_named Visibility float 5.0 // 28.0
+        param_named Visibility float 28.0
         param_named WaveScale float 1.0
         param_named ScatterAmount float 3.5
-        param_named ScatterColor float3  0 .1 0.095 // 0 1 0.95
+        param_named ScatterColor float3  0 1 0.95
         param_named RefrDistortionAmount float 0.03
-        //param_named ReflDistortionAmount float 0.04
+        param_named ReflDistortionAmount float 0.04
         param_named AberrationAmount float 0.002
         param_named WaterExtinction float3 0.6 0.8 1
-        //param_named WaterExtinction float3 0.45 0.55 0.68
+        param_named WaterExtinction float3 0.45 0.55 0.68
         param_named SunExtinction float3 0.45 0.55 0.7
     }
 }
@@ -55,25 +54,26 @@ material Water
     {
         pass
         {
-            //cull_hardware none
+            cull_hardware none
             transparent_sorting force
 
             vertex_program_ref water_vs {}
 
             fragment_program_ref water_fs
             {
-                param_named NormalTex int 0
+                param_named ReflectionTex int 0
                 param_named RefractionTex int 1
                 param_named CameraDepthTex int 2
-                //param_named ReflectionTex int 3
-                param_named SpecularEnvTex int 3
+                param_named NormalTex int 3
+                param_named CausticTex int 4
+                param_named FoamTex int 5
             }
 
-            texture_unit NormalTex
+            texture_unit ReflectionTex
             {
-                texture water-normal.dds
-                //texture water-caustic.dds
-                filtering bilinear
+                texture blue.dds
+                tex_address_mode clamp
+                filtering none
             }
             texture_unit RefractionTex
             {
@@ -87,15 +87,19 @@ material Water
                 tex_address_mode clamp
                 filtering none
             }
-            /*texture_unit ReflectionTex
+            texture_unit NormalTex
             {
-                content_type compositor Fresnel reflection
-                tex_address_mode clamp
-                filtering none
-            }*/
-            texture_unit IBL
+                texture water-normal.dds
+                filtering bilinear
+            }
+            texture_unit CausticTex
             {
-                texture specular.dds cubic
+                texture water-normal2.dds
+                filtering bilinear
+            }
+            texture_unit FoamTex
+            {
+                texture water-foam.dds
                 filtering bilinear
             }
         }

@@ -69,9 +69,9 @@ void SceneManager::LoadFromFile(const std::string &filename) {
       terrainGlobalOptions->setLightMapDirection(sceneManager->getLight("Sun")->getDerivedDirection());
     }
 
-    //    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
-    //      auto *terrain = it.getNext()->instance;
-    //    }
+    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
+      auto *terrain = it.getNext()->instance;
+    }
 
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
