@@ -21,6 +21,9 @@ set(DEPS_BIN_DIR ${DEPS_ROOT}/bin CACHE PATH "")
 set(DEPS_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(DEPS_C_FLAGS ${CMAKE_C_FLAGS})
 set(DEPS_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU") AND NOT MSVC)
+    set(DEPS_EXE_LINKER_FLAGS "${DEPS_EXE_LINKER_FLAGS} -s")
+endif ()
 set(DEPS_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
 set(DEPS_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
@@ -115,6 +118,12 @@ macro(check_stamp_patch TARGET PATCH)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
     endif ()
 endmacro()
+
+if (NOT CMAKE_CROSSCOMPILING)
+    set(BUILD_NATIVE ON)
+else ()
+    set(BUILD_NATIVE OFF)
+endif ()
 
 
 # list of third-party targets
@@ -469,7 +478,7 @@ externalproject_add(Target_assimp
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
-        GIT_TAG v5.3.1
+        GIT_TAG v5.4.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -585,12 +594,45 @@ externalproject_add(Target_imgui
 )
 
 
+check_stamp(Target_pugixml)
+externalproject_add(Target_pugixml
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        DEPENDS Target_zlib
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_pugixml
+        GIT_REPOSITORY https://github.com/zeux/pugixml.git
+        GIT_TAG v1.14
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+)
+
+
 check_stamp_patch(Target_OGRE ogre-14.2.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_imgui
+        DEPENDS Target_imgui Target_pugixml
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -685,7 +727,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_SAMPLES=OFF
         -DOGRE_INSTALL_SAMPLES_SOURCE=OFF
         -DOGRE_INSTALL_SAMPLES=OFF
-        -DOGRE_BUILD_TOOLS=OFF
+        -DOGRE_BUILD_TOOLS=${BUILD_NATIVE}
         -DOGRE_BUILD_XSIEXPORTER=OFF
         -DOGRE_INSTALL_PDB=OFF
         -DOGRE_INSTALL_DOCS=OFF
