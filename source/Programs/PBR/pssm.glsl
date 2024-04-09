@@ -122,7 +122,7 @@ uniform vec4 ShadowColour;
 
 #ifndef PSSM_FILTER_SIZE
 #ifndef GL_ES
-#define PSSM_FILTER_SIZE 8
+#define PSSM_FILTER_SIZE 6
 #else
 #define PSSM_FILTER_SIZE 4
 #endif
@@ -208,6 +208,10 @@ float CalcShadow(sampler2D shadowMap, int index)
         vec2 offset = vogel_disk_6[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 4
         vec2 offset = vogel_disk_4[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+#elif PSSM_FILTER_SIZE == 3
+        vec2 offset = vogel_disk_3[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+#elif PSSM_FILTER_SIZE == 2
+        vec2 offset = vogel_disk_2[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 1
         const vec2 offset = vec2(0.0, 0.0);
 #else

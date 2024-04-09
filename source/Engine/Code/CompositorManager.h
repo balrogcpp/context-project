@@ -47,6 +47,7 @@ class CompositorManager : public System<CompositorManager>,
   /// Ogre::CompositorInstance::Listener impl
   void notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
   void notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr& mat) override;
+  void notifyResourcesCreated(bool forResizeOnly) override;
 
   /// Ogre::CompositorLogic impl
   void compositorInstanceCreated(Ogre::CompositorInstance* newInstance) override;

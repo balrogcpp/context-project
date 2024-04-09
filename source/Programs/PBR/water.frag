@@ -51,12 +51,6 @@ float fresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
     }
 }
 
-vec3 intercept(const vec3 lineP, const vec3 lineN, const vec3 planeN, float planeD)
-{
-    float distance = (planeD - dot(planeN, lineP)) / dot(lineN, planeN);
-    return lineP + lineN * distance;
-}
-
 vec3 perturb(sampler2D tex, const vec2 coords, float bend)
 {
     vec3 col = vec3(0.0, 0.0, 0.0);
@@ -88,6 +82,7 @@ vec3 perturb(sampler2D tex, const vec2 coords, float bend)
 }
 
 in highp vec3 vPosition;
+in highp vec2 vUV0;
 void main()
 {
     vec3 SunTransmittance = max(1.0 - exp(LightDir0.y * SunExtinction), 0.0);
@@ -165,7 +160,7 @@ void main()
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
     vec3 refraction;
-#if 0
+#ifndef GL_ES
     refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
     refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
     refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
@@ -191,22 +186,24 @@ void main()
 
 //    float darkness = Visibility * 2.0; // 1.5 for underwater (?)
 //    darkness = saturate((CameraPosition.y + darkness) / darkness);
-    refraction = lerp(refraction, scatterColor, lightScatter);
+    refraction = mix(refraction, scatterColor, lightScatter);
 
     // underwater
     vec3 waterColor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
-    float NdotL = max(dot(normal, -LightDir0), 0.0);
+    vec3 waterEyePos = vPosition;
+    vec3 diffuse = refraction;
+    float NdotL = max(dot(vec3(0.0, 1.0, 0.0), -LightDir0), 0.0); //float NdotL = max(dot(normal, -LightDir0), 0.0);
     vec3 sunLight = LightColor0.rgb * NdotL * SunFade;
 
     // sky illumination
     float skyBright = max(dot(normal, float3(0.0, 1.0, 0.0)) * 0.5 + 0.5, 0.0);
-    vec3 skyLight = lerp(float3(1.0, 0.5, 0.0) * 0.05, float3(0.2, 0.5, 1.0) * 1.5, SunTransmittance);
+    vec3 skyLight = mix(float3(1.0, 0.5, 0.0) * 0.05, float3(0.2, 0.5, 1.0) * 1.5, SunTransmittance);
     skyLight *= skyBright;
 
     // ground illumination
     float groundBright = max(dot(normal, float3(0.0, -1.0, 0.0)) * 0.5 + 0.5, 0.0);
     float sunLerp = saturate(1.0 - exp(LightDir0.y));
-    vec3 groundLight = vec3(0.3 * sunLerp);
+    vec3 groundLight = 0.3 * vec3(sunLerp, sunLerp, sunLerp);
     groundLight *= groundBright;
 
     vec3 EV = vVec;
@@ -216,12 +213,12 @@ void main()
     float topfog = (refractedDepth - surfaceDepth) / Visibility;
     topfog = saturate(topfog);
 
-    float viewDepth = surfaceDepth; // refractedDepth
+    float viewDepth = refractedDepth - surfaceDepth;
 
     float underfog = viewDepth / Visibility;
     underfog = saturate(underfog);
 
-    float depth = refractedDepth - surfaceDepth;
+    float depth = refractedDepth - surfaceDepth; // water depth
 
     float far = viewDepth / 1000.0;
     float shorecut = aboveWater ? smoothstep(-0.001, 0.001, depth) : smoothstep(-5.0 * max(far, 0.0001), -4.0 * max(far, 0.0001), depth);
@@ -234,10 +231,10 @@ void main()
     fog *= shorecut;
 
     float darkness = Visibility * 1.5;
-    darkness = lerp(1.0, saturate((CameraPosition.y + darkness) / darkness), shorecut);
+    darkness = mix(1.0, saturate((CameraPosition.y + darkness) / darkness), shorecut);
 
     float fogdarkness = Visibility * 2.0;
-    fogdarkness = lerp(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
+    fogdarkness = mix(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
 
     // caustics
     float causticdepth = refractedDepth - surfaceDepth; // caustic depth
@@ -265,18 +262,19 @@ void main()
 
     vec3 underwaterSunLight = saturate((sunLight + 0.9) - (1.0 - caustics)) * causticdepth + (sunLight * caustics);
 
-    underwaterSunLight = lerp(underwaterSunLight, underwaterSunLight * waterColor, saturate((1.0 - causticdepth) / WaterExtinction));
+    underwaterSunLight = mix(underwaterSunLight, underwaterSunLight * waterColor, saturate((1.0 - causticdepth) / WaterExtinction));
     vec3 waterPenetration = saturate(depth / WaterExtinction);
-    skyLight = lerp(skyLight, skyLight * waterColor, waterPenetration);
-    groundLight = lerp(groundLight, groundLight * waterColor, waterPenetration);
+    skyLight = mix(skyLight, skyLight * waterColor, waterPenetration);
+    groundLight = mix(groundLight, groundLight * waterColor, waterPenetration);
 
-    sunLight = lerp(sunLight, lerp(underwaterSunLight , (waterColor * 0.8 + 0.4) * SunFade, underwaterFresnel), shorecut);
+    sunLight = mix(sunLight, mix(underwaterSunLight , (waterColor * 0.8 + 0.4) * SunFade, underwaterFresnel), shorecut);
 
-    vec3 color = refraction * darkness;// * vec3(sunLight + skyLight * 0.7 + groundLight * 0.8);
+    vec3 color = vec3(sunLight + skyLight * 0.7 + groundLight * 0.8) * darkness;
 
-    waterColor = lerp(waterColor * 0.3 * SunFade, waterColor, SunTransmittance);
+    waterColor = mix(waterColor * 0.3 * SunFade, waterColor, SunTransmittance);
 
-    vec3 fogging = lerp((refraction * 0.2 + 0.8) * lerp(vec3(1.2, 0.95, 0.58) * 0.8, vec3(1.1, 0.85, 0.5) * 0.8, shorewetcut) * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
+    //vec3 fogging = mix((refraction * 0.2 + 0.8) * mix(vec3(1.2, 0.95, 0.58) * 0.8, vec3(1.1, 0.85, 0.5) * 0.8, shorewetcut) * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
+    vec3 fogging = mix(refraction * sunLight * SRGBtoLINEAR(color), waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
 
     if (aboveWater) {
         color = mix(fogging, reflection, fresnel * 0.6);
@@ -285,6 +283,15 @@ void main()
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }
+
+    // foam not implementer
+    // if(abs(causticdepth) < 0.1)
+    //{
+    //    vec2 uv_offset = Time * vec2(0.05, 0.04);
+    //    float foam_noise = clamp(pow(texture2D(FoamTex, (vUV0*20.0) - uv_offset).r, 10.0)*40.0, 0.0, 0.2);
+    //    float foam_mix = clamp(pow((1.0-(depth) + foam_noise), 8.0) * foam_noise * 0.4, 0.0, 1.0);
+    //    color = mix(color, vec3(1.0, 1.0, 1.0), foam_mix);
+    //}
 
     color += LightColor0.xyz * specular;
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);

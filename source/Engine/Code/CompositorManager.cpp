@@ -90,12 +90,9 @@ void CompositorManager::OnUpdate(float time) {
   float elevation = Ogre::Math::HALF_PI - thetaS;
   for (int i = 0; i < 3; i++) states[i] = arhosek_rgb_skymodelstate_alloc_init(turbidity, groundAlbedo[i], elevation);
 
-  for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 3; j++) {
-      hosekParams[i][j] = states[j]->configs[j][i];
-      hosekParams[9] = Ogre::Vector3(states[0]->radiances[0], states[1]->radiances[1], states[2]->radiances[2]);
-    }
-  }
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 3; j++) hosekParams[i][j] = states[j]->configs[j][i];
+  hosekParams[9] = Ogre::Vector3(states[0]->radiances[0], states[1]->radiances[1], states[2]->radiances[2]);
 
   auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
   auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -154,6 +151,7 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
+  // AddCompositor("KinoFog", !RenderSystemIsGLES2());
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
   // if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
@@ -401,6 +399,15 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
 void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
 
+void CompositorManager::notifyResourcesCreated(bool forResizeOnly) {
+  if (IsCompositorInChain("Fresnel")) {
+    auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+    if (rt1) {
+      rt1->removeAllListeners();
+      rt1->addListener(this);
+    }
+  }
+}
 void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                                  const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
   if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram()) return;
@@ -450,8 +457,6 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       if (!IsCompositorEnabled("Fresnel")) AddCompositor("Fresnel", true, 0);
       tex->setCompositorReference("Fresnel", "reflection");
       tex->setProjectiveTexturing(true, camera);
-      auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-      rt1->addListener(this);
     }
   }
 
