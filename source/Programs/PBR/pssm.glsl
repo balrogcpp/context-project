@@ -4,6 +4,21 @@
 #define PSSM_GLSL
 
 // https://drdesten.github.io/web/tools/vogel_disk/
+const vec2 vogel_disk_1[1] = vec2[](
+    vec2(0, 0)
+);
+
+const vec2 vogel_disk_2[2] = vec2[](
+    vec2(0.5692900901879276, -0.2924958774201527),
+    vec2(-0.5692900901879276, 0.2924958774201527)
+);
+
+const vec2 vogel_disk_3[3] = vec2[](
+    vec2(0.41936223743220985, 0.14391060533125274),
+    vec2(-0.5102845869567497, 0.6215543730292727),
+    vec2(0.09092234952453991, -0.7654649783605254)
+);
+
 const vec2 vogel_disk_4[4] = vec2[](
     vec2(0.21848650099008202, -0.09211370200809937),
     vec2(-0.5866112654782878, 0.32153793477769893),
@@ -226,8 +241,6 @@ float CalcShadow(int index)
         return CalcShadow(ShadowTex, 2);
     else if (index == 3)
         return CalcShadow(ShadowTex, 3);
-    else
-        return 1.0;
 #else
     if (index == 0)
         return CalcShadow(ShadowMap0, 0);
@@ -237,9 +250,9 @@ float CalcShadow(int index)
         return CalcShadow(ShadowMap2, 2);
     else if (index == 3)
         return CalcShadow(ShadowMap3, 3);
-    else
-        return 1.0;
 #endif
+
+    return 1.0; // to shut up "missing return" warning
 }
 
 float CalcPSSMShadow()
@@ -262,6 +275,8 @@ float CalcPSSMShadow()
     else if (depth <= PssmSplitPoints.z)
         return CalcShadow(ShadowMap2, 2);
 #endif
+
+    return 1.0; // to shut up "missing return" warning
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0

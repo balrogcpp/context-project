@@ -9,14 +9,22 @@ compositor MRT
         texture mrt target_width target_height PF_FLOAT16_RGB PF_FLOAT16_R PF_R8G8 PF_R11G11B10_FLOAT PF_R8G8 no_fsaa chain_scope
         texture rt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa depth_pool 0
         texture ao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        //texture shadowmap 2048 2048 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
+        texture shadowmap 2048 2048 PF_FLOAT16_R no_fsaa depth_pool 0
+
+        target shadowmap
+        {
+            pass render_quad
+            {
+                material ShadowMap
+            }
+        }
 
         target mrt
         {
             pass clear {}
             pass render_scene { last_render_queue 90 }
-            //shadows off
-            //pass render_custom RenderShadowMap {}
+            shadows off
+            pass render_custom RenderShadowMap {}
         }
 
         target rt
@@ -39,16 +47,11 @@ compositor MRT
         {
             pass clear { colour_value 1 1 1 1 }
         }
-
-/*
         target shadowmap
         {
-            pass render_quad
-            {
-                material ShadowMap
-            }
+            pass clear { colour_value 1 1 1 1 }
         }
-*/
+
         target_output
         {
             pass render_quad

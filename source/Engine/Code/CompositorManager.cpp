@@ -304,8 +304,8 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
-        jt->width = 0;
-        jt->height = 0;
+        // jt->width = 0;
+        // jt->height = 0;
       }
     }
 

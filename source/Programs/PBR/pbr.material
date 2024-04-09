@@ -116,12 +116,12 @@ abstract material PBR
                 texture $AO
                 sampler_ref AO
             }
-            /*texture_unit ShadowAtlas
+            texture_unit ShadowAtlas
             {
                 content_type compositor MRT shadowmap
                 filtering bilinear
-            }*/
-            texture_unit ShadowMap0
+            }
+            /*texture_unit ShadowMap0
             {
                 content_type shadow
                 sampler_ref ShadowTex
@@ -140,7 +140,8 @@ abstract material PBR
             {
                 content_type shadow
                 sampler_ref ShadowTex
-            }
+            }*/
+
 
             vertex_program_ref PBR_vs {}
 
@@ -151,11 +152,11 @@ abstract material PBR
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
                 param_named OcclusionTex   int 4
-                //param_named ShadowTex      int 5
-                param_named ShadowMap0     int 5
-                param_named ShadowMap1     int 6
-                param_named ShadowMap2     int 7
-                param_named ShadowMap3     int 8
+                param_named ShadowTex      int 5
+                //param_named ShadowMap0     int 5
+                //param_named ShadowMap1     int 6
+                //param_named ShadowMap2     int 7
+                //param_named ShadowMap3     int 8
             }
         }
     }
@@ -177,7 +178,7 @@ abstract material IBL : PBR
 
             fragment_program_ref IBL_fs
             {
-                param_named SpecularEnvTex int 9
+                param_named SpecularEnvTex int 6
             }
         }
     }
@@ -256,12 +257,12 @@ abstract material TERRA
                 texture $AO
                 sampler_ref AO
             }
-            /*texture_unit ShadowAtlas
+            texture_unit ShadowAtlas
             {
                 content_type compositor MRT shadowmap
                 filtering bilinear
-            }*/
-            texture_unit ShadowMap0
+            }
+            /*texture_unit ShadowMap0
             {
                 content_type shadow
                 sampler_ref ShadowTex
@@ -280,22 +281,22 @@ abstract material TERRA
             {
                 content_type shadow
                 sampler_ref ShadowTex
-            }
+            }*/
 
             vertex_program_ref TERRA_vs {}
 
-            fragment_program_ref TERRA_fs 
+            fragment_program_ref TERRA_fs
             {
                 param_named AlbedoTex      int 0
                 param_named NormalTex      int 1
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
                 param_named OcclusionTex   int 4
-                //param_named ShadowTex      int 5
-                param_named ShadowMap0     int 5
-                param_named ShadowMap1     int 6
-                param_named ShadowMap2     int 7
-                param_named ShadowMap3     int 8
+                param_named ShadowTex      int 5
+                //param_named ShadowMap0     int 5
+                //param_named ShadowMap1     int 6
+                ///param_named ShadowMap2     int 7
+                //param_named ShadowMap3     int 8
             }
         }
     }
