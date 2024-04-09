@@ -20,7 +20,6 @@ namespace Ogre
 {
 class SceneManager;
 class SceneNode;
-class TerrainGroup;
 
 /** \addtogroup Plugins Plugins
 *  @{

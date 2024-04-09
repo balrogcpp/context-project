@@ -57,6 +57,8 @@ bool getAttribBool(const pugi::xml_node& XMLNode, const String& attrib, bool def
         return anode.as_bool();
     else
         return defaultValue;
+
+    return false;
 }
 
 Vector3 parseVector3(const pugi::xml_node& XMLNode, Vector3 defaultValue = Vector3::ZERO)
@@ -141,6 +143,7 @@ struct DotSceneCodecB : public Codec
         loader.exportScene(any_cast<SceneNode*>(input), outFileName);
     }
 };
+
 } // namespace
 
 DotSceneLoaderB::DotSceneLoaderB() : mSceneMgr(0), mBackgroundColour(ColourValue::Black) {}
@@ -319,7 +322,7 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
     terrainGlobalOptions->setMaxPixelError((Real)maxPixelError);
     terrainGlobalOptions->setCompositeMapDistance((Real)compositeMapDistance);
 
-    auto terrainGroup = std::make_shared<TerrainGroup>(mSceneMgr, Terrain::ALIGN_X_Z, mapSize, worldSize);
+    auto *terrainGroup = OGRE_NEW TerrainGroup(mSceneMgr, Terrain::ALIGN_X_Z, mapSize, worldSize);
     terrainGroup->setOrigin(Vector3::ZERO);
     terrainGroup->setResourceGroup(m_sGroupName);
 
@@ -338,6 +341,17 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
         }
     }
     terrainGroup->loadAllTerrains(true);
+
+//    OgreAssert(mSceneMgr->hasCamera("Camera"), "[DotSceneLoaderB] No default camera found");
+//    auto* defaultCamera = mSceneMgr->getCamera("Camera");
+//    unsigned long generator = 0;
+
+//  for (auto &pPageElement : XMLNode.children("terrain"))
+//  {
+//    processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup, generator);
+//    processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup, generator);
+//    generator++;
+//  }
 
     terrainGroup->freeTemporaryResources();
 
@@ -760,7 +774,6 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
         MeshManager::getSingletonPtr()->createPlane(name + "mesh", m_sGroupName, plane, width, height, xSegments,
                                                     ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
     Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
-
     ent->setCastShadows(false);
     ent->setMaterialName(material);
 
