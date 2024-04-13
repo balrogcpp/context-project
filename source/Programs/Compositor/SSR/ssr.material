@@ -22,6 +22,7 @@ material SSR : RayCast
                 param_named DepthTex int 0
                 param_named NormalTex int 1
                 param_named GlossTex int 2
+                param_named ColorTex int 3
             }
 
             texture_unit Depth
@@ -37,6 +38,12 @@ material SSR : RayCast
                 filtering none
             }
             texture_unit Gloss
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit Color
             {
                 texture black.dds
                 tex_address_mode clamp

@@ -252,7 +252,7 @@ void DotSceneLoaderB::processNodes(pugi::xml_node& XMLNode)
     // Process direction (?)
     if (auto pElement = XMLNode.child("direction"))
     {
-        mAttachNode->setDirection(parseVector3(pElement).normalisedCopy());
+        mAttachNode->setDirection(parseVector3(pElement));
         mAttachNode->setInitialState();
     }
 
@@ -507,7 +507,7 @@ void DotSceneLoaderB::processNode(pugi::xml_node& XMLNode, SceneNode* pParent)
     // Process direction (?)
     if (auto pElement = XMLNode.child("direction"))
     {
-      pNode->setDirection(parseVector3(pElement).normalisedCopy());
+      pNode->setDirection(parseVector3(pElement));
       pNode->setInitialState();
     }
 

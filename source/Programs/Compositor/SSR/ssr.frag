@@ -6,13 +6,14 @@
 #include "header.glsl"
 #define MAX_BIN_SEARCH_COUNT 10
 #define MAX_RAY_MARCH_COUNT 30
-#define STEP 0.1
+#define STEP 0.05
 #define JITT_SCALE 0.01
 #define LLIMITER 0.1
 
 uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
 uniform sampler2D GlossTex;
+uniform sampler2D ColorTex;
 uniform mat4 ProjMatrix;
 uniform float ClipDistance;
 
@@ -62,12 +63,12 @@ vec2 RayCast(inout vec3 position, vec3 direction)
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
         // We don't want to sample too far from the starting position.
-        if (delta > 0.0) {
+        if ((direction.z - delta) < 1.2 && delta <= 0.0) {
             return BinarySearch(position, direction);
         }
     }
 
-    return nuv.xy;
+    return vec2(-1.0, -1.0);
 }
 
 // source: https://www.standardabweichung.de/code/javascript/webgl-glsl-fresnel-schlick-approximation
@@ -109,6 +110,9 @@ void main()
     float fresnel = Fresnel(reflected, normal);
 
     if (uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0) {
-        FragColor.rgb = vec3(uv, fresnel * error);
+        vec3 ssr = texture2D(ColorTex, uv).rgb;
+        vec3 color = texture2D(ColorTex, vUV0).rgb;
+        color = mix(color, ssr, metallic);
+        FragColor.rgb = ssr;
     }
 }

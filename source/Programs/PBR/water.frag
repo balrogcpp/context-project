@@ -298,6 +298,6 @@ void main()
 
     EvaluateBuffer(color);
 #ifdef HAS_MRT
-    FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(lNormal, 0.0))).xyz;
+    FragData[MRT_NORMALS].xyz = mul(ViewMatrix, vec4(lNormal, 0.0)).xyz;
 #endif
 }

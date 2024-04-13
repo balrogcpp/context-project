@@ -4,7 +4,6 @@
 #include "header.glsl"
 #include "srgb.glsl"
 #include "fog.glsl"
-#include "skymodel.glsl"
 
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;
@@ -20,6 +19,9 @@ uniform sampler2D EmissiveTex;
 #endif
 #ifdef HAS_AO
 uniform sampler2D OcclusionTex;
+#endif
+#ifdef HAS_SSR
+uniform sampler2D SSrTex;
 #endif
 #ifdef HAS_IBL
 uniform samplerCube SpecularEnvTex;
@@ -556,21 +558,25 @@ void main()
 #endif
     color += emission;
 
+#ifdef HAS_SSR
+    vec3 ssr = texture2D(SSrTex, fragCoord - fragVelocity).rgb;
+    if (Any(ssr)) {
+        //color = mix(color, ssr, metallic);
+    }
+#endif
+
+//#ifdef GL_ES
 #if MAX_LIGHTS > 0
-    vec3 fogColor = HosekWilkie(-v, -LightDirectionArray[0].xyz, HosekParams);
-    fogColor = clouds(-v, fogColor, LightDiffuseScaledColourArray[0].rgb, -LightDirectionArray[0].xyz, Time);
-    fogColor = SRGBtoLINEAR(fogColor);
-    fogColor = ApplyFog(fogColor, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - sign(v.y) * v.y), v, LightDirectionArray[0].xyz, vec3(0.0, 0.0, 0.0));
-    color = mix(ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition),
-         ApplyFog(color, FogParams.x, fogColor, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition), saturate((fragDepth - 10.0) / 50.0));
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition);
 #else
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, vec3(0.0, 0.0, 0.0), CameraPosition);
 #endif
+//#endif
 
     EvaluateBuffer(color, alpha);
 #ifdef HAS_MRT
 #ifdef MRT_NORMALS
-    FragData[MRT_NORMALS].xyz = normalize(mul(ViewMatrix, vec4(n, 0.0)).xyz);
+    FragData[MRT_NORMALS].xyz = mul(ViewMatrix, vec4(n, 0.0)).xyz;
 #endif
 #ifdef MRT_GLOSS
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);

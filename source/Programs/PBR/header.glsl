@@ -20,9 +20,7 @@
 #define PSSM_GLOBAL_RANGE 64.0
 #define MRT_COLOR 0
 #define MRT_DEPTH 1
-#ifndef GL_ES
 #define MRT_VELOCITY 2
-#endif
 #define MRT_NORMALS 3
 #define MRT_GLOSS 4
 #define MAX_MRT_TEXTURES 5

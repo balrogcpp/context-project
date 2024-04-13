@@ -2,12 +2,14 @@
 
 import STD from std.compositor
 
-compositor SSR : STD
+compositor SSR
 {
     technique
     {
+        compositor_logic DeferredLogic
+        texture_ref mrt MRT mrt
+        texture_ref ssr MRT ssr
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssr target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_RGB no_fsaa depth_pool 0
 
         target depth
         {
@@ -18,7 +20,7 @@ compositor SSR : STD
             }
         }
 
-        target ssr
+        target_output
         {
             pass render_quad
             {
@@ -28,18 +30,13 @@ compositor SSR : STD
                 input 0 depth
                 input 1 mrt 3
                 input 2 mrt 4
+                input 3 mrt 0
             }
         }
 
         target_output
         {
-            pass render_quad
-            {
-                material ssrMod
-                input 0 rt
-                input 1 ssr
-                input 2 mrt 4
-            }
+            input previous
         }
     }
 }

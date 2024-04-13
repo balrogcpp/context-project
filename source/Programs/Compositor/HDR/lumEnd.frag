@@ -31,7 +31,7 @@ void main()
 {
     float newLum = Downscale2x2(RT, vUV0);
     newLum = expose(newLum, Exposure);
-    float oldLum = texture2D(Lum, vec2(0.0, 0.0)).r;
+    float oldLum = texelFetch(Lum, ivec2(0, 0), 0).r;
     float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
     FragColor.r = SafeHDR(lum);
 }

@@ -55,7 +55,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
     default_params
     {
         shared_params_ref IBL_Shared_frag
@@ -88,7 +88,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 
 abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
 }
 
 vertex_program Unlit_vs glsl glsles hlsl : Unlit_I_vs {}
@@ -110,7 +110,7 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA
 }
 
 vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
@@ -125,7 +125,7 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
 }
 
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
@@ -135,5 +135,5 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
 }

@@ -22,6 +22,11 @@ sampler AO
     filtering none
     tex_address_mode wrap
 }
+sampler SSR
+{
+    filtering none
+    tex_address_mode wrap
+}
 
 abstract material Unlit
 {
@@ -33,6 +38,7 @@ abstract material Unlit
     set $ORM yellow.dds
     set $Emissive black.dds
     set $AO white.dds
+    set $SSR black.dds
     set $IBL specular.dds
 
     technique
@@ -78,6 +84,7 @@ abstract material PBR
     set $ORM yellow.dds
     set $Emissive black.dds
     set $AO white.dds
+    set $SSR black.dds
     set $IBL specular.dds
 
     technique
@@ -116,32 +123,16 @@ abstract material PBR
                 texture $AO
                 sampler_ref AO
             }
+            texture_unit SSR
+            {
+                texture $SSR
+                sampler_ref SSR
+            }
             texture_unit ShadowAtlas
             {
                 content_type compositor MRT shadowmap
                 filtering bilinear
             }
-            /*texture_unit ShadowMap0
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }*/
-
 
             vertex_program_ref PBR_vs {}
 
@@ -152,11 +143,8 @@ abstract material PBR
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
                 param_named OcclusionTex   int 4
-                param_named ShadowTex      int 5
-                //param_named ShadowMap0     int 5
-                //param_named ShadowMap1     int 6
-                //param_named ShadowMap2     int 7
-                //param_named ShadowMap3     int 8
+                param_named SSrTex         int 5
+                param_named ShadowTex      int 6
             }
         }
     }
@@ -178,7 +166,7 @@ abstract material IBL : PBR
 
             fragment_program_ref IBL_fs
             {
-                param_named SpecularEnvTex int 6
+                param_named SpecularEnvTex int 7
             }
         }
     }
@@ -219,6 +207,7 @@ abstract material TERRA
     set $Albedo white.dds
     set $Normal normal.dds
     set $AO white.dds
+    set $SSR black.dds
 
     technique
     {
@@ -257,31 +246,16 @@ abstract material TERRA
                 texture $AO
                 sampler_ref AO
             }
+            texture_unit SSR
+            {
+                texture $SSR
+                sampler_ref SSR
+            }
             texture_unit ShadowAtlas
             {
                 content_type compositor MRT shadowmap
                 filtering bilinear
             }
-            /*texture_unit ShadowMap0
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }
-            texture_unit ShadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowTex
-            }*/
 
             vertex_program_ref TERRA_vs {}
 
@@ -292,11 +266,8 @@ abstract material TERRA
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
                 param_named OcclusionTex   int 4
-                param_named ShadowTex      int 5
-                //param_named ShadowMap0     int 5
-                //param_named ShadowMap1     int 6
-                ///param_named ShadowMap2     int 7
-                //param_named ShadowMap3     int 8
+                param_named SSrTex         int 5
+                param_named ShadowTex      int 6
             }
         }
     }

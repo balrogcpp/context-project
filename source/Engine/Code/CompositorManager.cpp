@@ -151,9 +151,9 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  // AddCompositor("KinoFog", !RenderSystemIsGLES2());
-  AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
+  AddCompositor("SSAO", !RenderSystemIsGLES2());
+  //AddCompositor("KinoFog", false);
   // if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
@@ -369,7 +369,12 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 10 || pass_id == 20) {  // 10 = SSAO, 20 = SSR
+  if (pass_id == 10) {  // 10 = SSAO
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
+    fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
+
+  } else if (pass_id == 20) {  // 20 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
@@ -379,7 +384,15 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
-  } else if (pass_id == 12) {  // 12 = Rays
+  } else if (pass_id == 40) {  // 40 = KinoFog
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    const auto &ll = sceneManager->_getLightsAffectingFrustum();
+    fp->setNamedConstant("CameraPosition", camera->getRealPosition());
+    fp->setNamedConstant("ProjMatrix", camera->getViewMatrix().inverse());
+    fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
+    if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
+
+  } else if (pass_id == 12) {  // 12 = God Rays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &ll = sceneManager->_getLightsAffectingFrustum();
     Ogre::Real lightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
@@ -437,6 +450,12 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "ao");
+    }
+  }
+  if (auto *tex = pass->getTextureUnitState("SSR")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "ssr");
     }
   }
   if (auto *tex = pass->getTextureUnitState("RefractionTex")) {

@@ -90,6 +90,9 @@ material HDR : STD
 	{
 		pass
 		{
+
+		    vertex_program_ref CopyVert {}
+
             fragment_program_ref HDR
 			{
                 param_named RT int 0
@@ -109,10 +112,6 @@ material HDR : STD
 fragment_program Tonemap glsl glsles hlsl
 {
     source tonemap.frag
-    default_params
-    {
-        //param_named Exposure float 2.5
-    }
 }
 
 material Tonemap : STD
@@ -121,6 +120,8 @@ material Tonemap : STD
 	{
 		pass
 		{
+		    vertex_program_ref CopyVert {}
+
             fragment_program_ref Tonemap
 			{
                 param_named RT int 0
