@@ -5,13 +5,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 abstract target CubeFace
 {
-    visibility_mask 0x0F0
     shadows off
     only_initial on
 
     pass clear {}
     pass render_scene
     {
+        //last_render_queue 5
         camera CubeCamera align_to_face
     }
 }
@@ -31,10 +31,5 @@ compositor CubeMap
         target cube 3 : CubeFace {}
         target cube 4 : CubeFace {}
         target cube 5 : CubeFace {}
-
-        target_output
-        {
-            input previous
-        }
     }
 }

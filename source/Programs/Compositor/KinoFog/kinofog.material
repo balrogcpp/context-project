@@ -1,0 +1,52 @@
+// created by Andrey Vasiliev
+
+import RayCast from stdquad.material
+
+fragment_program KinoFog glsl glsles hlsl
+{
+    source kinofog.frag
+
+	default_params
+	{
+        param_named_auto FogColour fog_colour
+        param_named_auto FogParams fog_params
+	}
+}
+
+material KinoFog : RayCast
+{
+	technique
+	{
+		pass
+		{
+		    fog_override false
+
+            fragment_program_ref KinoFog
+			{
+                param_named RT int 0
+                param_named DepthTex int 1
+                param_named SkyBoxTex int 2
+			}
+
+			texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit DepthTex
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit SkyBox
+            {
+                //texture specular.dds cubic
+                content_type compositor CubeMap cube
+                tex_address_mode clamp
+                filtering bilinear
+            }
+		}
+	}
+}

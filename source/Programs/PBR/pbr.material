@@ -130,7 +130,7 @@ abstract material PBR
             }
             texture_unit ShadowAtlas
             {
-                content_type compositor MRT shadowmap
+                texture white.dds
                 filtering bilinear
             }
 
@@ -253,7 +253,7 @@ abstract material TERRA
             }
             texture_unit ShadowAtlas
             {
-                content_type compositor MRT shadowmap
+                texture white.dds
                 filtering bilinear
             }
 

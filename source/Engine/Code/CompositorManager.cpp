@@ -153,7 +153,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("MRT", true);
   AddCompositor("SSR", false);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
-  //AddCompositor("KinoFog", false);
+  AddCompositor("KinoFog", false);
   // if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
@@ -440,7 +440,19 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
 
   if (!pass->getLightingEnabled() || pass->getFogOverride()) return;
 
+  if (auto *tex = pass->getTextureUnitState("ShadowAtlas")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "shadowmap");
+    }
+  }
   if (auto *tex = pass->getTextureUnitState("IBL")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("CubeMap", "cube");
+    }
+  }
+  if (auto *tex = pass->getTextureUnitState("SkyBox")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("CubeMap", "cube");

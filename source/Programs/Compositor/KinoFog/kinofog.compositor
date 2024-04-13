@@ -1,0 +1,21 @@
+// created by Andrey Vasiliev
+
+import STD from std.compositor
+
+compositor KinoFog : STD
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                identifier 40
+                quad_normals camera_far_corners_view_space
+                material KinoFog
+                input 0 rt
+                input 1 mrt 1
+            }
+        }
+    }
+}
