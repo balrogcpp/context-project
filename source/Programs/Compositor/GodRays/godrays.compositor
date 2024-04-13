@@ -1,0 +1,41 @@
+// created by Andrey Vasiliev
+
+import STD from std.compositor
+
+compositor GodRays : STD
+{
+    technique
+    {
+        texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rays target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target fbo
+        {
+            pass render_quad
+            {
+                material FBO
+                input 0 rt
+            }
+        }
+
+        target rays
+        {
+            pass render_quad
+            {
+                identifier 12
+                material GodRays
+                input 0 fbo
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Mod
+                input 0 rt
+                input 1 rays
+            }
+        }
+    }
+}

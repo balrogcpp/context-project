@@ -27,7 +27,7 @@ void main()
     float gamma = acos(cos_gamma);
 
     if (gamma <= M_PI / 360.0 && sunZenith > 0.0) {
-        color = mix(color, LightColor0, 0.1);
+        color = mix(color, LightColor0 * 10.0, 0.1);
     }
 
     // Apply exposure.
