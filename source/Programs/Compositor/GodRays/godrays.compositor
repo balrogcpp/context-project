@@ -7,18 +7,18 @@ compositor GodRays : STD
     technique
     {
         texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture rays target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture godrays target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target fbo
         {
             pass render_quad
             {
-                material FBO
+                material GodraysFBO
                 input 0 rt
             }
         }
 
-        target rays
+        target godrays
         {
             pass render_quad
             {
@@ -32,9 +32,9 @@ compositor GodRays : STD
         {
             pass render_quad
             {
-                material Mod
+                material GodraysMOD
                 input 0 rt
-                input 1 rays
+                input 1 godrays
             }
         }
     }

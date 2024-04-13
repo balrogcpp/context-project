@@ -21,18 +21,18 @@ material Lens : STD
     }
 }
 
-fragment_program fbo glsl glsles hlsl
+fragment_program lensFBO glsl glsles hlsl
 {
-	source fbo.frag
+	source lensFBO.frag
 }
 
-material FBO : STD
+material LensFBO : STD
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref fbo
+            fragment_program_ref lensFBO
 			{
                 param_named RT int 0
             }
@@ -40,18 +40,18 @@ material FBO : STD
 	}
 }
 
-fragment_program Mod glsl glsles hlsl
+fragment_program lensMOD glsl glsles hlsl
 {
-	source mod.frag
+	source lensMOD.frag
 }
 
-material Mod : STD
+material LensMOD : STD
 {
     technique
     {
         pass
         {
-            fragment_program_ref Mod
+            fragment_program_ref lensMOD
             {
                 param_named RT int 0
                 param_named FBO int 1

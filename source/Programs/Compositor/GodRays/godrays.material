@@ -2,19 +2,19 @@
 
 import STD from stdquad.material
 
-/*
-fragment_program fbo glsl glsles hlsl
+
+fragment_program godraysFBO glsl glsles hlsl
 {
-	source fbo.frag
+	source godraysFBO.frag
 }
 
-material FBO : STD
+material GodraysFBO : STD
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref fbo
+            fragment_program_ref godraysFBO
 			{
                 param_named RT int 0
                 param_named Lum int 0
@@ -43,9 +43,9 @@ material FBO : STD
 		}
 	}
 }
-*/
 
-fragment_program rays glsl glsles hlsl
+
+fragment_program godrays glsl glsles hlsl
 {
 	source godrays.frag
 
@@ -65,7 +65,7 @@ material GodRays : STD
     {
         pass
         {
-            fragment_program_ref rays
+            fragment_program_ref godrays
             {
                 param_named FBO int 0
             }
@@ -73,25 +73,22 @@ material GodRays : STD
     }
 }
 
-/*
-fragment_program raysMod glsl glsles hlsl
+fragment_program godraysMOD glsl glsles hlsl
 {
-	source raysMod.frag
-
-    default_params
-    {
-        param_named RT int 0
-        param_named FBO int 1
-    }
+	source godraysMOD.frag
 }
 
-material RaysMod : STD
+material GodraysMOD : STD
 {
     technique
     {
         pass
         {
-            fragment_program_ref raysMod {}
+            fragment_program_ref godraysMOD
+            {
+                param_named RT int 0
+                param_named FBO int 1
+            }
 
             texture_unit FBO
             {
@@ -102,4 +99,3 @@ material RaysMod : STD
         }
     }
 }
-*/

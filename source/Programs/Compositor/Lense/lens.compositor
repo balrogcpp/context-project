@@ -13,7 +13,7 @@ compositor Lens : STD
         {
             pass render_quad
             {
-                material FBO
+                material LensFBO
                 input 0 rt
             }
         }
@@ -31,7 +31,7 @@ compositor Lens : STD
         {
             pass render_quad
             {
-                material Mod
+                material LensMOD
                 input 0 rt
                 input 1 lens
             }
