@@ -1,4 +1,4 @@
-﻿//
+//
 // KinoFog - Deferred fog effect
 //
 // Copyright (C) 2015 Keijiro Takahashi
@@ -41,7 +41,7 @@ void main()
     vec3 color = texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb;
     float clampedPixelDepth = texelFetch(DepthTex, ivec2(gl_FragCoord.xy), 0).x;
 
-    if (clampedPixelDepth > 0.5) {
+    if (clampedPixelDepth > 0.9) {
         FragColor.rgb = color;
         return;
     }

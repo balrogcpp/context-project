@@ -20,7 +20,7 @@ compositor SSR
             }
         }
 
-        target_output
+        target ssr
         {
             pass render_quad
             {

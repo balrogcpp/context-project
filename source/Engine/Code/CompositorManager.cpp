@@ -154,7 +154,8 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("KinoFog", false);
-  // if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", false);
+  if (!RenderSystemIsGLES2()) AddCompositor("Lens", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
@@ -392,7 +393,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
     if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
 
-  } else if (pass_id == 12) {  // 12 = God Rays
+  } else if (pass_id == 12) {  // 12 = GodRays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &ll = sceneManager->_getLightsAffectingFrustum();
     Ogre::Real lightPositionViewSpace[OGRE_MAX_SIMULTANEOUS_LIGHTS * 4];
@@ -404,7 +405,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     }
 
     fp->setNamedConstant("LightPositionList", lightPositionViewSpace, OGRE_MAX_SIMULTANEOUS_LIGHTS);
-    fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(ll.size()));
+    //    fp->setNamedConstant("LightCount", static_cast<Ogre::int32>(ll.size()));
 
   } else if (pass_id == 99) {  // 99 = FullScreenBlur
   }

@@ -195,12 +195,12 @@ vec3 Irradiance_SphericalHarmonics(const vec3 n) {
 
 vec3 DiffuseIrradiance(const vec3 n)
 {
-    return textureCube(SpecularEnvTex, vec3(-n.x, n.y, n.z)).rgb;
+    return textureCube(SpecularEnvTex, vec3(n.x, -n.y, -n.z)).rgb;
 }
 
 vec3 GetIblSpecularColor(const vec3 n)
 {
-    return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, vec3(-n.x, n.y, n.z)).rgb));
+    return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, vec3(n.x, -n.y, -n.z)).rgb));
 }
 #endif // HAS_IBL
 
