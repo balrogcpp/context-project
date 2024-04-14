@@ -4,7 +4,7 @@
 
 uniform sampler2D FBO;
 uniform int LightCount;
-uniform vec4 LightPositionList[MAX_LIGHTS];
+uniform vec4 LightPosition;
 uniform int RayCount;
 uniform float Decay;
 uniform float Density;
@@ -34,9 +34,7 @@ vec3 GodRays(sampler2D tex, const vec2 uv, const vec2 lightPos, int counter, flo
 in vec2 vUV0;
 void main()
 {
-    vec4 point = LightPositionList[0];
-    float w = Weight * point.w;
-    vec3 color = GodRays(FBO, vUV0, point.xy, RayCount, Density, w, Decay, Exposure);
+    vec3 color = GodRays(FBO, vUV0, LightPosition.xy, RayCount, Density, LightPosition.w, Decay, Exposure);
 
     FragColor.rgb = SafeHDR(color);
 }
