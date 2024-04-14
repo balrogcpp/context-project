@@ -80,15 +80,15 @@ void CompositorManager::OnUpdate(float time) {
     sunDir = Ogre::Vector3::ZERO;
   }
 
-  Ogre::Vector3f groundAlbedo = Ogre::Vector3f(0.1f);
+  Ogre::Vector3f albedo = Ogre::Vector3f(1.0f);
   sunDir.y = Clamp(sunDir.y, 0.0, 1.0);
   sunDir.normalise();
-  Ogre::Real turbidity = 4.0;
-  groundAlbedo = Ogre::Vector3f(Clamp(groundAlbedo.x, 0.0, 1.0), Clamp(groundAlbedo.y, 0.0, 1.0), Clamp(groundAlbedo.z, 0.0, 1.0));
+  Ogre::Real turbidity = 3.0;
+  albedo = Ogre::Vector3f(Clamp(albedo.x, 0.0, 1.0), Clamp(albedo.y, 0.0, 1.0), Clamp(albedo.z, 0.0, 1.0));
 
   float thetaS = AngleBetween(sunDir, Ogre::Vector3f(0, 1, 0));
   float elevation = Ogre::Math::HALF_PI - thetaS;
-  for (int i = 0; i < 3; i++) states[i] = arhosek_rgb_skymodelstate_alloc_init(turbidity, groundAlbedo[i], elevation);
+  for (int i = 0; i < 3; i++) states[i] = arhosek_rgb_skymodelstate_alloc_init(turbidity, albedo[i], elevation);
 
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 3; j++) hosekParams[i][j] = states[j]->configs[j][i];
@@ -149,12 +149,17 @@ void CompositorManager::OnSetUp() {
   rt->removeAllViewports();
   rt->addViewport(cubeCamera);
   rt->addListener(this);
+  AddCompositor("CubeMapSky", true);
+  auto *rt1 = compositorChain->getCompositor("CubeMapSky")->getRenderTarget("cube");
+  rt1->removeAllViewports();
+  rt1->addViewport(cubeCamera);
+  rt1->addListener(this);
 
   AddCompositor("MRT", true);
   AddCompositor("SSR", false);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
-  AddCompositor("KinoFog", false);
-  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", false);
+  if (!RenderSystemIsGLES2()) AddCompositor("KinoFog", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", true);
   if (!RenderSystemIsGLES2()) AddCompositor("Lens", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
@@ -392,6 +397,11 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ProjMatrix", camera->getViewMatrix().inverse());
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
     if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
+    auto *tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(2);
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("CubeMapSky", "cube");
+    }
 
   } else if (pass_id == 12) {  // 12 = GodRays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -431,14 +441,6 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
 
-  //  if (pass->getParent()->getParent()->getName() == "SkyBox") {
-  //    Ogre::Real hosekParamsArray[10 * 3];
-  //    for (int i = 0; i < 10; i++)
-  //      for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
-  //    fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
-  //    needsUpdate = false;
-  //  }
-
   if (!pass->getLightingEnabled() || pass->getFogOverride()) return;
 
   if (auto *tex = pass->getTextureUnitState("ShadowAtlas")) {
@@ -448,12 +450,6 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     }
   }
   if (auto *tex = pass->getTextureUnitState("IBL")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("CubeMap", "cube");
-    }
-  }
-  if (auto *tex = pass->getTextureUnitState("SkyBox")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("CubeMap", "cube");

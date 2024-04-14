@@ -51,8 +51,7 @@ void main()
     vec4 wPosition = mul(ProjMatrix, vec4(viewPos, 1.0));
     wPosition.xy /= wPosition.w;
     vec3 v = normalize(wPosition.xyz - CameraPosition);
-    vec3 uv = vec3(v.x, -v.y, -v.z);
-    vec3 fogColor = textureCube(SkyBoxTex, uv).rgb;
-    vec3 fog = ApplyFog(color, FogParams.x, fogColor, pixelDepth, v, LightDir0.xyz, CameraPosition);
+    vec3 fogColor = textureCube(SkyBoxTex, vec3(-v.x, v.y, v.z)).rgb;
+    vec3 fog = ApplyFog(color, FogParams.x, fogColor, max(pixelDepth - 3.0, 0.0), v, LightDir0.xyz, CameraPosition);
     FragColor.rgb = fog;
 }

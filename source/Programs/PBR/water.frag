@@ -294,7 +294,9 @@ void main()
     //}
 
     color += LightColor0.xyz * specular;
+#ifdef GL_ES
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
+#endif
 
     EvaluateBuffer(color);
 #ifdef HAS_MRT

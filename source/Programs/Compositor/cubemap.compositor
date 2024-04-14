@@ -11,7 +11,19 @@ abstract target CubeFace
     pass clear {}
     pass render_scene
     {
-        //last_render_queue 5
+        camera CubeCamera align_to_face
+    }
+}
+
+abstract target CubeFaceSky
+{
+    shadows off
+    only_initial on
+
+    pass clear {}
+    pass render_scene
+    {
+        last_render_queue 5 // render early sky only
         camera CubeCamera align_to_face
     }
 }
@@ -31,5 +43,20 @@ compositor CubeMap
         target cube 3 : CubeFace {}
         target cube 4 : CubeFace {}
         target cube 5 : CubeFace {}
+    }
+}
+
+compositor CubeMapSky
+{
+    technique
+    {
+        texture cube 128 128 PF_R11G11B10_FLOAT cubic no_fsaa
+
+        target cube 0 : CubeFaceSky {}
+        target cube 1 : CubeFaceSky {}
+        target cube 2 : CubeFaceSky {}
+        target cube 3 : CubeFaceSky {}
+        target cube 4 : CubeFaceSky {}
+        target cube 5 : CubeFaceSky {}
     }
 }

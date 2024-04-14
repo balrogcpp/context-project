@@ -26,7 +26,9 @@ vec3 ApplyFog(const vec3 color, float fogParam, vec3 fogColor, const highp float
     float fogAmount = (a / b) * exp(-camHeight * b) * (1.0 - exp(-dist * camHeight * b)) / camHeight;
 
     float sunAmount = max(dot(camDir, -lightDir), 0.0);
-    fogColor  = mix(fogColor, vec3(1.0, 0.9, 0.7), pow8(sunAmount));
+    //const vec3 sunColor = vec3(1.0, 0.9, 0.7);
+    const vec3 sunColor = vec3(1.0, 1.0, 1.0);
+    fogColor  = mix(fogColor, sunColor, pow8(sunAmount));
     fogAmount = saturate(fogAmount);
     return mix(color, fogColor, fogAmount);
 }

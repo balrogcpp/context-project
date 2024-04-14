@@ -565,13 +565,13 @@ void main()
     }
 #endif
 
-//#ifdef GL_ES
+#ifdef GL_ES
 #if MAX_LIGHTS > 0
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition);
 #else
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, vec3(0.0, 0.0, 0.0), CameraPosition);
 #endif
-//#endif
+#endif
 
     EvaluateBuffer(color, alpha);
 #ifdef HAS_MRT
