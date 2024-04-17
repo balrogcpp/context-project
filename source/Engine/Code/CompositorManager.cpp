@@ -383,6 +383,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 20) {  // 20 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
 
@@ -395,7 +396,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &ll = sceneManager->_getLightsAffectingFrustum();
     fp->setNamedConstant("CameraPosition", camera->getRealPosition());
-    fp->setNamedConstant("ProjMatrix", camera->getViewMatrix().inverse());
+    fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
     if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
     auto *tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(2);
@@ -407,10 +408,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   } else if (pass_id == 12) {  // 12 = GodRays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     const auto &ll = sceneManager->_getLightsAffectingFrustum();
-    if (!ll.empty()) {
-      Ogre::Vector4 lightPos = GetLightScreenSpaceCoords(ll[0], camera);
-      fp->setNamedConstant("LightPosition", GetLightScreenSpaceCoords(ll[0], camera));
-    }
+    if (!ll.empty()) fp->setNamedConstant("LightPosition", GetLightScreenSpaceCoords(ll[0], camera));
 
   } else if (pass_id == 99) {  // 99 = FullScreenBlur
   }

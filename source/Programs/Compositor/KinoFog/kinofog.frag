@@ -31,7 +31,7 @@ uniform highp vec3 CameraPosition;
 uniform vec3 LightDir0;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
-uniform mat4 ProjMatrix;
+uniform mat4 InvViewMatrix;
 uniform float ClipDistance;
 
 in highp vec2 vUV0;
@@ -48,7 +48,7 @@ void main()
 
     float pixelDepth = clampedPixelDepth * ClipDistance;
     vec3 viewPos = vRay * clampedPixelDepth;
-    vec4 wPosition = mul(ProjMatrix, vec4(viewPos, 1.0));
+    vec4 wPosition = mul(InvViewMatrix, vec4(viewPos, 1.0));
     wPosition.xy /= wPosition.w;
     vec3 v = normalize(wPosition.xyz - CameraPosition);
     vec3 fogColor = textureCube(SkyBoxTex, vec3(-v.x, v.y, v.z)).rgb;
