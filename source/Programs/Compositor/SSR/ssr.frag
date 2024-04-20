@@ -24,11 +24,11 @@ vec2 BinarySearch(vec3 direction, inout vec3 hitCoord)
         vec4 nuv = mul(ProjMatrix, vec4(hitCoord, 1.0));
         nuv.xy /= nuv.w;
 
-        float depth = texture2D(DepthTex, nuv.xy).x * ClipDistance;
+        float sampleDepth = texture2D(DepthTex, nuv.xy).x * ClipDistance;
 
         direction *= 0.5;
 
-        hitCoord += (-hitCoord.z - depth) < 0.0 ? direction : -direction;
+        hitCoord += (-hitCoord.z - sampleDepth) < 0.0 ? direction : -direction;
     }
 
     vec4 nuv = mul(ProjMatrix, vec4(hitCoord, 1.0));
@@ -47,11 +47,12 @@ vec2 RayCast(vec3 direction, inout vec3 hitCoord)
         vec4 nuv  = mul(ProjMatrix, vec4(hitCoord, 1.0));
         nuv.xy /= nuv.w;
 
-        float depth = texture2D(DepthTex, nuv.xy).x * ClipDistance;
+        float sampleDepth = texture2D(DepthTex, nuv.xy).x * ClipDistance;
+        float dDepth = -hitCoord.z - sampleDepth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
         // We don't want to sample too far from the starting position.
-        if ((-hitCoord.z - depth) > 0.0) return BinarySearch(hitCoord, direction);
+        if ((direction.z - dDepth) < 1.2 && dDepth >= 0.0) return BinarySearch(hitCoord, direction);
     }
 
     return vec2(-1.0, -1.0);
@@ -79,38 +80,36 @@ in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    vec3 color = texture2D(ColorTex, vUV0).rgb;
     vec2 gloss = texture2D(GlossTex, vUV0).rg;
     float metallic = gloss.r;
     float roughness = gloss.g;
     float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
     vec3 normal = texture2D(NormalTex, vUV0).xyz;
-    normal.z = -normal.z;
 
-    if (metallic < HALF_EPSILON || clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal)) {
-        FragColor.rgb = color;
+    if (Null(normal) || metallic < HALF_EPSILON) {
+        FragColor.rgb = texture2D(ColorTex, vUV0).rgb;
         return;
     }
 
     vec3 viewPos = vRay * clampedPixelDepth;
-    viewPos.z = -viewPos.z;
     vec3 jitter = hash(gl_FragCoord.xyz) * roughness * JITT_SCALE;
 
     // Reflection vector
     vec3 hitCoord = viewPos;
-    vec3 reflected = reflect(normalize(hitCoord), normalize(normal)) + jitter;
-    vec2 uv = RayCast(reflected * viewPos.z, hitCoord);
+    vec3 reflected = normalize(reflect(normalize(hitCoord), normalize(normal)));
+    vec2 uv = RayCast(jitter + reflected * max(-viewPos.z, MIN_RAY_STEP), hitCoord);
 
     float L = length(viewPos - hitCoord);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     float error = 1.0 - L;
+
     float fresnel = Fresnel(reflected, normal);
 
-    if (uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0) {
-        vec3 ssr = texture2D(ColorTex, uv).rgb;
-        color = mix(color, ssr, fresnel);
-        FragColor.rgb = color;
+    if (uv != vec2(-1.0, -1.0)) {
+        vec3 ssr = texture2D(ColorTex, uv).rgb * error * fresnel;
+        vec3 pixelColor = texture2D(ColorTex, vUV0).rgb;
+        FragColor.rgb = mix(pixelColor, ssr, metallic * error * fresnel);
     } else {
-        FragColor.rgb = color;
+        FragColor.rgb = texture2D(ColorTex, vUV0).rgb;
     }
 }
