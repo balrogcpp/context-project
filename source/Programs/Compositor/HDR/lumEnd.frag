@@ -26,10 +26,10 @@ float expose(float color, const vec3 exposure)
     return exposure.x / exp(clamp(color, exposure.y, exposure.z));
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    float newLum = Downscale2x2(RT, vUV0);
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
+    float newLum = Downscale2x2(RT, uv);
     newLum = expose(newLum, Exposure);
     float oldLum = texelFetch(Lum, ivec2(0, 0), 0).r;
     float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));

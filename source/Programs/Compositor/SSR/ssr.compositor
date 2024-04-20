@@ -9,19 +9,10 @@ compositor SSR
         compositor_logic DeferredLogic
         texture_ref mrt MRT mrt
         texture_ref ssr MRT ssr
-        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture_ref depth MRT depth
 
-        target depth
-        {
-            pass render_quad
-            {
-                material Linear
-                input 0 mrt 1
-            }
-        }
-
-        //target ssr
-        target_output
+        //target_output
+        target ssr
         {
             pass render_quad
             {
@@ -35,9 +26,9 @@ compositor SSR
             }
         }
 
-        /*target_output
+        target_output
         {
             input previous
-        }*/
+        }
     }
 }

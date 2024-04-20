@@ -8,6 +8,11 @@ import STD from stdquad.material
 fragment_program lumStart glsl glsles hlsl
 {
 	source lumStart.frag
+
+    default_params
+    {
+        param_named_auto ViewportSize viewport_size
+    }
 }
 
 fragment_program lumIt glsl glsles hlsl
@@ -22,8 +27,8 @@ fragment_program lumEnd glsl glsles hlsl
     default_params
     {
         //param_named Exposure float3 553.5833 5.0 10.0
-        //param_named			Exposure				float3 138.5833 5 10
-        //param_named			Exposure				float3 138.5833 5 9
+        //param_named Exposure float3 138.5833 5 10
+        //param_named Exposure float3 138.5833 5 9
         param_named			Exposure				float3 228.485283992 5 6.5
         param_named_auto timeSinceLast frame_time 1
     }
@@ -109,7 +114,12 @@ material HDR : STD
 	}
 }
 
-fragment_program Tonemap glsl glsles hlsl
+vertex_program tonemap_vp glsl glsles hlsl
+{
+    source tonemap.vert
+}
+
+fragment_program tonemap_fp glsl glsles hlsl
 {
     source tonemap.frag
 }
@@ -120,9 +130,9 @@ material Tonemap : STD
 	{
 		pass
 		{
-		    vertex_program_ref CopyVert {}
+		    vertex_program_ref tonemap_vp {}
 
-            fragment_program_ref Tonemap
+            fragment_program_ref tonemap_fp
 			{
                 param_named RT int 0
 			}

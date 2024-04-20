@@ -2,7 +2,12 @@
 
 import STD from stdquad.material
 
-fragment_program fxaa glsl glsles hlsl
+vertex_program fxaa_vp glsl glsles hlsl
+{
+    source fxaa.vert
+}
+
+fragment_program fxaa_fp glsl glsles hlsl
 {
     source fxaa.frag
 }
@@ -13,7 +18,9 @@ material FXAA : STD
 	{
 		pass
 		{
-            fragment_program_ref fxaa
+			vertex_program_ref fxaa_vp {}
+
+            fragment_program_ref fxaa_fp
 			{
                 param_named RT int 0
 			}

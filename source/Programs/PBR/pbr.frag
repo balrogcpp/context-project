@@ -551,19 +551,17 @@ void main()
     vec3 color = vec3(0.0, 0.0, 0.0);
 #if MAX_LIGHTS > 0
     color += EvaluateIBL(material);
+#ifdef HAS_SSR
+    vec3 ssr = texture2D(SSrTex, fragCoord - fragVelocity).rgb;
+    if (Any(ssr)) color = mix(color, ssr, metallic);
+#endif
+
     color += EvaluateDirectionalLight(material);
     color += EvaluateLocalLights(material);
 #else
     color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
 #endif
     color += emission;
-
-#ifdef HAS_SSR
-    vec3 ssr = texture2D(SSrTex, fragCoord - fragVelocity).rgb;
-    if (Any(ssr)) {
-        //color = mix(color, ssr, metallic);
-    }
-#endif
 
 #ifdef GL_ES
 #if MAX_LIGHTS > 0

@@ -92,24 +92,24 @@ void main()
     }
 
     vec3 viewPos = vRay * clampedPixelDepth;
+    //float jitter = float(int(gl_FragCoord.x + gl_FragCoord.y) & 1) * 0.5;
     vec3 jitter = hash(gl_FragCoord.xyz) * roughness * JITT_SCALE;
 
     // Reflection vector
-    vec3 hitCoord = viewPos;
-    vec3 reflected = normalize(reflect(normalize(hitCoord), normalize(normal)));
-    vec2 uv = RayCast(jitter + reflected * max(-viewPos.z, MIN_RAY_STEP), hitCoord);
+    vec3 hitPoint = viewPos;
+    vec3 reflected = normalize(reflect(normalize(viewPos), normalize(normal)));
+    vec2 hitPixel = RayCast(jitter + reflected * max(-viewPos.z, MIN_RAY_STEP), hitPoint);
 
-    float L = length(viewPos - hitCoord);
+    float L = length(viewPos - hitPoint);
     L = clamp(L * LLIMITER, 0.0, 1.0);
     float error = 1.0 - L;
 
     float fresnel = Fresnel(reflected, normal);
 
-    if (uv != vec2(-1.0, -1.0)) {
-        vec3 ssr = texture2D(ColorTex, uv).rgb * error * fresnel;
-        vec3 pixelColor = texture2D(ColorTex, vUV0).rgb;
-        FragColor.rgb = mix(pixelColor, ssr, metallic * error * fresnel);
+    if (hitPixel != vec2(-1.0, -1.0)) {
+        vec3 ssr = texture2D(ColorTex, hitPixel).rgb * error * fresnel;
+        FragColor.rgb = ssr;
     } else {
-        FragColor.rgb = texture2D(ColorTex, vUV0).rgb;
+        FragColor.rgb = vec3(0.0, 0.0, 0.0);
     }
 }

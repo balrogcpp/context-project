@@ -3,9 +3,9 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
+uniform vec4 ViewportSize;
 
-in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = texture2D(RT, vUV0).rgb;
+    FragColor.rgb = texture2D(RT, gl_FragCoord.xy * ViewportSize.zw).rgb;
 }

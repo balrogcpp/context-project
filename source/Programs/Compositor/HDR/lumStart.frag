@@ -4,6 +4,7 @@
 #include "tonemap.glsl"
 
 uniform sampler2D RT;
+uniform vec4 ViewportSize;
 
 //const vec2 c_offsets[16] = vec2[16]
 //(
@@ -44,7 +45,6 @@ float Downscale4x4(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3 + c4;
 }
 
-in highp vec2 vUV0;
 void main()
 {
     //Compute how many pixels we have to skip because we can't sample them all
@@ -52,6 +52,7 @@ void main()
     //We would need 64x64 samples, but we only sample 4x4, therefore we sample one
     //pixel and skip 15, then repeat. We perform:
     //(ViewportResolution / TargetResolution) / 4
-    float lum = Downscale4x4(RT, vUV0);
+    vec2 uv = gl_FragCoord.xy * ViewportSize.zw;
+    float lum = Downscale4x4(RT, uv);
     FragColor.r = SafeHDR(lum);
 }

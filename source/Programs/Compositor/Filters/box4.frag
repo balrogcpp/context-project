@@ -19,8 +19,7 @@ vec3 Box4(sampler2D tex, const vec2 uv)
     return c1;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Box4(RT, vUV0);
+    FragColor.rgb = Box4(RT, gl_FragCoord.xy / vec2(textureSize(RT, 0)));
 }

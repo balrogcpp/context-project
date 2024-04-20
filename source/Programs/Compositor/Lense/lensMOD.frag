@@ -26,11 +26,11 @@ vec3 Upscale9(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    vec3 color = texture2D(RT, vUV0).rgb;
-    vec3 fbo = Upscale9(FBO, vUV0).rgb;
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
+    vec3 color = texture2D(RT, uv).rgb;
+    vec3 fbo = Upscale9(FBO, uv).rgb;
 
     FragColor.rgb = SafeHDR(color + fbo / 6.0);
 }

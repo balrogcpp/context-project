@@ -18,9 +18,9 @@ float Downscale2x2(sampler2D tex, const vec2 uv)
     return c1;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    float lum = Downscale2x2(RT, vUV0);
+    vec2 uv = gl_FragCoord.xy * 2.0 / vec2(textureSize(RT, 0));
+    float lum = Downscale2x2(RT, uv);
     FragColor.r = SafeHDR(lum);
 }

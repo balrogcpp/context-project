@@ -31,10 +31,9 @@ vec3 Downscale13(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3 + c4 + c5;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    vec3 color = texture2D(RT, vUV0).rgb;
+    vec3 color = texture2D(RT, gl_FragCoord.xy * 2.0 / vec2(textureSize(RT, 0))).rgb;
     float lum = dot(color, vec3(0.2126, 0.7152, 0.0722));
     if (lum > 9.0) lum = 0.0;
     lum = max(0.0, lum - 0.7);

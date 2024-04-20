@@ -54,7 +54,7 @@ CompositorManager::~CompositorManager() = default;
 
 void CompositorManager::OnUpdate(float time) {
   viewProjPrev = viewProj;
-  viewProj = camera->getProjectionMatrix() * camera->getViewMatrix();
+  viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix();
 
   if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
     auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get());
@@ -159,14 +159,14 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   if (!RenderSystemIsGLES2()) AddCompositor("KinoFog", true);
-  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Lens", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);
   AddCompositor("Tonemap", false);
-  AddCompositor("MotionBlur", false);
+  AddCompositor("MotionBlur", !RenderSystemIsGLES2());
   AddCompositor("Pause", false);
 
   // reg as viewport listener
@@ -386,9 +386,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
 
-  } else if (pass_id == 30) {  // 14 = Motion Blur
+  } else if (pass_id == 30) {  // 14 = MotionBlur
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setNamedConstant("ViewProjPrev", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * viewProjPrev);
+    fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
   } else if (pass_id == 40) {  // 40 = KinoFog
@@ -484,11 +484,11 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);
   }
 
-  // apply for dynamic entities only
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);
   vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
 
+  // apply for dynamic entities only
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
     auto *entity = subentity->getParent();
     auto mass = entity->getUserObjectBindings().getUserAny("mass");
@@ -497,7 +497,8 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     if (entity->getMesh()->isReloadable()) {
       Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
       rend->getUserObjectBindings().setUserAny(MVP);
-      if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+      if (prevMVP.has_value())
+        vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
     }
   }
 }

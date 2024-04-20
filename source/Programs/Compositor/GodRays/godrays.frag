@@ -31,10 +31,10 @@ vec3 GodRays(sampler2D tex, const vec2 uv, const vec2 lightPos, int counter, flo
     return color;
 }
 
-in vec2 vUV0;
 void main()
 {
-    vec3 color = GodRays(FBO, vUV0, LightPosition.xy, RayCount, Density, LightPosition.w, Decay, Exposure);
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(FBO, 0));
+    vec3 color = GodRays(FBO, uv, LightPosition.xy, RayCount, Density, LightPosition.w, Decay, Exposure);
 
     FragColor.rgb = SafeHDR(color);
 }

@@ -13,7 +13,7 @@ abstract material Filter
             lighting off
             fog_override true
 
-			vertex_program_ref StdQuad {}
+			vertex_program_ref CopyVert {}
 
 			texture_unit RT
             {
@@ -118,6 +118,7 @@ material Linear : Filter
             fragment_program_ref linear
             {
                 param_named RT int 0
+                param_named_auto ViewportSize viewport_size
             }
         }
     }
@@ -143,8 +144,6 @@ material Downscale13 : Filter
     {
         pass
         {
-            vertex_program_ref StdQuad {}
-
             fragment_program_ref downscale13
             {
                 param_named RT int 0
@@ -159,8 +158,6 @@ material Box4 : Filter
     {
         pass
         {
-            vertex_program_ref StdQuad {}
-
             fragment_program_ref box4
             {
                 param_named RT int 0

@@ -26,8 +26,7 @@ vec3 Upscale9(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Upscale9(RT, vUV0);
+    FragColor.rgb = Upscale9(RT, gl_FragCoord.xy / 2.0 / vec2(textureSize(RT, 0)));
 }

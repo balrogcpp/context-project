@@ -19,8 +19,7 @@ vec3 Gauss5(sampler2D tex, const vec2 uv)
     return c1 + c2;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Gauss5(RT, vUV0);
+    FragColor.rgb = Gauss5(RT, gl_FragCoord.xy / vec2(textureSize(RT, 0)));
 }
