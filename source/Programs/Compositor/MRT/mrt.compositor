@@ -60,7 +60,7 @@ compositor MRT
         }
         target ssr
         {
-            pass clear {}
+            pass clear { colour_value 0 0 0 1 }
         }
         target shadowmap
         {

@@ -26,5 +26,10 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w);
     //color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, vVec, WorldSpaceLightPos0.xyz, CameraPosition);
 
-    EvaluateBuffer(color, alpha);
+#ifdef FORCE_TONEMAP
+    FragColor.rgb = SafeHDR(unreal(color));
+#else 
+    FragColor.rgb = SafeHDR(color);
+#endif
+    FragColor.a = alpha;
 }

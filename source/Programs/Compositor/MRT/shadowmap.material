@@ -5,6 +5,7 @@ import STD from stdquad.material
 fragment_program shadowmap glsl glsles hlsl
 {
 	source shadowmap.frag
+    target ps_2_a
 }
 
 sampler ShadowMap
@@ -27,7 +28,7 @@ material ShadowMap
             lighting off
             fog_override true
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref shadowmap
             {

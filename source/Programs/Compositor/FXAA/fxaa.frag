@@ -3,6 +3,7 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
+uniform vec2 TexelSize;
 
 //https://github.com/libretro/glsl-shaders/blob/master/anti-aliasing/shaders/fxaa.glsl
 
@@ -232,8 +233,7 @@ vec3 FxaaPixelShader(sampler2D tex, const vec2 pos, const vec2 rcpFrame)
 in highp vec2 vUV0;
 void main()
 {
-    vec2 texelSize = 1.0 / vec2(textureSize(RT, 0));
-    vec3 color = FxaaPixelShader(RT, vUV0, texelSize);
+    vec3 color = FxaaPixelShader(RT, vUV0, TexelSize);
 #ifndef FORCE_TONEMAP
     color = unreal(color);
 #endif

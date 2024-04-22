@@ -33,9 +33,11 @@ vertex_program CopyVert glsl glsles hlsl
 fragment_program CopyFrag glsl glsles hlsl
 {
 	source copy.frag
+    target ps_2_a
 }
 
 fragment_program Copy2x glsl glsles hlsl
 {
 	source copy2x.frag
+    target ps_2_a
 }

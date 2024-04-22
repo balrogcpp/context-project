@@ -3,12 +3,11 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
+uniform vec2 TexelSize;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
-vec3 Upscale9(sampler2D tex, const vec2 uv)
+vec3 Upscale9(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
-
     vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
     vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;
     vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).rgb;
@@ -26,7 +25,8 @@ vec3 Upscale9(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3;
 }
 
+in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Upscale9(RT, gl_FragCoord.xy / 2.0 / vec2(textureSize(RT, 0)));
+    FragColor.rgb = Upscale9(RT, vUV0, TexelSize);
 }

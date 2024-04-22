@@ -8,6 +8,7 @@ uniform sampler2D RT;
 uniform sampler2D VelocityTex;
 uniform sampler2D DepthTex;
 uniform sampler2D DepthOldTex;
+uniform vec4 ViewportSize;
 uniform mat4 InvViewMatrix;
 uniform mat4 ViewProjPrev;
 
@@ -37,8 +38,8 @@ void main()
     }
 
     // neighbors
-    vec2 texSize0 = vec2(textureSize(MRT, 0));
-    vec2 texelSize0 = 1.0 / texSize0;
+    vec2 texSize0 = ViewportSize.xy;
+    vec2 texelSize0 = ViewportSize.zw;
     vec3 A = texture2D(MRT, vUV0 + texelSize0 * vec2(0.0, 1.0)).rgb;
     vec3 B = texture2D(MRT, vUV0 + texelSize0 * vec2(0.0, -1.0)).rgb;
     vec3 C = texture2D(MRT, vUV0 + texelSize0 * vec2(-1.0, 0.0)).rgb;

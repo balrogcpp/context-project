@@ -11,8 +11,12 @@ uniform sampler2D CameraDepthTex;
 uniform sampler2D NormalTex;
 uniform sampler2D CausticTex;
 uniform sampler2D FoamTex;
+
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
+uniform vec4 ViewportSize;
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 uniform float Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
@@ -89,7 +93,7 @@ void main()
     float SunFade = clamp((0.1 - LightDir0.y) * 10.0, 0.0, 1.0);
     float ScatterFade = clamp((0.15 - LightDir0.y) * 4.0, 0.0, 1.0);
 
-    vec2 fragCoord = gl_FragCoord.xy / vec2(textureSize(RefractionTex, 0));
+    vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
     fragCoord = clamp(fragCoord, 0.002, 0.998);
 
     bool aboveWater = gl_FrontFacing;
@@ -298,8 +302,13 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 #endif
 
-    EvaluateBuffer(color);
+#ifdef FORCE_TONEMAP
+    FragColor.rgb = SafeHDR(unreal(color));
+#else 
+    FragColor.rgb = SafeHDR(color);
+#endif
 #ifdef HAS_MRT
+    FragData[MRT_DEPTH].x = (surfaceDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     FragData[MRT_NORMALS].xyz = mul(ViewMatrix, vec4(lNormal, 0.0)).xyz;
 #endif
 }

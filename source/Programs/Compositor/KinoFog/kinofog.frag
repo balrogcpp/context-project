@@ -38,8 +38,8 @@ in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    vec3 color = texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb;
-    float clampedPixelDepth = texelFetch(DepthTex, ivec2(gl_FragCoord.xy), 0).x;
+    vec3 color = texture2D(RT, vUV0).rgb;
+    float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
 
     if (clampedPixelDepth > 0.9) {
         FragColor.rgb = color;

@@ -12,12 +12,12 @@
 
 #include "srgb.glsl"
 
-vec4 toSRGB(const vec4 linear)
+vec4 toSRGB(const vec4 col)
 {
 #ifndef FORCE_TONEMAP
-	return vec4(LINEARtoSRGB(linear.rgb), linear.a);
+	return vec4(LINEARtoSRGB(col.rgb), col.a);
 #else
-	return linear;
+	return col;
 #endif
 }
 

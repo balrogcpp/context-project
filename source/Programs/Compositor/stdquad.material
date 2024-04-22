@@ -63,7 +63,7 @@ material Copy
             lighting off
             fog_override true
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref CopyFrag
             {
@@ -93,7 +93,7 @@ material Copy2x
             lighting off
             fog_override true
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref Copy2x
             {

@@ -6,6 +6,7 @@ import STD from stdquad.material
 fragment_program godraysFBO glsl glsles hlsl
 {
 	source godraysFBO.frag
+    target ps_2_a
 }
 
 material GodraysFBO : STD
@@ -17,29 +18,15 @@ material GodraysFBO : STD
             fragment_program_ref godraysFBO
 			{
                 param_named RT int 0
-                param_named Lum int 0
-                param_named DepthTex int 2
+                param_named DepthTex int 1
             }
 
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
-            texture_unit Lum
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
             texture_unit Depth
             {
                 texture black.dds
                 tex_address_mode clamp
                 filtering bilinear
             }
-
 		}
 	}
 }
@@ -48,6 +35,7 @@ material GodraysFBO : STD
 fragment_program godrays glsl glsles hlsl
 {
 	source godrays.frag
+    target ps_2_a
 
     default_params
     {
@@ -76,6 +64,7 @@ material GodRays : STD
 fragment_program godraysMOD glsl glsles hlsl
 {
 	source godraysMOD.frag
+    target ps_2_a
 }
 
 material GodraysMOD : STD

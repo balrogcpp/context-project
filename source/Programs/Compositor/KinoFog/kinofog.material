@@ -5,6 +5,7 @@ import RayCast from stdquad.material
 fragment_program KinoFog glsl glsles hlsl
 {
     source kinofog.frag
+    target ps_2_a
 
 	default_params
 	{
@@ -28,12 +29,6 @@ material KinoFog : RayCast
                 param_named SkyBoxTex int 2
 			}
 
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
             texture_unit DepthTex
             {
                 texture black.dds

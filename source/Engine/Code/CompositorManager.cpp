@@ -166,7 +166,7 @@ void CompositorManager::OnSetUp() {
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);
   AddCompositor("Tonemap", false);
-  AddCompositor("MotionBlur", !RenderSystemIsGLES2());
+  AddCompositor("MotionBlur", false);
   AddCompositor("Pause", false);
 
   // reg as viewport listener
@@ -424,6 +424,7 @@ void CompositorManager::notifyResourcesCreated(bool forResizeOnly) {
     }
   }
 }
+
 void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                                  const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
   if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram()) return;

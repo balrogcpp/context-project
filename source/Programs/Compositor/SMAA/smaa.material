@@ -15,6 +15,7 @@ vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
 {
 	source SMAA_EdgeDetection.frag
+    target ps_2_a
 }
 
 material SMAA/EdgeDetection
@@ -70,6 +71,7 @@ vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles hlsl
 {
 	source SMAA_BlendingWeightCalculation.frag
+    target ps_2_a
 
 	default_params
 	{
@@ -139,6 +141,7 @@ vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 fragment_program SMAA/NeighborhoodBlending_ps glsl glsles hlsl
 {
 	source SMAA_NeighborhoodBlending.frag
+    target ps_2_a
 
 	default_params
 	{

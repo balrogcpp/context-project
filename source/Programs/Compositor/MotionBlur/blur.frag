@@ -7,6 +7,7 @@ uniform sampler2D DepthTex;
 #ifdef MRT_VELOCITY
 uniform sampler2D VelocityTex;
 #endif
+uniform vec2 TexSize;
 uniform mat4 InvViewMatrix;
 uniform mat4 ViewProjPrev;
 uniform float FPS;
@@ -37,7 +38,7 @@ void main()
     }
 #endif
     velocity *= FPS / 60.0;
-    float speed = length(velocity * vec2(textureSize(RT, 0)));
+    float speed = length(velocity * TexSize);
     float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
     float invSamples = 1.0 / nSamples;
 

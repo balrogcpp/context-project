@@ -3,49 +3,59 @@
 fragment_program gauss5y glsl glsles hlsl
 {
 	source gauss5y.frag
+    target ps_2_a
 }
 
 fragment_program gauss5x glsl glsles hlsl
 {
 	source gauss5x.frag
+    target ps_2_a
 }
 
 fragment_program gauss9y glsl glsles hlsl
 {
 	source gauss9y.frag
+    target ps_2_a
 }
 
 fragment_program gauss9x glsl glsles hlsl
 {
 	source gauss9x.frag
+    target ps_2_a
 }
 
 fragment_program gauss13y glsl glsles hlsl
 {
 	source gauss13y.frag
+    target ps_2_a
 }
 
 fragment_program gauss13x glsl glsles hlsl
 {
 	source gauss13x.frag
+    target ps_2_a
 }
 
 fragment_program linear glsl glsles hlsl
 {
 	source linear.frag
+    target ps_2_a
 }
 
 fragment_program downscale13 glsl glsles hlsl
 {
 	source downscale13.frag
+    target ps_2_a
 }
 
 fragment_program upscale9 glsl glsles hlsl
 {
 	source upscale9.frag
+    target ps_2_a
 }
 
 fragment_program box4 glsl glsles hlsl
 {
 	source box4.frag
+    target ps_2_a
 }

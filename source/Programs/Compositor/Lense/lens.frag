@@ -72,12 +72,11 @@ vec3 HaloFeatures(const vec2 uv, int counter, float radius)
     return color;
 }
 
+in highp vec2 vUV0;
 void main()
 {
-    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
-    vec3 color = texture2D(RT, uv).rgb;
-
-//    color += GhostFeatures(uv, FeaturesCount, ChromaticRadius) * 0.5;
-    color += HaloFeatures(uv, FeaturesCount, ChromaticRadius);
+    vec3 color = texture2D(RT, vUV0).rgb;
+//    color += GhostFeatures(vUV0, FeaturesCount, ChromaticRadius) * 0.5;
+    color += HaloFeatures(vUV0, FeaturesCount, ChromaticRadius);
     FragColor.rgb = color;
 }

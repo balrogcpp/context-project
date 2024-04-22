@@ -73,5 +73,8 @@ out vec4 FragColor;
 #endif
 #include "math.glsl"
 #include "mrt.glsl"
+#ifdef FORCE_TONEMAP
+#include "tonemap.glsl"
+#endif
 
 #endif // HEADER_GLSL

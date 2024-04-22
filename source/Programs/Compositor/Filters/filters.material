@@ -13,7 +13,7 @@ abstract material Filter
             lighting off
             fog_override true
 
-			vertex_program_ref CopyVert {}
+			vertex_program_ref StdQuad {}
 
 			texture_unit RT
             {
@@ -34,6 +34,7 @@ material Filter5Y : Filter
 			fragment_program_ref gauss5y
 			{
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
 			}
 		}
 	}
@@ -48,6 +49,7 @@ material Filter5X : Filter
 			fragment_program_ref gauss5x
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
 		}
 	}
@@ -62,6 +64,7 @@ material Filter9Y : Filter
 			fragment_program_ref gauss9y
 			{
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
 			}
 		}
 	}
@@ -76,6 +79,7 @@ material Filter9X : Filter
 			fragment_program_ref gauss9x
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
 		}
 	}
@@ -90,6 +94,7 @@ material Filter13Y : Filter
 			fragment_program_ref gauss13y
 			{
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
 			}
 		}
 	}
@@ -104,6 +109,7 @@ material Filter13X : Filter
 			fragment_program_ref gauss13x
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
 		}
 	}
@@ -118,7 +124,6 @@ material Linear : Filter
             fragment_program_ref linear
             {
                 param_named RT int 0
-                param_named_auto ViewportSize viewport_size
             }
         }
     }
@@ -133,6 +138,7 @@ material Upscale9 : Filter
             fragment_program_ref upscale9
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
         }
     }
@@ -147,6 +153,7 @@ material Downscale13 : Filter
             fragment_program_ref downscale13
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
         }
     }
@@ -161,6 +168,7 @@ material Box4 : Filter
             fragment_program_ref box4
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
         }
     }

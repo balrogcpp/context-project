@@ -5,6 +5,7 @@ import STD from stdquad.material
 fragment_program Lens glsl glsles hlsl
 {
 	source lens.frag
+    target ps_2_a
 }
 
 material Lens : STD
@@ -24,6 +25,7 @@ material Lens : STD
 fragment_program lensFBO glsl glsles hlsl
 {
 	source lensFBO.frag
+    target ps_2_a
 }
 
 material LensFBO : STD
@@ -43,6 +45,7 @@ material LensFBO : STD
 fragment_program lensMOD glsl glsles hlsl
 {
 	source lensMOD.frag
+    target ps_2_a
 }
 
 material LensMOD : STD

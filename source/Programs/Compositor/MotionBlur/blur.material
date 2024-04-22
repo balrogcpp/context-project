@@ -5,6 +5,7 @@ import RayCast from stdquad.material
 fragment_program Blur glsl glsles hlsl
 {
     source blur.frag
+    target ps_2_a
 
     preprocessor_defines MAX_SAMPLES=3
 
@@ -25,6 +26,7 @@ material Blur : RayCast
                 param_named RT int 0
                 param_named DepthTex int 1
                 param_named VelocityTex int 2
+                param_named_auto TexSize texture_size 0
 			}
 
             texture_unit Depth

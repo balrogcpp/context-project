@@ -80,10 +80,10 @@ const vec2 vogel_disk_16[16] = vec2[](
     vec2(-0.1133270115046468, -0.9490025827627441)
 );
 
-float InterleavedGradientNoise()
+float InterleavedGradientNoise(const vec2 uv)
 {
     const vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
-    return fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
+    return fract(magic.z * fract(dot(uv, magic.xy)));
 }
 
 #ifdef TERRA_LIGHTMAP
@@ -92,11 +92,10 @@ uniform sampler2D TerraLightTex;
 float FetchTerraShadow(const vec2 uv)
 {
     float shadow = 0.0;
-    float phi = InterleavedGradientNoise();
-    vec2 tsize = 1.0 / vec2(textureSize(TerraLightTex, 0));
+    float phi = InterleavedGradientNoise(uv);
 
     for (int i = 0; i < 4; ++i) {
-        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * tsize;
+        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexSize3.zw;
         shadow += texture2D(TerraLightTex, uv + offset).x;
     }
     shadow *= 0.25;
@@ -107,14 +106,14 @@ float FetchTerraShadow(const vec2 uv)
 
 
 #if MAX_SHADOW_TEXTURES > 0
-#ifdef SHADOWMAP_ATLAS
+// #ifdef SHADOWMAP_ATLAS
 uniform mediump sampler2D ShadowTex;
-#else
-uniform mediump sampler2D ShadowMap0;
-uniform mediump sampler2D ShadowMap1;
-uniform mediump sampler2D ShadowMap2;
-uniform mediump sampler2D ShadowMap3;
-#endif
+// #else
+// uniform mediump sampler2D ShadowMap0;
+// uniform mediump sampler2D ShadowMap1;
+// uniform mediump sampler2D ShadowMap2;
+// uniform mediump sampler2D ShadowMap3;
+// #endif
 uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 uniform highp vec4 PssmSplitPoints;
@@ -187,10 +186,10 @@ float CalcShadow(sampler2D shadowMap, int index)
 #endif
 
     depth = depth * 0.5 + 0.5;
-    vec2 tsize = 1.0 / vec2(textureSize(shadowMap, 0));
+    vec2 tsize = TexSize6.zw;
     //depth -= 0.001;
     float shadow = 0.0;
-    float phi = InterleavedGradientNoise();
+    float phi = InterleavedGradientNoise(uv);
 #ifdef PENUMBRA
     float penumbra = Penumbra(uv, tsize, phi, depth);
 #endif
@@ -236,7 +235,7 @@ float CalcShadow(sampler2D shadowMap, int index)
 
 float CalcShadow(int index)
 {
-#ifdef SHADOWMAP_ATLAS
+// #ifdef SHADOWMAP_ATLAS
     if (index == 0)
         return CalcShadow(ShadowTex, 0);
     else if (index == 1)
@@ -245,40 +244,39 @@ float CalcShadow(int index)
         return CalcShadow(ShadowTex, 2);
     else if (index == 3)
         return CalcShadow(ShadowTex, 3);
-#else
-    if (index == 0)
-        return CalcShadow(ShadowMap0, 0);
-    else if (index == 1)
-        return CalcShadow(ShadowMap1, 1);
-    else if (index == 2)
-        return CalcShadow(ShadowMap2, 2);
-    else if (index == 3)
-        return CalcShadow(ShadowMap3, 3);
-#endif
+// #else
+//     if (index == 0)
+//         return CalcShadow(ShadowMap0, 0);
+//     else if (index == 1)
+//         return CalcShadow(ShadowMap1, 1);
+//     else if (index == 2)
+//         return CalcShadow(ShadowMap2, 2);
+//     else if (index == 3)
+//         return CalcShadow(ShadowMap3, 3);
+// #endif
 
     return 1.0; // to shut up "missing return" warning
 }
 
-float CalcPSSMShadow()
+float CalcPSSMShadow(float pixelDepth)
 {
-    float depth = gl_FragCoord.z / gl_FragCoord.w;
-    if (depth >= PssmSplitPoints.w) return 1.0;
+    if (pixelDepth >= PssmSplitPoints.w) return 1.0;
 
-#ifdef SHADOWMAP_ATLAS
-    if (depth <= PssmSplitPoints.x)
+// #ifdef SHADOWMAP_ATLAS
+    if (pixelDepth <= PssmSplitPoints.x)
         return CalcShadow(ShadowTex, 0);
-    else if (depth <= PssmSplitPoints.y)
+    else if (pixelDepth <= PssmSplitPoints.y)
         return CalcShadow(ShadowTex, 1);
-    else if (depth <= PssmSplitPoints.z)
+    else if (pixelDepth <= PssmSplitPoints.z)
         return CalcShadow(ShadowTex, 2);
-#else
-    if (depth <= PssmSplitPoints.x)
-        return CalcShadow(ShadowMap0, 0);
-    else if (depth <= PssmSplitPoints.y)
-        return CalcShadow(ShadowMap1, 1);
-    else if (depth <= PssmSplitPoints.z)
-        return CalcShadow(ShadowMap2, 2);
-#endif
+// #else
+//     if (pixelDepth <= PssmSplitPoints.x)
+//         return CalcShadow(ShadowMap0, 0);
+//     else if (pixelDepth <= PssmSplitPoints.y)
+//         return CalcShadow(ShadowMap1, 1);
+//     else if (pixelDepth <= PssmSplitPoints.z)
+//         return CalcShadow(ShadowMap2, 2);
+// #endif
 
     return 1.0; // to shut up "missing return" warning
 }

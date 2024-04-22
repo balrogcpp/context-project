@@ -29,14 +29,14 @@ vec3 SRGBtoLINEAR(const vec3 srgb)
 #endif
 }
 
-vec3 LINEARtoSRGB(const vec3 linear)
+vec3 LINEARtoSRGB(const vec3 col)
 {
 #if defined(SRGB_FAST_APPROXIMATION)
-    return pow(linear, vec3(0.45454545, 0.45454545, 0.45454545));
+    return pow(col, vec3(0.45454545, 0.45454545, 0.45454545));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
-    return sqrt(linear);
+    return sqrt(col);
 #else
-    return vec3(toSRGB(linear.x), toSRGB(linear.y), toSRGB(linear.z));
+    return vec3(toSRGB(col.x), toSRGB(col.y), toSRGB(col.z));
 #endif
 }
 

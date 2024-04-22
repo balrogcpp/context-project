@@ -27,6 +27,8 @@
 #define mat3x4 float4x3
 #define mat4x4 float4x4
 #define mat4x4 matrix
+#define mat3 float3x3
+#define mat4 float4x4
 #define half min16float
 #define half4 vector <min16float, 4>
 #define half3 vector <min16float, 3>
@@ -57,7 +59,7 @@
 #define noinline
 #define precision
 #define highp
-#define
+#define mediump
 #define lowp
 #define dFdx ddx
 #define dFdy ddy

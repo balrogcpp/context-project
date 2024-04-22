@@ -4,7 +4,7 @@
 #include "tonemap.glsl"
 
 uniform sampler2D RT;
-uniform vec4 ViewportSize;
+uniform vec2 TexelSize;
 
 //const vec2 c_offsets[16] = vec2[16]
 //(
@@ -14,9 +14,8 @@ uniform vec4 ViewportSize;
 //vec2( 2, 2 ), vec2( 3, 2 ), vec2( 2, 3 ), vec2( 3, 3 )
 //);
 //  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale01_SumLumStart_ps.glsl
-float Downscale4x4(sampler2D tex, const vec2 uv)
+float Downscale4x4(sampler2D tex, const vec2 uv, const vec2 texSize)
 {
-    vec2 texSize = vec2(textureSize(tex, 0));
     vec2 ratio = (texSize / vec2(64.0, 64.0)) * 0.25;
     vec2 tsize = ratio / texSize;
     const float W = 1.0 / 16.0;
@@ -45,6 +44,7 @@ float Downscale4x4(sampler2D tex, const vec2 uv)
     return c1 + c2 + c3 + c4;
 }
 
+in highp vec2 vUV0;
 void main()
 {
     //Compute how many pixels we have to skip because we can't sample them all
@@ -52,7 +52,6 @@ void main()
     //We would need 64x64 samples, but we only sample 4x4, therefore we sample one
     //pixel and skip 15, then repeat. We perform:
     //(ViewportResolution / TargetResolution) / 4
-    vec2 uv = gl_FragCoord.xy * ViewportSize.zw;
-    float lum = Downscale4x4(RT, uv);
+    float lum = Downscale4x4(RT, vUV0, TexelSize);
     FragColor.r = SafeHDR(lum);
 }

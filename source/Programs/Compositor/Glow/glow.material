@@ -8,6 +8,7 @@ import STD from stdquad.material
 fragment_program glowStart glsl glsles hlsl
 {
 	source glowStart.frag
+    target ps_2_a
 }
 
 material GlowStart : STD
@@ -33,6 +34,7 @@ material GlowStart : STD
 fragment_program glowMod glsl glsles hlsl
 {
 	source glowMod.frag
+    target ps_2_a
 }
 
 material GlowMod : STD

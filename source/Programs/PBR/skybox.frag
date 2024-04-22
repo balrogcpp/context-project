@@ -13,6 +13,8 @@ uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform vec3 HosekParams[10];
 uniform float Time;
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 
 in highp vec3 vUV0;
 void main()
@@ -38,6 +40,10 @@ void main()
     // Fog
     color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
-    EvaluateBuffer(color);
+#ifdef FORCE_TONEMAP
+    FragColor.rgb = SafeHDR(unreal(color));
+#else 
+    FragColor.rgb = SafeHDR(color);
+#endif
     FragData[MRT_DEPTH].r = 0.999;
 }

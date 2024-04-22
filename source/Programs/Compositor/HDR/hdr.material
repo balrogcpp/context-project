@@ -8,21 +8,19 @@ import STD from stdquad.material
 fragment_program lumStart glsl glsles hlsl
 {
 	source lumStart.frag
-
-    default_params
-    {
-        param_named_auto ViewportSize viewport_size
-    }
+    target ps_2_a
 }
 
 fragment_program lumIt glsl glsles hlsl
 {
 	source lumIt.frag
+    target ps_2_a
 }
 
 fragment_program lumEnd glsl glsles hlsl
 {
 	source lumEnd.frag
+    target ps_2_a
 
     default_params
     {
@@ -43,6 +41,7 @@ material HdrStart : STD
             fragment_program_ref lumStart
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
         }
     }
@@ -57,6 +56,7 @@ material HdrIt : STD
             fragment_program_ref lumIt
             {
                 param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
             }
         }
     }
@@ -72,6 +72,7 @@ material HdrEnd : STD
             {
                 param_named RT int 0
                 param_named Lum int 1
+                param_named_auto TexelSize inverse_texture_size 0
             }
 
             texture_unit Lum
@@ -87,6 +88,7 @@ material HdrEnd : STD
 fragment_program HDR glsl glsles hlsl
 {
     source hdr.frag
+    target ps_2_a
 }
 
 material HDR : STD
@@ -95,8 +97,6 @@ material HDR : STD
 	{
 		pass
 		{
-
-		    vertex_program_ref CopyVert {}
 
             fragment_program_ref HDR
 			{
@@ -122,6 +122,7 @@ vertex_program tonemap_vp glsl glsles hlsl
 fragment_program tonemap_fp glsl glsles hlsl
 {
     source tonemap.frag
+    target ps_2_a
 }
 
 material Tonemap : STD

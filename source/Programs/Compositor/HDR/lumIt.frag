@@ -4,10 +4,10 @@
 #include "tonemap.glsl"
 
 uniform sampler2D RT;
+uniform vec2 TexelSize;
 
-float Downscale2x2(sampler2D tex, const vec2 uv)
+float Downscale2x2(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    vec2 tsize = 1.0 / vec2(textureSize(tex, 0));
     float A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).x;
     float B = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).x;
     float C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).x;
@@ -18,9 +18,9 @@ float Downscale2x2(sampler2D tex, const vec2 uv)
     return c1;
 }
 
+in highp vec2 vUV0;
 void main()
 {
-    vec2 uv = gl_FragCoord.xy * 2.0 / vec2(textureSize(RT, 0));
-    float lum = Downscale2x2(RT, uv);
+    float lum = Downscale2x2(RT, vUV0, TexelSize);
     FragColor.r = SafeHDR(lum);
 }

@@ -30,8 +30,18 @@ uniform samplerCube SpecularEnvTex;
 uniform sampler2D TerraNormalTex;
 #endif
 
+uniform vec4 TexSize0;
+uniform vec4 TexSize1;
+uniform vec4 TexSize2;
+uniform vec4 TexSize3;
+uniform vec4 TexSize4;
+uniform vec4 TexSize5;
+uniform vec4 TexSize6;
+
 uniform vec3 IBL[9];
 uniform vec3 HosekParams[10];
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 uniform float Time;
 uniform highp mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
@@ -233,6 +243,7 @@ struct PBRInfo
 };
 
 vec3 v, n;
+highp float fragDepth;
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
@@ -316,7 +327,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material)
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        attenuation *= saturate(CalcPSSMShadow() + ShadowColour.r);
+        attenuation *= saturate(CalcPSSMShadow(fragDepth) + ShadowColour.r);
         if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -339,7 +350,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material)
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
-vec3 EvaluateLocalLights(PBRInfo material)
+vec3 EvaluateLocalLights(const PBRInfo material)
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -422,7 +433,7 @@ vec3 GetNormal(const vec2 uv, const vec2 uv1)
 #endif
 
 #ifdef HAS_NORMALMAP
-    if (textureSize(NormalTex, 0).x > 1) {
+    if (TexSize1.x > 1.0) {
         highp mat3 tbn = mtxFromCols3x3(t, b, n);
         vec3 normal = texture2D(NormalTex, uv).xyz;
         return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
@@ -439,7 +450,7 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
 {
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * color, 1.0);
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(AlbedoTex, uv);
+    if (TexSize0.x > 1.0) albedo *= texture2D(AlbedoTex, uv);
 #endif
 
 #ifdef HAS_ALPHA
@@ -452,7 +463,7 @@ vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
-    if (textureSize(EmissiveTex, 0).x > 1) emission += texture2D(EmissiveTex, uv).rgb;
+    if (TexSize3.x > 1.0) emission += texture2D(EmissiveTex, uv).rgb;
 #endif
     return SRGBtoLINEAR(emission) * SurfaceSpecularColour.b;
 }
@@ -467,7 +478,7 @@ vec3 GetORM(const vec2 uv, float spec)
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
 #endif
 #ifdef HAS_ORM
-    if (textureSize(OrmTex, 0).x > 1) orm *= texture2D(OrmTex, uv).rgb;
+    if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;
     else orm.b = 0.0;
 #endif
 
@@ -511,7 +522,7 @@ void main()
     float metallic = orm.b;
     float occlusion = orm.r;
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
-    highp float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
+    fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     vec2 fragPos = vScreenPosition.xz;
     vec2 fragPosPrev = vPrevScreenPosition.xz;
     vec2 fragVelocity = (fragPos - fragPosPrev) * ViewportSize.zw;
@@ -571,8 +582,16 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(color, alpha);
+#ifdef FORCE_TONEMAP
+    FragColor.rgb = SafeHDR(unreal(color));
+#else 
+    FragColor.rgb = SafeHDR(color);
+#endif
+    FragColor.a = alpha;
 #ifdef HAS_MRT
+#ifdef MRT_DEPTH
+    FragData[MRT_DEPTH].x = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+#endif
 #ifdef MRT_NORMALS
     FragData[MRT_NORMALS].xyz = mul(ViewMatrix, vec4(n, 0.0)).xyz;
 #endif
