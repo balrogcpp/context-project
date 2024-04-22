@@ -22,7 +22,7 @@
             </camera>
         </node>
         <node name="Helmet">
-            <position x="0" y="2" z="2.0"/>
+            <position x="0" y="2" z="-2.0"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
             <scale x="2" y="2" z="2"/>
             <entity meshFile="DamagedHelmet.mesh" name="Helmet2" castShadows="true">
@@ -33,7 +33,7 @@
             </entity>
         </node>
         <node name="Cube.mesh">
-            <position x="0" y="10.0" z="5.0"/>
+            <position x="0" y="5.0" z="5.0"/>
             <scale x="5" y="5" z="5"/>
             <entity meshFile="Cube.mesh" name="Cube">
                 <userData>
@@ -43,11 +43,11 @@
             </entity>
         </node>
         <node name="Plane">
-            <plane name="Plane" material="Plane" width="100" height="100" distance="-1"/>
+            <plane name="Plane" material="Plane" width="100" height="100" distance="0"/>
         </node>
-        <node name="Plane2">
-            <plane name="Plane2" material="Water" width="200" height="200" distance="0" flag="0xFFF"/>
-        </node>
+        <!-- <node name="Plane2">
+            <plane name="Plane2" material="Water" width="200" height="200" distance="0"/>
+        </node> -->
     </nodes>
 <!--    <terrainGroupLegacy>-->
 <!--        <terrain x="0" y="0" file="terrain.cfg"/>-->
