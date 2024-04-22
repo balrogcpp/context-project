@@ -500,6 +500,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 
     } else {
       Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+
     }
   }
 };

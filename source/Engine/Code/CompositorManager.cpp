@@ -497,8 +497,7 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     if (entity->getMesh()->isReloadable()) {
       Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
       rend->getUserObjectBindings().setUserAny(MVP);
-      if (prevMVP.has_value())
-        vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+      if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
     }
   }
 }

@@ -18,6 +18,3 @@ void SetupImGuiStyle_RedCustom();
 void SetupImGuiStyle_Enemymouse();
 void SetupImGuiStyle_SpectrumLight();
 void SetupImGuiStyle_SpectrumDark();
-void SetupImGuiStyle_NeverBlue();
-void SetupImGuiStyle_NeverDark();
-void SetupImGuiStyle_NeverLight();
