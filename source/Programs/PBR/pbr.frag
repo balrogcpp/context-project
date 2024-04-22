@@ -4,6 +4,9 @@
 #include "header.glsl"
 #include "srgb.glsl"
 #include "fog.glsl"
+#ifdef FORCE_TONEMAP
+#include "tonemap.glsl"
+#endif
 
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;
@@ -37,7 +40,6 @@ uniform vec4 TexSize3;
 uniform vec4 TexSize4;
 uniform vec4 TexSize5;
 uniform vec4 TexSize6;
-
 uniform vec3 IBL[9];
 uniform vec3 HosekParams[10];
 uniform float FarClipDistance;

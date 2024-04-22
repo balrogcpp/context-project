@@ -4,9 +4,9 @@
 #define HEADER_GLSL
 
 //#undef HAS_MRT
-#ifdef GL_ES
+//#ifdef GL_ES
 //#define FORCE_TONEMAP
-#endif
+//#endif
 
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
@@ -66,15 +66,15 @@ out vec4 FragColor;
 #endif
 #endif
 
+
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 #include "hlsl2.glsl"
-#elif defined(OGRE_HLSL)
-#include "glsl2.hlsl"
+#else
+#define highp
+#define mediump
+#define lowp
+#include "OgreUnifiedShader.h"
 #endif
 #include "math.glsl"
-#include "mrt.glsl"
-#ifdef FORCE_TONEMAP
-#include "tonemap.glsl"
-#endif
 
 #endif // HEADER_GLSL

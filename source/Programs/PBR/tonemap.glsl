@@ -3,9 +3,9 @@
 #ifndef TONEMAP_GLSL
 #define TONEMAP_GLSL
 
-float luminance(const vec3 linear)
+float luminance(const vec3 col)
 {
-    return dot(linear, vec3(0.2126, 0.7152, 0.0722));
+    return dot(col, vec3(0.2126, 0.7152, 0.0722));
 }
 
 // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"

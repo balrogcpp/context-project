@@ -5,6 +5,9 @@
 #include "srgb.glsl"
 #include "fog.glsl"
 #include "skymodel.glsl"
+#ifdef FORCE_TONEMAP
+#include "tonemap.glsl"
+#endif
 
 uniform vec3 LightColor0;
 uniform vec3 LightDir0;
