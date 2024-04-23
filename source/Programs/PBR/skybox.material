@@ -13,7 +13,6 @@ vertex_program SkyBoxVp glsl glsles hlsl
 fragment_program SkyBoxFp glsl glsles hlsl
 {
 	source skybox.frag
-    target ps_2_a
 
     default_params
     {
@@ -21,8 +20,6 @@ fragment_program SkyBoxFp glsl glsles hlsl
         param_named_auto LightColor0 light_diffuse_colour_power_scaled 0
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
-        param_named_auto FarClipDistance far_clip_distance
-        param_named_auto NearClipDistance near_clip_distance
         param_named_auto Time time
     }
 }

@@ -5,7 +5,6 @@ import RayCast from stdquad.material
 fragment_program ssao glsl glsles hlsl
 {
 	source ssao.frag
-    target ps_2_a
 }
 
 material SSAO : RayCast

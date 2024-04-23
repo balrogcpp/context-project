@@ -10,7 +10,6 @@ vertex_program fxaa_vp glsl glsles hlsl
 fragment_program fxaa_fp glsl glsles hlsl
 {
     source fxaa.frag
-    target ps_2_a
 }
 
 material FXAA : STD

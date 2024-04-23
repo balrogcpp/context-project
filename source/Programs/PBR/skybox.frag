@@ -5,9 +5,8 @@
 #include "srgb.glsl"
 #include "fog.glsl"
 #include "skymodel.glsl"
-#ifdef FORCE_TONEMAP
-#include "tonemap.glsl"
-#endif
+#include "clouds.glsl"
+#include "starfield.glsl"
 
 uniform vec3 LightColor0;
 uniform vec3 LightDir0;
@@ -16,8 +15,6 @@ uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform vec3 HosekParams[10];
 uniform float Time;
-uniform float FarClipDistance;
-uniform float NearClipDistance;
 
 in highp vec3 vUV0;
 void main()
@@ -36,8 +33,8 @@ void main()
     }
 
     // Apply exposure.
-    //color += starfield(vUV0, -LightDir0, Time);
-    //color = clouds(vUV0, color, LightColor0, -LightDir0, Time);
+    color += starfield(vUV0, -LightDir0, Time);
+    color = clouds(vUV0, color, LightColor0, -LightDir0, Time);
     color = SRGBtoLINEAR(color);
 
     // Fog

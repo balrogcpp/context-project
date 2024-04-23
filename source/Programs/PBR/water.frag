@@ -4,9 +4,6 @@
 #include "header.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
-#ifdef FORCE_TONEMAP
-#include "tonemap.glsl"
-#endif
 
 uniform sampler2D ReflectionTex;
 uniform sampler2D RefractionTex;

@@ -5,7 +5,6 @@ import RayCast from stdquad.material
 fragment_program Blur glsl glsles hlsl
 {
     source blur.frag
-    target ps_2_a
 
     preprocessor_defines MAX_SAMPLES=3
 

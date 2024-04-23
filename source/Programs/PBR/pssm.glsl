@@ -159,7 +159,7 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
 }
 #endif
 
-float CalcShadow(const highp vec4 lightSpacePos, int index)
+float CalcShadow(const highp vec3 lightSpacePos, int index)
 {
     vec2 uv = lightSpacePos.xy;
     float depth = lightSpacePos.z;
@@ -224,16 +224,16 @@ float CalcShadow(const highp vec4 lightSpacePos, int index)
     return shadow;
 }
 
-float CalcPSSMShadow(const highp vec4 lightSpacePos0, const highp vec4 lightSpacePos1, const highp vec4 lightSpacePos2, float pixelDepth)
+float CalcPSSMShadow(const highp vec3 lightSpacePos0, const highp vec3 lightSpacePos1, const highp vec3 lightSpacePos2, float pixelDepth)
 {
     if (pixelDepth >= PssmSplitPoints.w) return 1.0;
 
     if (pixelDepth <= PssmSplitPoints.x)
-        return CalcShadow(lightSpacePos0 / lightSpacePos0.w, 0);
+        return CalcShadow(lightSpacePos0, 0);
     else if (pixelDepth <= PssmSplitPoints.y)
-        return CalcShadow(lightSpacePos1 / lightSpacePos1.w, 1);
+        return CalcShadow(lightSpacePos1, 1);
     else if (pixelDepth <= PssmSplitPoints.z)
-        return CalcShadow(lightSpacePos2 / lightSpacePos2.w, 2);
+        return CalcShadow(lightSpacePos2, 2);
 
     return 1.0; // to shut up "missing return" warning
 }

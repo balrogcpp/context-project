@@ -78,5 +78,6 @@ out vec4 FragColor;
 #endif
 #include "OgreUnifiedShader.h"
 #include "math.glsl"
+#include "tonemap.glsl"
 
 #endif // HEADER_GLSL

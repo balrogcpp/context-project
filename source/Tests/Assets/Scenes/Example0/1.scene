@@ -49,10 +49,10 @@
             <plane name="Plane2" material="Water" width="200" height="200" distance="0"/>
         </node> -->
     </nodes>
-<!--    <terrainGroupLegacy>-->
-<!--        <terrain x="0" y="0" file="terrain.cfg"/>-->
-<!--    </terrainGroupLegacy>-->
-<!--    <terrainGroupLegacy>-->
+   <!-- <terrainGroup>
+       <terrain x="0" y="0" file="terrain.cfg"/>
+   </terrainGroup> -->
+<!--    <terrainGroup>-->
 <!--        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" density="0.4" density_map="terrain2.png" trees="fir05_30.mesh"/>-->
-<!--    </terrainGroupLegacy>-->
+<!--    </terrainGroup>-->
 </scene>

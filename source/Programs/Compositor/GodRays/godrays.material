@@ -6,7 +6,6 @@ import STD from stdquad.material
 fragment_program godraysFBO glsl glsles hlsl
 {
 	source godraysFBO.frag
-    target ps_2_a
 }
 
 material GodraysFBO : STD
@@ -35,7 +34,6 @@ material GodraysFBO : STD
 fragment_program godrays glsl glsles hlsl
 {
 	source godrays.frag
-    target ps_2_a
 
     default_params
     {
@@ -64,7 +62,6 @@ material GodRays : STD
 fragment_program godraysMOD glsl glsles hlsl
 {
 	source godraysMOD.frag
-    target ps_2_a
 }
 
 material GodraysMOD : STD

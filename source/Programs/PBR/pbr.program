@@ -8,6 +8,7 @@ shared_params IBL_Shared_frag
 abstract vertex_program Unlit_I_vs glsl glsles hlsl
 {
 	source pbr.vert
+
     preprocessor_defines HAS_UV,MAX_LIGHTS=0,MAX_SHADOW_TEXTURES=0
     default_params
     {
@@ -19,7 +20,7 @@ abstract vertex_program Unlit_I_vs glsl glsles hlsl
 abstract fragment_program Unlit_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    target ps_2_a
+
     preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,MAX_LIGHTS=0,MAX_SHADOW_TEXTURES=0
     
     default_params
@@ -43,20 +44,19 @@ abstract fragment_program Unlit_I_fs glsl glsles hlsl
 abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
+
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
     default_params
     {
         param_named_auto WorldMatrix world_matrix
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
-        // param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
-        // param_named_auto LightCount light_count
     }
 }
 
 abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
-    target ps_2_a
+
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
     default_params
     {
@@ -77,10 +77,9 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto SurfaceSpecularColour surface_specular_colour
         param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto SurfaceEmissiveColour surface_emissive_colour
-        param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
+        //param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
-        param_named_auto Time time
         param_named_auto FarClipDistance far_clip_distance
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto CameraPosition camera_position

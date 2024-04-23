@@ -14,7 +14,6 @@ vertex_program water_vs glsl glsles hlsl
 fragment_program water_fs glsl glsles hlsl
 {
     source water.frag
-    target ps_2_a
 
     default_params
     {

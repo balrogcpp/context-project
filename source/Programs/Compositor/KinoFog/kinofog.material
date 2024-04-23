@@ -5,11 +5,9 @@ import RayCast from stdquad.material
 fragment_program KinoFog glsl glsles hlsl
 {
     source kinofog.frag
-    target ps_2_a
 
 	default_params
 	{
-        param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
 	}
 }

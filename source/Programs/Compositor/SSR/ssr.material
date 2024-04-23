@@ -8,7 +8,6 @@ import RayCast from stdquad.material
 fragment_program ssr glsl glsles hlsl
 {
 	source ssr.frag
-    target ps_2_a
 }
 
 material SSR : RayCast

@@ -4,39 +4,36 @@
 #include "header.glsl"
 #include "srgb.glsl"
 #include "fog.glsl"
-#ifdef FORCE_TONEMAP
-#include "tonemap.glsl"
-#endif
 
 #ifdef HAS_BASECOLORMAP
-SAMPLER2D( AlbedoTex, 0)
+uniform sampler2D AlbedoTex;
 #endif
 #ifdef HAS_NORMALMAP
-SAMPLER2D( NormalTex, 1)
+uniform sampler2D NormalTex;
 #endif
 #ifdef HAS_ORM
-SAMPLER2D( OrmTex, 2)
+uniform sampler2D OrmTex;
 #endif
 #ifdef HAS_EMISSIVEMAP
-SAMPLER2D( EmissiveTex, 3)
+uniform sampler2D EmissiveTex;
 #endif
 #ifdef HAS_AO
-SAMPLER2D( OcclusionTex, 4)
+uniform sampler2D OcclusionTex;
 #endif
 #ifdef HAS_SSR
-SAMPLER2D( SSrTex, 5)
+uniform sampler2D SSrTex;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
-SAMPLER2D( ShadowTex, 6)
+uniform sampler2D ShadowTex;
 #endif
 #ifdef HAS_IBL
-SAMPLERCUBE( SpecularEnvTex, 7)
+uniform samplerCube SpecularEnvTex;;
 #endif
 #ifdef TERRA_NORMALMAP
-SAMPLER2D( TerraNormalTex, 2)
+uniform sampler2D TerraNormalTex;
 #endif
 #ifdef TERRA_LIGHTMAP
-SAMPLER2D( TerraLightTex, 3)
+uniform sampler2D TerraLightTex;
 #endif
 
 uniform vec4 TexSize0;
@@ -50,8 +47,8 @@ uniform vec3 IBL[9];
 uniform vec3 HosekParams[10];
 uniform float FarClipDistance;
 uniform float NearClipDistance;
-uniform float Time;
 uniform highp mat4 ViewMatrix;
+uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
 uniform float LightCount;
@@ -65,7 +62,7 @@ uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #if MAX_SHADOW_TEXTURES > 0
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
-uniform float SurfaceAlphaRejection;
+// uniform float SurfaceAlphaRejection;
 uniform vec4 AmbientLightColour;
 uniform vec4 SurfaceAmbientColour;
 uniform vec4 SurfaceDiffuseColour;
@@ -154,7 +151,7 @@ vec3 gtaoMultiBounce(float visibility, const vec3 albedo)
     vec3 b = -4.7951 * albedo + 0.6417;
     vec3 c =  2.7552 * albedo + 0.6903;
 
-    return max(vec3(visibility), ((visibility * a + b) * visibility + c) * visibility);
+    return max(vec3(visibility, visibility, visibility), ((visibility * a + b) * visibility + c) * visibility);
 }
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
@@ -306,7 +303,7 @@ float GetAttenuation(int index, const vec3 lightView)
 
 vec3 EvaluateDirectionalLight(const PBRInfo material
 #if MAX_SHADOW_TEXTURES > 0
-, const highp vec4 lightSpacePos[MAX_SHADOW_TEXTURES]
+, const highp vec3 lightSpacePos0, const highp vec3 lightSpacePos1, const highp vec3 lightSpacePos2
 #endif
 )
 {
@@ -321,7 +318,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        attenuation *= saturate(CalcPSSMShadow(lightSpacePos[0], lightSpacePos[1], lightSpacePos[2], fragDepth) + ShadowColour.r);
+        attenuation *= saturate(CalcPSSMShadow(lightSpacePos0, lightSpacePos1, lightSpacePos2, fragDepth) + ShadowColour.r);
         if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -346,11 +343,12 @@ vec3 EvaluateDirectionalLight(const PBRInfo material
 
 vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosition
 #if MAX_SHADOW_TEXTURES > 0
-, const highp vec4 lightSpacePos[MAX_SHADOW_TEXTURES]
+, const highp vec3 lightSpacePos[MAX_SHADOW_TEXTURES]
 #endif
 )
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
+    // [unroll(MAX_LIGHTS)]
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
@@ -393,23 +391,40 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosi
 }
 #endif
 
+in highp vec3 vPosition;
+in highp vec3 vPosition1;
+#ifdef HAS_UV
+in highp vec2 vUV0;
+#endif
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
+in mediump mat3 vTBN;
+#else
+in mediump vec3 vNormal;
+#endif
+#endif
+#ifdef HAS_VERTEXCOLOR
+in mediump vec3 vColor;
+#endif
+
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 {
-#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
-#elif defined(TERRA_NORMALMAP)
+    // Retrieve the tangent space matrix
+#ifndef HAS_TANGENTS
+#if defined(TERRA_NORMALMAP)
     vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 n = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, t));
     t = normalize(cross(n ,b));
-    tbn = mtxFromCols3x3(t, b, n);
+    tbn = mtxFromCols(t, b, n);
 #elif defined(PAGED_GEOMETRY)
     const vec3 n = vec3(0.0, 1.0, 0.0);
     const vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 b = normalize(cross(n, t));
-    tbn = mtxFromCols3x3(t, b, n);
-#else // ! defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+    tbn = mtxFromCols(t, b, n);
+#else
     highp vec3 pos_dx = dFdx(vPosition);
     highp vec3 pos_dy = dFdy(vPosition);
 #ifdef HAS_UV
@@ -419,13 +434,16 @@ vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
     highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
     highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
 #endif
-#ifndef HAS_NORMALS
+#ifdef HAS_NORMALS
+    vec3 n = tbn[2];
+#else
     vec3 n = cross(pos_dx, pos_dy);
 #endif
     highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
     t = normalize(t - n * dot(n, t));
     highp vec3 b = normalize(cross(n, t));
-    tbn = mtxFromCols3x3(t, b, n);
+    tbn = mtxFromCols(t, b, n);
+#endif
 #endif
 
 #ifdef HAS_NORMALMAP
@@ -449,7 +467,7 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
 #endif
 
 #ifdef HAS_ALPHA
-    if (albedo.a < SurfaceAlphaRejection) discard;
+    if (albedo.a < 0.5) discard;
 #endif
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
@@ -492,25 +510,23 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
     return uv;
 }
 
-MAIN_PARAMETERS
-IN( highp vec3 vPosition, TEXCOORD0)
-#ifdef HAS_UV
-IN( highp vec2 vUV0, TEXCOORD1)
-#endif
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-IN( mediump mat3 vTBN, TEXCOORD2)
-#else
-IN( mediump vec3 vNormal, TEXCOORD2)
-#endif
-#endif
-#ifdef HAS_VERTEXCOLOR
-IN( mediump vec3 vColor, TEXCOORD3)
-#endif
-#ifdef MRT_VELOCITY
-IN( mediump vec4 vPrevScreenPosition, TEXCOORD4)
-#endif
-MAIN_DECLARATION
+
+// in highp vec3 vPosition;
+// in highp vec3 vPosition1;
+// #ifdef HAS_UV
+// in highp vec2 vUV0;
+// #endif
+// #ifdef HAS_NORMALS
+// #ifdef HAS_TANGENTS
+// in mediump mat3 vTBN;
+// #else
+// in mediump vec3 vNormal;
+// #endif
+// #endif
+// #ifdef HAS_VERTEXCOLOR
+// in mediump vec3 vColor;
+// #endif
+void main()
 {
     v = normalize(CameraPosition - vPosition);
 #ifdef HAS_UV
@@ -530,10 +546,13 @@ MAIN_DECLARATION
     float alpha = colour.a;
     vec3 orm = GetORM(uv, alpha);
     vec3 emission = GetEmission(uv);
-#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
-    mat3 tbn = vTBN;
-#else
     mat3 tbn;
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
+    tbn = vTBN;
+#else
+    tbn[2] = vNormal;
+#endif
 #endif
     n = GetNormal(tbn, uv, uv1);
     float roughness = orm.g;
@@ -542,7 +561,7 @@ MAIN_DECLARATION
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
     fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     vec2 fragPos = fragCoord;
-    vec2 fragPosPrev = vPrevScreenPosition.xz;
+    vec2 fragPosPrev = mul(WorldViewProjPrev, vec4(vPosition1, 1.0)).zw;
     vec2 fragVelocity = (fragPos - fragPosPrev) * ViewportSize.zw;
 #ifdef HAS_AO
     float ao = texture2D(OcclusionTex, fragCoord - fragVelocity).r;
@@ -566,7 +585,7 @@ MAIN_DECLARATION
     material.uv = vec2(0.0, 0.0);
 #endif
     material.NdotV = abs(dot(n, v)) + 0.001;
-    material.diffuseColor = diffuseColor;
+    material.diffuseColor = diffuseColor;   
     material.specularColor = specularColor;
     material.metalness = metallic;
     material.occlusion = occlusion;
@@ -574,7 +593,8 @@ MAIN_DECLARATION
     material.perceptualRoughness = roughness;
     material.alphaRoughness = roughness * roughness;
     material.reflectance0 = specularColor.rgb;
-    material.reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
+    float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);
+    material.reflectance90 = vec3(reflectance90, reflectance90, reflectance90);
     material.reflection = -normalize(reflect(v, n));
 
     vec3 color = vec3(0.0, 0.0, 0.0);
@@ -586,17 +606,19 @@ MAIN_DECLARATION
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0
-    highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
+    highp vec3 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 
     // Calculate the position of vertex attribute light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
         if (max(int(LightCount), 3) <= i) break;
-        lightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], vec4(vPosition, 1.0));
+        highp vec4 lightPos = mul(TexWorldViewProjMatrixArray[i], vec4(vPosition1, 1.0));
+        lightPos.xyz /= lightPos.w;
+        lightSpacePosArray[i] = lightPos.xyz;
     }
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0
-    color += EvaluateDirectionalLight(material, lightSpacePosArray);
+    color += EvaluateDirectionalLight(material, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2]);
     color += EvaluateLocalLights(material, vPosition, lightSpacePosArray);
 #else
     color += EvaluateDirectionalLight(material);
@@ -633,7 +655,7 @@ MAIN_DECLARATION
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
 #endif
 #ifdef MRT_VELOCITY
-    if (Any(vPrevScreenPosition.xz)) FragData[MRT_VELOCITY].xy = fragVelocity;
+    if (Any(fragPosPrev)) FragData[MRT_VELOCITY].xy = fragVelocity;
 #endif
 #endif
 }

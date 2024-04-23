@@ -12,7 +12,6 @@ uniform highp float baseUVScale;
 #endif
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
-uniform highp mat4 WorldViewProjPrev;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
 uniform highp vec3 CameraPosition;
@@ -23,51 +22,48 @@ uniform float LightCount;
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
 
-MAIN_PARAMETERS
 #ifndef VERTEX_COMPRESSION
-IN( highp vec3 vertex, POSITION)
+in highp vec3 vertex;
 #else
-IN( highp vec2 vertex, POSITION)
+in highp vec2 vertex;
 #endif // VERTEX_COMPRESSION
 #ifdef HAS_NORMALS
-IN( highp vec3 normal, NORMAL)
+in highp vec3 normal;
 #endif
 #ifdef HAS_TANGENTS
-IN( highp vec4 tangent, TANGENT)
+in highp vec4 tangent;
 #endif
 #ifdef HAS_VERTEXCOLOR
-IN( highp vec3 colour, COLOR)
+in highp vec3 colour;
 #endif
 #ifdef HAS_UV
 #ifndef VERTEX_COMPRESSION
-IN( highp vec2 uv0, TEXCOORD0)
+in highp vec2 uv0;
 #else
-IN( highp float uv0, TEXCOORD0)
+in highp float uv0;
 #endif // VERTEX_COMPRESSION
 #ifdef PAGED_GEOMETRY
-IN( highp vec4 uv1, TEXCOORD1)
-IN( highp vec4 uv2, TEXCOORD2)
+in highp vec4 uv1;
+in highp vec4 uv2;
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
-OUT( highp vec3 vPosition, TEXCOORD0)
+out highp vec3 vPosition;
+out highp vec3 vPosition1;
 #ifdef HAS_UV
-OUT( highp vec2 vUV0, TEXCOORD1)
+out highp vec2 vUV0;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-OUT( mediump mat3 vTBN, TEXCOORD2)
+out mediump mat3 vTBN;
 #else
-OUT( mediump vec3 vNormal, TEXCOORD2)
+out mediump vec3 vNormal;
 #endif
 #endif
 #ifdef HAS_VERTEXCOLOR
-OUT( mediump vec3 vColor, TEXCOORD3)
+out mediump vec3 vColor;
 #endif
-#ifdef MRT_VELOCITY
-OUT( mediump vec4 vPrevScreenPosition, TEXCOORD4)
-#endif
-MAIN_DECLARATION
+void main()
 {
 #ifdef HAS_VERTEXCOLOR
     vColor = Any(colour) ? colour : vec3(1.0, 1.0, 1.0);
@@ -102,7 +98,6 @@ MAIN_DECLARATION
     
     highp vec4 world = mul(WorldMatrix, position);
     vPosition = world.xyz / world.w;
+    vPosition1 = position.xyz;
     gl_Position = mul(WorldViewProjMatrix, position);
-
-    vPrevScreenPosition = mul(WorldViewProjPrev, position);
 }

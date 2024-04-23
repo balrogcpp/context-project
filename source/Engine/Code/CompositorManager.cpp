@@ -487,7 +487,7 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
 
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);
-  vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
+  fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
 
   // apply for dynamic entities only
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
@@ -498,7 +498,7 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     if (entity->getMesh()->isReloadable()) {
       Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
       rend->getUserObjectBindings().setUserAny(MVP);
-      if (prevMVP.has_value()) vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+      if (prevMVP.has_value()) fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
     }
   }
 }

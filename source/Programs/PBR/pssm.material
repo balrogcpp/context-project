@@ -13,7 +13,6 @@ vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 {
 	source pssm.frag
-    target ps_2_a
 
 	preprocessor_defines SHADOWCASTER_ALPHA
 
@@ -36,7 +35,6 @@ vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 fragment_program PSSM/shadow_caster_fs glsl glsles hlsl
 {
 	source pssm.frag
-    target ps_2_a
 	default_params
 	{
 	    //param_named_auto DepthRange scene_depth_range
