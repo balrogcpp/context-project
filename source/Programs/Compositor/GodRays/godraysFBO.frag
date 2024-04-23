@@ -12,6 +12,6 @@ void main()
     float depth = texture2D(DepthTex, vUV0).r;
     float lum = dot(color, vec3(0.2126, 0.7152, 0.0722));
     if (lum > 20.0) lum = 0.0;
-    lum = max(0.0, lum - 1.0);
+    lum = max(0.0, lum - 0.7);
     FragColor.rgb = depth > 0.5 ? SafeHDR(color * sign(lum)) : vec3(0.0, 0.0, 0.0);
 }

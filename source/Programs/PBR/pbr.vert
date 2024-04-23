@@ -23,55 +23,49 @@ uniform float LightCount;
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 #endif
 
+MAIN_PARAMETERS
 #ifndef VERTEX_COMPRESSION
-in highp vec3 vertex;
+IN( highp vec3 vertex, POSITION)
 #else
-in highp vec2 vertex;
+IN( highp vec2 vertex, POSITION)
 #endif // VERTEX_COMPRESSION
 #ifdef HAS_NORMALS
-in highp vec3 normal;
+IN( highp vec3 normal, NORMAL)
 #endif
 #ifdef HAS_TANGENTS
-in highp vec4 tangent;
+IN( highp vec4 tangent, TANGENT)
 #endif
 #ifdef HAS_VERTEXCOLOR
-in highp vec3 colour;
+IN( highp vec3 colour, COLOR)
 #endif
 #ifdef HAS_UV
 #ifndef VERTEX_COMPRESSION
-in highp vec2 uv0;
+IN( highp vec2 uv0, TEXCOORD0)
 #else
-in highp float uv0;
+IN( highp float uv0, TEXCOORD0)
 #endif // VERTEX_COMPRESSION
 #ifdef PAGED_GEOMETRY
-in highp vec4 uv1;
-in highp vec4 uv2;
+IN( highp vec4 uv1, TEXCOORD1)
+IN( highp vec4 uv2, TEXCOORD2)
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
-
-out highp vec3 vPosition;
+OUT( highp vec3 vPosition, TEXCOORD0)
 #ifdef HAS_UV
-out highp vec2 vUV0;
+OUT( highp vec2 vUV0, TEXCOORD1)
 #endif
-#ifdef HAS_NORMALS
-out mediump vec3 vNormal;
-#endif
-#ifdef HAS_TANGENTS
-out mediump vec3 vTangent;
-out mediump vec3 vBitangent;
+#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+OUT( mediump mat3 vTBN, TEXCOORD2)
 #endif
 #ifdef HAS_VERTEXCOLOR
-out mediump vec3 vColor;
+OUT( mediump vec3 vColor, TEXCOORD3)
 #endif
-//#ifdef MRT_VELOCITY
-out mediump vec4 vScreenPosition;
-out mediump vec4 vPrevScreenPosition;
-//#endif
+OUT( mediump vec4 vScreenPosition, TEXCOORD4)
+OUT( mediump vec4 vPrevScreenPosition, TEXCOORD5)
 #if MAX_SHADOW_TEXTURES > 0
-out highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+OUT( highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD6)
 #endif
-void main()
+MAIN_DECLARATION
 {
 #ifdef HAS_VERTEXCOLOR
     vColor = Any(colour) ? colour : vec3(1.0, 1.0, 1.0);
@@ -93,22 +87,19 @@ void main()
      position +=  uv2.x == 0.0 ? fstep(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
 #endif
 
-#ifdef HAS_NORMALS
-    vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+    vec3 n = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+    vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
+    vec3 b = cross(n, t) * tangent.w;
+    vTBN = mtxFromCols(t, b, n);
 #endif
-#ifdef HAS_TANGENTS
-    vTangent = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
-    vBitangent = cross(vNormal, vTangent) * tangent.w;
-#endif
-
+    
     highp vec4 world = mul(WorldMatrix, position);
     vPosition = world.xyz / world.w;
     gl_Position = mul(WorldViewProjMatrix, position);
 
-//#ifdef MRT_VELOCITY
     vScreenPosition = gl_Position;
     vPrevScreenPosition = mul(WorldViewProjPrev, position);
-//#endif
 
 #if MAX_SHADOW_TEXTURES > 0
     // Calculate the position of vertex attribute light space

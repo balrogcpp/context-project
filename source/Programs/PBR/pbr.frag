@@ -9,28 +9,34 @@
 #endif
 
 #ifdef HAS_BASECOLORMAP
-uniform sampler2D AlbedoTex;
+SAMPLER2D( AlbedoTex, 0)
 #endif
 #ifdef HAS_NORMALMAP
-uniform sampler2D NormalTex;
+SAMPLER2D( NormalTex, 1)
 #endif
 #ifdef HAS_ORM
-uniform sampler2D OrmTex;
+SAMPLER2D( OrmTex, 2)
 #endif
 #ifdef HAS_EMISSIVEMAP
-uniform sampler2D EmissiveTex;
+SAMPLER2D( EmissiveTex, 3)
 #endif
 #ifdef HAS_AO
-uniform sampler2D OcclusionTex;
+SAMPLER2D( OcclusionTex, 4)
 #endif
 #ifdef HAS_SSR
-uniform sampler2D SSrTex;
+SAMPLER2D( SSrTex, 5)
+#endif
+#if MAX_SHADOW_TEXTURES > 0
+SAMPLER2D( ShadowTex, 6)
 #endif
 #ifdef HAS_IBL
-uniform samplerCube SpecularEnvTex;
+SAMPLERCUBE( SpecularEnvTex, 7)
 #endif
 #ifdef TERRA_NORMALMAP
-uniform sampler2D TerraNormalTex;
+SAMPLER2D( TerraNormalTex, 2)
+#endif
+#ifdef TERRA_LIGHTMAP
+SAMPLER2D( TerraLightTex, 3)
 #endif
 
 uniform vec4 TexSize0;
@@ -70,27 +76,21 @@ uniform float TexScale;
 uniform float OffsetScale;
 #endif
 
-in highp vec3 vPosition;
-#ifdef HAS_UV
-in highp vec2 vUV0;
-#endif
-#ifdef HAS_NORMALS
-in mediump vec3 vNormal;
-#endif
-#ifdef HAS_TANGENTS
-in mediump vec3 vTangent;
-in mediump vec3 vBitangent;
-#endif
-#ifdef HAS_VERTEXCOLOR
-in mediump vec3 vColor;
-#endif
-//#ifdef MRT_VELOCITY
-in mediump vec4 vScreenPosition;
-in mediump vec4 vPrevScreenPosition;
-//#endif
-#if MAX_SHADOW_TEXTURES > 0
-in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
+// in highp vec3 vPosition;
+// #ifdef HAS_UV
+// in highp vec2 vUV0;
+// #endif
+// #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+// in mediump mat3 vTBN;
+// #endif
+// #ifdef HAS_VERTEXCOLOR
+// in mediump vec3 vColor;
+// #endif
+// in mediump vec4 vScreenPosition;
+// in mediump vec4 vPrevScreenPosition;
+// #if MAX_SHADOW_TEXTURES > 0
+// in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
+// #endif
 
 #if MAX_SHADOW_TEXTURES > 0 || defined(TERRA_NORMALMAP)
 #include "pssm.glsl"
@@ -99,7 +99,7 @@ in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
-vec3 Diffuse(vec3 diffuseColor)
+vec3 Diffuse(const vec3 diffuseColor)
 {
     return diffuseColor / M_PI;
 }
@@ -316,7 +316,11 @@ float GetAttenuation(int index, const vec3 lightView)
     return attenuation;
 }
 
-vec3 EvaluateDirectionalLight(const PBRInfo material)
+vec3 EvaluateDirectionalLight(const PBRInfo material
+#if MAX_SHADOW_TEXTURES > 0
+, const highp vec4 lightSpacePos[MAX_SHADOW_TEXTURES]
+#endif
+)
 {
     vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
     float NdotL = saturate(dot(n, l));
@@ -329,7 +333,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material)
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        attenuation *= saturate(CalcPSSMShadow(fragDepth) + ShadowColour.r);
+        attenuation *= saturate(CalcPSSMShadow(lightSpacePos[0], lightSpacePos[1], lightSpacePos[2], fragDepth) + ShadowColour.r);
         if (attenuation == 0.0) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -352,7 +356,11 @@ vec3 EvaluateDirectionalLight(const PBRInfo material)
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
-vec3 EvaluateLocalLights(const PBRInfo material)
+vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosition
+#if MAX_SHADOW_TEXTURES > 0
+, const highp vec4 lightSpacePos[MAX_SHADOW_TEXTURES]
+#endif
+)
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
     for (int i = 0; i < MAX_LIGHTS; ++i) {
@@ -365,7 +373,7 @@ vec3 EvaluateLocalLights(const PBRInfo material)
         if (NdotL <= 0.001) continue;
 
         // attenuation is property of spot and point light
-        float attenuation = GetAttenuation(i, lightPosition.xyz - vPosition);
+        float attenuation = GetAttenuation(i, lightPosition.xyz - pixelWorldPosition);
         if (attenuation == 0.0) continue;
 
         Light light;
@@ -385,7 +393,7 @@ vec3 EvaluateLocalLights(const PBRInfo material)
 
 #if MAX_SHADOW_TEXTURES > 1
         if (LightCastsShadowsArray[0] != 0.0) {
-            attenuation *= saturate(CalcShadow(i) + ShadowColour.r);
+            attenuation *= saturate(CalcShadow(lightSpacePos[i], i) + ShadowColour.r);
             if (attenuation == 0.0) continue;
         }
 #endif
@@ -399,23 +407,20 @@ vec3 EvaluateLocalLights(const PBRInfo material)
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 GetNormal(const vec2 uv, const vec2 uv1)
+vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 {
-#ifdef HAS_NORMALS
-    vec3 n = vNormal;
-#endif
-#ifdef HAS_TANGENTS
-    vec3 t = vTangent;
-    vec3 b = vBitangent;
+#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
 #elif defined(TERRA_NORMALMAP)
     vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 n = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, t));
     t = normalize(cross(n ,b));
+    tbn = mtxFromCols3x3(t, b, n);
 #elif defined(PAGED_GEOMETRY)
     const vec3 n = vec3(0.0, 1.0, 0.0);
     const vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 b = normalize(cross(n, t));
+    tbn = mtxFromCols3x3(t, b, n);
 #else
     highp vec3 pos_dx = dFdx(vPosition);
     highp vec3 pos_dy = dFdy(vPosition);
@@ -432,18 +437,18 @@ vec3 GetNormal(const vec2 uv, const vec2 uv1)
     highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
     t = normalize(t - n * dot(n, t));
     highp vec3 b = normalize(cross(n, t));
+    tbn = mtxFromCols3x3(t, b, n);
 #endif
 
 #ifdef HAS_NORMALMAP
     if (TexSize1.x > 1.0) {
-        highp mat3 tbn = mtxFromCols3x3(t, b, n);
-        vec3 normal = texture2D(NormalTex, uv).xyz;
-        return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * normal - 1.0)));
+        vec3 normal = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
+        return normalize(mul(tbn, (2.0 * normal - 1.0)));
     } else {
-        return n;
+        return tbn[2];
     }
 #else
-    return n;
+    return tbn[2];
 #endif
 }
 
@@ -499,7 +504,23 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
     return uv;
 }
 
-void main()
+MAIN_PARAMETERS
+IN( highp vec3 vPosition, TEXCOORD0)
+#ifdef HAS_UV
+IN( highp vec2 vUV0, TEXCOORD1)
+#endif
+#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+IN( mediump mat3 vTBN, TEXCOORD2)
+#endif
+#ifdef HAS_VERTEXCOLOR
+IN( mediump vec3 vColor, TEXCOORD3)
+#endif
+IN( mediump vec4 vScreenPosition, TEXCOORD4)
+IN( mediump vec4 vPrevScreenPosition, TEXCOORD5)
+#if MAX_SHADOW_TEXTURES > 0
+IN( highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD6)
+#endif
+MAIN_DECLARATION
 {
     v = normalize(CameraPosition - vPosition);
 #ifdef HAS_UV
@@ -519,7 +540,12 @@ void main()
     float alpha = colour.a;
     vec3 orm = GetORM(uv, alpha);
     vec3 emission = GetEmission(uv);
-    n = GetNormal(uv, uv1);
+#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+    mat3 tbn = vTBN;
+#else
+    mat3 tbn;
+#endif
+    n = GetNormal(tbn, uv, uv1);
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
@@ -569,8 +595,14 @@ void main()
     if (Any(ssr)) color = mix(color, ssr, metallic);
 #endif
 
+#if MAX_SHADOW_TEXTURES > 0
+    color += EvaluateDirectionalLight(material, vLightSpacePosArray);
+    color += EvaluateLocalLights(material, vPosition, vLightSpacePosArray);
+#else
     color += EvaluateDirectionalLight(material);
-    color += EvaluateLocalLights(material);
+    color += EvaluateLocalLights(material, vPosition);
+#endif
+
 #else
     color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
 #endif

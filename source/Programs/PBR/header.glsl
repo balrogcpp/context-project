@@ -12,6 +12,7 @@
 #define MAX_LIGHTS 8
 #endif
 #ifdef GL_ES
+#undef MAX_SHADOW_TEXTURES
 #define MAX_SHADOW_TEXTURES 0
 #endif
 #define SHADOWMAP_ATLAS
@@ -73,8 +74,8 @@ out vec4 FragColor;
 #define highp
 #define mediump
 #define lowp
-#include "OgreUnifiedShader.h"
 #endif
+#include "OgreUnifiedShader.h"
 #include "math.glsl"
 
 #endif // HEADER_GLSL

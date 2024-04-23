@@ -87,7 +87,7 @@ float InterleavedGradientNoise(const vec2 uv)
 }
 
 #ifdef TERRA_LIGHTMAP
-uniform sampler2D TerraLightTex;
+// uniform sampler2D TerraLightTex;
 
 float FetchTerraShadow(const vec2 uv)
 {
@@ -106,14 +106,7 @@ float FetchTerraShadow(const vec2 uv)
 
 
 #if MAX_SHADOW_TEXTURES > 0
-// #ifdef SHADOWMAP_ATLAS
-uniform mediump sampler2D ShadowTex;
-// #else
-// uniform mediump sampler2D ShadowMap0;
-// uniform mediump sampler2D ShadowMap1;
-// uniform mediump sampler2D ShadowMap2;
-// uniform mediump sampler2D ShadowMap3;
-// #endif
+// uniform mediump sampler2D ShadowTex;
 uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 uniform highp vec4 PssmSplitPoints;
@@ -166,10 +159,8 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
 }
 #endif
 
-float CalcShadow(sampler2D shadowMap, int index)
+float CalcShadow(const highp vec4 lightSpacePos, int index)
 {
-    vec4 lightSpacePos = vLightSpacePosArray[index];
-    lightSpacePos.xyz /= lightSpacePos.w;
     vec2 uv = lightSpacePos.xy;
     float depth = lightSpacePos.z;
     if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
@@ -216,7 +207,7 @@ float CalcShadow(sampler2D shadowMap, int index)
 #else
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * PSSM_FILTER_RADIUS;
 #endif
-        float texDepth = texture2D(shadowMap, uv + offset).x;
+        float texDepth = texture2D(ShadowTex, uv + offset).x;
         //if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
 #ifdef PSSM_ESM_SHADOWMAP
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
@@ -233,50 +224,16 @@ float CalcShadow(sampler2D shadowMap, int index)
     return shadow;
 }
 
-float CalcShadow(int index)
-{
-// #ifdef SHADOWMAP_ATLAS
-    if (index == 0)
-        return CalcShadow(ShadowTex, 0);
-    else if (index == 1)
-        return CalcShadow(ShadowTex, 1);
-    else if (index == 2)
-        return CalcShadow(ShadowTex, 2);
-    else if (index == 3)
-        return CalcShadow(ShadowTex, 3);
-// #else
-//     if (index == 0)
-//         return CalcShadow(ShadowMap0, 0);
-//     else if (index == 1)
-//         return CalcShadow(ShadowMap1, 1);
-//     else if (index == 2)
-//         return CalcShadow(ShadowMap2, 2);
-//     else if (index == 3)
-//         return CalcShadow(ShadowMap3, 3);
-// #endif
-
-    return 1.0; // to shut up "missing return" warning
-}
-
-float CalcPSSMShadow(float pixelDepth)
+float CalcPSSMShadow(const highp vec4 lightSpacePos0, const highp vec4 lightSpacePos1, const highp vec4 lightSpacePos2, float pixelDepth)
 {
     if (pixelDepth >= PssmSplitPoints.w) return 1.0;
 
-// #ifdef SHADOWMAP_ATLAS
     if (pixelDepth <= PssmSplitPoints.x)
-        return CalcShadow(ShadowTex, 0);
+        return CalcShadow(lightSpacePos0 / lightSpacePos0.w, 0);
     else if (pixelDepth <= PssmSplitPoints.y)
-        return CalcShadow(ShadowTex, 1);
+        return CalcShadow(lightSpacePos1 / lightSpacePos1.w, 1);
     else if (pixelDepth <= PssmSplitPoints.z)
-        return CalcShadow(ShadowTex, 2);
-// #else
-//     if (pixelDepth <= PssmSplitPoints.x)
-//         return CalcShadow(ShadowMap0, 0);
-//     else if (pixelDepth <= PssmSplitPoints.y)
-//         return CalcShadow(ShadowMap1, 1);
-//     else if (pixelDepth <= PssmSplitPoints.z)
-//         return CalcShadow(ShadowMap2, 2);
-// #endif
+        return CalcShadow(lightSpacePos2 / lightSpacePos2.w, 2);
 
     return 1.0; // to shut up "missing return" warning
 }

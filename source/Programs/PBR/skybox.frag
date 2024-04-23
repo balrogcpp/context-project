@@ -36,8 +36,8 @@ void main()
     }
 
     // Apply exposure.
-//    color += starfield(vUV0, -LightDir0, Time);
-//    color = clouds(vUV0, color, LightColor0, -LightDir0, Time);
+    //color += starfield(vUV0, -LightDir0, Time);
+    //color = clouds(vUV0, color, LightColor0, -LightDir0, Time);
     color = SRGBtoLINEAR(color);
 
     // Fog
