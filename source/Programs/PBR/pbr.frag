@@ -62,6 +62,9 @@ uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 LightAttenuationArray[MAX_LIGHTS];
 uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #endif // MAX_LIGHTS > 0
+#if MAX_SHADOW_TEXTURES > 0
+uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
+#endif
 uniform float SurfaceAlphaRejection;
 uniform vec4 AmbientLightColour;
 uniform vec4 SurfaceAmbientColour;
@@ -76,21 +79,6 @@ uniform float TexScale;
 uniform float OffsetScale;
 #endif
 
-// in highp vec3 vPosition;
-// #ifdef HAS_UV
-// in highp vec2 vUV0;
-// #endif
-// #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
-// in mediump mat3 vTBN;
-// #endif
-// #ifdef HAS_VERTEXCOLOR
-// in mediump vec3 vColor;
-// #endif
-// in mediump vec4 vScreenPosition;
-// in mediump vec4 vPrevScreenPosition;
-// #if MAX_SHADOW_TEXTURES > 0
-// in highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES];
-// #endif
 
 #if MAX_SHADOW_TEXTURES > 0 || defined(TERRA_NORMALMAP)
 #include "pssm.glsl"
@@ -421,7 +409,7 @@ vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
     const vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 b = normalize(cross(n, t));
     tbn = mtxFromCols3x3(t, b, n);
-#else
+#else // ! defined(HAS_NORMALS) && defined(HAS_TANGENTS)
     highp vec3 pos_dx = dFdx(vPosition);
     highp vec3 pos_dy = dFdy(vPosition);
 #ifdef HAS_UV
@@ -509,16 +497,18 @@ IN( highp vec3 vPosition, TEXCOORD0)
 #ifdef HAS_UV
 IN( highp vec2 vUV0, TEXCOORD1)
 #endif
-#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
 IN( mediump mat3 vTBN, TEXCOORD2)
+#else
+IN( mediump vec3 vNormal, TEXCOORD2)
+#endif
 #endif
 #ifdef HAS_VERTEXCOLOR
 IN( mediump vec3 vColor, TEXCOORD3)
 #endif
-IN( mediump vec4 vScreenPosition, TEXCOORD4)
-IN( mediump vec4 vPrevScreenPosition, TEXCOORD5)
-#if MAX_SHADOW_TEXTURES > 0
-IN( highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD6)
+#ifdef MRT_VELOCITY
+IN( mediump vec4 vPrevScreenPosition, TEXCOORD4)
 #endif
 MAIN_DECLARATION
 {
@@ -551,7 +541,7 @@ MAIN_DECLARATION
     float occlusion = orm.r;
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
     fragDepth = gl_FragCoord.z / gl_FragCoord.w;
-    vec2 fragPos = vScreenPosition.xz;
+    vec2 fragPos = fragCoord;
     vec2 fragPosPrev = vPrevScreenPosition.xz;
     vec2 fragVelocity = (fragPos - fragPosPrev) * ViewportSize.zw;
 #ifdef HAS_AO
@@ -596,8 +586,18 @@ MAIN_DECLARATION
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0
-    color += EvaluateDirectionalLight(material, vLightSpacePosArray);
-    color += EvaluateLocalLights(material, vPosition, vLightSpacePosArray);
+    highp vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
+
+    // Calculate the position of vertex attribute light space
+    for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
+        if (max(int(LightCount), 3) <= i) break;
+        lightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], vec4(vPosition, 1.0));
+    }
+#endif
+
+#if MAX_SHADOW_TEXTURES > 0
+    color += EvaluateDirectionalLight(material, lightSpacePosArray);
+    color += EvaluateLocalLights(material, vPosition, lightSpacePosArray);
 #else
     color += EvaluateDirectionalLight(material);
     color += EvaluateLocalLights(material, vPosition);
@@ -608,7 +608,7 @@ MAIN_DECLARATION
 #endif
     color += emission;
 
-#ifdef GL_ES
+#ifdef FORCE_FOG
 #if MAX_LIGHTS > 0
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition);
 #else

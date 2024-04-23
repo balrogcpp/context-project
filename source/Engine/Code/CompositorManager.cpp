@@ -158,7 +158,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("MRT", true);
   AddCompositor("SSR", false);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
-  if (!RenderSystemIsGLES2()) AddCompositor("KinoFog", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("KinoFog", false);
   if (!RenderSystemIsGLES2()) AddCompositor("GodRays", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Lens", false);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);

@@ -301,7 +301,7 @@ void main()
     //}
 
     color += LightColor0.xyz * specular;
-#ifdef GL_ES
+#ifdef FORCE_FOG
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 #endif
 

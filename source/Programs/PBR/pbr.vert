@@ -54,16 +54,18 @@ OUT( highp vec3 vPosition, TEXCOORD0)
 #ifdef HAS_UV
 OUT( highp vec2 vUV0, TEXCOORD1)
 #endif
-#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
 OUT( mediump mat3 vTBN, TEXCOORD2)
+#else
+OUT( mediump vec3 vNormal, TEXCOORD2)
+#endif
 #endif
 #ifdef HAS_VERTEXCOLOR
 OUT( mediump vec3 vColor, TEXCOORD3)
 #endif
-OUT( mediump vec4 vScreenPosition, TEXCOORD4)
-OUT( mediump vec4 vPrevScreenPosition, TEXCOORD5)
-#if MAX_SHADOW_TEXTURES > 0
-OUT( highp vec4 vLightSpacePosArray[MAX_SHADOW_TEXTURES], TEXCOORD6)
+#ifdef MRT_VELOCITY
+OUT( mediump vec4 vPrevScreenPosition, TEXCOORD4)
 #endif
 MAIN_DECLARATION
 {
@@ -87,25 +89,20 @@ MAIN_DECLARATION
      position +=  uv2.x == 0.0 ? fstep(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
 #endif
 
-#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
     vec3 n = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
     vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
     vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols(t, b, n);
+#else
+    vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+#endif
 #endif
     
     highp vec4 world = mul(WorldMatrix, position);
     vPosition = world.xyz / world.w;
     gl_Position = mul(WorldViewProjMatrix, position);
 
-    vScreenPosition = gl_Position;
     vPrevScreenPosition = mul(WorldViewProjPrev, position);
-
-#if MAX_SHADOW_TEXTURES > 0
-    // Calculate the position of vertex attribute light space
-    for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
-        if (max(int(LightCount), 3) <= i) break;
-        vLightSpacePosArray[i] = mul(TexWorldViewProjMatrixArray[i], position);
-    }
-#endif
 }
