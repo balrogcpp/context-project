@@ -277,7 +277,7 @@ abstract material TERRA
                 param_named ShadowTex      int 6
                 param_named_auto TexSize0 packed_texture_size 0
                 param_named_auto TexSize1 packed_texture_size 1
-                param_named_auto TexSize2 packed_texture_size 2
+                //param_named_auto TexSize2 packed_texture_size 2
                 param_named_auto TexSize3 packed_texture_size 3
                 param_named_auto TexSize6 packed_texture_size 6
             }
