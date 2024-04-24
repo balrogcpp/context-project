@@ -92,8 +92,8 @@ void main()
 #endif
 #endif
 
-    highp vec4 world = mul(WorldMatrix, position);
-    vPosition = world.xyz / world.w;
+    highp vec4 worldPosition = mul(WorldMatrix, position);
+    vPosition = worldPosition.xyz / worldPosition.w;
     vPosition1 = position.xyz;
     gl_Position = mul(WorldViewProjMatrix, position);
 }

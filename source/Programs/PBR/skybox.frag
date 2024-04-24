@@ -20,7 +20,6 @@ in highp vec3 vUV0;
 void main()
 {
     vec3 color = HosekWilkie(vUV0, -LightDir0.xyz, HosekParams);
-    //vec3 color = sky(vUV0, N);
 
     highp vec3 V = normalize(vUV0);
     vec3 N = normalize(-LightDir0.xyz);
