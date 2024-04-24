@@ -162,8 +162,8 @@ void CompositorManager::OnSetUp() {
   AddCompositor("SSR", false);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   if (!RenderSystemIsGLES2()) AddCompositor("KinoFog", false);
-  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", false);
-  if (!RenderSystemIsGLES2()) AddCompositor("Lens", false);
+  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", true);
+//  if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
   if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
   if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
@@ -373,7 +373,7 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
     point.w = Ogre::Math::saturate(v.dotProduct(l));
 
   point.w = Ogre::Math::Abs(Ogre::Math::Sin(point.w * Ogre::Math::HALF_PI));
-  if (point.x < -0.1 || point.x > 1.1 || point.y < -0.1 || point.y > 1.1) point.w = 0;
+//  if (point.x < -0.1 || point.x > 1.1 || point.y < -0.1 || point.y > 1.1) point.w = 0;
 
   return point;
 }
@@ -382,12 +382,14 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   if (pass_id == 10) {  // 10 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
-    fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
+    fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
+    fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
 
   } else if (pass_id == 20) {  // 20 = SSR
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
-    fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
+    fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
+    fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
 
   } else if (pass_id == 30) {  // 14 = MotionBlur
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -399,7 +401,8 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     const auto &ll = sceneManager->_getLightsAffectingFrustum();
     fp->setNamedConstant("CameraPosition", camera->getRealPosition());
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
-    fp->setNamedConstant("ClipDistance", camera->getFarClipDistance() - camera->getNearClipDistance());
+    fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
+    fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
     if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
     auto *tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(2);
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {

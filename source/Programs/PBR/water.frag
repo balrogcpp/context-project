@@ -200,12 +200,12 @@ void main()
     vec3 sunLight = LightColor0.rgb * NdotL * SunFade;
 
     // sky illumination
-    float skyBright = max(dot(normal, float3(0.0, 1.0, 0.0)) * 0.5 + 0.5, 0.0);
-    vec3 skyLight = mix(float3(1.0, 0.5, 0.0) * 0.05, float3(0.2, 0.5, 1.0) * 1.5, SunTransmittance);
+    float skyBright = max(dot(normal, vec3(0.0, 1.0, 0.0)) * 0.5 + 0.5, 0.0);
+    vec3 skyLight = mix(vec3(1.0, 0.5, 0.0) * 0.05, vec3(0.2, 0.5, 1.0) * 1.5, SunTransmittance);
     skyLight *= skyBright;
 
     // ground illumination
-    float groundBright = max(dot(normal, float3(0.0, -1.0, 0.0)) * 0.5 + 0.5, 0.0);
+    float groundBright = max(dot(normal, vec3(0.0, -1.0, 0.0)) * 0.5 + 0.5, 0.0);
     float sunLerp = saturate(1.0 - exp(LightDir0.y));
     vec3 groundLight = 0.3 * vec3(sunLerp, sunLerp, sunLerp);
     groundLight *= groundBright;
@@ -305,10 +305,10 @@ void main()
 #endif
 
 #ifdef FORCE_TONEMAP
-    FragColor.rgb = SafeHDR(unreal(color));
-#else 
-    FragColor.rgb = SafeHDR(color);
+    color = unreal(color);
 #endif
+    FragColor.rgb = SafeHDR(color);
+
 #ifdef HAS_MRT
     FragData[MRT_DEPTH].x = (surfaceDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     FragData[MRT_NORMALS].xyz = mul(ViewMatrix, vec4(lNormal, 0.0)).xyz;

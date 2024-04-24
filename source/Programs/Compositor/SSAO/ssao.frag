@@ -6,7 +6,8 @@
 uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
 uniform mat4 ProjMatrix;
-uniform float ClipDistance;
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 
 vec3 hash(const vec3 a)
 {
@@ -72,13 +73,13 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
-    float pixelDepth = clampedPixelDepth * ClipDistance;
+    float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
     vec3 viewPos = vRay * clampedPixelDepth;
     vec3 randN = hash(gl_FragCoord.xyz) * sq(1.0 - clampedPixelDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    vec3 normal = texture2D(NormalTex, vUV0).xyz;
+    vec3 normal = normalize(texture2D(NormalTex, vUV0).xyz);
 
     if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal)) {
         FragColor.r = 1.0;
@@ -100,7 +101,7 @@ void main()
 
         // Compute occlusion based on the (scaled) Z difference
         float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
-        float sampleDepth = clampedSampleDepth * ClipDistance;
+        float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
         float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * fstep(clampedSampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with

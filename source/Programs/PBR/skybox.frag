@@ -27,7 +27,7 @@ void main()
     float cos_gamma = dot(V, N);
     float gamma = acos(cos_gamma);
 
-    if (gamma <= M_PI / 360.0 && sunZenith > 0.0) {
+    if (gamma <= 2.0 * M_PI / 360.0 && sunZenith > 0.0) {
         color = mix(color, LightColor0 * 10.0, 0.1);
     }
 
@@ -40,9 +40,8 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
 #ifdef FORCE_TONEMAP
-    FragColor.rgb = SafeHDR(unreal(color));
-#else 
-    FragColor.rgb = SafeHDR(color);
+    color = unreal(color);
 #endif
+    FragColor.rgb = SafeHDR(color);
     FragData[MRT_DEPTH].r = 0.999;
 }

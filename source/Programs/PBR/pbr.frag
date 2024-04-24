@@ -617,10 +617,9 @@ void main()
 #endif
 
 #ifdef FORCE_TONEMAP
-    FragColor.rgb = SafeHDR(unreal(color));
-#else 
-    FragColor.rgb = SafeHDR(color);
+    color = unreal(color);
 #endif
+    FragColor.rgb = SafeHDR(color);
     FragColor.a = alpha;
 #ifdef HAS_MRT
 #ifdef MRT_DEPTH
