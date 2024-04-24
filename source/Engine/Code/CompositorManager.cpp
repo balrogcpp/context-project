@@ -112,7 +112,10 @@ void CompositorManager::compositorInstanceDestroyed(Ogre::CompositorInstance *de
 void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   string name = evt.source->getName();
   if (name.find("reflection") != string::npos) {
-    camera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
+    if (plane.getSide(camera->getRealPosition()) != Ogre::Plane::NEGATIVE_SIDE)
+      camera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
+    else
+      camera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, -plane.d));
     camera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
   }
 }

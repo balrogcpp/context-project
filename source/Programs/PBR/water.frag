@@ -37,7 +37,7 @@ uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
 uniform vec3 SunExtinction;
 
-float fresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
+float FresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
 {
     // compute fresnel reflectance without explicitly computing
     // the refracted direction
@@ -122,7 +122,7 @@ void main()
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vPosition);
-    highp vec3 lVec = LightDir0.xyz;
+    highp vec3 lVec = -LightDir0.xyz;
 
     // normal for light scattering
     highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
@@ -139,7 +139,7 @@ void main()
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
-    float fresnel = fresnelDielectric(-vVec, nVec, ior);
+    float fresnel = FresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
     vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
@@ -175,7 +175,7 @@ void main()
     refraction = SRGBtoLINEAR(refraction);
 #endif
 
-    float waterSunGradient = dot(vVec, -LightDir0.xyz);
+    float waterSunGradient = dot(vVec, LightDir0.xyz);
     waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));
     vec3 waterSunColor = (vec3(0.0, 1.0, 0.85) * waterSunGradient);
     waterSunColor *= aboveWater ? 0.25 : 0.5;
@@ -186,10 +186,10 @@ void main()
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-//    float fog = aboveWater ? saturate((refractedDepth - surfaceDepth) / Visibility) : surfaceDepth / Visibility;
+    float fog1 = aboveWater ? saturate((refractedDepth - surfaceDepth) / Visibility) : surfaceDepth / Visibility;
 
-//    float darkness = Visibility * 2.0; // 1.5 for underwater (?)
-//    darkness = saturate((CameraPosition.y + darkness) / darkness);
+    float darkness = Visibility * 2.0;
+    darkness = saturate((CameraPosition.y + darkness) / darkness);
     refraction = mix(refraction, scatterColor, lightScatter);
 
     // underwater
@@ -234,8 +234,8 @@ void main()
     float fog = aboveWater ? topfog : underfog;
     fog *= shorecut;
 
-    float darkness = Visibility * 1.5;
-    darkness = mix(1.0, saturate((CameraPosition.y + darkness) / darkness), shorecut);
+//    float darkness = Visibility * 1.5;
+//    darkness = mix(1.0, saturate((CameraPosition.y + darkness) / darkness), shorecut);
 
     float fogdarkness = Visibility * 2.0;
     fogdarkness = mix(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
@@ -275,17 +275,19 @@ void main()
 
     vec3 color = vec3(sunLight + skyLight * 0.7 + groundLight * 0.8) * darkness;
 
+    waterColor = SRGBtoLINEAR(waterColor);
+    watercolor = SRGBtoLINEAR(watercolor);
     waterColor = mix(waterColor * 0.3 * SunFade, waterColor, SunTransmittance);
 
     //vec3 fogging = mix((refraction * 0.2 + 0.8) * mix(vec3(1.2, 0.95, 0.58) * 0.8, vec3(1.1, 0.85, 0.5) * 0.8, shorewetcut) * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
-    vec3 fogging = mix(refraction * sunLight * SRGBtoLINEAR(color), waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
+    vec3 fogging = mix(refraction * sunLight * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
 
     if (aboveWater) {
         color = mix(fogging, reflection, fresnel * 0.6);
     } else {
         // scatter and extinction between surface and camera
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);
-        color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
+        color = mix(color, watercolor * darkness * ScatterFade, saturate(fog1 / WaterExtinction));
     }
 
     // foam not implementer
@@ -297,7 +299,7 @@ void main()
     //    color = mix(color, vec3(1.0, 1.0, 1.0), foam_mix);
     //}
 
-    color += LightColor0.xyz * specular;
+    color += LightColor0 * specular;
 #ifdef FORCE_FOG
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 #endif
