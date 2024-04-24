@@ -44,7 +44,7 @@ float pow10(float x)
     #define NUM_BASE_SAMPLES 6
 #endif
 
-#define INVSQ3 0.57735026918962576451
+#define INVSQ3 0.57735026918962576451 // 1 / sqrt(3)
 
 const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
     vec3[](

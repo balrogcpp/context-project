@@ -27,7 +27,7 @@ uniform sampler2D SSrTex;
 uniform sampler2D ShadowTex;
 #endif
 #ifdef HAS_IBL
-uniform samplerCube SpecularEnvTex;;
+uniform samplerCube SpecularEnvTex;
 #endif
 #ifdef TERRA_NORMALMAP
 uniform sampler2D TerraNormalTex;
@@ -174,22 +174,22 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
-#ifdef HAS_IBL
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
 vec3 Irradiance_SphericalHarmonics(const vec3 n) {
     return max(
-        IBL[0]
-        + IBL[1] * (n.y)
-        + IBL[2] * (n.z)
-        + IBL[3] * (n.x)
-        + IBL[4] * (n.y * n.x)
-        + IBL[5] * (n.y * n.z)
-        + IBL[6] * (3.0 * n.z * n.z - 1.0)
-        + IBL[7] * (n.z * n.x)
-        + IBL[8] * (n.x * n.x - n.y * n.y)
-        , 0.0);
+    IBL[0]
+    + IBL[1] * (n.y)
+    + IBL[2] * (n.z)
+    + IBL[3] * (n.x)
+    + IBL[4] * (n.y * n.x)
+    + IBL[5] * (n.y * n.z)
+    + IBL[6] * (3.0 * n.z * n.z - 1.0)
+    + IBL[7] * (n.z * n.x)
+    + IBL[8] * (n.x * n.x - n.y * n.y)
+    , 0.0);
 }
 
+#ifdef HAS_IBL
 vec3 DiffuseIrradiance(const vec3 n)
 {
     return textureCube(SpecularEnvTex, vec3(n.x, -n.y, -n.z)).rgb;
@@ -511,21 +511,6 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 }
 
 
-// in highp vec3 vPosition;
-// in highp vec3 vPosition1;
-// #ifdef HAS_UV
-// in highp vec2 vUV0;
-// #endif
-// #ifdef HAS_NORMALS
-// #ifdef HAS_TANGENTS
-// in mediump mat3 vTBN;
-// #else
-// in mediump vec3 vNormal;
-// #endif
-// #endif
-// #ifdef HAS_VERTEXCOLOR
-// in mediump vec3 vColor;
-// #endif
 void main()
 {
     v = normalize(CameraPosition - vPosition);
