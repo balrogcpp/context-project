@@ -78,7 +78,7 @@ void main()
 #endif
 
 #ifdef PAGED_GEOMETRY
-     position +=  uv2.x == 0.0 ? fstep(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
+     position += uv2.x == 0.0 ? fstep(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0)) : WaveTree(position, Time.x, uv1, uv2);
 #endif
 
 #ifdef HAS_NORMALS
@@ -91,7 +91,7 @@ void main()
     vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
 #endif
 #endif
-    
+
     highp vec4 world = mul(WorldMatrix, position);
     vPosition = world.xyz / world.w;
     vPosition1 = position.xyz;

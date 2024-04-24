@@ -391,73 +391,6 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosi
 }
 #endif
 
-in highp vec3 vPosition;
-in highp vec3 vPosition1;
-#ifdef HAS_UV
-in highp vec2 vUV0;
-#endif
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-in mediump mat3 vTBN;
-#else
-in mediump vec3 vNormal;
-#endif
-#endif
-#ifdef HAS_VERTEXCOLOR
-in mediump vec3 vColor;
-#endif
-
-// Find the normal for this fragment, pulling either from a predefined normal map
-// or from the interpolated mesh normal and tangent attributes.
-vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
-{
-    // Retrieve the tangent space matrix
-#ifndef HAS_TANGENTS
-#if defined(TERRA_NORMALMAP)
-    vec3 t = vec3(1.0, 0.0, 0.0);
-    vec3 n = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
-    vec3 b = normalize(cross(n, t));
-    t = normalize(cross(n ,b));
-    tbn = mtxFromCols(t, b, n);
-#elif defined(PAGED_GEOMETRY)
-    const vec3 n = vec3(0.0, 1.0, 0.0);
-    const vec3 t = vec3(1.0, 0.0, 0.0);
-    vec3 b = normalize(cross(n, t));
-    tbn = mtxFromCols(t, b, n);
-#else
-    highp vec3 pos_dx = dFdx(vPosition);
-    highp vec3 pos_dy = dFdy(vPosition);
-#ifdef HAS_UV
-    highp vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
-    highp vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
-#else
-    highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
-    highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
-#endif
-#ifdef HAS_NORMALS
-    vec3 n = tbn[2];
-#else
-    vec3 n = cross(pos_dx, pos_dy);
-#endif
-    highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-    t = normalize(t - n * dot(n, t));
-    highp vec3 b = normalize(cross(n, t));
-    tbn = mtxFromCols(t, b, n);
-#endif
-#endif
-
-#ifdef HAS_NORMALMAP
-    if (TexSize1.x > 1.0) {
-        vec3 normal = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
-        return normalize(mul(tbn, (2.0 * normal - 1.0)));
-    } else {
-        return tbn[2];
-    }
-#else
-    return tbn[2];
-#endif
-}
-
 // Sampler helper functions
 vec4 GetAlbedo(const vec2 uv, const vec3 color)
 {
@@ -510,6 +443,74 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
     return uv;
 }
 
+in highp vec3 vPosition;
+in highp vec3 vPosition1;
+#ifdef HAS_UV
+in highp vec2 vUV0;
+#endif
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
+in mediump mat3 vTBN;
+#else
+in mediump vec3 vNormal;
+#endif
+#endif
+#ifdef HAS_VERTEXCOLOR
+in mediump vec3 vColor;
+#endif
+
+// Find the normal for this fragment, pulling either from a predefined normal map
+// or from the interpolated mesh normal and tangent attributes.
+vec3 GetNormal(const vec2 uv, const vec2 uv1)
+{
+    // Retrieve the tangent space matrix
+#ifndef HAS_TANGENTS
+#if defined(TERRA_NORMALMAP)
+    vec3 t = vec3(1.0, 0.0, 0.0);
+    vec3 n = texture2D(TerraNormalTex, uv1).xyz * 2.0 - 1.0;
+    vec3 b = normalize(cross(n, t));
+    t = normalize(cross(n ,b));
+    highp mat3 tbn = mtxFromCols(t, b, n);
+#elif defined(PAGED_GEOMETRY)
+    const vec3 n = vec3(0.0, 1.0, 0.0);
+    const vec3 t = vec3(1.0, 0.0, 0.0);
+    vec3 b = normalize(cross(n, t));
+    highp mat3 tbn = mtxFromCols(t, b, n);
+#else
+    highp vec3 pos_dx = dFdx(vPosition);
+    highp vec3 pos_dy = dFdy(vPosition);
+#ifdef HAS_UV
+    highp vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+    highp vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+#else
+    highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
+    highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
+#endif
+#ifdef HAS_NORMALS
+    vec3 n = vNormal;
+#else
+    vec3 n = cross(pos_dx, pos_dy);
+#endif
+    highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+    t = normalize(t - n * dot(n, t));
+    highp vec3 b = normalize(cross(n, t));
+    highp mat3 tbn = mtxFromCols(t, b, n);
+#endif
+#else
+    highp mat3 tbn = vTBN;
+#endif
+
+#ifdef HAS_NORMALMAP
+    if (TexSize1.x > 1.0) {
+        vec3 normal = SurfaceSpecularColour.a * texture2D(NormalTex, uv).xyz;
+        return normalize(mul(tbn, (2.0 * normal - 1.0)));
+    } else {
+        return tbn[2];
+    }
+#else
+    return tbn[2];
+#endif
+}
 
 void main()
 {
@@ -531,15 +532,7 @@ void main()
     float alpha = colour.a;
     vec3 orm = GetORM(uv, alpha);
     vec3 emission = GetEmission(uv);
-    mat3 tbn;
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-    tbn = vTBN;
-#else
-    tbn[2] = vNormal;
-#endif
-#endif
-    n = GetNormal(tbn, uv, uv1);
+    n = GetNormal(uv, uv1);
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
