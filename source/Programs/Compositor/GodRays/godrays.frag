@@ -13,10 +13,10 @@ uniform float Exposure;
 
 vec3 GodRays(sampler2D tex, const vec2 uv, const vec2 lightPos, int counter, float density, float weight, float decay, float exposure)
 {
-    vec3 color = vec3(0.0, 0.0, 0.0);
-    vec2 suv = uv;
-    float illuminationDecay = 1.0;
-    vec2 deltaTextCoord = (uv - lightPos) * (density / float(counter));
+    highp vec3 color = vec3(0.0, 0.0, 0.0);
+    highp vec2 suv = uv;
+    highp float illuminationDecay = 1.0;
+    highp vec2 deltaTextCoord = (uv - lightPos) * (density / float(counter));
 
     for(int i = 0; i < 100; ++i) {
         if (counter <= i) break;
@@ -34,7 +34,7 @@ vec3 GodRays(sampler2D tex, const vec2 uv, const vec2 lightPos, int counter, flo
 in highp vec2 vUV0;
 void main()
 {
-    vec3 color = GodRays(FBO, vUV0, LightPosition.xy, RayCount, Density, Weight, Decay, Exposure);
+    vec3 color = GodRays(FBO, vUV0, LightPosition.xy, RayCount, Density, Weight * LightPosition.w, Decay, Exposure);
 
     FragColor.rgb = SafeHDR(color);
 }

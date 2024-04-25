@@ -20,6 +20,13 @@ material GodraysFBO : STD
                 param_named DepthTex int 1
             }
 
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+
             texture_unit Depth
             {
                 texture black.dds
@@ -55,6 +62,13 @@ material GodRays : STD
             {
                 param_named FBO int 0
             }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
         }
     }
 }
@@ -74,6 +88,13 @@ material GodraysMOD : STD
             {
                 param_named RT int 0
                 param_named FBO int 1
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
             }
 
             texture_unit FBO
