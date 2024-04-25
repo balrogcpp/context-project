@@ -103,7 +103,7 @@ RUN apt-get update \
     && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
     && sdkmanager  --install "cmake;${ANDROID_CMAKE_VERSION}" --sdk_root=${ANDROID_HOME}  \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x86_64.cmake -G Ninja .. \
     && cmake --build . --target GradleContrib \
     && cmake --build . --target GradleBuild \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
