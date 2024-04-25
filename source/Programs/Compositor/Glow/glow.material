@@ -5,18 +5,18 @@ import STD from stdquad.material
 //----------------------------------------------------------------------------------------------------------------------
 // Cut glow parts of scene
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program glowStart glsl glsles hlsl
+fragment_program glowFBO glsl glsles hlsl
 {
-	source glowStart.frag
+	source glowFBO.frag
 }
 
-material GlowStart : STD
+material GlowFBO : STD
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref glowStart
+            fragment_program_ref glowFBO
 			{
                 param_named RT int 0
 			}
@@ -24,7 +24,7 @@ material GlowStart : STD
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
 		}
 	}
@@ -56,7 +56,7 @@ material GlowMod : STD
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
         }
 	}

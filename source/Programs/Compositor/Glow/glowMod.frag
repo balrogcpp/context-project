@@ -10,5 +10,5 @@ void main()
 {
     vec3 rt = texture2D(RT, vUV0).rgb;
     vec3 rt0 = texture2D(RT0, vUV0).rgb;
-    FragColor.rgb = SafeHDR(rt + rt0 / 6.0);
+    FragColor.rgb = SafeHDR(rt + rt0 / 7.0);
 }

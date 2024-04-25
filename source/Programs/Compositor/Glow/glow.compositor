@@ -24,7 +24,7 @@ compositor Glow : STD
         {
             pass render_quad
             {
-                material GlowStart
+                material GlowFBO
                 input 0 rt
             }
         }
