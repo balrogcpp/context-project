@@ -3,8 +3,9 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-#define ChromaticRadius 0.005
-#define FeaturesCount 5
+uniform vec4 ViewportSize;
+#define ChromaticRadius 0.002
+#define FEAT_COUNT 2
 
 vec3 SampleChromatic(sampler2D tex, const vec2 uv, float radius)
 {
@@ -27,19 +28,22 @@ float WindowCubic(float x, float center, float radius)
     return 1.0 - y * y * (3.0 - 2.0 * y);
 }
 
-vec3 GhostFeatures(const vec2 uv, int counter, float radius)
+vec3 GhostFeatures(const vec2 uv, float radius)
 {
     vec2 nuv = vec2(1.0, 1.0) - uv;
-    vec2 ghostVec = (vec2(0.5, 0.5) - nuv) * 0.44;
+    vec2 ghostVec = (vec2(0.5, 0.5) - nuv);
     vec3 color = vec3(0.0, 0.0, 0.0);
+    float ratio = ViewportSize.w / ViewportSize.z;
+    ghostVec.x *= ratio;
+    ghostVec = normalize(ghostVec);
+    ghostVec.x /= ratio;
+    ghostVec *= 0.44;
 
     // ghosts
-    for (int i = 0; i < 12; ++i) {
-        if (counter <= i) break;
-
+    for (int i = 0; i < FEAT_COUNT; ++i) {
         vec2 suv = fract(nuv + ghostVec * float(i));
         float d = distance(suv, vec2(0.5, 0.5));
-        float w = pow(1.0 - d, 5.0) / float(counter);
+        float w = pow(1.0 - d, 5.0) / float(FEAT_COUNT);
         vec3 s = SampleChromatic(RT, suv, radius);
         color += s * w;
     }
@@ -47,7 +51,7 @@ vec3 GhostFeatures(const vec2 uv, int counter, float radius)
     return color;
 }
 
-vec3 HaloFeatures(const vec2 uv, int counter, float radius)
+vec3 HaloFeatures(const vec2 uv, float radius)
 {
     vec2 nuv = vec2(1.0, 1.0) - uv;
     vec2 haloVec = vec2(0.5, 0.5) - nuv;
@@ -55,8 +59,7 @@ vec3 HaloFeatures(const vec2 uv, int counter, float radius)
     #define RADIUS 0.6
 
     // halo
-    //float ratio = texel.y / texel.x;
-    const float ratio = 1.0;
+    float ratio = ViewportSize.w / ViewportSize.z;
     haloVec.x *= ratio;
     haloVec = normalize(haloVec);
     haloVec.x /= ratio;
@@ -76,7 +79,7 @@ in highp vec2 vUV0;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;
-//    color += GhostFeatures(vUV0, FeaturesCount, ChromaticRadius) * 0.5;
-    color += HaloFeatures(vUV0, FeaturesCount, ChromaticRadius);
+    color += GhostFeatures(vUV0, ChromaticRadius) * 0.5;
+//    color += HaloFeatures(vUV0, ChromaticRadius) * 0.5;
     FragColor.rgb = color;
 }

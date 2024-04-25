@@ -7,7 +7,9 @@ compositor Lens : STD
     technique
     {
         texture fbo target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
-        texture lens target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture lens target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture lensx target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture lensy target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         target fbo
         {
@@ -27,13 +29,31 @@ compositor Lens : STD
             }
         }
 
+        target lensx
+        {
+            pass render_quad
+            {
+                material Filter13X
+                input 0 lens
+            }
+        }
+
+        target lensy
+        {
+            pass render_quad
+            {
+                material Filter13Y
+                input 0 lensx
+            }
+        }
+
         target_output
         {
             pass render_quad
             {
                 material LensMOD
                 input 0 rt
-                input 1 lens
+                input 1 lensy
             }
         }
     }
