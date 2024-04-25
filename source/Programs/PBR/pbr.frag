@@ -376,7 +376,7 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosi
         light.VdotH = saturate(dot(v, h));
         vec3 c = SurfaceShading(light, material) * NdotL * ComputeMicroShadowing(NdotL, material.occlusion);
 
-#if MAX_SHADOW_TEXTURES > 1
+#if MAX_SHADOW_TEXTURES > 3
         if (LightCastsShadowsArray[0] != 0.0) {
             attenuation *= saturate(CalcShadow(lightSpacePos[i], i) + ShadowColour.r);
             if (attenuation == 0.0) continue;
