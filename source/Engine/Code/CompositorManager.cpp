@@ -159,13 +159,12 @@ void CompositorManager::OnSetUp() {
   rt1->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("SSR", false);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
-  if (!RenderSystemIsGLES2()) AddCompositor("KinoFog", false);
-  if (!RenderSystemIsGLES2()) AddCompositor("GodRays", true);
-//  if (!RenderSystemIsGLES2()) AddCompositor("Lens", true);
-  if (!RenderSystemIsGLES2()) AddCompositor("Glow", true);
-  if (!RenderSystemIsGLES2()) AddCompositor("HDR", true);
+  AddCompositor("SSR", false);
+  AddCompositor("KinoFog", false);
+  AddCompositor("Glow", !RenderSystemIsGLES2());
+  AddCompositor("GodRays", !RenderSystemIsGLES2());
+  AddCompositor("HDR", !RenderSystemIsGLES2());
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);
   AddCompositor("Tonemap", false);
@@ -373,7 +372,6 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
     point.w = Ogre::Math::saturate(v.dotProduct(l));
 
   point.w = Ogre::Math::Abs(Ogre::Math::Sin(point.w * Ogre::Math::HALF_PI));
-//  if (point.x < -0.1 || point.x > 1.1 || point.y < -0.1 || point.y > 1.1) point.w = 0;
 
   return point;
 }

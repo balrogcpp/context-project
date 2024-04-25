@@ -342,6 +342,14 @@ void OverlayManager::OnUpdate(float time) {
     GetComponent<CompositorManager>().EnableCompositor("SSR", compositorFlags[2]);
   }
 
+  if (ImGui::Checkbox("Glow", &compositorFlags[3])) {
+    GetComponent<CompositorManager>().EnableCompositor("Glow", compositorFlags[3]);
+  }
+
+  if (ImGui::Checkbox("GodRays", &compositorFlags[4])) {
+    GetComponent<CompositorManager>().EnableCompositor("GodRays", compositorFlags[4]);
+  }
+
   ImGui::EndChild();
   ImGui::PopFont();
 
