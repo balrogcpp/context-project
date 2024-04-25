@@ -64,7 +64,7 @@ macro(check_stamp_option TARGET OPTION)
     set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
     set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
 
-    if (NOT OPTION)
+    if (OPTION)
         set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
@@ -74,7 +74,7 @@ macro(check_stamp_option TARGET OPTION)
         unset(INSTALL_PLACEHOLDER)
     endif ()
 
-    if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
+    if ((EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD}) OR OPTION)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
@@ -944,7 +944,7 @@ if (NOT PROTOC_FOUND)
         set(BUILD_PROTOC_NATIVE ON)
     endif ()
 endif ()
-check_stamp_option(Target_protoc BUILD_PROTOC_CROSS)
+check_stamp(Target_protoc)
 externalproject_add(Target_protoc
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -961,9 +961,6 @@ externalproject_add(Target_protoc
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CONFIGURE_COMMAND ${CONFIGURE_PLACEHOLDER}
-        BUILD_COMMAND ${BUILD_PLACEHOLDER}
-        INSTALL_COMMAND ${INSTALL_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -985,16 +982,23 @@ externalproject_add(Target_protoc
 )
 
 
-check_stamp(Target_protobuf)
+if (BUILD_PROTOC_CROSS)
+    set(PROTOBUF_DEPENDS Target_protoc)
+endif ()
+check_stamp_option(Target_protobuf BUILD_PROTOC_CROSS)
 externalproject_add(Target_protobuf
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_protoc
+        DEPENDS ${PROTOBUF_DEPENDS}
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
-        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
+        GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+        GIT_TAG v25.3
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
