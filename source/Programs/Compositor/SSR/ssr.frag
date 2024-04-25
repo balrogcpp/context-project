@@ -25,7 +25,7 @@ vec2 BinarySearch(vec3 direction, inout vec3 hitCoord)
         vec4 nuv = mul(ProjMatrix, vec4(hitCoord, 1.0));
         nuv.xy /= nuv.w;
 
-        float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
+        float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);
 
         direction *= 0.5;
 
@@ -48,7 +48,7 @@ vec2 RayCast(vec3 direction, inout vec3 hitCoord)
         vec4 nuv  = mul(ProjMatrix, vec4(hitCoord, 1.0));
         nuv.xy /= nuv.w;
 
-        float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
+        float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);
         float dDepth = -hitCoord.z - sampleDepth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?

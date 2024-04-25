@@ -45,7 +45,7 @@ float pow10(float x)
     #define NUM_BASE_SAMPLES 6
 #endif
 
-#define INVSQ3 0.57735026918962576451 // 1 / sqrt(3)
+#define INVSQ3 0.57735026918962576451
 
 const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
     vec3[](
@@ -73,7 +73,7 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
-    float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance);
     vec3 viewPos = vRay * clampedPixelDepth;
     vec3 randN = hash(gl_FragCoord.xyz) * sq(1.0 - clampedPixelDepth);
 
@@ -101,7 +101,7 @@ void main()
 
         // Compute occlusion based on the (scaled) Z difference
         float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
-        float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+        float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance);
         float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * fstep(clampedSampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with

@@ -177,16 +177,16 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
 vec3 Irradiance_SphericalHarmonics(const vec3 n) {
     return max(
-    IBL[0]
-    + IBL[1] * (n.y)
-    + IBL[2] * (n.z)
-    + IBL[3] * (n.x)
-    + IBL[4] * (n.y * n.x)
-    + IBL[5] * (n.y * n.z)
-    + IBL[6] * (3.0 * n.z * n.z - 1.0)
-    + IBL[7] * (n.z * n.x)
-    + IBL[8] * (n.x * n.x - n.y * n.y)
-    , 0.0);
+        IBL[0]
+        + IBL[1] * (n.y)
+        + IBL[2] * (n.z)
+        + IBL[3] * (n.x)
+        + IBL[4] * (n.y * n.x)
+        + IBL[5] * (n.y * n.z)
+        + IBL[6] * (3.0 * n.z * n.z - 1.0)
+        + IBL[7] * (n.z * n.x)
+        + IBL[8] * (n.x * n.x - n.y * n.y)
+        , 0.0);
 }
 
 #ifdef HAS_IBL
@@ -348,7 +348,6 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosi
 )
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
-    // [unroll(MAX_LIGHTS)]
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
@@ -563,7 +562,7 @@ void main()
     material.uv = vec2(0.0, 0.0);
 #endif
     material.NdotV = abs(dot(n, v)) + 0.001;
-    material.diffuseColor = diffuseColor;   
+    material.diffuseColor = diffuseColor;
     material.specularColor = specularColor;
     material.metalness = metallic;
     material.occlusion = occlusion;
