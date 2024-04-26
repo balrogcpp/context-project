@@ -48,6 +48,7 @@ uniform vec3 HosekParams[10];
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 uniform highp mat4 ViewMatrix;
+uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
@@ -535,13 +536,14 @@ void main()
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
-    vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
+    vec4 fragPos = mul(WorldViewProjMatrix, vec4(vPosition1, 1.0));
+    fragPos.xyz /= fragPos.w;
     fragDepth = gl_FragCoord.z / gl_FragCoord.w;
-    vec2 fragPos = fragCoord;
-    vec2 fragPosPrev = mul(WorldViewProjPrev, vec4(vPosition1, 1.0)).zw;
-    vec2 fragVelocity = (fragPos - fragPosPrev) * ViewportSize.zw;
+    vec4 fragPosPrev = mul(WorldViewProjPrev, vec4(vPosition1, 1.0));
+    fragPosPrev.xyz /= fragPosPrev.w;
+    vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
 #ifdef HAS_AO
-    float ao = texture2D(OcclusionTex, fragCoord - fragVelocity).r;
+    float ao = texture2D(OcclusionTex, fragPos.xy - fragVelocity).r;
     occlusion = min(occlusion, ao);
 #else
     const float ao = 1.0;
@@ -578,7 +580,7 @@ void main()
 #if MAX_LIGHTS > 0
     color += EvaluateIBL(material);
 #ifdef HAS_SSR
-    vec3 ssr = texture2D(SSrTex, fragCoord - fragVelocity).rgb;
+    vec3 ssr = texture2D(SSrTex, fragPos.xy - fragVelocity).rgb;
     if (Any(ssr)) color = mix(color, ssr, metallic);
 #endif
 
@@ -631,7 +633,7 @@ void main()
     FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
 #endif
 #ifdef MRT_VELOCITY
-    if (Any(fragPosPrev)) FragData[MRT_VELOCITY].xy = fragVelocity;
+    FragData[MRT_VELOCITY].xy = fragVelocity;
 #endif
 #endif
 }

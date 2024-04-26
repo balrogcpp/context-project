@@ -4,16 +4,14 @@
 
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
-#ifdef MRT_VELOCITY
 uniform sampler2D VelocityTex;
-#endif
 uniform vec2 TexSize;
 uniform mat4 InvViewMatrix;
 uniform mat4 ViewProjPrev;
 uniform float FPS;
 
 #ifndef MAX_SAMPLES
-#define MAX_SAMPLES 5
+#define MAX_SAMPLES 4
 #endif
 
 in highp vec2 vUV0;
@@ -22,21 +20,17 @@ void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;
     float depth = texture2D(DepthTex, vUV0).x;
-#ifdef MRT_VELOCITY
     vec2 velocity = texture2D(VelocityTex, vUV0).xy;
+
     if (Null(velocity)) {
-#else
-    vec2 velocity;
-#endif
         vec3 viewPos = vRay * depth;
         vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
         worldPos.xyz /= worldPos.w;
         vec4 nuv = mul(ViewProjPrev, vec4(worldPos.xyz, 1.0));
         nuv.xy /= nuv.w;
         velocity = (nuv.xy - vUV0.xy);
-#ifdef MRT_VELOCITY
     }
-#endif
+
     velocity *= FPS / 60.0;
     float speed = length(velocity * TexSize);
     float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
