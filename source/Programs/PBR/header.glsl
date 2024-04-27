@@ -78,8 +78,8 @@ out vec4 FragColor;
 #define highp
 #define mediump
 #define lowp
-#endif
 //#include "OgreUnifiedShader.h"
+#endif
 #include "math.glsl"
 #include "mrt.glsl"
 

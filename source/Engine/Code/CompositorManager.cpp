@@ -97,7 +97,7 @@ void CompositorManager::OnUpdate(float time) {
   auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
   auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
-  Ogre::Real hosekParamsArray[10 * 3];
+  float hosekParamsArray[10 * 3];
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
   fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
