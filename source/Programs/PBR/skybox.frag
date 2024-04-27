@@ -39,9 +39,5 @@ void main()
     // Fog
     color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
-#ifdef FORCE_TONEMAP
-    color = unreal(color);
-#endif
-    FragColor.rgb = SafeHDR(color);
-    FragData[MRT_DEPTH].r = 0.999;
+    EvaluateBuffer(vec4(color, 1.0), 0.99, vec3(0.0, 0.0, 0.0), vec2(0.0, 0.0), 0.0);
 }

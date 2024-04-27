@@ -5,8 +5,8 @@ compositor MRT
     technique
     {
         compositor_logic DeferredLogic
-        // 0 color; 1 depth; 2 velocity; 3 normals; 4 gloss;
-        texture mrt target_width target_height PF_FLOAT16_RGB PF_FLOAT16_R PF_R8G8 PF_R11G11B10_FLOAT PF_R8G8 no_fsaa chain_scope
+        // 0 color; 1 depth + normals; 2 velocity + roughness;
+        texture mrt target_width target_height PF_FLOAT16_RGB PF_FLOAT16_RGB PF_R11G11B10_FLOAT no_fsaa chain_scope
         texture rt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa depth_pool 0
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
         texture ao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope

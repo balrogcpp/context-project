@@ -72,16 +72,16 @@ void main()
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
+    float clampedPixelDepth = texture2D(NormalTex, vUV0).x;
     float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance);
     vec3 viewPos = vRay * clampedPixelDepth;
     vec3 randN = hash(gl_FragCoord.xyz) * sq(1.0 - clampedPixelDepth);
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    vec3 normal = normalize(texture2D(NormalTex, vUV0).xyz);
+    vec3 normal = decode(texture2D(NormalTex, vUV0).yz);
 
-    if(clampedPixelDepth > 0.5 || clampedPixelDepth < HALF_EPSILON || Null(normal)) {
+    if(clampedPixelDepth > 0.5 || Null(normal)) {
         FragColor.r = 1.0;
         return;
     }

@@ -304,13 +304,6 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 #endif
 
-#ifdef FORCE_TONEMAP
-    color = unreal(color);
-#endif
-    FragColor.rgb = SafeHDR(color);
-
-#ifdef HAS_MRT
-    FragData[MRT_DEPTH].x = (surfaceDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    FragData[MRT_NORMALS].xyz = mul(ViewMatrix, vec4(lNormal, 0.0)).xyz;
-#endif
+    float clampedDepth = (surfaceDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    EvaluateBuffer(vec4(color, 1.0), clampedDepth, mul(ViewMatrix, vec4(lNormal, 0.0)).xyz, vec2(0.0, 0.0), 0.0);
 }

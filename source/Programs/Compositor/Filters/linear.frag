@@ -9,5 +9,5 @@ uniform vec4 ViewportSize;
 in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = texture2D(RT, vUV0).rgb;
+    FragColor = texture2D(RT, vUV0);
 }

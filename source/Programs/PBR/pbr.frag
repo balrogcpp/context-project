@@ -617,23 +617,6 @@ void main()
 #endif
 #endif
 
-#ifdef FORCE_TONEMAP
-    color = unreal(color);
-#endif
-    FragColor.rgb = SafeHDR(color);
-    FragColor.a = alpha;
-#ifdef HAS_MRT
-#ifdef MRT_DEPTH
-    FragData[MRT_DEPTH].x = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-#endif
-#ifdef MRT_NORMALS
-    FragData[MRT_NORMALS].xyz = mul(ViewMatrix, vec4(n, 0.0)).xyz;
-#endif
-#ifdef MRT_GLOSS
-    FragData[MRT_GLOSS].rgb = vec3(metallic, roughness, alpha);
-#endif
-#ifdef MRT_VELOCITY
-    FragData[MRT_VELOCITY].xy = fragVelocity;
-#endif
-#endif
+    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, mul(ViewMatrix, vec4(n, 0.0)).xyz, fragVelocity, roughness);
 }
