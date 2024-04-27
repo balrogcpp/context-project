@@ -7,7 +7,6 @@ uniform sampler2D DepthTex;
 uniform sampler2D VelocityTex;
 uniform vec2 TexSize;
 uniform mat4 InvViewMatrix;
-uniform mat4 WorldViewProjMatrix;
 uniform mat4 ViewProjPrev;
 uniform vec4 ViewportSize;
 uniform float FPS;
@@ -32,10 +31,7 @@ void main()
         vec4 nuv = mul(ViewProjPrev, worldPos);
         nuv.xy /= nuv.w;
 
-        vec4 olduv = mul(WorldViewProjMatrix, worldPos);
-        olduv.xy /= olduv.w;
-
-        velocity = (nuv.xy - olduv.xy);
+        velocity = (nuv.xy - vUV0.xy);
     }
 
     velocity *= FPS / 60.0;

@@ -391,7 +391,6 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 30) {  // 14 = MotionBlur
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setNamedConstant("WorldViewProjMatrix", viewProj);
     fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
