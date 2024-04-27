@@ -112,7 +112,7 @@ void main()
 
     // normalise
     occlusion /= float(NUM_BASE_SAMPLES);
-    occlusion = pow(occlusion, 1.5);
+    occlusion = sqrt(occlusion * occlusion * occlusion);
 
     // amplify and saturate if necessary
     FragColor.r = occlusion;
