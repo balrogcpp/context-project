@@ -79,7 +79,7 @@ void main()
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    vec3 normal = decode(texture2D(NormalTex, vUV0).yz);
+    vec3 normal = unpack(texture2D(NormalTex, vUV0).y);
 
     if(clampedPixelDepth > 0.5 || Null(normal)) {
         FragColor.r = 1.0;

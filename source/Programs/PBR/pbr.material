@@ -20,12 +20,14 @@ sampler ShadowTex
 sampler AO
 {
     filtering none
-    tex_address_mode wrap
+    tex_address_mode border
+    tex_border_colour 1 1 1 1
 }
 sampler SSR
 {
     filtering none
-    tex_address_mode wrap
+    tex_address_mode border
+    tex_border_colour 0 0 0 1
 }
 
 abstract material Unlit

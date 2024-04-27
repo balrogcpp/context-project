@@ -44,7 +44,6 @@ uniform vec4 TexSize4;
 uniform vec4 TexSize5;
 uniform vec4 TexSize6;
 uniform vec3 IBL[9];
-uniform vec3 HosekParams[10];
 //uniform float FarClipDistance;
 //uniform float NearClipDistance;
 uniform highp mat4 ViewMatrix;
@@ -536,6 +535,7 @@ void main()
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
+    vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
     vec4 fragPos = mul(WorldViewProjMatrix, vec4(vPosition1, 1.0));
     fragPos.xyz /= fragPos.w;
     fragDepth = gl_FragCoord.z / gl_FragCoord.w;
@@ -543,7 +543,7 @@ void main()
     fragPosPrev.xyz /= fragPosPrev.w;
     vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
 #ifdef HAS_AO
-    float ao = texture2D(OcclusionTex, fragPos.xy - fragVelocity).r;
+    float ao = texture2D(OcclusionTex, fragCoord.xy - fragVelocity).r;
     occlusion = min(occlusion, ao);
 #else
     const float ao = 1.0;
@@ -617,6 +617,5 @@ void main()
 #endif
 #endif
 
-//    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     EvaluateBuffer(vec4(color, alpha), mul(ViewMatrix, vec4(n, 0.0)).xyz, fragVelocity, roughness);
 }
