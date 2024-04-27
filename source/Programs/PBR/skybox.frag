@@ -39,5 +39,6 @@ void main()
     // Fog
     color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
-    EvaluateBuffer(vec4(color, 1.0), 0.99, vec3(0.0, 0.0, 0.0), vec2(0.0, 0.0), 0.0);
+    EvaluateBuffer(vec4(color, 1.0), vec3(0.0, 0.0, 0.0), vec2(0.0, 0.0), 0.0);
+    FragData[MRT_DEPTH].x = 0.99;
 }

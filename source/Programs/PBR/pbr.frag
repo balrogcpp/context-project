@@ -45,8 +45,8 @@ uniform vec4 TexSize5;
 uniform vec4 TexSize6;
 uniform vec3 IBL[9];
 uniform vec3 HosekParams[10];
-uniform float FarClipDistance;
-uniform float NearClipDistance;
+//uniform float FarClipDistance;
+//uniform float NearClipDistance;
 uniform highp mat4 ViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
@@ -617,6 +617,6 @@ void main()
 #endif
 #endif
 
-    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, mul(ViewMatrix, vec4(n, 0.0)).xyz, fragVelocity, roughness);
+//    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    EvaluateBuffer(vec4(color, alpha), mul(ViewMatrix, vec4(n, 0.0)).xyz, fragVelocity, roughness);
 }

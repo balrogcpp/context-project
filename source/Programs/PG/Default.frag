@@ -8,8 +8,8 @@
 uniform sampler2D texTex;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
-uniform float FarClipDistance;
-uniform float NearClipDistance;
+//uniform float FarClipDistance;
+//uniform float NearClipDistance;
 
 in vec4 oUV;
 in vec4 oColour;
@@ -28,13 +28,5 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w);
     //color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, vVec, WorldSpaceLightPos0.xyz, CameraPosition);
 
-#ifdef FORCE_TONEMAP
-    FragColor.rgb = SafeHDR(unreal(color));
-#else 
-    FragColor.rgb = SafeHDR(color);
-#endif
-    FragColor.a = alpha;
-#ifdef MRT_DEPTH
-    FragData[MRT_DEPTH].x = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
-#endif
+    EvaluateBuffer(vec4(color, alpha));
 }

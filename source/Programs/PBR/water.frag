@@ -15,8 +15,8 @@ uniform sampler2D FoamTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform vec4 ViewportSize;
-uniform float FarClipDistance;
-uniform float NearClipDistance;
+//uniform float FarClipDistance;
+//uniform float NearClipDistance;
 uniform float Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
@@ -158,7 +158,7 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * 0.9).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    float refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * 0.9).x;
     highp float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
@@ -304,6 +304,6 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 #endif
 
-    float clampedDepth = (surfaceDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    EvaluateBuffer(vec4(color, 1.0), clampedDepth, mul(ViewMatrix, vec4(lNormal, 0.0)).xyz, vec2(0.0, 0.0), 0.0);
+//    float clampedDepth = (surfaceDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    EvaluateBuffer(vec4(color, 1.0), mul(ViewMatrix, vec4(lNormal, 0.0)).xyz, vec2(0.0, 0.0), 0.0);
 }
