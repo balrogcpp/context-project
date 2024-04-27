@@ -52,6 +52,7 @@ uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
 uniform float LightCount;
+uniform float StaticObj;
 #if MAX_LIGHTS > 0
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
@@ -542,8 +543,12 @@ void main()
     vec4 fragPosPrev = mul(WorldViewProjPrev, vec4(vPosition1, 1.0));
     fragPosPrev.xyz /= fragPosPrev.w;
     vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
+#ifdef GL_ES
+    // magic fix for GLES
+    fragVelocity *= ViewportSize.zw;
+#endif
 #ifdef HAS_AO
-    float ao = texture2D(OcclusionTex, fragCoord.xy - fragVelocity).r;
+    float ao = texture2D(OcclusionTex, fragCoord.xy - fragVelocity.xy).r;
     occlusion = min(occlusion, ao);
 #else
     const float ao = 1.0;
@@ -580,7 +585,7 @@ void main()
 #if MAX_LIGHTS > 0
     color += EvaluateIBL(material);
 #ifdef HAS_SSR
-    vec3 ssr = texture2D(SSrTex, fragPos.xy - fragVelocity).rgb;
+    vec3 ssr = texture2D(SSrTex, fragCoord.xy - fragVelocity.xy).rgb;
     if (Any(ssr)) color = mix(color, ssr, metallic);
 #endif
 
@@ -617,5 +622,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), mul(ViewMatrix, vec4(n, 0.0)).xyz, fragVelocity, roughness);
+    EvaluateBuffer(vec4(color, alpha), mul(ViewMatrix, vec4(n, 0.0)).xyz, StaticObj * fragVelocity.xy, roughness);
 }

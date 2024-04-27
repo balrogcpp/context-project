@@ -180,45 +180,6 @@ index 5e06c1945..ee4cf91e9 100644
          }
      };
      
-diff --git a/OgreMain/src/OgreAutoParamDataSource.cpp b/OgreMain/src/OgreAutoParamDataSource.cpp
-index e35af3943..680f7415a 100644
---- a/OgreMain/src/OgreAutoParamDataSource.cpp
-+++ b/OgreMain/src/OgreAutoParamDataSource.cpp
-@@ -351,7 +351,7 @@ namespace Ogre {
-             }
-             else
-             {
--                mProjectionMatrix = mCurrentCamera->getProjectionMatrixWithRSDepth();
-+                mProjectionMatrix = mCurrentCamera->getProjectionMatrix();
-             }
-             if (mCurrentRenderTarget && mCurrentRenderTarget->requiresTextureFlipping())
-             {
-@@ -685,14 +685,14 @@ namespace Ogre {
-                         mCurrentCamera->getDerivedPosition(), viewMatrix);
-                     mTextureViewProjMatrix[index] = 
-                         Matrix4::CLIPSPACE2DTOIMAGESPACE *
--                        mCurrentTextureProjector[index]->getProjectionMatrixWithRSDepth() * 
-+                        mCurrentTextureProjector[index]->getProjectionMatrix() *
-                         viewMatrix;
-                 }
-                 else
-                 {
-                     mTextureViewProjMatrix[index] = 
-                         Matrix4::CLIPSPACE2DTOIMAGESPACE *
--                        mCurrentTextureProjector[index]->getProjectionMatrixWithRSDepth() * 
-+                        mCurrentTextureProjector[index]->getProjectionMatrix() *
-                         mCurrentTextureProjector[index]->getViewMatrix();
-                 }
-                 mTextureViewProjMatrixDirty[index] = false;
-@@ -757,7 +757,7 @@ namespace Ogre {
-                 // since they are built into the frustum position
-                 mSpotlightViewProjMatrix[index] = 
-                     Matrix4::CLIPSPACE2DTOIMAGESPACE *
--                    frust.getProjectionMatrixWithRSDepth() * 
-+                    frust.getProjectionMatrix() *
-                     frust.getViewMatrix();
- 
-                 mSpotlightViewProjMatrixDirty[index] = false;
 diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
 index dc4684669..17bf6854c 100644
 --- a/OgreMain/src/OgreRoot.cpp
@@ -258,7 +219,7 @@ index 9a76f0291..9ac3ae468 100644
          {
              // For directional lights, all we care about is projecting the receivers
              // backwards towards the light, clipped by the camera region
-+            if (float dot = cam.getDerivedDirection().dotProduct(light.getDerivedDirection()) > 0.0) {
++            if (float dot = cam.getDerivedDirection().dotProduct(light.getDerivedDirection()) > 0.0 && false) {
 +                mBodyB.extend(-light.getDerivedDirection()*0.5*cam.getFarClipDistance());
 +                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_X)*0.5*cam.getFarClipDistance());
 +                mBodyB.extend(-light.getDerivedDirection().crossProduct(Vector3::UNIT_Y)*0.5*cam.getFarClipDistance());

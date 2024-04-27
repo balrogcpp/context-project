@@ -25,7 +25,7 @@ float PackFloat16bit2(const vec2 src)
 //unpack:	f2=frac(res);	f1=(res-f2)/1000;	f1=(f1-0.5)*2;f2=(f2-0.5)*2;
 vec2 UnPackFloat16bit2(float src)
 {
-    float fFrac = frac(src);
+    float fFrac = fract(src);
     return vec2(((src - fFrac) / 100.0 - 0.5) * 2.0, (fFrac - 0.4) * 2.5);
 }
 

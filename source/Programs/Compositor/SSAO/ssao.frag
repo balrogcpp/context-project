@@ -75,7 +75,8 @@ void main()
     float clampedPixelDepth = texture2D(NormalTex, vUV0).x;
     float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance);
     vec3 viewPos = vRay * clampedPixelDepth;
-    vec3 randN = hash(gl_FragCoord.xyz) * sq(1.0 - clampedPixelDepth);
+    float invDepth = 1.0 - clampedPixelDepth;
+    vec3 randN = hash(gl_FragCoord.xyz) * invDepth * invDepth;
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable

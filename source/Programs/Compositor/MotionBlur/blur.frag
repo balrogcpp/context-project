@@ -7,12 +7,17 @@ uniform sampler2D DepthTex;
 uniform sampler2D VelocityTex;
 uniform vec2 TexSize;
 uniform mat4 InvViewMatrix;
+uniform mat4 WorldViewProjMatrix;
 uniform mat4 ViewProjPrev;
 uniform vec4 ViewportSize;
-uniform float FPS;
+uniform float FrameTime;
 
 #ifndef MAX_SAMPLES
-#define MAX_SAMPLES 4
+#ifndef GL_ES
+#define MAX_SAMPLES 8
+#else
+#define MAX_SAMPLES 8
+#endif
 #endif
 
 in highp vec2 vUV0;
@@ -31,10 +36,13 @@ void main()
         vec4 nuv = mul(ViewProjPrev, worldPos);
         nuv.xy /= nuv.w;
 
-        velocity = (nuv.xy - vUV0.xy);
+        vec4 olduv = mul(WorldViewProjMatrix, worldPos);
+        olduv.xy /= olduv.w;
+
+        velocity = (nuv.xy - olduv.xy);
     }
 
-    velocity *= FPS / 60.0;
+    velocity *= 16.6666666667 /  FrameTime;
     float speed = length(velocity * ViewportSize.xy);
     float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
     float invSamples = 1.0 / nSamples;

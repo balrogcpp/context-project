@@ -8,7 +8,8 @@ fragment_program Blur glsl glsles hlsl
 
     default_params
     {
-        param_named_auto FPS fps
+        param_named_auto FrameTime frame_time 1000
+        param_named_auto ViewportSize viewport_size
     }
 }
 
@@ -23,10 +24,14 @@ material Blur : RayCast
                 param_named RT int 0
                 param_named DepthTex int 1
                 param_named VelocityTex int 2
-                param_named_auto TexSize texture_size 0
-                param_named_auto ViewportSize viewport_size
 			}
 
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
             texture_unit Depth
             {
                 texture black.dds

@@ -70,13 +70,16 @@ out vec4 FragColor;
 
 
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
-#include "hlsl2.glsl"
+//#include "hlsl2.glsl"
+#define saturate(x) clamp(x, 0.0, 1.0)
+#define mul(a, b) ((a) * (b))
+#define mtxFromCols(a, b, c) mat3((a), (b), (c))
 #else
 #define highp
 #define mediump
 #define lowp
 #endif
-#include "OgreUnifiedShader.h"
+//#include "OgreUnifiedShader.h"
 #include "math.glsl"
 #include "mrt.glsl"
 

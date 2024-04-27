@@ -391,6 +391,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 30) {  // 14 = MotionBlur
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setNamedConstant("WorldViewProjMatrix", viewProj);
     fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
@@ -433,9 +434,7 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
                                                  const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
   if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram()) return;
 
-  const auto &vp = pass->getVertexProgramParameters();
   const auto &fp = pass->getFragmentProgramParameters();
-  vp->setIgnoreMissingParams(true);
   fp->setIgnoreMissingParams(true);
 
   if (!pass->getLightingEnabled() || pass->getFogOverride()) return;
@@ -493,6 +492,7 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   rend->getWorldTransforms(&MVP);
   fp->setNamedConstant("WorldViewProjPrev",  viewProjPrev * MVP);
   fp->setNamedConstant("WorldViewProjMatrix",  viewProj * MVP);
+  fp->setNamedConstant("StaticObj",  0.0f);
 
   // apply for dynamic entities only
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
@@ -506,6 +506,7 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       if (prevMVP.has_value()) {
         fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
         fp->setNamedConstant("WorldViewProjMatrix", viewProj * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+        fp->setNamedConstant("StaticObj",  1.0f);
       }
     }
   }
