@@ -212,7 +212,7 @@ index dc4684669..17bf6854c 100644
  
          for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
 diff --git a/OgreMain/src/OgreShadowCameraSetupFocused.cpp b/OgreMain/src/OgreShadowCameraSetupFocused.cpp
-index 9a76f0291..2fde8d88d 100644
+index 9a76f0291..b414a42fc 100644
 --- a/OgreMain/src/OgreShadowCameraSetupFocused.cpp
 +++ b/OgreMain/src/OgreShadowCameraSetupFocused.cpp
 @@ -106,6 +106,16 @@ namespace Ogre
@@ -405,3 +405,21 @@ index 85d62c04e..bad25d424 100644
  
          return mHeight;
      }
+diff --git a/Tools/AssimpConverter/CMakeLists.txt b/Tools/AssimpConverter/CMakeLists.txt
+index 58c996f7e..741aaad27 100644
+--- a/Tools/AssimpConverter/CMakeLists.txt
++++ b/Tools/AssimpConverter/CMakeLists.txt
+@@ -5,10 +5,10 @@
+ #
+ # The contents of this file are placed in the public domain. Feel
+ # free to make use of it in any way you like.
+-#-------------------------------------------------------------------
+-
++set(ZLIB_USE_STATIC_LIBS ON)
++find_package(ZLIB)
+ add_executable(OgreAssimpConverter main.cpp)
+-target_link_libraries(OgreAssimpConverter OgreMain Codec_Assimp)
++target_link_libraries(OgreAssimpConverter OgreMain Codec_Assimp ZLIB::ZLIB)
+ if (OGRE_PROJECT_FOLDERS)
+ 	set_property(TARGET OgreAssimpConverter PROPERTY FOLDER Tools)
+ endif ()

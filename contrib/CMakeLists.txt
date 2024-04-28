@@ -186,7 +186,6 @@ externalproject_add(Target_OIS
         GIT_SHALLOW true
         GIT_PROGRESS false
         CMAKE_ARGS
-        CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
@@ -421,6 +420,7 @@ externalproject_add(Target_FreeType
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_FreeType
@@ -702,7 +702,7 @@ externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_imgui Target_pugixml
+        DEPENDS Target_imgui Target_pugixml Target_assimp
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -782,7 +782,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_COMPONENT_TERRAIN=ON
         -DOGRE_BUILD_PLUGIN_FREEIMAGE=OFF
         -DOGRE_BUILD_PLUGIN_EXRCODEC=OFF
-        -DOGRE_BUILD_PLUGIN_ASSIMP=OFF
+        -DOGRE_BUILD_PLUGIN_ASSIMP=ON
         -DOGRE_BUILD_PLUGIN_STBI=ON
         -DOGRE_BUILD_PLUGIN_RSIMAGE=OFF
         -DOGRE_BUILD_PLUGIN_BSP=OFF
