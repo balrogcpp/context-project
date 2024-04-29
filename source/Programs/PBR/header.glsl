@@ -23,9 +23,7 @@
 #define MRT_COLOR 0
 #define MRT_DEPTH 1
 #define MRT_VELOCITY 2
-#define MRT_NORMALS 3
-#define MRT_GLOSS 4
-#define MAX_MRT_TEXTURES 5
+#define MAX_MRT_TEXTURES 3
 
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300

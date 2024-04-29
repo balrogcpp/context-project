@@ -47,28 +47,28 @@ float pow10(float x)
 
 #define INVSQ3 0.57735026918962576451
 
-const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
-    vec3[](
-    vec3(1.0, 0.0, 0.0),
-    vec3(-1.0, 0.0, 0.0),
-    vec3(0.0, 1.0, 0.0),
-    vec3(0.0, -1.0, 0.0),
-    vec3(0.0, 0.0, 1.0),
-    vec3(0.0, 0.0, -1.0),
-    vec3( INVSQ3,  INVSQ3,  INVSQ3),
-    vec3(-INVSQ3,  INVSQ3,  INVSQ3),
-    vec3( INVSQ3, -INVSQ3,  INVSQ3),
-    vec3( INVSQ3,  INVSQ3, -INVSQ3),
-    vec3(-INVSQ3, -INVSQ3,  INVSQ3),
-    vec3(-INVSQ3,  INVSQ3, -INVSQ3),
-    vec3( INVSQ3, -INVSQ3, -INVSQ3),
-    vec3(-INVSQ3, -INVSQ3, -INVSQ3)
-    );
-
 in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
+    const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+        vec3[](
+        vec3(1.0, 0.0, 0.0),
+        vec3(-1.0, 0.0, 0.0),
+        vec3(0.0, 1.0, 0.0),
+        vec3(0.0, -1.0, 0.0),
+        vec3(0.0, 0.0, 1.0),
+        vec3(0.0, 0.0, -1.0),
+        vec3( INVSQ3,  INVSQ3,  INVSQ3),
+        vec3(-INVSQ3,  INVSQ3,  INVSQ3),
+        vec3( INVSQ3, -INVSQ3,  INVSQ3),
+        vec3( INVSQ3,  INVSQ3, -INVSQ3),
+        vec3(-INVSQ3, -INVSQ3,  INVSQ3),
+        vec3(-INVSQ3,  INVSQ3, -INVSQ3),
+        vec3( INVSQ3, -INVSQ3, -INVSQ3),
+        vec3(-INVSQ3, -INVSQ3, -INVSQ3)
+    );
+
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
