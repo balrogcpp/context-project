@@ -1,22 +1,10 @@
-
 # When bpy is already in local, we know this is not the initial import...
 if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
     import importlib
-    if "config" in locals():
-        importlib.reload(config)
-    if "util" in locals():
-        importlib.reload(util)
-    if "shader" in locals():
-        importlib.reload(shader)
-    if "report" in locals():
-        importlib.reload(report)
-    if "program" in locals():
-        importlib.reload(program)
+    #print("Reloading modules: shader")
+    importlib.reload(shader)
 
-# This is only relevant on first run, on later reloads those modules
-# are already in locals() and those statements do not do anything.
-import logging, os, shutil, tempfile, math
+import os, shutil, tempfile, math, logging
 from .. import config
 from .. import shader
 from .. import util
@@ -74,10 +62,10 @@ def dot_materials(materials, path=None, separate_files=True, prefix='mats', **kw
                     generator.copy_programs()
                 #if kwargs.get('touch_textures', config.get('TOUCH_TEXTURES')):
                     #generator.copy_textures()
-                fd.write(bytes(material_text+"\n",'utf-8'))
+                fd.write(bytes(material_text + "\n", 'utf-8'))
 
             if include_missing:
-                fd.write(bytes(MISSING_MATERIAL + "\n",'utf-8'))
+                fd.write(bytes(MISSING_MATERIAL + "\n", 'utf-8'))
 
 def dot_material(mat, path, **kwargs):
     """
@@ -127,16 +115,23 @@ class OgreMaterialGenerator(object):
         self.target_path = target_path
         self.w = util.IndentedWriter()
         self.passes = []
-        self.material_name = material_name(self.material,prefix=prefix)
+        if self.material is None:
+            self.material_name = "_missing_material_"
+        else:
+            self.material_name = material_name(self.material, prefix=prefix)
         self.images = set()
 
-        if material.node_tree:
+        if (self.material is not None and 
+            material.node_tree is not None):
             nodes = shader.get_subnodes( self.material.node_tree, type='MATERIAL_EXT' )
             for node in nodes:
                 if node.material:
                     self.passes.append( node.material )
 
     def generate(self):
+        if self.material is None:
+            return MISSING_MATERIAL
+
         self.generate_header()
         with self.w.iword('material').word(self.material_name).iword(' : PBR').embed():
             # if self.material.shadow_method != "NONE":
@@ -200,14 +195,17 @@ class OgreMaterialGenerator(object):
 
             color = mat_wrapper.base_color
             alpha = 1.0
-            if mat.blend_method != "OPAQUE":
+            if mat.blend_method == "CLIP":
+                alpha = mat_wrapper.alpha
+                self.w.iword('alpha_rejection greater_equal').round(255*mat.alpha_threshold).nl()
+            elif mat.blend_method != "OPAQUE":
                 alpha = mat_wrapper.alpha
                 self.w.iword('scene_blend alpha_blend').nl()
                 if mat.show_transparent_back:
                     self.w.iword('cull_hardware none').nl()
                     self.w.iword('depth_write off').nl()
 
-            if config.get('USE_FFP_PARAMETERS'):
+            if config.get('USE_FFP_PARAMETERS') is True:
                 # arbitrary bad translation from PBR to Blinn Phong
                 # derive proportions from metallic
                 bf = 1.0 - mat_wrapper.metallic
@@ -379,7 +377,6 @@ class OgreMaterialGenerator(object):
             image.filepath = target_filepath
             image.save()
             image.filepath = origin_filepath
-            util.image_magick(image, target_filepath, target_filepath, compress)
             logger.info("Writing texture: (%s)", target_filepath)
         else:
             image_filepath = bpy.path.abspath(image.filepath, library=image.library)
@@ -456,7 +453,7 @@ TEXTURE_ADDRESS_MODE = {
 }
 
 MISSING_MATERIAL = '''
-material _missing_material_ : PBR
+material _missing_material_
 {
     receive_shadows off
     technique

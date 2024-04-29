@@ -1,41 +1,18 @@
-
 # When bpy is already in local, we know this is not the initial import...
 if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
     import importlib
-    if "material" in locals():
-        importlib.reload(material)
-    if "materialv2json" in locals():
-        importlib.reload(materialv2json)
-    if "node_anim" in locals():
-        importlib.reload(node_anim)
-    if "mesh" in locals():
-        importlib.reload(mesh)
-    if "skeleton" in locals():
-        importlib.reload(skeleton)
-    if "config" in locals():
-        importlib.reload(config)
-    if "util" in locals():
-        importlib.reload(util)
-    if "report" in locals():
-        importlib.reload(report)
-    if "xml" in locals():
-        importlib.reload(xml)
+    #print("Reloading modules: material, materialv2json, node_anim, mesh, skeleton")
+    importlib.reload(material)
+    importlib.reload(materialv2json)
+    importlib.reload(node_anim)
+    importlib.reload(mesh)
+    importlib.reload(skeleton)
 
-# This is only relevant on first run, on later reloads those modules
-# are already in locals() and those statements do not do anything.
-import bpy, mathutils, os, getpass, math
+import bpy, mathutils, os, getpass, math, logging, datetime
 from os.path import join
-from . import material
-from . import materialv2json
-from . import node_anim
-from . import mesh
-from . import skeleton
-from .. import bl_info
-from .. import config
-from .. import util
+from . import material, materialv2json, node_anim, mesh, skeleton
+from .. import bl_info, config, util
 from ..report import Report
-from ..util import *
 from ..xml import *
 from .material import *
 from .materialv2json import *
@@ -77,12 +54,12 @@ def dot_scene(path, scene_name=None):
     for ob in bpy.context.scene.objects:
         if ob.subcollision:
             continue
-        if not (config.get("EXPORT_HIDDEN") or ob in bpy.context.visible_objects):
+        if ((config.get("EXPORT_HIDDEN") is False) and (ob not in bpy.context.visible_objects)):
             continue
         if config.get("SELECTED_ONLY") and not ob.select_get():
-            if ob.type == 'CAMERA' and config.get("FORCE_CAMERA"):
+            if ob.type == 'CAMERA' and (config.get("FORCE_CAMERA") is True):
                 pass
-            elif ob.type == 'LAMP' and config.get("FORCE_LAMPS"):
+            elif ob.type == 'LIGHT' and (config.get("FORCE_LIGHTS") is True):
                 pass
             else:
                 continue
@@ -190,7 +167,7 @@ def dot_scene(path, scene_name=None):
             meshes.append(ob)
 
     materials = []
-    if config.get("MATERIALS"):
+    if config.get("MATERIALS") is True:
         logger.info("* Processing Materials")
         materials = util.objects_merge_materials(meshes)
 
@@ -199,11 +176,11 @@ def dot_scene(path, scene_name=None):
             dot_materialsv2json(materials, path, separate_files=config.get('SEPARATE_MATERIALS'), prefix=prefix)
         elif converter_type == "OgreXMLConverter":
             dot_materials(materials, path, separate_files=config.get('SEPARATE_MATERIALS'), prefix=prefix)
-        else: # Unkown converter type, error
-            logger.error("Unkown converter type '{}', will not generate materials".format(converter_type))
-            Reports.error.append("Unkown converter type '{}', will not generate materials".format(converter_type))
+        else: # Unknown converter type, error
+            logger.error("Unknown converter type '{}', will not generate materials".format(converter_type))
+            Report.errors.append("Unknown converter type '{}', will not generate materials".format(converter_type))
 
-    doc = ogre_document(materials)
+    doc = ogre_document(materials, path)
 
     mesh_collision_prims = {}
     mesh_collision_files = {}
@@ -223,7 +200,7 @@ def dot_scene(path, scene_name=None):
         )
 
     # Create the .scene file
-    if config.get('SCENE'):
+    if config.get('SCENE') is True:
         data = doc.toprettyxml()
         try:
             with open(target_scene_file, 'wb') as fd:
@@ -381,6 +358,7 @@ def _ogre_node_helper( doc, ob, prefix='', pos=None, rot=None, scl=None ):
         v = swap(pos)
     else:
         v = swap( mat.to_translation() )
+
     p = doc.createElement('position')
     p.setAttribute('x', '%6f' % v.x)
     p.setAttribute('y', '%6f' % v.y)
@@ -414,7 +392,7 @@ def _ogre_node_helper( doc, ob, prefix='', pos=None, rot=None, scl=None ):
 
     return o
 
-def ogre_document(materials):
+def ogre_document(materials, path):
     now = time.time()
     doc = RDocument()
     scn = doc.createElement('scene')
@@ -422,6 +400,8 @@ def ogre_document(materials):
     time_format = "%a, %d %b %Y %H:%M:%S +0000"
     doc.addComment('exporter: blender2ogre ' + ".".join(str(i) for i in bl_info["version"]))
     doc.addComment('export_time: ' + time.strftime(time_format, time.gmtime(now)))
+    doc.addComment('blender_version: %s (%s; %s)' % (bpy.app.version_string, bpy.app.version_cycle, bpy.app.build_platform.decode('UTF-8')))
+
     scn.setAttribute('formatVersion', '1.1')
     bscn = bpy.context.scene
 
@@ -433,48 +413,245 @@ def ogre_document(materials):
 
     nodes = doc.createElement('nodes')
     doc._scene_nodes = nodes
-    extern = doc.createElement('externals')
-    environ = doc.createElement('environment')
-    for n in (nodes,extern,environ):
+    external = doc.createElement('externals')
+    environment = doc.createElement('environment')
+    for n in (nodes, external, environment):
         scn.appendChild( n )
 
-    # Extern files
+    # External files
     for mat in materials:
         if mat is None: continue
         item = doc.createElement('item')
-        extern.appendChild( item )
+        external.appendChild( item )
         item.setAttribute('type', 'material')
         a = doc.createElement('file')
         item.appendChild( a )
-        a.setAttribute('name', '%s.material'%material.material_name(mat))
+        a.setAttribute('name', '%s.material' % material.material_name(mat))
 
-    # Environ settings
+    # Environment settings
     world = bpy.context.scene.world
     if world: # multiple scenes - other scenes may not have a world
         _c = [ ('colourBackground', world.color)]
         for ctag, color in _c:
-            a = doc.createElement(ctag); environ.appendChild( a )
+            a = doc.createElement(ctag)
+            environment.appendChild( a )
             a.setAttribute('r', '%3f' % color.r)
             a.setAttribute('g', '%3f' % color.g)
             a.setAttribute('b', '%3f' % color.b)
 
     if world and world.mist_settings.use_mist:
-        a = doc.createElement('fog'); environ.appendChild( a )
-        a.setAttribute('linearStart', '%6f' % world.mist_settings.start )
+        fog = doc.createElement('fog')
+        environment.appendChild( fog )
+        fog.setAttribute('linearStart', '%6f' % world.mist_settings.start )
         mist_falloff = world.mist_settings.falloff
-        if mist_falloff == 'QUADRATIC': a.setAttribute('mode', 'exp')    # on DTD spec (none | exp | exp2 | linear)
-        elif mist_falloff == 'LINEAR': a.setAttribute('mode', 'linear')
-        else: a.setAttribute('mode', 'exp2')
-        #a.setAttribute('mode', world.mist_settings.falloff.lower() )    # not on DTD spec
-        a.setAttribute('linearEnd', '%6f' % (world.mist_settings.start + world.mist_settings.depth))
-        a.setAttribute('expDensity', world.mist_settings.intensity)
+        if mist_falloff == 'QUADRATIC': fog.setAttribute('mode', 'exp')    # on DTD spec (none | exp | exp2 | linear)
+        elif mist_falloff == 'LINEAR': fog.setAttribute('mode', 'linear')
+        else: fog.setAttribute('mode', 'exp2')
+        #fog.setAttribute('mode', world.mist_settings.falloff.lower() )    # not on DTD spec
+        fog.setAttribute('linearEnd', '%6f' % (world.mist_settings.start + world.mist_settings.depth))
+        fog.setAttribute('expDensity', world.mist_settings.intensity)
 
-        c = doc.createElement('colourDiffuse'); a.appendChild( c )
+        c = doc.createElement('colourDiffuse')
+        fog.appendChild( c )
         c.setAttribute('r', '%3f' % color.r)
         c.setAttribute('g', '%3f' % color.g)
         c.setAttribute('b', '%3f' % color.b)
 
+    skybox_name = dot_scene_skybox_export( path )
+    if skybox_name is not None:
+        skybox = doc.createElement('skyBox')
+        environment.appendChild( skybox )
+        skybox.setAttribute('material', skybox_name )
+        #skybox.setAttribute('distance', '5000')
+        #skybox.setAttribute('drawFirst', 'true')
+        skybox.setAttribute('active', 'true')
+
     return doc
+
+def dot_scene_skybox_export( path ):
+    if config.get('EXPORT_SKYBOX') is False:
+        return None
+
+    skybox_name = None
+    skybox_resolution = config.get('SKYBOX_RESOLUTION')
+    skybox_distance = 5000
+    skybox_imagepath = None
+    collection_name = "OgreSkyBox"
+    #path = "D:\\tmp\\SkyBox"
+
+    # Get the current scene
+    scene = bpy.context.scene
+
+    # Get the world used by the scene
+    world = scene.world
+
+    # Ensure that node use is enabled for the world
+    if world.use_nodes:
+        # Get the node tree of the world
+        nodes = world.node_tree.nodes
+
+        # Find the Background node (usually named 'Background')
+        background_node = nodes.get('Background')
+        if background_node:
+            # Access the 'Color' input
+            color_input = background_node.inputs['Color']
+
+            # Check if there is a link and if it's from a valid node
+            if color_input.is_linked:
+                linked_node = color_input.links[0].from_node
+                # Check if the node is an environment texture
+                if linked_node.type == 'TEX_ENVIRONMENT':
+                    # Output some information about the image
+                    logger.debug("SkyBox: Image linked as background:")
+                    logger.debug("SkyBox: - Image Name: %s" % linked_node.image.name)
+                    logger.debug("SkyBox: - Image Filepath: %s" % linked_node.image.filepath)
+                else:
+                    logger.warning("Unable to create SkyBox: Linked node is not an environment texture. Node type: %s" % linked_node.type)
+                    Report.warnings.append("Unable to create SkyBox: Linked node is not an environment texture. Node type: %s" % linked_node.type)
+                    return None
+            else:
+                # Retrieve the static color if no image is linked
+                background_color = color_input.default_value
+                logger.warning("Unable to create SkyBox: Found background color instead of environment texture")
+                Report.warnings.append("Unable to create SkyBox: Found background color instead of environment texture")
+                return None
+        else:
+            logger.warning("Unable to create SkyBox: No Background node found")
+            Report.warnings.append("Unable to create SkyBox: No Background node found")
+            return None
+    else:
+        logger.warning("Unable to create SkyBox: World nodes are not enabled.")
+        Report.warnings.append("Unable to create SkyBox: World nodes are not enabled.")
+        return None
+
+    skybox_imagepath = linked_node.image.filepath
+    skybox_name = os.path.splitext(linked_node.image.name)[0]
+
+    logger.info("* Generating SkyBox: %s" % skybox_name)
+    logger.info("+ From Image: %s" % skybox_name)
+    logger.info("+ With resolution: %s" % skybox_resolution)
+
+    # Create a collection to render the SkyBox
+    skybox_collection = bpy.data.collections.new(collection_name)
+    bpy.context.scene.collection.children.link(skybox_collection)
+
+    # Create camera to render the SkyBox
+    camera_name = "OgreSkyBox_CAM"
+
+    camera = bpy.data.cameras.new(camera_name)
+    camera_ob = bpy.data.objects.new(camera_name, camera)
+    #bpy.context.scene.objects.link(camera_ob)
+
+    #camera_ob = bpy.data.objects['CameraY']
+    skybox_collection.objects.link(camera_ob)
+
+    scene_camera_orig = scene.camera
+    scene.camera = camera_ob
+
+    # Set SkyBox camera settings
+    camera_ob.data.lens_unit = 'FOV'
+    camera_ob.data.angle = math.radians(90)
+
+    # Depth of Field
+    #camera_ob.data.dof.use_dof = True
+    #camera_ob.data.dof.focus_distance = 10.0
+
+    camera_ob.data.clip_start = 0.1
+    camera_ob.data.clip_end = 1000
+
+    # Backup scene settings
+    scene_res_x_orig = scene.render.resolution_x
+    scene_res_y_orig = scene.render.resolution_y
+    scene_rdr_perc_orig = scene.render.resolution_percentage
+    scene_filepath_orig = scene.render.filepath
+    scene_use_nodes_orig = scene.use_nodes
+    scene_file_format_orig = scene.render.image_settings.file_format
+
+    # Set scene settings for SkyBox rendering
+    scene.render.resolution_x = skybox_resolution
+    scene.render.resolution_y = skybox_resolution
+    scene.render.resolution_percentage = 100
+    scene.use_nodes = True
+    scene.render.image_settings.file_format = 'PNG'
+
+    # Create SkyBox camera orientations
+    front = mathutils.Euler((math.radians(90), 0, 0), 'XYZ')
+    back = mathutils.Euler((math.radians(90), 0, math.radians(180)), 'XYZ')
+    right = mathutils.Euler((math.radians(90), 0, -math.radians(90)), 'XYZ')
+    left = mathutils.Euler((math.radians(90), 0, math.radians(90)), 'XYZ')
+    top = mathutils.Euler((math.radians(180), 0, 0), 'XYZ')
+    bottom = mathutils.Euler((0, 0, 0), 'XYZ')
+
+    orientations = {"fr": front, "bk": back, "rt": right, "lf": left, "up": top, "dn": bottom}
+
+    # Render only the SkyBox collection
+    for collection in bpy.data.collections:
+        if collection != skybox_collection:
+            collection.hide_render = True
+        else:
+            collection.hide_render = False
+
+    # Render one side of the skybox for each orientation
+    i = 0
+    for orientation in orientations:
+        camera_ob.rotation_euler = orientations[orientation]
+        image_name = os.path.join(path, skybox_name + "_" + orientation)
+        scene.render.filepath = image_name
+        logger.info("Exporting SkyBox image: %s" % image_name)
+        scene.render.use_compositing = True
+        bpy.ops.render.render(write_still = True)
+        #bpy.ops.render.render(animation=False, write_still=False, use_viewport=False, layer='', scene='')
+        #progressbar.update(i)
+        i = i + 1
+        percent = len(orientations) / i
+        bpy.context.window_manager.progress_update(percent * 100)
+
+    # Restore scene settings
+    scene.render.resolution_x = scene_res_x_orig
+    scene.render.resolution_y = scene_res_y_orig
+    scene.render.resolution_percentage = scene_rdr_perc_orig
+    scene.render.filepath = scene_filepath_orig
+    scene.use_nodes = scene_use_nodes_orig
+    scene.camera = scene_camera_orig
+    scene.render.image_settings.file_format = scene_file_format_orig
+
+    # Restore collection rendering
+    for collection in bpy.data.collections:
+        collection.hide_render = False
+
+    # Remove SkyBox camera
+    bpy.data.cameras.remove(camera)
+
+    # Destroy the collection created to render the SkyBox
+    bpy.context.scene.collection.children.unlink(skybox_collection)
+    bpy.data.collections.remove(skybox_collection)
+
+    w = util.IndentedWriter()
+    with w.iword('material').word(skybox_name).embed():
+        with w.iword('technique').embed():
+            with w.iword('pass').embed():
+                w.iline('lighting off')
+                w.iline('depth_write off')
+                with w.iword('texture_unit').embed():
+                    w.iword('texture').word(skybox_name + ".png").word("cubic").nl()
+                    w.iline('tex_address_mode clamp')
+    material_text = w.text
+
+    try:
+        mat_file_name = join(path, skybox_name + ".material")
+        with open(mat_file_name, 'wb') as fd:
+            logger.info("SkyBox: Exporting material to: %s" % mat_file_name)
+            b2o_ver = ".".join(str(i) for i in bl_info["version"])
+            fd.write(bytes('// generated by blender2ogre %s on %s\n' % (b2o_ver, datetime.now().replace(microsecond=0)), 'utf-8'))
+            fd.write(bytes(material_text, 'utf-8'))
+    except Exception as e:
+        logger.error("Unable to create SkyBox material file: %s" % mat_file_name)
+        logger.error(e)
+        Report.errors.append("Unable to create SkyBox material file: %s" % mat_file_name)
+        return None
+
+    return skybox_name
+
 
 # Recursive Node export
 def dot_scene_node_export( ob, path, doc=None, rex=None,
@@ -484,7 +661,7 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
     o = _ogre_node_helper( doc, ob )
     xmlparent.appendChild(o)
 
-    # if config.get('EXPORT_USER'):
+    # if config.get('EXPORT_USER') is True:
     # Custom user props
     if len(ob.items()) > 0:
         user = doc.createElement('userData')
@@ -534,13 +711,20 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
         elif collisionFile:
             e.setAttribute('collisionFile', collisionFile )
 
-        #if config.get('EXPORT_USER'):
+        #if config.get('EXPORT_USER') is True:
         _mesh_entity_helper( doc, ob, e )
 
         # export mesh.xml file of this object
-        if config.get('MESH') and ob.data.name not in exported_meshes:
+        if (config.get('MESH') is True) and ob.data.name not in exported_meshes:
+            # Alert if scale or rotation are not uniform
+            if ob.scale != mathutils.Vector((1.0, 1.0, 1.0)) or \
+               ob.rotation_quaternion != mathutils.Quaternion((1.0, 0.0, 0.0, 0.0)) or \
+               ob.rotation_euler.to_quaternion() != mathutils.Quaternion((1.0, 0.0, 0.0, 0.0)):
+                    logger.warning("Object \"%s\" has non uniform scale or rotation" % ob.name)
+                    Report.warnings.append("Object \"%s\" has non uniform scale or rotation, exported mesh will look different" % ob.name)
+
             exists = os.path.isfile( join( path, '%s.mesh' % ob.data.name ) )
-            overwrite = not exists or (exists and config.get("MESH_OVERWRITE"))
+            overwrite = not exists or (exists and (config.get("MESH_OVERWRITE") is True))
             tangents = int(config.get("GENERATE_TANGENTS"))
             mesh.dot_mesh(ob, path, overwrite=overwrite, tangents=tangents)
             exported_meshes.append( ob.data.name )
@@ -549,7 +733,7 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
         # Deal with Array modifier
         vecs = [ ob.matrix_world.to_translation() ]
         for mod in ob.modifiers:
-            if config.get("ARRAY") == True and mod.type == 'ARRAY':
+            if (config.get("ARRAY") is True) and (mod.type == 'ARRAY'):
                 if mod.fit_type != 'FIXED_COUNT':
                     logger.warning("<%s> Unsupported array-modifier type: %s, only 'Fixed Count' is supported" % (ob.name, mod.fit_type))
                     Report.warnings.append("Object \"%s\" has unsupported array-modifier type: %s, only 'Fixed Count' is supported" % (ob.name, mod.fit_type))
@@ -635,7 +819,7 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
         a.setAttribute('near', '%6f' % ob.data.clip_start)    # requested by cyrfer
         a.setAttribute('far', '%6f' % ob.data.clip_end)
 
-    elif ob.type == 'LIGHT' and ob.data.type in 'POINT SPOT SUN'.split():
+    elif ob.type == 'LIGHT' and ob.data.type in 'POINT SPOT SUN AREA'.split():
         Report.lights.append( ob.name )
         l = doc.createElement('light')
         o.appendChild(l)
@@ -646,16 +830,14 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
             l.setAttribute('type', 'spot')
         elif ob.data.type == 'SUN':
             l.setAttribute('type', 'directional')
+        elif ob.data.type == 'AREA':
+            l.setAttribute('type', 'rect')
 
-        l.setAttribute('name', ob.name )
-        l.setAttribute('powerScale', str(ob.data.energy))
-        
-        if (bpy.app.version[0] == 2 and bpy.app.version[1] >= 93) or (bpy.app.version[0] >= 3):
+        if (bpy.app.version >= (2, 93, 0)):
             a = doc.createElement('colourDiffuse'); l.appendChild(a)
             a.setAttribute('r', '%3f' % (ob.data.color.r * ob.data.diffuse_factor))
             a.setAttribute('g', '%3f' % (ob.data.color.g * ob.data.diffuse_factor))
             a.setAttribute('b', '%3f' % (ob.data.color.b * ob.data.diffuse_factor))
-
         else:
             a = doc.createElement('colourDiffuse'); l.appendChild(a)
             a.setAttribute('r', '%3f' % ob.data.color.r)
@@ -671,18 +853,33 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
         if ob.data.type == 'SPOT':
             a = doc.createElement('lightRange')
             l.appendChild(a)
-            a.setAttribute('inner',str( ob.data.spot_size * (1.0 - ob.data.spot_blend)))
-            a.setAttribute('outer',str(ob.data.spot_size))
-            a.setAttribute('falloff','1.0')
+            a.setAttribute('inner', str(ob.data.spot_size * (1.0 - ob.data.spot_blend)))
+            a.setAttribute('outer', str(ob.data.spot_size))
+            a.setAttribute('falloff', '1.0')
+
+        if ob.data.type == 'AREA':
+            a = doc.createElement('lightSourceSize')
+            l.appendChild(a)
+            a.setAttribute('width', str(ob.data.size))
+            a.setAttribute('height', str(ob.data.size_y))
+
+        factor = 10
+        l.setAttribute('name', ob.name )
+        l.setAttribute('powerScale', str(ob.data.energy / factor))
 
         a = doc.createElement('lightAttenuation'); l.appendChild( a )
-        a.setAttribute('range', '5000' )        # is this an Ogre constant?
-        a.setAttribute('constant', '1.0')       # TODO support quadratic light
-        a.setAttribute('linear', '%6f' % (1.0 / ob.data.distance))
-        a.setAttribute('quadratic', '0.0')
+        light_range = ob.data.cutoff_distance / factor
+        if light_range == 0:
+            light_range = 0.001
+        a.setAttribute('range', light_range * factor)
+        a.setAttribute('constant', '1.0')
+        a.setAttribute('linear', '%6f' % (4.5 / light_range))
+        #a.setAttribute('linear', '%6f' % (0 / light_range))
+        a.setAttribute('quadratic', '%6f' % (75.0 / (light_range * light_range)))
+        #a.setAttribute('quadratic', '%6f' % (1 / (light_range * light_range)))
 
     # Node Animation
-    if config.get('NODE_ANIMATION'):
+    if config.get('NODE_ANIMATION') is True:
         node_anim.dot_nodeanim(ob, doc, o)
 
     for child in ob.children:

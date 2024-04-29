@@ -1,19 +1,3 @@
-
-# When bpy is already in local, we know this is not the initial import...
-if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
-    import importlib
-    if "config" in locals():
-        importlib.reload(config)
-    if "report" in locals():
-        importlib.reload(report)
-    if "xml" in locals():
-        importlib.reload(xml)
-    if "util" in locals():
-        importlib.reload(util)
-
-# This is only relevant on first run, on later reloads those modules
-# are already in locals() and those statements do not do anything.
 import bpy, mathutils, logging, time, sys
 from .. import config
 from ..report import Report
@@ -42,11 +26,11 @@ def dot_skeleton(obj, path, **kwargs):
     """
 
     arm = obj.find_armature()
-    if arm and config.get('ARMATURE_ANIMATION'):
+    if arm and (config.get('ARMATURE_ANIMATION') is True):
         exported_armatures = kwargs.get('exported_armatures')
 
         name = kwargs.get('force_name') or obj.data.name
-        if config.get('SHARED_ARMATURE') == True:
+        if config.get('SHARED_ARMATURE') is True:
             name = kwargs.get('force_name') or arm.data.name
         name = util.clean_object_name(name)
 
@@ -101,7 +85,7 @@ class Bone(object):
 
         self.bone = pbone        # safe to hold pointer to pose bone, not edit bone!
         self.shouldOutput = True
-        if config.get('ONLY_DEFORMABLE_BONES') and not pbone.bone.use_deform:
+        if (config.get('ONLY_DEFORMABLE_BONES') is True) and not pbone.bone.use_deform:
             self.shouldOutput = False
 
         # todo: Test -> #if pbone.bone.use_inherit_scale: logger.warn('Bone <%s> is using inherit scaling, Ogre has no support for this' % self.name)
@@ -131,7 +115,7 @@ class Bone(object):
         #else:
         #    self.pose_rotation = pbone.rotation_euler.to_quaternion()
             
-        if config.get('OGRE_INHERIT_SCALE'):
+        if config.get('OGRE_INHERIT_SCALE') is True:
             # special case workaround for broken Ogre nonuniform scaling:
             # Ogre can't deal with arbitrary nonuniform scaling, but it can handle certain special cases
             # The special case we are trying to handle here is when a bone has a nonuniform scale and it's
@@ -146,7 +130,8 @@ class Bone(object):
                 self.ogreDerivedScale[1] *= self.parent.ogreDerivedScale[1]
                 self.ogreDerivedScale[2] *= self.parent.ogreDerivedScale[2]
                 # if we don't want inherited scale,
-                if not self.bone.bone.use_inherit_scale:
+                # https://docs.blender.org/api/2.83/bpy.types.Bone.html#bpy.types.Bone.inherit_scale
+                if self.bone.bone.inherit_scale == 'NONE' or self.bone.bone.inherit_scale == 'NONE_LEGACY':
                     # cancel out the scale that Ogre will calculate
                     scl = self.parent.ogreDerivedScale
                     self.pose_scale = mathutils.Vector((1.0/scl[0], 1.0/scl[1], 1.0/scl[2]))
@@ -156,7 +141,8 @@ class Bone(object):
             # just output the scale directly
             self.pose_scale = pbone.scale.copy()
             # however, if Blender is inheriting the scale,
-            if self.parent and self.bone.bone.use_inherit_scale:
+            # https://docs.blender.org/api/2.83/bpy.types.Bone.html#bpy.types.Bone.inherit_scale
+            if self.parent and self.bone.bone.inherit_scale == 'AVERAGE':
                 # apply parent's scale (only works for uniform scaling)
                 self.pose_scale[0] *= self.parent.pose_scale[0]
                 self.pose_scale[1] *= self.parent.pose_scale[1]
@@ -324,7 +310,12 @@ def findArmature( ob ):
     arm = ob.find_armature()
     # if this armature has no animation,
     if not arm.animation_data:
-        # search for another armature that is a proxy for it
+        # The old proxy system has been deprecated in Blender 3.0, and fully removed in Blender 3.2.
+        # https://docs.blender.org/manual/en/3.2/files/linked_libraries/library_proxies.html
+        if (bpy.app.version >= (3, 2, 0)):
+            return arm
+
+        # Search for another armature that is a proxy for it
         for ob2 in bpy.data.objects:
             if ob2.type == 'ARMATURE' and ob2.proxy == arm:
                 logger.info( "- Proxy armature %s found" % ob2.name )
@@ -392,11 +383,11 @@ class Skeleton(object):
             if bone.shouldOutput:
                 bone_tracks.append( Bone_Track(bone) )
             bone.clear_pose_transform()  # clear out any leftover pose transforms in case this bone isn't keyframed
-        
+
         # Decide keyframes to export:
         # ONLY keyframes (Exported animation won't be affected by Inverse Kinematics, Drivers and modified F-Curves)
         # OR export keyframe each frame over animation range (Exported animation will be affected by Inverse Kinematics, Drivers and modified F-Curves)
-        if config.get('ONLY_KEYFRAMES'): # Only keyframes 
+        if config.get('ONLY_KEYFRAMES') is True: # Only keyframes
             frame_range = [] # Holds a list of keyframes for export
             action = bpy.data.actions[actionName] # actionName is the animation name (NLAtrack child)
             # loops through all channels on the f-curve --> Code taken from: https://blender.stackexchange.com/questions/8387/how-to-get-keyframe-data-from-python
@@ -410,18 +401,11 @@ class Skeleton(object):
 
         logger.info(" - Exporting action: %s" % actionName)
 
-        # Initialize progress through Blender cursor
-        progressScale = 1.0 / len(frame_range)
-        bpy.context.window_manager.progress_begin(0, 100)
+        progressbar = util.ProgressBar("Frames", len(frame_range) )
 
         # Add keyframes to export
         for frame in frame_range:
-            percent = (frame - frameBegin + 1) * progressScale
-            sys.stdout.write( "\r + Frames [" + '=' * int(percent * 50) + '>' + '.' * int(50 - percent * 50) + "] " + str(int(percent * 10000) / 100.0) + "%   ")
-            sys.stdout.flush()
-
-            # Update progress through Blender cursor
-            bpy.context.window_manager.progress_update(percent)
+            progressbar.update( frame - frameBegin )
 
             bpy.context.scene.frame_set(frame)
             for bone in self.roots:
@@ -443,14 +427,14 @@ class Skeleton(object):
         parentElement.appendChild( anim )
         tracks = doc.createElement('tracks')
         anim.appendChild( tracks )
-        
+
         # Report and log
         suffix_text = ''
-        if config.get('ONLY_KEYFRAMES'):
+        if config.get('ONLY_KEYFRAMES') is True:
             suffix_text = ' - Key frames: ' + str(frame_range)
             logger.info('+ %s Key frames: %s' %(actionName,str(frame_range)))            
         Report.armature_animations.append( '%s : %s [start frame=%s end frame=%s]%s' %(arm.name, actionName, frameBegin, frameEnd, suffix_text) )
-            
+
         # Write stuff to skeleton.xml file
         anim.setAttribute('name', actionName)   # USE the action name
         anim.setAttribute('length', '%6f' %( (frameEnd - frameBegin)/ _fps ) )
@@ -519,9 +503,9 @@ class Skeleton(object):
                 Report.warnings.append('You must assign an NLA strip to armature (%s) that defines the start and end frames' % arm.name)
 
             # Log to console
-            if config.get('ONLY_KEYFRAMES'):
+            if config.get('ONLY_KEYFRAMES') is True:
                 logger.info('+ Only exporting keyframes')
-                            
+
             actions = {}  # actions by name
             # the only thing NLA is used for is to gather the names of the actions
             # it doesn't matter if the actions are all in the same NLA track or in different tracks
@@ -543,7 +527,7 @@ class Skeleton(object):
                 action = actionData[0]
                 arm.animation_data.action = action  # set as the current action
                 suppressedBones = []
-                if config.get('ONLY_KEYFRAMED_BONES'):
+                if config.get('ONLY_KEYFRAMED_BONES') is True:
                     keyframedBones = {}
                     for group in action.groups:
                         keyframedBones[ group.name ] = True

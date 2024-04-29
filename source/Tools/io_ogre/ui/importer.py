@@ -1,26 +1,18 @@
-import bpy, os, getpass, math, mathutils, logging
-
-from pprint import pprint
-
 # When bpy is already in local, we know this is not the initial import...
 if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
     import importlib
-    if "config" in locals():
-        importlib.reload(config)
-    if "ogre_import" in locals():
-        importlib.reload(ogre_import)
-    if "util" in locals():
-        importlib.reload(util)
+    #print("Reloading modules: ogre_import")
+    importlib.reload(ogre_import)
 
-# This is only relevant on first run, on later reloads those modules
-# are already in locals() and those statements do not do anything.
+import bpy, os, getpass, math, mathutils, logging, datetime
+
+from pprint import pprint
 from bpy.props import EnumProperty, BoolProperty, FloatProperty, StringProperty, IntProperty
 from .. import config
-from ..ogre import ogre_import
 from ..report import Report
 from ..util import *
 from ..xml import *
+from ..ogre import ogre_import
 
 logger = logging.getLogger('import')
 
@@ -28,18 +20,23 @@ def auto_register(register):
     yield OP_ogre_import
 
     if register:
+        if bpy.app.version >= (4, 1, 0):
+            bpy.utils.register_class(OGRE_FH_import)
         bpy.types.TOPBAR_MT_file_import.append(menu_func)
     else:
+        if bpy.app.version >= (4, 1, 0):
+            bpy.utils.unregister_class(OGRE_FH_import)
         bpy.types.TOPBAR_MT_file_import.remove(menu_func)
 
 def menu_func(self, context):
     """ invoked when import in drop down menu is clicked """
-    op = self.layout.operator(OP_ogre_import.bl_idname, text="Ogre3D (.mesh)")
+    op = self.layout.operator(OP_ogre_import.bl_idname, text="Ogre3D (.scene and .mesh)")
     return op
 
 class _OgreCommonImport_(object):
 
     last_import_path = None
+    called_from_UI = False
 
     @classmethod
     def poll(cls, context):
@@ -51,19 +48,31 @@ class _OgreCommonImport_(object):
         self.converter = detect_converter_type()
 
     def invoke(self, context, event):
+        """
+        By default the file handler invokes the operator with the filepath property set.
+        In this example if this property is set the operator is executed, if not the
+        file select window is invoked.
+        This depends on setting ``options={'SKIP_SAVE'}`` to the property options to avoid
+        to reuse filepath data between operator calls.
+        """
+        if self.filepath:
+            return self.execute(context)
+
         # Update the interface with the config values
         for key, value in config.CONFIG.items():
-            if getattr(self, "IM_" + key, None) or getattr(self, "IM_Vx_" + key, None) or getattr(self, "IM_V1_" + key, None) or getattr(self, "IM_V2_" + key, None):
-                # todo: isn't the key missing the "IM_" prefix?
-                setattr(self,key,value)
+            for prefix in ["IM_", "IM_Vx_", "IM_V1_", "IM_V2_"]:
+                attr_name = prefix + key
+                if getattr(self, attr_name, None) is not None:
+                    setattr(self, attr_name, value)
 
         wm = context.window_manager
         fs = wm.fileselect_add(self)
-        
+
         return {'RUNNING_MODAL'}
 
     def draw(self, context):
         layout = self.layout
+        self.called_from_UI = True
 
         if self.converter == "unknown":
             layout.label(text="No converter found! Please check your preferences.", icon='ERROR')
@@ -77,16 +86,16 @@ class _OgreCommonImport_(object):
         section_icons = {
             "General" : "WORLD", "Armature" : "ARMATURE_DATA", "Mesh" : "MESH_DATA", "Shape Keys" : "ANIM_DATA", "Logging" : "TEXT"
         }
-        
+
         # Options associated with each section
         section_options = {
-            "General" : ["IM_SWAP_AXIS", "IM_V2_MESH_TOOL_VERSION", "IM_XML_DELETE"], 
+            "General" : ["IM_SWAP_AXIS", "IM_V2_MESH_TOOL_VERSION", "IM_IMPORT_XML_DELETE"], 
             "Armature" : ["IM_IMPORT_ANIMATIONS", "IM_ROUND_FRAMES", "IM_USE_SELECTED_SKELETON"], 
             "Mesh" : ["IM_IMPORT_NORMALS", "IM_MERGE_SUBMESHES"], 
             "Shape Keys" : ["IM_IMPORT_SHAPEKEYS"], 
-            "Logging" : ["IM_Vx_ENABLE_LOGGING"]
+            "Logging" : ["IM_Vx_ENABLE_LOGGING", "IM_Vx_DEBUG_LOGGING"]
         }
-        
+
         for section in sections:
             row = layout.row()
             box = row.box()
@@ -103,9 +112,16 @@ class _OgreCommonImport_(object):
                         box.prop(self, prop)
                 elif prop.startswith('IM_'):
                     box.prop(self, prop)
-        
+
     def execute(self, context):
-        # Add warinng about missing XML converter
+        """ Calls to this Operator can set unfiltered filepaths, ensure the file extension is .mesh, .xml or .scene. """
+        if not self.filepath or not (\
+           self.filepath.endswith(".mesh") or \
+           self.filepath.endswith(".xml") or \
+           self.filepath.endswith(".scene")):
+            return {'CANCELLED'}
+
+        # Add warning about missing XML converter
         Report.reset()
         if self.converter == "unknown":
             Report.errors.append(
@@ -137,36 +153,65 @@ class _OgreCommonImport_(object):
 
         logger.debug("Self.filepath: %s" % self.filepath)
 
+        # Update saved defaults to new settings and also print import code
         kw = {}
+
+        print ("_" * 80,"\n")
+
+        script_text = "# Blender Import Script:\n\n"
+        script_text += "import bpy\n"
+        script_text += "bpy.ops.ogre.import_mesh(\n"
+        script_text += "  filepath='%s', \n" % os.path.abspath(self.filepath).replace('\\', '\\\\')
         for name in dir(_OgreCommonImport_):
-            if name.startswith('IM_V1_'):
-                kw[ name[6:] ] = getattr(self,name)
-            elif name.startswith('IM_V2_'):
-                kw[ name[6:] ] = getattr(self,name)
-            elif name.startswith('IM_Vx_'):
-                kw[ name[6:] ] = getattr(self,name)
+            conf_name = ""
+            if name.startswith('IM_V1_') or \
+               name.startswith('IM_V2_') or \
+               name.startswith('IM_Vx_'):
+                conf_name = name[6:]
             elif name.startswith('IM_'):
-                kw[ name[3:] ] = getattr(self,name)
+                conf_name = name[3:]
+            if conf_name not in config.CONFIG.keys():
+                continue
+            attribute = getattr(self, name)
+            kw[ conf_name ] = attribute
+            if config._CONFIG_DEFAULTS_ALL[ conf_name ] != attribute:
+                if type(attribute) == str:
+                    script_text += "  %s='%s', \n" % (name, attribute)
+                else:
+                    script_text += "  %s=%s, \n" % (name, attribute)
+        script_text += ")\n"
+
+        print(script_text)
+
+        print ("_" * 80,"\n")
+
+        # Let's save the script in a text block if called from the UI
+        if self.called_from_UI:
+            text_block_name = "ogre_import-" + datetime.datetime.now().strftime("%Y%m%d%H%M")
+            logger.info("* Creating Text Block '%s' with import script" % text_block_name)
+            if text_block_name not in bpy.data.texts:
+                #text_block = bpy.data.texts[text_block_name]
+                text_block = bpy.data.texts.new(text_block_name)
+                text_block.from_string(script_text)
+
         config.update(**kw)
 
-        print ("_" * 80)
-        
         target_path, target_file_name = os.path.split(os.path.abspath(self.filepath))
         target_file_name = clean_object_name(target_file_name)
         target_file_name_no_ext = os.path.splitext(target_file_name)[0]
 
         file_handler = None
-        
+
         # Add a file handler to all Logger instances
-        if config.get('ENABLE_LOGGING') == True:
-            log_file = ("%s/blender2ogre.log" % target_path)
+        if config.get('ENABLE_LOGGING') is True:
+            log_file = os.path.join(target_path, "blender2ogre.log")
             logger.info("Writing log file to: %s" % log_file)
 
             file_handler = logging.FileHandler(filename=log_file, mode='w', encoding='utf-8', delay=False)
-            
+
             # Show the python file name from where each log message originated
             SHOW_LOG_NAME = False
-            
+
             if SHOW_LOG_NAME:
                 file_formatter = logging.Formatter(fmt='%(asctime)s %(name)9s.py [%(levelname)5s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
             else:
@@ -181,27 +226,35 @@ class _OgreCommonImport_(object):
         logger.info("Target_file_name: %s" % target_file_name)
 
         Report.importing = True
-        ogre_import.load(os.path.join(target_path, target_file_name))
+        if target_file_name.lower().endswith(".scene"):
+            ogre_import.load_scene(os.path.join(target_path, target_file_name))
+        else:
+            ogre_import.load_mesh(os.path.join(target_path, target_file_name))
         Report.show()
 
         # Flush and close all logging file handlers
-        if config.get('ENABLE_LOGGING') == True:
+        if config.get('ENABLE_LOGGING') is True:
             for logger_name in logging.Logger.manager.loggerDict.keys():
                 logger_instance = logging.getLogger(logger_name)
-                    
+
                 # Remove handlers
                 logger_instance.handlers.clear()
-            
+
             file_handler.flush()
             file_handler.close()
 
         return {'FINISHED'}
 
     filepath : StringProperty(name="File Path",
-        description="Filepath used for importing Ogre .mesh file",
+        description="Filepath used for importing Ogre .mesh and .scene files",
         maxlen=1024,
         default="",
+        options={'SKIP_SAVE'},
         subtype='FILE_PATH')
+
+    filter_glob : StringProperty(
+            default="*.mesh;*.xml;*.scene;",
+            options={'HIDDEN'})
 
     # Basic options
     # NOTE config values are automatically propagated if you name it like: IM_<config-name>
@@ -223,10 +276,10 @@ class _OgreCommonImport_(object):
         description='Specify Ogre version format to read',
         default=config.get('MESH_TOOL_VERSION')) = {}
 
-    IM_XML_DELETE : BoolProperty(
-        name="Clean up xml files",
-        description="Remove the generated xml files after binary conversion. \n(The removal will only happen if OgreXMLConverter/OgreMeshTool finish successfully)",
-        default=config.get('XML_DELETE')) = {}
+    IM_IMPORT_XML_DELETE : BoolProperty(
+        name="Clean up XML files",
+        description="Remove the generated XML files after binary conversion. \n(The removal will only happen if OgreXMLConverter/OgreMeshTool finishes successfully)",
+        default=config.get('IMPORT_XML_DELETE')) = {}
 
     # Mesh
     IM_IMPORT_NORMALS : BoolProperty(
@@ -260,12 +313,33 @@ class _OgreCommonImport_(object):
         name="Import shape keys",
         description="Import shape keys (morphs)",
         default=config.get('IMPORT_SHAPEKEYS')) = {}
-    
+
     # Logging
     IM_Vx_ENABLE_LOGGING : BoolProperty(
         name="Write Importer Logs",
         description="Write Log file to the output directory (blender2ogre.log)",
         default=config.get('ENABLE_LOGGING')) = {}
+
+    # It seems that it is not possible to exclude DEBUG when selecting a log level
+    IM_Vx_DEBUG_LOGGING : BoolProperty(
+        name="Debug Logging",
+        description="Whether to show DEBUG log messages",
+        default=config.get('DEBUG_LOGGING')) = {}
+
+
+# Support for Blender 4.1+ drag and drop
+# (https://docs.blender.org/api/4.1/bpy.types.FileHandler.html)
+if bpy.app.version >= (4, 1, 0):
+    class OGRE_FH_import(bpy.types.FileHandler):
+        bl_idname = "OGRE_FH_import"
+        bl_label = "Import Ogre drag and drop support"
+        bl_import_operator = "ogre.import_mesh"
+        bl_file_extensions = ".mesh;.xml;.scene;"
+
+        @classmethod
+        def poll_drop(cls, context):
+            if context.mode != 'EDIT_MESH':
+                return True
 
 
 class OP_ogre_import(bpy.types.Operator, _OgreCommonImport_):

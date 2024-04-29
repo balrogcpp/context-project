@@ -1,4 +1,4 @@
-import bpy, os, sys, logging, pickle, mathutils
+import bpy, os, sys, logging, mathutils, json
 from pprint import pprint
 from bpy.props import *
 
@@ -21,15 +21,23 @@ TANGENT_MODES =  [
     ('4', 'generate with parity', 'Generate with parity')
 ]
 
+LOD_METHODS =  [
+    ('0', 'meshtools', 'Generate LODs using OgreMesh Tools: does LOD by removing edges, which allows only changing the index buffer and re-use the vertex-buffer (storage efficient)'),
+    ('1', 'blender', 'Generate LODs using Blenders "Decimate" Modifier: does LOD by collapsing vertices, which can result in a visually better LOD, but needs different vertex-buffers per LOD'),
+    ('2', 'manual', 'Generate LODs by manually crafting the lower LODs: needs different vertex-buffers per LOD')
+]
+
 CONFIG_PATH = bpy.utils.user_resource('CONFIG', path='scripts', create=True)
-CONFIG_FILENAME = 'io_ogre.pickle'
+CONFIG_FILENAME = 'io_ogre.json'
 CONFIG_FILEPATH = os.path.join(CONFIG_PATH, CONFIG_FILENAME)
+
+CONFIG = {}
 
 _CONFIG_DEFAULTS_ALL = {
     # General
-    'SWAP_AXIS' : 'xz-y', # ogre standard is 'xz-y', but swapping is currently broken
+    'SWAP_AXIS' : 'xz-y',
     'MESH_TOOL_VERSION' : 'v2',
-    'XML_DELETE' : True,
+    'EXPORT_XML_DELETE' : True,
 
     # Scene
     'SCENE' : True,
@@ -37,9 +45,11 @@ _CONFIG_DEFAULTS_ALL = {
     'EXPORT_HIDDEN' : True,
     #'EXPORT_USER' : True,
     'FORCE_CAMERA' : True,
-    'FORCE_LAMPS' : True,
+    'FORCE_LIGHTS' : True,
     'NODE_ANIMATION' : True,
     #'NODE_KEYFRAMES' : False,
+    'EXPORT_SKYBOX': False,
+    'SKYBOX_RESOLUTION': 2048,
 
     # Materials
     'MATERIALS' : True,
@@ -68,17 +78,19 @@ _CONFIG_DEFAULTS_ALL = {
     'ARRAY' : True,
     'EXTREMITY_POINTS' : 0,
     'GENERATE_EDGE_LISTS' : False,
-    'GENERATE_TANGENTS' : "3",
+    'GENERATE_TANGENTS' : '3',
+    'PACK_INT_10_10_10_2': True,
     'OPTIMISE_ANIMATIONS' : True,
     'INTERFACE_TOGGLE': False,
+    'OPTIMISE_VERTEX_CACHE' : True,
     'OPTIMISE_VERTEX_BUFFERS' : True,
     'OPTIMISE_VERTEX_BUFFERS_OPTIONS' : 'puqs',
 
     # LOD
+    'LOD_GENERATION': '0',
     'LOD_LEVELS' : 32,
     'LOD_DISTANCE' : 300,
     'LOD_PERCENT' : 40,
-    'LOD_MESH_TOOLS' : True,
 
     # Pose Animation
     'SHAPE_ANIMATIONS' : True,
@@ -90,12 +102,13 @@ _CONFIG_DEFAULTS_ALL = {
     #'SHOW_LOG_NAME' : False,
 
     # Import
+    'IMPORT_XML_DELETE' : False,
     'IMPORT_NORMALS' : True,
     'MERGE_SUBMESHES' : True,
     'IMPORT_ANIMATIONS' : True,
     'ROUND_FRAMES' : True,
     'USE_SELECTED_SKELETON' : True,
-    'IMPORT_SHAPEKEYS' : True
+    'IMPORT_SHAPEKEYS' : True,
 }
 
 _CONFIG_TAGS_ = 'OGRETOOLS_XML_CONVERTER OGRETOOLS_MESH_UPGRADER MESH_PREVIEWER IMAGE_MAGICK_CONVERT USER_MATERIALS SHADER_PROGRAMS'.split()
@@ -141,15 +154,22 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin') or sys.
 ## PUBLIC API continues
 
 def load_config():
+    global CONFIG
+    logger.info('* Loading config: %s' % CONFIG_FILEPATH)
     config_dict = {}
 
     # Check if the config file exists and load it
     if os.path.isfile( CONFIG_FILEPATH ):
         try:
-            with open( CONFIG_FILEPATH, 'rb' ) as f:
-                config_dict = pickle.load( f )
-        except:
-            logger.error('Can not read config from %s' % CONFIG_FILEPATH)
+            with open( os.path.join(CONFIG_FILEPATH), 'r' ) as f:
+                config_dict = json.load(f)
+        except EOFError:
+            logger.error('Config file: %s is empty' % CONFIG_FILEPATH)
+        except Exception as e:
+            logger.error('Can not read config from: %s' % CONFIG_FILEPATH)
+            logger.error('Exception: %s' % e)
+    else:
+        logger.error('Config file: %s does not exist' % CONFIG_FILEPATH)
 
     # Load default values from _CONFIG_DEFAULTS_ALL if they don't exist after loading config from file
     for tag in _CONFIG_DEFAULTS_ALL:
@@ -189,35 +209,42 @@ def load_config():
 
     return config_dict
 
-# Global CONFIG dictionary
-CONFIG = load_config()
-
 def get(name, default=None):
     global CONFIG
     if name in CONFIG:
         return CONFIG[name]
+    else:
+        logger.error("Config option %s does not exist!" % name)
     return default
 
+# Global CONFIG dictionary
+CONFIG = load_config()
+
 def update(**kwargs):
-    for k,v in kwargs.items():
-        if k not in _CONFIG_DEFAULTS_ALL:
-            logger.warn("Trying to set CONFIG['%s'] = %s, but it is not a known config setting" % (k,v))
-        CONFIG[k] = v
+    global CONFIG
+    for key,value in kwargs.items():
+        if key not in _CONFIG_DEFAULTS_ALL:
+            logger.warn("Trying to set CONFIG['%s'] = %s, but it is not a known config setting" % (key, value))
+        #print("update() :: key: %s, value: %s" % (key, value))
+        CONFIG[key] = value
     save_config()
 
 def save_config():
     global CONFIG
+    logger.info('* Saving config to: %s' % CONFIG_FILEPATH)
     #for key in CONFIG: print( '%s = %s' %(key, CONFIG[key]) )
     if os.path.isdir( CONFIG_PATH ):
         try:
-            with open( CONFIG_FILEPATH, 'wb' ) as f:
-                pickle.dump( CONFIG, f, -1 )
-        except:
+            with open( os.path.join(CONFIG_FILEPATH), 'w' ) as f:
+                f.write(json.dumps(CONFIG, indent=4))
+        except Exception as e:
             logger.error('Can not write to %s' % CONFIG_FILEPATH)
+            logger.error('Exception: %s' % e)
     else:
         logger.error('Config directory %s does not exist' % CONFIG_PATH)
 
 def update_from_addon_preference(context):
+    global CONFIG
     addon_preferences = context.preferences.addons["io_ogre"].preferences
 
     for key in _CONFIG_TAGS_:

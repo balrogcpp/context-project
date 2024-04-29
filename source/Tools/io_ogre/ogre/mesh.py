@@ -1,26 +1,10 @@
 import os, time, sys, logging
-import bmesh
-import mathutils
-
-# When bpy is already in local, we know this is not the initial import...
-if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
-    import importlib
-    if "report" in locals():
-        importlib.reload(report)
-    if "material" in locals():
-        importlib.reload(material)
-    if "util" in locals():
-        importlib.reload(util)
-    if "xml" in locals():
-        importlib.reload(xml)
-    if "skeleton.Skeleton" in locals():
-        importlib.reload(skeleton.Skeleton)
+import bmesh, mathutils, math
 
 from ..report import Report
 from ..util import *
 from ..xml import *
-from .. import util
+from .. import util, config
 from .material import *
 from .skeleton import Skeleton
 
@@ -28,43 +12,48 @@ logger = logging.getLogger('mesh')
 
 class VertexColorLookup:
     def __init__(self, mesh):
-        self.mesh = mesh
-        
         self.__colors = None
-        self.__alphas = None
 
-        color_names = ["col", "color"]
-        alpha_names = ["a", "alpha"]
+        color_names = ["col", "color", "colour", "attribute"]
 
-        if len(self.mesh.vertex_colors) > 0:
-            for key, colors in self.mesh.vertex_colors.items():
+        vertex_colors = None
+
+        # In Blender version 3.2, vertex colors have been refactored into generic color attributes
+        # https://developer.blender.org/docs/release_notes/3.2/sculpt/
+        if bpy.app.version >= (3, 2, 0):
+            vertex_colors = mesh.color_attributes
+        else:
+            vertex_colors = mesh.vertex_colors
+
+        if len(vertex_colors) > 0:
+            logger.debug("* Mesh has vertex colors")
+
+            for key, colors in vertex_colors.items():
                 if (self.__colors is None) and (key.lower() in color_names):
                     self.__colors = colors
-                if (self.__alphas is None) and (key.lower() in alpha_names):
-                    self.__alphas = colors
-            if self.__colors is None and self.__alphas is None:
-                # No alpha and color found by name, assume that the only
-                # vertex color data is actual color data
-                self.__colors = colors
+
+                    if (bpy.app.version >= (3, 2, 0)):
+                        if colors.domain != 'CORNER':
+                            Report.warnings.append( 'Mesh "%s" with color attribute "%s" has wrong color domain: "%s" (should be: "CORNER")' % \
+                                (mesh.name, key, colors.domain) )
+                        if colors.data_type != 'BYTE_COLOR':
+                            Report.warnings.append( 'Mesh "%s" with color attribute "%s" has wrong color data type: "%s" (should be: "BYTE_COLOR")' % \
+                                (mesh.name, key, colors.data_type) )
 
             if self.__colors:
                 self.__colors = [x.color for x in self.__colors.data]
-            if self.__alphas:
-                self.__alphas = [x.color for x in self.__alphas.data]
+                #self.__colors = [x.color_srgb for x in self.__colors.data]
 
     @property
     def has_color_data(self):
-        return self.__colors is not None or self.__alphas is not None
+        return self.__colors is not None
 
     def get(self, item):
         if self.__colors:
             color = self.__colors[item]
         else:
             color = [1.0] * 4
-        if self.__alphas:
-            color[3] = mathutils.Vector(self.__alphas[item]).length
         return color
-
 
 def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=True, tangents=4, isLOD=False, **kwargs):
     """
@@ -85,8 +74,11 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
     overwrite = kwargs.get('overwrite', False)
 
     # Don't export hidden or unselected objects unless told to
-    if ((config.get("EXPORT_HIDDEN") == False and ob not in bpy.context.visible_objects) or
-        (config.get("SELECTED_ONLY") == True and ob.select_get() == False)):
+    if  not isLOD and (
+        (config.get('LOD_GENERATION') == '2' and "_LOD_" in ob.name) or
+        ((config.get("EXPORT_HIDDEN") is False) and ob not in bpy.context.visible_objects) or
+        ((config.get("SELECTED_ONLY") is True) and not ob.select_get())
+        ):
         logger.debug("Skip exporting hidden/non-selected object: %s" % ob.data.name)
         return []
 
@@ -104,13 +96,13 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
         # If we try to remove the unwanted modifiers from the copy object, then none of the modifiers will be applied when doing `to_mesh()`
 
         # If we want to optimise array modifiers as instances, then the Array Modifier should be disabled
-        if config.get("ARRAY") == True:
+        if config.get("ARRAY") is True:
             disable_mods = ['ARMATURE', 'ARRAY']
         else:
             disable_mods = ['ARMATURE']
 
         for mod in ob.modifiers:
-            if mod.type in disable_mods and mod.show_viewport == True:
+            if mod.type in disable_mods and mod.show_viewport is True:
                 logger.debug("Disabling Modifier: %s" % mod.name)
                 mod.show_viewport = False
 
@@ -242,27 +234,24 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
             mesh.calc_tangents(uvmap=mesh.uv_layers.active.name)
         else:
             # calc_tangents() already calculates split normals for us
-            mesh.calc_normals_split()
+            if bpy.app.version < (4, 1, 0):
+                mesh.calc_normals_split()
 
-        progressScale = 1.0 / len(mesh.polygons)
-        bpy.context.window_manager.progress_begin(0, 100)
+        progressbar = util.ProgressBar("Faces", len(mesh.polygons))
 
         # Process mesh after triangulation
         for F in mesh.polygons:
-            # Update progress in console
-            percent = (F.index + 1) * progressScale
-            sys.stdout.write( "\r + Faces [" + '=' * int(percent * 50) + '>' + '.' * int(50 - percent * 50) + "] " + str(int(percent * 10000) / 100.0) + "%   ")
-            sys.stdout.flush()
-
-            # Update progress through Blender cursor
-            bpy.context.window_manager.progress_update(percent)
+            progressbar.update(F.index)
 
             tri = (F.vertices[0], F.vertices[1], F.vertices[2])
             face = []
             for loop_idx, idx in zip(F.loop_indices, tri):
                 v = mesh.vertices[ idx ]
 
-                nx,ny,nz = swap( mesh.loops[ loop_idx ].normal )
+                if bpy.app.version < (3, 6, 0):
+                    nx,ny,nz = swap( mesh.loops[ loop_idx ].normal )
+                else:
+                    nx,ny,nz = swap( mesh.corner_normals[ loop_idx ].vector )
 
                 if tangents != 0:
                     tx,ty,tz = swap( mesh.loops[ loop_idx ].tangent )
@@ -445,8 +434,57 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
 
         logger.info('- Done at %s seconds' % util.timer_diff_str(start))
 
-        # Generate lod levels
-        if isLOD == False and ob.type == 'MESH' and config.get('LOD_LEVELS') > 0 and config.get('LOD_MESH_TOOLS') == False:
+        # Generate LOD levels for manual LOD meshes
+        if isLOD == False and ob.type == 'MESH' and config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '2':
+            lod_levels = config.get('LOD_LEVELS')
+            lod_distance = config.get('LOD_DISTANCE')
+
+            lod_generated = []
+            lod_current_distance = lod_distance
+
+            for level in range(lod_levels + 1)[1:]:
+                lod_ob_name = obj_name + '_LOD_' + str(level)
+                lod_manual_ob = bpy.context.scene.objects.get(lod_ob_name)
+
+                if lod_manual_ob:
+                    logger.info("- Found LOD Manual object: %s" % lod_ob_name)
+                    lod_generated.append({ 'level': level, 'distance': lod_current_distance, 'lod_manual_ob': lod_manual_ob })
+                    lod_current_distance += lod_distance
+
+                else:
+                    failure = 'FAILED to manually create LOD levels, manual LOD with name %s NOT FOUND!' % lod_ob_name
+                    Report.warnings.append( failure )
+                    logger.error( failure )
+                    break
+
+            # Create lod .mesh files and generate LOD XML to the original .mesh.xml
+            if len(lod_generated) > 0:
+                # 'manual' means if the geometry gets loaded from a different file than this LOD list references
+                doc.start_tag('levelofdetail', {
+                    'strategy'  : 'default',
+                    'numlevels' : str(len(lod_generated) + 1), # The main mesh is + 1 (kind of weird Ogre logic)
+                    'manual'    : "true"
+                })
+
+                logger.info('- Generating: %s LOD meshes. Original: vertices %s, faces: %s' % (len(lod_generated), len(mesh.vertices), len(mesh.loop_triangles)))
+                for lod in lod_generated:
+                    lod_manual_ob = lod['lod_manual_ob']
+
+                    logger.info("- Writing LOD %s for distance %s, with %s vertices and %s faces" % 
+                        (lod['level'], lod['distance'], len(lod_manual_ob.data.vertices), len(lod_manual_ob.data.loop_triangles)))
+
+                    dot_mesh(lod_manual_ob, path, lod_manual_ob.data.name, ignore_shape_animation, normals, tangents, isLOD=True)
+
+                    # 'value' is the distance this LOD kicks in for the 'Distance' strategy.
+                    doc.leaf_tag('lodmanual', {
+                        'value'    : str(lod['distance']),
+                        'meshname' : lod_manual_ob.data.name + ".mesh"
+                    })
+
+                doc.end_tag('levelofdetail')
+
+        # Generate LOD levels automatically using Blenders "Decimate" Modifier
+        if isLOD == False and ob.type == 'MESH' and config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '1':
             lod_levels = config.get('LOD_LEVELS')
             lod_distance = config.get('LOD_DISTANCE')
             lod_ratio = config.get('LOD_PERCENT') / 100.0
@@ -576,7 +614,7 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
         arm = ob.find_armature()
         if arm:
             skeleton_name = obj_name
-            if config.get('SHARED_ARMATURE') == True:
+            if config.get('SHARED_ARMATURE') is True:
                 skeleton_name = arm.data.name
             skeleton_name = util.clean_object_name(skeleton_name)
 
@@ -588,7 +626,7 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
             boneIndexFromName = {}
             for bone in arm.pose.bones:
                 boneOutputEnableFromName[ bone.name ] = True
-                if config.get('ONLY_DEFORMABLE_BONES'):
+                if config.get('ONLY_DEFORMABLE_BONES') is True:
                     # if we found a deformable bone,
                     if bone.bone.use_deform:
                         # visit all ancestor bones and mark them "output enabled"
@@ -630,8 +668,13 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
             doc.end_tag('boneassignments')
 
         # Updated June3 2011 - shape animation works
-        if config.get('SHAPE_ANIMATIONS') and mesh.shape_keys and len(mesh.shape_keys.key_blocks) > 0:
+        if (config.get('SHAPE_ANIMATIONS') is True) and mesh.shape_keys and len(mesh.shape_keys.key_blocks) > 0:
             logger.info('* Writing shape keys')
+
+            if ob.active_shape_key_index != 0 and ob.show_only_shape_key == True:
+                warning = "Object \"%s\" mesh will look like selected shape key: '%s', not 'Basis'" % (ob.name, ob.active_shape_key.name)
+                logger.warn(warning)
+                Report.warnings.append(warning)
 
             doc.start_tag('poses', {})
             for sidx, skey in enumerate(mesh.shape_keys.key_blocks):
@@ -673,7 +716,7 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
                     pv = skey.data[ v.index ]
                     x,y,z = swap( pv.co - v.co )
 
-                    if config.get('SHAPE_NORMALS'):
+                    if config.get('SHAPE_NORMALS') is True:
                         vertex_idx = v.index
 
                         # Try to get original polygon loop index (before tesselation)
@@ -689,7 +732,7 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
                         pn = mathutils.Vector( snormals[normal_idx] )
                         nx,ny,nz = swap( pn )
 
-                    if config.get('SHAPE_NORMALS'):
+                    if config.get('SHAPE_NORMALS') is True:
                         doc.leaf_tag('poseoffset', {
                                 'x' : '%6f' % x,
                                 'y' : '%6f' % y,
@@ -797,11 +840,13 @@ def dot_mesh(ob, path, force_name=None, ignore_shape_animation=False, normals=Tr
     logger.info('- Created %s.mesh in total time %s seconds' % (obj_name, util.timer_diff_str(start)))
 
     # If requested by the user, generate LOD levels / Edge Lists / Vertex buffer optimization through OgreMeshUpgrader
-    if ((config.get('LOD_LEVELS') > 0 and config.get('LOD_MESH_TOOLS') == True) or
-        (config.get('GENERATE_EDGE_LISTS') == True)):
+    if ((config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '0') or
+        (config.get('GENERATE_EDGE_LISTS') is True) or
+        (config.get('PACK_INT_10_10_10_2') is True) or
+        (config.get('OPTIMISE_VERTEX_CACHE') is True)):
         target_mesh_file = os.path.join(path, '%s.mesh' % obj_name )
         util.mesh_upgrade_tool(target_mesh_file)
-    
+
     # Note that exporting the skeleton does not happen here anymore
     # It was moved to the function dot_skeleton in its own module (skeleton.py)
 
@@ -848,73 +893,6 @@ def append_triangle_in_vertex_group(mesh, obj, vertex_groups, ogre_indices, blen
             vertex_groups[name] = []
         vertex_groups[name].append(ogre_indices)
 
-import cmath
-def isclose(a,
-            b,
-            rel_tol=1e-9,
-            abs_tol=0.0,
-            method='weak'):
-    ### copied from PEP 485. when blender switches to python 3.5 use math.isclose(...)
-    """
-    returns True if a is close in value to b. False otherwise
-    :param a: one of the values to be tested
-    :param b: the other value to be tested
-    :param rel_tol=1e-8: The relative tolerance -- the amount of error
-                         allowed, relative to the magnitude of the input
-                         values.
-    :param abs_tol=0.0: The minimum absolute tolerance level -- useful for
-                        comparisons to zero.
-    :param method: The method to use. options are:
-                  "asymmetric" : the b value is used for scaling the tolerance
-                  "strong" : The tolerance is scaled by the smaller of
-                             the two values
-                  "weak" : The tolerance is scaled by the larger of
-                           the two values
-                  "average" : The tolerance is scaled by the average of
-                              the two values.
-    NOTES:
-    -inf, inf and NaN behave similar to the IEEE 754 standard. That
-    -is, NaN is not close to anything, even itself. inf and -inf are
-    -only close to themselves.
-    Complex values are compared based on their absolute value.
-    The function can be used with Decimal types, if the tolerance(s) are
-    specified as Decimals::
-      isclose(a, b, rel_tol=Decimal('1e-9'))
-    See PEP-0485 for a detailed description
-    """
-    if method not in ("asymmetric", "strong", "weak", "average"):
-        raise ValueError('method must be one of: "asymmetric",'
-                         ' "strong", "weak", "average"')
-
-    if rel_tol < 0.0 or abs_tol < 0.0:
-        raise ValueError('error tolerances must be non-negative')
-
-    if a == b:  # short-circuit exact equality
-        return True
-    # use cmath so it will work with complex or float
-    if cmath.isinf(a) or cmath.isinf(b):
-        # This includes the case of two infinities of opposite sign, or
-        # one infinity and one finite number. Two infinities of opposite sign
-        # would otherwise have an infinite relative tolerance.
-        return False
-    diff = abs(b - a)
-    if method == "asymmetric":
-        return (diff <= abs(rel_tol * b)) or (diff <= abs_tol)
-    elif method == "strong":
-        return (((diff <= abs(rel_tol * b)) and
-                 (diff <= abs(rel_tol * a))) or
-                (diff <= abs_tol))
-    elif method == "weak":
-        return (((diff <= abs(rel_tol * b)) or
-                 (diff <= abs(rel_tol * a))) or
-                (diff <= abs_tol))
-    elif method == "average":
-        return ((diff <= abs(rel_tol * (a + b) / 2) or
-                (diff <= abs_tol)))
-    else:
-        raise ValueError('method must be one of:'
-                         ' "asymmetric", "strong", "weak", "average"')
-
 class VertexNoPos(object):
     def __init__(self, ogre_vidx, nx,ny,nz, r,g,b,ra, vert_uvs):
         self.ogre_vidx = ogre_vidx
@@ -929,13 +907,13 @@ class VertexNoPos(object):
 
     '''does not compare ogre_vidx (and position at the moment) [ no need to compare position ]'''
     def __eq__(self, o):
-        if not isclose(self.nx, o.nx): return False
-        if not isclose(self.ny, o.ny): return False
-        if not isclose(self.nz, o.nz): return False
-        if not isclose(self.r, o.r): return False
-        if not isclose(self.g, o.g): return False
-        if not isclose(self.b, o.b): return False
-        if not isclose(self.ra, o.ra): return False
+        if not math.isclose(self.nx, o.nx): return False
+        if not math.isclose(self.ny, o.ny): return False
+        if not math.isclose(self.nz, o.nz): return False
+        if not math.isclose(self.r, o.r): return False
+        if not math.isclose(self.g, o.g): return False
+        if not math.isclose(self.b, o.b): return False
+        if not math.isclose(self.ra, o.ra): return False
         if len(self.vert_uvs) != len(o.vert_uvs): return False
         if self.vert_uvs:
             for i, uv1 in enumerate( self.vert_uvs ):

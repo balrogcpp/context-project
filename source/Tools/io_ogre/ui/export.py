@@ -1,35 +1,21 @@
-import bpy, os, getpass, math, mathutils, logging
+## When bpy is already in local, we know this is not the initial import...
+if "bpy" in locals():
+    import importlib
+    #print("Reloading modules: scene")
+    importlib.reload(material)
+    importlib.reload(mesh)
+    importlib.reload(scene)
+    importlib.reload(skeleton)
+
+import bpy, os, getpass, math, mathutils, logging, datetime
 
 from pprint import pprint
-
-# When bpy is already in local, we know this is not the initial import...
-if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
-    import importlib
-    if "config" in locals():
-        importlib.reload(config)
-    if "mesh" in locals():
-        importlib.reload(mesh)
-    if "skeleton" in locals():
-        importlib.reload(skeleton)
-    if "scene" in locals():
-        importlib.reload(scene)
-    if "material" in locals():
-        importlib.reload(material)
-    if "report" in locals():
-        importlib.reload(report)
-
-# This is only relevant on first run, on later reloads those modules
-# are already in locals() and those statements do not do anything.
 from bpy.props import EnumProperty, BoolProperty, FloatProperty, StringProperty, IntProperty
 from .. import config
-from ..ogre import material
-from ..ogre import mesh
-from ..ogre import scene
-from ..ogre import skeleton
 from ..report import Report
 from ..util import *
 from ..xml import *
+from ..ogre import material, mesh, scene, skeleton
 
 logger = logging.getLogger('export')
 
@@ -48,6 +34,8 @@ def menu_func(self, context):
 
 class _OgreCommonExport_(object):
 
+    called_from_UI = False
+
     @classmethod
     def poll(cls, context):
         if context.active_object and context.mode != 'EDIT_MESH':
@@ -60,9 +48,10 @@ class _OgreCommonExport_(object):
     def invoke(self, context, event):
         # Update the interface with the config values
         for key, value in config.CONFIG.items():
-            if getattr(self, "EX_" + key, None) or getattr(self, "EX_Vx_" + key, None) or getattr(self, "EX_V1_" + key, None) or getattr(self, "EX_V2_" + key, None):
-                # todo: isn't the key missing the "EX_" prefix?
-                setattr(self,key,value)
+            for prefix in ["EX_", "EX_Vx_", "EX_V1_", "EX_V2_"]:
+                attr_name = prefix + key
+                if getattr(self, attr_name, None) is not None:
+                    setattr(self, attr_name, value)
 
         if not self.filepath:
             blend_filepath = context.blend_data.filepath
@@ -84,6 +73,7 @@ class _OgreCommonExport_(object):
 
     def draw(self, context):
         layout = self.layout
+        self.called_from_UI = True
 
         if self.converter == "unknown":
             layout.label(text="No converter found! Please check your preferences.", icon='ERROR')
@@ -103,13 +93,13 @@ class _OgreCommonExport_(object):
 
         # Options associated with each section
         section_options = {
-            "General" : ["EX_SWAP_AXIS", "EX_V2_MESH_TOOL_VERSION", "EX_XML_DELETE"],
-            "Scene" : ["EX_SCENE", "EX_SELECTED_ONLY", "EX_EXPORT_HIDDEN", "EX_FORCE_CAMERA", "EX_FORCE_LAMPS", "EX_NODE_ANIMATION"],
+            "General" : ["EX_SWAP_AXIS", "EX_V2_MESH_TOOL_VERSION", "EX_EXPORT_XML_DELETE"],
+            "Scene" : ["EX_SCENE", "EX_SELECTED_ONLY", "EX_EXPORT_HIDDEN", "EX_FORCE_CAMERA", "EX_FORCE_LIGHTS", "EX_NODE_ANIMATION", "EX_EXPORT_SKYBOX", "EX_SKYBOX_RESOLUTION"],
             "Materials" : ["EX_MATERIALS", "EX_SEPARATE_MATERIALS", "EX_COPY_SHADER_PROGRAMS", "EX_USE_FFP_PARAMETERS"],
             "Textures" : ["EX_DDS_MIPS", "EX_FORCE_IMAGE_FORMAT"],
             "Armature" : ["EX_ARMATURE_ANIMATION", "EX_SHARED_ARMATURE", "EX_ONLY_KEYFRAMES", "EX_ONLY_DEFORMABLE_BONES", "EX_ONLY_KEYFRAMED_BONES", "EX_OGRE_INHERIT_SCALE", "EX_TRIM_BONE_WEIGHTS"],
-            "Mesh" : ["EX_MESH", "EX_MESH_OVERWRITE", "EX_ARRAY", "EX_V1_EXTREMITY_POINTS", "EX_Vx_GENERATE_EDGE_LISTS", "EX_GENERATE_TANGENTS", "EX_Vx_OPTIMISE_ANIMATIONS", "EX_V2_OPTIMISE_VERTEX_BUFFERS", "EX_V2_OPTIMISE_VERTEX_BUFFERS_OPTIONS"],
-            "LOD" : ["EX_LOD_LEVELS", "EX_LOD_DISTANCE", "EX_LOD_PERCENT", "EX_LOD_MESH_TOOLS"],
+            "Mesh" : ["EX_MESH", "EX_MESH_OVERWRITE", "EX_ARRAY", "EX_V1_EXTREMITY_POINTS", "EX_Vx_GENERATE_EDGE_LISTS", "EX_GENERATE_TANGENTS", "EX_Vx_PACK_INT_10_10_10_2", "EX_Vx_OPTIMISE_ANIMATIONS", "EX_Vx_OPTIMISE_VERTEX_CACHE", "EX_V2_OPTIMISE_VERTEX_BUFFERS", "EX_V2_OPTIMISE_VERTEX_BUFFERS_OPTIONS"],
+            "LOD" : ["EX_LOD_GENERATION", "EX_LOD_LEVELS", "EX_LOD_DISTANCE", "EX_LOD_PERCENT"],
             "Shape Animation" : ["EX_SHAPE_ANIMATIONS", "EX_SHAPE_NORMALS"],
             "Logging" : ["EX_Vx_ENABLE_LOGGING", "EX_Vx_DEBUG_LOGGING"]
         }
@@ -144,19 +134,48 @@ class _OgreCommonExport_(object):
         # Load addonPreference in CONFIG
         config.update_from_addon_preference(context)
 
+        # Update saved defaults to new settings and also print export code
         kw = {}
-        for name in dir(_OgreCommonExport_):
-            if name.startswith('EX_V1_'):
-                kw[ name[6:] ] = getattr(self,name)
-            elif name.startswith('EX_V2_'):
-                kw[ name[6:] ] = getattr(self,name)
-            elif name.startswith('EX_Vx_'):
-                kw[ name[6:] ] = getattr(self,name)
-            elif name.startswith('EX_'):
-                kw[ name[3:] ] = getattr(self,name)
-        config.update(**kw)
 
         print ("_" * 80,"\n")
+
+        script_text = "# Blender Export Script:\n\n"
+        script_text += "import bpy\n"
+        script_text += "bpy.ops.ogre.export(\n"
+        script_text += "  filepath='%s', \n" % os.path.abspath(self.filepath).replace('\\', '\\\\')
+        for name in dir(_OgreCommonExport_):
+            conf_name = ""
+            if name.startswith('EX_V1_') or \
+               name.startswith('EX_V2_') or \
+               name.startswith('EX_Vx_'):
+                conf_name = name[6:]
+            elif name.startswith('EX_'):
+                conf_name = name[3:]
+            if conf_name not in config.CONFIG.keys():
+                continue
+            attribute = getattr(self, name)
+            kw[ conf_name ] = attribute
+            if config._CONFIG_DEFAULTS_ALL[ conf_name ] != attribute:
+                if type(attribute) == str:
+                    script_text += "  %s='%s', \n" % (name, attribute)
+                else:
+                    script_text += "  %s=%s, \n" % (name, attribute)
+        script_text += ")\n"
+
+        print(script_text)
+
+        print ("_" * 80,"\n")
+
+        # Let's save the script in a text block if called from the UI
+        if self.called_from_UI:
+            text_block_name = "ogre_export-" + datetime.datetime.now().strftime("%Y%m%d%H%M")
+            logger.info("* Creating Text Block '%s' with export script" % text_block_name)
+            if text_block_name not in bpy.data.texts:
+                #text_block = bpy.data.texts[text_block_name]
+                text_block = bpy.data.texts.new(text_block_name)
+                text_block.from_string(script_text)
+
+        config.update(**kw)
 
         target_path, target_file_name = os.path.split(os.path.abspath(self.filepath))
         target_file_name = clean_object_name(target_file_name)
@@ -165,8 +184,8 @@ class _OgreCommonExport_(object):
         file_handler = None
 
         # Add a file handler to all Logger instances
-        if config.get('ENABLE_LOGGING') == True:
-            log_file = ("%s/blender2ogre.log" % target_path)
+        if config.get('ENABLE_LOGGING') is True:
+            log_file = os.path.join(target_path, "blender2ogre.log")
             logger.info("* Writing log file to: %s" % log_file)
 
             try:
@@ -182,7 +201,7 @@ class _OgreCommonExport_(object):
 
                 file_handler.setFormatter(file_formatter)
 
-                if config.get('DEBUG_LOGGING') == True:
+                if config.get('DEBUG_LOGGING') is True:
                     level = logging.DEBUG
                 else:
                     level = logging.INFO
@@ -211,10 +230,10 @@ class _OgreCommonExport_(object):
         Report.show()
 
         # Flush and close all logging file handlers
-        if config.get('ENABLE_LOGGING') == True and file_handler != None:
+        if config.get('ENABLE_LOGGING') is True and file_handler is not None:
             for logger_name in logging.Logger.manager.loggerDict.keys():
                 logging.getLogger(logger_name).handlers.clear()
-            
+
             file_handler.flush()
             file_handler.close()
 
@@ -244,19 +263,20 @@ class _OgreCommonExport_(object):
         name='Mesh Export Version',
         description='Specify Ogre version format to write',
         default=config.get('MESH_TOOL_VERSION')) = {}
-    EX_XML_DELETE : BoolProperty(
-        name="Clean up xml files",
-        description="Remove the generated xml files after binary conversion. \n(The removal will only happen if OgreXMLConverter/OgreMeshTool finishes successfully)",
-        default=config.get('XML_DELETE')) = {}
-    
+    EX_EXPORT_XML_DELETE : BoolProperty(
+        name="Clean up XML files",
+        description="""Remove the generated XML files after binary conversion.
+(The removal will only happen if OgreXMLConverter/OgreMeshTool finishes successfully)""",
+        default=config.get('EXPORT_XML_DELETE')) = {}
+
     # Scene
     EX_SCENE : BoolProperty(
         name="Export Scene",
-        description="Export current scene (OgreDotScene xml file)",
+        description="Export current scene (OgreDotScene XML file)",
         default=config.get('SCENE')) = {}
     EX_SELECTED_ONLY : BoolProperty(
         name="Export Selected Only",
-        description="Export only selected objects\nTurn on to avoid exporting non-selected stuff",
+        description="Export only selected objects.\nTurn on to avoid exporting non-selected stuff",
         default=config.get('SELECTED_ONLY')) = {}
     EX_EXPORT_HIDDEN : BoolProperty(
         name="Export Hidden Also",
@@ -268,12 +288,12 @@ class _OgreCommonExport_(object):
     #    default=config.get('EXPORT_USER')) = {}
     EX_FORCE_CAMERA : BoolProperty(
         name="Force Camera",
-        description="Export active camera",
+        description="Export active camera, even if not selected",
         default=config.get('FORCE_CAMERA')) = {}
-    EX_FORCE_LAMPS : BoolProperty(
-        name="Force Lamps",
-        description="Export all Lamps",
-        default=config.get('FORCE_LAMPS')) = {}
+    EX_FORCE_LIGHTS : BoolProperty(
+        name="Force Lights",
+        description="Export all Lights, even if not selected",
+        default=config.get('FORCE_LIGHTS')) = {}
     EX_NODE_ANIMATION : BoolProperty(
         name="Export Node Animations",
         description="Export Node Animations, these are animations of the objects properties like position, rotation and scale",
@@ -285,7 +305,16 @@ class _OgreCommonExport_(object):
 #Don't select this option if you have any fine tuning of the F-Curves in Blender, since they won't get exported.
 #NOTE: Node Animations based on the 'Follow Path' constraint will most likely fail with this option set to True.""",
 #        default=config.get('NODE_KEYFRAMES')) = {}
-    
+    EX_EXPORT_SKYBOX : BoolProperty(
+        name="Export SkyBox",
+        description="Export SkyBox when there is an environment texture plugged to the World background.\nThis is useful to convert from HDRi images to a CubeMap format.",
+        default=config.get('EXPORT_SKYBOX')) = {}
+    EX_SKYBOX_RESOLUTION : IntProperty(
+        name="SkyBox Resolution",
+        description="Resolution for the exported CubeMap images of the SkyBox",
+        min=512, max=16384,
+        default=config.get('SKYBOX_RESOLUTION')) = {}
+
     # Materials
     EX_MATERIALS : BoolProperty(
         name="Export Materials",
@@ -315,7 +344,7 @@ class _OgreCommonExport_(object):
         name="Convert Images",
         description="Convert all textures to selected image format",
         default=config.get('FORCE_IMAGE_FORMAT')) = {}
-    
+
     # Armature
     EX_ARMATURE_ANIMATION : BoolProperty(
         name="Armature Animation",
@@ -323,7 +352,9 @@ class _OgreCommonExport_(object):
         default=config.get('ARMATURE_ANIMATION')) = {}
     EX_SHARED_ARMATURE : BoolProperty(
         name="Shared Armature",
-        description="Export a single .skeleton file for objects that have the same Armature parent (useful for: shareSkeletonInstanceWith())\nNOTE: The name of the .skeleton file will be that of the Armature",
+        description="""Export a single .skeleton file for objects that have the same Armature parent
+(useful for: shareSkeletonInstanceWith())
+NOTE: The name of the .skeleton file will be that of the Armature""",
         default=config.get('SHARED_ARMATURE')) = {}
     EX_ONLY_KEYFRAMES : BoolProperty(
         name="Only Keyframes",
@@ -376,10 +407,22 @@ For some meshes with transparent materials (partial transparency) this can be us
         name="Tangents",
         description="Export tangents generated by Blender",
         default=config.get('GENERATE_TANGENTS')) = {}
+    EX_Vx_PACK_INT_10_10_10_2 : BoolProperty(
+        name="Pack into 'INT_10_10_10_2' format",
+        description="""Ogre now supports normalized INT_10_10_10_2 as the normal format.
+This packs 3 signed values with 10bit precision and a fourth 2bit value into 4 bytes; the size of a single float.
+If you are using normal-maps, you will notice how this format is perfect to store a tangent with parity, while only requiring 25% of storage compared to 4 floats""",
+        default=config.get('PACK_INT_10_10_10_2')) = {}
     EX_Vx_OPTIMISE_ANIMATIONS : BoolProperty(
         name="Optimise Animations",
         description="DON'T optimise out redundant tracks & keyframes",
         default=config.get('OPTIMISE_ANIMATIONS')) = {}
+    EX_Vx_OPTIMISE_VERTEX_CACHE : BoolProperty(
+        name="Optimise Vertex Cache",
+        description="""This reorders the index buffer of the mesh such that triangles are rendered in order of proximity.
+If enabled, the MeshUpgrader will print the change of the "average cache miss ratio (ACMR)" metric.
+It measures the number of cache misses per triangle and thus ranges from 3.0 (all 3 vertices missed) to about 0.5 for an optimized mesh""",
+        default=config.get('OPTIMISE_VERTEX_CACHE')) = {}
     EX_V2_OPTIMISE_VERTEX_BUFFERS : BoolProperty(
         name="Optimise Vertex Buffers For Shaders",
         description="Optimise vertex buffers for shaders.\nSee Vertex Buffers Options for more settings",
@@ -397,6 +440,11 @@ S - strips the buffers for shadow mapping (consumes less space and memory)""",
         default=config.get('OPTIMISE_VERTEX_BUFFERS_OPTIONS')) = {}
 
     # LOD
+    EX_LOD_GENERATION : EnumProperty(
+        items=config.LOD_METHODS,
+        name='LOD Generation Method',
+        description='Method of generating LOD levels',
+        default=config.get('LOD_GENERATION')) = {}
     EX_LOD_LEVELS : IntProperty(
         name="LOD Levels",
         description="Number of LOD levels",
@@ -412,12 +460,6 @@ S - strips the buffers for shadow mapping (consumes less space and memory)""",
         description="LOD percentage reduction",
         min=0, max=99,
         default=config.get('LOD_PERCENT')) = {}
-    EX_LOD_MESH_TOOLS : BoolProperty(
-        name="Use OgreMesh Tools",
-        description="""Use OgreMeshUpgrader/OgreMeshTool instead of Blender to generate the mesh LODs.
-OgreMeshUpgrader/OgreMeshTool does LOD by removing edges, which allows only changing the index buffer and re-use the vertex-buffer (storage efficient).
-Blenders decimate does LOD by collapsing vertices, which can result in a visually better LOD, but needs different vertex-buffers per LOD.""",
-        default=config.get('LOD_MESH_TOOLS')) = {}
 
     # Pose Animation
     EX_SHAPE_ANIMATIONS : BoolProperty(
@@ -428,19 +470,19 @@ Blenders decimate does LOD by collapsing vertices, which can result in a visuall
         name="Shape Normals",
         description="Export normals in shape animations (updates the .mesh file)",
         default=config.get('SHAPE_NORMALS')) = {}
-    
+
     # Logging
     EX_Vx_ENABLE_LOGGING : BoolProperty(
         name="Write Exporter Logs",
         description="Write Log file to the output directory (blender2ogre.log)",
         default=config.get('ENABLE_LOGGING')) = {}
-    
+
     # It seems that it is not possible to exclude DEBUG when selecting a log level
     EX_Vx_DEBUG_LOGGING : BoolProperty(
         name="Debug Logging",
         description="Whether to show DEBUG log messages",
         default=config.get('DEBUG_LOGGING')) = {}
-    
+
     # It was decided to make this an option that is not user-facing
     #EX_Vx_SHOW_LOG_NAME : BoolProperty(
     #    name="Show Log name",

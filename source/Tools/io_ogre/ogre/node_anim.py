@@ -1,19 +1,3 @@
-
-# When bpy is already in local, we know this is not the initial import...
-if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
-    import importlib
-    if "config" in locals():
-        importlib.reload(config)
-    if "report" in locals():
-        importlib.reload(report)
-    if "xml" in locals():
-        importlib.reload(xml)
-    if "util" in locals():
-        importlib.reload(util)
-
-# This is only relevant on first run, on later reloads those modules
-# are already in locals() and those statements do not do anything.
 import bpy, mathutils, logging, time
 from .. import config
 from ..report import Report
@@ -97,10 +81,11 @@ def write_animation(ob, action, frame_start, frame_end, doc, xmlnode):
 
     _fps = float( bpy.context.scene.render.fps )
 
-    # Actually in Blender this does not make sense because there is only one possible animation per object, but lets maintain compatibility with Easy Ogre Exporter
+    # Actually in Blender this does not make sense because there is only one possible animation per object,
+    # but lets maintain compatibility with Easy Ogre Exporter
     aa = doc.createElement('animations')
     xmlnode.appendChild(aa)
-    
+
     a = doc.createElement('animation')
     a.setAttribute("name", "%s" % action.name)
     a.setAttribute("enable", "false")
@@ -111,7 +96,7 @@ def write_animation(ob, action, frame_start, frame_end, doc, xmlnode):
     aa.appendChild(a)
 
     frame_current = bpy.context.scene.frame_current
-    
+
     initial_location = mathutils.Vector((0, 0, 0))
     initial_rotation = mathutils.Quaternion((1, 0, 0, 0))
     initial_scale = mathutils.Vector((1, 1, 1))
@@ -119,9 +104,9 @@ def write_animation(ob, action, frame_start, frame_end, doc, xmlnode):
     frames = range(int(frame_start), int(frame_end) + 1)
 
     # If NODE_KEYFRAMES is True, then use only the keyframes to export the animation
-    #if config.get('NODE_KEYFRAMES'):
+    #if config.get('NODE_KEYFRAMES') is True:
     #    frames = get_keyframes(action)
-    
+
     for frame in frames:
 
         kf = doc.createElement('keyframe')

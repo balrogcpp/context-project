@@ -84,9 +84,12 @@ MESHDATA:
         [[vertexNumber], [weight]], [[vertexNumber], [weight]],  ..
 ['submeshes'][idx]
         [material] - string (material name)
-        [materialOrg] - original material name - for searching the in shared materials file
+        [materialOrig] - original material name - for searching in the shared materials file
         [faces] - vectors with faces [v1,v2,v3]
         [geometry] - identical to 'sharedgeometry' data content
+['poses']
+    ['pose'] - name, target, index (if target = submesh)
+        ['poseoffset'] - vectors with index, nx, ny, nz, x, y, z
 ['materials']
     [(matID)]: {}
         ['texture'] - full path to texture file
@@ -100,27 +103,33 @@ MESHDATA:
         ['children'] - list with names if children ([child1, child2, ...])
 ['boneIDs']: {[bone ID]:[bone Name]} - dictionary with ID to name
 ['skeletonName'] - name of skeleton
+[animations] - vector of animation tuples
+  [animation] - tuple: ([tracks], name, length)
+    [tracks] - vector of track tuples
+      [track] - tuple: ([keyframes], type, target, index (>=0 if submesh, else: -1))
+        [keyframes] - vector of keyframe tuples
+          [keyframe] - tuple: ([poserefs], frame)
+            [poserefs] - vector of poseref tuples
+              poseref: tuple: (poseindex, influence)
 
 Note: Bones store their OGREID as a custom variable so they are consistent when a mesh is exported
 """
 
 # When bpy is already in local, we know this is not the initial import...
-if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
-    import importlib
-    if "material_parser" in locals():
-        importlib.reload(material_parser.MaterialParser)
+#if "bpy" in locals():
+#    import importlib
+#    print("RELOADING: material_parser.MaterialParser")
+#    importlib.reload(material_parser)
 
-#from Blender import *
 import bpy
 from xml.dom import minidom
-from mathutils import Vector, Matrix
-import math, os, subprocess
+from mathutils import Vector, Matrix, Quaternion
+import math, os, subprocess, json
 from .material_parser import MaterialParser
-from .. import config
-from .. import util
-from ..report import Report
+from .. import config, util
 from ..util import *
+from ..report import Report
+from bpy_extras.io_utils import unpack_list
 
 logger = logging.getLogger('ogre_import')
 
@@ -129,20 +138,15 @@ SHOW_IMPORT_DUMPS = False
 SHOW_IMPORT_TRACE = False
 MIN_BONE_LENGTH = 0.00001	# Prevent automatic removal of bones
 
-# Default blender version of script
-blender_version = 259
-
 # Makes sure name doesn't exceed Blenders naming limits
 # Also keeps after name (as Torchlight uses names to identify types -boots, chest, ...- with names)
 # TODO: This is not needed for Blender 2.62 and above
 def GetValidBlenderName(name):
 
-    global blender_version
-
     newname = name.strip()
     
     maxChars = 20
-    if blender_version > 262:
+    if bpy.app.version >= (2, 62, 0):
         maxChars = 63
 
     if(len(name) > maxChars):
@@ -160,6 +164,7 @@ def GetValidBlenderName(name):
 
     if(newname != name):
         logger.warning("Name truncated (%s -> %s)" % (name, newname))
+        Report.warnings.append("Name truncated (%s -> %s)" % (name, newname))
 
     return newname
 
@@ -203,21 +208,11 @@ def xCollectVertexData(data):
     for vb in data.childNodes:
         if vb.localName == 'vertexbuffer':
             if vb.hasAttribute('positions'):
-
-                progressScale = 1.0 / len(vb.getElementsByTagName('vertex'))
-                bpy.context.window_manager.progress_begin(0, 100)
+                progressbar = util.ProgressBar("Vertices", len(vb.getElementsByTagName('vertex')))
                 index = 0
 
                 for vertex in vb.getElementsByTagName('vertex'):
-
-                    # Update progress in console
-                    percent = (index + 1) * progressScale
-                    sys.stdout.write( "\r + Vertices [" + '=' * int(percent * 50) + '>' + '.' * int(50 - percent * 50) + "] " + str(int(percent * 10000) / 100.0) + "%   ")
-                    sys.stdout.flush()
-
-                    # Update progress through Blender cursor
-                    bpy.context.window_manager.progress_update(percent)
-
+                    progressbar.update(index)
                     index = index + 1
 
                     for vp in vertex.childNodes:
@@ -230,7 +225,7 @@ def xCollectVertexData(data):
 
                 sys.stdout.write("\n")
 
-            if vb.hasAttribute('normals') and config.get('IMPORT_NORMALS'):
+            if vb.hasAttribute('normals') and config.get('IMPORT_NORMALS') is True:
                 for vertex in vb.getElementsByTagName('vertex'):
                     for vn in vertex.childNodes:
                         if vn.localName == 'normal':
@@ -296,12 +291,14 @@ def xCollectMeshData(meshData, xmldoc, meshname, dirname):
     for submeshes in xmldoc.getElementsByTagName('submeshes'):
         for submesh in submeshes.childNodes:
             if submesh.localName == 'submesh':
-                materialOrg = str(submesh.getAttributeNode('material').value)
+                materialOrig = "Material"
+                if submesh.getAttributeNode('material') is not None:
+                    materialOrig = str(submesh.getAttributeNode('material').value)
                 # To avoid Blender naming limit problems
-                material = GetValidBlenderName(materialOrg)
+                material = GetValidBlenderName(materialOrig)
                 sm = {}
                 sm['material'] = material
-                sm['materialOrg'] = materialOrg
+                sm['materialOrig'] = materialOrig
                 for subnodes in submesh.childNodes:
                     if subnodes.localName == 'faces':
                         facescount = int(subnodes.getAttributeNode('count').value)
@@ -358,26 +355,184 @@ def xCollectBoneAssignments(meshData, xmldoc):
 def xCollectPoseData(meshData, xmldoc):
     logger.info("* Collecting pose data...")
 
-    poses = xmldoc.getElementsByTagName('pose')
-    if(len(poses) > 0):
-        meshData['poses'] = []
+    poses = xmldoc.getElementsByTagName('poses')
+    if(len(poses) == 0):
+        return
 
-    for pose in poses:
+    meshData['poses'] = []
+
+    for pose in poses[0].getElementsByTagName('pose'):
         name = pose.getAttribute('name')
         target = pose.getAttribute('target')
-        index = pose.getAttribute('index')
+
+        poseData = {}
+        poseData['name'] = name
         if target == 'submesh':
-            poseData = {}
-            poseData['name'] = name
+            index = pose.getAttribute('index')
             poseData['submesh'] = int(index)
-            poseData['data'] = data = []
-            meshData['poses'].append(poseData)
-            for value in pose.getElementsByTagName('poseoffset'):
-                index = int(value.getAttribute('index'))
-                x = float(value.getAttribute('x'))
-                y = float(value.getAttribute('y'))
-                z = float(value.getAttribute('z'))
-                data.append((index, x, -z, y))
+            logger.info("+ Pose: %s, index: %s, target: %s" % (name, index, target))
+        else:
+            logger.info("+ Pose: %s, target: %s" % (name, target))
+        poseData['data'] = data = []
+        meshData['poses'].append(poseData)
+        for value in pose.getElementsByTagName('poseoffset'):
+            index = int(value.getAttribute('index'))
+            x = float(value.getAttribute('x'))
+            y = float(value.getAttribute('y'))
+            z = float(value.getAttribute('z'))
+            data.append((index, x, -z, y))
+
+    # Let's see if there are Pose animations as well
+    # https://ogrecave.github.io/ogre/api/13/_animation.html#Pose-Animation
+    animations_tag = xmldoc.getElementsByTagName('animations')
+    if(len(animations_tag) == 0):
+        return
+
+    animations = []
+
+    fps = bpy.context.scene.render.fps
+
+    for animation_tag in animations_tag[0].getElementsByTagName('animation'):
+        name = animation_tag.getAttribute('name')
+        length = animation_tag.getAttribute('length')
+
+        logger.info("+ Animation: %s, length: %s" % (name, length))
+
+        tracks = []
+
+        for track_tag in animation_tag.getElementsByTagName('track'):
+            target = track_tag.getAttribute('target')
+            type = track_tag.getAttribute('type')
+
+            # If the type of animations were not pose after all... bail
+            if type != "pose":
+                return
+
+            if target == 'submesh':
+                submesh_index = track_tag.getAttribute('index')
+                logger.info("+ Track: %s, index: %s, target: %s" % (name, submesh_index, target))
+            else:
+                submesh_index = -1
+                logger.info("+ Track: %s, target: %s" % (name, target))
+
+            for keyframes_tag in track_tag.getElementsByTagName('keyframes'):
+
+                keyframes = []
+
+                for keyframe_tag in keyframes_tag.getElementsByTagName('keyframe'):
+
+                    time = float(keyframe_tag.getAttribute('time'))
+                    frame = time * fps + 1
+                    #print("frame: %s, time: %s" % (frame, time))
+
+                    if config.get('ROUND_FRAMES') is True:
+                        frame = round(frame)
+
+                    poserefs = []
+
+                    for poseref_tag in keyframe_tag.getElementsByTagName('poseref'):
+                        influence = poseref_tag.getAttribute('influence')
+                        poseindex = poseref_tag.getAttribute('poseindex')
+
+                        poseref = (poseindex, influence)
+                        poserefs.append(poseref)
+
+                    keyframe = (poserefs, frame)
+                    keyframes.append(keyframe)
+
+            track = (keyframes, type, target, submesh_index)
+            tracks.append(track)
+
+        animation = (tracks, name, length)
+        animations.append(animation)
+
+    meshData['pose_animations'] = animations
+
+
+def bCreatePoseAnimations(ob, meshData, subMeshIndex):
+    if 'pose_animations' in meshData and len(meshData['pose_animations']) > 0:
+        logger.info("+ Creating pose animations...")
+
+        # Create animation data for the shape animations
+        shape_keys = ob.data.shape_keys
+
+        if shape_keys.animation_data is None:
+            shape_keys.animation_data_create()
+
+        shape_key_names = []
+        for pose in meshData['poses']:
+            shape_key_names.append(pose['name'])
+
+        for animation in meshData['pose_animations']:
+            tracks = animation[0]
+            name = animation[1]
+            length = float(animation[2])
+
+            logger.debug("- Animation: %s, length: %s" % (name, length))
+
+            fcurves = {}
+
+            # The way we are iterating over submeshes the action might already exist
+            if name in bpy.data.actions:
+                action = bpy.data.actions[name]
+                logger.debug("- Action: %s already in 'bpy.data.actions'" % name)
+
+                # Get the FCurves for each pose/shape key
+                for shape_key_name in shape_key_names:
+                    fcurves[shape_key_name] = action.fcurves.find(data_path=f'key_blocks["{shape_key_name}"].value')
+            else:
+                action = bpy.data.actions.new(name)
+                # action.use_fake_user = True   # Dont need this as we are adding them to the nla editor
+                shape_keys.animation_data.action = action
+                Report.shape_animations.append(name)
+
+                # Add action to NLA tracks
+                track = shape_keys.animation_data.nla_tracks.new()
+                track.name = name
+                track.mute = True
+                track.strips.new(name, 0, action)
+
+                # Create the FCurves for each pose/shape key
+                for shape_key_name in shape_key_names:
+                    fcurve = action.fcurves.new(data_path=f'key_blocks["{shape_key_name}"].value')
+                    fcurves[shape_key_name] = fcurve
+
+                logger.info("+ Created action: %s" % name)
+
+            for track in tracks:
+                keyframes = track[0]
+                type = track[1]
+                target = track[2]
+                submesh_index = int(track[3])
+                logger.debug("- Track -- type: %s, target: %s, submesh_index: %s" % (type, target, submesh_index))
+
+                # If we are not dealing with shared geometry and this track does not apply to this submesh... skip
+                if(submesh_index >= 0 and submesh_index != subMeshIndex):
+                    logger.debug("Skipping submesh_index: %s" % submesh_index)
+                    continue
+
+                # Create fcurves
+                for keyframe in keyframes:
+                    poserefs = keyframe[0]
+                    frame = keyframe[1]
+
+                    # We have to account for the shape keys not referenced in the poserefs
+                    referenced_shape_keys = []
+
+                    for poseref in poserefs:
+                        pose_index = int(poseref[0])
+                        influence = float(poseref[1])
+                        shape_key_name = meshData['poses'][pose_index]['name']
+                        referenced_shape_keys.append(shape_key_name)
+
+                        fcurve = fcurves[shape_key_name]
+                        fcurve.keyframe_points.insert(frame, influence)
+
+                    # Set influence to 0 for shape keys not referenced in the poserefs
+                    # Otherwise the animation will look bad
+                    for shape_key_name in [item for item in shape_key_names if item not in referenced_shape_keys]:
+                        fcurve = fcurves[shape_key_name]
+                        fcurve.keyframe_points.insert(frame, 0)
 
 
 def xGetSkeletonLink(xmldoc, folder):
@@ -389,8 +544,8 @@ def xGetSkeletonLink(xmldoc, folder):
         skeletonFile = os.path.join(folder, skeletonName)
         # Check for existence of skeleton file
         if not os.path.isfile(skeletonFile):
-            Report.warnings.append("Cannot find linked skeleton file '%s'\nIt must be in the same directory as the mesh file." % skeletonName)
             logger.warning("Ogre skeleton missing: %s" % skeletonFile)
+            Report.warnings.append("Cannot find linked skeleton file '%s'\nIt must be in the same directory as the mesh file." % skeletonName)
             skeletonFile = "None"
 
     return skeletonFile
@@ -693,7 +848,7 @@ def xReadAnimation(action, tracks):
                 continue
             time = float(keyframe.getAttribute('time'))
             frame = time * fps
-            if config.get('ROUND_FRAMES'):
+            if config.get('ROUND_FRAMES') is True:
                 frame = round(frame)
             for key in keyframe.childNodes:
                 if key.nodeType != 1:
@@ -795,12 +950,12 @@ def bCreateMesh(meshData, folder, name, filepath):
         bCreateSkeleton(meshData, skeletonName)
 
     logger.info("+ Creating mesh: %s" % name)
-    
+
     # From collected data create all sub meshes
     subObjs = bCreateSubMeshes(meshData, name)
     # Skin submeshes
     #bSkinMesh(subObjs)
-    
+
     # Move to parent skeleton if there
     if 'armature' in meshData:
         arm = meshData['armature']
@@ -816,19 +971,21 @@ def bCreateMesh(meshData, folder, name, filepath):
     # Temporarily select all imported objects
     for subOb in subObjs:
         subOb.select_set(True)
-    
+
     # TODO: Try to merge everything into the armature object
-    if config.get('MERGE_SUBMESHES') == True:
+    if config.get('MERGE_SUBMESHES') is True:
         bpy.ops.object.join()
         ob = bpy.context.view_layer.objects.active
         ob.name = name
         ob.data.name = name
 
+    Report.meshes.append( name )
+
+    # Dump import structure
     if SHOW_IMPORT_DUMPS:
-        importDump = filepath + "IDump"
-        fileWr = open(importDump, 'w')
-        fileWr.write(str(meshData))
-        fileWr.close()
+        import_dump = filepath.replace(".xml", ".json")
+        with open( import_dump, 'w' ) as f:
+            json.dump(meshData, f, indent=4)
 
 
 def bCreateSkeleton(meshData, name):
@@ -893,12 +1050,12 @@ def bCreateSkeleton(meshData, name):
         rotmat = boneData['rotmatAS']
         #print(rotmat[1].to_tuple())
         #boneObj.matrix = Matrix(rotmat[1],rotmat[0],rotmat[2])
-        if blender_version <= 262:
+        if bpy.app.version <= (2, 62, 0):
             r0 = [rotmat[0].x] + [rotmat[0].y] + [rotmat[0].z]
             r1 = [rotmat[1].x] + [rotmat[1].y] + [rotmat[1].z]
             r2 = [rotmat[2].x] + [rotmat[2].y] + [rotmat[2].z]
             boneRotMatrix = Matrix((r1, r0, r2))
-        elif blender_version > 262:
+        elif bpy.app.version > (2, 62, 0):
             # this is fugly way of flipping matrix
             r0 = [rotmat.col[0].x] + [rotmat.col[0].y] + [rotmat.col[0].z]
             r1 = [rotmat.col[1].x] + [rotmat.col[1].y] + [rotmat.col[1].z]
@@ -1009,8 +1166,7 @@ def bCreateSubMeshes(meshData, meshName):
     for subMeshIndex in range(len(submeshes)):
         subMeshData = submeshes[subMeshIndex]
         subMeshName = subMeshData['material']
-        Report.meshes.append( subMeshName )
-        
+
         # Create mesh and object
         me = bpy.data.meshes.new(subMeshName)
         ob = bpy.data.objects.new(subMeshName, me)
@@ -1028,50 +1184,42 @@ def bCreateSubMeshes(meshData, meshName):
 
         verts = geometry['positions']
         faces = subMeshData['faces']
-        
+
         hasNormals = False
         if 'normals' in geometry.keys():
             normals = geometry['normals']
             hasNormals = True
-        # Mesh vertices and faces
 
-        # vertices and faces of mesh
+        # Mesh vertices and faces
         VertLength = len(verts)
         FaceLength = len(faces)
         me.vertices.add(VertLength)
         me.loops.add(FaceLength * 3)
         me.polygons.add(FaceLength)
-        for i in range(VertLength):
-            me.vertices[i].co = verts[i]
-            # NOTE: Doesn't work in Blender 3.2+ and this wasn't needed anyway.
-            # Even the Blender official .OBJ importer uses Custom Split Normals when importing normals
-            #if hasNormals:
-                #me.vertices[i].normal = Vector((normals[i][0],normals[i][1],normals[i][2]))
 
-        #me.vertices[VertLength].co = verts[0]
-        for i in range(FaceLength):
-            me.loops[i*3].vertex_index = faces[i][0]
-            me.loops[i*3+1].vertex_index = faces[i][1]
-            me.loops[i*3+2].vertex_index = faces[i][2]
-            me.polygons[i].loop_start = i * 3
-            # NOTE: Doesn't work in Blender 3.6+ and this isn't needed anyway.
-            #me.polygons[i].loop_total = 3
-            me.polygons[i].use_smooth
+        me.vertices.foreach_set("co", unpack_list(verts))
 
-        #meshFaces = me.tessfaces
-        #meshUV_textures = me.tessface_uv_textures
-        #meshVertex_colors = me.tessface_vertex_colors
-        #meshUV_textures = me.uv_textures
+        if hasNormals:
+            me.vertices.foreach_set("normal", unpack_list(normals))
+
+        me.polygons.foreach_set("loop_start", [i for i in range(0, FaceLength * 3, 3)])
+        me.polygons.foreach_set("loop_total", [3] * (FaceLength))
+        me.loops.foreach_set("vertex_index", unpack_list(faces))
 
         hasTexture = False
         # Material for the submesh
         # Create image texture from image.
         if subMeshName in meshData['materials']:
             matInfo = meshData['materials'][subMeshName]	# material data
-            Report.materials.append( subMeshName )
+            if subMeshName not in Report.materials:
+                Report.materials.append(subMeshName)
 
             # Create shadeless material and MTex
-            mat = bpy.data.materials.new(subMeshName)
+            mat = None
+            if subMeshName not in bpy.data.materials:
+                mat = bpy.data.materials.new(subMeshName)
+            else:
+                mat = bpy.data.materials.get(subMeshName)
 
             mat.use_nodes = True
 
@@ -1120,8 +1268,11 @@ def bCreateSubMeshes(meshData, meshName):
             ob.data.materials.append(mat)
             #logger.debug(me.uv_textures[0].data.values()[0].image)
         else:
-            logger.warning("Definition of material: %s not found!" % subMeshName)
-            Report.warnings.append("Definition of material: %s not found!" % subMeshName)
+            logger.warning("Definition of material: \"%s\" not found!" % subMeshName)
+            Report.warnings.append("Definition of material: \"%s\" not found!" % subMeshName)
+            # create default material if it could not be imported to preserve submesh material reference
+            mat = bpy.data.materials.new(name=subMeshName)
+            ob.data.materials.append(mat)
 
         # Texture coordinates
         if 'texcoordsets' in geometry and 'uvsets' in geometry:
@@ -1135,25 +1286,19 @@ def bCreateSubMeshes(meshData, meshName):
                         loopIndex += 1
 
         # Vertex colors
-        if 'vertexcolors' in geometry:
-            colourData = me.vertex_colors.new(name='Colour'+str(j)).data
+        if 'vertexcolors' in geometry and len(geometry['vertexcolors']) > 0:
+            colourData = None
+            if (bpy.app.version >= (3, 2, 0)):
+                colourData = me.color_attributes.new(name='Color', domain='CORNER', type='BYTE_COLOR').data
+            else:
+                colourData = me.vertex_colors.new(name='Color').data
+
             vcolors = geometry['vertexcolors']
             loopIndex = 0
             for face in faces:
                 for v in face:
                     colourData[loopIndex].color = vcolors[v]
                     loopIndex += 1
-            
-            # Vertex Alpha
-            for c in vcolors:
-                if c[3] != 1.0:
-                    alphaData = me.vertex_colors.new(name='Alpha'+str(j)).data
-                    loopIndex = 0
-                    for face in faces:
-                        for v in face:
-                            colourData[loopIndex].color[3] = vcolors[v][3]
-                            loopIndex += 1
-                    break
 
         # Bone assignments:
         if 'boneIDs' in meshData:
@@ -1165,12 +1310,12 @@ def bCreateSubMeshes(meshData, meshName):
                     for (v, w) in vgroup:
                         #grp.add([v], w, 'REPLACE')
                         grp.add([v], w, 'ADD')
-                        
+
         # Give mesh object an armature modifier, using vertex groups but not envelopes
         if 'skeleton' in meshData:
             skeletonName = meshData['skeletonName']
             Report.armatures.append(skeletonName)
-            
+
             mod = ob.modifiers.new('OgreSkeleton', 'ARMATURE')
             mod.object = bpy.data.objects[skeletonName]  # gets the rig object
             mod.use_bone_envelopes = False
@@ -1184,50 +1329,38 @@ def bCreateSubMeshes(meshData, meshName):
 
         # Shape keys (poses)
         if 'poses' in meshData:
-            base = None
+            # Must have base shape
+            base = ob.shape_key_add(name='Basis')
+
             for pose in meshData['poses']:
-                if(pose['submesh'] == subMeshIndex):
-                    if base is None:
-                        # Must have base shape
-                        base = ob.shape_key_add(name='Basis')
+                if('submesh' not in pose or pose['submesh'] == subMeshIndex):
                     name = pose['name']
-                    Report.shape_animations.append(name)
-                    
-                    logger.info('* Creating pose', name)
+                    Report.shape_keys.append(name)
+
+                    logger.info('* Creating pose: %s' % name)
                     shape = ob.shape_key_add(name=name)
                     for vkey in pose['data']:
                         b = base.data[vkey[0]].co
                         me.shape_keys.key_blocks[name].data[vkey[0]].co = [vkey[1] + b[0], vkey[2] + b[1], vkey[3] + b[2]]
 
+            bCreatePoseAnimations(ob, meshData, subMeshIndex)
+
         # Update mesh with new data
+        #me.calc_loop_triangles()
         me.update(calc_edges=True)
-        me.use_auto_smooth = True
 
         # Try to set custom normals
         if hasNormals:
-            noChange = len(me.loops) == len(faces) * 3
-            if not noChange:
-                logger.debug('Removed %s faces' % (len(faces) - len(me.loops) / 3))
-            split = []
-            polyIndex = 0
-            for face in faces:
-                if noChange or matchFace(face, verts, me, polyIndex):
-                    polyIndex += 1
-                    for vx in face:
-                        split.append(normals[vx])
-
-            if len(split) == len(me.loops):
-                me.normals_split_custom_set(split)
-            else:
-                Report.warnings.append("Failed to import mesh normals")
-                logger.warning('Failed to import mesh normals %s / %s' % (polyIndex, str(len(me.polygons))))
+            if bpy.app.version < (4, 1, 0):
+                me.use_auto_smooth = True
+            me.normals_split_custom_set_from_vertices(normals)
 
         Report.orig_vertices = len( me.vertices )
         Report.faces += len( me.polygons )
 
         bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.remove_doubles(threshold=0.001)
-        #bpy.ops.mesh.tris_convert_to_quads()
+        #bpy.ops.mesh.remove_doubles(threshold=0.001)
+        bpy.ops.mesh.tris_convert_to_quads()
         bpy.ops.object.editmode_toggle()
 
         Report.triangles += len( me.polygons )
@@ -1256,27 +1389,266 @@ def matchFace(face, vertices, mesh, index):
 
 
 def getBoneNameMapFromArmature(arm):
-        # Get Ogre bone IDs - need to be in edit mode to access edit_bones
-        # Arm should already be the active object
-        boneMap = {}
-        bpy.context.view_layer.objects.active = arm
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        for bone in arm.data.edit_bones:
-            if 'OGREID' in bone:
-                boneMap[ str(bone['OGREID']) ] = bone.name;
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-        return boneMap
+    # Get Ogre bone IDs - need to be in edit mode to access edit_bones
+    # Arm should already be the active object
+    boneMap = {}
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+    for bone in arm.data.edit_bones:
+        if 'OGREID' in bone:
+            boneMap[ str(bone['OGREID']) ] = bone.name;
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    return boneMap
 
-def load(filepath):
-    global blender_version
 
-    blender_version = bpy.app.version[0] * 100 + bpy.app.version[1]
+def load_scene(filepath):
+    logger.info("* Loading scene from: %s" % str(filepath))
 
+    folder = os.path.dirname(filepath)
+
+    xDocSceneData = xOpenFile(filepath)
+
+    scene = xDocSceneData.getElementsByTagName('scene')
+    if len(scene) == 0:
+        logger.error("No scene found!")
+        Report.errors.append("No scene found!")
+        return
+
+    import_collection = bpy.data.collections.new("OgreImport")
+    bpy.context.scene.collection.children.link(import_collection)
+
+    environment = scene[0].getElementsByTagName('environment')
+    if len(environment) > 0:
+        logger.info("+ Environment")
+
+        backgnd_col = environment[0].getElementsByTagName('colourBackground')[0]
+        backgnd_col_r = float(backgnd_col.getAttribute('r'))
+        backgnd_col_g = float(backgnd_col.getAttribute('g'))
+        backgnd_col_b = float(backgnd_col.getAttribute('b'))
+        logger.info(f"  - Background Color: r={backgnd_col_r}, g={backgnd_col_g}, b={backgnd_col_b}")
+
+        world = bpy.context.scene.world
+        world.color = Vector((backgnd_col_r, backgnd_col_g, backgnd_col_b))
+
+        if len(environment[0].getElementsByTagName('fog')) > 0:
+            fog = environment[0].getElementsByTagName('fog')[0]
+            fog_falloff = fog.getAttribute('mode')
+            linear_start = float(fog.getAttribute('linearStart'))
+            linear_end = float(fog.getAttribute('linearEnd'))
+            exp_density = float(fog.getAttribute('expDensity'))
+            logger.info(f"  - Fog: falloff={fog_falloff}, linear_start={linear_start}, linear_end={linear_end}, exp_density={exp_density}")
+
+            world.mist_settings.use_mist = True
+            world.mist_settings.intensity = exp_density
+            world.mist_settings.start = linear_start
+            world.mist_settings.depth = linear_end - linear_start
+
+            falloff_types = {'linear': 'LINEAR', 'exp': 'QUADRATIC', 'exp2': 'INVERSE_QUADRATIC'}
+            world.mist_settings.falloff = falloff_types[fog_falloff]
+
+    nodes = scene[0].getElementsByTagName('nodes')
+    if len(nodes) > 0:
+        for node in nodes[0].getElementsByTagName('node'):
+            # Extract and print node name
+            node_name = node.getAttribute('name')
+            logger.info(f"+ Node: {node_name}")
+
+            # Position
+            position = node.getElementsByTagName('position')[0]
+            pos_x = float(position.getAttribute('x'))
+            pos_y = float(position.getAttribute('y'))
+            pos_z = float(position.getAttribute('z'))
+            location = Vector((pos_x, -pos_z, pos_y))
+            logger.info(f"  - Position: x={pos_x}, y={pos_y}, z={pos_z}")
+
+            # Rotation
+            rotation = node.getElementsByTagName('rotation')[0]
+            rot_qw = float(rotation.getAttribute('qw'))
+            rot_qx = float(rotation.getAttribute('qx'))
+            rot_qy = float(rotation.getAttribute('qy'))
+            rot_qz = float(rotation.getAttribute('qz'))
+            quaternion = Quaternion((rot_qw, rot_qx, -rot_qz, rot_qy))
+            euler = quaternion.to_euler()
+            logger.info(f"  - Rotation: qw={rot_qw}, qx={rot_qx}, qy={rot_qy}, qz={rot_qz}")
+
+            # Scale
+            scale = node.getElementsByTagName('scale')[0]
+            scale_x = float(scale.getAttribute('x'))
+            scale_y = float(scale.getAttribute('y'))
+            scale_z = float(scale.getAttribute('z'))
+            scale_vector = Vector((scale_x, scale_z, scale_y))
+            logger.info(f"  - Scale: x={scale_x}, y={scale_y}, z={scale_z}")
+
+            # Entity (if any)
+            entities = node.getElementsByTagName('entity')
+            if entities:
+                entity = entities[0]
+                meshFile = entity.getAttribute('meshFile')
+                entity_name = entity.getAttribute('name')
+                logger.info(f"  * Entity: {entity_name}, Mesh File: {meshFile}")
+
+                mesh_path = os.path.join(folder, meshFile)
+                load_mesh(mesh_path)
+
+                entity = bpy.context.active_object
+                entity.name = node_name
+                entity.location = location
+                entity.rotation_euler = euler
+                entity.scale = scale_vector
+                # Unlink from all current collections
+                for col in entity.users_collection:
+                    col.objects.unlink(entity)
+                import_collection.objects.link(entity)
+
+            # Light (if any)
+            lights = node.getElementsByTagName('light')
+            if lights:
+                light = lights[0]
+                light_name = light.getAttribute('name')
+                light_type = light.getAttribute('type')
+                powerScale = float(light.getAttribute('powerScale'))
+                logger.info(f"  * Light: {light_name}, Type: {light_type}, Power Scale: {powerScale}")
+
+                diff_color = light.getElementsByTagName('colourDiffuse')
+                diff_color_r = float(diff_color[0].getAttribute('r'))
+                diff_color_g = float(diff_color[0].getAttribute('g'))
+                diff_color_b = float(diff_color[0].getAttribute('b'))
+                diffuse_color = Vector((diff_color_r, diff_color_g, diff_color_b))
+                diffuse_factor = 1              # Impossible to obtain from the data
+                logger.info(f"  * Light Diffuse: (color: r={diff_color_r}, g={diff_color_g}, b={diff_color_b}), factor: {diffuse_factor}")
+
+                spec_color = light.getElementsByTagName('colourSpecular')
+                spec_color_r = float(spec_color[0].getAttribute('r'))
+                spec_color_g = float(spec_color[0].getAttribute('g'))
+                spec_color_b = float(spec_color[0].getAttribute('b'))
+                specular_color = Vector((spec_color_r, spec_color_g, spec_color_b))
+                if (bpy.app.version >= (2, 93, 0)):
+                    specular_factor = 1         # Impossible to obtain from the data
+                else:
+                    if diff_color_r > 0.001:
+                        specular_factor = spec_color_r / diff_color_r
+                    elif diff_color_g > 0.001:
+                        specular_factor = spec_color_g / diff_color_g
+                    elif diff_color_b > 0.001:
+                        specular_factor = spec_color_b / diff_color_b
+                    else:
+                        specular_factor = 1     # Impossible to know
+                logger.info(f"  * Light Specular (color: r={spec_color_r}, g={spec_color_g}, b={spec_color_b}), factor: {specular_factor}")
+
+                light_attn = light.getElementsByTagName('lightAttenuation')
+                light_attn_constant = float(light_attn[0].getAttribute('constant'))
+                light_attn_linear = float(light_attn[0].getAttribute('linear'))
+                light_attn_quadratic = float(light_attn[0].getAttribute('quadratic'))
+                light_attn_range = float(light_attn[0].getAttribute('range'))
+                logger.info(f"  * Light Attenuation -- Constant: {light_attn_constant}, Linear: {light_attn_linear}, Range: {light_attn_range}")
+
+                light_types = {'point': 'POINT', 'directional': 'SUN', 'spot': 'SPOT', 'rect': 'RECTANGLE'}
+                bpy.ops.object.light_add(type=light_types[light_type], location=location, rotation=euler)
+                light = bpy.context.active_object
+
+                # Common attributes to all lights: color, energy, diffuse, specular, volume
+                light.name = light_name
+
+                # Unlink from all current collections
+                for col in light.users_collection:
+                    col.objects.unlink(light)
+                import_collection.objects.link(light)
+
+                light.data.energy = powerScale
+                if (bpy.app.version >= (2, 93, 0)):
+                    light.data.color = diffuse_color / diffuse_factor
+                    light.data.diffuse_factor = diffuse_factor
+                else:
+                    light.data.color = diffuse_color
+                light.data.specular_factor = specular_factor
+
+                Report.lights.append( light_name )
+
+                # Point light sources give off light equally in all directions, so require only position not direction.
+                #if light_type == 'point':
+                #    light.data.use_custom_distance = True
+                #    light.data.cutoff_distance = light_attn_range
+
+                #Directional lights simulate parallel light beams from a distant source, hence have direction but no position.
+                #if light_type == 'directional':
+                #    light.data.angle = 0.0615403
+                #    pass
+
+                #Spotlights simulate a cone of light from a source so require position and direction, plus extra values for falloff.
+                #if light_type == 'spot':
+                #    light.data.use_custom_distance = True
+                #    light.data.cutoff_distance = light_attn_range
+                #    light.data.spot_size = 0.785398
+                #    light.data.spot_blend = 0.15
+                    #a.setAttribute('inner', str( ob.data.spot_size * (1.0 - ob.data.spot_blend)))
+                    #a.setAttribute('outer', str(ob.data.spot_size))
+
+                #A rectangular area light, requires position, direction, width and height.
+                #if light_type == 'rect':
+                #    light.data.shape = 'RECTANGLE'
+                #    light.data.size = 0.25
+                #    light.data.size_y = 0.25
+
+            # Camera (if any)
+            cameras = node.getElementsByTagName('camera')
+            if cameras:
+                camera = cameras[0]
+                camera_name = camera.getAttribute('name')
+                fov = float(camera.getAttribute('fov'))
+                projection_type = camera.getAttribute('projectionType')
+                clipping = camera.getElementsByTagName('clipping')[0]
+                clipping_near = float(clipping.getAttribute('near'))
+                clipping_far = float(clipping.getAttribute('far'))
+                logger.info(f"  * Camera: {camera_name}, FOV: {fov}, Projection Type: {projection_type}, Clipping: (near: {clipping_near}, far: {clipping_far})")
+
+                bpy.ops.object.camera_add(location=location, rotation=euler)
+
+                camera = bpy.context.active_object
+                camera.name = camera_name
+
+                # Unlink from all current collections
+                for col in camera.users_collection:
+                    col.objects.unlink(camera)
+                import_collection.objects.link(camera)
+
+                Report.cameras.append( camera_name )
+
+                #aspx = bpy.context.scene.render.pixel_aspect_x
+                #aspy = bpy.context.scene.render.pixel_aspect_y
+                #sx = bpy.context.scene.render.resolution_x
+                #sy = bpy.context.scene.render.resolution_y
+                #if ob.data.type == "PERSP":
+                #    fovY = 0.0
+                #    if (sx*aspx > sy*aspy):
+                #        fovY = 2 * math.atan(sy * aspy * 16.0 / (ob.data.lens * sx * aspx))
+                #    else:
+                #        fovY = 2 * math.atan(16.0 / ob.data.lens)
+                #    # fov in radians - like OgreMax - requested by cyrfer
+                #    fov = math.radians( fovY * 180.0 / math.pi )
+                #    c.setAttribute('projectionType', "perspective")
+                #    c.setAttribute('fov', '%6f' % fov)
+                #else: # ob.data.type == "ORTHO":
+                #    c.setAttribute('projectionType', "orthographic")
+                #    c.setAttribute('orthoScale', '%6f' % ob.data.ortho_scale)
+
+                # Perspective
+                camera_types = {'perspective': 'PERSP', 'orthographic': 'ORTHO'}
+                camera.data.type = camera_types[projection_type]
+
+                # Field of View
+                camera.data.lens_unit = 'FOV'
+                camera.data.angle = fov * 2
+
+                # Clipping
+                camera.data.clip_start = clipping_near
+                camera.data.clip_end = clipping_far
+
+
+def load_mesh(filepath):
     logger.info("* Loading mesh from: %s" % str(filepath))
 
-    filepath = filepath
-    pathMeshXml = filepath
+    pathMeshXml = None
     # Get the mesh as .xml file
     if filepath.lower().endswith(".mesh"):
         if mesh_convert(filepath):
@@ -1290,7 +1662,7 @@ def load(filepath):
     else:
         return {'CANCELLED'}
 
-    folder = os.path.split(filepath)[0]
+    folder = os.path.dirname(filepath)
     nameDotMeshDotXml = os.path.split(pathMeshXml)[1]
     nameDotMesh = os.path.splitext(nameDotMeshDotXml)[0]
     onlyName = os.path.splitext(nameDotMesh)[0]
@@ -1321,7 +1693,7 @@ def load(filepath):
 
         # Use selected skeleton
         selectedSkeleton = bpy.context.active_object \
-            if (config.get('USE_SELECTED_SKELETON')
+            if (config.get('USE_SELECTED_SKELETON') is True
                 and bpy.context.active_object
                 and bpy.context.active_object.type == 'ARMATURE') else None
         if selectedSkeleton:
@@ -1330,8 +1702,9 @@ def load(filepath):
                 meshData['boneIDs'] = map
                 meshData['armature'] = selectedSkeleton
             else:
+                logger.warning("Selected armature has no OGRE data.")
                 Report.warnings.append("Selected armature has no OGRE data.")
-        
+
         # There is valid skeleton link and existing file
         elif skeletonFile != "None":
             if mesh_convert(skeletonFile):
@@ -1344,29 +1717,30 @@ def load(filepath):
                     meshData['skeletonName'] = os.path.basename(skeletonFile[:-9])
 
                     # Parse animations
-                    if config.get('IMPORT_ANIMATIONS'):
+                    if config.get('IMPORT_ANIMATIONS') is True:
                         fps = xAnalyseFPS(xDocSkeletonData)
-                        if(fps and config.get('ROUND_FRAMES')):
+                        if(fps and (config.get('ROUND_FRAMES') is True)):
                             logger.info(" * Setting FPS to %s" % fps)
                             bpy.context.scene.render.fps = int(fps)
                         xCollectAnimations(meshData, xDocSkeletonData)
 
             else:
-                Report.warnings.append("Failed to load linked skeleton")
                 logger.warning("Failed to load linked skeleton")
+                Report.warnings.append("Failed to load linked skeleton")
 
         # Collect mesh data
         xCollectMeshData(meshData, xDocMeshData, onlyName, folder)
         MaterialParser.xCollectMaterialData(meshData, onlyName, folder)
         
-        if config.get('IMPORT_SHAPEKEYS'):
+        if config.get('IMPORT_SHAPEKEYS') is True:
             xCollectPoseData(meshData, xDocMeshData)
 
         # After collecting is done, start creating stuff#
         # Create skeleton (if any) and mesh from parsed data
         bCreateMesh(meshData, folder, onlyName, pathMeshXml)
         bCreateAnimations(meshData)
-        if config.get('XML_DELETE'):
+
+        if config.get('IMPORT_XML_DELETE') is True:
             # Cleanup by deleting the XML file we created
             os.unlink("%s" % pathMeshXml)
             if 'skeleton' in meshData:

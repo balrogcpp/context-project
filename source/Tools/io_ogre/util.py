@@ -1,19 +1,30 @@
-
-# When bpy is already in local, we know this is not the initial import...
-if "bpy" in locals():
-    # ...so we need to reload our submodule(s) using importlib
-    import importlib
-    if "config" in locals():
-        importlib.reload(config)
-
-# This is only relevant on first run, on later reloads those modules
-# are already in locals() and those statements do not do anything.
-from . import config
-from . report import Report
 from os.path import split, splitext
 import bpy, logging, logging, mathutils, os, re, subprocess, sys, time
+from . import config
+from . report import Report
 
 logger = logging.getLogger('util')
+
+class ProgressBar:
+    def __init__(self, name, total):
+        self.name = name
+        self.progressScale = 1.0 / total
+        self.step = max(1, int(total / 100))
+
+        # Initialize progress through Blender cursor
+        bpy.context.window_manager.progress_begin(0, 100)
+    
+    def update(self, value):
+        if value % self.step != 0:
+            return
+
+        # Update progress in console
+        percent = (value + 1) * self.progressScale
+        sys.stdout.write( "\r + "+self.name+" [" + '=' * int(percent * 50) + '>' + '.' * int(50 - percent * 50) + "] " + str(round(percent * 100)) + "%   ")
+        sys.stdout.flush()
+
+        # Update progress through Blender cursor
+        bpy.context.window_manager.progress_update(percent)
 
 def xml_converter_parameters():
     """
@@ -77,20 +88,26 @@ def mesh_upgrade_tool(infile):
     # For Ogre v2.x we will use OgreMeshTool, which can perform the same operations
     if detect_converter_type() != "OgreXMLConverter":
         return
-    
+
     output_path, filename = os.path.split(infile)
-    
+
     if not os.path.exists(infile):
         logger.warn("Cannot find file mesh file: %s, unable run OgreMeshUpgrader" % filename)
 
-        if config.get('LOD_MESH_TOOLS') == True:
+        if config.get('LOD_GENERATION') == '0':
             Report.warnings.append("OgreMeshUpgrader failed, LODs will not be generated for this mesh: %s" % filename)
 
-        if config.get('GENERATE_EDGE_LISTS') == True:
+        if config.get('GENERATE_EDGE_LISTS') is True:
             Report.warnings.append("OgreMeshUpgrader failed, Edge Lists will not be generated for this mesh: %s" % filename)
 
+        if config.get('OPTIMISE_VERTEX_CACHE') is True:
+            Report.warnings.append("OgreMeshUpgrader failed, Vertex Cache will not be optimized for this mesh: %s" % filename)
+
+        if config.get('PACK_INT_10_10_10_2') is True:
+            Report.warnings.append("OgreMeshUpgrader failed, Normals won't be packed for this mesh: %s" % filename)
+
         return
-    
+
     # Extract converter type from its output
     try:
         exe_path, exe_name = os.path.split(exe)
@@ -107,7 +124,7 @@ def mesh_upgrade_tool(infile):
 
     cmd = [exe]
 
-    if config.get('LOD_LEVELS') > 0 and config.get('LOD_MESH_TOOLS') == True:
+    if config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '0':
         cmd.append('-l')
         cmd.append(str(config.get('LOD_LEVELS')))
 
@@ -117,9 +134,38 @@ def mesh_upgrade_tool(infile):
         cmd.append('-p')
         cmd.append(str(config.get('LOD_PERCENT')))
 
-    # Don't generate Edge Lists (-e = DON'T generate edge lists (for stencil shadows))
-    if config.get('GENERATE_EDGE_LISTS') == False:
-        cmd.append('-e')
+    # Edge Lists: why is the logic so convoluted?
+    # OGRE < 14.0: the option is '-e' and the option is NOT to generate the edge lists (reverse logic which created the whole problem)
+    # OGRE >= 14.0: the option is now named '-el' and the option is to generate the edge lists
+
+    # [OGRE >= 14.0] Generate Edge Lists (-el = generate edge lists (for stencil shadows))
+    if config.get('GENERATE_EDGE_LISTS') is True:
+        # If OGRE version is >= 14.0
+        if output.find("-el") != -1:
+            cmd.append('-el')
+    # [OGRE < 14.0] Don't generate Edge Lists (-e = DON'T generate edge lists (for stencil shadows))
+    else:
+        # If OGRE version is < 14.0
+        if output.find("-el") == -1:
+            cmd.append('-e')
+
+    # Vertex Cache Optimization
+    # https://www.ogre3d.org/2024/02/26/ogre-14-2-released#vertex-cache-optimization-in-meshupgrader
+    if config.get('OPTIMISE_VERTEX_CACHE') is True:
+        if output.find("-optvtxcache") == -1:
+            logger.warn("Vertex Cache Optimization requested, but this version of OgreMeshUpgrader does not support it (OGRE >= 14.2)")
+            Report.warnings.append("Vertex Cache Optimization requested, but this version of OgreMeshUpgrader does not support it (OGRE >= 14.2)")
+        else:
+            cmd.append('-optvtxcache')
+
+    # Normal Packing
+    # https://www.ogre3d.org/2022/06/07/ogre-13-4-released#vetint1010102norm-support-added
+    if config.get('PACK_INT_10_10_10_2') is True:
+        if output.find("-pack") == -1:
+            logger.warn("Normal Packing requested, but this version of OgreMeshUpgrader does not support it (OGRE >= 13.4)")
+            Report.warnings.append("Normal Packing requested, but this version of OgreMeshUpgrader does not support it (OGRE >= 13.4)")
+        else:
+            cmd.append('-pack')
 
     # Put logfile into output directory
     use_logger = False
@@ -134,11 +180,17 @@ def mesh_upgrade_tool(infile):
     # Finally, specify input file
     cmd.append(infile)
 
-    if config.get('LOD_LEVELS') > 0 and config.get('LOD_MESH_TOOLS') == True:
+    if config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '0':
         logger.info("* Generating %s LOD levels for mesh: %s" % (config.get('LOD_LEVELS'), filename))
 
-    if config.get('GENERATE_EDGE_LISTS') == True:
+    if config.get('GENERATE_EDGE_LISTS') is True and ('-e' not in cmd or '-el' in cmd):
         logger.info("* Generating Edge Lists for mesh: %s" % filename)
+
+    if config.get('OPTIMISE_VERTEX_CACHE') is True and '-optvtxcache' in cmd:
+        logger.info("* Optimizing Vertex Cache for mesh: %s" % filename)
+
+    if config.get('PACK_INT_10_10_10_2') is True and '-pack' in cmd:
+        logger.info("* Packing Normals for mesh: %s" % filename)
 
     # First try to execute with the -log option
     logger.debug("%s" % " ".join(cmd))
@@ -149,26 +201,37 @@ def mesh_upgrade_tool(infile):
         # If this OgreMeshUpgrader does not have -log then use python to write the output of stdout to a log file
         with open(logfile, 'w') as log:
             log.write(output)
-    
+
     if proc.returncode != 0:
         logger.warn("OgreMeshUpgrader failed, LODs / Edge Lists / Vertex buffer optimizations will not be generated for this mesh: %s" % filename)
 
-        if config.get('LOD_LEVELS') > 0 and config.get('LOD_MESH_TOOLS') == True:
+        if config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '0':
             Report.warnings.append("OgreMeshUpgrader failed, LODs will not be generated for this mesh: %s" % filename)
 
-        if config.get('GENERATE_EDGE_LISTS') == True:
+        if config.get('GENERATE_EDGE_LISTS') is True:
             Report.warnings.append("OgreMeshUpgrader failed, Edge Lists will not be generated for this mesh: %s" % filename)
+
+        if config.get('OPTIMISE_VERTEX_CACHE') is True:
+            Report.warnings.append("OgreMeshUpgrader failed, Vertex Cache will not be optimized for this mesh: %s" % filename)
+
+        if config.get('PACK_INT_10_10_10_2') is True:
+            Report.warnings.append("OgreMeshUpgrader failed, Normals won't be packed for this mesh: %s" % filename)
 
         if error != None:
             logger.error(error)
         logger.warn(output)
     else:
-        if config.get('LOD_LEVELS') > 0 and config.get('LOD_MESH_TOOLS') == True:
+        if config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '0':
             logger.info("- Generated %s LOD levels for mesh: %s" % (config.get('LOD_LEVELS'), filename))
 
-        if config.get('GENERATE_EDGE_LISTS') == True:
+        if config.get('GENERATE_EDGE_LISTS') is True and ('-e' not in cmd or '-el' in cmd):
             logger.info("- Generated Edge Lists for mesh: %s" % filename)
 
+        if config.get('OPTIMISE_VERTEX_CACHE') is True and '-optvtxcache' in cmd:
+            logger.info("- Optimized Vertex Cache for mesh: %s" % filename)
+
+        if config.get('PACK_INT_10_10_10_2') is True and '-pack' in cmd:
+            logger.info("- Packed Normals for mesh: %s" % filename)
 
 def detect_converter_type():
     # todo: executing the same exe twice might not be efficient but will do for now
@@ -236,7 +299,7 @@ def mesh_convert(infile):
         
     else:
         # Convert to v2 format if required
-        cmd.append('-%s' %config.get('MESH_TOOL_VERSION'))
+        cmd.append('-%s' % config.get('MESH_TOOL_VERSION'))
 
         # Finally, specify input file
         cmd.append(infile)
@@ -250,7 +313,7 @@ def mesh_convert(infile):
 
         # Open log file to replace old logging feature that the new tool dropped
         # The log file will be created alongside the exported mesh
-        if config.get('ENABLE_LOGGING'):
+        if config.get('ENABLE_LOGGING') is True:
             logfile_path, name = os.path.split(infile)
             logfile = os.path.join(logfile_path, 'OgreMeshTool.log')
         
@@ -290,7 +353,7 @@ def xml_convert(infile, has_uvs=False):
 
     # OgreMeshTool (OGRE v2): -e = DON'T generate edge lists (for stencil shadows)
     # OgreXMLConverter (OGRE < 1.10): -e = DON'T generate edge lists (for stencil shadows)
-    if config.get('GENERATE_EDGE_LISTS') == False and (version < (1,10,0) or converter_type == "OgreMeshTool"):
+    if config.get('GENERATE_EDGE_LISTS') is False and (version < (1,10,0) or converter_type == "OgreMeshTool"):
         cmd.append('-e')
 
     if config.get('GENERATE_TANGENTS') != "0" and converter_type == "OgreMeshTool":
@@ -302,7 +365,7 @@ def xml_convert(infile, has_uvs=False):
         cmd.append('-O')
         cmd.append(config.get('OPTIMISE_VERTEX_BUFFERS_OPTIONS'))
 
-    if not config.get('OPTIMISE_ANIMATIONS'):
+    if config.get('OPTIMISE_ANIMATIONS') is not True:
         cmd.append('-o')
 
     if converter_type == "OgreXMLConverter":
@@ -330,18 +393,18 @@ def xml_convert(infile, has_uvs=False):
             logger.error("OgreXMLConverter returned with non-zero status, check OgreXMLConverter.log")
             logger.info(" ".join(cmd))
             Report.errors.append("OgreXMLConverter finished with non-zero status converting mesh: (%s), it might not have been properly generated" % name)
-        
+
         # Clean up .xml file after successful conversion
-        if proc.returncode == 0 and config.get('XML_DELETE') == True:
+        if (proc.returncode == 0) and (config.get('EXPORT_XML_DELETE') is True):
             logger.info("Removing generated xml file after conversion: %s" % infile)
             os.remove(infile)
-        
+
     else:
         # Convert to v2 format if required
-        cmd.append('-%s' %config.get('MESH_TOOL_VERSION'))
+        cmd.append('-%s' % config.get('MESH_TOOL_VERSION'))
 
         # If requested by the user, generate LOD levels through OgreMeshUpgrader/OgreMeshTool
-        if config.get('LOD_LEVELS') > 0 and config.get('LOD_MESH_TOOLS') == True:
+        if config.get('LOD_LEVELS') > 0 and config.get('LOD_GENERATION') == '0':
             cmd.append('-l')
             cmd.append(str(config.get('LOD_LEVELS')))
             
@@ -366,10 +429,10 @@ def xml_convert(infile, has_uvs=False):
 
         # Open log file to replace old logging feature that the new tool dropped
         # The log file will be created alongside the exported mesh
-        if config.get('ENABLE_LOGGING'):
+        if config.get('ENABLE_LOGGING') is True:
             logfile_path, name = os.path.split(infile)
             logfile = os.path.join(logfile_path, 'OgreMeshTool.log')
-        
+
             with open(logfile, 'w') as log:
                 log.write(output)
 
@@ -380,11 +443,11 @@ def xml_convert(infile, has_uvs=False):
             Report.errors.append("OgreMeshTool finished with non-zero status converting mesh: (%s), it might not have been properly generated" % name)
 
         # Clean up .xml file after successful conversion
-        if proc.returncode == 0 and config.get('XML_DELETE') == True:
+        if (proc.returncode == 0) and (config.get('EXPORT_XML_DELETE') is True):
             logger.info("Removing generated xml file after conversion: %s" % infile)
             os.remove(infile)
 
-def image_magick( image, origin_filepath, target_filepath, compression='bc5', separate_channel=None):
+def image_magick( image, origin_filepath, target_filepath, separate_channel=None):
     exe = config.get('IMAGE_MAGICK_CONVERT')
     cmd = [ exe, origin_filepath ]
 
@@ -398,17 +461,11 @@ def image_magick( image, origin_filepath, target_filepath, compression='bc5', se
         cmd.append('{}'.format(separate_channel))
         cmd.append('-separate')
 
-    MAX_TEXTURE_SIZE = 1024
-    if x > MAX_TEXTURE_SIZE or y > MAX_TEXTURE_SIZE:
-        cmd.append( '-filter' )
-        cmd.append( 'Lanczos' )
+    if x > config.get('MAX_TEXTURE_SIZE') or y > config.get('MAX_TEXTURE_SIZE'):
         cmd.append( '-resize' )
-        cmd.append( str(MAX_TEXTURE_SIZE) )
-
+        cmd.append( str(config.get('MAX_TEXTURE_SIZE')) )
 
     if target_filepath.endswith('.dds'):
-        cmd.append('-define')
-        cmd.append('dds:compression={}'.format(compression))
         cmd.append('-define')
         cmd.append('dds:mipmaps={}'.format(config.get('DDS_MIPS')))
 
@@ -450,9 +507,9 @@ def find_bone_index( ob, arm, groupidx): # sometimes the groups are out of order
     if groupidx < len(ob.vertex_groups): # reported by Slacker
         vg = ob.vertex_groups[ groupidx ]
         j = 0
-        for i,bone in enumerate(arm.pose.bones):
-            if not bone.bone.use_deform and config.get('ONLY_DEFORMABLE_BONES'):
-                j+=1 # if we skip bones we need to adjust the id
+        for i, bone in enumerate(arm.pose.bones):
+            if (config.get('ONLY_DEFORMABLE_BONES') is True) and (bone.bone.use_deform is False):
+                j = j + 1 # if we skip bones we need to adjust the id
             if bone.name == vg.name:
                 return i-j
     else:
@@ -685,8 +742,9 @@ def wordwrap( txt ):
 def get_lights_by_type( T ):
     r = []
     for ob in bpy.context.scene.objects:
-        if ob.type=='LAMP':
-            if ob.data.type==T: r.append( ob )
+        if ob.type == 'LIGHT':
+            if ob.data.type == T:
+                r.append( ob )
     return r
 
 invalid_chars_in_name     = '"<>\:' # "<> is xml prohibited, : is Ogre prohibited, \ is standard escape char
