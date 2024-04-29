@@ -29,6 +29,12 @@ sampler SSR
     tex_address_mode border
     tex_border_colour 0 0 0 1
 }
+sampler Depth
+{
+    filtering none
+    tex_address_mode border
+    tex_border_colour 0 0 0 1
+}
 
 abstract material Unlit
 {
@@ -89,6 +95,7 @@ abstract material PBR
     set $Emissive black.dds
     set $AO white.dds
     set $SSR black.dds
+    set $Depth black.dds
     set $IBL specular.dds
 
     technique
@@ -127,10 +134,10 @@ abstract material PBR
                 texture $AO
                 sampler_ref AO
             }
-            texture_unit SSR
+            texture_unit Depth
             {
-                texture $SSR
-                sampler_ref SSR
+                texture $Depth
+                sampler_ref Depth
             }
             texture_unit ShadowAtlas
             {
@@ -147,7 +154,7 @@ abstract material PBR
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
                 param_named OcclusionTex   int 4
-                param_named SSrTex         int 5
+                param_named DepthTex       int 5
                 param_named ShadowTex      int 6
                 param_named_auto TexSize0 packed_texture_size 0
                 param_named_auto TexSize1 packed_texture_size 1
@@ -217,6 +224,7 @@ abstract material TERRA
     set $Normal normal.dds
     set $AO white.dds
     set $SSR black.dds
+    set $Depth black.dds
 
     technique
     {
@@ -255,10 +263,10 @@ abstract material TERRA
                 texture $AO
                 sampler_ref AO
             }
-            texture_unit SSR
+            texture_unit Depth
             {
-                texture $SSR
-                sampler_ref SSR
+                texture $Depth
+                sampler_ref Depth
             }
             texture_unit ShadowAtlas
             {
@@ -275,7 +283,7 @@ abstract material TERRA
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
                 param_named OcclusionTex   int 4
-                param_named SSrTex         int 5
+                param_named DepthTex       int 5
                 param_named ShadowTex      int 6
                 param_named_auto TexSize0 packed_texture_size 0
                 param_named_auto TexSize1 packed_texture_size 1

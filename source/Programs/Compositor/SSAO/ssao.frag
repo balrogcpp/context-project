@@ -82,7 +82,7 @@ void main()
     // considering this is just for bias, this loss is acceptable
     vec3 normal = unpack(texture2D(NormalTex, vUV0).y);
 
-    if(clampedPixelDepth > 0.5 || Null(normal)) {
+    if(normal == vec3(0.0, 0.0, 0.0) || clampedPixelDepth > 0.5) {
         FragColor.r = 1.0;
         return;
     }

@@ -457,10 +457,10 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       tex->setCompositorReference("MRT", "ao");
     }
   }
-  if (auto *tex = pass->getTextureUnitState("SSR")) {
+  if (auto *tex = pass->getTextureUnitState("Depth")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "ssr");
+      tex->setCompositorReference("MRT", "depth");
     }
   }
   if (auto *tex = pass->getTextureUnitState("RefractionTex")) {
@@ -490,9 +490,9 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
 
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);
-  fp->setNamedConstant("WorldViewProjPrev",  viewProjPrev * MVP);
-  fp->setNamedConstant("WorldViewProjMatrix",  viewProj * MVP);
-  fp->setNamedConstant("StaticObj",  0.0f);
+  fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
+  fp->setNamedConstant("WorldViewProjMatrix", viewProj * MVP);
+  fp->setNamedConstant("StaticObj", 0.0f);
 
   // apply for dynamic entities only
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
@@ -506,7 +506,7 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       if (prevMVP.has_value()) {
         fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
         fp->setNamedConstant("WorldViewProjMatrix", viewProj * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-        fp->setNamedConstant("StaticObj",  1.0f);
+        fp->setNamedConstant("StaticObj", 1.0f);
       }
     }
   }
