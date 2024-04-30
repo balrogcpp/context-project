@@ -66,7 +66,7 @@ material Water
                 param_named CameraDepthTex int 2
                 param_named NormalTex int 3
                 param_named CausticTex int 4
-                param_named FoamTex int 5
+                //param_named FoamTex int 5
             }
 
             texture_unit ReflectionTex

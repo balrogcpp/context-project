@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
 import RayCast from stdquad.material
+import Filter from filters.material
 
 fragment_program ssao glsl glsles hlsl
 {
@@ -34,3 +35,44 @@ material SSAO : RayCast
         }
     }
 }
+
+fragment_program ssaoy glsl glsles hlsl
+{
+	source ssaoy.frag
+}
+
+fragment_program ssaox glsl glsles hlsl
+{
+	source ssaox.frag
+}
+
+material SSAOY : Filter
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref ssaoy
+			{
+                param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
+			}
+		}
+	}
+}
+
+material SSAOX : Filter
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref ssaox
+            {
+                param_named RT int 0
+                param_named_auto TexelSize inverse_texture_size 0
+            }
+		}
+	}
+}
+

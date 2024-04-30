@@ -25,8 +25,10 @@ void main()
 #endif
 
     color = SRGBtoLINEAR(color);
+#ifdef FORCE_FOG
     color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w);
     //color = ApplyFog(color, FogParams.x, FogColour.rgb, gl_FragCoord.z / gl_FragCoord.w, vVec, WorldSpaceLightPos0.xyz, CameraPosition);
+#endif
 
     EvaluateBuffer(vec4(color, alpha));
 }

@@ -19,10 +19,9 @@ uniform sampler2D EmissiveTex;
 #endif
 #ifdef HAS_AO
 uniform sampler2D OcclusionTex;
-uniform sampler2D DepthTex;
 #endif
 #ifdef HAS_SSR
-uniform sampler2D SSrTex;
+uniform sampler2D SSR;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
 uniform sampler2D ShadowTex;
@@ -544,17 +543,18 @@ void main()
     vec4 fragPosPrev = mul(WorldViewProjPrev, vec4(vPosition1, 1.0));
     fragPosPrev.xyz /= fragPosPrev.w;
     vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
-    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    float ao = 1.0;
 #ifdef GL_ES
     // magic fix for GLES
     fragVelocity *= ViewportSize.zw;
 #endif
+#if defined(HAS_AO) || defined(HAS_SSR)
+    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
+    vec2 nuv = fragCoord.xy + fragVelocity.xy;
+    float dDepth = (clampedDepth - texture2D(OcclusionTex, nuv).g);
+#endif
 #ifdef HAS_AO
-    float ao = texture2D(OcclusionTex, fragCoord.xy + fragVelocity.xy).r;
-    float dDepth = (clampedDepth - texture2D(DepthTex, fragCoord.xy + fragVelocity.xy).r);
-    if (dDepth > 0.001) ao = 1.0;
-#else
-    const float ao = 1.0;
+    if (dDepth <= 0.001) ao = texture2D(OcclusionTex, nuv).r;
 #endif
 
     // Roughness is authored as perceptual roughness; as is convention,
@@ -585,10 +585,11 @@ void main()
     material.reflection = -normalize(reflect(v, n));
 
     vec3 color = vec3(0.0, 0.0, 0.0);
+
 #if MAX_LIGHTS > 0
     color += EvaluateIBL(material);
 #ifdef HAS_SSR
-    vec3 ssr = texture2D(SSrTex, fragCoord.xy + fragVelocity.xy).rgb;
+    vec3 ssr = texture2D(SSR, nuv).rgb;
     if (Any(ssr)) color = mix(color, ssr, metallic);
 #endif
 
@@ -614,7 +615,7 @@ void main()
 
 #else
     color += 3.0 * SurfaceAmbientColour.rgb * AmbientLightColour.rgb * albedo;
-#endif
+#endif // MAX_LIGHTS > 0
     color += emission;
 
 #ifdef FORCE_FOG

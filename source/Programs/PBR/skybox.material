@@ -43,7 +43,7 @@ material SkyBox
 
 			fragment_program_ref SkyBoxFp
 			{
-			    param_named StarsTex int 0
+			    //param_named StarsTex int 0
 			}
 
             texture_unit StarsTex

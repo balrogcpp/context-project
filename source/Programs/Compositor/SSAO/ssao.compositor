@@ -8,10 +8,10 @@ compositor SSAO
         texture_ref mrt MRT mrt
         texture_ref ao MRT ao
         texture_ref depth MRT depth
-        texture ssaoOld target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ssaox target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_GR no_fsaa depth_pool 0
+        texture ssaox target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_GR no_fsaa depth_pool 0
 
-        target ssaoOld
+        target ssao
         {
             pass render_quad
             {
@@ -27,8 +27,8 @@ compositor SSAO
         {
             pass render_quad
             {
-                material Filter9X
-                input 0 ssaoOld
+                material SSAOX
+                input 0 ssao
             }
         }
 
@@ -36,7 +36,7 @@ compositor SSAO
         {
             pass render_quad
             {
-                material Filter9Y
+                material SSAOY
                 input 0 ssaox
             }
         }

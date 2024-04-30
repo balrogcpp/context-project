@@ -457,10 +457,10 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       tex->setCompositorReference("MRT", "ao");
     }
   }
-  if (auto *tex = pass->getTextureUnitState("Depth")) {
+  if (auto *tex = pass->getTextureUnitState("SSR")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "depth");
+      tex->setCompositorReference("MRT", "ssr");
     }
   }
   if (auto *tex = pass->getTextureUnitState("RefractionTex")) {

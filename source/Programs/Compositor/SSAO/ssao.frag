@@ -36,21 +36,20 @@ float pow10(float x)
     return x4 * x4 * x2;
 }
 
-#define MAX_RAND_SAMPLES 14
-#define RADIUS 0.105
 
+in highp vec2 vUV0;
+in highp vec3 vRay;
+void main()
+{
+    #define MAX_RAND_SAMPLES 14
+    #define RADIUS 0.105
+    #define INVSQ3 0.57735026918962576451
 #ifndef GL_ES
     #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
 #else
     #define NUM_BASE_SAMPLES 6
 #endif
 
-#define INVSQ3 0.57735026918962576451
-
-in highp vec2 vUV0;
-in highp vec3 vRay;
-void main()
-{
     const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
         vec3[](
         vec3(1.0, 0.0, 0.0),
@@ -80,7 +79,7 @@ void main()
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    vec3 normal = unpack(texture2D(NormalTex, vUV0).y);
+    vec3 normal = unpack(texture2D(NormalTex, vUV0).y) * 2.0 - 1.0;
 
     if(normal == vec3(0.0, 0.0, 0.0) || clampedPixelDepth > 0.5) {
         FragColor.r = 1.0;
@@ -88,7 +87,7 @@ void main()
     }
 
     // Accumulated occlusion factor
-    float occlusion = 0.0;
+    float occ = 0.0;
     for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
         // Reflected direction to move in for the sphere
         // (based on random samples and a random texture sample)
@@ -107,13 +106,13 @@ void main()
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occlusion += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
+        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
     }
 
     // normalise
-    occlusion /= float(NUM_BASE_SAMPLES);
-    occlusion = sqrt(occlusion * occlusion * occlusion);
+    occ /= float(NUM_BASE_SAMPLES);
+    occ = sqrt(occ * occ * occ);
 
     // amplify and saturate if necessary
-    FragColor.r = occlusion;
+    FragColor.rg = vec2(occ, clampedPixelDepth);
 }
