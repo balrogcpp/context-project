@@ -132,8 +132,6 @@ std::string FindPath(const std::string &path, int depth = 0) {
 }
 
 void ScanLocation(const string &path, const string &groupName) {
-  const char *FILE_SYSTEM = "FileSystem";
-  const char *ZIP = "Zip";
   std::vector<std::string> resourceList;
 
   if (!fs::is_directory(path)) {
@@ -141,16 +139,16 @@ void ScanLocation(const string &path, const string &groupName) {
     return;
   }
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
-  ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
+  ogreResourceManager.addResourceLocation(path, "FileSystem", groupName);
 
   for (fs::recursive_directory_iterator end, it(path); it != end; ++it) {
     const std::string fullPath = it->path().string();
     const std::string fileExtention = it->path().filename().extension().string();
 
     if (it->is_directory())
-      ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
+      ogreResourceManager.addResourceLocation(fullPath, "FileSystem", groupName);
     else if (it->is_regular_file() && (fileExtention == ".bin" || fileExtention == ".zip"))
-      ogreResourceManager.addResourceLocation(fullPath, ZIP, groupName);
+      ogreResourceManager.addResourceLocation(fullPath, "Zip", groupName);
   }
 }
 #endif  // DESKTOP
