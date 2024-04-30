@@ -52,8 +52,8 @@ void main()
         if (int(nSamples) <= i) break;
 
         vec2 offset = (float(i) * invSamples - 0.5) * velocity;
-        float ddepth = abs(texture2D(DepthTex, vUV0 + offset).r - depth);
-        if (ddepth > 0.001) break;
+        float dDepth = (depth - texture2D(DepthTex, vUV0 + offset).r);
+        if (dDepth > 0.001) break;
         color += texture2D(RT, vUV0 + offset).rgb;
         counter += 1.0;
     }
