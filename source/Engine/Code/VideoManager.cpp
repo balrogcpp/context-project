@@ -193,11 +193,15 @@ void VideoManager::LoadResources() {
   archiveManager.addArchiveFactory(new Ogre::APKZipArchiveFactory(assetManager));
 #endif
 
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
-  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
-  Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
-  auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
+  if (!RenderSystemIsGLES2()) {
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
+    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
+  } else {
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
+  }
 
+  auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   const char *APKZIP = "APKZip";
@@ -306,6 +310,9 @@ void VideoManager::CheckGPU() {
   const auto *ogreRenderSystem = ogreRoot->getRenderSystem();
   const auto *ogreRenderCapabilities = ogreRenderSystem->getCapabilities();
   const auto *ogreRenderSystemCommon = dynamic_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_PROGRAM), "Vertex shader support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_FRAGMENT_PROGRAM), "Fragment shader support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_3D), "3D texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
@@ -314,11 +321,16 @@ void VideoManager::CheckGPU() {
   if (RenderSystemIsGL3()) {
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_AUTOMIPMAP_COMPRESSED), "DXT compression support required");
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_ANISOTROPY), "DXT compression support required");
   }
 #elif defined(ANDROID)
-  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+  if (RenderSystemIsGLES2()) {
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+  }
 #elif defined(IOS)
-  ASSERTION(ogreRenderCapabilities->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
+  if (RenderSystemIsGLES2()) {
+    ASSERTION(ogreRenderCapabilities->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
+  }
 #endif
   if (RenderSystemIsGL3()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
@@ -500,7 +512,6 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 
     } else {
       Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
-
     }
   }
 };

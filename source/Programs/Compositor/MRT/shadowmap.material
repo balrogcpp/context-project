@@ -7,13 +7,6 @@ fragment_program shadowmap glsl glsles hlsl
 	source shadowmap.frag
 }
 
-sampler ShadowMap
-{
-    filtering none
-    tex_address_mode border
-    tex_border_colour 1 1 1 1
-}
-
 material ShadowMap
 {
     technique

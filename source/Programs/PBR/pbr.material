@@ -1,19 +1,19 @@
 // created by Andrey Vasiliev
 
-sampler PbrTex
+sampler PBR
 {
     filtering anisotropic
     max_anisotropy 1
     tex_address_mode wrap
 }
-sampler CubeTex
+sampler CubeMap
 {
     filtering bilinear
     tex_address_mode clamp
 }
-sampler ShadowTex
+sampler ShadowMap
 {
-    filtering bilinear
+    filtering none
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
@@ -57,12 +57,10 @@ abstract material Unlit
             texture_unit Albedo
             {
                 texture $Albedo
-                sampler_ref PbrTex
             }
             texture_unit Emissive
             {
                 texture $Emissive
-                sampler_ref PbrTex
             }
 
             vertex_program_ref Unlit_vs {}
@@ -105,22 +103,18 @@ abstract material PBR
             texture_unit Albedo
             {
                 texture $Albedo
-                sampler_ref PbrTex
             }
             texture_unit Normal
             {
                 texture $Normal
-                sampler_ref PbrTex
             }
             texture_unit ORM
             {
                 texture $ORM
-                sampler_ref PbrTex
             }
             texture_unit Emissive
             {
                 texture $Emissive
-                sampler_ref PbrTex
             }
             texture_unit AO
             {
@@ -135,7 +129,7 @@ abstract material PBR
             texture_unit ShadowAtlas
             {
                 texture white.dds
-                sampler_ref ShadowTex
+                sampler_ref ShadowMap
             }
 
             vertex_program_ref PBR_vs {}
@@ -168,7 +162,7 @@ abstract material IBL : PBR
             texture_unit IBL
             {
                 texture $IBL cubic
-                sampler_ref CubeTex
+                sampler_ref CubeMap
             }
 
             vertex_program_ref IBL_vs {}
@@ -231,12 +225,10 @@ abstract material TERRA
             texture_unit Albedo
             {
                 texture $Albedo
-                sampler_ref PbrTex
             }
             texture_unit Normal
             {
                 texture $Normal
-                sampler_ref PbrTex
             }
             texture_unit TerraNormal
             {
@@ -263,7 +255,7 @@ abstract material TERRA
             texture_unit ShadowAtlas
             {
                 texture white.dds
-                sampler_ref ShadowTex
+                sampler_ref ShadowMap
             }
 
             vertex_program_ref TERRA_vs {}
