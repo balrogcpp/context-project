@@ -36,13 +36,12 @@ float pow10(float x)
     return x4 * x4 * x2;
 }
 
-
 in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
     #define MAX_RAND_SAMPLES 14
-    #define RADIUS 0.105
+    #define RADIUS 0.21 // 0.105
     #define INVSQ3 0.57735026918962576451
 #ifndef GL_ES
     #define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
@@ -79,7 +78,7 @@ void main()
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    vec3 normal = unpack(texture2D(NormalTex, vUV0).y) * 2.0 - 1.0;
+    vec3 normal = unpack(texture2D(NormalTex, vUV0).y);
 
     if(normal == vec3(0.0, 0.0, 0.0) || clampedPixelDepth > 0.5) {
         FragColor.r = 1.0;
