@@ -22,8 +22,8 @@
 #define PSSM_GLOBAL_RANGE 64.0
 #define MRT_COLOR 0
 #define MRT_DEPTH 1
-#define MRT_VELOCITY 2
-#define MAX_MRT_TEXTURES 3
+//#define MRT_VELOCITY 2
+#define MAX_MRT_TEXTURES 2
 
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300

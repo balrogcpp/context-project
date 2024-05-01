@@ -4,11 +4,6 @@
 #define MRT_GLSL
 #ifdef OGRE_FRAGMENT_SHADER
 
-#ifdef HAS_MRT
-uniform float FarClipDistance;
-uniform float NearClipDistance;
-#endif
-
 #ifdef FORCE_TONEMAP
 #include "tonemap.glsl"
 #endif
@@ -83,7 +78,7 @@ vec3 unpack(float f)
     return decode(UnPackFloat16bit2(f));
 }
 
-void EvaluateBuffer(const vec4 color)
+void EvaluateBuffer(const vec4 color, float depth)
 {
 #ifdef FORCE_TONEMAP
     FragColor = SafeHDR(vec4(unreal(color.rgb), color.a));
@@ -92,11 +87,13 @@ void EvaluateBuffer(const vec4 color)
 #endif
 
 #ifdef HAS_MRT
-    FragData[MRT_DEPTH].r = (gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance);
+#ifdef MRT_DEPTH
+    FragData[MRT_DEPTH].r = depth;
+#endif
 #endif
 }
 
-void EvaluateBuffer(const vec4 color, const vec3 normal, const vec2 velocity, float roughness)
+void EvaluateBuffer(const vec4 color, float depth, const vec3 normal, const vec2 velocity)
 {
 #ifdef FORCE_TONEMAP
     FragColor = SafeHDR(vec4(unreal(color.rgb), color.a));
@@ -105,8 +102,12 @@ void EvaluateBuffer(const vec4 color, const vec3 normal, const vec2 velocity, fl
 #endif
 
 #ifdef HAS_MRT
-    FragData[MRT_DEPTH].rg = vec2((gl_FragCoord.z / gl_FragCoord.w - NearClipDistance) / (FarClipDistance - NearClipDistance), pack(normal));
-    FragData[MRT_VELOCITY].rgb = vec3(velocity, roughness);
+#ifdef MRT_DEPTH
+    FragData[MRT_DEPTH].rg = vec2(depth, pack(normal));
+#endif
+#ifdef MRT_VELOCITY
+    FragData[MRT_VELOCITY].rg = vec2(velocity);
+#endif
 #endif
 }
 

@@ -63,7 +63,7 @@ material Water
             {
                 param_named ReflectionTex int 0
                 param_named RefractionTex int 1
-                param_named CameraDepthTex int 2
+                param_named DepthTex int 2
                 param_named NormalTex int 3
                 param_named CausticTex int 4
                 //param_named FoamTex int 5
@@ -97,11 +97,11 @@ material Water
                 texture water-normal2.dds
                 filtering bilinear
             }
-            texture_unit FoamTex
+            /*texture_unit FoamTex
             {
                 texture water-foam.dds
                 filtering bilinear
-            }
+            }*/
         }
     }
 }

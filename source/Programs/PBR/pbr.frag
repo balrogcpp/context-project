@@ -44,8 +44,8 @@ uniform vec4 TexSize4;
 uniform vec4 TexSize5;
 uniform vec4 TexSize6;
 uniform vec3 IBL[9];
-//uniform float FarClipDistance;
-//uniform float NearClipDistance;
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 uniform highp mat4 ViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
@@ -540,6 +540,7 @@ void main()
     vec4 fragPos = mul(WorldViewProjMatrix, vec4(vPosition1, 1.0));
     fragPos.xyz /= fragPos.w;
     fragDepth = gl_FragCoord.z / gl_FragCoord.w;
+    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     vec4 fragPosPrev = mul(WorldViewProjPrev, vec4(vPosition1, 1.0));
     fragPosPrev.xyz /= fragPosPrev.w;
     vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
@@ -549,7 +550,6 @@ void main()
     fragVelocity *= ViewportSize.zw;
 #endif
 #if defined(HAS_AO) || defined(HAS_SSR)
-    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     vec2 nuv = fragCoord.xy + fragVelocity.xy;
     float dDepth = (clampedDepth - texture2D(OcclusionTex, nuv).g);
 #endif
@@ -626,5 +626,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), mul(ViewMatrix, vec4(n, 0.0)).xyz, StaticObj * fragVelocity.xy, roughness);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, mul(ViewMatrix, vec4(n, 0.0)).xyz, StaticObj * fragVelocity.xy);
 }

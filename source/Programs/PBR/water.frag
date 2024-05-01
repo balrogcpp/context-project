@@ -7,7 +7,7 @@
 
 uniform sampler2D ReflectionTex;
 uniform sampler2D RefractionTex;
-uniform sampler2D CameraDepthTex;
+uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
 uniform sampler2D CausticTex;
 uniform sampler2D FoamTex;
@@ -15,8 +15,8 @@ uniform sampler2D FoamTex;
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform vec4 ViewportSize;
-//uniform float FarClipDistance;
-//uniform float NearClipDistance;
+uniform float FarClipDistance;
+uniform float NearClipDistance;
 uniform float Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
@@ -98,7 +98,8 @@ void main()
 
     bool aboveWater = gl_FrontFacing;
 
-    float normalFade = 1.0 - min(exp(-gl_FragCoord.z / gl_FragCoord.w / 40.0), 1.0);
+    float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
+    float normalFade = 1.0 - min(exp(-fragDepth / 40.0), 1.0);
 
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
     vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
@@ -158,18 +159,18 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = texture2D(CameraDepthTex, fragCoord - refrOffset * 0.9).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
-    highp float surfaceDepth = gl_FragCoord.z / gl_FragCoord.w;
+    float refractedDepth = texture2D(DepthTex, fragCoord - refrOffset * 0.9).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    highp float surfaceDepth = fragDepth;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
-    vec3 refraction;
 #ifndef GL_ES
+    vec3 refraction;
     refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
     refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
     refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
 #else
-    refraction = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
+    vec3 refraction = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
 #endif
 #ifdef FORCE_TONEMAP
     refraction = SRGBtoLINEAR(refraction);
@@ -304,5 +305,5 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 #endif
 
-    EvaluateBuffer(vec4(color, 1.0), mul(ViewMatrix, vec4(lNormal, 0.0)).xyz, vec2(0.0, 0.0), 0.0);
+    EvaluateBuffer(vec4(color, 1.0), (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), mul(ViewMatrix, vec4(lNormal, 0.0)).xyz, vec2(0.0, 0.0));
 }

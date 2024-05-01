@@ -76,6 +76,7 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Viewport* viewport = nullptr;
   Ogre::Vector4 pssmPoints;
   Ogre::Vector4 pssmPointsPrev;
+  float hosekParamsArray[10 * 3];
   bool pssmChanged;
 };
 

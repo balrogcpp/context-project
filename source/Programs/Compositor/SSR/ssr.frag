@@ -94,8 +94,8 @@ void main()
     }
 
     vec3 viewPos = vRay * clampedPixelDepth;
-    //float jitter = float(int(gl_FragCoord.x + gl_FragCoord.y) & 1) * 0.5;
-    vec3 jitter = hash(gl_FragCoord.xyz) * roughness * JITT_SCALE;
+    //float jitter = float(int(viewPos.x + viewPos.y) & 1) * 0.5;
+    vec3 jitter = hash(viewPos.xyz) * roughness * JITT_SCALE;
 
     // Reflection vector
     vec3 hitPoint = viewPos;

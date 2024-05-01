@@ -97,7 +97,7 @@ void CompositorManager::OnUpdate(float time) {
   auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
   auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
-  float hosekParamsArray[10 * 3];
+
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
   fp->setNamedConstant("HosekParams", hosekParamsArray, 10 * 3);
@@ -152,16 +152,16 @@ void CompositorManager::OnSetUp() {
   rt->removeAllViewports();
   rt->addViewport(cubeCamera);
   rt->addListener(this);
-  AddCompositor("CubeMapSky", true);
-  auto *rt1 = compositorChain->getCompositor("CubeMapSky")->getRenderTarget("cube");
-  rt1->removeAllViewports();
-  rt1->addViewport(cubeCamera);
-  rt1->addListener(this);
+  //  AddCompositor("CubeMapSky", true);
+  //  auto *rt1 = compositorChain->getCompositor("CubeMapSky")->getRenderTarget("cube");
+  //  rt1->removeAllViewports();
+  //  rt1->addViewport(cubeCamera);
+  //  rt1->addListener(this);
 
   AddCompositor("MRT", true);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
   AddCompositor("SSR", false);
-  AddCompositor("KinoFog", false);
+//  AddCompositor("KinoFog", false);
   AddCompositor("Glow", !RenderSystemIsGLES2());
   AddCompositor("GodRays", !RenderSystemIsGLES2());
   AddCompositor("HDR", !RenderSystemIsGLES2());

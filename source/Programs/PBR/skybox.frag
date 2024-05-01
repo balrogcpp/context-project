@@ -31,7 +31,7 @@ void main()
     color = SRGBtoLINEAR(color);
 
     if (gamma <= 2.0 * M_PI / 360.0 && sunZenith > 0.0) {
-        color = mix(color, LightColor0 * 100.0, 0.1);
+        color = LightColor0 * 10.0;
     }
 
 //    color += starfield(vUV0, -LightDir0, Time);
@@ -40,6 +40,5 @@ void main()
     // Fog
     color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
-    EvaluateBuffer(vec4(color, 1.0));
-    FragData[MRT_DEPTH].x = 0.99;
+    EvaluateBuffer(vec4(color, 1.0), 0.999);
 }
