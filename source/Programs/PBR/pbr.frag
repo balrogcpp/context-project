@@ -589,8 +589,9 @@ void main()
 #if MAX_LIGHTS > 0
     color += EvaluateIBL(material);
 #ifdef HAS_SSR
-    vec3 ssr = texture2D(SSR, nuv).rgb;
-    if (Any(ssr)) color = mix(color, ssr, metallic);
+    vec3 ssr = vec3(0.0, 0.0, 0.0);
+    if (dDepth <= 0.001) ssr = texture2D(SSR, nuv).rgb;
+    if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, metallic);
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0

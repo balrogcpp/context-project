@@ -350,6 +350,10 @@ void OverlayManager::OnUpdate(float time) {
     GetComponent<CompositorManager>().EnableCompositor("GodRays", compositorFlags[4]);
   }
 
+  if (ImGui::Checkbox("HDR", &compositorFlags[5])) {
+    GetComponent<CompositorManager>().EnableCompositor("HDR", compositorFlags[5]);
+  }
+
   ImGui::EndChild();
   ImGui::PopFont();
 

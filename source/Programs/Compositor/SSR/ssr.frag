@@ -12,10 +12,9 @@
 #define LLIMITER 0.1
 #define MIN_RAY_STEP 0.2
 
+uniform sampler2D ColorTex;
 uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
-uniform sampler2D GlossTex;
-uniform sampler2D ColorTex;
 uniform mat4 ProjMatrix;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
@@ -82,20 +81,17 @@ in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    vec2 gloss = texture2D(GlossTex, vUV0).rg;
-    float metallic = gloss.r;
-    float roughness = gloss.g;
-    float clampedPixelDepth = texture2D(DepthTex, vUV0).x;
-    vec3 normal = texture2D(NormalTex, vUV0).xyz;
+    float clampedPixelDepth = texture2D(NormalTex, vUV0).x;
+    vec3 normal = unpack(texture2D(NormalTex, vUV0).y);
 
-    if (normal == vec3(0.0, 0.0, 0.0) || metallic < HALF_EPSILON) {
+    if (normal == vec3(0.0, 0.0, 0.0)) {
         FragColor.rgb = texture2D(ColorTex, vUV0).rgb;
         return;
     }
 
     vec3 viewPos = vRay * clampedPixelDepth;
-    //float jitter = float(int(viewPos.x + viewPos.y) & 1) * 0.5;
-    vec3 jitter = hash(viewPos.xyz) * roughness * JITT_SCALE;
+    float jitter = float(int(viewPos.x + viewPos.y) & 1) * 0.5;
+//    vec3 jitter = hash(viewPos.xyz) * roughness * JITT_SCALE;
 
     // Reflection vector
     vec3 hitPoint = viewPos;
