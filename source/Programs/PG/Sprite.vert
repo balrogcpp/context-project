@@ -3,7 +3,7 @@
 #include "header.glsl"
 
 uniform highp mat4 WorldViewProjMatrix;
-uniform highp mat4 WorldViewProjPrev;
+uniform highp mat4 WorldMatrix;
 #ifdef FADE
 uniform vec3  camPos;
 uniform float fadeGap;
@@ -17,9 +17,10 @@ in highp vec4 vertex;
 in highp vec4 normal;
 in highp vec4 colour;
 in highp vec4 uv0;
+
+out highp vec3 vPosition;
 out vec4 oUV;
 out vec4 oColour;
-out float oFogCoord;
 void main()
 {
     //Face the camera
@@ -27,6 +28,9 @@ void main()
 	vec4 vScale = vec4( normal.x, normal.y, normal.x , 1.0 );
 	vec4 position = vCenter + (preRotatedQuad[int(normal.z)] * vScale);
 	gl_Position = mul(WorldViewProjMatrix, position);
+
+    highp vec4 world = mul(WorldMatrix, position);
+    vPosition = world.xyz / world.w;
 
 	//Color
 	oColour = colour;
@@ -41,7 +45,4 @@ void main()
 	oUV = uv0;
 	oUV.x += uScroll;
 	oUV.y += vScroll;
-
-    //Fog
-	oFogCoord = gl_Position.z;
 }

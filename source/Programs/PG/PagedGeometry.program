@@ -6,6 +6,7 @@ vertex_program Sprite_vp glsl glsles hlsl
     default_params
     {
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
+        param_named_auto WorldMatrix world_matrix
     }
 }
 
@@ -19,6 +20,7 @@ vertex_program SpriteFade_vp glsl glsles hlsl
     default_params
     {
         param_named_auto WorldViewProjMatrix worldviewproj_matrix
+        param_named_auto WorldMatrix world_matrix
         param_named_auto camPos camera_position_object_space
     }
 }
@@ -32,6 +34,8 @@ fragment_program Default_AlphaTest glsl glsles hlsl
 
     default_params
     {
+        param_named_auto CameraPosition camera_position
+        param_named_auto LightDir0 light_direction 0
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
         param_named_auto FarClipDistance far_clip_distance
