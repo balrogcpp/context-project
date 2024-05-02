@@ -44,7 +44,6 @@ fragment_program godrays glsl glsles hlsl
 
     default_params
     {
-        param_named RayCount int 100
         param_named Decay float 0.96815
         param_named Exposure float 0.0034
         param_named Density float 0.84
@@ -88,6 +87,7 @@ material GodraysMOD : STD
             {
                 param_named RT int 0
                 param_named FBO int 1
+                param_named_auto TexelSize inverse_texture_size 1
             }
 
             texture_unit RT
@@ -96,7 +96,6 @@ material GodraysMOD : STD
                 tex_address_mode clamp
                 filtering none
             }
-
             texture_unit FBO
             {
                 texture black.dds

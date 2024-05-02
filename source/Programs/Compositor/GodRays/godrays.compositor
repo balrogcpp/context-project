@@ -15,7 +15,7 @@ compositor GodRays : STD
             {
                 material GodraysFBO
                 input 0 rt
-                input 1 mrt 1
+                input 1 depth
             }
         }
 

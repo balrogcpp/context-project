@@ -12,6 +12,7 @@ compositor Glow : STD
         texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt7 target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
         texture _rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture _rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
@@ -20,12 +21,23 @@ compositor Glow : STD
         texture _rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture _rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
 
+        texture _rt1_ target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt2_ target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt3_ target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt4_ target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        texture rt_ target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt_1 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt_2 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt_3 target_width target_height PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
         target rt1
         {
             pass render_quad
             {
                 material GlowFBO
                 input 0 rt
+                input 1 depth
             }
         }
 
@@ -74,6 +86,24 @@ compositor Glow : STD
             }
         }
 
+        target rt7
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt6
+            }
+        }
+
+        target _rt6
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 rt7
+            }
+        }
+
         target _rt5
         {
             pass render_quad
@@ -119,13 +149,59 @@ compositor Glow : STD
             }
         }
 
-        target_output
+        target rt_
         {
             pass render_quad
             {
                 material GlowMod
                 input 0 rt
                 input 1 _rt1
+            }
+        }
+
+        target _rt4_
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 rt5
+            }
+        }
+
+        target _rt3_
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt4_
+            }
+        }
+
+        target _rt2_
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt3_
+            }
+        }
+
+        target _rt1_
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt2_
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material GlowMod
+                input 0 rt_
+                input 1 _rt1_
             }
         }
     }

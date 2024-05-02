@@ -30,7 +30,7 @@ in highp vec2 vUV0;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;
-    vec3 fbo = texture2D(FBO, vUV0).rgb;
+    vec3 fbo = Upscale9(FBO, vUV0, TexelSize).rgb;
 
     FragColor.rgb = SafeHDR(color + fbo / 6.0);
 }
