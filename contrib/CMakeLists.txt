@@ -139,6 +139,7 @@ externalproject_add(Target_SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
         GIT_TAG release-2.30.3
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -184,6 +185,7 @@ externalproject_add(Target_OIS
         GIT_REPOSITORY https://github.com/wgois/OIS.git
         GIT_TAG v1.5.1
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
@@ -214,6 +216,7 @@ externalproject_add(Target_Bullet
         GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
         GIT_TAG 3.25
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -273,6 +276,7 @@ externalproject_add(Target_OpenAL
         GIT_REPOSITORY https://github.com/kcat/openal-soft.git
         GIT_TAG 1.23.1
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -320,6 +324,7 @@ externalproject_add(Target_Ogg
         GIT_REPOSITORY https://github.com/xiph/ogg.git
         GIT_TAG v1.3.5
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -358,6 +363,7 @@ externalproject_add(Target_Vorbis
         GIT_REPOSITORY https://github.com/xiph/vorbis.git
         GIT_TAG v1.3.7
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -427,6 +433,7 @@ externalproject_add(Target_FreeType
         GIT_REPOSITORY https://github.com/freetype/freetype.git
         GIT_TAG VER-2-13-2
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -471,6 +478,7 @@ externalproject_add(Target_zlib
         GIT_REPOSITORY https://github.com/madler/zlib.git
         GIT_TAG v1.3.1
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -511,6 +519,7 @@ externalproject_add(Target_ZZIP
         GIT_REPOSITORY https://github.com/gdraheim/zziplib.git
         GIT_TAG v0.13.74
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
@@ -550,6 +559,7 @@ externalproject_add(Target_assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
         GIT_TAG v5.4.0
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -651,6 +661,7 @@ externalproject_add(Target_imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
         GIT_TAG v1.90.4
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -676,6 +687,7 @@ externalproject_add(Target_pugixml
         GIT_REPOSITORY https://github.com/zeux/pugixml.git
         GIT_TAG v1.14
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -709,6 +721,7 @@ externalproject_add(Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
         GIT_TAG v14.2.4
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -944,6 +957,7 @@ externalproject_add(Target_sol2
         GIT_REPOSITORY https://github.com/ThePhD/sol2.git
         GIT_TAG v3.3.0
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -984,6 +998,7 @@ externalproject_add(Target_LibreSSL
         GIT_REPOSITORY https://github.com/PowerShell/LibreSSL.git
         GIT_TAG V3.8.2.0
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -1022,6 +1037,7 @@ externalproject_add(Target_cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
         GIT_TAG 1.10.5
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -1058,6 +1074,7 @@ externalproject_add(Target_sqlite
         GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
         GIT_TAG 3.3.1
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -1102,6 +1119,7 @@ externalproject_add(Target_enet
         GIT_REPOSITORY https://github.com/lsalzman/enet.git
         GIT_TAG v1.3.17
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -1160,6 +1178,7 @@ externalproject_add(Target_protoc
         GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
         GIT_TAG v25.3
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
@@ -1201,6 +1220,7 @@ externalproject_add(Target_protobuf
         GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
         GIT_TAG v25.3
         GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
