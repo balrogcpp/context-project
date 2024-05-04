@@ -43,7 +43,6 @@ uniform vec4 TexSize3;
 uniform vec4 TexSize4;
 uniform vec4 TexSize5;
 uniform vec4 TexSize6;
-uniform vec3 IBL[9];
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 uniform highp mat4 ViewMatrix;
@@ -175,30 +174,15 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
     return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
 }
 
-// https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
-vec3 Irradiance_SphericalHarmonics(const vec3 n) {
-    return max(
-        IBL[0]
-        + IBL[1] * (n.y)
-        + IBL[2] * (n.z)
-        + IBL[3] * (n.x)
-        + IBL[4] * (n.y * n.x)
-        + IBL[5] * (n.y * n.z)
-        + IBL[6] * (3.0 * n.z * n.z - 1.0)
-        + IBL[7] * (n.z * n.x)
-        + IBL[8] * (n.x * n.x - n.y * n.y)
-        , 0.0);
-}
-
 #ifdef HAS_IBL
 vec3 DiffuseIrradiance(const vec3 n)
 {
-    return textureCube(SpecularEnvTex, vec3(n.x, -n.y, -n.z)).rgb;
+    return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, n.z), 6.0).rgb);
 }
 
-vec3 GetIblSpecularColor(const vec3 n)
+vec3 GetIblSpecularColor(const vec3 n, float roughness)
 {
-    return LINEARtoSRGB(LINEARtoSRGB(textureCube(SpecularEnvTex, vec3(n.x, -n.y, -n.z)).rgb));
+    return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), roughness * 6.0).rgb);
 }
 #endif // HAS_IBL
 
@@ -244,8 +228,8 @@ vec3 EvaluateIBL(const PBRInfo material)
     float specularAO = computeSpecularAO(material.NdotV, diffuseAO, material.perceptualRoughness);
 
 #ifdef HAS_IBL
-    vec3 diffuseLight = Irradiance_SphericalHarmonics(material.reflection);
-    vec3 specularLight = GetIblSpecularColor(material.reflection);
+    vec3 diffuseLight = DiffuseIrradiance(material.reflection);
+    vec3 specularLight = GetIblSpecularColor(material.reflection, material.perceptualRoughness);
 #else
     const vec3 diffuseLight = vec3(1.0, 1.0, 1.0);
     vec3 specularLight = diffuseLight;

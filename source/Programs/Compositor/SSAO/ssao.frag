@@ -71,7 +71,7 @@ void main()
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
     float clampedPixelDepth = texture2D(NormalTex, vUV0).x;
-    float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance);
+    float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
     vec3 viewPos = vRay * clampedPixelDepth;
     float invDepth = 1.0 - clampedPixelDepth;
     vec3 randN = hash(viewPos.xyz) * invDepth * invDepth;
@@ -100,7 +100,7 @@ void main()
 
         // Compute occlusion based on the (scaled) Z difference
         float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
-        float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance);
+        float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
         float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * fstep(clampedSampleDepth, oSample.z);
 
         // This is a sample occlusion function, you can always play with

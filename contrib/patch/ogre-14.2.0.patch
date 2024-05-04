@@ -180,6 +180,21 @@ index 5e06c1945..ee4cf91e9 100644
          }
      };
      
+diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
+index 6de573e0f..3ebf9fbb5 100644
+--- a/OgreMain/src/OgreCompositor.cpp
++++ b/OgreMain/src/OgreCompositor.cpp
+@@ -237,8 +237,8 @@ void Compositor::createGlobalTextures()
+                 TexturePtr tex;
+                 tex = TextureManager::getSingleton().createManual(
+                     texName, 
+-                    ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME, TEX_TYPE_2D, 
+-                    (uint)def->width, (uint)def->height, 0, def->formatList[0], TU_RENDERTARGET, 0,
++                    ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME, def->type,
++                    (uint)def->width, (uint)def->height, -1, def->formatList[0], TU_RENDERTARGET | TU_AUTOMIPMAP, 0,
+                     def->hwGammaWrite && !PixelUtil::isFloatingPoint(def->formatList[0]), def->fsaa); 
+                 
+ 
 diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
 index dc4684669..17bf6854c 100644
 --- a/OgreMain/src/OgreRoot.cpp

@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
-#ifndef HOSEK_GLSL
-#define HOSEK_GLSL
+#ifndef HOSEKGPU_GLSL
+#define HOSEKGPU_GLSL
 
 // https://www.shadertoy.com/view/wslfD7
 // https://www.shadertoy.com/view/wdlBRS

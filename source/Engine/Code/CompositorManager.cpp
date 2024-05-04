@@ -144,19 +144,15 @@ void CompositorManager::OnSetUp() {
   cubeCamera = sceneManager->createCamera("CubeCamera");
   cubeCamera->setFOVy(Ogre::Degree(90.0));
   cubeCamera->setAspectRatio(1.0);
-  cubeCamera->setNearClipDistance(camera->getFarClipDistance() / 6.0);
+  cubeCamera->setNearClipDistance(camera->getNearClipDistance() * 100.0);
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
   sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y)->attachObject(cubeCamera);
-  AddCompositor("CubeMap", true);
+  AddCompositor("CubeMap", true, 0);
   auto *rt = compositorChain->getCompositor("CubeMap")->getRenderTarget("cube");
   rt->removeAllViewports();
+  rt->removeAllListeners();
   rt->addViewport(cubeCamera);
   rt->addListener(this);
-  //  AddCompositor("CubeMapSky", true);
-  //  auto *rt1 = compositorChain->getCompositor("CubeMapSky")->getRenderTarget("cube");
-  //  rt1->removeAllViewports();
-  //  rt1->addViewport(cubeCamera);
-  //  rt1->addListener(this);
 
   AddCompositor("MRT", true);
   AddCompositor("SSAO", !RenderSystemIsGLES2());
@@ -376,7 +372,18 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 10) {  // 10 = SSAO
+  if (pass_id == 1) {  // 1 = MRT
+    if (IsCompositorEnabled("CubeMap")) {
+      auto &cube = compositorChain->getCompositor("CubeMap")->getTextureInstance("cube", 0);
+      auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
+      static bool copied = false;
+      if (!copied) {
+        cube->copyToTexture(ibl);
+        copied = true;
+      }
+    }
+
+  } else if (pass_id == 10) {  // 10 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
@@ -405,7 +412,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     auto *tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(2);
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("CubeMapSky", "cube");
+      tex->setCompositorReference("CubeMap", "cube");
     }
 
   } else if (pass_id == 12) {  // 12 = GodRays
@@ -421,10 +428,10 @@ void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::Material
 
 void CompositorManager::notifyResourcesCreated(bool forResizeOnly) {
   if (IsCompositorInChain("Fresnel")) {
-    auto *rt1 = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
-    if (rt1) {
-      rt1->removeAllListeners();
-      rt1->addListener(this);
+    auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+    if (rt) {
+      rt->removeAllListeners();
+      rt->addListener(this);
     }
   }
 }
@@ -438,16 +445,55 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
 
   if (!pass->getLightingEnabled() || pass->getFogOverride()) return;
 
+  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
+    fp->setNamedConstant("PssmSplitPoints", pssmPoints);
+  }
+
+  if (auto *tex = pass->getTextureUnitState("IBL")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      if (IsCompositorEnabled("CubeMap")) tex->setCompositorReference("MRT", "ibl");
+    }
+  }
+
+  if (!IsCompositorEnabled("MRT")) return;
+
+  Ogre::Matrix4 MVP;
+  rend->getWorldTransforms(&MVP);
+  fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
+  fp->setNamedConstant("WorldViewProjMatrix", viewProj * MVP);
+  fp->setNamedConstant("StaticObj", 0.0f);
+
+  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
+    auto *entity = subentity->getParent();
+    auto mass = entity->getUserObjectBindings().getUserAny("mass");
+    if (entity->getMesh()->isReloadable() && mass.has_value() && Ogre::any_cast<Real>(mass) == 0.0) {
+      Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
+      rend->getUserObjectBindings().setUserAny(MVP);
+      if (prevMVP.has_value()) {
+        fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+        fp->setNamedConstant("WorldViewProjMatrix", viewProj * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+        fp->setNamedConstant("StaticObj", 1.0f);
+      }
+    }
+  }
+
+  if (auto *tex = pass->getTextureUnitState("RefractionTex")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "rt", 0);
+    }
+  }
+  if (auto *tex = pass->getTextureUnitState("DepthTex")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "rt", 1);
+    }
+  }
   if (auto *tex = pass->getTextureUnitState("ShadowAtlas")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "shadowmap");
-    }
-  }
-  if (auto *tex = pass->getTextureUnitState("IBL")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("CubeMap", "cube");
     }
   }
   if (auto *tex = pass->getTextureUnitState("AO")) {
@@ -462,51 +508,12 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       tex->setCompositorReference("MRT", "ssr");
     }
   }
-  if (auto *tex = pass->getTextureUnitState("RefractionTex")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "rt", 0);
-    }
-  }
-  if (auto *tex = pass->getTextureUnitState("DepthTex")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "rt", 1);
-    }
-  }
   if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       if (!IsCompositorEnabled("Fresnel")) AddCompositor("Fresnel", true, 0);
       tex->setCompositorReference("Fresnel", "reflection");
       tex->setProjectiveTexturing(true, camera);
-    }
-  }
-
-  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
-    fp->setNamedConstant("PssmSplitPoints", pssmPoints);
-  }
-
-  Ogre::Matrix4 MVP;
-  rend->getWorldTransforms(&MVP);
-  fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
-  fp->setNamedConstant("WorldViewProjMatrix", viewProj * MVP);
-  fp->setNamedConstant("StaticObj", 0.0f);
-
-  // apply for dynamic entities only
-  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    auto *entity = subentity->getParent();
-    auto mass = entity->getUserObjectBindings().getUserAny("mass");
-    if (!mass.has_value()) return;
-    if (Ogre::any_cast<Ogre::Real>(mass) == 0.0) return;
-    if (entity->getMesh()->isReloadable()) {
-      Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
-      rend->getUserObjectBindings().setUserAny(MVP);
-      if (prevMVP.has_value()) {
-        fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-        fp->setNamedConstant("WorldViewProjMatrix", viewProj * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-        fp->setNamedConstant("StaticObj", 1.0f);
-      }
     }
   }
 }

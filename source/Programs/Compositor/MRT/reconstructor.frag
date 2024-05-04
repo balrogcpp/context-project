@@ -49,7 +49,7 @@ void main()
     vec2 velocity = texture2D(VelocityTex, vUV0).xy;
     float depth1 = texture2D(DepthTex, vUV0).x;
 
-    if (Null(velocity)) {
+    if (velocity == vec2(0.0, 0.0)) {
         vec3 viewPos = vRay * depth1;
         vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
         worldPos.xyz /= worldPos.w;
