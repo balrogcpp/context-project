@@ -127,7 +127,7 @@ endif ()
 
 
 # list of third-party targets
-check_stamp_patch(Target_SDL2 sdl2-2.26.1.patch)
+check_stamp_patch(Target_SDL2 sdl2-2.30.3.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -547,7 +547,7 @@ externalproject_add(Target_ZZIP
         )
 
 
-check_stamp_patch(Target_assimp assimp-5.3.1.patch)
+check_stamp_patch(Target_assimp assimp-5.4.0.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false

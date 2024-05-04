@@ -1,0 +1,39 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2a91824c..4408f1d7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2156,7 +2156,7 @@ elseif(APPLE)
+           int main() { return 0; }" HAVE_FRAMEWORK_COREHAPTICS)
+       if(HAVE_FRAMEWORK_GAMECONTROLLER AND HAVE_FRAMEWORK_COREHAPTICS)
+         # Only enable MFI if we also have CoreHaptics to ensure rumble works
+-        set(SDL_JOYSTICK_MFI 1)
++        #set(SDL_JOYSTICK_MFI 1)
+         set(SDL_FRAMEWORK_GAMECONTROLLER 1)
+         set(SDL_FRAMEWORK_COREHAPTICS 1)
+       endif()
+diff --git a/src/joystick/iphoneos/SDL_mfijoystick.m b/src/joystick/iphoneos/SDL_mfijoystick.m
+index 28ddca72..6fd9c71c 100644
+--- a/src/joystick/iphoneos/SDL_mfijoystick.m
++++ b/src/joystick/iphoneos/SDL_mfijoystick.m
+@@ -833,7 +833,7 @@ static int IOS_JoystickInit(void)
+
+ #if defined(__MACOSX__)
+ #if _SDL_HAS_BUILTIN(__builtin_available)
+-    if (@available(macOS 10.16, *)) {
++    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_15) {
+         /* Continue with initialization on macOS 11+ */
+     } else {
+         return 0;
+diff --git a/src/sensor/android/SDL_androidsensor.c b/src/sensor/android/SDL_androidsensor.c
+index 3f57253c..c06faf2e 100644
+--- a/src/sensor/android/SDL_androidsensor.c
++++ b/src/sensor/android/SDL_androidsensor.c
+@@ -161,7 +161,7 @@ static void SDL_ANDROID_SensorUpdate(SDL_Sensor *sensor)
+     ASensorEvent event;
+     struct android_poll_source *source;
+ 
+-    if (ALooper_pollAll(0, NULL, &events, (void **)&source) == LOOPER_ID_USER) {
++    if (ALooper_pollOnce(0, NULL, &events, (void **)&source) == LOOPER_ID_USER) {
+         SDL_zero(event);
+         while (ASensorEventQueue_getEvents(sensor->hwdata->eventqueue, &event, 1) > 0) {
+             SDL_PrivateSensorUpdate(sensor, 0, event.data, SDL_arraysize(event.data));
