@@ -451,19 +451,7 @@ vec2 GetParallaxCoord(const highp vec2 uv0, const highp vec3 v)
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 GetNormal(
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-highp mat3 tbn,
-#else
-const highp vec3 n,
-#endif
-#endif
-#ifndef HAS_TANGENTS
-const highp vec3 pos_dx, const highp vec3 pos_dy, const highp vec3 tex_dx, const highp vec3 tex_dy,
-#endif
-const vec2 uv, const vec2 uv1
-)
+vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
@@ -472,20 +460,12 @@ const vec2 uv, const vec2 uv1
     vec3 n = texture2D(TerraNormalTex, uv1.xy).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, t));
     t = normalize(cross(n ,b));
-    highp mat3 tbn = mtxFromCols(t, b, n);
+    tbn = mtxFromCols(t, b, n);
 #elif defined(PAGED_GEOMETRY)
     const vec3 n = vec3(0.0, 1.0, 0.0);
     const vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 b = normalize(cross(n, t));
-    highp mat3 tbn = mtxFromCols(t, b, n);
-#else
-#ifndef HAS_NORMALS
-    vec3 n = cross(pos_dx, pos_dy);
-#endif
-    highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-    t = normalize(t - n * dot(n, t));
-    highp vec3 b = normalize(cross(n, t));
-    highp mat3 tbn = mtxFromCols(t, b, n);
+    tbn = mtxFromCols(t, b, n);
 #endif
 #endif
 
@@ -536,7 +516,11 @@ void main()
     float alpha = colour.a;
     vec3 orm = GetORM(uv, alpha);
     vec3 emission = GetEmission(uv);
+    highp mat3 tbn;
+#if !defined(TERRA_NORMALMAP) && !defined(PAGED_GEOMETRY)
 #ifndef HAS_TANGENTS
+    highp vec3 pos_dx = dFdx(vPosition);
+    highp vec3 pos_dy = dFdy(vPosition);
     #ifdef HAS_UV
         highp vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
         highp vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
@@ -544,16 +528,21 @@ void main()
         highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
         highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
     #endif
-#endif
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-    n = GetNormal(vTBN, uv, uv1);
+    #ifdef HAS_NORMALS
+        vec3 n = vNormal;
+    #else
+        vec3 n = cross(pos_dx, pos_dy);
+    #endif
+        highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+        t = normalize(t - n * dot(n, t));
+        highp vec3 b = normalize(cross(n, t));
+        tbn = mtxFromCols(t, b, n);
 #else
-    n = GetNormal(vNormal, dFdx(vPosition), dFdy(vPosition), tex_dx, tex_dy, uv, uv1);
-#endif
-#else
-    n = GetNormal(dFdx(vPosition), dFdy(vPosition), tex_dx, tex_dy, uv, uv1);
-#endif
+    tbn = vTBN;
+#endif // HAS_TANGENTS
+#endif // !defined(TERRA_NORMALMAP) && !defined(PAGED_GEOMETRY)
+
+    n = GetNormal(tbn, uv, uv1);
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
