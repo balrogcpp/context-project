@@ -11,7 +11,7 @@ abstract target cubemap_target
     pass clear {}
     pass render_scene
     {
-        //last_render_queue 5
+        last_render_queue 5
         camera CubeCamera align_to_face
     }
 }
