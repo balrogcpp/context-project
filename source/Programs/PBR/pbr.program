@@ -2,7 +2,6 @@
 
 shared_params IBL_Shared_frag
 {
-    shared_param_named IBL float3 [9] 0.5 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 }
 
 abstract vertex_program Unlit_I_vs glsl glsles hlsl
@@ -45,7 +44,7 @@ abstract vertex_program PBR_I_vs glsl glsles hlsl
 {
 	source pbr.vert
 
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
     default_params
     {
         param_named_auto WorldMatrix world_matrix
@@ -57,7 +56,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 {
 	source pbr.frag
 
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
     default_params
     {
         shared_params_ref IBL_Shared_frag
@@ -67,7 +66,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto LightAttenuationArray light_attenuation_array 8
         param_named_auto LightSpotParamsArray spotlight_params_array 8
         param_named_auto LightCastsShadowsArray light_casts_shadows_array 8
-        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 8
+        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
         //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 8
         param_named_auto LightCount light_count
         param_named_auto AmbientLightColour ambient_light_colour
@@ -90,7 +89,7 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
 
 abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
 }
 
 vertex_program Unlit_vs glsl glsles hlsl : Unlit_I_vs {}
@@ -102,7 +101,7 @@ fragment_program IBL_fs glsl glsles hlsl : IBL_I_fs {}
 
 vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,PAGED_GEOMETRY
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,PAGED_GEOMETRY
     default_params
     {
         param_named_auto Time time
@@ -112,12 +111,12 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA
 }
 
 vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,PAGED_GEOMETRY
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,PAGED_GEOMETRY
     default_params
     {
         param_named_auto Time time
@@ -127,15 +126,15 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 
 fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
 }
 
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
 {
-    preprocessor_defines HAS_UV,VERTEX_COMPRESSION,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_UV,VERTEX_COMPRESSION,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs
 {
-    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=8
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
 }

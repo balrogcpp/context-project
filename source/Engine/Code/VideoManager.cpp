@@ -536,9 +536,15 @@ void VideoManager::InitOgreSceneManager() {
     auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     sceneManager->setShadowTextureCasterMaterial(casterMaterial);
     sceneManager->setShadowTextureCount(shadowTexCount);
-    Ogre::ShadowTextureConfig texConfig = sceneManager->getShadowTextureConfigList().at(0);
-    texConfig.depthBufferPoolId = 2;
-    for (int i = 0; i < shadowTexCount; i++) sceneManager->setShadowTextureConfig(i, texConfig);
+    for (int i = 0; i < shadowTexCount; i++) {
+      Ogre::ShadowTextureConfig texConfig = sceneManager->getShadowTextureConfigList().at(i);
+      int texSize = shadowTexSize;
+      if (i > pssmSplitCount - 1) texSize = shadowTexSize / 2;
+      texConfig.depthBufferPoolId = 2;
+      texConfig.height = texSize;
+      texConfig.width = texSize;
+      sceneManager->setShadowTextureConfig(i, texConfig);
+    }
 
     // pssm stuff
     shadowNearDistance = camera->getNearClipDistance();
