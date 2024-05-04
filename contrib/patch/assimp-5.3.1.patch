@@ -1,7 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75b160c..a120b76 100644
+index 31c5e66..9202eaa 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -38,7 +38,7 @@ SET(CMAKE_POLICY_DEFAULT_CMP0012 NEW)
+ SET(CMAKE_POLICY_DEFAULT_CMP0074 NEW)
+ SET(CMAKE_POLICY_DEFAULT_CMP0092 NEW)
+ 
+-CMAKE_MINIMUM_REQUIRED( VERSION 3.22 )
++CMAKE_MINIMUM_REQUIRED( VERSION 3.18 )
+ 
+ # Disabled importers: m3d for 5.1 or later
+ ADD_DEFINITIONS( -DASSIMP_BUILD_NO_M3D_IMPORTER)
 @@ -490,11 +490,11 @@ ELSE()
      FIND_PACKAGE(ZLIB)
    ENDIF()
@@ -16,3 +25,16 @@ index 75b160c..a120b76 100644
      MESSAGE(STATUS "compiling zlib from sources")
      INCLUDE(CheckIncludeFile)
      INCLUDE(CheckTypeSize)
+diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
+index 0a7be62..b6a3c62 100644
+--- a/code/CMakeLists.txt
++++ b/code/CMakeLists.txt
+@@ -42,7 +42,7 @@
+ # 3) Add libassimp using the file lists (eliminates duplication of file names between
+ #    source groups and library command)
+ #
+-cmake_minimum_required( VERSION 3.22 )
++cmake_minimum_required( VERSION 3.18 )
+ SET( HEADER_PATH ../include/assimp )
+ 
+ if(NOT ANDROID AND ASSIMP_ANDROID_JNIIOSYSTEM)

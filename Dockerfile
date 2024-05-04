@@ -62,9 +62,9 @@ RUN apt-get update \
 
 # win32
 RUN mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x86_64.cmake -G Ninja .. \
     && cmake --build . --target Contrib \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x86_64.cmake -G Ninja .. \
     && cmake --build . --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
