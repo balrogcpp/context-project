@@ -181,7 +181,7 @@ index 5e06c1945..ee4cf91e9 100644
      };
      
 diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
-index 6de573e0f..3ebf9fbb5 100644
+index 6de573e0f..33a6d40f0 100644
 --- a/OgreMain/src/OgreCompositor.cpp
 +++ b/OgreMain/src/OgreCompositor.cpp
 @@ -237,8 +237,8 @@ void Compositor::createGlobalTextures()
@@ -286,6 +286,22 @@ index 3b320f711..69edddd74 100644
          return;
  
      if (!mShadowDebugPass)
+diff --git a/OgreMain/src/OgreTexture.cpp b/OgreMain/src/OgreTexture.cpp
+index 7468105ad..8560e8b85 100644
+--- a/OgreMain/src/OgreTexture.cpp
++++ b/OgreMain/src/OgreTexture.cpp
+@@ -489,9 +489,9 @@ namespace Ogre {
+         // disable software mipmap creation.
+         // Not supported by GLES.
+         if (PixelUtil::isCompressed(loadedImages[0].getFormat()) &&
+-            !renderCaps->hasCapability(RSC_AUTOMIPMAP_COMPRESSED) && loadedImages[0].getNumMipmaps() == 0)
++            !renderCaps->hasCapability(RSC_AUTOMIPMAP_COMPRESSED))
+         {
+-            mNumMipmaps = mNumRequestedMipmaps = 0;
++            if(loadedImages[0].getNumMipmaps() == 0) mNumMipmaps = mNumRequestedMipmaps = 0;
+             // Disable flag for auto mip generation
+             mUsage &= ~TU_AUTOMIPMAP;
+         }
 diff --git a/PlugIns/STBICodec/CMakeLists.txt b/PlugIns/STBICodec/CMakeLists.txt
 index 10283f51e..8cb4ec14b 100644
 --- a/PlugIns/STBICodec/CMakeLists.txt
@@ -326,7 +342,7 @@ index 5cb052037..4d5a1e514 100644
                                                   : (void*)params->getFloatPointer(def->physicalIndex);
  
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
-index 663dc69bf..cf41e9b1f 100644
+index 663dc69bf..c35dca88d 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 +++ b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 @@ -122,7 +122,7 @@ namespace Ogre {
@@ -334,7 +350,7 @@ index 663dc69bf..cf41e9b1f 100644
      {
          // Get face identifier
 -        mFaceTarget = mTarget;
-+        mFaceTarget = mTarget; mUsage &= ~TU_AUTOMIPMAP;
++        mFaceTarget = mTarget; //mUsage &= ~TU_AUTOMIPMAP;
          if(mTarget == GL_TEXTURE_CUBE_MAP)
              mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
  
