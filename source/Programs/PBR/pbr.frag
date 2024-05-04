@@ -178,7 +178,7 @@ float EnvBRDFApproxNonmetal(float roughness, float NdotV)
 #if SPHERICAL_HARMONICS_BANDS > 0
 vec3 Irradiance_SphericalHarmonics(const vec3 n, const vec3 ibl[9]) {
     return max(
-    ibl[0]
+        ibl[0]
 #if SPHERICAL_HARMONICS_BANDS >= 2
         + ibl[1] * (n.y)
         + ibl[2] * (n.z)
@@ -196,14 +196,23 @@ vec3 Irradiance_SphericalHarmonics(const vec3 n, const vec3 ibl[9]) {
 #endif
 
 #ifdef HAS_IBL
+vec3 decodeDataForIBL(const vec3 data)
+{
+#ifdef FORCE_TONEMAP
+    return LINEARtoSRGB(LINEARtoSRGB(data));
+#else
+    return LINEARtoSRGB(data);
+#endif
+}
+
 vec3 DiffuseIrradiance(const vec3 n)
 {
-    return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, n.z), 6.0).rgb);
+    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, n.z), 6.0).rgb);
 }
 
 vec3 GetIblSpecularColor(const vec3 n, float roughness)
 {
-    return LINEARtoSRGB(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), roughness * 6.0).rgb);
+    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), roughness * 6.0).rgb);
 }
 #endif // HAS_IBL
 
