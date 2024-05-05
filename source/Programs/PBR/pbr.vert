@@ -86,14 +86,6 @@ void main()
 
 #ifdef HAS_NORMALS
     mat3 worldFromModelNormalMatrix = mat3(WorldMatrix);
-#if 0
-    worldFromModelNormalMatrix = mat3(
-        normalize(worldFromModelNormalMatrix[0]),
-        normalize(worldFromModelNormalMatrix[1]),
-        normalize(worldFromModelNormalMatrix[2])
-    );
-#endif
-
 #ifdef HAS_TANGENTS
     vec3 n = normalize(mul(worldFromModelNormalMatrix, normal.xyz));
     vec3 t = normalize(mul(worldFromModelNormalMatrix, tangent.xyz));

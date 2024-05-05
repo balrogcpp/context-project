@@ -252,7 +252,7 @@ struct PBRInfo
     vec3 specularColor;           // color contribution from specular lighting
 };
 
-vec3 v, n;
+vec3 V, N;
 highp float fragDepth;
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
@@ -331,7 +331,7 @@ vec3 EvaluateDirectionalLight(const PBRInfo material
 )
 {
     vec3 l = -normalize(LightDirectionArray[0].xyz); // Vector from surface point to light
-    float NdotL = saturate(dot(n, l));
+    float NdotL = saturate(dot(N, l));
     if (NdotL <= 0.001) return vec3(0.0, 0.0, 0.0);
     float attenuation = 1.0;
 
@@ -346,20 +346,20 @@ vec3 EvaluateDirectionalLight(const PBRInfo material
     }
 #endif
 
-    vec3 h = normalize(l + v); // Half vector between both l and v
+    vec3 h = normalize(l + V); // Half vector between both l and v
 
     Light light;
     light.LdotH = dot(l, h);
-    light.NdotH = dot(n, h);
+    light.NdotH = dot(N, h);
     // https://github.com/google/filament/blob/d273838e07c76be86a3521d32d8f51f3588e4292/shaders/src/brdf.fs#L54
 #ifdef GL_ES
-    vec3 NxH = cross(n, h);
+    vec3 NxH = cross(N, h);
     light.oneMinusNoHSquared = dot(NxH, NxH);
 #else
     light.oneMinusNoHSquared = 1.0 - light.NdotH * light.NdotH;
 #endif
     light.NdotL = NdotL;
-    light.VdotH = dot(v, h);
+    light.VdotH = dot(V, h);
     vec3 color = SurfaceShading(light, material) * ComputeMicroShadowing(NdotL, material.occlusion) * NdotL;
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
@@ -377,7 +377,7 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosi
         highp vec4 lightPosition = LightPositionArray[i];
         if (lightPosition.w == 0.0) continue;
         vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
-        float NdotL = saturate(dot(n, l));
+        float NdotL = saturate(dot(N, l));
         if (NdotL <= 0.001) continue;
 
         // attenuation is property of spot and point light
@@ -385,18 +385,18 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelWorldPosi
         if (attenuation == 0.0) continue;
 
         Light light;
-        vec3 h = normalize(l + v); // Half vector between both l and v
+        vec3 h = normalize(l + V); // Half vector between both l and v
         light.LdotH = saturate(dot(l, h));
-        light.NdotH = saturate(dot(n, h));
+        light.NdotH = saturate(dot(N, h));
         // https://github.com/google/filament/blob/d273838e07c76be86a3521d32d8f51f3588e4292/shaders/src/brdf.fs#L54
 #ifdef GL_ES
-        vec3 NxH = cross(n, h);
+        vec3 NxH = cross(N, h);
         light.oneMinusNoHSquared = dot(NxH, NxH);
 #else
         light.oneMinusNoHSquared = 1.0 - light.NdotH * light.NdotH;
 #endif
         light.NdotL = NdotL;
-        light.VdotH = saturate(dot(v, h));
+        light.VdotH = saturate(dot(V, h));
         vec3 c = SurfaceShading(light, material) * NdotL * ComputeMicroShadowing(NdotL, material.occlusion);
 
 #if MAX_SHADOW_TEXTURES > 3
@@ -487,12 +487,8 @@ vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 #endif
 
 #ifdef HAS_NORMALMAP
-    if (TexSize1.x > 1.0) {
-        vec3 normal = SurfaceSpecularColour.a * texture2D(NormalTex, uv.xy).xyz;
-        return normalize(mul(tbn, (2.0 * normal - 1.0)));
-    } else {
-        return tbn[2];
-    }
+    if (TexSize1.x > 1.0) return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv.xy).xyz - 1.0)));
+    else return tbn[2];
 #else
     return tbn[2];
 #endif
@@ -515,9 +511,9 @@ in mediump vec3 vColor;
 #endif
 void main()
 {
-    v = normalize(CameraPosition - vPosition);
+    V = normalize(CameraPosition - vPosition);
 #ifdef HAS_UV
-    vec2 uv = GetParallaxCoord(vUV0, v);
+    vec2 uv = GetParallaxCoord(vUV0, V);
     vec2 uv1 = vUV0;
 #else
     const vec2 uv = vec2(0.0, 0.0);
@@ -538,28 +534,28 @@ void main()
 #ifndef HAS_TANGENTS
     highp vec3 pos_dx = dFdx(vPosition);
     highp vec3 pos_dy = dFdy(vPosition);
-    #ifdef HAS_UV
-        highp vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
-        highp vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
-    #else
-        highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
-        highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
-    #endif
-    #ifdef HAS_NORMALS
-        vec3 n = vNormal;
-    #else
-        vec3 n = cross(pos_dx, pos_dy);
-    #endif
-        highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-        t = normalize(t - n * dot(n, t));
-        highp vec3 b = normalize(cross(n, t));
-        tbn = mtxFromCols(t, b, n);
+#ifdef HAS_UV
+    highp vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+    highp vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
+#else
+    highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
+    highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
+#endif
+#ifdef HAS_NORMALS
+    vec3 n = vNormal;
+#else
+    vec3 n = cross(pos_dx, pos_dy);
+#endif
+    highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+    t = normalize(t - n * dot(n, t));
+    highp vec3 b = normalize(cross(n, t));
+    tbn = mtxFromCols(t, b, n);
 #else
     tbn = vTBN;
 #endif // HAS_TANGENTS
 #endif // !defined(TERRA_NORMALMAP) && !defined(PAGED_GEOMETRY)
 
-    n = GetNormal(tbn, uv, uv1);
+    N = GetNormal(tbn, uv, uv1);
     float roughness = orm.g;
     float metallic = orm.b;
     float occlusion = orm.r;
@@ -598,7 +594,7 @@ void main()
 #else
     material.uv = vec2(0.0, 0.0);
 #endif
-    material.NdotV = abs(dot(n, v)) + 0.001;
+    material.NdotV = abs(dot(N, V)) + 0.001;
     material.diffuseColor = diffuseColor;
     material.specularColor = specularColor;
     material.metalness = metallic;
@@ -609,7 +605,7 @@ void main()
     material.reflectance0 = specularColor.rgb;
     float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);
     material.reflectance90 = vec3(reflectance90, reflectance90, reflectance90);
-    material.reflection = -normalize(reflect(v, n));
+    material.reflection = -normalize(reflect(V, N));
 
     vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -648,11 +644,11 @@ void main()
 
 #ifdef FORCE_FOG
 #if MAX_LIGHTS > 0
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, LightDirectionArray[0].xyz, CameraPosition);
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, V, LightDirectionArray[0].xyz, CameraPosition);
 #else
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, v, vec3(0.0, 0.0, 0.0), CameraPosition);
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, V, vec3(0.0, 0.0, 0.0), CameraPosition);
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, mul(mat3(ViewMatrix), n), StaticObj * fragVelocity.xy);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, mul(mat3(ViewMatrix), N), StaticObj * fragVelocity.xy);
 }
