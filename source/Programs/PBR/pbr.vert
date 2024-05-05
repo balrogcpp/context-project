@@ -86,7 +86,7 @@ void main()
 
 #ifdef HAS_NORMALS
     mat3 worldFromModelNormalMatrix = mat3(WorldMatrix);
-#ifdef GL_ES
+#if 0
     worldFromModelNormalMatrix = mat3(
         normalize(worldFromModelNormalMatrix[0]),
         normalize(worldFromModelNormalMatrix[1]),
@@ -95,12 +95,12 @@ void main()
 #endif
 
 #ifdef HAS_TANGENTS
-    vec3 n = mul(worldFromModelNormalMatrix, normal.xyz);
-    vec3 t = mul(worldFromModelNormalMatrix, tangent.xyz);
+    vec3 n = normalize(mul(worldFromModelNormalMatrix, normal.xyz));
+    vec3 t = normalize(mul(worldFromModelNormalMatrix, tangent.xyz));
     vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols(t, b, n);
 #else
-    vNormal = mul(worldFromModelNormalMatrix, normal.xyz);
+    vNormal = normalize(mul(worldFromModelNormalMatrix, normal.xyz));
 #endif
 #endif
 
