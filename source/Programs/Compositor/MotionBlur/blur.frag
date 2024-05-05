@@ -30,13 +30,13 @@ void main()
 
     if (velocity == vec2(0.0, 0.0)) {
         vec3 viewPos = vRay * depth;
-        vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
+        vec4 worldPos = mulMat4x4Float3(InvViewMatrix, viewPos.xyz);
         worldPos.xyz /= worldPos.w;
 
-        vec4 nuv = mul(ViewProjPrev, worldPos);
+        vec4 nuv = mulMat4x4Float3(ViewProjPrev, worldPos.xyz);
         nuv.xy /= nuv.w;
 
-        vec4 olduv = mul(WorldViewProjMatrix, worldPos);
+        vec4 olduv = mulMat4x4Float3(WorldViewProjMatrix, worldPos.xyz);
         olduv.xy /= olduv.w;
 
         velocity = (nuv.xy - olduv.xy);

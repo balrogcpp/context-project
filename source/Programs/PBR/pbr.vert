@@ -85,18 +85,27 @@ void main()
 #endif
 
 #ifdef HAS_NORMALS
+    mat3 worldFromModelNormalMatrix = mat3(WorldMatrix);
+#ifdef GL_ES
+    worldFromModelNormalMatrix = mat3(
+        normalize(worldFromModelNormalMatrix[0]),
+        normalize(worldFromModelNormalMatrix[1]),
+        normalize(worldFromModelNormalMatrix[2])
+    );
+#endif
+
 #ifdef HAS_TANGENTS
-    vec3 n = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
-    vec3 t = normalize(mul(WorldMatrix, vec4(tangent.xyz, 0.0)).xyz);
+    vec3 n = mul(worldFromModelNormalMatrix, normal.xyz);
+    vec3 t = mul(worldFromModelNormalMatrix, tangent.xyz);
     vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols(t, b, n);
 #else
-    vNormal = normalize(mul(WorldMatrix, vec4(normal.xyz, 0.0)).xyz);
+    vNormal = mul(worldFromModelNormalMatrix, normal.xyz);
 #endif
 #endif
 
-    highp vec4 worldPosition = mul(WorldMatrix, position);
+    highp vec4 worldPosition = mulMat4x4Float3(WorldMatrix, position.xyz);
     vPosition = worldPosition.xyz / worldPosition.w;
     vPosition1 = position.xyz;
-    gl_Position = mul(WorldViewProjMatrix, position);
+    gl_Position = mulMat4x4Float3(WorldViewProjMatrix, position.xyz);
 }

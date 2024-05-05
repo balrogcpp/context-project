@@ -556,11 +556,11 @@ void main()
     float metallic = orm.b;
     float occlusion = orm.r;
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
-    vec4 fragPos = mul(WorldViewProjMatrix, vec4(vPosition1, 1.0));
+    vec4 fragPos = mulMat4x4Float3(WorldViewProjMatrix, vPosition1);
     fragPos.xyz /= fragPos.w;
     fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    vec4 fragPosPrev = mul(WorldViewProjPrev, vec4(vPosition1, 1.0));
+    vec4 fragPosPrev = mulMat4x4Float3(WorldViewProjPrev, vPosition1);
     fragPosPrev.xyz /= fragPosPrev.w;
     vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
     float ao = 1.0;
@@ -619,7 +619,7 @@ void main()
     // Calculate the position of vertex attribute light space
     for (int i = 0; i < MAX_SHADOW_TEXTURES; ++i) {
         if (max(int(LightCount), 3) <= i) break;
-        highp vec4 lightPos = mul(TexWorldViewProjMatrixArray[i], vec4(vPosition1, 1.0));
+        highp vec4 lightPos = mulMat4x4Float3(TexWorldViewProjMatrixArray[i], vPosition1);
         lightPos.xyz /= lightPos.w;
         lightSpacePosArray[i] = lightPos.xyz;
     }
@@ -646,5 +646,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, mul(ViewMatrix, vec4(n, 0.0)).xyz, StaticObj * fragVelocity.xy);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, mul(mat3(ViewMatrix), n), StaticObj * fragVelocity.xy);
 }

@@ -1,6 +1,6 @@
-import PBR from pbr.material
+import IBL from pbr.material
 
-material Plane : PBR
+material Plane : IBL
 {
     set $Albedo used-stainless-steel2_albedo.dds
     set $Normal used-stainless-steel2_normal-ogl.dds

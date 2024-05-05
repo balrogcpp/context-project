@@ -24,6 +24,81 @@
 #define F0 0.045
 #endif
 
+#ifdef OGRE_VERTEX_SHADER
+#define HIGHP highp
+#else
+#define HIGHP
+#endif
+
+// https://github.com/google/filament/blob/1c693e24cf0c101ab3e21b137e95874117ce6b91/shaders/src/common_math.glsl#L92
+//------------------------------------------------------------------------------
+// Trigonometry
+//------------------------------------------------------------------------------
+
+/**
+ * Approximates acos(x) with a max absolute error of 9.0x10^-3.
+ * Valid in the range -1..1.
+ */
+float acosFast(float x) {
+    // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
+    // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
+    float y = abs(x);
+    float p = -0.1565827 * y + 1.570796;
+    p *= sqrt(1.0 - y);
+    return x >= 0.0 ? p : PI - p;
+}
+
+/**
+ * Approximates acos(x) with a max absolute error of 9.0x10^-3.
+ * Valid only in the range 0..1.
+ */
+float acosFastPositive(float x) {
+    float p = -0.1565827 * x + 1.570796;
+    return p * sqrt(1.0 - x);
+}
+
+// https://github.com/google/filament/blob/1c693e24cf0c101ab3e21b137e95874117ce6b91/shaders/src/common_math.glsl#L118
+
+/**
+ * Multiplies the specified 3-component vector by the 4x4 matrix (m * v) in
+ * high precision.
+ *
+ * @public-api
+ */
+vec4 mulMat4x4Float3(const HIGHP mat4 m, const HIGHP vec3 v) {
+    return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
+}
+
+/**
+ * Multiplies the specified 3-component vector by the 3x3 matrix (m * v) in
+ * high precision.
+ *
+ * @public-api
+ */
+vec3 mulMat3x3Float3(const HIGHP mat4 m, const HIGHP vec3 v) {
+    return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
+}
+
+/**
+ * Extracts the normal vector of the tangent frame encoded in the specified quaternion.
+ */
+void toTangentFrame(const HIGHP vec4 q, out HIGHP vec3 n) {
+    n = vec3( 0.0,  0.0,  1.0) +
+    vec3( 2.0, -2.0, -2.0) * q.x * q.zwx +
+    vec3( 2.0,  2.0, -2.0) * q.y * q.wzy;
+}
+
+/**
+ * Extracts the normal and tangent vectors of the tangent frame encoded in the
+ * specified quaternion.
+ */
+void toTangentFrame(const HIGHP vec4 q, out HIGHP vec3 n, out HIGHP vec3 t) {
+    toTangentFrame(q, n);
+    t = vec3( 1.0,  0.0,  0.0) +
+    vec3(-2.0,  2.0, -2.0) * q.y * q.yxw +
+    vec3(-2.0,  2.0,  2.0) * q.z * q.zwx;
+}
+
 // https://twitter.com/SebAaltonen/status/878250919879639040
 float fstep(float x, float y)
 {

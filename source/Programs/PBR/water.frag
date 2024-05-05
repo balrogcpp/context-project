@@ -305,5 +305,5 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 #endif
 
-    EvaluateBuffer(vec4(color, 1.0), (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), mul(ViewMatrix, vec4(lNormal, 0.0)).xyz, vec2(0.0, 0.0));
+    EvaluateBuffer(vec4(color, 1.0), (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance), mul(mat3(ViewMatrix), lNormal), vec2(0.0, 0.0));
 }

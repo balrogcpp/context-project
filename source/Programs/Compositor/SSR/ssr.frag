@@ -22,7 +22,7 @@ uniform float NearClipDistance;
 vec2 BinarySearch(vec3 direction, inout vec3 hitCoord)
 {
     for(int i = 0; i < MAX_BIN_SEARCH_COUNT; ++i) {
-        vec4 nuv = mul(ProjMatrix, vec4(hitCoord, 1.0));
+        vec4 nuv = mulMat4x4Float3(ProjMatrix, hitCoord);
         nuv.xy /= nuv.w;
 
         float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);
@@ -32,7 +32,7 @@ vec2 BinarySearch(vec3 direction, inout vec3 hitCoord)
         hitCoord += (-hitCoord.z - sampleDepth) < 0.0 ? direction : -direction;
     }
 
-    vec4 nuv = mul(ProjMatrix, vec4(hitCoord, 1.0));
+    vec4 nuv = mulMat4x4Float3(ProjMatrix, hitCoord);
     nuv.xy /= nuv.w;
 
     return nuv.xy;
@@ -45,7 +45,7 @@ vec2 RayCast(vec3 direction, inout vec3 hitCoord)
     for (int i = 0; i < MAX_RAY_MARCH_COUNT; ++i) {
         hitCoord += direction;
 
-        vec4 nuv  = mul(ProjMatrix, vec4(hitCoord, 1.0));
+        vec4 nuv  = mulMat4x4Float3(ProjMatrix, hitCoord);
         nuv.xy /= nuv.w;
 
         float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);

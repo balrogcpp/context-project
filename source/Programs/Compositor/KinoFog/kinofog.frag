@@ -48,7 +48,7 @@ void main()
 
     float pixelDepth = clampedPixelDepth * ClipDistance;
     vec3 viewPos = vRay * clampedPixelDepth;
-    vec4 wPosition = mul(InvViewMatrix, vec4(viewPos, 1.0));
+    vec4 wPosition = mulMat4x4Float3(InvViewMatrix, viewPos.xyz);
     wPosition.xy /= wPosition.w;
     vec3 v = normalize(wPosition.xyz - CameraPosition);
     vec3 fogColor = textureCube(SkyBoxTex, vec3(-v.x, v.y, v.z)).rgb;
