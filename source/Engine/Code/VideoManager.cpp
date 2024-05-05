@@ -196,6 +196,7 @@ void VideoManager::LoadResources() {
     Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
     Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
   } else {
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(0);
     Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   }
 

@@ -207,12 +207,20 @@ vec3 decodeDataForIBL(const vec3 data)
 
 vec3 DiffuseIrradiance(const vec3 n)
 {
+#ifndef GL_ES
     return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, n.z), 6.0).rgb);
+#else
+    return decodeDataForIBL(textureCube(SpecularEnvTex, vec3(n.x, n.y, n.z)).rgb);
+#endif
 }
 
 vec3 GetIblSpecularColor(const vec3 n, float roughness)
 {
+#ifndef GL_ES
     return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), roughness * 6.0).rgb);
+#else
+    return decodeDataForIBL(textureCube(SpecularEnvTex, vec3(n.x, n.y, -n.z)).rgb);
+#endif
 }
 #endif // HAS_IBL
 
