@@ -2,8 +2,8 @@
 
 #define HAS_MRT
 #include "header.glsl"
-#include "srgb.glsl"
 #include "fog.glsl"
+#include "srgb.glsl"
 
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D AlbedoTex;
@@ -501,9 +501,9 @@ in highp vec2 vUV0;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-in mediump mat3 vTBN;
+in highp mat3 vTBN;
 #else
-in mediump vec3 vNormal;
+in highp vec3 vNormal;
 #endif
 #endif
 #ifdef HAS_VERTEXCOLOR
@@ -538,8 +538,8 @@ void main()
     highp vec3 tex_dx = max(dFdx(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
     highp vec3 tex_dy = max(dFdy(vec3(vUV0, 0.0)), vec3(0.001, 0.001, 0.001));
 #else
-    highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
-    highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
+    const highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
+    const highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
 #endif
 #ifdef HAS_NORMALS
     vec3 n = vNormal;

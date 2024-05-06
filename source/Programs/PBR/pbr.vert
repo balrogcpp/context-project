@@ -51,9 +51,9 @@ out highp vec2 vUV0;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-out mediump mat3 vTBN;
+out highp mat3 vTBN;
 #else
-out mediump vec3 vNormal;
+out highp vec3 vNormal;
 #endif
 #endif
 #ifdef HAS_VERTEXCOLOR
