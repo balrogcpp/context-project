@@ -95,7 +95,7 @@ float FetchTerraShadow(const vec2 uv)
     float phi = InterleavedGradientNoise(uv);
 
     for (int i = 0; i < 4; ++i) {
-        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexSize3.xy;
+        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexSize3;
         shadow += texture2D(TerraLightTex, uv + offset).x;
     }
     shadow *= 0.25;
@@ -177,7 +177,7 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
 #endif
 
     depth = depth * 0.5 + 0.5;
-    vec2 tsize = TexSize6.xy;
+    vec2 tsize = TexSize6;
     //depth -= 0.001;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise(uv);
