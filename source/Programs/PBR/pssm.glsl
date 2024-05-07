@@ -177,7 +177,7 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
 #endif
 
     depth = depth * 0.5 + 0.5;
-    vec2 tsize = TexSize6.zw;
+    vec2 tsize = TexSize6.xy;
     //depth -= 0.001;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise(uv);

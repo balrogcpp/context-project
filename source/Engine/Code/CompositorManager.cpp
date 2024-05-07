@@ -144,7 +144,7 @@ void CompositorManager::OnSetUp() {
   cubeCamera = sceneManager->createCamera("CubeCamera");
   cubeCamera->setFOVy(Ogre::Degree(90.0));
   cubeCamera->setAspectRatio(1.0);
-  cubeCamera->setNearClipDistance(camera->getNearClipDistance() * 100.0);
+  cubeCamera->setNearClipDistance(1.0);
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
   sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y)->attachObject(cubeCamera);
   AddCompositor("CubeMap", true, 0);
@@ -161,8 +161,8 @@ void CompositorManager::OnSetUp() {
   AddCompositor("GodRays", !RenderSystemIsGLES2());
   AddCompositor("HDR", !RenderSystemIsGLES2());
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
-  AddCompositor("FXAA", true);
-  AddCompositor("Tonemap", false);
+  AddCompositor("FXAA", false);
+  AddCompositor("Tonemap", true);
   AddCompositor("MotionBlur", false);
   AddCompositor("Pause", false);
 

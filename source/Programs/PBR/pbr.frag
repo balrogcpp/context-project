@@ -36,13 +36,11 @@ uniform sampler2D TerraNormalTex;
 uniform sampler2D TerraLightTex;
 #endif
 
-uniform vec4 TexSize0;
-uniform vec4 TexSize1;
-uniform vec4 TexSize2;
-uniform vec4 TexSize3;
-uniform vec4 TexSize4;
-uniform vec4 TexSize5;
-uniform vec4 TexSize6;
+uniform vec2 TexSize0;
+uniform vec2 TexSize1;
+uniform vec2 TexSize2;
+uniform vec2 TexSize3;
+uniform vec2 TexSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 uniform highp mat4 ViewMatrix;
@@ -487,7 +485,12 @@ vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 #endif
 
 #ifdef HAS_NORMALMAP
+    // magic fix for GLES, uniform fails at old Blackbery phone, textureSize works
+#ifndef GL_ES
     if (TexSize1.x > 1.0) return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv.xy).xyz - 1.0)));
+#else
+    if (textureSize(NormalTex, 0).x > 1) return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv.xy).xyz - 1.0)));
+#endif
     else return tbn[2];
 #else
     return tbn[2];
@@ -501,9 +504,9 @@ in highp vec2 vUV0;
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-in highp mat3 vTBN;
+in mediump mat3 vTBN;
 #else
-in highp vec3 vNormal;
+in mediump vec3 vNormal;
 #endif
 #endif
 #ifdef HAS_VERTEXCOLOR
