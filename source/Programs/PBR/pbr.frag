@@ -485,11 +485,11 @@ vec3 GetNormal(highp mat3 tbn, const vec2 uv, const vec2 uv1)
 #endif
 
 #ifdef HAS_NORMALMAP
-    // magic fix for GLES, uniform fails at old Blackbery phone, textureSize works
+    // magic fix for GLES, uniform fails on old Blackbery phone, textureSize works
 #ifndef GL_ES
-    if (TexSize1.x > 1.0) return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv.xy).xyz - 1.0)));
+    if (TexSize1.x > 1.0) return normalize(mul(tbn, (2.0 * texture2D(NormalTex, uv.xy).xyz - 1.0)));
 #else
-    if (textureSize(NormalTex, 0).x > 1) return normalize(mul(tbn, (2.0 * SurfaceSpecularColour.a * texture2D(NormalTex, uv.xy).xyz - 1.0)));
+    if (textureSize(NormalTex, 0).x > 1) return normalize(mul(tbn, (2.0 * texture2D(NormalTex, uv.xy).xyz - 1.0)));
 #endif
     else return tbn[2];
 #else
