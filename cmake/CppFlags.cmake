@@ -7,6 +7,7 @@ set(_cppflags_included true)
 
 include(CMakeDependentOption)
 include(ProcessorCount)
+
 processorcount(PROCESSOR_COUNT)
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 
