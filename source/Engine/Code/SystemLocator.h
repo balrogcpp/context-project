@@ -55,6 +55,7 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   int targetFps;
   std::vector<SystemI*> componentList;
   std::vector<SystemI*> preRenderList;
+  std::vector<SystemI*> queueRenderList;
   std::vector<SystemI*> postRenderList;
   std::unique_ptr<VideoManager> video;
   std::unique_ptr<SceneManager> scene;

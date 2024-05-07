@@ -578,7 +578,6 @@ void VideoManager::EnableShadows(bool enable) {
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 1);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
     sceneManager->setShadowTextureCount(shadowTexCount);
-    GetComponent<CompositorManager>().EnableCompositor("ShadowAtlas", shadowEnabled);
     InitOgreSceneManager();
   } else {
     sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
@@ -587,7 +586,6 @@ void VideoManager::EnableShadows(bool enable) {
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_RECTLIGHT, 0);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     sceneManager->setShadowTextureCount(0);
-    GetComponent<CompositorManager>().EnableCompositor("ShadowAtlas", shadowEnabled);
   }
 }
 

@@ -22,9 +22,7 @@ SystemLocator::SystemLocator() : lockFps(true), targetFps(60) {
 #endif
 }
 
-SystemLocator::~SystemLocator() {
-  OnClean();
-}
+SystemLocator::~SystemLocator() { OnClean(); }
 
 void SystemLocator::Init() {
   video = make_unique<VideoManager>();
@@ -68,9 +66,7 @@ void SystemLocator::RenderFrame() {
   FrameControl();
 }
 
-void SystemLocator::Capture() {
-  InputSequencer::GetInstance().Capture();
-}
+void SystemLocator::Capture() { InputSequencer::GetInstance().Capture(); }
 
 void SystemLocator::RegComponent(SystemI *component, bool preRender) {
   auto it = find(componentList.begin(), componentList.end(), component);
@@ -83,8 +79,8 @@ void SystemLocator::RegComponent(SystemI *component, bool preRender) {
     auto jt = find(preRenderList.begin(), preRenderList.end(), component);
     if (jt == preRenderList.end()) preRenderList.push_back(component);
   } else {
-    auto jt = find(postRenderList.begin(), postRenderList.end(), component);
-    if (jt == postRenderList.end()) postRenderList.push_back(component);
+    auto jt = find(queueRenderList.begin(), queueRenderList.end(), component);
+    if (jt == queueRenderList.end()) queueRenderList.push_back(component);
   }
 }
 
@@ -97,7 +93,15 @@ void SystemLocator::UnregComponent(SystemI *component) {
   }
 }
 
-bool SystemLocator::frameEnded(const Ogre::FrameEvent &evt) { return true; }
+bool SystemLocator::frameEnded(const Ogre::FrameEvent &evt) {
+  for (auto it : postRenderList) {
+    if (!it->IsSleeping() && !IsSleeping()) {
+      it->OnUpdate(evt.timeSinceLastFrame);
+    }
+  }
+
+  return true;
+}
 
 bool SystemLocator::frameStarted(const Ogre::FrameEvent &evt) {
   for (auto it : preRenderList) {
@@ -110,7 +114,7 @@ bool SystemLocator::frameStarted(const Ogre::FrameEvent &evt) {
 }
 
 bool SystemLocator::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  for (auto it : postRenderList) {
+  for (auto it : queueRenderList) {
     if (!it->IsSleeping() && !IsSleeping()) {
       it->OnUpdate(evt.timeSinceLastFrame);
     }

@@ -95,7 +95,7 @@ void main()
         vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + normal;
 
         vec3 oSample = viewPos + randomDir * RADIUS;
-        vec4 nuv = mulMat4x4Float3(ProjMatrix, oSample);
+        vec4 nuv = mulMat4x4Half3(ProjMatrix, oSample);
         nuv.xy /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference

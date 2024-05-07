@@ -22,7 +22,7 @@ vec2 RestoreTexCoord(const vec3 viewPos, const mat4 invViewMatrix, const mat4 vi
 {
     vec4 worldPos = vec4(invViewMatrix * vec4(viewPos, 1.0));
     worldPos.xyz /= worldPos.w;
-    vec4 nuv = mulMat4x4Float3(viewProjPrev, worldPos.xyz);
+    vec4 nuv = mulMat4x4Half3(viewProjPrev, worldPos.xyz);
     nuv.xy /= nuv.w;
     return nuv.xy;
 }
@@ -53,7 +53,7 @@ void main()
         vec3 viewPos = vRay * depth1;
         vec4 worldPos = vec4(InvViewMatrix * vec4(viewPos, 1.0));
         worldPos.xyz /= worldPos.w;
-        vec4 nuv = mulMat4x4Float3(ViewProjPrev, worldPos.xyz);
+        vec4 nuv = mulMat4x4Half3(ViewProjPrev, worldPos.xyz);
         nuv.xy /= nuv.w;
         velocity = (nuv.xy - vUV0.xy);
     }

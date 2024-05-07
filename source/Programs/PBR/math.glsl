@@ -24,12 +24,6 @@
 #define F0 0.045
 #endif
 
-#ifdef OGRE_VERTEX_SHADER
-#define HIGHP highp
-#else
-#define HIGHP
-#endif
-
 // https://github.com/google/filament/blob/1c693e24cf0c101ab3e21b137e95874117ce6b91/shaders/src/common_math.glsl#L92
 //------------------------------------------------------------------------------
 // Trigonometry
@@ -65,7 +59,10 @@ float acosFastPositive(float x) {
  *
  * @public-api
  */
-vec4 mulMat4x4Float3(const HIGHP mat4 m, const HIGHP vec3 v) {
+vec4 mulMat4x4Float3(const highp mat4 m, const highp vec3 v) {
+    return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
+}
+vec4 mulMat4x4Half3(const mat4 m, const vec3 v) {
     return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
 }
 
@@ -75,14 +72,17 @@ vec4 mulMat4x4Float3(const HIGHP mat4 m, const HIGHP vec3 v) {
  *
  * @public-api
  */
-vec3 mulMat3x3Float3(const HIGHP mat4 m, const HIGHP vec3 v) {
+vec3 mulMat3x3Float3(const highp mat4 m, const highp vec3 v) {
+    return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
+}
+vec3 mulMat3x3Half3(const mat4 m, const vec3 v) {
     return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
 }
 
 /**
  * Extracts the normal vector of the tangent frame encoded in the specified quaternion.
  */
-void toTangentFrame(const HIGHP vec4 q, out HIGHP vec3 n) {
+void toTangentFrame(const highp vec4 q, out highp vec3 n) {
     n = vec3( 0.0,  0.0,  1.0) +
     vec3( 2.0, -2.0, -2.0) * q.x * q.zwx +
     vec3( 2.0,  2.0, -2.0) * q.y * q.wzy;
@@ -92,7 +92,7 @@ void toTangentFrame(const HIGHP vec4 q, out HIGHP vec3 n) {
  * Extracts the normal and tangent vectors of the tangent frame encoded in the
  * specified quaternion.
  */
-void toTangentFrame(const HIGHP vec4 q, out HIGHP vec3 n, out HIGHP vec3 t) {
+void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
     toTangentFrame(q, n);
     t = vec3( 1.0,  0.0,  0.0) +
     vec3(-2.0,  2.0, -2.0) * q.y * q.yxw +
@@ -130,17 +130,17 @@ bool Any(const vec4 x)
     return x.x > 0.0 || x.y > 0.0 || x.z > 0.0 || x.w > 0.0;
 }
 
-bool Null(const vec2 x)
+bool IsNull(const vec2 x)
 {
     return x.x == 0.0 && x.y == 0.0;
 }
 
-bool Null(const vec3 x)
+bool IsNull(const vec3 x)
 {
     return x.x == 0.0 && x.y == 0.0 && x.z == 0.0;
 }
 
-bool Null(const vec4 x)
+bool IsNull(const vec4 x)
 {
     return x.x == 0.0 && x.y == 0.0 && x.z == 0.0 && x.w == 0.0;
 }

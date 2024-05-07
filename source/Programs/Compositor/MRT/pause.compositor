@@ -22,7 +22,7 @@ compositor Pause : STD
 
         target rt1
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Downscale13
@@ -32,7 +32,7 @@ compositor Pause : STD
 
         target rt2
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Downscale13
@@ -42,7 +42,7 @@ compositor Pause : STD
 
         target rt3
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Downscale13
@@ -52,7 +52,7 @@ compositor Pause : STD
 
         target rt4
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Downscale13
@@ -62,7 +62,7 @@ compositor Pause : STD
 
         target rt5
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Downscale13
@@ -72,7 +72,7 @@ compositor Pause : STD
 
         target rt6
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Downscale13
@@ -82,7 +82,7 @@ compositor Pause : STD
 
         target _rt5
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Upscale9
@@ -92,7 +92,7 @@ compositor Pause : STD
 
         target _rt4
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Upscale9
@@ -102,7 +102,7 @@ compositor Pause : STD
 
         target _rt3
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Upscale9
@@ -112,7 +112,7 @@ compositor Pause : STD
 
         target _rt2
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Upscale9
@@ -122,7 +122,7 @@ compositor Pause : STD
 
         target _rt1
         {
-            //only_initial on
+            only_initial on
             pass render_quad
             {
                 material Upscale9
@@ -132,7 +132,6 @@ compositor Pause : STD
 
         target_output
         {
-            //only_initial on
             pass render_quad
             {
                 material Upscale9

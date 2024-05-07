@@ -62,12 +62,12 @@ out mediump vec3 vColor;
 void main()
 {
 #ifdef HAS_VERTEXCOLOR
-    vColor = Any(colour) ? colour : vec3(1.0, 1.0, 1.0);
+    vColor = (colour != vec3(0.0, 0.0, 0.0)) ? colour : vec3(1.0, 1.0, 1.0);
 #endif
 
 #ifndef VERTEX_COMPRESSION
     highp vec4 position = vertex;
-    highp vec2 uv = uv0.xy;
+    highp vec2 uv = uv0;
 #else
     highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0.x, 1.0);
     highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
@@ -85,14 +85,13 @@ void main()
 #endif
 
 #ifdef HAS_NORMALS
-    mat3 worldFromModelNormalMatrix = mat3(WorldMatrix);
 #ifdef HAS_TANGENTS
-    vec3 n = normalize(mul(worldFromModelNormalMatrix, normal.xyz));
-    vec3 t = normalize(mul(worldFromModelNormalMatrix, tangent.xyz));
+    vec3 n = normalize(mulMat3x3Float3(WorldMatrix, normal.xyz));
+    vec3 t = normalize(mulMat3x3Float3(WorldMatrix, tangent.xyz));
     vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols(t, b, n);
 #else
-    vNormal = normalize(mul(worldFromModelNormalMatrix, normal.xyz));
+    vNormal = normalize(mulMat3x3Float3(WorldMatrix, normal.xyz));
 #endif
 #endif
 
