@@ -665,7 +665,7 @@ externalproject_add(Target_imgui
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.90.4
+        GIT_TAG v1.90.6
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
@@ -715,12 +715,15 @@ externalproject_add(Target_pugixml
 )
 
 
+if(OGRE_BUILD_ASSIMP)
+    set(ASSIMP_TARGET Target_assimp)
+endif()
 check_stamp_patch(Target_OGRE ogre-14.2.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_imgui Target_pugixml Target_assimp
+        DEPENDS Target_imgui Target_pugixml ${ASSIMP_TARGET}
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
