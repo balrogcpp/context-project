@@ -63,7 +63,7 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   const auto &objBindings = sceneManager->getRootSceneNode()->getUserObjectBindings();
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
     auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
-    auto *terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
+    auto terrainGroup = Ogre::any_cast<shared_ptr<Ogre::TerrainGroup>>(objBindings.getUserAny("TerrainGroup"));
 
     if (sceneManager->hasLight("Sun")) {
       terrainGlobalOptions->setLightMapDirection(sceneManager->getLight("Sun")->getDerivedDirection());
@@ -74,7 +74,7 @@ void SceneManager::LoadFromFile(const std::string &filename) {
     }
 
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
-    GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
+    GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup.get());
   }
 
   // search for GrassPage

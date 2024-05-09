@@ -12,7 +12,7 @@ class TerrainManager final : public System<TerrainManager> {
   virtual ~TerrainManager();
 
   float GetHeight(float x, float z);
-  void RegTerrainGroup(Ogre::TerrainGroup *terrainGroup);
+  void RegTerrainGroup(std::shared_ptr<Ogre::TerrainGroup> terrainGroup);
   void LoadTerrainGroupLegacy(int x, int y, const std::string &filename);
   void ProcessTerrainCollider(Ogre::TerrainGroup *terrainGroup);
 
@@ -22,7 +22,7 @@ class TerrainManager final : public System<TerrainManager> {
   void OnClean() override;
 
  protected:
-  std::unique_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
+  std::shared_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;
