@@ -336,7 +336,6 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
         if (!filename.empty()) {
           terrainGroup->loadLegacyTerrain(filename, pageX, pageY, true);
           terrainGroup->setOrigin(Vector3::ZERO);
-          terrainGroup->saveAllTerrains(false);
         } else {
           terrainGroup->defineTerrain(pageX, pageY, pPageElement.attribute("dataFile").value());
         }
