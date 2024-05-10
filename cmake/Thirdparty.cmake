@@ -723,7 +723,7 @@ externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_imgui Target_pugixml ${ASSIMP_TARGET}
+        DEPENDS Target_imgui ${ASSIMP_TARGET}
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -819,7 +819,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_SAMPLES=OFF
         -DOGRE_INSTALL_SAMPLES_SOURCE=OFF
         -DOGRE_INSTALL_SAMPLES=OFF
-        -DOGRE_BUILD_TOOLS=${BUILD_NATIVE}
+        -DOGRE_BUILD_TOOLS=OFF
         -DOGRE_BUILD_XSIEXPORTER=OFF
         -DOGRE_INSTALL_PDB=OFF
         -DOGRE_INSTALL_DOCS=OFF
