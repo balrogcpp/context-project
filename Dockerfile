@@ -20,7 +20,7 @@ RUN apt-get update \
 ARG CMAKE_VERSION=3.29.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.12.0
-ARG UPX_VERSION=4.2.3
+ARG UPX_VERSION=4.2.4
 RUN cd /tmp \
     && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \

@@ -35,42 +35,42 @@ material ShadowMap
             texture_unit ShadowMap0
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
             texture_unit ShadowMap1
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
             texture_unit ShadowMap2
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
             texture_unit ShadowMap3
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
             texture_unit ShadowMap4
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
             texture_unit ShadowMap5
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
             texture_unit ShadowMap6
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
             texture_unit ShadowMap7
             {
                 content_type shadow
-                sampler_ref ShadowMap
+                filtering none
             }
         }
     }
