@@ -173,3 +173,26 @@ material Box4 : Filter
         }
     }
 }
+
+material Bilateral : Filter
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref bilateral
+            {
+                param_named RT int 0
+                param_named DepthTex int 1
+                param_named_auto TexelSize inverse_texture_size 0
+            }
+
+			texture_unit DepthTex
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}

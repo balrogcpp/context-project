@@ -19,7 +19,7 @@ sampler ShadowMap
 }
 sampler AO
 {
-    filtering none
+    filtering bilinear
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
@@ -140,13 +140,14 @@ abstract material PBR
                 param_named NormalTex      int 1
                 param_named OrmTex         int 2
                 param_named EmissiveTex    int 3
-                param_named OcclusionTex   int 4
+                param_named OccTex         int 4
                 param_named SSR            int 5
                 param_named ShadowTex      int 6
                 param_named_auto TexSize0  texture_size 0
                 param_named_auto TexSize1  texture_size 1
                 param_named_auto TexSize2  texture_size 2
                 param_named_auto TexSize3  texture_size 3
+                param_named_auto TexSize4  inverse_texture_size 4
                 param_named_auto TexSize6  inverse_texture_size 6
             }
         }
@@ -239,8 +240,7 @@ abstract material TERRA
             texture_unit TerraLight
             {
                 texture white.dds
-                filtering bilinear
-                tex_address_mode clamp
+                sampler_ref ShadowMap
             }
             texture_unit AO
             {
@@ -266,13 +266,14 @@ abstract material TERRA
                 param_named NormalTex      int 1
                 param_named TerraNormalTex int 2
                 param_named TerraLightTex  int 3
-                param_named OcclusionTex   int 4
+                param_named OccTex         int 4
                 param_named SSR            int 5
                 param_named ShadowTex      int 6
                 param_named_auto TexSize0  texture_size 0
                 param_named_auto TexSize1  texture_size 1
                 //param_named_auto TexSize2  texture_size 2
                 param_named_auto TexSize3  inverse_texture_size 3
+                param_named_auto TexSize4  inverse_texture_size 4
                 param_named_auto TexSize6  inverse_texture_size 6
             }
         }

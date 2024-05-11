@@ -49,3 +49,8 @@ fragment_program box4 glsl glsles hlsl
 {
 	source box4.frag
 }
+
+fragment_program bilateral glsl glsles hlsl
+{
+	source bilateral.frag
+}

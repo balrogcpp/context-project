@@ -155,8 +155,6 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("SSAO", !RenderSystemIsGLES2());
-  AddCompositor("SSR", false);
   AddCompositor("Glow", !RenderSystemIsGLES2());
   AddCompositor("GodRays", !RenderSystemIsGLES2());
   AddCompositor("HDR", !RenderSystemIsGLES2());

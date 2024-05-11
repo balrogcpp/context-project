@@ -86,6 +86,21 @@ float InterleavedGradientNoise(const vec2 uv)
     return fract(magic.z * fract(dot(uv, magic.xy)));
 }
 
+//float GetAO(const vec2 uv)
+//{
+//    float shadow = 0.0;
+//    float phi = InterleavedGradientNoise(uv);
+//
+//    for (int i = 0; i < 4; ++i) {
+//        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexSize4;
+//        shadow += texture2D(OcclusionTex, uv + offset).x;
+//    }
+//    shadow *= 0.25;
+//
+//    return shadow;
+//}
+
+
 #ifdef TERRA_LIGHTMAP
 // uniform sampler2D TerraLightTex;
 

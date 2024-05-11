@@ -92,7 +92,7 @@ void main()
         // (based on random samples and a random texture sample)
         // bias the random direction away from the normal
         // this tends to minimize self occlusion
-        vec3 randomDir = reflect(RAND_SAMPLES[i], randN) + normal;
+        vec3 randomDir = normalize(reflect(RAND_SAMPLES[i], randN) + normal);
 
         vec3 oSample = viewPos + randomDir * RADIUS;
         vec4 nuv = mulMat4x4Half3(ProjMatrix, oSample);

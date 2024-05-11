@@ -37,7 +37,7 @@ compositor Glow : STD
             {
                 material GlowFBO
                 input 0 rt
-                input 1 depth
+                input 1 mrt 1
             }
         }
 

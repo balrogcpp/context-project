@@ -5,11 +5,11 @@ compositor MRT
     technique
     {
         compositor_logic DeferredLogic
-        // 0 color; 1 depth + normals; 2 velocity + roughness; PF_R8G8_SNORM
+        // 0 color; 1 depth + normals; 2 velocity; PF_R8G8_SNORM
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_GR no_fsaa chain_scope
         texture rt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa depth_pool 0
-        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        texture ao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_GR no_fsaa depth_pool 0 chain_scope
+        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_GR no_fsaa depth_pool 0
         texture ssr target_width_scaled 0.5 target_height_scaled 1 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
         texture shadowmap 2048 2048 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
@@ -55,8 +55,17 @@ compositor MRT
             }
         }
 
-        target ao { pass clear { colour_value 1 1 1 1 } }
-        target ssr { pass clear { colour_value 0 0 0 1 } }
+        target ao
+        {
+            pass render_quad
+            {
+                identifier 10
+                quad_normals camera_far_corners_view_space
+                material SSAO
+                input 0 depth
+                input 1 mrt 1
+            }
+        }
 
         target_output
         {
