@@ -27,6 +27,7 @@ material SMAA/EdgeDetection
 			depth_check off
             depth_write off
             polygon_mode_overrideable false
+            lighting off
 
 			vertex_program_ref SMAA/EdgeDetection_vs {}
 
@@ -87,6 +88,7 @@ material SMAA/BlendingWeightCalculation
 			depth_check off
             depth_write off
             polygon_mode_overrideable false
+            lighting off
 
 			vertex_program_ref SMAA/BlendingWeightCalculation_vs {}
 
@@ -156,6 +158,7 @@ material SMAA/NeighborhoodBlending
 			depth_check off
             depth_write off
             polygon_mode_overrideable false
+            lighting off
 
 			vertex_program_ref SMAA/NeighborhoodBlending_vs {}
 

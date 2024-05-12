@@ -1,0 +1,39 @@
+// created by Andrey Vasiliev
+
+vertex_program GBuffer_vs glsl glsles hlsl
+{
+	source pssm.vert
+
+	default_params
+	{
+		param_named_auto WorldViewProjMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program GBuffer_fs glsl glsles hlsl
+{
+	source pssm.frag
+
+	default_params
+	{
+	}
+}
+
+material GBuffer
+{
+	receive_shadows off
+
+	technique
+	{
+		pass
+		{
+		    depth_bias -1 -1
+			lighting off
+			polygon_mode_overrideable off
+
+			vertex_program_ref GBuffer_vs {}
+
+			fragment_program_ref GBuffer_fs {}
+		}
+	}
+}

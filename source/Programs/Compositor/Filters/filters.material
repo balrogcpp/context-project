@@ -11,7 +11,6 @@ abstract material Filter
             depth_write off
             polygon_mode_overrideable false
             lighting off
-            fog_override true
 
 			vertex_program_ref StdQuad {}
 

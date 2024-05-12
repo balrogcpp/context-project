@@ -67,10 +67,10 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl
         param_named_auto LightSpotParamsArray spotlight_params_array 8
         param_named_auto LightCastsShadowsArray light_casts_shadows_array 8
         param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
-        //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 8
+        //param_named_auto ShadowDepthRangeArray shadow_scene_depth_range_array 4
         param_named_auto LightCount light_count
         param_named_auto AmbientLightColour ambient_light_colour
-        param_named_auto ShadowColour shadow_colour
+        //param_named_auto ShadowColour shadow_colour
         param_named_auto SurfaceAmbientColour surface_ambient_colour
         param_named_auto SurfaceDiffuseColour surface_diffuse_colour
         param_named_auto SurfaceSpecularColour surface_specular_colour

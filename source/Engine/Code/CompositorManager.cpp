@@ -23,6 +23,22 @@ inline float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) 
 inline float Mix(float x, float y, float s) { return x + (y - x) * s; }
 }  // namespace
 
+class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
+ public:
+  GBufferSchemeHandler() = default;
+  virtual ~GBufferSchemeHandler() = default;
+
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName, Ogre::Material *originalMaterial,
+                                        unsigned short lodIndex, const Ogre::Renderable *rend) final {
+    const auto &refMat = Ogre::MaterialManager::getSingleton().getByName("GBuffer");
+    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
+    gBufferTech->setSchemeName(schemeName);
+    Ogre::Pass *gbufPass = gBufferTech->createPass();
+    *gbufPass = *refMat->getTechnique(0)->getPass(0);
+    return gBufferTech;
+  }
+};
+
 class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
  public:
   RenderShadows(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport(); }
@@ -131,6 +147,7 @@ void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &ev
 void CompositorManager::OnSetUp() {
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
+  Ogre::MaterialManager::getSingleton().addListener(new GBufferSchemeHandler, "GBuffer");
   compositorManager->registerCompositorLogic("DeferredLogic", this);
   ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
   sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -436,12 +453,10 @@ void CompositorManager::notifyResourcesCreated(bool forResizeOnly) {
 
 void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                                  const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-  if (!pass || !pass->hasVertexProgram() || !pass->hasFragmentProgram()) return;
+  if (!pass->getLightingEnabled() || !pass->getPolygonModeOverrideable() || !pass->hasVertexProgram() || !pass->hasFragmentProgram()) return;
 
   const auto &fp = pass->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
-
-  if (!pass->getLightingEnabled() || pass->getFogOverride()) return;
 
   if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);

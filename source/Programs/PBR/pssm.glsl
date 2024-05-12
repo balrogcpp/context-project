@@ -121,11 +121,6 @@ float FetchTerraShadow(const vec2 uv)
 
 
 #if MAX_SHADOW_TEXTURES > 0
-// uniform mediump sampler2D ShadowTex;
-uniform vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
-uniform float LightCastsShadowsArray[MAX_LIGHTS];
-uniform highp vec4 PssmSplitPoints;
-uniform vec4 ShadowColour;
 
 #ifndef PSSM_FILTER_SIZE
 #ifndef GL_ES

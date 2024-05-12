@@ -14,6 +14,4 @@ void main()
 #ifdef SHADOWCASTER_ALPHA
     if (texture2D(AlbedoTex, vUV0.xy).a < 0.5) discard;
 #endif
-
-    FragColor.r = (gl_FragCoord.z - PSSM_GLOBAL_MIN_DEPTH) / (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH);
 }

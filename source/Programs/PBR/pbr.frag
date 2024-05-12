@@ -59,9 +59,11 @@ uniform vec4 LightAttenuationArray[MAX_LIGHTS];
 uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #endif // MAX_LIGHTS > 0
 #if MAX_SHADOW_TEXTURES > 0
+uniform highp vec4 PssmSplitPoints;
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
-#endif
-// uniform float SurfaceAlphaRejection;
+uniform highp vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
+uniform float LightCastsShadowsArray[MAX_LIGHTS];
+#endif // MAX_SHADOW_TEXTURES > 0
 uniform vec4 AmbientLightColour;
 uniform vec4 SurfaceAmbientColour;
 uniform vec4 SurfaceDiffuseColour;
@@ -206,20 +208,12 @@ vec3 decodeDataForIBL(const vec3 data)
 
 vec3 DiffuseIrradiance(const vec3 n)
 {
-#ifndef GL_ES
     return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), 6.0).rgb);
-#else
-    return decodeDataForIBL(textureCube(SpecularEnvTex, vec3(n.x, n.y, -n.z)).rgb);
-#endif
 }
 
 vec3 GetIblSpecularColor(const vec3 n, float roughness)
 {
-#ifndef GL_ES
     return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), roughness * 6.0).rgb);
-#else
-    return decodeDataForIBL(textureCube(SpecularEnvTex, vec3(n.x, n.y, -n.z)).rgb);
-#endif
 }
 #endif // HAS_IBL
 
