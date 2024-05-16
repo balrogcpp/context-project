@@ -301,8 +301,6 @@ float getAngleAttenuation(const vec3 params, const vec3 lightDir, const vec3 toL
 
 vec3 EvaluateDirectionalLight(const PBRInfo material, const highp vec3 pixelModelPosition)
 {
-    // if (LightPositionArray[i].w != 0.0) return vec3(0.0, 0.0, 0.0);
-
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
     float NdotL = saturate(dot(N, l));
     if (NdotL <= 0.001) return vec3(0.0, 0.0, 0.0);
@@ -345,14 +343,15 @@ vec3 EvaluateDirectionalLight(const PBRInfo material, const highp vec3 pixelMode
 vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
+
 #if MAX_SHADOW_TEXTURES > 0
-    int PSSM_OFFSET = int(LightCastsShadowsArray[0]) * PSSM_SPLITS;
-    int j = 0;
+    int PSSM_OFFSET = (LightPositionArray[0].w == 0.0 && LightCastsShadowsArray[0] == 1.0) ? PSSM_SPLITS - 1 : 0;
 #endif
 
-    for (int i = 1; i < MAX_LIGHTS; ++i) {
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
-        //if (LightPositionArray[i].w == 0.0) continue;
+
+        if (LightPositionArray[i].w == 0.0) continue;
 
         highp vec3 l = LightPositionArray[i].xyz - pixelViewPosition;
         float fLightD = length(l);
@@ -374,11 +373,10 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelViewPosit
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] != 0.0) {
-            highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[j + PSSM_OFFSET], pixelModelPosition);
+            highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i + PSSM_OFFSET], pixelModelPosition);
             lightSpacePos.xyz /= lightSpacePos.w;
-            attenuation *= CalcShadow(lightSpacePos.xyz, j + PSSM_OFFSET);
+            attenuation *= CalcShadow(lightSpacePos.xyz, i + PSSM_OFFSET);
             if (attenuation < 0.001) continue;
-            j++;
         }
 #endif
 
@@ -653,7 +651,8 @@ void main()
     if (dDepth <= 0.001) ssr = texture2D(SSR, nuv).rgb;
     if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, metallic);
 #endif
-    color += EvaluateDirectionalLight(material, vPosition1);
+
+    if (LightPositionArray[0].w == 0.0) color += EvaluateDirectionalLight(material, vPosition1);
     color += EvaluateLocalLights(material, vPosition, vPosition1);
 
 #else
