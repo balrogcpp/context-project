@@ -44,7 +44,7 @@ uniform vec2 TexSize4;
 uniform vec2 TexSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
-uniform highp mat4 ViewMatrix;
+uniform highp mat4 InvViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
@@ -55,7 +55,7 @@ uniform float StaticObj;
 uniform highp vec4 LightPositionArray[MAX_LIGHTS];
 uniform vec4 LightDirectionArray[MAX_LIGHTS];
 uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
-uniform vec4 LightAttenuationArray[MAX_LIGHTS];
+uniform vec4 LightPointParamsArray[MAX_LIGHTS];
 uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #endif // MAX_LIGHTS > 0
 #if MAX_SHADOW_TEXTURES > 0
@@ -208,12 +208,12 @@ vec3 decodeDataForIBL(const vec3 data)
 
 vec3 DiffuseIrradiance(const vec3 n)
 {
-    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), 6.0).rgb);
+    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, n, 6.0).rgb);
 }
 
 vec3 GetIblSpecularColor(const vec3 n, float roughness)
 {
-    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, vec3(n.x, n.y, -n.z), roughness * 6.0).rgb);
+    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, n, roughness * 6.0).rgb);
 }
 #endif // HAS_IBL
 
@@ -287,55 +287,39 @@ vec3 SurfaceShading(const Light light, const PBRInfo material)
     return diffuseContrib + specContrib;
 }
 
-float GetAttenuation(int index, const vec3 lightView)
+float getDistanceAttenuation(const vec3 params, float distance)
 {
-    vec4 attParams = LightAttenuationArray[index];
-    vec4 spotParams = LightSpotParamsArray[index];
-    highp float fLightD = length(lightView);
-    if (fLightD > attParams.x) return 0.0;
-
-    highp vec3 vLightView = normalize(lightView);
-    float attenuationConst = attParams.y;
-    float attenuationLinear = attParams.z;
-    float attenuationQuad = attParams.w;
-    float attenuation = 1.0 / (attenuationConst + (attenuationLinear * fLightD) + (attenuationQuad * (fLightD * fLightD)));
-
-    // spotlight
-    if (spotParams.w != 0.0) {
-        float outerRadius = spotParams.z;
-        float fallof = spotParams.x;
-        float innerRadius = spotParams.y;
-
-        vec3 l = -LightDirectionArray[index].xyz; // Vector from surface point to light
-        float rho = dot(l, vLightView);
-        float fSpotE = saturate((rho - innerRadius) / (fallof - innerRadius));
-        attenuation *= pow(fSpotE, outerRadius);
-    }
-
-    return attenuation;
+    return 1.0 / (params.x + params.y * distance + params.z * distance * distance);
 }
 
-vec3 EvaluateDirectionalLight(const PBRInfo material, const highp vec3 pixelScreenPosition)
+float getAngleAttenuation(const vec3 params, const vec3 lightDir, const vec3 toLight)
 {
+    float rho		= dot(-lightDir, toLight);
+    float fSpotE	= saturate((rho - params.y) / (params.x - params.y));
+    return pow(fSpotE, params.z);
+}
+
+vec3 EvaluateDirectionalLight(const PBRInfo material, const highp vec3 pixelModelPosition)
+{
+    // if (LightPositionArray[i].w != 0.0) return vec3(0.0, 0.0, 0.0);
+
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
     float NdotL = saturate(dot(N, l));
     if (NdotL <= 0.001) return vec3(0.0, 0.0, 0.0);
     float attenuation = 1.0;
 
 #ifdef TERRA_LIGHTMAP
-    attenuation = saturate(FetchTerraShadow(material.uv));
+    attenuation = FetchTerraShadow(material.uv);
     if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        highp vec4 lightSpacePos0 = mulMat4x4Half3(TexWorldViewProjMatrixArray[0], pixelScreenPosition);
-        lightSpacePos0.xyz /= lightSpacePos0.w;
-        highp vec4 lightSpacePos1 = mulMat4x4Half3(TexWorldViewProjMatrixArray[1], pixelScreenPosition);
-        lightSpacePos1.xyz /= lightSpacePos1.w;
-        highp vec4 lightSpacePos2 = mulMat4x4Half3(TexWorldViewProjMatrixArray[2], pixelScreenPosition);
-        lightSpacePos2.xyz /= lightSpacePos2.w;
-        attenuation = CalcPSSMShadow(lightSpacePos0.xyz, lightSpacePos1.xyz, lightSpacePos2.xyz, fragDepth);
-
+        highp vec4 lightSpacePos[PSSM_SPLITS];
+        for (int i = 0; i < PSSM_SPLITS; ++i) {
+            lightSpacePos[i] = mulMat4x4Half3(TexWorldViewProjMatrixArray[i], pixelModelPosition);
+            lightSpacePos[i].xyz /= lightSpacePos[i].w;
+        }
+        attenuation = CalcPSSMShadow(lightSpacePos, fragDepth);
         if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -358,28 +342,43 @@ vec3 EvaluateDirectionalLight(const PBRInfo material, const highp vec3 pixelScre
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
-vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelScreenPosition, const highp vec3 pixelWorldPosition)
+vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
-    for (int i = 0; i < MAX_LIGHTS; ++i) {
-        if (int(LightCount) <= i) break;
+#if MAX_SHADOW_TEXTURES > 0
+    int PSSM_OFFSET = int(LightCastsShadowsArray[0]) * PSSM_SPLITS;
+    int j = 0;
+#endif
 
-        highp vec4 lightPosition = LightPositionArray[i];
-        if (lightPosition.w == 0.0) continue;
-        vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
-        float NdotL = saturate(dot(N, l));
+    for (int i = 1; i < MAX_LIGHTS; ++i) {
+        if (int(LightCount) <= i) break;
+        //if (LightPositionArray[i].w == 0.0) continue;
+
+        highp vec3 l = LightPositionArray[i].xyz - pixelViewPosition;
+        float fLightD = length(l);
+        l /= fLightD; // Vector from surface point to light
+
+        if (fLightD > LightPointParamsArray[i].x) continue;
+
+        float NdotL = dot(N, l);
         if (NdotL <= 0.001) continue;
 
         // attenuation is property of spot and point light
-        float attenuation = GetAttenuation(i, lightPosition.xyz - pixelWorldPosition);
-        if (attenuation == 0.0) continue;
+        float attenuation = getDistanceAttenuation(LightPointParamsArray[i].yzw, fLightD);
+        if (attenuation < 0.001) continue;
+    
+        if(LightSpotParamsArray[i].w != 0.0) {
+            attenuation *= getAngleAttenuation(LightSpotParamsArray[i].xyz, LightDirectionArray[i].xyz, l);
+            if (attenuation < 0.001) continue;
+        }
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] != 0.0) {
-            highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i], pixelScreenPosition);
+            highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[j + PSSM_OFFSET], pixelModelPosition);
             lightSpacePos.xyz /= lightSpacePos.w;
-            attenuation = CalcShadow(lightSpacePos.xyz, i);
+            attenuation *= CalcShadow(lightSpacePos.xyz, j + PSSM_OFFSET);
             if (attenuation < 0.001) continue;
+            j++;
         }
 #endif
 
@@ -396,9 +395,9 @@ vec3 EvaluateLocalLights(const PBRInfo material, const highp vec3 pixelScreenPos
 #endif
         light.NdotL = NdotL;
         light.VdotH = saturate(dot(V, h));
-        vec3 c = SurfaceShading(light, material) * NdotL * ComputeMicroShadowing(NdotL, material.occlusion);
+        vec3 c = SurfaceShading(light, material) * NdotL;
 
-        color += LightDiffuseScaledColourArray[0].xyz * c * attenuation;
+        color += LightDiffuseScaledColourArray[i].xyz * c * attenuation;
     }
 
     return color;
@@ -546,7 +545,7 @@ in mediump vec3 vColor;
 #endif
 void main()
 {
-    V = normalize(CameraPosition - vPosition);
+    V = -normalize(vPosition);
 #ifdef HAS_UV
     vec2 uv = GetParallaxCoord(vUV0, V);
     vec2 uv1 = vUV0;
@@ -641,7 +640,9 @@ void main()
     material.reflectance0 = specularColor.rgb;
     float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);
     material.reflectance90 = vec3(reflectance90, reflectance90, reflectance90);
-    material.reflection = -normalize(reflect(V, N));
+    material.reflection = -reflect(V, N);
+    material.reflection = normalize(mulMat3x3Half3(InvViewMatrix, material.reflection));
+    material.reflection.z *= -1.0;
 
     vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -668,5 +669,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, mulMat3x3Float3(ViewMatrix, N), StaticObj * fragVelocity.xy);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, N, StaticObj * fragVelocity.xy);
 }

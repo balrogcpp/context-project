@@ -502,13 +502,18 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
   /// Default shadow camera setup
   void getShadowCamera(const Ogre::SceneManager *sm, const Ogre::Camera *cam, const Ogre::Viewport *vp, const Ogre::Light *light,
                        Ogre::Camera *texCam, size_t iteration) const override {
-    if (light->getType() == Ogre::Light::LT_POINT) {
-      Ogre::DefaultShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+    auto lType = light->getType();
 
-    } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
+    if (lType == Ogre::Light::LT_POINT) {
+      Ogre::LiSPSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+
+    } else if (lType == Ogre::Light::LT_DIRECTIONAL) {
       Ogre::PSSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
 
-    } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT || light->getType() == Ogre::Light::LT_RECTLIGHT) {
+    } else if (lType == Ogre::Light::LT_SPOTLIGHT) {
+      Ogre::LiSPSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
+
+    } else if (lType == Ogre::Light::LT_RECTLIGHT) {
       Ogre::LiSPSMShadowCameraSetup::getShadowCamera(sm, cam, vp, light, texCam, iteration);
 
     } else {
@@ -519,7 +524,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 
 void VideoManager::InitOgreSceneManager() {
   sceneManager->setFog(Ogre::FOG_EXP, Ogre::ColourValue(0.5, 0.6, 0.7), 0.003);
-  sceneManager->setSkyBox(true, "SkyBox", 500, true);
+  sceneManager->setSkyBox(true, "SkyBox", 500, false);
   sceneManager->setAmbientLight(Ogre::ColourValue::White * 0.32);
   shadowEnabled = !RenderSystemIsGLES2();
   if (shadowEnabled) {
@@ -541,11 +546,13 @@ void VideoManager::InitOgreSceneManager() {
     sceneManager->setShadowTextureCount(shadowTexCount);
     for (int i = 0; i < shadowTexCount; i++) {
       Ogre::ShadowTextureConfig texConfig = sceneManager->getShadowTextureConfigList().at(i);
-      int texSize = shadowTexSize;
-      if (i > pssmSplitCount - 1) texSize = shadowTexSize / 2;
       texConfig.depthBufferPoolId = 2;
-      texConfig.height = texSize;
-      texConfig.width = texSize;
+      texConfig.height = shadowTexSize / (floor(i / 3) + 1);
+      texConfig.width = texConfig.height;
+      if (RenderSystemIsGLES2()) {
+        texConfig.height /= 2;
+        texConfig.width /= 2;
+      }
       sceneManager->setShadowTextureConfig(i, texConfig);
     }
 

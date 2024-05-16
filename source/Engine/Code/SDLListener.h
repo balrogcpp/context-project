@@ -59,10 +59,7 @@ class WindowListener {
 /// Keeps listeners list, capture inputs and send messages every frame
 class InputSequencer final : public LazySingleton<InputSequencer> {
  public:
-  InputSequencer() {
-    winListeners.reserve(50);
-    devListeners.reserve(50);
-  }
+  InputSequencer() {}
   virtual ~InputSequencer() {}
 
   ///
@@ -74,14 +71,12 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   ///
   inline void UnregAlWindowListeners() noexcept {
     winListeners.clear();
-    winListeners.reserve(50);
     winListeners.shrink_to_fit();
   }
 
   ///
   inline void UnregAllDeviceListeners() noexcept {
     devListeners.clear();
-    devListeners.reserve(50);
     devListeners.shrink_to_fit();
   }
 

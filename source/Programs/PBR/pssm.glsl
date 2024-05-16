@@ -86,24 +86,8 @@ float InterleavedGradientNoise(const vec2 uv)
     return fract(magic.z * fract(dot(uv, magic.xy)));
 }
 
-//float GetAO(const vec2 uv)
-//{
-//    float shadow = 0.0;
-//    float phi = InterleavedGradientNoise(uv);
-//
-//    for (int i = 0; i < 4; ++i) {
-//        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexSize4;
-//        shadow += texture2D(OcclusionTex, uv + offset).x;
-//    }
-//    shadow *= 0.25;
-//
-//    return shadow;
-//}
-
 
 #ifdef TERRA_LIGHTMAP
-// uniform sampler2D TerraLightTex;
-
 float FetchTerraShadow(const vec2 uv)
 {
     float shadow = 0.0;
@@ -182,6 +166,8 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
         uv = uv * 0.5 + vec2(0.5, 0.0);
     else if (index == 2)
         uv = uv * 0.5 + vec2(0.0, 0.5);
+    else if (index == 3)
+        uv = uv * 0.5 + vec2(0.5, 0.5);
     else
         return 1.0;
 #endif
@@ -234,17 +220,20 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
     return shadow;
 }
 
-float CalcPSSMShadow(const highp vec3 lightSpacePos0, const highp vec3 lightSpacePos1, const highp vec3 lightSpacePos2, float pixelDepth)
+float CalcPSSMShadow(const highp vec4 lightSpacePos[PSSM_SPLITS], float pixelDepth)
 {
     if (pixelDepth >= PssmSplitPoints.w) return 1.0;
 
     if (pixelDepth <= PssmSplitPoints.x)
-        return CalcShadow(lightSpacePos0, 0);
+        return CalcShadow(lightSpacePos[0].xyz, 0);
+#if PSSM_SPLITS > 1
     else if (pixelDepth <= PssmSplitPoints.y)
-        return CalcShadow(lightSpacePos1, 1);
+        return CalcShadow(lightSpacePos[1].xyz, 1);
+#endif
+#if PSSM_SPLITS > 2
     else if (pixelDepth <= PssmSplitPoints.z)
-        return CalcShadow(lightSpacePos2, 2);
-
+        return CalcShadow(lightSpacePos[2].xyz, 2);
+#endif
     return 1.0; // to shut up "missing return" warning
 }
 
