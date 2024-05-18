@@ -189,47 +189,6 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
-vec3 EvaluateLocalLight(const PixelParams pixel, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
-{
-    if (LightPositionArray[0].w == 0.0) return vec3(0.0, 0.0, 0.0);
-
-    highp vec3 l = LightPositionArray[0].xyz - pixelViewPosition;
-    float fLightD = length(l);
-    l /= fLightD; // Vector from surface point to light
-
-    if (fLightD > LightPointParamsArray[0].x) return vec3(0.0, 0.0, 0.0);
-
-    float NoL = dot(N, l);
-    if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
-
-    // attenuation is property of spot and point light
-    float attenuation = getDistanceAttenuation(LightPointParamsArray[0].yzw, fLightD);
-    if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
-
-    if(LightSpotParamsArray[0].w != 0.0) {
-        attenuation *= getAngleAttenuation(LightSpotParamsArray[0].xyz, LightDirectionArray[0].xyz, l);
-        if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
-    }
-
-#if MAX_SHADOW_TEXTURES > 0
-    if (LightCastsShadowsArray[0] != 0.0) {
-        highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[0], pixelModelPosition);
-        lightSpacePos.xyz /= lightSpacePos.w;
-        attenuation *= CalcShadow(lightSpacePos.xyz, 0);
-        if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
-    }
-#endif
-
-    Light light;
-    vec3 h = normalize(l + V); // Half vector between both l and v
-    light.h = h;
-    light.NoH = saturate(dot(N, h));
-    light.NoL = NoL;
-    vec3 color = surfaceShading(light, pixel);
-
-    return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
-}
-
 vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
@@ -238,12 +197,10 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
     int PSSM_OFFSET = (LightPositionArray[0].w == 0.0) ? PSSM_SPLITS - 1 : 0;
 #endif
 
-    for (int i = 1; i < MAX_LIGHTS; ++i) {
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
-#if 1
         if (LightPositionArray[i].w == 0.0) continue;
-#endif
 
         highp vec3 l = LightPositionArray[i].xyz - pixelViewPosition;
         float fLightD = length(l);
@@ -520,7 +477,6 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
     color += EvaluateDirectionalLight(pixel, vPosition1);
 #endif
-    color += EvaluateLocalLight(pixel, vPosition, vPosition1);
     color += EvaluateLocalLights(pixel, vPosition, vPosition1);
 
 #else
