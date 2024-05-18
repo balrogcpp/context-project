@@ -156,6 +156,8 @@ float getAngleAttenuation(const vec3 params, const vec3 lightDir, const vec3 toL
 
 vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelModelPosition)
 {
+    if (LightPositionArray[0].w != 0.0) return vec3(0.0, 0.0, 0.0);
+
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
     float NoL = saturate(dot(N, l));
     if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
@@ -189,6 +191,8 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
 
 vec3 EvaluateLocalLight(const PixelParams pixel, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
 {
+    if (LightPositionArray[0].w == 0.0) return vec3(0.0, 0.0, 0.0);
+
     highp vec3 l = LightPositionArray[0].xyz - pixelViewPosition;
     float fLightD = length(l);
     l /= fLightD; // Vector from surface point to light
@@ -514,9 +518,9 @@ void main()
 #endif
 
 #if MAX_SHADOW_TEXTURES > 0
-    if (LightPositionArray[0].w == 0.0) color += EvaluateDirectionalLight(pixel, vPosition1);
+    color += EvaluateDirectionalLight(pixel, vPosition1);
 #endif
-    if (LightPositionArray[0].w != 0.0) color += EvaluateLocalLight(pixel, vPosition, vPosition1);
+    color += EvaluateLocalLight(pixel, vPosition, vPosition1);
     color += EvaluateLocalLights(pixel, vPosition, vPosition1);
 
 #else
