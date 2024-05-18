@@ -1,7 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef SRGB_GLSL
-#define SRGB_GLSL
 #ifndef GL_ES
     #define SRGB_FAST_APPROXIMATION
 #else
@@ -39,5 +37,3 @@ vec3 LINEARtoSRGB(const vec3 col)
     return vec3(toSRGB(col.x), toSRGB(col.y), toSRGB(col.z));
 #endif
 }
-
-#endif //SRGB_GLSL

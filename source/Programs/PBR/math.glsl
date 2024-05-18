@@ -1,8 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef MATH_GLSL
-#define MATH_GLSL
-
 #define HALF_MAX        65504.0 // (2 - 2^-10) * 2^15
 #define HALF_MAX_MINUS1 65472.0 // (2 - 2^-9) * 2^15
 #define HALF_EPSILON    1.0e-4
@@ -18,11 +15,7 @@
 #define FLT_MIN         1.175494351e-38 // Minimum representable positive floating-point number
 #define FLT_MAX         3.402823466e+38 // Maximum representable floating-point number
 #define M_PI PI
-#ifdef GL_ES
-#define F0 0.089
-#else
-#define F0 0.045
-#endif
+
 
 // https://github.com/google/filament/blob/1c693e24cf0c101ab3e21b137e95874117ce6b91/shaders/src/common_math.glsl#L92
 //------------------------------------------------------------------------------
@@ -115,36 +108,6 @@ float max3(const vec3 a)
     return max(max(a.x, a.y), a.z);
 }
 
-bool Any(const vec2 x)
-{
-    return x.x > 0.0 || x.y > 0.0;
-}
-
-bool Any(const vec3 x)
-{
-    return x.x > 0.0 || x.y > 0.0 || x.z > 0.0;
-}
-
-bool Any(const vec4 x)
-{
-    return x.x > 0.0 || x.y > 0.0 || x.z > 0.0 || x.w > 0.0;
-}
-
-bool IsNull(const vec2 x)
-{
-    return x.x == 0.0 && x.y == 0.0;
-}
-
-bool IsNull(const vec3 x)
-{
-    return x.x == 0.0 && x.y == 0.0 && x.z == 0.0;
-}
-
-bool IsNull(const vec4 x)
-{
-    return x.x == 0.0 && x.y == 0.0 && x.z == 0.0 && x.w == 0.0;
-}
-
 // NaN checker
 // /Gic isn't enabled on fxc so we can't rely on isnan() anymore
 bool IsNan(float x)
@@ -171,24 +134,4 @@ bool IsNan(const vec4 x)
 }
 
 // Clamp HDR value within a safe range
-float SafeHDR(float c)
-{
-    return min(c, HALF_MAX);
-}
-
-vec2 SafeHDR(const vec2 c)
-{
-    return min(c, HALF_MAX);
-}
-
-vec3 SafeHDR(const vec3 c)
-{
-    return min(c, HALF_MAX);
-}
-
-vec4 SafeHDR(const vec4 c)
-{
-    return min(c, HALF_MAX);
-}
-
-#endif // MATH_GLSL
+#define SafeHDR(x) min(x, HALF_MAX)

@@ -1,8 +1,3 @@
-// created by Andrey Vasiliev
-
-#ifndef ATMOSPHERE_GLSL
-#define ATMOSPHERE_GLSL
-
 #ifndef M_PI
 #define M_PI 3.141592653589793
 #endif
@@ -109,5 +104,3 @@ vec3 atmosphere(const vec3 r, const vec3 r0, const vec3 pSun, float iSun, float 
     // Calculate and return the final color.
     return iSun * (pRlh * kRlh * totalRlh + pMie * kMie * totalMie);
 }
-
-#endif // ATMOSPHERE_GLSL

@@ -432,8 +432,12 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 12) {  // 12 = GodRays
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    const auto &ll = sceneManager->_getLightsAffectingFrustum();
-    if (!ll.empty()) fp->setNamedConstant("LightPosition", GetLightScreenSpaceCoords(ll[0], camera));
+    for (auto *l : sceneManager->_getLightsAffectingFrustum()) {
+      if (l->getType() == Light::LT_DIRECTIONAL) {
+        fp->setNamedConstant("LightPosition", GetLightScreenSpaceCoords(l, camera));
+        break;
+      }
+    }
 
   } else if (pass_id == 99) {  // 99 = FullScreenBlur
   }

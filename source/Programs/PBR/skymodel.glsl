@@ -1,8 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef SKYMODEL_GLSL
-#define SKYMODEL_GLSL
-
 // Clamps color between 0 and 1 smoothly
 vec3 SkyLightExpose(const vec3 color)
 {
@@ -60,5 +57,3 @@ vec3 HosekWilkie(const highp vec3 uv, const highp vec3 lightDir, const vec3 coef
     vec3 color =  Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * sqrt(cos_theta)));
     return SkyLightExpose(color);
 }
-
-#endif // SKYMODEL_GLSL

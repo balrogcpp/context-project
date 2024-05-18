@@ -1,9 +1,3 @@
-// created by Andrey Vasiliev
-
-#ifndef HLSL2_GLSL
-#define HLSL2_GLSL
-#ifdef OGRE_HLSL
-
 // some glsl functions as macros
 #define vec4 float4
 #define vec3 float3
@@ -96,6 +90,3 @@
 #define mtxFromCols4x4(a, b, c, d) ( mat4(a, b, c, d) )
 #define mtx3x3(a1, a2, a3, a4, a5, a6, a7, a8, a9) ( transpose(mat3(a1, a2, a3, a4, a5, a6, a7, a8, a9)) )
 #define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( transpose(mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)) )
-
-#endif // OGRE_HLSL
-#endif // HLSL2_GLSL

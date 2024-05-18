@@ -6,7 +6,6 @@
 #include "fog.glsl"
 #include "skymodel.glsl"
 //#include "clouds.glsl"
-//#include "starfield.glsl"
 
 uniform vec3 LightColor0;
 uniform vec3 LightDir0;
@@ -34,11 +33,11 @@ void main()
         color = LightColor0 * 10.0;
     }
 
-//    color += starfield(vUV0, -LightDir0, Time);
 //    color = clouds(vUV0, color, LightColor0, -LightDir0, 0.0);
 
     // Fog
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
+//    color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
+    color = ApplyFog(color, FogParams.x, FogColour.rgb, 100.0, V, -LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
     EvaluateBuffer(vec4(color, 1.0), 0.999);
 }

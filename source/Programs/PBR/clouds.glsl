@@ -1,9 +1,3 @@
-// created by Andrey Vasiliev
-
-#ifndef CLOUDS_GLSL
-#define CLOUDS_GLSL
-
-
 //group_uniforms sky;
 const vec3 day_top_color = vec3( 0.1, 0.6, 1.0 );
 const vec3 day_bottom_color = vec3( 0.4, 0.8, 1.0 );
@@ -186,5 +180,3 @@ vec3 clouds(const highp vec3 uv, const vec3 _sky_color, const vec3 lightColor, c
     _clouds_color = mix( _clouds_color, vec3( 0.0 ), clouds_weight * 0.9 );
     return mix( _sky_color, _clouds_color, _clouds_amount );
 }
-
-#endif // CLOUDS_GLSL

@@ -1,8 +1,3 @@
-// created by Andrey Vasiliev
-
-#ifndef FOG_GLSL
-#define FOG_GLSL
-
 vec3 ApplyFog(const vec3 color, float fogParam, const vec3 fogColor, highp float dist)
 {
     float fogAmount = 1.0 - exp(-dist * fogParam);
@@ -25,12 +20,9 @@ vec3 ApplyFog(const vec3 color, float fogParam, vec3 fogColor, const highp float
     if (abs(camHeight) < 0.001) camHeight = 0.001 * sign(camHeight);
     float fogAmount = (a / b) * exp(-camHeight * b) * (1.0 - exp(-dist * camHeight * b)) / camHeight;
 
-    float sunAmount = max(dot(camDir, -lightDir), 0.0);
-    //const vec3 sunColor = vec3(1.0, 0.9, 0.7);
-    const vec3 sunColor = vec3(1.0, 1.0, 1.0);
+    float sunAmount = max(dot(camDir, lightDir), 0.0);
+    const vec3 sunColor = vec3(1.0, 0.9, 0.7);
     fogColor  = mix(fogColor, sunColor, pow8(sunAmount));
     fogAmount = saturate(fogAmount);
     return mix(color, fogColor, fogAmount);
 }
-
-#endif // FOG_GLSL

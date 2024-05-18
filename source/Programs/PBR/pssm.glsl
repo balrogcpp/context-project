@@ -1,8 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef PSSM_GLSL
-#define PSSM_GLSL
-
 // https://drdesten.github.io/web/tools/vogel_disk/
 const vec2 vogel_disk_1[1] = vec2[](
     vec2(0, 0)
@@ -238,5 +235,3 @@ float CalcPSSMShadow(const highp vec4 lightSpacePos[PSSM_SPLITS], float pixelDep
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0
-
-#endif // PSSM_GLSL

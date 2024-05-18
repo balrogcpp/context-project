@@ -1,9 +1,3 @@
-// created by Andrey Vasiliev
-
-#ifndef HLSL2_GLSL
-#define HLSL2_GLSL
-#if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
-
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/GLSL_GL3Support.glsl
 #if __VERSION__ == 100
 mat2 transpose(mat2 m)
@@ -120,6 +114,3 @@ mat4 transpose(mat4 m)
 #define mtxFromCols4x4(a, b, c, d) ( mat4(a, b, c, d) )
 #define mtx3x3(a1, a2, a3, a4, a5, a6, a7, a8, a9) ( mat3(a1, a2, a3, a4, a5, a6, a7, a8, a9) )
 #define mtx4x4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) ( mat4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) )
-
-#endif // OGRE_GLSL
-#endif // HLSL2_GLSL

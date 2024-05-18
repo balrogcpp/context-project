@@ -49,12 +49,8 @@ out highp vec3 vPosition1;
 #ifdef HAS_UV
 out highp vec2 vUV0;
 #endif
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
+#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
 out mediump mat3 vTBN;
-#else
-out mediump vec3 vNormal;
-#endif
 #endif
 #ifdef HAS_VERTEXCOLOR
 out mediump vec3 vColor;
@@ -84,15 +80,11 @@ void main()
         position += WaveTree(position, Time.x, uv1, uv2);
 #endif
 
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
+#if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
     vec3 n = normalize(mulMat3x3Float3(WorldViewMatrix, normal.xyz));
     vec3 t = normalize(mulMat3x3Float3(WorldViewMatrix, tangent.xyz));
-    vec3 b = cross(n, t) * sign(tangent.w);
+    vec3 b = cross(n, t) * tangent.w;
     vTBN = mtxFromCols(t, b, n);
-#else
-    vNormal = normalize(mulMat3x3Float3(WorldViewMatrix, normal.xyz));
-#endif
 #endif
 
     highp vec4 viewPosition = mulMat4x4Float3(WorldViewMatrix, position.xyz);

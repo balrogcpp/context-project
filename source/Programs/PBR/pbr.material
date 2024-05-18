@@ -257,6 +257,11 @@ abstract material TERRA
                 texture white.dds
                 sampler_ref ShadowMap
             }
+            texture_unit IBL
+            {
+                texture $IBL cubic
+                sampler_ref CubeMap
+            }
 
             vertex_program_ref TERRA_vs {}
 
@@ -269,6 +274,7 @@ abstract material TERRA
                 param_named OccTex         int 4
                 param_named SSR            int 5
                 param_named ShadowTex      int 6
+                param_named SpecularEnvTex int 7
                 param_named_auto TexSize0  texture_size 0
                 param_named_auto TexSize1  texture_size 1
                 //param_named_auto TexSize2  texture_size 2

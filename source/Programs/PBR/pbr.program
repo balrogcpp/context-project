@@ -1,9 +1,5 @@
 // created by Andrey Vasiliev
 
-shared_params IBL_Shared_frag
-{
-}
-
 abstract vertex_program Unlit_I_vs glsl glsles hlsl
 {
 	source pbr.vert
@@ -93,6 +89,11 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
 fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA
+
+    default_params
+    {
+        //param_named_auto ViewMatrix view_matrix
+    }
 }
 
 vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
@@ -109,6 +110,11 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
 fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs
 {
     preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
+
+    default_params
+    {
+        param_named_auto ViewMatrix view_matrix
+    }
 }
 
 vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
@@ -116,7 +122,12 @@ vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
     preprocessor_defines HAS_UV,VERTEX_COMPRESSION,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
 }
 
-fragment_program TERRA_fs glsl glsles hlsl : PBR_I_fs
+fragment_program TERRA_fs glsl glsles hlsl : IBL_I_fs
 {
-    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_SSR,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_SSR,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
+
+    default_params
+    {
+        param_named_auto ViewMatrix view_matrix
+    }
 }

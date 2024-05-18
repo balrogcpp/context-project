@@ -1,8 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef TONEMAP_GLSL
-#define TONEMAP_GLSL
-
 float luminance(const vec3 col)
 {
     return dot(col, vec3(0.2126, 0.7152, 0.0722));
@@ -56,5 +53,3 @@ vec3 filmic(const vec3 x)
     vec3 c = max(vec3(0.0), x - 0.004);
     return (c * (c * 6.2 + 0.5)) / (c * (c * 6.2 + 1.7) + 0.06);
 }
-
-#endif // TONEMAP_GLSL

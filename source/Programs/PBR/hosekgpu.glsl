@@ -1,8 +1,3 @@
-// created by Andrey Vasiliev
-
-#ifndef HOSEKGPU_GLSL
-#define HOSEKGPU_GLSL
-
 // https://www.shadertoy.com/view/wslfD7
 // https://www.shadertoy.com/view/wdlBRS
 // Ground albedo and turbidy are baked into the lookup tables
@@ -180,7 +175,7 @@ vec3 spectral_radiance(float gamma, float cos_gamma, float cos_theta, float sun_
 
 vec3 XYZtoRGB(const vec3 xyz)
 {
-    return mtx3x3(
+    return mat3(
     3.240812398895283, -0.9692430170086407, 0.055638398436112804,
     -1.5373084456298136,  1.8759663029085742, -0.20400746093241362,
     -0.4985865229069666,  0.04155503085668564, 1.0571295702861434
@@ -192,5 +187,3 @@ vec3 HosekWilkie(float gamma, float cos_gamma, float cos_theta, float sun_zenith
 {
     return XYZtoRGB(spectral_radiance(gamma, cos_gamma, cos_theta, sun_zenith) * mean_spectral_radiance(sun_zenith));
 }
-
-#endif // HOSEK_GLSL

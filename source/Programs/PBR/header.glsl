@@ -1,8 +1,5 @@
 // created by Andrey Vasiliev
 
-#ifndef HEADER_GLSL
-#define HEADER_GLSL
-
 //#undef HAS_MRT
 //#ifdef GL_ES
 //#define FORCE_TONEMAP
@@ -26,8 +23,8 @@
 #define PSSM_GLOBAL_RANGE 64.0
 #define MRT_COLOR 0
 #define MRT_DEPTH 1
-//#define MRT_VELOCITY 2
-#define MAX_MRT_TEXTURES 2
+#define MRT_VELOCITY 2
+#define MAX_MRT_TEXTURES 3
 
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300
@@ -72,14 +69,12 @@ out vec4 FragColor;
 
 
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
-//#include "hlsl2.glsl"
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define mul(a, b) ((a) * (b))
 #define mtxFromCols(a, b, c) mat3(a, b, c)
 #else
+#define mtxFromCols(a, b, c) transpose(mat3(a, b, c))
 //#include "OgreUnifiedShader.h"
 #endif
 #include "math.glsl"
 #include "mrt.glsl"
-
-#endif // HEADER_GLSL
