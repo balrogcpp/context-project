@@ -87,16 +87,14 @@ uniform float OffsetScale;
 // of the shading terms, outlined in the Readme.MD Appendix.
 struct Light
 {
-    float NdotL;                  // cos angle between normal and light direction
-    float NdotH;                  // cos angle between normal and half vector
-    float LdotH;                  // cos angle between light direction and half vector
-    float VdotH;                  // cos angle between view direction and half vector
+    float NoL;                  // cos angle between normal and light direction
+    float NoH;                  // cos angle between normal and half vector
     vec3 h;
 };
 
 struct PixelParams
 {
-    float NdotV;                  // cos angle between normal and view direction
+    float NoV;                  // cos angle between normal and view direction
     float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
     float occlusion;
     float ssao;
@@ -121,7 +119,7 @@ vec3 EvaluateIBL(const PixelParams pixel)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     float diffuseAO = min(pixel.occlusion, pixel.ssao);
-    float specularAO = computeSpecularAO(pixel.NdotV, diffuseAO, pixel.roughness);
+    float specularAO = computeSpecularAO(pixel.NoV, diffuseAO, pixel.roughness);
 
 #ifdef HAS_IBL
     vec3 reflection = -reflect(V, N);
@@ -159,8 +157,8 @@ float getAngleAttenuation(const vec3 params, const vec3 lightDir, const vec3 toL
 vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelModelPosition)
 {
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
-    float NdotL = saturate(dot(N, l));
-    if (NdotL <= 0.001) return vec3(0.0, 0.0, 0.0);
+    float NoL = saturate(dot(N, l));
+    if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
     float attenuation = 1.0;
 
 #ifdef TERRA_LIGHTMAP
@@ -182,12 +180,49 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     vec3 h = normalize(l + V); // Half vector between both l and v
 
     Light light;
-    light.LdotH = dot(l, h);
-    light.NdotH = dot(N, h);
+    light.NoH = dot(N, h);
     light.h = h;
-    light.NdotL = NdotL;
-    light.VdotH = dot(V, h);
-    vec3 color = SurfaceShading(light, pixel) * computeMicroShadowing(NdotL, pixel.occlusion) * NdotL;
+    light.NoL = NoL;
+    vec3 color = surfaceShading(light, pixel) * computeMicroShadowing(NoL, pixel.occlusion);
+    return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
+}
+
+vec3 EvaluateLocalLight(const PixelParams pixel, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
+{
+    highp vec3 l = LightPositionArray[0].xyz - pixelViewPosition;
+    float fLightD = length(l);
+    l /= fLightD; // Vector from surface point to light
+
+    if (fLightD > LightPointParamsArray[0].x) return vec3(0.0, 0.0, 0.0);
+
+    float NoL = dot(N, l);
+    if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
+
+    // attenuation is property of spot and point light
+    float attenuation = getDistanceAttenuation(LightPointParamsArray[0].yzw, fLightD);
+    if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
+
+    if(LightSpotParamsArray[0].w != 0.0) {
+        attenuation *= getAngleAttenuation(LightSpotParamsArray[0].xyz, LightDirectionArray[0].xyz, l);
+        if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
+    }
+
+#if MAX_SHADOW_TEXTURES > 0
+    if (LightCastsShadowsArray[0] != 0.0) {
+        highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[0], pixelModelPosition);
+        lightSpacePos.xyz /= lightSpacePos.w;
+        attenuation *= CalcShadow(lightSpacePos.xyz, 0);
+        if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
+    }
+#endif
+
+    Light light;
+    vec3 h = normalize(l + V); // Half vector between both l and v
+    light.h = h;
+    light.NoH = saturate(dot(N, h));
+    light.NoL = NoL;
+    vec3 color = surfaceShading(light, pixel);
+
     return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
 }
 
@@ -196,13 +231,15 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
     vec3 color = vec3(0.0, 0.0, 0.0);
 
 #if MAX_SHADOW_TEXTURES > 0
-    int PSSM_OFFSET = (LightPositionArray[0].w == 0.0 && LightCastsShadowsArray[0] == 1.0) ? PSSM_SPLITS - 1 : 0;
+    int PSSM_OFFSET = (LightPositionArray[0].w == 0.0) ? PSSM_SPLITS - 1 : 0;
 #endif
 
-    for (int i = 0; i < MAX_LIGHTS; ++i) {
+    for (int i = 1; i < MAX_LIGHTS; ++i) {
         if (int(LightCount) <= i) break;
 
+#if 1
         if (LightPositionArray[i].w == 0.0) continue;
+#endif
 
         highp vec3 l = LightPositionArray[i].xyz - pixelViewPosition;
         float fLightD = length(l);
@@ -210,8 +247,8 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 
         if (fLightD > LightPointParamsArray[i].x) continue;
 
-        float NdotL = dot(N, l);
-        if (NdotL <= 0.001) continue;
+        float NoL = dot(N, l);
+        if (NoL <= 0.001) continue;
 
         // attenuation is property of spot and point light
         float attenuation = getDistanceAttenuation(LightPointParamsArray[i].yzw, fLightD);
@@ -234,11 +271,9 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
         Light light;
         vec3 h = normalize(l + V); // Half vector between both l and v
         light.h = h;
-        light.LdotH = saturate(dot(l, h));
-        light.NdotH = saturate(dot(N, h));
-        light.NdotL = NdotL;
-        light.VdotH = saturate(dot(V, h));
-        vec3 c = SurfaceShading(light, pixel) * NdotL;
+        light.NoH = saturate(dot(N, h));
+        light.NoL = NoL;
+        vec3 c = surfaceShading(light, pixel);
 
         color += LightDiffuseScaledColourArray[i].xyz * c * attenuation;
     }
@@ -316,14 +351,14 @@ vec3 GetORM(const vec2 uv, float spec)
  * testing fails.
  */
 void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout PixelParams pixel) {
-    pixel.NdotV = abs(dot(N, V)) + 0.001;
+    pixel.NoV = abs(dot(N, V)) + 0.001;
     pixel.diffuseColor = computeDiffuseColor(baseColor, orm.b);
     pixel.occlusion = orm.r;
     pixel.ssao = ssao;
     pixel.perceptualRoughness = orm.g;
     pixel.roughness = perceptualRoughnessToRoughness(orm.g);
     pixel.f0 = computeF0(baseColor, orm.b, 0.04);
-    pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, pixel.NdotV);
+    pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, pixel.NoV);
 
     // https://google.github.io/filament/Filament.md.html#toc5.6.2
     pixel.f90 = saturate(dot(pixel.f0, vec3(50.0 * 0.33, 50.0 * 0.33, 50.0 * 0.33)));
@@ -478,7 +513,10 @@ void main()
     if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
 #endif
 
+#if MAX_SHADOW_TEXTURES > 0
     if (LightPositionArray[0].w == 0.0) color += EvaluateDirectionalLight(pixel, vPosition1);
+#endif
+    if (LightPositionArray[0].w != 0.0) color += EvaluateLocalLight(pixel, vPosition, vPosition1);
     color += EvaluateLocalLights(pixel, vPosition, vPosition1);
 
 #else

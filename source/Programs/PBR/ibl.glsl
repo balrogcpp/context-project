@@ -48,23 +48,23 @@ float singleBounceAO(float visibility) {
 }
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NdotV)
+vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NoV)
 {
     const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
     const vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
     vec4 r = roughness * c0 + c1;
-    float a004 = min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
+    float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
     vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
     return specularColor * AB.x + AB.y;
 }
 
-float EnvBRDFApproxNonmetal(float roughness, float NdotV)
+float EnvBRDFApproxNonmetal(float roughness, float NoV)
 {
     // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
     const vec2 c0 = vec2(-1.0, -0.0275);
     const vec2 c1 = vec2(1.0, 0.0425);
     vec2 r = roughness * c0 + c1;
-    return min(r.x * r.x, exp2(-9.28 * NdotV)) * r.x + r.y;
+    return min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
 }
 
 vec3 specularDFG(const PixelParams pixel) {
@@ -110,7 +110,7 @@ vec3 getSpecularDominantDirection(const vec3 n, const vec3 r, float roughness) {
 //vec3 EvaluateIBL(const PixelParams pixel)
 //{
 //    float diffuseAO = min(pixel.occlusion, pixel.ssao);
-//    float specularAO = computeSpecularAO(pixel.NdotV, diffuseAO, pixel.roughness);
+//    float specularAO = computeSpecularAO(pixel.NoV, diffuseAO, pixel.roughness);
 //
 //    // specular layer
 //    vec3 E = specularDFG(pixel);

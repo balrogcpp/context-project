@@ -11,10 +11,10 @@
 #define MIN_N_DOT_V 1e-4
 
 // Chan 2018, "Material Advances in Call of Duty: WWII"
-float computeMicroShadowing(float NdotL, float visibility)
+float computeMicroShadowing(float NoL, float visibility)
 {
     float aperture = inversesqrt(1.0 - visibility);
-    float microShadow = saturate(NdotL * aperture);
+    float microShadow = saturate(NoL * aperture);
     return microShadow * microShadow;
 }
 
@@ -94,17 +94,16 @@ float D_GGX(float roughness, float NoH, const vec3 h, const vec3 n) {
     return saturateMediump(d);
 }
 
-vec3 SurfaceShading(const Light light, const PixelParams pixel)
-{
-    float V = V_SmithGGXCorrelated(pixel.roughness, pixel.NdotV, light.NdotL);
-    vec3 F  = F_Schlick(pixel.f0, pixel.f90, light.NdotH);
-    float D = D_GGX(pixel.roughness, light.NdotH, light.h, N);
+vec3 surfaceShading(const Light light, const PixelParams pixel) {
+    float V = V_SmithGGXCorrelated(pixel.roughness, pixel.NoV, light.NoL);
+    vec3 F  = F_Schlick(pixel.f0, pixel.f90, light.NoH);
+    float D = D_GGX(pixel.roughness, light.NoH, light.h, N);
 
     vec3 Fr = (D * V) * F;
     vec3 Fd = pixel.diffuseColor * Fd_Lambert();
 
     // https://google.github.io/filament/Filament.md.html#materialsystem/improvingthebrdfs/energylossinspecularreflectance
-    vec3 color = light.NdotL * (Fr * pixel.energyCompensation + Fd);
+    vec3 color = light.NoL * (Fr * pixel.energyCompensation + Fd);
 
     return color;
 }
