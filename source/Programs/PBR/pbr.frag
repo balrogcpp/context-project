@@ -256,9 +256,9 @@ vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 #ifdef HAS_NORMALMAP
 #ifndef GL_ES
     // magic fix for GLES, uniform fails on old Blackbery phone, textureSize works
-    if (TexSize1.x > 1.0) return normalize(mul(tbn, (2.0 * texture2D(NormalTex, uv.xy).xyz - 1.0)));
+    if (TexSize1.x > 1.0) return normalize(mul(tbn, (texture2D(NormalTex, uv.xy).xyz * 2.0 - 1.0)));
 #else
-    if (textureSize(NormalTex, 0).x > 1) return normalize(mul(tbn, (2.0 * texture2D(NormalTex, uv.xy).xyz - 1.0)));
+    if (textureSize(NormalTex, 0).x > 1) return normalize(mul(tbn, (texture2D(NormalTex, uv.xy).xyz * 2.0 - 1.0)));
 #endif
     else return tbn[2];
 #else
@@ -286,16 +286,16 @@ vec3 GetNormal(const vec2 uv)
 
 vec3 GetORM(const vec2 uv, float spec)
 {
-    //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
-    // converting phong specular value to material roughness
 #ifndef TERRA_NORMALMAP
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
-    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
+    //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
+    // converting phong specular value to material roughness
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.5);
 #endif
 #ifdef HAS_ORM
     if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;
-    else orm.b = 0.0;
+    else orm.b = 0.5;
 #endif
 
     return clamp(orm, vec3(0.0, MIN_PERCEPTUAL_ROUGHNESS, 0.0), vec3(1.0, 1.0, 1.0));
@@ -319,8 +319,9 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
     pixel.perceptualRoughness = roughness;
     pixel.roughness = perceptualRoughnessToRoughness(roughness);
     // Assumes an interface from air to an IOR of 1.5 for dielectrics
-    float reflectance = computeDielectricF0(0.5);
-    pixel.f0 = computeF0(baseColor, metallic, reflectance);
+    const float reflectance = 0.5;
+    float f0 = computeDielectricF0(reflectance);
+    pixel.f0 = computeF0(baseColor, metallic, f0);
 
     pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, pixel.NoV);
 
