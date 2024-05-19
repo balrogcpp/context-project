@@ -311,12 +311,17 @@ vec3 GetORM(const vec2 uv, float spec)
  */
 void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout PixelParams pixel) {
     pixel.NoV = abs(dot(N, V)) + 0.001;
-    pixel.diffuseColor = computeDiffuseColor(baseColor, orm.b);
+    float roughness = orm.g;
+    float metallic = orm.b;
+    pixel.diffuseColor = computeDiffuseColor(baseColor, metallic);
     pixel.occlusion = orm.r;
     pixel.ssao = ssao;
-    pixel.perceptualRoughness = orm.g;
-    pixel.roughness = perceptualRoughnessToRoughness(orm.g);
-    pixel.f0 = computeF0(baseColor, orm.b, 0.04);
+    pixel.perceptualRoughness = roughness;
+    pixel.roughness = perceptualRoughnessToRoughness(roughness);
+    // Assumes an interface from air to an IOR of 1.5 for dielectrics
+    float reflectance = computeDielectricF0(0.5);
+    pixel.f0 = computeF0(baseColor, metallic, reflectance);
+
     pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, pixel.NoV);
 
     // https://google.github.io/filament/Filament.md.html#toc5.6.2

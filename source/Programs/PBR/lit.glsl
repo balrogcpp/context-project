@@ -44,12 +44,24 @@ vec3 computeDiffuseColor(const vec3 baseColor, float metallic) {
     return baseColor.rgb * (1.0 - metallic);
 }
 
+float computeDielectricF0(float reflectance) {
+    return 0.16 * reflectance * reflectance;
+}
+
 vec3 computeF0(const vec3 baseColor, float metallic, float reflectance) {
     return baseColor.rgb * metallic + (reflectance * (1.0 - metallic));
 }
 
+float computeRoughnessFromGlossiness(float glossiness) {
+    return 1.0 - glossiness;
+}
+
 float perceptualRoughnessToRoughness(float perceptualRoughness) {
     return perceptualRoughness * perceptualRoughness;
+}
+
+float roughnessToPerceptualRoughness(float roughness) {
+    return sqrt(roughness);
 }
 
 // https://google.github.io/filament/Filament.md.html#materialsystem/specularbrdf/geometricshadowing(specularg)
