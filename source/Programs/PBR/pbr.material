@@ -212,6 +212,7 @@ abstract material TERRA
     set $Normal normal.dds
     set $AO white.dds
     set $SSR black.dds
+    set $IBL specular.dds
 
     technique
     {

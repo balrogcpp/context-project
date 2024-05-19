@@ -20,6 +20,7 @@ abstract fragment_program Unlit_I_fs glsl glsles hlsl
     
     default_params
     {
+        //param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
         param_named_auto AmbientLightColour ambient_light_colour
         param_named_auto SurfaceAmbientColour surface_ambient_colour
         param_named_auto SurfaceDiffuseColour surface_diffuse_colour
@@ -92,6 +93,7 @@ fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
 
     default_params
     {
+        param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
         //param_named_auto ViewMatrix view_matrix
     }
 }
@@ -113,6 +115,7 @@ fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs
 
     default_params
     {
+        param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
         param_named_auto ViewMatrix view_matrix
     }
 }

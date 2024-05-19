@@ -65,6 +65,7 @@ uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 uniform highp vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 #endif // MAX_SHADOW_TEXTURES > 0
+uniform float SurfaceAlphaRejection;
 uniform vec4 AmbientLightColour;
 uniform vec4 SurfaceAmbientColour;
 uniform vec4 SurfaceDiffuseColour;
@@ -159,7 +160,7 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     if (LightPositionArray[0].w != 0.0) return vec3(0.0, 0.0, 0.0);
 
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
-    float NoL = saturate(dot(N, l));
+    float NoL = dot(N, l);
     if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
     float attenuation = 1.0;
 
@@ -169,12 +170,17 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
-        highp vec4 lightSpacePos[PSSM_SPLITS];
-        for (int i = 0; i < PSSM_SPLITS; ++i) {
-            lightSpacePos[i] = mulMat4x4Half3(TexWorldViewProjMatrixArray[i], pixelModelPosition);
-            lightSpacePos[i].xyz /= lightSpacePos[i].w;
+        float fDepth = gl_FragCoord.z / gl_FragCoord.w;
+
+        for (int i = PSSM_SPLITS - 1; i >= 0; --i) {
+            if (fDepth <= PssmSplitPoints[i]) {
+                highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i], pixelModelPosition);
+                lightSpacePos.xyz /= lightSpacePos.w;
+                attenuation *= CalcShadow(lightSpacePos.xyz, i);
+                break;
+            }
         }
-        attenuation = CalcPSSMShadow(lightSpacePos, gl_FragCoord.z / gl_FragCoord.w);
+
         if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
     }
 #endif
@@ -260,26 +266,18 @@ vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 #endif
 }
 
-vec3 GetNormal(const vec2 uv, const vec2 uv1)
+vec3 GetNormal(const vec2 uv)
 {
 #ifndef HAS_TANGENTS
 #if defined(TERRA_NORMALMAP)
-    vec3 n = texture2D(TerraNormalTex, uv1.xy).xyz * 2.0 - 1.0;
-    vec3 t = vec3(1.0, 0.0, 0.0);
-    n = normalize(mulMat3x3Half3(ViewMatrix, n));
-    t = normalize(mulMat3x3Half3(ViewMatrix, t));
-    vec3 b = normalize(cross(n, t));
-    t = normalize(cross(n ,b));
+    vec3 n = texture2D(TerraNormalTex, UV).xyz * 2.0 - 1.0;
+    vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
+    vec3 t = normalize(cross(n ,b));
     highp mat3 tbn = mtxFromCols(t, b, n);
-    return GetNormal(tbn, uv);
+    return normalize(mulMat3x3Half3(ViewMatrix, GetNormal(tbn, uv)));
 #elif defined(PAGED_GEOMETRY)
-    vec3 n = vec3(0.0, 1.0, 0.0);
-    vec3 t = vec3(1.0, 0.0, 0.0);
-    n = normalize(mulMat3x3Half3(ViewMatrix, n));
-    t = normalize(mulMat3x3Half3(ViewMatrix, t));
-    vec3 b = normalize(cross(n, t));
-    highp mat3 tbn = mtxFromCols(t, b, n);
-    return GetNormal(tbn, uv);
+    highp mat3 tbn = mtxFromCols(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 1.0, 0.0));
+    return normalize(mulMat3x3Half3(ViewMatrix, GetNormal(tbn, uv)));
 #endif
 #endif
 
@@ -293,7 +291,7 @@ vec3 GetORM(const vec2 uv, float spec)
 #ifndef TERRA_NORMALMAP
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
-    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * sqrt(1.0 - spec), 0.0);
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
 #endif
 #ifdef HAS_ORM
     if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;
@@ -330,6 +328,13 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
 }
 #endif
 
+#ifdef HAS_ALPHA
+float computeMaskedAlpha(float a) {
+    // Use derivatives to smooth alpha tested edges
+    return (a - 0.5) / max(fwidth(a), 1e-3) + 0.5;
+}
+#endif
+
 // Sampler helper functions
 vec4 GetAlbedo(const vec2 uv, const vec3 color)
 {
@@ -339,7 +344,9 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
 #endif
 
 #ifdef HAS_ALPHA
-    if (albedo.a < 0.5) discard;
+    if (albedo.a <= SurfaceAlphaRejection) {
+        discard;
+    }
 #endif
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
@@ -442,7 +449,7 @@ void main()
 #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
     N = GetNormal(vTBN, uv);
 #else
-    N = GetNormal(uv, uv1);
+    N = GetNormal(uv);
 #endif
 
     float ssao = 1.0;
