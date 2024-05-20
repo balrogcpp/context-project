@@ -161,7 +161,7 @@ vec3 surfaceShading(const Light light, const PixelParams pixel) {
     float NoL = saturate(light.NoL);
     float VoH = saturate(dot(V, h));
     float NoH = saturate(dot(N, h));
-    float LoH = saturate(dot(light.l, h));
+    // float LoH = saturate(dot(light.l, h));
 
     float V = V_SmithGGXCorrelated(pixel.roughness, NoV, light.NoL);
     vec3 F  = F_Schlick(pixel.f0, pixel.f90, VoH); // LoH (?)
