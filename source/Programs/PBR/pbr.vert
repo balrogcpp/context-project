@@ -10,7 +10,7 @@
 uniform highp mat4 posIndexToObjectSpace;
 uniform highp float baseUVScale;
 #endif
-uniform highp mat4 WorldViewMatrix;
+uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
@@ -81,14 +81,14 @@ void main()
 #endif
 
 #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
-    vec3 n = normalize(mulMat3x3Float3(WorldViewMatrix, normal.xyz));
-    vec3 t = normalize(mulMat3x3Float3(WorldViewMatrix, tangent.xyz));
-    vec3 b = cross(n, t) * tangent.w;
+    vec3 n = normalize(mulMat3x3Float3(WorldMatrix, normal.xyz));
+    vec3 t = normalize(mulMat3x3Float3(WorldMatrix, tangent.xyz));
+    vec3 b = cross(n, t) * sign(tangent.w);
     vTBN = mtxFromCols(t, b, n);
 #endif
 
-    highp vec4 viewPosition = mulMat4x4Float3(WorldViewMatrix, position.xyz);
-    vPosition = viewPosition.xyz / viewPosition.w;
+    highp vec4 wPosition = mulMat4x4Float3(WorldMatrix, position.xyz);
+    vPosition = wPosition.xyz / wPosition.w;
     vPosition1 = position.xyz;
     gl_Position = mulMat4x4Float3(WorldViewProjMatrix, position.xyz);
 }

@@ -44,8 +44,6 @@ uniform vec2 TexSize4;
 uniform vec2 TexSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
-uniform highp mat4 ViewMatrix;
-uniform highp mat4 InvViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
@@ -88,9 +86,10 @@ uniform float OffsetScale;
 // of the shading terms, outlined in the Readme.MD Appendix.
 struct Light
 {
-    float NoL;                  // cos angle between normal and light direction
-    float NoH;                  // cos angle between normal and half vector
-    vec3 h;
+    vec3 colorIntensity;  // rgb, pre-exposed intensity
+    vec3 l;
+    float attenuation;
+    float NoL;
 };
 
 struct PixelParams
@@ -109,6 +108,7 @@ struct PixelParams
 
 vec3 V, N;
 vec2 UV;
+float shading_NoV;
 
 #if MAX_LIGHTS > 0
 #include "ibl.glsl"
@@ -125,11 +125,9 @@ vec3 EvaluateIBL(const PixelParams pixel)
 #ifdef HAS_IBL
     vec3 reflection = -reflect(V, N);
     reflection = getSpecularDominantDirection(N, reflection, pixel.roughness);
-    reflection = mulMat3x3Half3(InvViewMatrix, reflection);
     reflection.z *= -1.0;
-    vec3 n = mulMat3x3Half3(InvViewMatrix, N);
 
-    vec3 diffuseLight = pixel.diffuseColor * diffuseIrradiance(n);
+    vec3 diffuseLight = pixel.diffuseColor * diffuseIrradiance(N);
     vec3 specularLight = prefilteredRadiance(reflection, pixel.perceptualRoughness) * (pixel.f0 * pixel.dfg.x + pixel.dfg.y);
 #else
     vec3 diffuseLight = AmbientLightColour.rgb * pixel.diffuseColor;
@@ -160,39 +158,38 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     if (LightPositionArray[0].w != 0.0) return vec3(0.0, 0.0, 0.0);
 
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
-    float NoL = dot(N, l);
+    float NoL = saturate(dot(N, l));
     if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
-    float attenuation = 1.0;
+    float visibility = min(pixel.occlusion, pixel.ssao);
 
 #ifdef TERRA_LIGHTMAP
-    attenuation = FetchTerraShadow(UV);
-    if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
+    visibility = FetchTerraShadow(UV);
+    if (visibility < 0.001) return vec3(0.0, 0.0, 0.0);
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
         float fDepth = gl_FragCoord.z / gl_FragCoord.w;
 
+        //for (int i = 0; i < PSSM_SPLITS; ++i) {
         for (int i = PSSM_SPLITS - 1; i >= 0; --i) {
             if (fDepth <= PssmSplitPoints[i]) {
                 highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i], pixelModelPosition);
                 lightSpacePos.xyz /= lightSpacePos.w;
-                attenuation *= CalcShadow(lightSpacePos.xyz, i);
+                visibility *= CalcShadow(lightSpacePos.xyz, i);
                 break;
             }
         }
 
-        if (attenuation < 0.001) return vec3(0.0, 0.0, 0.0);
+        if (visibility < 0.001) return vec3(0.0, 0.0, 0.0);
     }
 #endif
 
-    vec3 h = normalize(l + V); // Half vector between both l and v
-
     Light light;
-    light.NoH = dot(N, h);
-    light.h = h;
     light.NoL = NoL;
-    vec3 color = surfaceShading(light, pixel) * computeMicroShadowing(NoL, pixel.occlusion);
-    return LightDiffuseScaledColourArray[0].xyz * color * attenuation;
+    light.colorIntensity = LightDiffuseScaledColourArray[0].xyz;
+    light.attenuation = visibility;
+    vec3 color = surfaceShading(light, pixel) * computeMicroShadowing(NoL, visibility);
+    return color;
 }
 
 vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
@@ -208,13 +205,13 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 
         if (LightPositionArray[i].w == 0.0) continue;
 
-        highp vec3 l = LightPositionArray[i].xyz - pixelViewPosition;
+        highp vec3 l = (LightPositionArray[i].xyz - pixelViewPosition);
         float fLightD = length(l);
         l /= fLightD; // Vector from surface point to light
 
         if (fLightD > LightPointParamsArray[i].x) continue;
 
-        float NoL = dot(N, l);
+        float NoL = saturate(dot(N, l));
         if (NoL <= 0.001) continue;
 
         // attenuation is property of spot and point light
@@ -236,9 +233,6 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 #endif
 
         Light light;
-        vec3 h = normalize(l + V); // Half vector between both l and v
-        light.h = h;
-        light.NoH = saturate(dot(N, h));
         light.NoL = NoL;
         vec3 c = surfaceShading(light, pixel);
 
@@ -274,10 +268,10 @@ vec3 GetNormal(const vec2 uv)
     vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     vec3 t = normalize(cross(n ,b));
     highp mat3 tbn = mtxFromCols(t, b, n);
-    return normalize(mulMat3x3Half3(ViewMatrix, GetNormal(tbn, uv)));
+    return GetNormal(tbn, uv);
 #elif defined(PAGED_GEOMETRY)
     highp mat3 tbn = mtxFromCols(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 1.0, 0.0));
-    return normalize(mulMat3x3Half3(ViewMatrix, GetNormal(tbn, uv)));
+    return GetNormal(tbn, uv);
 #endif
 #endif
 
@@ -291,11 +285,11 @@ vec3 GetORM(const vec2 uv, float spec)
 #else
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to material roughness
-    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.5);
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec), 0.0);
 #endif
 #ifdef HAS_ORM
     if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;
-    else orm.b = 0.5;
+    else orm.b = 0.0;
 #endif
 
     return clamp(orm, vec3(0.0, MIN_PERCEPTUAL_ROUGHNESS, 0.0), vec3(1.0, 1.0, 1.0));
@@ -439,7 +433,7 @@ void main()
     float alpha = colour.a;
     vec3 emission = GetEmission(uv);
 
-    V = -normalize(vPosition);
+    V = normalize(CameraPosition - vPosition);
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
     vec4 fragPos = mulMat4x4Half3(WorldViewProjMatrix, vPosition1);
     fragPos.xyz /= fragPos.w;
@@ -458,6 +452,7 @@ void main()
     N = GetNormal(uv);
 #endif
 
+    shading_NoV = saturate(dot(N, V));
     float ssao = 1.0;
 #ifdef GL_ES
     // magic fix for GLES

@@ -29,15 +29,30 @@ float pow5(float x) {
     return x2 * x2 * x;
 }
 
-// https://google.github.io/filament/Filament.md.html#materialsystem/diffusebrdf
-float Fd_Lambert() {
-    return 1.0 / M_PI;
-}
-
-// https://google.github.io/filament/Filament.md.html#materialsystem/specularbrdf/fresnel(specularf)
 vec3 F_Schlick(const vec3 f0, float f90, float VoH) {
     // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
     return f0 + (f90 - f0) * pow5(1.0 - VoH);
+}
+
+vec3 F_Schlick(const vec3 f0, float VoH) {
+    float f = pow(1.0 - VoH, 5.0);
+    return f + f0 * (1.0 - f);
+}
+
+float F_Schlick(float f0, float f90, float VoH) {
+    return f0 + (f90 - f0) * pow5(1.0 - VoH);
+}
+
+float Fd_Lambert() {
+    return 1.0 / PI;
+}
+
+float Fd_Burley(float roughness, float NoV, float NoL, float LoH) {
+    // Burley 2012, "Physically-Based Shading at Disney"
+    float f90 = 0.5 + 2.0 * roughness * LoH * LoH;
+    float lightScatter = F_Schlick(1.0, f90, NoL);
+    float viewScatter  = F_Schlick(1.0, f90, NoV);
+    return lightScatter * viewScatter * (1.0 / PI);
 }
 
 vec3 computeDiffuseColor(const vec3 baseColor, float metallic) {
@@ -78,8 +93,24 @@ float V_SmithGGXCorrelated(float roughness, float NoV, float NoL) {
     return saturateMediump(v);
 }
 
+float V_SmithGGXCorrelated_Fast(float roughness, float NoV, float NoL) {
+    // Hammon 2017, "PBR Diffuse Lighting for GGX+Smith Microsurfaces"
+    float v = 0.5 / mix(2.0 * NoL * NoV, NoL + NoV, roughness);
+    return saturateMediump(v);
+}
+
+float V_SmithGGXCorrelated_Anisotropic(float at, float ab, float ToV, float BoV,
+        float ToL, float BoL, float NoV, float NoL) {
+    // Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"
+    // TODO: lambdaV can be pre-computed for all the lights, it should be moved out of this function
+    float lambdaV = NoL * length(vec3(at * ToV, ab * BoV, NoV));
+    float lambdaL = NoV * length(vec3(at * ToL, ab * BoL, NoL));
+    float v = 0.5 / (lambdaV + lambdaL);
+    return saturateMediump(v);
+}
+
 // https://google.github.io/filament/Filament.md.html#materialsystem/specularbrdf/normaldistributionfunction(speculard)
-float D_GGX(float roughness, float NoH, const vec3 h, const vec3 n) {
+float D_GGX(float roughness, float NoH, const vec3 h) {
     // Walter et al. 2007, "Microfacet Models for Refraction through Rough Surfaces"
 
     // In mediump, there are two problems computing 1.0 - NoH^2
@@ -94,7 +125,7 @@ float D_GGX(float roughness, float NoH, const vec3 h, const vec3 n) {
     // enough precision).
     // Overall this yields better performance, keeping all computations in mediump
 #ifdef GL_ES
-    vec3 NxH = cross(n, h);
+    vec3 NxH = cross(N, h);
     float oneMinusNoHSquared = dot(NxH, NxH);
 #else
     float oneMinusNoHSquared = 1.0 - NoH * NoH;
@@ -107,15 +138,22 @@ float D_GGX(float roughness, float NoH, const vec3 h, const vec3 n) {
 }
 
 vec3 surfaceShading(const Light light, const PixelParams pixel) {
+    vec3 h = normalize(V + light.l);
+
+    float NoV = shading_NoV;
+    float NoL = saturate(light.NoL);
+    float NoH = saturate(dot(N, h));
+    float LoH = saturate(dot(light.l, h));
+
     float V = V_SmithGGXCorrelated(pixel.roughness, pixel.NoV, light.NoL);
-    vec3 F  = F_Schlick(pixel.f0, pixel.f90, light.NoH);
-    float D = D_GGX(pixel.roughness, light.NoH, light.h, N);
+    vec3 F  = F_Schlick(pixel.f0, pixel.f90, NoH);
+    float D = D_GGX(pixel.roughness, NoH, h);
 
     vec3 Fr = (D * V) * F;
     vec3 Fd = pixel.diffuseColor * Fd_Lambert();
 
     // https://google.github.io/filament/Filament.md.html#materialsystem/improvingthebrdfs/energylossinspecularreflectance
-    vec3 color = light.NoL * (Fr * pixel.energyCompensation + Fd);
+    vec3 color = light.colorIntensity * light.NoL * (Fr * pixel.energyCompensation + Fd) * light.attenuation;
 
     return color;
 }
