@@ -137,23 +137,39 @@ float D_GGX(float roughness, float NoH, const vec3 h) {
     return saturateMediump(d);
 }
 
+/**
+ * Evaluates lit materials with the standard shading model. This model comprises
+ * of 2 BRDFs: an optional clear coat BRDF, and a regular surface BRDF.
+ *
+ * Surface BRDF
+ * The surface BRDF uses a diffuse lobe and a specular lobe to render both
+ * dielectrics and conductors. The specular lobe is based on the Cook-Torrance
+ * micro-facet model (see brdf.fs for more details). In addition, the specular
+ * can be either isotropic or anisotropic.
+ *
+ * Clear coat BRDF
+ * The clear coat BRDF simulates a transparent, absorbing dielectric layer on
+ * top of the surface. Its IOR is set to 1.5 (polyutherane) to simplify
+ * our computations. This BRDF only contains a specular lobe and while based
+ * on the Cook-Torrance microfacet model, it uses cheaper terms than the surface
+ * BRDF's specular lobe (see brdf.fs).
+ */
 vec3 surfaceShading(const Light light, const PixelParams pixel) {
     vec3 h = normalize(V + light.l);
 
     float NoV = shading_NoV;
     float NoL = saturate(light.NoL);
+    float VoH = saturate(dot(V, h));
     float NoH = saturate(dot(N, h));
     float LoH = saturate(dot(light.l, h));
 
     float V = V_SmithGGXCorrelated(pixel.roughness, pixel.NoV, light.NoL);
-    vec3 F  = F_Schlick(pixel.f0, pixel.f90, NoH);
+    vec3 F  = F_Schlick(pixel.f0, pixel.f90, VoH); // LoH (?)
     float D = D_GGX(pixel.roughness, NoH, h);
 
     vec3 Fr = (D * V) * F;
     vec3 Fd = pixel.diffuseColor * Fd_Lambert();
 
     // https://google.github.io/filament/Filament.md.html#materialsystem/improvingthebrdfs/energylossinspecularreflectance
-    vec3 color = light.colorIntensity * light.NoL * (Fr * pixel.energyCompensation + Fd) * light.attenuation;
-
-    return color;
+    return (light.colorIntensity * light.NoL) * (Fr * pixel.energyCompensation + Fd) * light.attenuation;
 }

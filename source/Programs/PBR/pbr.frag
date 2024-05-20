@@ -44,6 +44,7 @@ uniform vec2 TexSize4;
 uniform vec2 TexSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
+uniform highp mat4 ViewMatrix;
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
@@ -170,8 +171,7 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     if (LightCastsShadowsArray[0] != 0.0) {
         float fDepth = gl_FragCoord.z / gl_FragCoord.w;
 
-        //for (int i = 0; i < PSSM_SPLITS; ++i) {
-        for (int i = PSSM_SPLITS - 1; i >= 0; --i) {
+        for (int i = 0; i < PSSM_SPLITS; ++i) {
             if (fDepth <= PssmSplitPoints[i]) {
                 highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i], pixelModelPosition);
                 lightSpacePos.xyz /= lightSpacePos.w;
@@ -285,7 +285,7 @@ vec3 GetORM(const vec2 uv, float spec)
 #else
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to material roughness
-    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec), 0.0);
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
 #endif
 #ifdef HAS_ORM
     if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;
@@ -501,5 +501,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, N, StaticObj * fragVelocity.xy);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, mulMat3x3Float3(ViewMatrix, N), StaticObj * fragVelocity.xy);
 }
