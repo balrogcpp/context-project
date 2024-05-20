@@ -95,7 +95,6 @@ struct Light
 
 struct PixelParams
 {
-    float NoV;                  // cos angle between normal and view direction
     float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
     float occlusion;
     float ssao;
@@ -103,8 +102,8 @@ struct PixelParams
     float f90;           // reflectance color at grazing angle
     float roughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
     vec3 diffuseColor;            // color contribution from diffuse lighting
-    vec3  dfg;
-    vec3  energyCompensation;
+    vec3 dfg;
+    vec3 energyCompensation;
 };
 
 vec3 V, N;
@@ -121,7 +120,7 @@ vec3 EvaluateIBL(const PixelParams pixel)
 {
     // retrieve a scale and bias to F0. See [1], Figure 3
     float diffuseAO = min(pixel.occlusion, pixel.ssao);
-    float specularAO = computeSpecularAO(pixel.NoV, diffuseAO, pixel.roughness);
+    float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
 
 #ifdef HAS_IBL
     vec3 reflection = -reflect(V, N);
@@ -304,7 +303,8 @@ vec3 GetORM(const vec2 uv, float spec)
  * testing fails.
  */
 void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout PixelParams pixel) {
-    pixel.NoV = abs(dot(N, V)) + 0.001;
+    shading_NoV = clampNoV(dot(N, V));
+
     float roughness = orm.g;
     float metallic = orm.b;
     pixel.diffuseColor = computeDiffuseColor(baseColor, metallic);
@@ -317,7 +317,7 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
     float f0 = computeDielectricF0(reflectance);
     pixel.f0 = computeF0(baseColor, metallic, f0);
 
-    pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, pixel.NoV);
+    pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, shading_NoV);
 
     // https://google.github.io/filament/Filament.md.html#toc5.6.2
     pixel.f90 = saturate(dot(pixel.f0, vec3(50.0 * 0.33, 50.0 * 0.33, 50.0 * 0.33)));
@@ -452,7 +452,6 @@ void main()
     N = GetNormal(uv);
 #endif
 
-    shading_NoV = saturate(dot(N, V));
     float ssao = 1.0;
 #ifdef GL_ES
     // magic fix for GLES
