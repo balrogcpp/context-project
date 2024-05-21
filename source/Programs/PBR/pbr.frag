@@ -288,10 +288,10 @@ vec3 GetORM(const vec2 uv, float spec)
 void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout PixelParams pixel) {
     shading_NoV = clampNoV(dot(N, V));
 
-    float roughness = orm.g;
-    float metallic = orm.b;
+    float roughness = orm.y;
+    float metallic = orm.z;
     pixel.diffuseColor = computeDiffuseColor(baseColor, metallic);
-    pixel.occlusion = orm.r;
+    pixel.occlusion = orm.x;
     pixel.ssao = ssao;
     pixel.perceptualRoughness = roughness;
     pixel.roughness = perceptualRoughnessToRoughness(roughness);
@@ -400,9 +400,12 @@ void main()
     vec3 color = vec3(0.0, 0.0, 0.0);
 
 #ifdef HAS_UV
-    vec2 uv = vUV0 * (1.0 + TexScale);
+    vec2 uv = vUV0;
     vec2 uv1 = vUV0;
     UV = vUV0;
+#ifdef TERRA_LIGHTMAP
+    uv *= TexScale;
+#endif
 #else
     const vec2 uv = vec2(0.0, 0.0);
     const vec2 uv1 = vec2(0.0, 0.0);

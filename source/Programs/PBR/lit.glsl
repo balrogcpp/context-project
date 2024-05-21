@@ -116,7 +116,7 @@ float D_GGX(float roughness, float NoH, const vec3 h) {
 
     float a = NoH * roughness;
     float k = roughness / (oneMinusNoHSquared + a * a);
-    float d = k * k * (1.0 / M_PI);
+    float d = k * k * (1.0 / PI);
     return saturateMediump(d);
 }
 
@@ -170,17 +170,17 @@ float distribution(float roughness, float NoH, const vec3 h) {
 float visibility(float roughness, float NoV, float NoL) {
 #ifndef GL_ES
     return V_SmithGGXCorrelated(roughness, NoV, NoL);
-#elif BRDF_SPECULAR_V == SPECULAR_V_SMITH_GGX_FAST
+#else
     return V_SmithGGXCorrelated_Fast(roughness, NoV, NoL);
 #endif
 }
 
 vec3 fresnel(const vec3 f0, float LoH) {
-#ifdef GL_ES
-    return F_Schlick(f0, LoH); // f90 = 1.0
-#else
+#ifndef GL_ES
     float f90 = saturate(dot(f0, vec3(50.0 * 0.33, 50.0 * 0.33, 50.0 * 0.33)));
     return F_Schlick(f0, f90, LoH);
+#else
+    return F_Schlick(f0, LoH); // f90 = 1.0
 #endif
 }
 
@@ -226,16 +226,12 @@ vec3 surfaceShading(const Light light, const PixelParams pixel, float occlusion)
     // Energy conservative wrap diffuse to simulate subsurface scattering
     diffuse *= Fd_Wrap(dot(shading_normal, light.l), 0.5);
 #endif
+
     vec3 Fd = pixel.diffuseColor * diffuse;
 
     // The energy compensation term is used to counteract the darkening effect
     // at high roughness
-#if !defined(SHADING_MODEL_SUBSURFACE) && !defined(SHADING_MODEL_CLOTH)
     vec3 color = (Fd + Fr * pixel.energyCompensation) * (NoL * occlusion);
-#else
-    // avoid extra multiplication to energyCompensation
-    vec3 color = (Fd + Fr) * (NoL * occlusion);
-#endif
 
 #if defined(SHADING_MODEL_SUBSURFACE)
     // subsurface scattering

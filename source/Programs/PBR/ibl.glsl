@@ -104,7 +104,7 @@ vec3 getSpecularDominantDirection(const vec3 n, const vec3 r, float roughness) {
 }
 
 vec3 getReflectedVector(float roughness) {
-    vec3 r = -reflect(V, N);
+    vec3 r = reflect(-V, N);
     r = getSpecularDominantDirection(N, r, roughness);
     r.z *= -1.0;
     return r;
