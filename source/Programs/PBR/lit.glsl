@@ -11,8 +11,7 @@
 #define MIN_N_DOT_V 1e-4
 
 // Chan 2018, "Material Advances in Call of Duty: WWII"
-float computeMicroShadowing(float NoL, float visibility)
-{
+float computeMicroShadowing(float NoL, float visibility) {
     float aperture = inversesqrt(1.0 - visibility);
     float microShadow = saturate(NoL * aperture);
     return microShadow * microShadow;
@@ -27,32 +26,6 @@ float clampNoV(float NoV) {
 float pow5(float x) {
     float x2 = x * x;
     return x2 * x2 * x;
-}
-
-vec3 F_Schlick(const vec3 f0, float f90, float VoH) {
-    // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
-    return f0 + (f90 - f0) * pow5(1.0 - VoH);
-}
-
-vec3 F_Schlick(const vec3 f0, float VoH) {
-    float f = pow(1.0 - VoH, 5.0);
-    return f + f0 * (1.0 - f);
-}
-
-float F_Schlick(float f0, float f90, float VoH) {
-    return f0 + (f90 - f0) * pow5(1.0 - VoH);
-}
-
-float Fd_Lambert() {
-    return 1.0 / PI;
-}
-
-float Fd_Burley(float roughness, float NoV, float NoL, float LoH) {
-    // Burley 2012, "Physically-Based Shading at Disney"
-    float f90 = 0.5 + 2.0 * roughness * LoH * LoH;
-    float lightScatter = F_Schlick(1.0, f90, NoL);
-    float viewScatter  = F_Schlick(1.0, f90, NoV);
-    return lightScatter * viewScatter * (1.0 / PI);
 }
 
 vec3 computeDiffuseColor(const vec3 baseColor, float metallic) {
@@ -109,6 +82,16 @@ float V_SmithGGXCorrelated_Anisotropic(float at, float ab, float ToV, float BoV,
     return saturateMediump(v);
 }
 
+float V_Kelemen(float LoH) {
+    // Kelemen 2001, "A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling"
+    return saturateMediump(0.25 / (LoH * LoH));
+}
+
+float V_Neubelt(float NoV, float NoL) {
+    // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
+    return saturateMediump(1.0 / (4.0 * (NoL + NoV - NoL * NoV)));
+}
+
 // https://google.github.io/filament/Filament.md.html#materialsystem/specularbrdf/normaldistributionfunction(speculard)
 float D_GGX(float roughness, float NoH, const vec3 h) {
     // Walter et al. 2007, "Microfacet Models for Refraction through Rough Surfaces"
@@ -135,6 +118,45 @@ float D_GGX(float roughness, float NoH, const vec3 h) {
     float k = roughness / (oneMinusNoHSquared + a * a);
     float d = k * k * (1.0 / M_PI);
     return saturateMediump(d);
+}
+
+float D_Charlie(float roughness, float NoH) {
+    // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
+    float invAlpha  = 1.0 / roughness;
+    float cos2h = NoH * NoH;
+    float sin2h = max(1.0 - cos2h, 0.0078125); // 2^(-14/2), so sin2h^2 > 0 in fp16
+    return (2.0 + invAlpha) * pow(sin2h, invAlpha * 0.5) / (2.0 * PI);
+}
+
+vec3 F_Schlick(const vec3 f0, float f90, float VoH) {
+    // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
+    return f0 + (f90 - f0) * pow5(1.0 - VoH);
+}
+
+vec3 F_Schlick(const vec3 f0, float VoH) {
+    float f = pow(1.0 - VoH, 5.0);
+    return f + f0 * (1.0 - f);
+}
+
+float F_Schlick(float f0, float f90, float VoH) {
+    return f0 + (f90 - f0) * pow5(1.0 - VoH);
+}
+
+float Fd_Lambert() {
+    return 1.0 / PI;
+}
+
+float Fd_Burley(float roughness, float NoV, float NoL, float LoH) {
+    // Burley 2012, "Physically-Based Shading at Disney"
+    float f90 = 0.5 + 2.0 * roughness * LoH * LoH;
+    float lightScatter = F_Schlick(1.0, f90, NoL);
+    float viewScatter  = F_Schlick(1.0, f90, NoV);
+    return lightScatter * viewScatter * (1.0 / PI);
+}
+
+// Energy conserving wrap diffuse term, does *not* include the divide by pi
+float Fd_Wrap(float NoL, float w) {
+    return saturate((NoL + w) / sq(1.0 + w));
 }
 
 /**
@@ -170,6 +192,10 @@ vec3 surfaceShading(const Light light, const PixelParams pixel) {
     vec3 Fr = (D * V) * F;
     vec3 Fd = pixel.diffuseColor * Fd_Lambert();
 
+    // The energy compensation term is used to counteract the darkening effect
+    // at high roughness
+    vec3 color = Fd + Fr * pixel.energyCompensation;
+
     // https://google.github.io/filament/Filament.md.html#materialsystem/improvingthebrdfs/energylossinspecularreflectance
-    return (light.colorIntensity * light.NoL) * (Fr * pixel.energyCompensation + Fd) * light.attenuation;
+    return (color * light.colorIntensity) * (light.attenuation * light.NoL);
 }

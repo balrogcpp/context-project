@@ -114,33 +114,6 @@ float shading_NoV;
 #include "ibl.glsl"
 #include "lit.glsl"
 
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
-vec3 EvaluateIBL(const PixelParams pixel)
-{
-    // retrieve a scale and bias to F0. See [1], Figure 3
-    float diffuseAO = min(pixel.occlusion, pixel.ssao);
-    float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
-
-#ifdef HAS_IBL
-    vec3 reflection = -reflect(V, N);
-    reflection = getSpecularDominantDirection(N, reflection, pixel.roughness);
-    reflection.z *= -1.0;
-
-    vec3 diffuseLight = pixel.diffuseColor * diffuseIrradiance(N);
-    vec3 specularLight = prefilteredRadiance(reflection, pixel.perceptualRoughness) * (pixel.f0 * pixel.dfg.x + pixel.dfg.y);
-#else
-    vec3 diffuseLight = AmbientLightColour.rgb * pixel.diffuseColor;
-    vec3 specularLight = AmbientLightColour.rgb * (pixel.f0 * pixel.dfg.x + pixel.dfg.y);
-#endif
-
-    // extra ambient occlusion term
-    multiBounceAO(diffuseAO, pixel.diffuseColor, diffuseLight);
-    multiBounceSpecularAO(specularAO, pixel.f0, specularLight);
-
-    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (diffuseLight  + specularLight);
-}
-
 float getDistanceAttenuation(const vec3 params, float distance)
 {
     return 1.0 / (params.x + params.y * distance + params.z * distance * distance);
@@ -160,7 +133,7 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
     float NoL = saturate(dot(N, l));
     if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
-    float visibility = min(pixel.occlusion, pixel.ssao);
+    float visibility = pixel.ssao;
 
 #ifdef TERRA_LIGHTMAP
     visibility = FetchTerraShadow(UV);
@@ -186,9 +159,9 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     Light light;
     light.NoL = NoL;
     light.colorIntensity = LightDiffuseScaledColourArray[0].xyz;
+    visibility *= computeMicroShadowing(NoL, pixel.occlusion);
     light.attenuation = visibility;
-    vec3 color = surfaceShading(light, pixel) * computeMicroShadowing(NoL, visibility);
-    return color;
+    return surfaceShading(light, pixel);
 }
 
 vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
@@ -233,9 +206,10 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 
         Light light;
         light.NoL = NoL;
-        vec3 c = surfaceShading(light, pixel);
+        light.colorIntensity = LightDiffuseScaledColourArray[i].xyz;
+        light.attenuation = attenuation;
 
-        color += LightDiffuseScaledColourArray[i].xyz * c * attenuation;
+        color += surfaceShading(light, pixel);
     }
 
     return color;
@@ -473,13 +447,13 @@ void main()
     PixelParams pixel;
     getPixelParams(albedo, orm, ssao, pixel);
 
-    color += EvaluateIBL(pixel);
+//#ifdef HAS_SSR
+//    vec3 ssr = vec3(0.0, 0.0, 0.0);
+//    if (dDepth <= 0.001) ssr = texture2D(SSR, nuv).rgb;
+//    if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
+//#endif
 
-#ifdef HAS_SSR
-    vec3 ssr = vec3(0.0, 0.0, 0.0);
-    if (dDepth <= 0.001) ssr = texture2D(SSR, nuv).rgb;
-    if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
-#endif
+    color += evaluateIBL(pixel);
 
 #if MAX_SHADOW_TEXTURES > 0
     color += EvaluateDirectionalLight(pixel, vPosition1);

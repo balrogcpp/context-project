@@ -102,49 +102,40 @@ vec3 prefilteredRadiance(const vec3 n, float perceptualRoughness) {
 vec3 getSpecularDominantDirection(const vec3 n, const vec3 r, float roughness) {
     return mix(r, n, roughness * roughness);
 }
+
+vec3 getReflectedVector(float roughness) {
+    vec3 r = -reflect(V, N);
+    r = getSpecularDominantDirection(N, r, roughness);
+    r.z *= -1.0;
+    return r;
+}
 #endif
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-//vec3 EvaluateIBL(const PixelParams pixel)
-//{
-//    float diffuseAO = min(pixel.occlusion, pixel.ssao);
-//    float specularAO = computeSpecularAO(pixel.NoV, diffuseAO, pixel.roughness);
-//
-//    // specular layer
-//    vec3 E = specularDFG(pixel);
-//
-//    // diffuse layer
-//    float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
-//
-//#ifdef HAS_IBL
-//    vec3 r = -reflect(V, N);
-//    r = getSpecularDominantDirection(N, r, pixel.roughness);
-//    r = mulMat3x3Half3(InvViewMatrix, r);
-//    r.z *= -1.0;
-//    vec3 n = mulMat3x3Half3(InvViewMatrix, N);
-//
-//    vec3 Fr = E * prefilteredRadiance(r, pixel.perceptualRoughness);
-//    Fr *= singleBounceAO(specularAO) * pixel.energyCompensation;
-//
-//    vec3 diffuseIrradiance = diffuseIrradiance(n);
-//    vec3 Fd = pixel.diffuseColor * diffuseIrradiance * (1.0 - E) * diffuseBRDF;
-//#else
-//    vec3 Fr = E * AmbientLightColour.rgb;
-//    Fr *= singleBounceAO(specularAO) * pixel.energyCompensation;
-//    vec3 Fd = pixel.diffuseColor * AmbientLightColour.rgb * (1.0 - E) * diffuseBRDF;
-//#endif
-//
-//    // extra ambient occlusion term
-//    multiBounceAO(diffuseAO, pixel.diffuseColor, Fd);
-//    multiBounceSpecularAO(specularAO, pixel.f0, Fr);
-//
-//    // Note: iblLuminance is already premultiplied by the exposure
-//#ifdef HAS_IBL
-//    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (Fd + Fr);
-//#else
-//    vec3 specular = Fr * (pixel.f0 * pixel.dfg.x + pixel.dfg.y);
-//    return SurfaceAmbientColour.rgb * (Fd + specular);
-//#endif
-//}
+vec3 evaluateIBL(const PixelParams pixel) {
+    float diffuseAO = min(pixel.occlusion, pixel.ssao);
+    float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
+
+    vec3 E = specularDFG(pixel);
+    float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
+
+#ifdef HAS_IBL
+    vec3 r = getReflectedVector(pixel.roughness);
+
+    vec3 Fr = E * prefilteredRadiance(r, pixel.perceptualRoughness);
+
+    vec3 diffuseIrradiance = diffuseIrradiance(N);
+    vec3 Fd = pixel.diffuseColor * diffuseIrradiance * (1.0 - E) * diffuseBRDF;
+#else
+    vec3 Fr = E;
+    vec3 Fd = pixel.diffuseColor * (1.0 - E) * diffuseBRDF;
+#endif
+
+    // extra ambient occlusion term
+    multiBounceAO(diffuseAO, pixel.diffuseColor, Fd);
+    multiBounceSpecularAO(specularAO, pixel.f0, Fr);
+
+    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (Fd  + Fr);
+}

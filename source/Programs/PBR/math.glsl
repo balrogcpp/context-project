@@ -93,43 +93,40 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 }
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float fstep(float x, float y)
-{
+float fstep(float x, float y) {
     return saturate(((x - y) - HALF_EPSILON) * HALF_MAX);
 }
 
-float fsign(float x)
-{
+float fsign(float x) {
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 
-float max3(const vec3 a)
-{
+float max3(const vec3 a) {
     return max(max(a.x, a.y), a.z);
+}
+
+float sq(float x) {
+    return x * x;
 }
 
 // NaN checker
 // /Gic isn't enabled on fxc so we can't rely on isnan() anymore
-bool IsNan(float x)
-{
+bool IsNan(float x) {
     // For some reason the following tests outputs "internal compiler error" randomly on desktop
     // so we'll use a safer but slightly slower version instead :/
     //return (x <= 0.0 || 0.0 <= x) ? false : true;
     return (x < 0.0 || x > 0.0 || x == 0.0) ? false : true;
 }
 
-bool IsNan(const vec2 x)
-{
+bool IsNan(const vec2 x) {
     return IsNan(x.x) || IsNan(x.y);
 }
 
-bool IsNan(const vec3 x)
-{
+bool IsNan(const vec3 x) {
     return IsNan(x.x) || IsNan(x.y) || IsNan(x.z);
 }
 
-bool IsNan(const vec4 x)
-{
+bool IsNan(const vec4 x) {
     return IsNan(x.x) || IsNan(x.y) || IsNan(x.z) || IsNan(x.w);
 }
 
