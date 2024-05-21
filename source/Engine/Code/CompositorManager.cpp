@@ -176,8 +176,8 @@ void CompositorManager::OnSetUp() {
   AddCompositor("GodRays", !RenderSystemIsGLES2());
   AddCompositor("HDR", !RenderSystemIsGLES2());
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
-  AddCompositor("FXAA", false);
-  AddCompositor("Tonemap", true);
+  AddCompositor("FXAA", true);
+  AddCompositor("Tonemap", false);
   AddCompositor("MotionBlur", false);
   AddCompositor("Pause", false);
 

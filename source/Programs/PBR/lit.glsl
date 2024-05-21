@@ -176,11 +176,11 @@ float visibility(float roughness, float NoV, float NoL) {
 }
 
 vec3 fresnel(const vec3 f0, float LoH) {
-#ifndef GL_ES
+#ifdef GL_ES
+    return F_Schlick(f0, LoH); // f90 = 1.0
+#else
     float f90 = saturate(dot(f0, vec3(50.0 * 0.33, 50.0 * 0.33, 50.0 * 0.33)));
     return F_Schlick(f0, f90, LoH);
-#else
-    return F_Schlick(f0, LoH); // f90 = 1.0
 #endif
 }
 
