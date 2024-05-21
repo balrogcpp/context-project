@@ -159,6 +159,31 @@ float Fd_Wrap(float NoL, float w) {
     return saturate((NoL + w) / sq(1.0 + w));
 }
 
+//------------------------------------------------------------------------------
+// Specular BRDF dispatch
+//------------------------------------------------------------------------------
+
+float distribution(float roughness, float NoH, const vec3 h) {
+    return D_GGX(roughness, NoH, h);
+}
+
+float visibility(float roughness, float NoV, float NoL) {
+#ifndef GL_ES
+    return V_SmithGGXCorrelated(roughness, NoV, NoL);
+#elif BRDF_SPECULAR_V == SPECULAR_V_SMITH_GGX_FAST
+    return V_SmithGGXCorrelated_Fast(roughness, NoV, NoL);
+#endif
+}
+
+vec3 fresnel(const vec3 f0, float LoH) {
+#ifdef GL_ES
+    return F_Schlick(f0, LoH); // f90 = 1.0
+#else
+    float f90 = saturate(dot(f0, vec3(50.0 * 0.33, 50.0 * 0.33, 50.0 * 0.33)));
+    return F_Schlick(f0, f90, LoH);
+#endif
+}
+
 /**
  * Evaluates lit materials with the standard shading model. This model comprises
  * of 2 BRDFs: an optional clear coat BRDF, and a regular surface BRDF.
@@ -176,7 +201,7 @@ float Fd_Wrap(float NoL, float w) {
  * on the Cook-Torrance microfacet model, it uses cheaper terms than the surface
  * BRDF's specular lobe (see brdf.fs).
  */
-vec3 surfaceShading(const Light light, const PixelParams pixel) {
+vec3 surfaceShading(const Light light, const PixelParams pixel, float occlusion) {
     vec3 h = normalize(V + light.l);
 
     float NoV = shading_NoV;
@@ -185,17 +210,44 @@ vec3 surfaceShading(const Light light, const PixelParams pixel) {
     float NoH = saturate(dot(N, h));
     // float LoH = saturate(dot(light.l, h));
 
-    float V = V_SmithGGXCorrelated(pixel.roughness, NoV, light.NoL);
-    vec3 F  = F_Schlick(pixel.f0, pixel.f90, VoH); // LoH (?)
-    float D = D_GGX(pixel.roughness, NoH, h);
+#if !defined(SHADING_MODEL_CLOTH)
+    float D = distribution(pixel.roughness, NoH, h);
+    float V = visibility(pixel.roughness, NoV, NoL);
+    vec3  F = fresnel(pixel.f0, VoH); // LoH (?)
+#else
+    float D = D_Charlie(pixel.roughness, NoH);
+    float V = V_Neubelt(NoV, NoL);
+    vec3  F = pixel.f0;
+#endif
 
     vec3 Fr = (D * V) * F;
-    vec3 Fd = pixel.diffuseColor * Fd_Lambert();
+    float diffuse = Fd_Lambert();
+#if defined(MATERIAL_HAS_SUBSURFACE_COLOR)
+    // Energy conservative wrap diffuse to simulate subsurface scattering
+    diffuse *= Fd_Wrap(dot(shading_normal, light.l), 0.5);
+#endif
+    vec3 Fd = pixel.diffuseColor * diffuse;
 
     // The energy compensation term is used to counteract the darkening effect
     // at high roughness
-    vec3 color = Fd + Fr * pixel.energyCompensation;
+#if !defined(SHADING_MODEL_SUBSURFACE) && !defined(SHADING_MODEL_CLOTH)
+    vec3 color = (Fd + Fr * pixel.energyCompensation) * (NoL * occlusion);
+#else
+    // avoid extra multiplication to energyCompensation
+    vec3 color = (Fd + Fr) * (NoL * occlusion);
+#endif
+
+#if defined(SHADING_MODEL_SUBSURFACE)
+    // subsurface scattering
+    // Use a spherical gaussian approximation of pow() for forwardScattering
+    // We could include distortion by adding shading_normal * distortion to light.l
+    float scatterVoH = saturate(dot(shading_view, -light.l));
+    float forwardScatter = exp2(scatterVoH * pixel.subsurfacePower - pixel.subsurfacePower);
+    float backScatter = saturate(NoL * pixel.thickness + (1.0 - pixel.thickness)) * 0.5;
+    float subsurface = mix(backScatter, 1.0, forwardScatter) * (1.0 - pixel.thickness);
+    color += pixel.subsurfaceColor * (subsurface * Fd_Lambert());
+#endif
 
     // https://google.github.io/filament/Filament.md.html#materialsystem/improvingthebrdfs/energylossinspecularreflectance
-    return (color * light.colorIntensity) * (light.attenuation * light.NoL);
+    return (color * light.colorIntensity) * light.attenuation;
 }

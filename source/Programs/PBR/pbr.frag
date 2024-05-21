@@ -99,11 +99,18 @@ struct PixelParams
     float occlusion;
     float ssao;
     vec3 f0;            // full reflectance color (normal incidence angle)
-    float f90;           // reflectance color at grazing angle
     float roughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
     vec3 diffuseColor;            // color contribution from diffuse lighting
     vec3 dfg;
     vec3 energyCompensation;
+#if defined(SHADING_MODEL_SUBSURFACE)
+    float thickness;
+    vec3  subsurfaceColor;
+    float subsurfacePower;
+#endif
+#if defined(SHADING_MODEL_CLOTH) && defined(MATERIAL_HAS_SUBSURFACE_COLOR)
+    vec3  subsurfaceColor;
+#endif
 };
 
 vec3 V, N;
@@ -157,11 +164,12 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
 #endif
 
     Light light;
+    light.attenuation = 1.0;
     light.NoL = NoL;
     light.colorIntensity = LightDiffuseScaledColourArray[0].xyz;
     visibility *= computeMicroShadowing(NoL, pixel.occlusion);
-    light.attenuation = visibility;
-    return surfaceShading(light, pixel);
+
+    return surfaceShading(light, pixel, visibility);
 }
 
 vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosition, const highp vec3 pixelModelPosition)
@@ -185,6 +193,7 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 
         float NoL = saturate(dot(N, l));
         if (NoL <= 0.001) continue;
+        float visibility = 1.0;
 
         // attenuation is property of spot and point light
         float attenuation = getDistanceAttenuation(LightPointParamsArray[i].yzw, fLightD);
@@ -199,17 +208,17 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
         if (LightCastsShadowsArray[i] != 0.0) {
             highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i + PSSM_OFFSET], pixelModelPosition);
             lightSpacePos.xyz /= lightSpacePos.w;
-            attenuation *= CalcShadow(lightSpacePos.xyz, i + PSSM_OFFSET);
-            if (attenuation < 0.001) continue;
+            visibility *= CalcShadow(lightSpacePos.xyz, i + PSSM_OFFSET);
+            if (visibility < 0.001) continue;
         }
 #endif
 
         Light light;
+        light.attenuation = attenuation;
         light.NoL = NoL;
         light.colorIntensity = LightDiffuseScaledColourArray[i].xyz;
-        light.attenuation = attenuation;
 
-        color += surfaceShading(light, pixel);
+        color += surfaceShading(light, pixel, visibility);
     }
 
     return color;
@@ -293,12 +302,13 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
 
     pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, shading_NoV);
 
-    // https://google.github.io/filament/Filament.md.html#toc5.6.2
-    pixel.f90 = saturate(dot(pixel.f0, vec3(50.0 * 0.33, 50.0 * 0.33, 50.0 * 0.33)));
-
     // Energy compensation for multiple scattering in a microfacet model
     // See "Multiple-Scattering Microfacet BSDFs with the Smith Model"
+#if !defined(SHADING_MODEL_CLOTH)
     pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
+#else
+    pixel.energyCompensation = vec3(1.0, 1.0, 1.0);
+#endif
 }
 #endif
 
@@ -455,9 +465,7 @@ void main()
 
     color += evaluateIBL(pixel);
 
-#if MAX_SHADOW_TEXTURES > 0
     color += EvaluateDirectionalLight(pixel, vPosition1);
-#endif
     color += EvaluateLocalLights(pixel, vPosition, vPosition1);
 
 #else

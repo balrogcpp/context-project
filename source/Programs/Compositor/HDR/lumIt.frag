@@ -1,7 +1,6 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
-#include "tonemap.glsl"
 
 uniform sampler2D RT;
 uniform vec2 TexelSize;

@@ -111,6 +111,27 @@ vec3 getReflectedVector(float roughness) {
 }
 #endif
 
+void evaluateClothIndirectDiffuseBRDF(const PixelParams pixel, inout float diffuse) {
+#if defined(SHADING_MODEL_CLOTH)
+#if defined(MATERIAL_HAS_SUBSURFACE_COLOR)
+    // Simulate subsurface scattering with a wrap diffuse term
+    diffuse *= Fd_Wrap(shading_NoV, 0.5);
+#endif
+#endif
+}
+
+void evaluateSubsurfaceIBL(const PixelParams pixel, const vec3 diffuseIrradiance,
+        inout vec3 Fd, inout vec3 Fr) {
+#if defined(SHADING_MODEL_SUBSURFACE)
+    vec3 viewIndependent = diffuseIrradiance;
+    vec3 viewDependent = prefilteredRadiance(-shading_view, pixel.roughness, 1.0 + pixel.thickness);
+    float attenuation = (1.0 - pixel.thickness) / (2.0 * PI);
+    Fd += pixel.subsurfaceColor * (viewIndependent + viewDependent) * attenuation;
+#elif defined(SHADING_MODEL_CLOTH) && defined(MATERIAL_HAS_SUBSURFACE_COLOR)
+    Fd *= saturate(pixel.subsurfaceColor + shading_NoV);
+#endif
+}
+
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
@@ -121,6 +142,8 @@ vec3 evaluateIBL(const PixelParams pixel) {
     vec3 E = specularDFG(pixel);
     float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
 
+    evaluateClothIndirectDiffuseBRDF(pixel, diffuseBRDF);
+
 #ifdef HAS_IBL
     vec3 r = getReflectedVector(pixel.roughness);
 
@@ -128,6 +151,9 @@ vec3 evaluateIBL(const PixelParams pixel) {
 
     vec3 diffuseIrradiance = diffuseIrradiance(N);
     vec3 Fd = pixel.diffuseColor * diffuseIrradiance * (1.0 - E) * diffuseBRDF;
+
+    // subsurface layer
+    evaluateSubsurfaceIBL(pixel, diffuseIrradiance, Fd, Fr);
 #else
     vec3 Fr = E;
     vec3 Fd = pixel.diffuseColor * (1.0 - E) * diffuseBRDF;

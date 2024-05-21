@@ -526,7 +526,7 @@ void VideoManager::InitOgreSceneManager() {
   sceneManager->setFog(Ogre::FOG_EXP, Ogre::ColourValue(0.5, 0.6, 0.7), 0.003);
   sceneManager->setSkyBox(true, "SkyBox", 500, false);
   sceneManager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));  // Ogre::ColourValue(0.5, 0.6, 0.7)
-  shadowEnabled = !RenderSystemIsGLES2();
+
   if (shadowEnabled) {
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     pssmSetup = make_shared<DPSMCameraSetup>();

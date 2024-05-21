@@ -72,26 +72,6 @@ vec3 mulMat3x3Half3(const mat4 m, const vec3 v) {
     return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
 }
 
-/**
- * Extracts the normal vector of the tangent frame encoded in the specified quaternion.
- */
-void toTangentFrame(const highp vec4 q, out highp vec3 n) {
-    n = vec3( 0.0,  0.0,  1.0) +
-    vec3( 2.0, -2.0, -2.0) * q.x * q.zwx +
-    vec3( 2.0,  2.0, -2.0) * q.y * q.wzy;
-}
-
-/**
- * Extracts the normal and tangent vectors of the tangent frame encoded in the
- * specified quaternion.
- */
-void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
-    toTangentFrame(q, n);
-    t = vec3( 1.0,  0.0,  0.0) +
-    vec3(-2.0,  2.0, -2.0) * q.y * q.yxw +
-    vec3(-2.0,  2.0,  2.0) * q.z * q.zwx;
-}
-
 // https://twitter.com/SebAaltonen/status/878250919879639040
 float fstep(float x, float y) {
     return saturate(((x - y) - HALF_EPSILON) * HALF_MAX);

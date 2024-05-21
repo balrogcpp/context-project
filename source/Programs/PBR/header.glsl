@@ -1,9 +1,7 @@
 // created by Andrey Vasiliev
 
 //#undef HAS_MRT
-//#ifdef GL_ES
 //#define FORCE_TONEMAP
-//#endif
 
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
@@ -11,10 +9,10 @@
 #ifndef MAX_SHADOW_TEXTURES
 #define MAX_SHADOW_TEXTURES 4
 #endif
-#ifdef GL_ES
-#undef MAX_SHADOW_TEXTURES
-#define MAX_SHADOW_TEXTURES 0
-#endif
+//#ifdef GL_ES
+//#undef MAX_SHADOW_TEXTURES
+//#define MAX_SHADOW_TEXTURES 0
+//#endif
 #define SHADOWMAP_ATLAS
 #define FORCE_FOG
 #define PSSM_SPLITS 2
@@ -77,4 +75,6 @@ out vec4 FragColor;
 //#include "OgreUnifiedShader.h"
 #endif
 #include "math.glsl"
+#ifdef OGRE_FRAGMENT_SHADER
 #include "mrt.glsl"
+#endif

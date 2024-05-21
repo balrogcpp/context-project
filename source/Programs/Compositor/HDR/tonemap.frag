@@ -1,9 +1,6 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
-#ifndef FORCE_TONEMAP
-#include "tonemap.glsl"
-#endif
 
 uniform sampler2D RT;
 

@@ -29,7 +29,7 @@ void main()
     // Apply exposure.
     color = SRGBtoLINEAR(color);
 
-    if (gamma <= 2.0 * M_PI / 360.0 && sunZenith > 0.0) {
+    if (gamma <= 2.0 * PI / 360.0 && sunZenith > 0.0) {
         color = LightColor0 * 10.0;
     }
 

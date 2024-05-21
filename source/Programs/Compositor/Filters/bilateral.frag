@@ -56,11 +56,11 @@ void main()
 
     for (int r = 1; r <= KERNEL_RADIUS; ++r)
     {
-        c_total += BlurFunction(vUV0 + TexelSize * float(r), r, center_c, center_d, w_total);
+        c_total += BlurFunction(vUV0 + TexelSize * float(r), float(r), center_c, center_d, w_total);
     }
     for (int r = 1; r <= KERNEL_RADIUS; ++r)
     {
-        c_total += BlurFunction(vUV0 - TexelSize * float(r), r, center_c, center_d, w_total);
+        c_total += BlurFunction(vUV0 - TexelSize * float(r), float(r), center_c, center_d, w_total);
     }
 
     FragColor.rgb = c_total / w_total;

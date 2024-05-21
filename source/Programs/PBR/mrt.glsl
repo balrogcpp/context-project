@@ -1,12 +1,6 @@
 // created by Andrey Vasiliev
 
-#ifndef MRT_GLSL
-#define MRT_GLSL
-#ifdef OGRE_FRAGMENT_SHADER
-
-#ifdef FORCE_TONEMAP
 #include "tonemap.glsl"
-#endif
 
 // https://community.khronos.org/t/glsl-packing-a-normal-in-a-single-float/52039/13
 //Thanks @paveltumik for the original code in comments
@@ -110,6 +104,3 @@ void EvaluateBuffer(const vec4 color, float depth, const vec3 normal, const vec2
 #endif
 #endif
 }
-
-#endif // OGRE_FRAGMENT_SHADER
-#endif // MRT_GLSL

@@ -16,7 +16,6 @@ uniform sampler2D velocityTex;
 uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
-#include "tonemap.glsl"
 
 in highp vec2 vUV0;
 in vec4 offset;

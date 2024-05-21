@@ -228,8 +228,6 @@ vec3 FxaaPixelShader(sampler2D tex, const vec2 pos, const vec2 rcpFrame)
     return FxaaLerp3(rgbL, rgbF, blendL);
 }
 
-#include "tonemap.glsl"
-
 in highp vec2 vUV0;
 void main()
 {
