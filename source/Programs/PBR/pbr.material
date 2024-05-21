@@ -46,6 +46,7 @@ abstract material Unlit
     technique
     {
         shadow_caster_material PSSM/shadow_caster
+
         pass
         {
             diffuse 1 1 1
@@ -92,6 +93,7 @@ abstract material PBR
     technique
     {
         shadow_caster_material PSSM/shadow_caster
+
         pass
         {
             diffuse 1 1 1
@@ -179,9 +181,11 @@ abstract material IBL : PBR
 abstract material PG : PBR
 {
     receive_shadows off
+
     technique
     {
         shadow_caster_material PSSM/shadow_caster_alpha
+
         pass
         {
             vertex_program_ref PG_vs {}
@@ -193,12 +197,15 @@ abstract material PG : PBR
 abstract material PG0 : PBR
 {
     receive_shadows off
+
     technique
     {
         shadow_caster_material PSSM/shadow_caster_alpha
+
         pass
         {
             cull_hardware none
+
             vertex_program_ref PG0_vs {}
             fragment_program_ref PG0_fs {}
         }
@@ -217,6 +224,7 @@ abstract material TERRA
     technique
     {
         shadow_caster_material PSSM/shadow_caster
+
         pass
         {
             diffuse 1 1 1

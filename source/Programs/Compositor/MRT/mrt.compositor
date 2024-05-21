@@ -22,16 +22,17 @@ compositor MRT
             }
         }
 
-        target mrt
+        /*target mrt
         {
             shadows off
             pass clear {}
             material_scheme GBuffer
-			//pass render_scene { last_render_queue 90 }
-        }
+			pass render_scene { last_render_queue 90 }
+        }*/
 
         target mrt
         {
+            pass clear {}
             shadows off
             pass render_scene { last_render_queue 90 }
             pass render_custom RenderShadowMap {}
