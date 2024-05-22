@@ -135,38 +135,12 @@ void evaluateSubsurfaceIBL(const PixelParams pixel, const vec3 diffuseIrradiance
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
-//vec3 evaluateIBL(const PixelParams pixel)
-//{
-//    // retrieve a scale and bias to F0. See [1], Figure 3
-//    float diffuseAO = min(pixel.occlusion, pixel.ssao);
-//    float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
-//
-//#ifdef HAS_IBL
-//    vec3 r = getReflectedVector(pixel.roughness);
-//
-//    vec3 Fd = pixel.diffuseColor * diffuseIrradiance(N);
-//    vec3 Fr = prefilteredRadiance(r, pixel.perceptualRoughness) * (pixel.f0 * pixel.dfg.x + pixel.dfg.y);
-//#else
-//    vec3 Fd = AmbientLightColour.rgb * pixel.diffuseColor;
-//    vec3 Fr = AmbientLightColour.rgb * (pixel.f0 * pixel.dfg.x + pixel.dfg.y);
-//#endif
-//
-//    // extra ambient occlusion term
-//    multiBounceAO(diffuseAO, pixel.diffuseColor, Fd);
-//    multiBounceSpecularAO(specularAO, pixel.f0, Fr);
-//
-//    return SurfaceAmbientColour.rgb * AmbientLightColour.rgb * (Fd  + Fr);
-//}
-
-// Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
 vec3 evaluateIBL(const PixelParams pixel) {
     float diffuseAO = min(pixel.occlusion, pixel.ssao);
     float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
 
 //    vec3 E = specularDFG(pixel);
-    vec3 E = (pixel.f0 * pixel.dfg.x + pixel.dfg.y); // ???
+    vec3 E = pixel.dfg; // ???
     float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
 
     evaluateClothIndirectDiffuseBRDF(pixel, diffuseBRDF);

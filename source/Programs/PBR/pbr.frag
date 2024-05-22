@@ -302,10 +302,11 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
 
     pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, shading_NoV);
 
-    // Energy compensation for multiple scattering in a microfacet model
-    // See "Multiple-Scattering Microfacet BSDFs with the Smith Model"
 #if !defined(SHADING_MODEL_CLOTH)
-    pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
+// Energy compensation for multiple scattering in a microfacet model
+// See "Multiple-Scattering Microfacet BSDFs with the Smith Model"
+//    pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
+    pixel.energyCompensation = vec3(1.0, 1.0, 1.0);
 #else
     pixel.energyCompensation = vec3(1.0, 1.0, 1.0);
 #endif
