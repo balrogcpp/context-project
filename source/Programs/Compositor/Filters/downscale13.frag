@@ -8,19 +8,19 @@ uniform vec2 TexelSize;
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 vec3 Downscale13(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    vec3 A = texture2D(tex, uv + tsize * vec2(-1.0, -1.0)).rgb;
-    vec3 B = texture2D(tex, uv + tsize * vec2( 0.0, -1.0)).rgb;
-    vec3 C = texture2D(tex, uv + tsize * vec2( 1.0, -1.0)).rgb;
-    vec3 D = texture2D(tex, uv + tsize * vec2(-0.5, -0.5)).rgb;
-    vec3 E = texture2D(tex, uv + tsize * vec2( 0.5, -0.5)).rgb;
-    vec3 F = texture2D(tex, uv + tsize * vec2(-1.0,  0.0)).rgb;
-    vec3 G = texture2D(tex, uv                           ).rgb;
-    vec3 H = texture2D(tex, uv + tsize * vec2( 1.0,  0.0)).rgb;
-    vec3 I = texture2D(tex, uv + tsize * vec2(-0.5,  0.5)).rgb;
-    vec3 J = texture2D(tex, uv + tsize * vec2( 0.5,  0.5)).rgb;
-    vec3 K = texture2D(tex, uv + tsize * vec2(-1.0,  1.0)).rgb;
-    vec3 L = texture2D(tex, uv + tsize * vec2( 0.0,  1.0)).rgb;
-    vec3 M = texture2D(tex, uv + tsize * vec2( 1.0,  1.0)).rgb;
+    vec3 A = textureLod(tex, uv + tsize * vec2(-1.0, -1.0), 0.0).rgb;
+    vec3 B = textureLod(tex, uv + tsize * vec2( 0.0, -1.0), 0.0).rgb;
+    vec3 C = textureLod(tex, uv + tsize * vec2( 1.0, -1.0), 0.0).rgb;
+    vec3 D = textureLod(tex, uv + tsize * vec2(-0.5, -0.5), 0.0).rgb;
+    vec3 E = textureLod(tex, uv + tsize * vec2( 0.5, -0.5), 0.0).rgb;
+    vec3 F = textureLod(tex, uv + tsize * vec2(-1.0,  0.0), 0.0).rgb;
+    vec3 G = textureLod(tex, uv                           , 0.0).rgb;
+    vec3 H = textureLod(tex, uv + tsize * vec2( 1.0,  0.0), 0.0).rgb;
+    vec3 I = textureLod(tex, uv + tsize * vec2(-0.5,  0.5), 0.0).rgb;
+    vec3 J = textureLod(tex, uv + tsize * vec2( 0.5,  0.5), 0.0).rgb;
+    vec3 K = textureLod(tex, uv + tsize * vec2(-1.0,  1.0), 0.0).rgb;
+    vec3 L = textureLod(tex, uv + tsize * vec2( 0.0,  1.0), 0.0).rgb;
+    vec3 M = textureLod(tex, uv + tsize * vec2( 1.0,  1.0), 0.0).rgb;
 
     vec3 c1 = (D + E + I + J) * 0.125;
     vec3 c2 = (A + B + G + F) * 0.03125;

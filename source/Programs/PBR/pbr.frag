@@ -352,7 +352,7 @@ vec3 GetEmission(const vec2 uv)
 // https://github.com/nvpro-samples/gl_ssao/blob/f6b010dc7a05346518cd13d3368d8d830a382ed9/bilateralblur.frag.glsl
 float BlurFunction(const vec2 uv, float r, const float center_c, float center_d, inout float w_total)
 {
-    vec2 occ = texture2D(OccTex, uv).rg;
+    vec2 occ = textureLod(OccTex, uv, 0.0).rg;
     float c = occ.r;
     float d = occ.g;
 
@@ -447,7 +447,7 @@ void main()
 #endif
 #if defined(HAS_AO) || defined(HAS_SSR)
     vec2 nuv = fragCoord.xy + fragVelocity.xy;
-    vec2 occ = texture2D(OccTex, nuv).rg;
+    vec2 occ = textureLod(OccTex, nuv, 0.0).rg;
     float dDepth = (clampedDepth - occ.g);
 #endif
 #ifdef HAS_AO

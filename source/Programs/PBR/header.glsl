@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
 //#undef HAS_MRT
-//#define FORCE_TONEMAP
+#define FORCE_TONEMAP
 
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8

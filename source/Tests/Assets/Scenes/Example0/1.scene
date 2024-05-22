@@ -2,8 +2,8 @@
 <scene author="balrog" formatVersion="1.1">
     <nodes>
         <node name="Sun">
-            <direction x="40.659888" y="-40.0" z="-30.950829"/>
-            <light name="Sun" powerScale="2" type="directional" castShadows="1"/>
+            <direction x="40.659888" y="-20.0" z="-30.950829"/>
+            <light name="Sun" powerScale="0.4" type="directional" castShadows="1"/>
         </node>
 <!--        <node name="Light0">-->
 <!--            <position x="0" y="10" z="0"/>-->
@@ -12,14 +12,14 @@
 <!--                <lightAttenuation constant="0.5" linear="0.040000" quadratic="0.0" range="30" />-->
 <!--            </light>-->
 <!--        </node>-->
-        <node name="Light1">
-            <position x="0" y="5" z="06"/>
-            <direction x="40.659888" y="-40.0" z="30.950829"/>
-            <light name="Light1" powerScale="2.0" type="spot" castShadows="1">
-                <lightRange falloff="1.0" inner="0.5" outer="1" />
-                <lightAttenuation constant="0.5" linear="0.040000" quadratic="0.0" range="30" />
-            </light>
-        </node>
+<!--        <node name="Light1">-->
+<!--            <position x="0" y="9" z="06"/>-->
+<!--            <direction x="40.659888" y="-40.0" z="30.950829"/>-->
+<!--            <light name="Light1" powerScale="2.0" type="spot" castShadows="1">-->
+<!--                <lightRange falloff="1.0" inner="0.5" outer="1" />-->
+<!--                <lightAttenuation constant="0.5" linear="0.040000" quadratic="0.0" range="30" />-->
+<!--            </light>-->
+<!--        </node>-->
         <node name="Camera">
             <position x="0" y="2" z="0"/>
             <direction x="0.0" y="0.0" z="-1"/>
@@ -50,11 +50,11 @@
 <!--            </entity>-->
 <!--        </node>-->
         <node name="Plane">
-            <plane name="Plane" material="Plane" width="100" height="100" distance="0"/>
+            <plane name="Plane" material="Plane" width="100" height="100" distance="-1"/>
         </node>
-<!--        <node name="Plane2">-->
-<!--            <plane name="Plane2" material="Water" width="200" height="200" distance="0"/>-->
-<!--        </node>-->
+        <node name="Plane2">
+            <plane name="Plane2" material="Water" width="200" height="200" distance="0"/>
+        </node>
     </nodes>
 <!--   <terrainGroup>-->
 <!--       <terrain x="0" y="0" file="terrain.cfg"/>-->

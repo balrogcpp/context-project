@@ -8,11 +8,11 @@ uniform vec2 TexelSize;
 // https://github.com/Experience-Monks/glsl-fast-gaussian-blur/blob/5dbb6e97aa43d4be9369bdd88e835f47023c5e2a/9.glsl
 vec3 Gauss9Y(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    vec3 A = texture2D(tex, uv).rgb;
-    vec3 B = texture2D(tex, uv + tsize * vec2(0.0, 1.3846153846)).rgb;
-    vec3 C = texture2D(tex, uv - tsize * vec2(0.0, 1.3846153846)).rgb;
-    vec3 D = texture2D(tex, uv + tsize * vec2(0.0, 3.2307692308)).rgb;
-    vec3 E = texture2D(tex, uv - tsize * vec2(0.0, 3.2307692308)).rgb;
+    vec3 A = textureLod(tex, uv, 0.0).rgb;
+    vec3 B = textureLod(tex, uv + tsize * vec2(0.0, 1.3846153846), 0.0).rgb;
+    vec3 C = textureLod(tex, uv - tsize * vec2(0.0, 1.3846153846), 0.0).rgb;
+    vec3 D = textureLod(tex, uv + tsize * vec2(0.0, 3.2307692308), 0.0).rgb;
+    vec3 E = textureLod(tex, uv - tsize * vec2(0.0, 3.2307692308), 0.0).rgb;
 
     vec3 c1 = A * 0.2270270270;
     vec3 c2 = (B + C) * 0.3162162162;

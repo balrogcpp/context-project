@@ -30,8 +30,8 @@ uniform vec2 TexelSize;
  */
 vec3 BlurFunction(const vec2 uv, float r, const vec3 center_c, float center_d, inout float w_total)
 {
-    vec3 c = texture2D(RT, uv).rgb;
-    float d = texture2D(DepthTex, uv).x;
+    vec3 c = textureLod(RT, uv, 0.0).rgb;
+    float d = textureLod(DepthTex, uv, 0.0).x;
     const float sharpness = 3.0;
 
     const float BlurSigma = float(KERNEL_RADIUS) * 0.5;
@@ -48,8 +48,8 @@ vec3 BlurFunction(const vec2 uv, float r, const vec3 center_c, float center_d, i
 in highp vec2 vUV0;
 void main()
 {
-    vec3  center_c = texture2D(RT, vUV0).rgb;
-    float center_d = texture2D(DepthTex, vUV0).x;
+    vec3  center_c = textureLod(RT, vUV0, 0.0).rgb;
+    float center_d = textureLod(DepthTex, vUV0, 0.0).x;
 
     vec3  c_total = center_c;
     float w_total = 1.0;

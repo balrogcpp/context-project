@@ -10,10 +10,10 @@ uniform float timeSinceLast;
 
 float Downscale2x2(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    float A = texture2DLod(tex, uv + tsize * vec2(-1.0, -1.0), 0).x;
-    float B = texture2DLod(tex, uv + tsize * vec2(-1.0,  1.0), 0).x;
-    float C = texture2DLod(tex, uv + tsize * vec2( 1.0, -1.0), 0).x;
-    float D = texture2DLod(tex, uv + tsize * vec2( 1.0,  1.0), 0).x;
+    float A = textureLod(tex, uv + tsize * vec2(-1.0, -1.0), 0.0).x;
+    float B = textureLod(tex, uv + tsize * vec2(-1.0,  1.0), 0.0).x;
+    float C = textureLod(tex, uv + tsize * vec2( 1.0, -1.0), 0.0).x;
+    float D = textureLod(tex, uv + tsize * vec2( 1.0,  1.0), 0.0).x;
 
     float c1 = (A + B + C + D) * 0.25;
 
@@ -25,7 +25,7 @@ void main()
 {
     float newLum = Downscale2x2(RT, vUV0, TexelSize);
     newLum = expose(newLum, Exposure);
-    float oldLum = texture2DLod(Lum, vec2(0.0, 0.0), 0).r;
+    float oldLum = textureLod(Lum, vec2(0.0, 0.0), 0.0).r;
     float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
     FragColor.r = SafeHDR(lum);
 }
