@@ -55,7 +55,8 @@ vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NoV)
     vec4 r = roughness * c0 + c1;
     float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
     vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
-    return specularColor * AB.x + AB.y;
+    //return specularColor * AB.x + AB.y;
+    return vec3(AB, 0.0);
 }
 
 float EnvBRDFApproxNonmetal(float roughness, float NoV)
@@ -77,9 +78,9 @@ vec3 specularDFG(const PixelParams pixel) {
 
 vec3 decodeDataForIBL(const vec3 data) {
 #if defined(FORCE_TONEMAP)
-    return SRGBtoLINEAR(data);
+    return (data);
 #else
-    return data;
+    return tonemap(data);
 #endif
 }
 
@@ -162,7 +163,7 @@ vec3 evaluateIBL(const PixelParams pixel) {
     float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
 
 //    vec3 E = specularDFG(pixel);
-    vec3 E = pixel.dfg; // ???
+    vec3 E = pixel.f0 * pixel.dfg.x + pixel.dfg.y;
     float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
 
     evaluateClothIndirectDiffuseBRDF(pixel, diffuseBRDF);

@@ -145,7 +145,7 @@ void main()
     // texture edge bleed removal is handled by clip plane offset
     vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
 #ifdef FORCE_TONEMAP
-    reflection = SRGBtoLINEAR(reflection);
+    reflection = inverseTonemap(reflection);
 #endif
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
@@ -173,7 +173,7 @@ void main()
     vec3 refraction = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
 #endif
 #ifdef FORCE_TONEMAP
-    refraction = SRGBtoLINEAR(refraction);
+    refraction = inverseTonemap(refraction);
 #endif
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);

@@ -24,7 +24,7 @@ fragment_program lumEnd glsl glsles hlsl
         //param_named Exposure float3 553.5833 5.0 10.0
         //param_named Exposure float3 138.5833 5 10
         //param_named Exposure float3 138.5833 5 9
-        param_named			Exposure				float3 228.485283992 5 6.5
+        param_named Exposure float3 228.485283992 5 6.5
         param_named_auto timeSinceLast frame_time 1
     }
 }

@@ -296,9 +296,9 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
     pixel.perceptualRoughness = roughness;
     pixel.roughness = perceptualRoughnessToRoughness(roughness);
     // Assumes an interface from air to an IOR of 1.5 for dielectrics
-    const float reflectance = 0.5;
-    float f0 = computeDielectricF0(reflectance);
-    pixel.f0 = computeF0(baseColor, metallic, f0);
+    //const float reflectance = 0.5;
+    //float f0 = computeDielectricF0(reflectance);
+    pixel.f0 = computeF0(baseColor, metallic, 0.04); // f0 = 0.04
 
     pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, shading_NoV);
 
