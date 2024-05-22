@@ -3,16 +3,23 @@
     <nodes>
         <node name="Sun">
             <direction x="40.659888" y="-40.0" z="-30.950829"/>
-            <light name="Sun" powerScale="2" type="directional" castShadows="true"/>
+            <light name="Sun" powerScale="2" type="directional" castShadows="1"/>
         </node>
 <!--        <node name="Light0">-->
-<!--            <position x="0" y="5" z="06"/>-->
-<!--            <direction x="0" y="-1" z="0"/>-->
-<!--            <light name="Spot" powerScale="1.0" type="spot" castShadows="false">-->
-<!--                <lightRange falloff="1.0" inner="0.0" outer="1" />-->
-<!--                <lightAttenuation constant="0.0" linear="0.040000" quadratic="0.0" range="30" />-->
+<!--            <position x="0" y="10" z="0"/>-->
+<!--            <light name="Light0" powerScale="2.0" type="point" castShadows="1">-->
+<!--                <lightRange falloff="1.0" inner="0.5" outer="1" />-->
+<!--                <lightAttenuation constant="0.5" linear="0.040000" quadratic="0.0" range="30" />-->
 <!--            </light>-->
 <!--        </node>-->
+        <node name="Light1">
+            <position x="0" y="5" z="06"/>
+            <direction x="40.659888" y="-40.0" z="30.950829"/>
+            <light name="Light1" powerScale="2.0" type="spot" castShadows="1">
+                <lightRange falloff="1.0" inner="0.5" outer="1" />
+                <lightAttenuation constant="0.5" linear="0.040000" quadratic="0.0" range="30" />
+            </light>
+        </node>
         <node name="Camera">
             <position x="0" y="2" z="0"/>
             <direction x="0.0" y="0.0" z="-1"/>
@@ -25,33 +32,33 @@
             <position x="0" y="2" z="-2.0"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
             <scale x="2" y="2" z="2"/>
-            <entity meshFile="DamagedHelmet.mesh" name="Helmet2" castShadows="true">
+            <entity meshFile="DamagedHelmet.mesh" name="Helmet2">
                 <userData>
                     <property data="0.0" name="mass" type="float"/>
                     <property data="3" name="proxy" type="int"/>
                 </userData>
             </entity>
         </node>
-        <node name="Cube.mesh">
-            <position x="0" y="5.0" z="5.0"/>
-            <scale x="5" y="5" z="5"/>
-            <entity meshFile="Cube.mesh" name="Cube">
-                <userData>
-                    <property data="0.0" name="mass" type="float"/>
-                    <property data="3" name="proxy" type="int"/>
-                </userData>
-            </entity>
-        </node>
+<!--        <node name="Cube.mesh">-->
+<!--            <position x="0" y="6.0" z="5.0"/>-->
+<!--            <scale x="5" y="5" z="5"/>-->
+<!--            <entity meshFile="Cube.mesh" name="Cube">-->
+<!--                <userData>-->
+<!--                    <property data="0.0" name="mass" type="float"/>-->
+<!--                    <property data="3" name="proxy" type="int"/>-->
+<!--                </userData>-->
+<!--            </entity>-->
+<!--        </node>-->
         <node name="Plane">
             <plane name="Plane" material="Plane" width="100" height="100" distance="0"/>
         </node>
-        <!-- <node name="Plane2">
-            <plane name="Plane2" material="Water" width="200" height="200" distance="0"/>
-        </node> -->
+<!--        <node name="Plane2">-->
+<!--            <plane name="Plane2" material="Water" width="200" height="200" distance="0"/>-->
+<!--        </node>-->
     </nodes>
-   <!-- <terrainGroup>
-       <terrain x="0" y="0" file="terrain.cfg"/>
-   </terrainGroup> -->
+<!--   <terrainGroup>-->
+<!--       <terrain x="0" y="0" file="terrain.cfg"/>-->
+<!--   </terrainGroup>-->
 <!--    <terrainGroup>-->
 <!--        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" density="0.4" density_map="terrain2.png" trees="fir05_30.mesh"/>-->
 <!--    </terrainGroup>-->
