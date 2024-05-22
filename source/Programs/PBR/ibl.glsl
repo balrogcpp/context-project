@@ -78,7 +78,7 @@ vec3 specularDFG(const PixelParams pixel) {
 #ifdef HAS_IBL
 vec3 decodeDataForIBL(const vec3 data) {
 #ifdef FORCE_TONEMAP
-    return LINEARtoSRGB(data);
+    return SRGBtoLINEAR(data);
 #else
     return data;
 #endif
@@ -149,6 +149,7 @@ vec3 evaluateIBL(const PixelParams pixel) {
     vec3 r = getReflectedVector(pixel.roughness);
 
     vec3 Fr = E * prefilteredRadiance(r, pixel.perceptualRoughness);
+    Fr *= singleBounceAO(specularAO) * pixel.energyCompensation;
 
     vec3 diffuseIrradiance = diffuseIrradiance(N);
     vec3 Fd = pixel.diffuseColor * diffuseIrradiance * (1.0 - E) * diffuseBRDF;
@@ -157,6 +158,8 @@ vec3 evaluateIBL(const PixelParams pixel) {
     evaluateSubsurfaceIBL(pixel, diffuseIrradiance, Fd, Fr);
 #else
     vec3 Fr = E;
+    Fr *= singleBounceAO(specularAO) * pixel.energyCompensation;
+
     vec3 Fd = pixel.diffuseColor * (1.0 - E) * diffuseBRDF;
 #endif
 

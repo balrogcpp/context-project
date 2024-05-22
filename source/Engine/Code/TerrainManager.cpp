@@ -47,7 +47,7 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
     auto *pass = newMaterial->getTechnique(0)->getPass(0);
     auto *texState = pass->getTextureUnitState("TerraNormal");
     auto *texState2 = pass->getTextureUnitState("TerraLight");
-    float uvScale = 2.0f * (terrain->getSize() - 1) / terrain->getWorldSize();
+    float uvScale = 10.0f * (terrain->getSize() - 1) / terrain->getWorldSize();
 
     if (pass->hasFragmentProgram()) {
       const auto &fp = pass->getFragmentProgramParameters();

@@ -44,6 +44,10 @@ float computeRoughnessFromGlossiness(float glossiness) {
     return 1.0 - glossiness;
 }
 
+float computeRoughnessFromSpec(float specularity) {
+    return 1.0 - specularity/128.0;
+}
+
 float perceptualRoughnessToRoughness(float perceptualRoughness) {
     return perceptualRoughness * perceptualRoughness;
 }
@@ -206,14 +210,13 @@ vec3 surfaceShading(const Light light, const PixelParams pixel, float occlusion)
 
     float NoV = shading_NoV;
     float NoL = saturate(light.NoL);
-    float VoH = saturate(dot(V, h));
     float NoH = saturate(dot(N, h));
-    // float LoH = saturate(dot(light.l, h));
+    float LoH = saturate(dot(light.l, h));
 
 #if !defined(SHADING_MODEL_CLOTH)
     float D = distribution(pixel.roughness, NoH, h);
     float V = visibility(pixel.roughness, NoV, NoL);
-    vec3  F = fresnel(pixel.f0, VoH); // LoH (?)
+    vec3  F = fresnel(pixel.f0, LoH); // VoH (?)
 #else
     float D = D_Charlie(pixel.roughness, NoH);
     float V = V_Neubelt(NoV, NoL);
@@ -221,7 +224,8 @@ vec3 surfaceShading(const Light light, const PixelParams pixel, float occlusion)
 #endif
 
     vec3 Fr = (D * V) * F;
-    float diffuse = Fd_Lambert();
+float diffuse = Fd_Lambert();
+
 #if defined(MATERIAL_HAS_SUBSURFACE_COLOR)
     // Energy conservative wrap diffuse to simulate subsurface scattering
     diffuse *= Fd_Wrap(dot(shading_normal, light.l), 0.5);

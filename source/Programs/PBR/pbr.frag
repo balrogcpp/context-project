@@ -140,7 +140,7 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
     float NoL = saturate(dot(N, l));
     if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
-    float visibility = pixel.ssao;
+    float visibility = 1.0;
 
 #ifdef TERRA_LIGHTMAP
     visibility = FetchTerraShadow(UV);
@@ -267,7 +267,7 @@ vec3 GetORM(const vec2 uv, float spec)
 #else
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to material roughness
-    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * saturate(1.0 - spec/128.0), 0.0);
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * (1.0 - spec/128.0), SurfaceSpecularColour.g * (spec/128.0));
 #endif
 #ifdef HAS_ORM
     if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;
@@ -306,7 +306,7 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
 // Energy compensation for multiple scattering in a microfacet model
 // See "Multiple-Scattering Microfacet BSDFs with the Smith Model"
 //    pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
-    pixel.energyCompensation = vec3(1.0, 1.0, 1.0);
+    pixel.energyCompensation = vec3(1.0, 1.0, 1.0); // energyCompensation not working atm
 #else
     pixel.energyCompensation = vec3(1.0, 1.0, 1.0);
 #endif
