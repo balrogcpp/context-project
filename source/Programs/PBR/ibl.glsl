@@ -75,15 +75,37 @@ vec3 specularDFG(const PixelParams pixel) {
 #endif
 }
 
-#ifdef HAS_IBL
 vec3 decodeDataForIBL(const vec3 data) {
-#ifdef FORCE_TONEMAP
+#if defined(FORCE_TONEMAP)
     return SRGBtoLINEAR(data);
 #else
     return data;
 #endif
 }
 
+//------------------------------------------------------------------------------
+// IBL prefiltered DFG term implementations
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// IBL environment BRDF dispatch
+//------------------------------------------------------------------------------
+
+#ifdef HAS_LUT
+vec3 PrefilteredDFG_LUT(float lod, float NoV) {
+    // coord = sqrt(linear_roughness), which is the mapping used by cmgen.
+    // SNiLD: Y is flipped for Ogre because there is no tool to flip the actual
+    //        texture that is in 16-bit float RGBA DDS format.
+    return textureLod(LUTtex, vec2(NoV, 1.0 - lod), 0.0).rgb;
+}
+
+vec3 prefilteredDFG(float perceptualRoughness, float NoV) {
+    // PrefilteredDFG_LUT() takes a LOD, which is sqrt(roughness) = perceptualRoughness
+    return PrefilteredDFG_LUT(perceptualRoughness, NoV);
+}
+#endif
+
+#ifdef HAS_IBL
 vec3 diffuseIrradiance(const vec3 n) {
     return decodeDataForIBL(textureCubeLod(SpecularEnvTex, n, 6.0).rgb);
 }
