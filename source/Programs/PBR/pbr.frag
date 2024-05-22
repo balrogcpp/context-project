@@ -164,6 +164,7 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
 #endif
 
     Light light;
+    light.l = l;
     light.attenuation = 1.0;
     light.NoL = NoL;
     light.colorIntensity = LightDiffuseScaledColourArray[0].xyz;
@@ -214,6 +215,7 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 #endif
 
         Light light;
+        light.l = l;
         light.attenuation = attenuation;
         light.NoL = NoL;
         light.colorIntensity = LightDiffuseScaledColourArray[i].xyz;
@@ -267,7 +269,7 @@ vec3 GetORM(const vec2 uv, float spec)
 #else
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to material roughness
-    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * (1.0 - spec/128.0), SurfaceSpecularColour.g * (spec/128.0));
+    vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * (1.0 - spec), 0.0);
 #endif
 #ifdef HAS_ORM
     if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;

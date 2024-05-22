@@ -138,7 +138,7 @@ vec3 F_Schlick(const vec3 f0, float f90, float VoH) {
 }
 
 vec3 F_Schlick(const vec3 f0, float VoH) {
-    float f = pow(1.0 - VoH, 5.0);
+    float f = pow5(1.0 - VoH);
     return f + f0 * (1.0 - f);
 }
 
@@ -216,7 +216,7 @@ vec3 surfaceShading(const Light light, const PixelParams pixel, float occlusion)
 #if !defined(SHADING_MODEL_CLOTH)
     float D = distribution(pixel.roughness, NoH, h);
     float V = visibility(pixel.roughness, NoV, NoL);
-    vec3  F = fresnel(pixel.f0, LoH); // VoH (?)
+    vec3  F = fresnel(pixel.f0, LoH);
 #else
     float D = D_Charlie(pixel.roughness, NoH);
     float V = V_Neubelt(NoV, NoL);
@@ -224,7 +224,7 @@ vec3 surfaceShading(const Light light, const PixelParams pixel, float occlusion)
 #endif
 
     vec3 Fr = (D * V) * F;
-float diffuse = Fd_Lambert();
+    float diffuse = Fd_Lambert();
 
 #if defined(MATERIAL_HAS_SUBSURFACE_COLOR)
     // Energy conservative wrap diffuse to simulate subsurface scattering
