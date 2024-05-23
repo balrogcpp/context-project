@@ -45,8 +45,8 @@ uniform vec2 TexSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 uniform mat4 ViewMatrix;
-uniform mat4 WorldViewProjMatrix;
-uniform mat4 WorldViewProjPrev;
+uniform highp mat4 WorldViewProjMatrix;
+uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
 uniform float LightCount;
@@ -151,7 +151,7 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
 
         for (int i = 0; i < PSSM_SPLITS; ++i) {
             if (fDepth <= PssmSplitPoints[i]) {
-                highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i], pixelModelPosition);
+                highp vec4 lightSpacePos = mulMat4x4Float3(TexWorldViewProjMatrixArray[i], pixelModelPosition);
                 lightSpacePos.xyz /= lightSpacePos.w;
                 visibility *= CalcShadow(lightSpacePos.xyz, i);
                 break;
@@ -206,7 +206,7 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 
 #if MAX_SHADOW_TEXTURES > 0
         if (LightCastsShadowsArray[i] != 0.0) {
-            highp vec4 lightSpacePos = mulMat4x4Half3(TexWorldViewProjMatrixArray[i + PSSM_OFFSET], pixelModelPosition);
+            highp vec4 lightSpacePos = mulMat4x4Float3(TexWorldViewProjMatrixArray[i + PSSM_OFFSET], pixelModelPosition);
             lightSpacePos.xyz /= lightSpacePos.w;
             visibility *= CalcShadow(lightSpacePos.xyz, i + PSSM_OFFSET);
             if (visibility < 0.001) continue;
@@ -423,11 +423,11 @@ void main()
 
     V = normalize(CameraPosition - vPosition);
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
-    vec4 fragPos = mulMat4x4Half3(WorldViewProjMatrix, vPosition1);
+    vec4 fragPos = mulMat4x4Float3(WorldViewProjMatrix, vPosition1);
     fragPos.xyz /= fragPos.w;
     float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    vec4 fragPosPrev = mulMat4x4Half3(WorldViewProjPrev, vPosition1);
+    vec4 fragPosPrev = mulMat4x4Float3(WorldViewProjPrev, vPosition1);
     fragPosPrev.xyz /= fragPosPrev.w;
     vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
 
@@ -486,5 +486,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, mulMat3x3Float3(ViewMatrix, N), StaticObj * fragVelocity.xy);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, mulMat3x3Half3(ViewMatrix, N), StaticObj * fragVelocity.xy);
 }
