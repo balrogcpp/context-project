@@ -302,13 +302,12 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
     //float f0 = computeDielectricF0(reflectance);
     pixel.f0 = computeF0(baseColor, metallic, 0.04); // f0 = 0.04
 
-    pixel.dfg = EnvBRDFApprox(pixel.f0, pixel.perceptualRoughness, shading_NoV);
+    pixel.dfg = EnvBRDFApprox(pixel.perceptualRoughness, shading_NoV);
 
 #if !defined(SHADING_MODEL_CLOTH)
 // Energy compensation for multiple scattering in a microfacet model
 // See "Multiple-Scattering Microfacet BSDFs with the Smith Model"
-//    pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
-    pixel.energyCompensation = vec3(1.0, 1.0, 1.0); // energyCompensation not working atm
+    pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
 #else
     pixel.energyCompensation = vec3(1.0, 1.0, 1.0);
 #endif

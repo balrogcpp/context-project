@@ -48,29 +48,31 @@ float singleBounceAO(float visibility) {
 }
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NoV)
+vec3 EnvBRDFApprox(float roughness, float NoV)
 {
     const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
     const vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
     vec4 r = roughness * c0 + c1;
     float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
     vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
-    return specularColor * AB.x + AB.y;
+//    return specularColor * AB.x + AB.y;
+    return vec3(AB.yx, 0.0);
 }
 
-float EnvBRDFApproxNonmetal(float roughness, float NoV)
+vec3 EnvBRDFApproxNonmetal(float roughness, float NoV)
 {
     // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
     const vec2 c0 = vec2(-1.0, -0.0275);
     const vec2 c1 = vec2(1.0, 0.0425);
     vec2 r = roughness * c0 + c1;
-    return min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
+    float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
+    return vec3(a004, a004, 0.0);
 }
 
-vec3 EnvDFGLazarov(const vec3 specularColor, float gloss, float ndotv )
+vec3 EnvDFGLazarov(float gloss, float ndotv )
 {
-    const vec4 p0 = vec4( 0.5745, 1.548, -0.02397, 1.301 );
-    const vec4 p1 = vec4( 0.5753, -0.2511, -0.02066, 0.4755 );
+    const vec4 p0 = vec4(0.5745, 1.548, -0.02397, 1.301);
+    const vec4 p1 = vec4(0.5753, -0.2511, -0.02066, 0.4755);
 
     vec4 t = gloss * p0 + p1;
 
@@ -78,12 +80,13 @@ vec3 EnvDFGLazarov(const vec3 specularColor, float gloss, float ndotv )
     float delta = saturate( t.w );
     float scale = delta - bias;
 
-    bias *= saturate( 50.0 * specularColor.y );
-    return specularColor * scale + bias;
+//    bias *= saturate(50.0 * specularColor.y);
+//    return specularColor * scale + bias;
+    return vec3(bias, scale, 0.0);
 }
 
 // https://knarkowicz.wordpress.com/2014/12/27/analytical-dfg-term-for-ibl/
-vec3 EnvDFGPolynomial(const vec3 specularColor, float gloss, float ndotv )
+vec3 EnvDFGPolynomial(float gloss, float ndotv)
 {
     float x = gloss;
     float y = ndotv;
@@ -94,7 +97,7 @@ vec3 EnvDFGPolynomial(const vec3 specularColor, float gloss, float ndotv )
     const float b4 = -4.853;
     const float b5 = 8.404;
     const float b6 = -5.069;
-    float bias = saturate( min( b1 * x + b2 * x * x, b3 + b4 * y + b5 * y * y + b6 * y * y * y ) );
+    float bias = saturate(min(b1 * x + b2 * x * x, b3 + b4 * y + b5 * y * y + b6 * y * y * y));
 
     const float d0 = 0.6045;
     const float d1 = 1.699;
@@ -103,11 +106,12 @@ vec3 EnvDFGPolynomial(const vec3 specularColor, float gloss, float ndotv )
     const float d4 = 1.404;
     const float d5 = 0.1939;
     const float d6 = 2.661;
-    float delta = saturate( d0 + d1 * x + d2 * y + d3 * x * x + d4 * x * y + d5 * y * y + d6 * x * x * x );
+    float delta = saturate(d0 + d1 * x + d2 * y + d3 * x * x + d4 * x * y + d5 * y * y + d6 * x * x * x);
     float scale = delta - bias;
 
-    bias *= saturate( 50.0 * specularColor.y );
-    return specularColor * scale + bias;
+//    bias *= saturate(50.0 * specularColor.y);
+//    return specularColor * scale + bias;
+    return vec3(bias, scale, 0.0);
 }
 
 vec3 specularDFG(const PixelParams pixel) {
@@ -204,9 +208,7 @@ vec3 evaluateIBL(const PixelParams pixel) {
     float diffuseAO = min(pixel.occlusion, pixel.ssao);
     float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
 
-//    vec3 E = specularDFG(pixel);
-//    vec3 E = pixel.f0 * pixel.dfg.x + pixel.dfg.y;
-    vec3 E = pixel.dfg;
+    vec3 E = specularDFG(pixel);
     float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
 
     evaluateClothIndirectDiffuseBRDF(pixel, diffuseBRDF);
