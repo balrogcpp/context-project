@@ -44,9 +44,9 @@ uniform vec2 TexSize4;
 uniform vec2 TexSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
-uniform highp mat4 ViewMatrix;
-uniform highp mat4 WorldViewProjMatrix;
-uniform highp mat4 WorldViewProjPrev;
+uniform mat4 ViewMatrix;
+uniform mat4 WorldViewProjMatrix;
+uniform mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
 uniform float LightCount;
@@ -61,7 +61,6 @@ uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #if MAX_SHADOW_TEXTURES > 0
 uniform highp vec4 PssmSplitPoints;
 uniform highp mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
-uniform highp vec4 ShadowDepthRangeArray[MAX_SHADOW_TEXTURES];
 uniform float LightCastsShadowsArray[MAX_LIGHTS];
 #endif // MAX_SHADOW_TEXTURES > 0
 uniform float SurfaceAlphaRejection;
@@ -426,7 +425,7 @@ void main()
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
     vec4 fragPos = mulMat4x4Half3(WorldViewProjMatrix, vPosition1);
     fragPos.xyz /= fragPos.w;
-    highp float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
+    float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
     vec4 fragPosPrev = mulMat4x4Half3(WorldViewProjPrev, vPosition1);
     fragPosPrev.xyz /= fragPosPrev.w;
