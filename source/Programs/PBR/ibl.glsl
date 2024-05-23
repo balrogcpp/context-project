@@ -55,8 +55,7 @@ vec3 EnvBRDFApprox(const vec3 specularColor, float roughness, float NoV)
     vec4 r = roughness * c0 + c1;
     float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
     vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
-    //return specularColor * AB.x + AB.y;
-    return vec3(AB, 0.0);
+    return specularColor * AB.x + AB.y;
 }
 
 float EnvBRDFApproxNonmetal(float roughness, float NoV)
@@ -66,6 +65,49 @@ float EnvBRDFApproxNonmetal(float roughness, float NoV)
     const vec2 c1 = vec2(1.0, 0.0425);
     vec2 r = roughness * c0 + c1;
     return min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
+}
+
+vec3 EnvDFGLazarov(const vec3 specularColor, float gloss, float ndotv )
+{
+    const vec4 p0 = vec4( 0.5745, 1.548, -0.02397, 1.301 );
+    const vec4 p1 = vec4( 0.5753, -0.2511, -0.02066, 0.4755 );
+
+    vec4 t = gloss * p0 + p1;
+
+    float bias = saturate( t.x * min( t.y, exp2( -7.672 * ndotv ) ) + t.z );
+    float delta = saturate( t.w );
+    float scale = delta - bias;
+
+    bias *= saturate( 50.0 * specularColor.y );
+    return specularColor * scale + bias;
+}
+
+// https://knarkowicz.wordpress.com/2014/12/27/analytical-dfg-term-for-ibl/
+vec3 EnvDFGPolynomial(const vec3 specularColor, float gloss, float ndotv )
+{
+    float x = gloss;
+    float y = ndotv;
+
+    const float b1 = -0.1688;
+    const float b2 = 1.895;
+    const float b3 = 0.9903;
+    const float b4 = -4.853;
+    const float b5 = 8.404;
+    const float b6 = -5.069;
+    float bias = saturate( min( b1 * x + b2 * x * x, b3 + b4 * y + b5 * y * y + b6 * y * y * y ) );
+
+    const float d0 = 0.6045;
+    const float d1 = 1.699;
+    const float d2 = -0.5228;
+    const float d3 = -3.603;
+    const float d4 = 1.404;
+    const float d5 = 0.1939;
+    const float d6 = 2.661;
+    float delta = saturate( d0 + d1 * x + d2 * y + d3 * x * x + d4 * x * y + d5 * y * y + d6 * x * x * x );
+    float scale = delta - bias;
+
+    bias *= saturate( 50.0 * specularColor.y );
+    return specularColor * scale + bias;
 }
 
 vec3 specularDFG(const PixelParams pixel) {
@@ -163,7 +205,8 @@ vec3 evaluateIBL(const PixelParams pixel) {
     float specularAO = computeSpecularAO(shading_NoV, diffuseAO, pixel.roughness);
 
 //    vec3 E = specularDFG(pixel);
-    vec3 E = pixel.f0 * pixel.dfg.x + pixel.dfg.y;
+//    vec3 E = pixel.f0 * pixel.dfg.x + pixel.dfg.y;
+    vec3 E = pixel.dfg;
     float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
 
     evaluateClothIndirectDiffuseBRDF(pixel, diffuseBRDF);
