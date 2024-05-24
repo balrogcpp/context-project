@@ -459,25 +459,26 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
 
   const auto &fp = pass->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
+  const auto &vp = pass->getVertexProgramParameters();
+  vp->setIgnoreMissingParams(true);
 
   if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);
   }
 
-  if (auto *tex = pass->getTextureUnitState("IBL")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      if (IsCompositorEnabled("CubeMap")) tex->setCompositorReference("MRT", "ibl");
+  if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
+    for (auto *it : pass->getTextureUnitStates()) {
+      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+        it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+      }
     }
-  }
 
-  if (!IsCompositorEnabled("MRT")) return;
+    return;
+  }
 
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);
-  fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
-  fp->setNamedConstant("WorldViewProjMatrix", viewProj * MVP);
-  fp->setNamedConstant("StaticObj", 0.0f);
+  vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
 
   if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
     auto *entity = subentity->getParent();
@@ -486,10 +487,16 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
       rend->getUserObjectBindings().setUserAny(MVP);
       if (prevMVP.has_value()) {
-        fp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-        fp->setNamedConstant("WorldViewProjMatrix", viewProj * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+        vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
         fp->setNamedConstant("StaticObj", 1.0f);
       }
+    }
+  }
+
+  if (auto *tex = pass->getTextureUnitState("IBL")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      if (IsCompositorEnabled("CubeMap")) tex->setCompositorReference("MRT", "ibl");
     }
   }
 

@@ -12,6 +12,7 @@ uniform highp float baseUVScale;
 #endif
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
+uniform highp mat4 WorldViewProjPrev;
 #ifdef PAGED_GEOMETRY
 uniform highp vec4 Time;
 uniform highp vec3 CameraPosition;
@@ -66,6 +67,7 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 
 out highp vec3 vPosition;
 out highp vec3 vPosition1;
+out highp vec4 vPrevScreenPosition;
 #ifdef HAS_UV
 out highp vec2 vUV0;
 #endif
@@ -111,4 +113,5 @@ void main()
     vPosition = wPosition.xyz / wPosition.w;
     vPosition1 = position.xyz;
     gl_Position = mulMat4x4Float3(WorldViewProjMatrix, position.xyz);
+    vPrevScreenPosition = mulMat4x4Float3(WorldViewProjPrev, position.xyz);
 }

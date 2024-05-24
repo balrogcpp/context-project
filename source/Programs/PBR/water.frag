@@ -143,9 +143,9 @@ void main()
     float fresnel = FresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = texture2D(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0)).rgb;
+    vec3 reflection = textureLod(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0), 0.0).rgb;
 #ifdef FORCE_TONEMAP
-    reflection = inverseTonemap(reflection);
+    reflection = Inverse_Tonemap_Unreal(reflection);
 #endif
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
@@ -159,21 +159,21 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = texture2D(DepthTex, fragCoord - refrOffset * 0.9).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    float refractedDepth = textureLod(DepthTex, fragCoord - refrOffset * 0.9, 0.0).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
     highp float surfaceDepth = fragDepth;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
 #ifndef GL_ES
     vec3 refraction;
-    refraction.r = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade).r;
-    refraction.g = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).g;
-    refraction.b = texture2D(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade).b;
+    refraction.r = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade, 0.0).r;
+    refraction.g = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).g;
+    refraction.b = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade, 0.0).b;
 #else
-    vec3 refraction = texture2D(RefractionTex, fragCoord - refrOffset * distortFade).rgb;
+    vec3 refraction = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).rgb;
 #endif
 #ifdef FORCE_TONEMAP
-    refraction = inverseTonemap(refraction);
+    refraction = Inverse_Tonemap_Unreal(refraction);
 #endif
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);

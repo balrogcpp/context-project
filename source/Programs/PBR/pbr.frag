@@ -45,8 +45,6 @@ uniform vec2 TexSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 uniform mat4 ViewMatrix;
-uniform highp mat4 WorldViewProjMatrix;
-uniform highp mat4 WorldViewProjPrev;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
 uniform float LightCount;
@@ -387,6 +385,7 @@ float GetAO(const vec2 uv, float center_c, float center_d)
 
 in highp vec3 vPosition;
 in highp vec3 vPosition1;
+in highp vec4 vPrevScreenPosition;
 #ifdef HAS_UV
 in highp vec2 vUV0;
 #endif
@@ -423,13 +422,10 @@ void main()
 
     V = normalize(CameraPosition - vPosition);
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
-    vec4 fragPos = mulMat4x4Float3(WorldViewProjMatrix, vPosition1);
-    fragPos.xyz /= fragPos.w;
+//    vec2 fragVelocity = (vPrevScreenPosition.xy / vPrevScreenPosition.w * 0.5 + 0.5) - fragCoord;
+    vec2 fragVelocity = (vPrevScreenPosition.xy / vPrevScreenPosition.w) - fragCoord;
     float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
-    vec4 fragPosPrev = mulMat4x4Float3(WorldViewProjPrev, vPosition1);
-    fragPosPrev.xyz /= fragPosPrev.w;
-    vec2 fragVelocity = (fragPosPrev.xy - fragPos.xy);
 
 #if MAX_LIGHTS > 0
     vec3 orm = GetORM(uv, alpha);
@@ -441,10 +437,7 @@ void main()
 #endif
 
     float ssao = 1.0;
-#ifdef GL_ES
-    // magic fix for GLES
-    fragVelocity *= ViewportSize.zw;
-#endif
+
 #if defined(HAS_AO) || defined(HAS_SSR)
     vec2 nuv = fragCoord.xy + fragVelocity.xy;
     vec2 occ = textureLod(OccTex, nuv, 0.0).rg;

@@ -1,10 +1,6 @@
 // created by Andrey Vasiliev
 
-#ifndef GL_ES
-    #define SRGB_FAST_APPROXIMATION
-#else
-    #define SRGB_VERY_FAST_APPROXIMATION
-#endif
+#define SRGB_FAST_APPROXIMATION
 
 float toSRGB(float x)
 {
