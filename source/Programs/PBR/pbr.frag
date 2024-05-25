@@ -422,7 +422,6 @@ void main()
 
     V = normalize(CameraPosition - vPosition);
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
-//    vec2 fragVelocity = (vPrevScreenPosition.xy / vPrevScreenPosition.w * 0.5 + 0.5) - fragCoord;
     vec2 fragVelocity = (vPrevScreenPosition.xy / vPrevScreenPosition.w) - fragCoord;
     float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
