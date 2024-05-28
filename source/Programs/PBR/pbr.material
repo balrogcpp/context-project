@@ -17,7 +17,7 @@ sampler ShadowMap
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
-sampler AO
+sampler SSAO
 {
     filtering bilinear
     tex_address_mode border
@@ -39,7 +39,7 @@ abstract material Unlit
     set $Normal normal.dds
     set $ORM yellow.dds
     set $Emissive black.dds
-    set $AO white.dds
+    set $SSAO white.dds
     set $SSR black.dds
     set $IBL specular.dds
 
@@ -70,8 +70,6 @@ abstract material Unlit
             {
                 param_named AlbedoTex      int 0
                 param_named EmissiveTex    int 1
-                param_named_auto TexSize0  texture_size 0
-                param_named_auto TexSize1  texture_size 1
             }
         }
     }
@@ -86,7 +84,7 @@ abstract material PBR
     set $Normal normal.dds
     set $ORM yellow.dds
     set $Emissive black.dds
-    set $AO white.dds
+    set $SSAO white.dds
     set $SSR black.dds
     set $IBL specular.dds
 
@@ -118,10 +116,10 @@ abstract material PBR
             {
                 texture $Emissive
             }
-            texture_unit AO
+            texture_unit SSAO
             {
-                texture $AO
-                sampler_ref AO
+                texture $SSAO
+                sampler_ref SSAO
             }
             texture_unit SSR
             {
@@ -145,12 +143,8 @@ abstract material PBR
                 param_named OccTex         int 4
                 param_named SSR            int 5
                 param_named ShadowTex      int 6
-                param_named_auto TexSize0  texture_size 0
-                param_named_auto TexSize1  texture_size 1
-                param_named_auto TexSize2  texture_size 2
-                param_named_auto TexSize3  texture_size 3
-                param_named_auto TexSize4  inverse_texture_size 4
-                param_named_auto TexSize6  inverse_texture_size 6
+                param_named_auto TexelSize4  inverse_texture_size 4
+                param_named_auto TexelSize6  inverse_texture_size 6
             }
         }
     }
@@ -217,7 +211,7 @@ abstract material TERRA
     receive_shadows off
     set $Albedo white.dds
     set $Normal normal.dds
-    set $AO white.dds
+    set $SSAO white.dds
     set $SSR black.dds
     set $IBL specular.dds
 
@@ -251,10 +245,10 @@ abstract material TERRA
                 texture white.dds
                 sampler_ref ShadowMap
             }
-            texture_unit AO
+            texture_unit SSAO
             {
-                texture $AO
-                sampler_ref AO
+                texture $SSAO
+                sampler_ref SSAO
             }
             texture_unit SSR
             {
@@ -284,12 +278,9 @@ abstract material TERRA
                 param_named SSR            int 5
                 param_named ShadowTex      int 6
                 param_named SpecularEnvTex int 7
-                param_named_auto TexSize0  texture_size 0
-                param_named_auto TexSize1  texture_size 1
-                //param_named_auto TexSize2  texture_size 2
-                param_named_auto TexSize3  inverse_texture_size 3
-                param_named_auto TexSize4  inverse_texture_size 4
-                param_named_auto TexSize6  inverse_texture_size 6
+                param_named_auto TexelSize3  inverse_texture_size 3
+                param_named_auto TexelSize4  inverse_texture_size 4
+                param_named_auto TexelSize6  inverse_texture_size 6
             }
         }
     }

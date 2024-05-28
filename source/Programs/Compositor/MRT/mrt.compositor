@@ -9,8 +9,8 @@ compositor MRT
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_GR PF_R8G8_SNORM no_fsaa chain_scope
         texture rt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa depth_pool 0
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_GR no_fsaa depth_pool 0
-        texture ssr target_width_scaled 0.5 target_height_scaled 1 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture ssao target_width_scaled 0.5 target_height_scaled 1 PF_FLOAT16_GR no_fsaa depth_pool 0
+        texture ssr target_width_scaled 0.5 target_height_scaled 1 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture shadowmap 2048 2048 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
 
@@ -63,7 +63,7 @@ compositor MRT
             }
         }
 
-        target ao
+        target ssao
         {
             pass render_quad
             {

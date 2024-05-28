@@ -24,9 +24,9 @@ in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    vec3 color = texture2D(RT, vUV0).rgb;
-    float depth = texture2D(DepthTex, vUV0).x;
-    vec2 velocity = texture2D(VelocityTex, vUV0).xy;
+    vec3 color = textureLod(RT, vUV0, 0.0).rgb;
+    float depth = textureLod(DepthTex, vUV0, 0.0).x;
+    vec2 velocity = textureLod(VelocityTex, vUV0, 0.0).xy;
 
     if (velocity == vec2(0.0, 0.0)) {
         vec3 viewPos = vRay * depth;
@@ -52,9 +52,9 @@ void main()
         if (int(nSamples) <= i) break;
 
         vec2 offset = (float(i) * invSamples - 0.5) * velocity;
-        float dDepth = (depth - texture2D(DepthTex, vUV0 + offset).r);
+        float dDepth = (depth - textureLod(DepthTex, vUV0 + offset, 0.0).r);
         if (dDepth > 0.001) break;
-        color += texture2D(RT, vUV0 + offset).rgb;
+        color += textureLod(RT, vUV0 + offset, 0.0).rgb;
         counter += 1.0;
     }
 

@@ -172,10 +172,9 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("Glow", false);
-  AddCompositor("HDR", false);
-  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
+  AddCompositor("HDR", true);
   AddCompositor("MotionBlur", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);
   AddCompositor("Pause", false);
 
@@ -518,10 +517,10 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       tex->setCompositorReference("MRT", "shadowmap");
     }
   }
-  if (auto *tex = pass->getTextureUnitState("AO")) {
+  if (auto *tex = pass->getTextureUnitState("SSAO")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "ao");
+      tex->setCompositorReference("MRT", "ssao");
     }
   }
   if (auto *tex = pass->getTextureUnitState("SSR")) {

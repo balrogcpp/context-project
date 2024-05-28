@@ -20,12 +20,17 @@ float Downscale2x2(sampler2D tex, const vec2 uv, const vec2 tsize)
     return c1;
 }
 
+float expose(float color, const vec3 exposure) {
+    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
+}
+
 in highp vec2 vUV0;
 void main()
 {
     float newLum = Downscale2x2(RT, vUV0, TexelSize);
     newLum = expose(newLum, Exposure);
-    float oldLum = textureLod(Lum, vec2(0.0, 0.0), 0.0).r;
-    float lum = mix(newLum, oldLum, pow(0.25, timeSinceLast));
-    FragColor.r = SafeHDR(lum);
+    float oldLum = texelFetch(Lum, ivec2(0, 0), 0).r;
+
+    //Adapt luminicense based 75% per second.
+    FragColor.r = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 }

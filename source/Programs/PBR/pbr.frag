@@ -36,12 +36,9 @@ uniform sampler2D TerraNormalTex;
 uniform sampler2D TerraLightTex;
 #endif
 
-uniform vec2 TexSize0;
-uniform vec2 TexSize1;
-uniform vec2 TexSize2;
-uniform vec2 TexSize3;
-uniform vec2 TexSize4;
-uniform vec2 TexSize6;
+uniform vec2 TexelSize3;
+uniform vec2 TexelSize4;
+uniform vec2 TexelSize6;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 uniform mat4 ViewMatrix;
@@ -229,19 +226,13 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 {
 #ifdef HAS_NORMALMAP
-#ifndef GL_ES
-    // magic fix for GLES, uniform fails on old Blackbery phone, textureSize works
-    if (TexSize1.x > 1.0) return normalize(mul(tbn, texture2D(NormalTex, uv.xy).xyz * 2.0 - 1.0));
-#else
-    if (textureSize(NormalTex, 0).x > 1) return normalize(mul(tbn, texture2D(NormalTex, uv.xy).xyz * 2.0 - 1.0));
-#endif
-    else return tbn[2];
+    return normalize(mul(tbn, texture2D(NormalTex, uv.xy).xyz * 2.0 - 1.0));
 #else
     return tbn[2];
 #endif
 }
 
-vec3 GetNormal(const vec2 uv)
+vec3 GetNormal(const vec2 uv, const vec3 position)
 {
 #ifndef HAS_TANGENTS
 #if defined(TERRA_NORMALMAP)
@@ -253,6 +244,27 @@ vec3 GetNormal(const vec2 uv)
 #elif defined(PAGED_GEOMETRY)
     highp mat3 tbn = mtxFromCols(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 1.0, 0.0));
     return GetNormal(tbn, uv);
+#else
+
+    highp vec3 pos_dx = dFdx(position);
+    highp vec3 pos_dy = dFdy(position);
+#ifdef HAS_UV
+    highp vec3 tex_dx = max(dFdx(vec3(uv, 0.0)), vec3(0.001, 0.001, 0.001));
+    highp vec3 tex_dy = max(dFdy(vec3(uv, 0.0)), vec3(0.001, 0.001, 0.001));
+#else
+    const highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
+    const highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
+#endif
+#ifdef HAS_NORMALS
+    vec3 n = vNormal;
+#else
+    vec3 n = cross(pos_dx, pos_dy);
+#endif
+    highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+    t = normalize(t - n * dot(n, t));
+    highp vec3 b = normalize(cross(n, t));
+    tbn = mtxFromCols(t, b, n);
+
 #endif
 #endif
 
@@ -269,8 +281,7 @@ vec3 GetORM(const vec2 uv, float spec)
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * (1.0 - spec), 0.0);
 #endif
 #ifdef HAS_ORM
-    if (TexSize2.x > 1.0) orm *= texture2D(OrmTex, uv).rgb;
-    else orm.b = 0.0;
+    orm *= texture2D(OrmTex, uv).rgb;
 #endif
 
     return clamp(orm, vec3(0.0, MIN_PERCEPTUAL_ROUGHNESS, 0.0), vec3(1.0, 1.0, 1.0));
@@ -323,7 +334,7 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
 {
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * color, 1.0);
 #ifdef HAS_BASECOLORMAP
-    if (TexSize0.x > 1.0) albedo *= texture2D(AlbedoTex, uv);
+    albedo *= texture2D(AlbedoTex, uv);
 #endif
 
 #ifdef HAS_ALPHA
@@ -338,7 +349,7 @@ vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
-    if (TexSize3.x > 1.0) emission += texture2D(EmissiveTex, uv).rgb;
+    emission += texture2D(EmissiveTex, uv).rgb;
 #endif
     return SRGBtoLINEAR(emission) * SurfaceSpecularColour.b;
 }
@@ -372,11 +383,11 @@ float GetAO(const vec2 uv, float center_c, float center_d)
 
     for (int r = 1; r <= KERNEL_RADIUS; ++r)
     {
-        c_total += BlurFunction(uv + TexSize4 * float(r), float(r), center_c, center_d, w_total);
+        c_total += BlurFunction(uv + TexelSize4 * float(r), float(r), center_c, center_d, w_total);
     }
     for (int r = 1; r <= KERNEL_RADIUS; ++r)
     {
-        c_total += BlurFunction(uv - TexSize4 * float(r), float(r), center_c, center_d, w_total);
+        c_total += BlurFunction(uv - TexelSize4 * float(r), float(r), center_c, center_d, w_total);
     }
 
     return c_total/w_total;
@@ -432,18 +443,18 @@ void main()
 #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
     N = GetNormal(vTBN, uv);
 #else
-    N = GetNormal(uv);
+    N = GetNormal(uv, vPosition);
 #endif
 
     float ssao = 1.0;
 
 #if defined(HAS_AO) || defined(HAS_SSR)
-    vec2 nuv = fragCoord.xy + fragVelocity.xy;
-    vec2 occ = textureLod(OccTex, nuv, 0.0).rg;
+    vec2 nuv = fragCoord + fragVelocity;
+    vec2 occ = textureLod(OccTex, fragCoord, 0.0).rg;
     float dDepth = (clampedDepth - occ.g);
 #endif
 #ifdef HAS_AO
-    if (dDepth <= 0.001) ssao = GetAO(nuv, occ.r, occ.g);
+    if (dDepth <= 0.001) ssao = GetAO(fragCoord, occ.r, occ.g);
 #endif
 
     // Roughness is authored as perceptual roughness; as is convention,

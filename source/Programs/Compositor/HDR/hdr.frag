@@ -9,7 +9,6 @@ in highp vec2 vUV0;
 void main()
 {
     vec3 color = texture2D(RT, vUV0).rgb;
-    float lum = texture2D(Lum, vec2(0.0, 0.0)).r;
-    color *= lum;
-    FragColor.rgb = SafeHDR(color);
+    float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
+    FragColor.rgb = SafeHDR(color * lum);
 }

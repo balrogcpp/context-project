@@ -70,7 +70,7 @@ void main()
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    float clampedPixelDepth = texture2D(NormalTex, vUV0).x;
+    float clampedPixelDepth = textureLod(NormalTex, vUV0, 0.0).x;
     float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
     vec3 viewPos = vRay * clampedPixelDepth;
     float invDepth = 1.0 - clampedPixelDepth;
@@ -78,7 +78,7 @@ void main()
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    vec3 normal = unpack(texture2D(NormalTex, vUV0).y);
+    vec3 normal = unpack(textureLod(NormalTex, vUV0, 0.0).y);
 
     if(normal == vec3(0.0, 0.0, 0.0) || clampedPixelDepth > 0.5) {
         FragColor.r = 1.0;
@@ -99,7 +99,7 @@ void main()
         nuv.xy /= nuv.w;
 
         // Compute occlusion based on the (scaled) Z difference
-        float clampedSampleDepth = texture2D(DepthTex, nuv.xy).x;
+        float clampedSampleDepth = textureLod(DepthTex, nuv.xy, 0.0).x;
         float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
         float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * fstep(clampedSampleDepth, oSample.z);
 

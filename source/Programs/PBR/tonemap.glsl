@@ -4,14 +4,6 @@ float luminance(const vec3 col) {
     return dot(col, vec3(0.2126, 0.7152, 0.0722));
 }
 
-float expose(float color, const vec3 exposure) {
-    return exposure.x / exp(clamp(color, exposure.y, exposure.z));
-}
-
-vec3 expose(const vec3 color, const vec3 exposure) {
-    return color * exposure.x / exp(clamp(luminance(color), exposure.y, exposure.z));
-}
-
 // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
 vec3 aces(const vec3 x) {
     const float a = 2.51;

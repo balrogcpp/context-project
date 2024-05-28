@@ -3,7 +3,8 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform vec2 TexelSize;
+uniform vec4 TexSize;
+uniform vec4 ViewportSize;
 
 //const vec2 c_offsets[16] = vec2[16]
 //(
@@ -13,11 +14,11 @@ uniform vec2 TexelSize;
 //vec2( 2, 2 ), vec2( 3, 2 ), vec2( 2, 3 ), vec2( 3, 3 )
 //);
 //  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale01_SumLumStart_ps.glsl
-float Downscale4x4(sampler2D tex, const vec2 uv, const vec2 texSize)
+float Downscale4x4(sampler2D tex, const vec2 uv)
 {
-    vec2 ratio = (texSize / vec2(64.0, 64.0)) * 0.25;
-    vec2 tsize = ratio / texSize;
-    const float W = 1.0 / 16.0;
+    vec2 ratio = (TexSize.xy * ViewportSize.zw) * 0.25;
+    vec2 tsize = ratio * TexSize.zw;
+
     float A = luminance(textureLod(tex, uv                         , 0.0).rgb) + 0.0001;
     float B = luminance(textureLod(tex, uv + tsize * vec2(1.0, 0.0), 0.0).rgb) + 0.0001;
     float C = luminance(textureLod(tex, uv + tsize * vec2(0.0, 1.0), 0.0).rgb) + 0.0001;
@@ -35,12 +36,14 @@ float Downscale4x4(sampler2D tex, const vec2 uv, const vec2 texSize)
     float O = luminance(textureLod(tex, uv + tsize * vec2(2.0, 3.0), 0.0).rgb) + 0.0001;
     float P = luminance(textureLod(tex, uv + tsize * vec2(3.0, 4.0), 0.0).rgb) + 0.0001;
 
-    float c1 = (log(A * 1024.0) + log(B * 1024.0) + log(C * 1024.0) + log(D * 1024.0)) * W;
-    float c2 = (log(E * 1024.0) + log(F * 1024.0) + log(G * 1024.0) + log(H * 1024.0)) * W;
-    float c3 = (log(I * 1024.0) + log(J * 1024.0) + log(K * 1024.0) + log(L * 1024.0)) * W;
-    float c4 = (log(M * 1024.0) + log(N * 1024.0) + log(O * 1024.0) + log(P * 1024.0)) * W;
+    float c1 = log(A * 1024.0) + log(B * 1024.0) + log(C * 1024.0) + log(D * 1024.0);
+    float c2 = log(E * 1024.0) + log(F * 1024.0) + log(G * 1024.0) + log(H * 1024.0);
+    float c3 = log(I * 1024.0) + log(J * 1024.0) + log(K * 1024.0) + log(L * 1024.0);
+    float c4 = log(M * 1024.0) + log(N * 1024.0) + log(O * 1024.0) + log(P * 1024.0);
 
-    return c1 + c2 + c3 + c4;
+    float c = (c1 + c2 + c3 + c4) * 0.0625; // 0.0625 = 1/16
+
+    return c;
 }
 
 in highp vec2 vUV0;
@@ -51,6 +54,6 @@ void main()
     //We would need 64x64 samples, but we only sample 4x4, therefore we sample one
     //pixel and skip 15, then repeat. We perform:
     //(ViewportResolution / TargetResolution) / 4
-    float lum = Downscale4x4(RT, vUV0, TexelSize);
-    FragColor.r = SafeHDR(lum);
+    float lum = Downscale4x4(RT, vUV0);
+    FragColor = vec4(lum, 0.0, 0.0, 1.0);
 }

@@ -91,7 +91,7 @@ float FetchTerraShadow(const vec2 uv)
     float phi = InterleavedGradientNoise(uv);
 
     for (int i = 0; i < 4; ++i) {
-        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexSize3;
+        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexelSize3;
         shadow += texture2D(TerraLightTex, uv + offset).x;
     }
     shadow *= 0.25;
@@ -168,9 +168,9 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
     else
         return 1.0;
 #endif
-
+    
     depth = depth * 0.5 + 0.5;
-    vec2 tsize = TexSize6;
+    vec2 tsize = TexelSize6;
     //depth -= 0.001;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise(uv);
@@ -182,26 +182,26 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
     #define PSSM_ESM_MIN -0.2
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
 #if PSSM_FILTER_SIZE == 16
-        vec2 offset = vogel_disk_16[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = vogel_disk_16[(i + int(phi)) % PSSM_FILTER_SIZE] * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 12
-        vec2 offset = vogel_disk_12[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = vogel_disk_12[(i + int(phi)) % PSSM_FILTER_SIZE] * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 8
-        vec2 offset = vogel_disk_8[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = vogel_disk_8[(i + int(phi)) % PSSM_FILTER_SIZE] * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 6
-        vec2 offset = vogel_disk_6[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = vogel_disk_6[(i + int(phi)) % PSSM_FILTER_SIZE] * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 4
-        vec2 offset = vogel_disk_4[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = vogel_disk_4[(i + int(phi)) % PSSM_FILTER_SIZE] * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 3
-        vec2 offset = vogel_disk_3[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = vogel_disk_3[(i + int(phi)) % PSSM_FILTER_SIZE] * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 2
-        vec2 offset = vogel_disk_2[(i + int(phi)) % PSSM_FILTER_SIZE] * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = vogel_disk_2[(i + int(phi)) % PSSM_FILTER_SIZE] * PSSM_FILTER_RADIUS;
 #elif PSSM_FILTER_SIZE == 1
         const vec2 offset = vec2(0.0, 0.0);
 #else
-        vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * PSSM_FILTER_RADIUS;
+        vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * PSSM_FILTER_RADIUS;
 #endif
-        float texDepth = texture2D(ShadowTex, uv + offset).x;
-        //if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
+        float texDepth = texture2D(ShadowTex, uv + offset * tsize).x;
+    //if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
 #ifdef PSSM_ESM_SHADOWMAP
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
         sampled = (1.0 - (4.0 * (1.0 - sampled)));
@@ -215,23 +215,6 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
     shadow /= float(PSSM_FILTER_SIZE);
 
     return shadow;
-}
-
-float CalcPSSMShadow(const highp vec4 lightSpacePos[PSSM_SPLITS], float pixelDepth)
-{
-    if (pixelDepth >= PssmSplitPoints.w) return 1.0;
-
-    if (pixelDepth <= PssmSplitPoints.x)
-        return CalcShadow(lightSpacePos[0].xyz, 0);
-#if PSSM_SPLITS > 1
-    else if (pixelDepth <= PssmSplitPoints.y)
-        return CalcShadow(lightSpacePos[1].xyz, 1);
-#endif
-#if PSSM_SPLITS > 2
-    else if (pixelDepth <= PssmSplitPoints.z)
-        return CalcShadow(lightSpacePos[2].xyz, 2);
-#endif
-    return 1.0; // to shut up "missing return" warning
 }
 
 #endif // MAX_SHADOW_TEXTURES > 0
