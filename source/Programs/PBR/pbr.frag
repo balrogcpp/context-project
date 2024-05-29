@@ -408,7 +408,7 @@ float GetAO(const vec2 uv, float center_c, float center_d)
 
 in highp vec3 vPosition;
 in highp vec3 vPosition1;
-in highp vec4 vPrevScreenPosition;
+in mediump vec4 vPrevScreenPosition;
 #ifdef HAS_UV
 in highp vec2 vUV0;
 #endif

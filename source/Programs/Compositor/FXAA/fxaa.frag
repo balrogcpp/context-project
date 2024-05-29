@@ -79,11 +79,7 @@ FXAA_SUBPIX_CAP - Insures fine detail is not completely removed.
 // FxaaLuma() will range 0.0 to 2.963210702.
 float FxaaLuma(const vec3 rgb) {
     //return rgb.y * (0.587/0.299) + rgb.x;
-#ifndef FORCE_TONEMAP
     return dot(rgb, vec3(0.2126, 0.7152, 0.0722));
-#else
-    return dot(Inverse_Tonemap_Unreal(rgb), vec3(0.2126, 0.7152, 0.0722));
-#endif
 }
 
 vec3 FxaaLerp3(const vec3 a, const vec3 b, float amountOfA) {

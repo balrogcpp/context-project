@@ -67,7 +67,7 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 
 out highp vec3 vPosition;
 out highp vec3 vPosition1;
-out highp vec4 vPrevScreenPosition;
+out mediump vec4 vPrevScreenPosition;
 #ifdef HAS_UV
 out highp vec2 vUV0;
 #endif
@@ -97,7 +97,7 @@ void main()
 
 #ifdef PAGED_GEOMETRY
     if (uv2.x == 0.0)
-        position += fstep(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
+        position += step(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
     else
         position += WaveTree(position, Time.x, uv1, uv2);
 #endif

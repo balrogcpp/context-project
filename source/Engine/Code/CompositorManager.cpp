@@ -174,6 +174,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("MRT", true);
   AddCompositor("MotionBlur", true);
   AddCompositor("FXAA", true);
+  AddCompositor("Glow", true);
   AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("Pause", false);
@@ -492,6 +493,15 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     }
   }
 
+  if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      if (!IsCompositorEnabled("Fresnel")) AddCompositor("Fresnel", true, 0);
+      tex->setCompositorReference("Fresnel", "reflection");
+      tex->setProjectiveTexturing(true, camera);
+    }
+  }
+
   if (!IsCompositorEnabled("MRT")) return;
 
   if (auto *tex = pass->getTextureUnitState("IBL")) {
@@ -529,14 +539,6 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "ssr");
-    }
-  }
-  if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      if (!IsCompositorEnabled("Fresnel")) AddCompositor("Fresnel", true, 0);
-      tex->setCompositorReference("Fresnel", "reflection");
-      tex->setProjectiveTexturing(true, camera);
     }
   }
 }

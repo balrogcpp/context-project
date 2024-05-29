@@ -22,13 +22,13 @@ vec3 Downscale13(sampler2D tex, const vec2 uv, const vec2 tsize)
     vec3 L = textureLod(tex, uv + tsize * vec2( 0.0,  1.0), 0.0).rgb;
     vec3 M = textureLod(tex, uv + tsize * vec2( 1.0,  1.0), 0.0).rgb;
 
-    vec3 c1 = (D + E + I + J) * 0.125;
-    vec3 c2 = (A + B + G + F) * 0.03125;
-    vec3 c3 = (B + C + H + G) * 0.03125;
-    vec3 c4 = (F + G + L + K) * 0.03125;
-    vec3 c5 = (G + H + M + L) * 0.03125;
+    vec3 c = (D + E + I + J) * 0.125;
+    c += (A + B + G + F) * 0.03125;
+    c += (B + C + H + G) * 0.03125;
+    c += (F + G + L + K) * 0.03125;
+    c += (G + H + M + L) * 0.03125;
 
-    return c1 + c2 + c3 + c4 + c5;
+    return c;
 }
 
 in highp vec2 vUV0;

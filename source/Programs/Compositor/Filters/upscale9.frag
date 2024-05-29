@@ -8,21 +8,23 @@ uniform vec2 TexelSize;
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 vec3 Upscale9(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    vec3 A = textureLod(tex, uv + tsize * vec2(-1.0, -1.0), 0.0).rgb;
-    vec3 B = textureLod(tex, uv + tsize * vec2( 0.0, -1.0), 0.0).rgb;
-    vec3 C = textureLod(tex, uv + tsize * vec2( 1.0, -1.0), 0.0).rgb;
-    vec3 D = textureLod(tex, uv + tsize * vec2(-1.0,  0.0), 0.0).rgb;
-    vec3 E = textureLod(tex, uv + tsize                   , 0.0).rgb;
-    vec3 F = textureLod(tex, uv + tsize * vec2( 1.0,  0.0), 0.0).rgb;
-    vec3 G = textureLod(tex, uv + tsize * vec2(-1.0,  1.0), 0.0).rgb;
-    vec3 H = textureLod(tex, uv + tsize * vec2( 0.0,  1.0), 0.0).rgb;
-    vec3 I = textureLod(tex, uv + tsize * vec2( 1.0,  1.0), 0.0).rgb;
+    vec4 d = tsize.xyxy * vec4(1.0, 1.0, -1.0, 0.0);
 
-    vec3 c1 = E * 0.25;
-    vec3 c2 = (B + D + F + H) * 0.125;
-    vec3 c3 = (A + C + G + I) * 0.0625;
+    vec3 A = textureLod(tex, uv - d.xy, 0.0).rgb;
+    vec3 B = textureLod(tex, uv - d.wy, 0.0).rgb;
+    vec3 C = textureLod(tex, uv - d.zy, 0.0).rgb;
+    vec3 D = textureLod(tex, uv + d.zw, 0.0).rgb;
+    vec3 E = textureLod(tex, uv       , 0.0).rgb;
+    vec3 F = textureLod(tex, uv + d.xw, 0.0).rgb;
+    vec3 G = textureLod(tex, uv + d.zy, 0.0).rgb;
+    vec3 H = textureLod(tex, uv + d.wy, 0.0).rgb;
+    vec3 I = textureLod(tex, uv + d.xy, 0.0).rgb;
 
-    return c1 + c2 + c3;
+    vec3 c = E * 0.25;
+    c += (B + D + F + H) * 0.125;
+    c += (A + C + G + I) * 0.0625;
+
+    return c;
 }
 
 in highp vec2 vUV0;
