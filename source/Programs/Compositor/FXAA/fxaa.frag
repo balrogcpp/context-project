@@ -44,7 +44,7 @@ FXAA_SUBPIX_CAP - Insures fine detail is not completely removed.
 */
 
 #ifndef FXAA_PRESET
-    #define FXAA_PRESET 5
+    #define FXAA_PRESET 3
 #endif
 #if (FXAA_PRESET == 3)
     #define FXAA_EDGE_THRESHOLD      (1.0/8.0)
@@ -236,8 +236,5 @@ in highp vec2 vUV0;
 void main()
 {
     vec3 color = FxaaPixelShader(RT, vUV0, TexelSize);
-#ifndef FORCE_TONEMAP
-    color = unreal(color);
-#endif
     FragColor.rgb = SafeHDR(color);
 }

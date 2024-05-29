@@ -24,7 +24,14 @@ uniform sampler2D OccTex;
 uniform sampler2D SSR;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
+#if defined(SHADOWMAP_ATLAS)
 uniform sampler2D ShadowTex;
+#else
+uniform sampler2D ShadowTex0;
+uniform sampler2D ShadowTex1;
+uniform sampler2D ShadowTex2;
+uniform sampler2D ShadowTex3;
+#endif
 #endif
 #ifdef HAS_IBL
 uniform samplerCube SpecularEnvTex;
@@ -39,6 +46,11 @@ uniform sampler2D TerraLightTex;
 uniform vec2 TexelSize3;
 uniform vec2 TexelSize4;
 uniform vec2 TexelSize6;
+#if !defined(SHADOWMAP_ATLAS)
+uniform vec2 TexelSize7;
+uniform vec2 TexelSize8;
+uniform vec2 TexelSize9;
+#endif
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 uniform mat4 ViewMatrix;

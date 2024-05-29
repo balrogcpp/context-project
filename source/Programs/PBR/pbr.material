@@ -126,9 +126,29 @@ abstract material PBR
                 texture $SSR
                 sampler_ref SSR
             }
-            texture_unit ShadowAtlas
+            // texture_unit ShadowAtlas
+            // {
+            //     texture white.dds
+            //     sampler_ref ShadowMap
+            // }
+            texture_unit ShadowMap0
             {
-                texture white.dds
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
                 sampler_ref ShadowMap
             }
 
@@ -142,9 +162,16 @@ abstract material PBR
                 param_named EmissiveTex    int 3
                 param_named OccTex         int 4
                 param_named SSR            int 5
-                param_named ShadowTex      int 6
+                // param_named ShadowTex      int 6
+                param_named ShadowTex0      int 6
+                param_named ShadowTex1      int 7
+                param_named ShadowTex2      int 8
+                param_named ShadowTex3      int 9
                 param_named_auto TexelSize4  inverse_texture_size 4
                 param_named_auto TexelSize6  inverse_texture_size 6
+                param_named_auto TexelSize7  inverse_texture_size 7
+                param_named_auto TexelSize8  inverse_texture_size 8
+                param_named_auto TexelSize9  inverse_texture_size 9
             }
         }
     }
@@ -166,7 +193,7 @@ abstract material IBL : PBR
 
             fragment_program_ref IBL_fs
             {
-                param_named SpecularEnvTex int 7
+                param_named SpecularEnvTex int 10
             }
         }
     }
@@ -255,9 +282,29 @@ abstract material TERRA
                 texture $SSR
                 sampler_ref SSR
             }
-            texture_unit ShadowAtlas
+            // texture_unit ShadowAtlas
+            // {
+            //     texture white.dds
+            //     sampler_ref ShadowMap
+            // }
+            texture_unit ShadowMap0
             {
-                texture white.dds
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap1
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap2
+            {
+                content_type shadow
+                sampler_ref ShadowMap
+            }
+            texture_unit ShadowMap3
+            {
+                content_type shadow
                 sampler_ref ShadowMap
             }
             texture_unit IBL
@@ -276,11 +323,18 @@ abstract material TERRA
                 param_named TerraLightTex  int 3
                 param_named OccTex         int 4
                 param_named SSR            int 5
-                param_named ShadowTex      int 6
-                param_named SpecularEnvTex int 7
+                // param_named ShadowTex      int 6
+                param_named ShadowTex0      int 6
+                param_named ShadowTex1      int 7
+                param_named ShadowTex2      int 8
+                param_named ShadowTex3      int 9
+                param_named SpecularEnvTex int 10
                 param_named_auto TexelSize3  inverse_texture_size 3
                 param_named_auto TexelSize4  inverse_texture_size 4
                 param_named_auto TexelSize6  inverse_texture_size 6
+                param_named_auto TexelSize7  inverse_texture_size 7
+                param_named_auto TexelSize8  inverse_texture_size 8
+                param_named_auto TexelSize9  inverse_texture_size 9
             }
         }
     }

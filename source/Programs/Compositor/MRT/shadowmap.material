@@ -25,10 +25,10 @@ material ShadowMap
                 param_named ShadowMap1 int 1
                 param_named ShadowMap2 int 2
                 param_named ShadowMap3 int 3
-                param_named ShadowMap4 int 4
-                param_named ShadowMap5 int 5
-                param_named ShadowMap6 int 6
-                //param_named ShadowMap7 int 7
+                // param_named ShadowMap4 int 4
+                // param_named ShadowMap5 int 5
+                // param_named ShadowMap6 int 6
+                // param_anamed ShadowMap7 int 7
             }
 
             texture_unit ShadowMap0

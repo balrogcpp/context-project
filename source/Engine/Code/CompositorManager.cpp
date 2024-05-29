@@ -154,7 +154,7 @@ void CompositorManager::OnSetUp() {
   ASSERTION(sceneManager, "[CompositorManager] sceneManager not initialised");
   camera = sceneManager->getCamera("Camera");
   ASSERTION(camera, "[CompositorManager] camera not initialised");
-  compositorManager->registerCustomCompositionPass("RenderShadowMap", OGRE_NEW RenderShadowsPass);
+  compositorManager->registerCustomCompositionPass("RenderShadowMap", new RenderShadowsPass);
 
   viewport = camera->getViewport();
   compositorChain = compositorManager->getCompositorChain(viewport);
@@ -172,10 +172,10 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("HDR", true);
   AddCompositor("MotionBlur", true);
-  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("FXAA", true);
+  AddCompositor("HDR", true);
+  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("Pause", false);
 
   // reg as viewport listener
@@ -491,6 +491,8 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       }
     }
   }
+
+  if (!IsCompositorEnabled("MRT")) return;
 
   if (auto *tex = pass->getTextureUnitState("IBL")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {

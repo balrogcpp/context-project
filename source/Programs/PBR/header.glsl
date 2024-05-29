@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
 //#undef HAS_MRT
-#define FORCE_TONEMAP
+// #define FORCE_TONEMAP
 
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
@@ -9,11 +9,7 @@
 #ifndef MAX_SHADOW_TEXTURES
 #define MAX_SHADOW_TEXTURES 4
 #endif
-//#ifdef GL_ES
-//#undef MAX_SHADOW_TEXTURES
-//#define MAX_SHADOW_TEXTURES 0
-//#endif
-#define SHADOWMAP_ATLAS
+// #define SHADOWMAP_ATLAS
 #define FORCE_FOG
 #define PSSM_SPLITS 2
 #define PSSM_ESM_SHADOWMAP

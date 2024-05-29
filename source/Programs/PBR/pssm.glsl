@@ -165,17 +165,14 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
         uv = uv * 0.5 + vec2(0.0, 0.5);
     else if (index == 3)
         uv = uv * 0.5 + vec2(0.5, 0.5);
-    else
-        return 1.0;
 #endif
     
     depth = depth * 0.5 + 0.5;
-    vec2 tsize = TexelSize6;
     //depth -= 0.001;
     float shadow = 0.0;
     float phi = InterleavedGradientNoise(uv);
 #ifdef PENUMBRA
-    float penumbra = Penumbra(uv, tsize, phi, depth);
+    float penumbra = Penumbra(uv, TexelSize6, phi, depth);
 #endif
 
     #define PSSM_ESM_K 13.0
@@ -200,7 +197,20 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
 #else
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * PSSM_FILTER_RADIUS;
 #endif
-        float texDepth = texture2D(ShadowTex, uv + offset * tsize).x;
+
+#ifdef SHADOWMAP_ATLAS
+        float texDepth = textureLod(ShadowTex, uv + offset * TexelSize6, 0.0).x;
+#else
+        float texDepth = 0.0;
+        if (index == 0)
+            texDepth = textureLod(ShadowTex0, uv + offset * TexelSize6, 0.0).x;
+        else if (index == 1)
+            texDepth = textureLod(ShadowTex1, uv + offset * TexelSize7, 0.0).x;
+        else if (index == 2)
+            texDepth = textureLod(ShadowTex2, uv + offset * TexelSize8, 0.0).x;
+        else if (index == 3)
+            texDepth = textureLod(ShadowTex3, uv + offset * TexelSize9, 0.0).x;
+#endif
     //if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
 #ifdef PSSM_ESM_SHADOWMAP
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));

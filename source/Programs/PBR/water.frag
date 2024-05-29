@@ -3,7 +3,6 @@
 #define HAS_MRT
 #include "header.glsl"
 #include "fog.glsl"
-#include "srgb.glsl"
 
 uniform sampler2D ReflectionTex;
 uniform sampler2D RefractionTex;

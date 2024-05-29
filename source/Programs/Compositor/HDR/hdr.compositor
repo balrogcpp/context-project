@@ -6,13 +6,15 @@ compositor HDR : STD
 {
     technique
     {
-        texture rt1 64 64 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture rt2 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture rt3 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lum1 64 64 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lum2 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lum3 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lumOld 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
 
-        target rt1
+        texture rt1	256 256 PF_R11G11B10_FLOAT depth_pool 0
+
+        target lum1
         {
             pass render_quad
             {
@@ -21,21 +23,21 @@ compositor HDR : STD
             }
         }
 
-        target rt2
+        target lum2
         {
             pass render_quad
             {
                 material HdrIt
-                input 0 rt1
+                input 0 lum1
             }
         }
 
-        target rt3
+        target lum3
         {
             pass render_quad
             {
                 material HdrIt
-                input 0 rt2
+                input 0 lum2
             }
         }
 
@@ -44,7 +46,7 @@ compositor HDR : STD
             pass render_quad
             {
                 material HdrEnd
-                input 0 rt3
+                input 0 lum3
                 input 1 lumOld
             }
         }
@@ -64,23 +66,24 @@ compositor HDR : STD
             {
                 material HDR
                 input 0 rt
-                input 1 lum
+                input 1 rt1
+                input 2 lum
             }
         }
     }
 }
 
-compositor Tonemap : STD
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Tonemap
-                input 0 rt
-            }
-        }
-    }
-}
+// compositor Tonemap : STD
+// {
+//     technique
+//     {
+//         target_output
+//         {
+//             pass render_quad
+//             {
+//                 material Tonemap
+//                 input 0 rt
+//             }
+//         }
+//     }
+// }

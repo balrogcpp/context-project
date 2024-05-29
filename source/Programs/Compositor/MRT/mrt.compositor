@@ -14,13 +14,13 @@ compositor MRT
         texture shadowmap 2048 2048 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
 
-        target shadowmap
+        /*target shadowmap
         {
             pass render_quad
             {
                 material ShadowMap
             }
-        }
+        }*/
 
         /*target mrt
         {
@@ -32,10 +32,10 @@ compositor MRT
 
         target mrt
         {
+            // shadows off
+            // pass render_custom RenderShadowMap {}
             pass clear {}
-            shadows off
             pass render_scene { last_render_queue 90 }
-            pass render_custom RenderShadowMap {}
         }
 
         target rt
