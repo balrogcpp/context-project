@@ -9,7 +9,7 @@ uniform vec2 TexelSize;
 vec3 Box4(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
 
-    vec4 d = texelSize.xyxy * vec4(-1.0, -1.0, 1.0, 1.0);
+    vec4 d = tsize.xyxy * vec4(-1.0, -1.0, 1.0, 1.0);
 
     vec3 A = textureLod(tex, uv + d.xy, 0.0).rgb;
     vec3 B = textureLod(tex, uv + d.zy, 0.0).rgb;

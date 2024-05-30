@@ -10,7 +10,7 @@ vec3 Gauss13(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
     vec2 off1 = tsize * vec2(1.411764705882353, 0.0);
     vec2 off2 = tsize * vec2(3.2941176470588234, 0.0);
-    vec2 off2 = tsize * vec2(5.176470588235294, 0.0);
+    vec2 off3 = tsize * vec2(5.176470588235294, 0.0);
     vec3 A = textureLod(tex, uv, 0.0).rgb;
     vec3 B = textureLod(tex, uv + off1, 0.0).rgb;
     vec3 C = textureLod(tex, uv - off1, 0.0).rgb;
