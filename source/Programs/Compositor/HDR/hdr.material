@@ -153,6 +153,7 @@ material HDR : STD
                 param_named RT int 0
                 param_named BrightTex int 1
                 param_named Lum int 2
+                param_named DirtTex int 3
                 param_named_auto TexelSize inverse_texture_size 1
 			}
 
@@ -168,6 +169,13 @@ material HDR : STD
                 texture black.dds
                 tex_address_mode clamp
                 filtering none
+            }
+
+			texture_unit DirtTex
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
             }
 		}
 	}

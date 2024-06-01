@@ -4,6 +4,7 @@
 
 uniform sampler2D RT;
 uniform sampler2D BrightTex;
+uniform sampler2D DirtTex;
 uniform sampler2D Lum;
 
 uniform vec2 TexelSize;
@@ -34,8 +35,9 @@ in highp vec2 vUV0;
 void main()
 {
     float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
-    vec3 bright = Upscale9(BrightTex, vUV0, TexelSize).rgb;
+    vec3 bloom = Upscale9(BrightTex, vUV0, TexelSize).rgb;
     vec3 color = textureLod(RT, vUV0, 0.0).rgb;
-    color = mix(color, bright, 0.04);
+    vec3 dirt = textureLod(DirtTex, vUV0, 0.0).rgb * 10.0;
+    color = mix(color, bloom + bloom * dirt, 0.04);
     FragColor.rgb = unreal(color * lum);
 }
