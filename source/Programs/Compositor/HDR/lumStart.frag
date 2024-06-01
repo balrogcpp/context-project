@@ -6,6 +6,10 @@ uniform sampler2D RT;
 uniform vec4 TexSize;
 uniform vec4 ViewportSize;
 
+float luminance(const vec3 col) {
+    return dot(col, vec3(0.2126, 0.7152, 0.0722));
+}
+
 //const vec2 c_offsets[16] = vec2[16]
 //(
 //vec2( 0, 0 ), vec2( 1, 0 ), vec2( 0, 1 ), vec2( 1, 1 ),
@@ -14,7 +18,6 @@ uniform vec4 ViewportSize;
 //vec2( 2, 2 ), vec2( 3, 2 ), vec2( 2, 3 ), vec2( 3, 3 )
 //);
 //  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale01_SumLumStart_ps.glsl
-
 in highp vec2 vUV0;
 void main()
 {
@@ -44,12 +47,12 @@ void main()
     float O = luminance(textureLod(RT, vUV0 + tsize * vec2(2.0, 3.0), 0.0).rgb) + 0.0001;
     float P = luminance(textureLod(RT, vUV0 + tsize * vec2(3.0, 4.0), 0.0).rgb) + 0.0001;
 
-    float c1 = log(A * 1024.0) + log(B * 1024.0) + log(C * 1024.0) + log(D * 1024.0);
-    float c2 = log(E * 1024.0) + log(F * 1024.0) + log(G * 1024.0) + log(H * 1024.0);
-    float c3 = log(I * 1024.0) + log(J * 1024.0) + log(K * 1024.0) + log(L * 1024.0);
-    float c4 = log(M * 1024.0) + log(N * 1024.0) + log(O * 1024.0) + log(P * 1024.0);
+    float c = log(A * 1024.0) + log(B * 1024.0) + log(C * 1024.0) + log(D * 1024.0);
+    c += log(E * 1024.0) + log(F * 1024.0) + log(G * 1024.0) + log(H * 1024.0);
+    c += log(I * 1024.0) + log(J * 1024.0) + log(K * 1024.0) + log(L * 1024.0);
+    c += log(M * 1024.0) + log(N * 1024.0) + log(O * 1024.0) + log(P * 1024.0);
 
-    float lum = (c1 + c2 + c3 + c4) * 0.0625; // 0.0625 = 1/16
+    float lum = c * 0.0625; // 0.0625 = 1/16
 
-    FragColor = vec4(lum, 0.0, 0.0, 1.0);
+    FragColor.r = lum;
 }

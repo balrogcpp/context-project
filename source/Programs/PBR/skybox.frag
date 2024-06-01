@@ -30,7 +30,7 @@ void main()
     color = SRGBtoLINEAR(color);
 
     if (gamma <= 2.0 * PI / 360.0 && sunZenith > 0.0) {
-        color = LightColor0 * 10.0;
+        color = LightColor0 * 100.0;
     }
 
 //    color = clouds(vUV0, color, LightColor0, -LightDir0, 0.0);

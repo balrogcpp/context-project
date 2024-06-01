@@ -2,7 +2,115 @@
 
 import STD from std.compositor
 
-compositor HDR : STD
+compositor PBB : STD
+{
+    technique
+    {
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        texture _rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target rt1
+        {
+            pass render_quad
+            {
+                material BrightFBO
+                input 0 rt
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt1
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt2
+            }
+        }
+
+        target rt4
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt3
+            }
+        }
+
+        target rt5
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt4
+            }
+        }
+
+        target _rt4
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 rt5
+            }
+        }
+
+        target _rt3
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt4
+            }
+        }
+
+        target _rt2
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt3
+            }
+        }
+
+        target _rt1
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt2
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material BloomMod
+                input 0 rt
+                input 1 _rt1
+            }
+        }
+    }
+}
+
+compositor HDR_PBB : STD
 {
     technique
     {
@@ -11,8 +119,6 @@ compositor HDR : STD
         texture lum3 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lumOld 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
         texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
-
-        texture rt1	256 256 PF_R11G11B10_FLOAT depth_pool 0
 
         target lum1
         {
@@ -66,24 +172,171 @@ compositor HDR : STD
             {
                 material HDR
                 input 0 rt
-                input 1 rt1
+                input 1 rt
                 input 2 lum
             }
         }
     }
 }
 
-// compositor Tonemap : STD
-// {
-//     technique
-//     {
-//         target_output
-//         {
-//             pass render_quad
-//             {
-//                 material Tonemap
-//                 input 0 rt
-//             }
-//         }
-//     }
-// }
+
+compositor HDR : STD
+{
+    technique
+    {
+        texture lum1 64 64 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lum2 16 16 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lum3 4 4 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lumOld 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture lum 1 1 PF_FLOAT16_R no_fsaa depth_pool 0
+
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        texture _rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture _rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+
+        target lum1
+        {
+            pass render_quad
+            {
+                material HdrStart
+                input 0 rt
+            }
+        }
+
+        target lum2
+        {
+            pass render_quad
+            {
+                material HdrIt
+                input 0 lum1
+            }
+        }
+
+        target lum3
+        {
+            pass render_quad
+            {
+                material HdrIt
+                input 0 lum2
+            }
+        }
+
+        target lum
+        {
+            pass render_quad
+            {
+                material HdrEnd
+                input 0 lum3
+                input 1 lumOld
+            }
+        }
+
+        target lumOld
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 lum
+            }
+        }
+
+        target rt1
+        {
+            pass render_quad
+            {
+                material BrightFBO
+                input 0 rt
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt1
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt2
+            }
+        }
+
+        target rt4
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt3
+            }
+        }
+
+        target rt5
+        {
+            pass render_quad
+            {
+                material Downscale13
+                input 0 rt4
+            }
+        }
+
+        target _rt4
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 rt5
+            }
+        }
+
+        target _rt3
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt4
+            }
+        }
+
+        target _rt2
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt3
+            }
+        }
+
+        target _rt1
+        {
+            pass render_quad
+            {
+                material Upscale9
+                input 0 _rt2
+            }
+        }
+
+        target_output
+        {
+            pass render_quad
+            {
+                material HDR
+                input 0 rt
+                input 1 _rt1
+                input 2 lum
+            }
+        }
+    }
+}

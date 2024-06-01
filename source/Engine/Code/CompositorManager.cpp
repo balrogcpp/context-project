@@ -174,7 +174,6 @@ void CompositorManager::OnSetUp() {
   AddCompositor("MRT", true);
   AddCompositor("MotionBlur", true);
   AddCompositor("FXAA", true);
-  AddCompositor("Glow", true);
   AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("Pause", false);

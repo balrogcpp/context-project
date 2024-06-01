@@ -8,16 +8,11 @@ import STD from stdquad.material
 fragment_program brightFBO glsl glsles hlsl
 {
 	source fbo.frag
-
-    default_params
-    {
-        param_named	brightThreshold	float2 3.0 0.5
-    }
 }
 
-fragment_program brightBlur glsl glsles hlsl
+fragment_program bloomMod glsl glsles hlsl
 {
-	source bright.frag
+	source bloomMod.frag
 }
 
 fragment_program lumStart glsl glsles hlsl
@@ -52,28 +47,37 @@ material BrightFBO : STD
             fragment_program_ref brightFBO
             {
                 param_named RT int 0
-                param_named Lum int 1
+                param_named_auto TexelSize inverse_texture_size 0
             }
 
-            texture_unit Lum
+            texture_unit RT
             {
                 texture grey.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
         }
     }
 }
 
-material BrightBlur : STD
+material BloomMod : STD
 {
     technique
     {
         pass
         {
-            fragment_program_ref brightBlur
+            fragment_program_ref bloomMod
             {
                 param_named RT int 0
+                param_named BloomTex int 1
+                param_named_auto TexelSize inverse_texture_size 1
+            }
+
+            texture_unit BloomTex
+            {
+                texture grey.dds
+                tex_address_mode clamp
+                filtering none
             }
         }
     }
@@ -149,6 +153,7 @@ material HDR : STD
                 param_named RT int 0
                 param_named BrightTex int 1
                 param_named Lum int 2
+                param_named_auto TexelSize inverse_texture_size 1
 			}
 
 			texture_unit BrightTex
@@ -167,29 +172,3 @@ material HDR : STD
 		}
 	}
 }
-
-// vertex_program tonemap_vp glsl glsles hlsl
-// {
-//     source tonemap.vert
-// }
-
-// fragment_program tonemap_fp glsl glsles hlsl
-// {
-//     source tonemap.frag
-// }
-
-// material Tonemap : STD
-// {
-// 	technique
-// 	{
-// 		pass
-// 		{
-// 		    vertex_program_ref tonemap_vp {}
-
-//             fragment_program_ref tonemap_fp
-// 			{
-//                 param_named RT int 0
-// 			}
-// 		}
-// 	}
-// }

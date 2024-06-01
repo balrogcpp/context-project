@@ -3,8 +3,7 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform sampler2D BrightTex;
-uniform sampler2D Lum;
+uniform sampler2D BloomTex;
 
 uniform vec2 TexelSize;
 
@@ -33,9 +32,7 @@ vec3 Upscale9(sampler2D tex, const vec2 uv, const vec2 tsize)
 in highp vec2 vUV0;
 void main()
 {
-    float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
-    vec3 bright = textureLod(BrightTex, vUV0, 0.0).rgb;
-    vec3 color = textureLod(RT, vUV0, 0.0).rgb;
-    color = mix(color, bright, 0.04);
-    FragColor.rgb = unreal(color * lum);
+    vec3 rt = textureLod(RT, vUV0, 0.0).rgb;
+    vec3 bloom = Upscale9(BloomTex, vUV0, TexelSize).rgb;
+    FragColor.rgb = mix(rt, bloom, 0.04);
 }
