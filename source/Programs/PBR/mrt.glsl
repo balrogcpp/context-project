@@ -72,6 +72,9 @@ vec3 unpack(float f)
     return decode(UnPackFloat16bit2(f));
 }
 
+vec3 toSRGB(const vec3 v) { return sqrt(v); }
+vec3 fromSRGB(const vec3 v) { return v * v; }
+
 void EvaluateBuffer(const vec4 color, float depth)
 {
 #ifdef FORCE_TONEMAP

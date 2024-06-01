@@ -232,5 +232,5 @@ in highp vec2 vUV0;
 void main()
 {
     vec3 color = FxaaPixelShader(RT, vUV0, TexelSize);
-    FragColor.rgb = SafeHDR(color);
+    FragColor.rgb = color;
 }
