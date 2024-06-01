@@ -476,11 +476,11 @@ void main()
     PixelParams pixel;
     getPixelParams(albedo, orm, ssao, pixel);
 
-//#ifdef HAS_SSR
-//    vec3 ssr = vec3(0.0, 0.0, 0.0);
-//    if (dDepth <= 0.001) ssr = texture2D(SSR, nuv).rgb;
-//    if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
-//#endif
+#ifdef HAS_SSR
+    vec3 ssr = vec3(0.0, 0.0, 0.0);
+    if (dDepth <= 0.001) ssr = texture2D(SSR, nuv).rgb;
+    if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
+#endif
 
     color += evaluateIBL(pixel);
 
