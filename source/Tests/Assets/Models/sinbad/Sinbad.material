@@ -1,6 +1,5 @@
 import PBR from pbr.material
-import PBR from pbr.material
-
+import IBL from pbr.material
 
 material Sinbad/Body : PBR
 {
@@ -96,7 +95,7 @@ material Examples/LightRibbonTrail2 : PBR
 
 			texture_unit
 			{
-				texture ribbonband.dds
+				texture ribbonband.dds 1d
 				tex_address_mode clamp
 				filtering none
 			}

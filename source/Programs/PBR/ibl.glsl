@@ -1,6 +1,8 @@
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
+#if !defined(GL_ES)
 #define MULTI_BOUNCE_AMBIENT_OCCLUSION 1
 #define SPECULAR_AMBIENT_OCCLUSION 1
+#endif
 
 /**
  * Computes a specular occlusion term from the ambient occlusion term.
@@ -69,7 +71,7 @@ vec3 EnvBRDFApproxNonmetal(float roughness, float NoV)
     return vec3(a004, a004, 0.0);
 }
 
-vec3 EnvDFGLazarov(float gloss, float ndotv )
+vec3 EnvDFGLazarov(float gloss, float ndotv)
 {
     const vec4 p0 = vec4(0.5745, 1.548, -0.02397, 1.301);
     const vec4 p1 = vec4(0.5753, -0.2511, -0.02066, 0.4755);

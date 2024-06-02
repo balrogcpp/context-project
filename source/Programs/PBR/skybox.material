@@ -41,17 +41,7 @@ material SkyBox
 
 			vertex_program_ref SkyBoxVp {}
 
-			fragment_program_ref SkyBoxFp
-			{
-			    //param_named StarsTex int 0
-			}
-
-            texture_unit StarsTex
-            {
-                texture starfield.jpg
-                //texture stars.png
-                filtering none
-            }
+			fragment_program_ref SkyBoxFp {}
 		}
 	}
 }

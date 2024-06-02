@@ -22,6 +22,7 @@ float KarisAverage(const vec3 col)
     return 1.0 / (1.0 + luma);
 }
 
+// Karis filter based on
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 vec3 Downscale13(sampler2D tex, const vec2 uv, const vec2 tsize)
 {
@@ -57,5 +58,5 @@ vec3 Downscale13(sampler2D tex, const vec2 uv, const vec2 tsize)
 in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Downscale13(RT, vUV0, TexelSize);
+    FragColor.rgb = max(Downscale13(RT, vUV0, TexelSize), 0.0001);
 }
