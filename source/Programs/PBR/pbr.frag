@@ -21,7 +21,7 @@ uniform sampler2D EmissiveTex;
 uniform sampler2D OccTex;
 #endif
 #ifdef HAS_SSR
-uniform sampler2D SSR;
+uniform sampler2D ReflTex;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
 #if defined(SHADOWMAP_ATLAS)
@@ -478,7 +478,7 @@ void main()
 
 #ifdef HAS_SSR
     vec3 ssr = vec3(0.0, 0.0, 0.0);
-    if (dDepth <= 0.001) ssr = texture2D(SSR, nuv).rgb;
+    if (dDepth <= 0.001) ssr = texture2D(ReflTex, nuv).rgb;
     if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
 #endif
 
