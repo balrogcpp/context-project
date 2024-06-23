@@ -2,6 +2,9 @@
 
 #include "tonemap.glsl"
 
+// Clamp HDR value within a safe range
+#define SafeHDR(x) min(x, 65504.0)
+
 // https://community.khronos.org/t/glsl-packing-a-normal-in-a-single-float/52039/13
 //Thanks @paveltumik for the original code in comments
 

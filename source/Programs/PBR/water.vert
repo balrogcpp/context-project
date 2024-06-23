@@ -11,9 +11,9 @@ out highp vec3 vPosition;
 out highp vec2 vUV0;
 void main()
 {
-    highp vec4 world = mulMat4x4Float3(WorldMatrix, position.xyz);
+    highp vec4 world = mul(WorldMatrix, position);
     vPosition = world.xyz / world.w;
 
     vUV0 = uv0.xy;
-    gl_Position = mulMat4x4Float3(WorldViewProjMatrix, position.xyz);
+    gl_Position = mul(WorldViewProjMatrix, position);
 }

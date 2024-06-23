@@ -63,7 +63,7 @@ vec3 EnvBRDFApprox(float roughness, float NoV)
 
 vec3 EnvBRDFApproxNonmetal(float roughness, float NoV)
 {
-    // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
+    // Same as EnvBRDFApprox(0.04, Roughness, NoV)
     const vec2 c0 = vec2(-1.0, -0.0275);
     const vec2 c1 = vec2(1.0, 0.0425);
     vec2 r = roughness * c0 + c1;
@@ -78,8 +78,8 @@ vec3 EnvDFGLazarov(float gloss, float ndotv)
 
     vec4 t = gloss * p0 + p1;
 
-    float bias = saturate( t.x * min( t.y, exp2( -7.672 * ndotv ) ) + t.z );
-    float delta = saturate( t.w );
+    float bias = saturate(t.x * min(t.y, exp2(-7.672 * ndotv)) + t.z);
+    float delta = saturate(t.w);
     float scale = delta - bias;
 
 //    bias *= saturate(50.0 * specularColor.y);
@@ -156,7 +156,7 @@ vec3 prefilteredDFG(float perceptualRoughness, float NoV) {
 
 #ifdef HAS_IBL
 vec3 diffuseIrradiance(const vec3 n) {
-    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, n, 6.0).rgb);
+    return decodeDataForIBL(textureLod(SpecularEnvTex, n, 6.0).rgb);
 }
 
 float perceptualRoughnessToLod(float perceptualRoughness) {
@@ -167,7 +167,7 @@ float perceptualRoughnessToLod(float perceptualRoughness) {
 }
 
 vec3 prefilteredRadiance(const vec3 n, float perceptualRoughness) {
-    return decodeDataForIBL(textureCubeLod(SpecularEnvTex, n, perceptualRoughnessToLod(perceptualRoughness)).rgb);
+    return decodeDataForIBL(textureLod(SpecularEnvTex, n, perceptualRoughnessToLod(perceptualRoughness)).rgb);
 }
 
 vec3 getSpecularDominantDirection(const vec3 n, const vec3 r, float roughness) {

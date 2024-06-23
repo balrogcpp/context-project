@@ -9,5 +9,5 @@ out highp vec3 vUV0;
 void main()
 {
     vUV0 = normalize(vertex.xyz);
-    gl_Position = mulMat4x4Float3(WorldViewProjMatrix, vertex.xyz);
+    gl_Position = mul(WorldViewProjMatrix, vertex);
 }

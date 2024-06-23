@@ -22,10 +22,8 @@ in vec4 offset;
 void main()
 {
 #if SMAA_REPROJECTION
-	vec3 color = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex, velocityTex).rgb;
+	FragColor.rgb = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex, velocityTex).rgb;
 #else
-	vec3 color = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex).rgb;
+	FragColor.rgb = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex).rgb;
 #endif
-
-	FragColor.rgb = SafeHDR(color);
 }

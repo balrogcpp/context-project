@@ -15,5 +15,5 @@ void main()
     vUV0.xy = uv0.xy;
 #endif
 
-    gl_Position = mulMat4x4Float3(WorldViewProjMatrix, vertex.xyz);
+    gl_Position = mul(WorldViewProjMatrix, vertex);
 }

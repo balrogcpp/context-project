@@ -32,5 +32,5 @@ void main()
     vec3 color = textureLod(RT, vUV0, 0.0).rgb;
     vec3 fbo = Upscale9(FBO, vUV0, TexelSize).rgb;
 
-    FragColor.rgb = SafeHDR(color + fbo / 6.0);
+    FragColor.rgb = color + fbo / 6.0;
 }

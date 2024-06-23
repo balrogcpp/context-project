@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
+#include "math.glsl"
 
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
@@ -58,6 +59,5 @@ void main()
         counter += 1.0;
     }
 
-    color /= counter;
-    FragColor.rgb = SafeHDR(color);
+    FragColor.rgb = color / counter;
 }

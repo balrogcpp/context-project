@@ -35,5 +35,5 @@ void main()
 {
     vec3 color = GodRays(FBO, vUV0, LightPosition.xy, Density, Weight * LightPosition.w, Decay, Exposure);
 
-    FragColor.rgb = SafeHDR(color);
+    FragColor.rgb = color;
 }

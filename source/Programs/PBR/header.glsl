@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 
 //#undef HAS_MRT
-// #define FORCE_TONEMAP
+//#define FORCE_TONEMAP
 
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 8
@@ -9,6 +9,8 @@
 #ifndef MAX_SHADOW_TEXTURES
 #define MAX_SHADOW_TEXTURES 4
 #endif
+
+#ifdef OGRE_FRAGMENT_SHADER
 // #define SHADOWMAP_ATLAS
 #define FORCE_FOG
 #define PSSM_SPLITS 2
@@ -19,6 +21,7 @@
 #define MRT_DEPTH 1
 #define MRT_VELOCITY 2
 #define MAX_MRT_TEXTURES 3
+#endif // OGRE_FRAGMENT_SHADER
 
 #ifdef OGRE_GLSLES
 #if __VERSION__ < 300
@@ -44,14 +47,6 @@ out vec4 FragData[MAX_MRT_TEXTURES];
 out vec4 FragColor;
 #endif
 #endif
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
 #endif
 
 #ifdef OGRE_FRAGMENT_SHADER
@@ -61,7 +56,6 @@ out vec4 FragColor;
 #endif
 #endif
 
-
 #if defined(OGRE_GLSL) || defined(OGRE_GLSLES)
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define mul(a, b) ((a) * (b))
@@ -70,7 +64,6 @@ out vec4 FragColor;
 #define mtxFromCols(a, b, c) transpose(mat3(a, b, c))
 //#include "OgreUnifiedShader.h"
 #endif
-#include "math.glsl"
-#ifdef OGRE_FRAGMENT_SHADER
+#if defined(OGRE_FRAGMENT_SHADER) && defined(HAS_MRT)
 #include "mrt.glsl"
 #endif

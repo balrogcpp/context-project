@@ -139,7 +139,7 @@ float Penumbra(vec2 uv, const vec2 tsize, float phi, float depth)
     for (int i = 0; i < PSSM_FILTER_SIZE; ++i) {
         vec2 offset = VogelDiskSample(i, PSSM_FILTER_SIZE, phi) * tsize * PSSM_FILTER_RADIUS;
         float sampleDepth = texture2D(ShadowTex, uv + offset).x;
-        float depthTest = fstep(sampleDepth, depth);
+        float depthTest = step(depth, sampleDepth);
         avgBlockersDepth += depthTest * sampleDepth;
         blockersCount += depthTest;
     }
@@ -216,7 +216,7 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
         sampled = (1.0 - (4.0 * (1.0 - sampled)));
         texDepth = texDepth * (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH) + PSSM_GLOBAL_MIN_DEPTH;
-        shadow += max(sampled, fstep(texDepth, depth));
+        shadow += max(sampled, step(depth, texDepth));
 #else
         texDepth = texDepth * (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH) + PSSM_GLOBAL_MIN_DEPTH;
         shadow += step(texDepth, depth);

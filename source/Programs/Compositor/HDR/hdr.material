@@ -10,11 +10,6 @@ fragment_program brightFBO glsl glsles hlsl
 	source fbo.frag
 }
 
-fragment_program bloomMod glsl glsles hlsl
-{
-	source bloomMod.frag
-}
-
 fragment_program lumStart glsl glsles hlsl
 {
 	source lumStart.frag
@@ -60,30 +55,7 @@ material BrightFBO : STD
     }
 }
 
-material BloomMod : STD
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref bloomMod
-            {
-                param_named RT int 0
-                param_named BloomTex int 1
-                param_named_auto TexelSize inverse_texture_size 1
-            }
-
-            texture_unit BloomTex
-            {
-                texture grey.dds
-                tex_address_mode clamp
-                filtering none
-            }
-        }
-    }
-}
-
-material HdrStart : STD
+material LumStart : STD
 {
     technique
     {
@@ -99,7 +71,7 @@ material HdrStart : STD
     }
 }
 
-material HdrIt : STD
+material LumIt : STD
 {
     technique
     {
@@ -114,7 +86,7 @@ material HdrIt : STD
     }
 }
 
-material HdrEnd : STD
+material LumEnd : STD
 {
     technique
     {
@@ -166,7 +138,7 @@ material HDR : STD
 
 			texture_unit Lum
             {
-                texture black.dds
+                texture white.dds
                 tex_address_mode clamp
                 filtering none
             }

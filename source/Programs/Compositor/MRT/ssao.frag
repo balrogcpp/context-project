@@ -2,6 +2,8 @@
 // based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
 
 #include "header.glsl"
+#include "math.glsl"
+#include "mrt.glsl"
 
 uniform sampler2D DepthTex;
 uniform sampler2D NormalTex;
@@ -14,26 +16,6 @@ vec3 hash(const vec3 a)
     vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
-}
-
-float pow5(float x)
-{
-    float x2 = x * x;
-    return x2 * x2 * x;
-}
-
-float pow8(float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x4;
-}
-
-float pow10(float x)
-{
-    float x2 = x * x;
-    float x4 = x2 * x2;
-    return x4 * x4 * x2;
 }
 
 in highp vec2 vUV0;
@@ -101,11 +83,11 @@ void main()
         // Compute occlusion based on the (scaled) Z difference
         float clampedSampleDepth = textureLod(DepthTex, nuv.xy, 0.0).x;
         float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
-        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * fstep(clampedSampleDepth, oSample.z);
+        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * step(oSample.z, clampedSampleDepth);
 
         // This is a sample occlusion function, you can always play with
         // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += clamp(pow10(1.0 - rangeCheck) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
+        occ += clamp(pow(1.0 - rangeCheck, 10.0) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
     }
 
     // normalise

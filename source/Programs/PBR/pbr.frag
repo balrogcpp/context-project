@@ -2,6 +2,7 @@
 
 #define HAS_MRT
 #include "header.glsl"
+#include "math.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
 
@@ -501,5 +502,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, mulMat3x3Half3(ViewMatrix, N), StaticObj * fragVelocity.xy);
+    EvaluateBuffer(vec4(color, alpha), clampedDepth, mulMat3x3Float3(ViewMatrix, N), StaticObj * fragVelocity.xy);
 }

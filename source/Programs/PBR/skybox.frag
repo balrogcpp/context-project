@@ -2,6 +2,7 @@
 
 #define HAS_MRT
 #include "header.glsl"
+#include "math.glsl"
 #include "srgb.glsl"
 #include "fog.glsl"
 #include "skymodel.glsl"
@@ -15,6 +16,32 @@ uniform vec4 FogParams;
 uniform vec3 HosekParams[10];
 uniform float Time;
 
+//------------------------------------------------------------------------------
+// Trigonometry
+//------------------------------------------------------------------------------
+
+/**
+ * Approximates acos(x) with a max absolute error of 9.0x10^-3.
+ * Valid in the range -1..1.
+ */
+float acosFast(float x) {
+    // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
+    // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
+    float y = abs(x);
+    float p = -0.1565827 * y + 1.570796;
+    p *= sqrt(1.0 - y);
+    return x >= 0.0 ? p : PI - p;
+}
+
+/**
+ * Approximates acos(x) with a max absolute error of 9.0x10^-3.
+ * Valid only in the range 0..1.
+ */
+float acosFastPositive(float x) {
+    float p = -0.1565827 * x + 1.570796;
+    return p * sqrt(1.0 - x);
+}
+
 in highp vec3 vUV0;
 void main()
 {
@@ -24,7 +51,7 @@ void main()
     vec3 N = normalize(-LightDir0.xyz);
     float sunZenith = V.y;
     float cos_gamma = dot(V, N);
-    float gamma = acos(cos_gamma);
+    float gamma = acosFastPositive(cos_gamma);
 
     // Apply exposure.
     color = SRGBtoLINEAR(color);

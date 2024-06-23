@@ -13,5 +13,5 @@ void main()
     float lum = dot(color, vec3(0.2126, 0.7152, 0.0722));
     if (lum > 10.0) lum = 10.0;
     lum = max(0.0, lum - 1.0);
-    FragColor.rgb = depth > 0.8 ? SafeHDR(color * sign(lum)) : vec3(0.0, 0.0, 0.0);
+    FragColor.rgb = depth > 0.8 ? color * sign(lum) : vec3(0.0, 0.0, 0.0);
 }

@@ -31,6 +31,18 @@ vec3 Upscale9(sampler2D tex, const vec2 uv, const vec2 tsize)
     return c;
 }
 
+// Unreal 3, Documentation: "Color Grading"
+// Adapted to be close to Tonemap_ACES, with similar range
+// Gamma 2.2 correction is baked in, don't use with sRGB conversion!
+vec3 unreal(const highp vec3 x)
+{
+    return x / (x + 0.155) * 1.019;
+}
+
+vec3 tonemap(const highp vec3 x) {
+    return unreal(x);
+}
+
 in highp vec2 vUV0;
 void main()
 {

@@ -28,6 +28,14 @@ float pow5(float x) {
     return x2 * x2 * x;
 }
 
+float sq(float x) {
+    return x * x;
+}
+
+float max3(const vec3 v) {
+    return max(v.x, max(v.y, v.z));
+}
+
 vec3 computeDiffuseColor(const vec3 baseColor, float metallic) {
     return baseColor.rgb * (1.0 - metallic);
 }
@@ -38,6 +46,10 @@ float computeDielectricF0(float reflectance) {
 
 vec3 computeF0(const vec3 baseColor, float metallic, float reflectance) {
     return baseColor.rgb * metallic + (reflectance * (1.0 - metallic));
+}
+
+float computeMetallicFromSpecularColor(const vec3 specularColor) {
+    return max3(specularColor);
 }
 
 float computeRoughnessFromGlossiness(float glossiness) {

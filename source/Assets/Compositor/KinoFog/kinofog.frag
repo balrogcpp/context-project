@@ -22,6 +22,7 @@
 //
 
 #include "header.glsl"
+#include "math.glsl"
 #include "fog.glsl"
 
 uniform sampler2D RT;

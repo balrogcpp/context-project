@@ -45,6 +45,30 @@ in highp vec4 uv2;
 #endif // PAGED_GEOMETRY
 #endif //  HAS_UV
 
+//------------------------------------------------------------------------------
+// Matrix and quaternion operations
+//------------------------------------------------------------------------------
+
+/**
+ * Multiplies the specified 3-component vector by the 4x4 matrix (m * v) in
+ * high precision.
+ *
+ * @public-api
+ */
+highp vec4 mulMat4x4Float3(const highp mat4 m, const highp vec3 v) {
+    return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
+}
+
+/**
+ * Multiplies the specified 3-component vector by the 3x3 matrix (m * v) in
+ * high precision.
+ *
+ * @public-api
+ */
+highp vec3 mulMat3x3Float3(const highp mat4 m, const highp vec3 v) {
+    return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
+}
+
 /**
  * Extracts the normal vector of the tangent frame encoded in the specified quaternion.
  */
