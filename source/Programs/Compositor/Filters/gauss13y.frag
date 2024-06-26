@@ -16,7 +16,7 @@ vec3 Gauss13(sampler2D tex, const vec2 uv, const vec2 tsize)
     vec3 C = textureLod(tex, uv - off1, 0.0).rgb;
     vec3 D = textureLod(tex, uv + off2, 0.0).rgb;
     vec3 E = textureLod(tex, uv - off2, 0.0).rgb;
-    vec3 F = textureLod(tex, uv - off3, 0.0).rgb;
+    vec3 F = textureLod(tex, uv + off3, 0.0).rgb;
     vec3 G = textureLod(tex, uv - off3, 0.0).rgb;
 
     vec3 c = A * 0.1964825501511404;
