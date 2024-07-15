@@ -94,8 +94,8 @@ uniform float OffsetScale;
 // of the shading terms, outlined in the Readme.MD Appendix.
 struct Light
 {
-    vec3 colorIntensity;  // rgb, pre-exposed intensity
-    vec3 l;
+    vec3  colorIntensity;  // rgb, pre-exposed intensity
+    vec3  l;
     float attenuation;
     float NoL;
 };
@@ -105,11 +105,11 @@ struct PixelParams
     float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
     float occlusion;
     float ssao;
-    vec3 f0;            // full reflectance color (normal incidence angle)
+    vec3  f0;            // full reflectance color (normal incidence angle)
     float roughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
-    vec3 diffuseColor;            // color contribution from diffuse lighting
-    vec3 dfg;
-    vec3 energyCompensation;
+    vec3  diffuseColor;            // color contribution from diffuse lighting
+    vec3  dfg;
+    vec3  energyCompensation;
 #if defined(SHADING_MODEL_SUBSURFACE)
     float thickness;
     vec3  subsurfaceColor;

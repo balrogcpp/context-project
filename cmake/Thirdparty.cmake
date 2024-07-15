@@ -143,7 +143,7 @@ externalproject_add(Target_SDL2
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.30.3
+        GIT_TAG release-2.30.5
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
@@ -563,7 +563,7 @@ externalproject_add(Target_assimp
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
-        GIT_TAG v5.4.1
+        GIT_TAG v5.4.2
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
@@ -665,7 +665,7 @@ externalproject_add(Target_imgui
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.90.7
+        GIT_TAG v1.90.8 #v1.90.8 fails to compile
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
@@ -940,7 +940,7 @@ externalproject_add(Target_Lua
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DLUA_VERSION=5.4.4
+        -DLUA_VERSION=5.4.7
         -DLUA_EXE=OFF
         -DLUA_DOC=OFF
         -DLUA_BUILD_WLUA=OFF
