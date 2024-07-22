@@ -17,7 +17,7 @@ RUN apt-get update \
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.29.6
+ARG CMAKE_VERSION=3.30.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.12.1
 ARG UPX_VERSION=4.2.4
@@ -89,8 +89,8 @@ RUN mkdir build && cd build \
 
 # android
 ARG ANDROID_HOME=/opt/android-sdk
-ARG ANDROID_CMD_VERSION=9477386
-ARG ANDROID_JAVA_MAJOR=11
+ARG ANDROID_CMD_VERSION=11076708
+ARG ANDROID_JAVA_MAJOR=17
 ARG ANDROID_CMAKE_VERSION=3.18.1
 RUN apt-get update \
     && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
