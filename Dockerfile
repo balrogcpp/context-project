@@ -91,7 +91,6 @@ RUN mkdir build && cd build \
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=11076708
 ARG ANDROID_JAVA_MAJOR=17
-ARG ANDROID_CMAKE_VERSION=3.18.1
 RUN apt-get update \
     && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
     && apt-get clean \
@@ -101,7 +100,6 @@ RUN apt-get update \
     && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME} > /dev/null \
     && export PATH="/opt/cmdline-tools/bin:${PATH}" \
     && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
-    && sdkmanager  --install "cmake;${ANDROID_CMAKE_VERSION}" --sdk_root=${ANDROID_HOME}  \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x86_64.cmake -G Ninja .. \
     && cmake --build . --target GradleContrib \
