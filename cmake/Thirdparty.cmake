@@ -357,7 +357,7 @@ externalproject_add(Target_Ogg
 )
 
 
-check_stamp(Target_Vorbis)
+check_stamp_patch(Target_Vorbis vorbis-1.3.7.patch)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false

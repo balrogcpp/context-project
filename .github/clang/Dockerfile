@@ -22,8 +22,8 @@ ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
 # 2.38;2.39;2.40 are broken
 ARG BINUTILS_VERSION=2.37
-ARG MINGW_VERSION=11.0.1
-ARG GCC_VERSION=13.2.0
+ARG MINGW_VERSION=12.0.0
+ARG GCC_VERSION=14.1.0
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=11
 RUN apt-get update \
@@ -149,8 +149,8 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 # apple
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG OSXCROSS_GIT_HASH=ff8d100f3f026b4ffbe4ce96d8aac4ce06f1278b
-ARG CMAKE_VERSION=3.28.3
+ARG OSXCROSS_GIT_HASH=fd32ecc6e0786369272be2da670bc9b5849b215a
+ARG CMAKE_VERSION=3.29.6
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 RUN apt-get update \
     && apt-get -y install --no-install-recommends git python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
@@ -161,7 +161,6 @@ RUN apt-get update \
     && git clone https://github.com/tpoechtrager/osxcross.git \
     && cd osxcross \
     && git checkout ${OSXCROSS_GIT_HASH} \
-    && git apply ../tarballs/osxcross.patch \
     && cp -r ../tarballs . && rm -rf ../tarballs \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
     && rm -rf ../osxcross \

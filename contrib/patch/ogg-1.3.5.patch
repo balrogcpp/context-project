@@ -1,7 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fe20f2d..a2399f1 100644
+index fe20f2d..17f43e5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.12)
++cmake_minimum_required(VERSION 3.5)
+ project(libogg)
+ 
+ # Required modules
 @@ -66,7 +66,7 @@ set(USIZE32 uint32_t)
  set(SIZE64 int64_t)
  set(USIZE64 uint64_t)

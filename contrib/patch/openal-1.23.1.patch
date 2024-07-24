@@ -1,7 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 55644b0..8c73ff2 100644
+index 55644b0..3e632e2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ # CMake build file list for OpenAL
+ 
+-cmake_minimum_required(VERSION 3.0.2)
++cmake_minimum_required(VERSION 3.5)
+ 
+ if(APPLE)
+     # The workaround for try_compile failing with code signing
 @@ -277,13 +277,13 @@ else()
              set(C_FLAGS ${C_FLAGS} $<$<COMPILE_LANGUAGE:CXX>:-Wno-c++20-extensions>)
          endif()

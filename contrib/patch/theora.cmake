@@ -1,5 +1,5 @@
 project(theora C)
-cmake_minimum_required(VERSION 2.9)
+cmake_minimum_required(VERSION 3.5)
 
 # https://github.com/xiph/theora/issues/10#issuecomment-591894142
 
