@@ -12,7 +12,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get -y install --no-install-recommends zip unzip xz-utils make autoconf file patch \
     && apt-get -y purge software-properties-common \
-    && apt-get -y autoremove \
+    && apt-get -y autoremove --purge \
     && apt-get clean
 
 
@@ -121,7 +121,7 @@ RUN apt-get update \
     && rm -rf ${MINGW_ROOT} \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
     && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
-    && apt-get -y autoremove \
+    && apt-get -y autoremove --purge \
     && apt-get -y clean \
     && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 1000 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
@@ -157,7 +157,6 @@ RUN apt-get update \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && export PATH="${CMAKE_HOME}/bin:${PATH}" \
-    && apt-get clean \
     && git clone https://github.com/tpoechtrager/osxcross.git \
     && cd osxcross \
     && git checkout ${OSXCROSS_GIT_HASH} \
@@ -166,7 +165,7 @@ RUN apt-get update \
     && rm -rf ../osxcross \
     && rm -rf ${CMAKE_HOME} \
     && apt-get -y purge git python lzma-dev libxml2-dev libssl-dev libbz2-dev \
-    && apt-get -y autoremove \
+    && apt-get -y autoremove --purge \
     && apt-get clean
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake

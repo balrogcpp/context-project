@@ -57,7 +57,8 @@ RUN apt-get update \
     && cmake --build . --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
     && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-    && apt-get -y autoremove
+    && apt-get -y autoremove --purge \
+    && apt-get clean
 
 
 # win32
@@ -98,15 +99,14 @@ RUN apt-get update \
     && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
     && unzip -q tools.zip && rm tools.zip \
     && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME} > /dev/null \
-    && export PATH="/opt/cmdline-tools/bin:${PATH}" \
-    && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x86_64.cmake -G Ninja .. \
     && cmake --build . --target GradleContrib \
     && cmake --build . --target GradleBuild \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
-    && apt-get -y autoremove
+    && apt-get -y autoremove --purge &&\
+    && apt-get clean
 
 
 # wasm
