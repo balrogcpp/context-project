@@ -9,7 +9,7 @@ WORKDIR ${CONTEXT_HOME}
 
 # https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
 RUN apt-get update \
-    && apt-get -y install git \
+    && apt-get -y install --no-install-recommends git \
     && apt-get clean \
     && git config --global http.postBuffer 1048576000 \
     && git config --global https.postBuffer 1048576000 \

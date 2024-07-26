@@ -129,7 +129,7 @@ RUN apt-get update \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
 
 
-# clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
+# clang; libgcc-7 is for ubuntu 18.04, newer ubuntus has newer libgcc
 ARG CLANG_MAJOR=18
 ARG STDLIB_APT_MAJOR=11
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
