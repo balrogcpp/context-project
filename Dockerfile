@@ -91,7 +91,7 @@ RUN mkdir build && cd build \
 # android
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=11076708
-ARG ANDROID_JAVA_MAJOR=17
+ARG ANDROID_JAVA_MAJOR=11
 RUN apt-get update \
     && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
     && apt-get clean \
@@ -101,7 +101,8 @@ RUN apt-get update \
     && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME} > /dev/null \
     && cd ${CONTEXT_HOME} && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x86_64.cmake -G Ninja .. \
-    && cmake --build . --target GradleContrib \
+    && cmake --build . --target GradleBuild \
+    && cmake --build . --target GradleClean \
     && cmake --build . --target GradleBuild \
     && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \

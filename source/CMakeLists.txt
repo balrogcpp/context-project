@@ -172,8 +172,6 @@ if ((IS_DIRECTORY ${ANDROID_HOME}) OR (IS_DIRECTORY ${ANDROID_SDK_ROOT}))
     elseif (${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "RelWithDebInfo" OR ${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "Debug")
         set(GRADLE_BUILD_TYPE "Debug")
     endif ()
-    add_custom_target(GradleContrib COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
-            COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle Android/.cxx Android/build Android/assets ${ARTIFACT_DIR}/tests-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
     add_custom_target(GradleBuild COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} GRADLE_DEPLOY=1 ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE})
     add_custom_target(GradleClean COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Engine ${CMAKE_COMMAND} -E rm -rf build .gradle Android/.cxx Android/build Android/assets ${ARTIFACT_DIR}/tests-${GIT_SHA_SHORT}-android-arm64-${CMAKE_BUILD_TYPE_LOWER}.apk)
 else ()

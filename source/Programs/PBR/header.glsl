@@ -47,6 +47,14 @@ out vec4 FragData[MAX_MRT_TEXTURES];
 out vec4 FragColor;
 #endif
 #endif
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
 #endif
 
 #ifdef OGRE_FRAGMENT_SHADER
