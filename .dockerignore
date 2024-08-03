@@ -2,6 +2,7 @@
 
 !/cmake/
 !/source/
+!/android/
 !/CMakeLists.txt/
 !/contrib/CMakeLists.txt/
 !/contrib/patch/

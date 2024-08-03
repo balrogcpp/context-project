@@ -65,3 +65,4 @@ add_subdirectory(contrib)
 
 # engine sources
 add_subdirectory(source)
+add_subdirectory(android)
