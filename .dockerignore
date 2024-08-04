@@ -1,8 +1,11 @@
-**
+*
 
 !/cmake/
 !/source/
-!/android/
+/source/Android/.gradle/
+/source/Android/app/.cxx/
+/source/Android/app/assets/
+/source/Android/app/build/
 !/CMakeLists.txt/
 !/contrib/CMakeLists.txt/
 !/contrib/patch/
