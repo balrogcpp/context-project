@@ -18,6 +18,7 @@ android {
         versionName    '1.0'
         externalNativeBuild {
             cmake {
+                arguments ' -DANDROID_ARM_NEON=ON'
             }
         }
     }
@@ -50,7 +51,7 @@ android {
                 outputFileName = "tests-${sha1}-android-arm64-${variant.name}.apk"
              }
             if (deploy) {
-                outputFileName = "../../artifacts/" + outputFileName
+                outputFileName = "../../../artifacts/" + outputFileName
             }
         }
     }
@@ -59,8 +60,8 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version '3.22.1+'
-            path '../../CMakeLists.txt'
+            version '3.18.1+'
+            path '../../../CMakeLists.txt'
         }
     }
     splits {

@@ -8,7 +8,7 @@ include(DateTime)
 
 # assets
 set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
-set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Android/assets)
+set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Android/app/assets)
 file(MAKE_DIRECTORY ${ASSETS_DIR_ANDROID})
 
 if (RELEASE)
@@ -22,22 +22,19 @@ if (RELEASE)
 else ()
     add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${ASSETS_DIR}/assets -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
             COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR}/programs.bin ${ASSETS_DIR_ANDROID})
 endif ()
 
 
-# deps
-if (ANDROID AND ANY_NOT_FOUND)
-    add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Android/src/main/cpp/main.cpp)
-    add_dependencies(AndroidDummy Contrib)
-    message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib). Exiting...")
-    return()
-endif ()
+#
 if (ANY_NOT_FOUND)
-    message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib)")
+    message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib). Exiting...")
+    if (ANDROID)
+        add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Android/app/src/main/cpp/main.cpp)
+        add_dependencies(AndroidDummy Contrib)
+        return()
+    endif ()
 endif ()
-
 
 # this required to to disable windows upscaling @hdp monitors @windows
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.hpp)
@@ -168,3 +165,25 @@ else ()
     set(CPACK_GENERATOR "ZIP")
 endif ()
 include(CPack)
+
+
+# Android
+if (WIN32)
+    set(GRADLEW_COMMAND gradlew.bat)
+else ()
+    set(GRADLEW_COMMAND sh gradlew)
+endif ()
+if (${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "MinSizeRel")
+    set(GRADLE_BUILD_TYPE "Release")
+elseif (${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "RelWithDebInfo" OR ${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "Debug")
+    set(GRADLE_BUILD_TYPE "Debug")
+endif ()
+
+add_custom_target(GradleBuild
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} clean
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E copy_directory app/build/outputs/apk/${CMAKE_BUILD_TYPE_LOWER} ${ARTIFACT_DIR}
+)
+
+add_custom_target(GradleClear COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build app/assets)

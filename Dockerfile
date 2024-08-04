@@ -37,25 +37,24 @@ RUN cd /tmp \
 
 
 COPY ./source ./source
-COPY ./android ./android
 COPY ./contrib ./contrib
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
 
 # linux x86_64
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-#    && apt-get clean \
-#    && mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-#    && cmake --build . --target Contrib \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-#    && cmake --build . --target package \
-#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
-#    && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-#    && apt-get -y autoremove --purge \
-#    && apt-get clean
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+    && apt-get clean \
+    && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake --build . --target Contrib \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake --build . --target package \
+    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
+    && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+    && apt-get -y autoremove --purge \
+    && apt-get clean
 
 
 # win32
@@ -86,21 +85,21 @@ RUN mkdir build && cd build \
 
 
 # android
-#ARG ANDROID_CMD_VERSION=11076708
-#ARG ANDROID_JAVA_MAJOR=17
-#ENV ANDROID_HOME=/opt/android-sdk
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
-#    && apt-get clean \
-#    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
-#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
-#    && unzip -q tools.zip && rm tools.zip \
-#    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
-#    && cd ${CONTEXT_HOME} && mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-#    && cmake --build . --target GradleBuild \
-#    && cmake --build . --target GradleClear \
-#    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle $ANDROID_HOME \
-#    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
-#    && apt-get -y autoremove --purge \
-#    && apt-get clean
+ARG ANDROID_CMD_VERSION=11076708
+ARG ANDROID_JAVA_MAJOR=17
+ENV ANDROID_HOME=/opt/android-sdk
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
+    && apt-get clean \
+    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
+    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
+    && unzip -q tools.zip && rm tools.zip \
+    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
+    && cd ${CONTEXT_HOME} && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake --build . --target GradleBuild \
+    && cmake --build . --target GradleClear \
+    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle $ANDROID_HOME \
+    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
+    && apt-get -y autoremove --purge \
+    && apt-get clean
