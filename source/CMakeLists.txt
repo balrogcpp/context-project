@@ -174,16 +174,16 @@ else ()
     set(GRADLEW_COMMAND sh gradlew)
 endif ()
 if (${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "MinSizeRel")
-    set(GRADLE_BUILD_TYPE "Release")
+    set(GRADLE_BUILD_TYPE "release")
 elseif (${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "RelWithDebInfo" OR ${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "Debug")
-    set(GRADLE_BUILD_TYPE "Debug")
+    set(GRADLE_BUILD_TYPE "debug")
 endif ()
 
 add_custom_target(GradleBuild
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} clean
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E env GIT_SHA1=${GIT_SHA_SHORT} ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E copy_directory app/build/outputs/apk/${CMAKE_BUILD_TYPE_LOWER} ${ARTIFACT_DIR}
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E copy_directory app/build/outputs/apk/${GRADLE_BUILD_TYPE} ${ARTIFACT_DIR}
 )
 
 add_custom_target(GradleClear COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build app/assets)

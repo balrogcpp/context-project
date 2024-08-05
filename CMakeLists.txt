@@ -27,7 +27,7 @@ if (NOT CMAKE_BUILD_TYPE)
     elseif (BINARY_DIR_LOWER MATCHES "release$")
         set(CMAKE_BUILD_TYPE "Release")
     else ()
-        set(CMAKE_BUILD_TYPE "Release") #default value
+        set(CMAKE_BUILD_TYPE "RelWithDebInfo") #default
     endif ()
 endif ()
 message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
