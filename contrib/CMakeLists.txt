@@ -1110,16 +1110,17 @@ externalproject_add(Target_sqlite
 )
 
 
+set(PROTOBUF_VERSION 27.3)
 find_package(Protobuf QUIET)
 if (Protobuf_PROTOC_EXECUTABLE)
     execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE} --version OUTPUT_VARIABLE PROTOC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     if (PROTOC_VERSION)
-        if (${PROTOC_VERSION} STREQUAL "libprotoc 25.3")
+        if (${PROTOC_VERSION} STREQUAL "libprotoc ${PROTOBUF_VERSION}")
             set(PROTOC_FOUND 1)
             message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE} (${PROTOC_VERSION})")
         else ()
             set(PROTOC_FOUND 0)
-            message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE} (${PROTOC_VERSION}). Required version is 25.3")
+            message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE} (${PROTOC_VERSION}). Required version is ${PROTOBUF_VERSION}")
         endif ()
     else ()
         set(PROTOC_FOUND 0)
@@ -1146,7 +1147,7 @@ externalproject_add(Target_protoc
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
         GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-        GIT_TAG v25.3
+        GIT_TAG v${PROTOBUF_VERSION}
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
@@ -1188,7 +1189,7 @@ externalproject_add(Target_protobuf
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
         GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-        GIT_TAG v25.3
+        GIT_TAG v${PROTOBUF_VERSION}
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
