@@ -20,15 +20,14 @@ RUN apt-get update \
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
-# 2.38;2.39;2.40 are broken
-ARG BINUTILS_VERSION=2.37
+ARG BINUTILS_VERSION=2.43
 ARG MINGW_VERSION=12.0.0
 ARG GCC_VERSION=14.1.0
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=11
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
-    && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
+    && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
     && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -q -O - | tar -xz \
@@ -120,7 +119,7 @@ RUN apt-get update \
     && rm -rf gcc-mingw32 \
     && rm -rf ${MINGW_ROOT} \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
-    && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
+    && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
     && apt-get -y autoremove --purge \
     && apt-get -y clean \
     && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 1000 \
@@ -169,6 +168,3 @@ RUN apt-get update \
     && apt-get clean
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
-ENV OSXCROSS_EVAL=`osxcross-conf`
-ENV OSXCROSS_HOST_X86_64=x86_64-apple
-ENV OSXCROSS_HOST_ARM64=aarch64-apple
