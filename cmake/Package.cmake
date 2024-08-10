@@ -11,7 +11,7 @@ macro(FlatCopy curdir destination)
     file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
 
     foreach (directory ${directories})
-        if (${directory} STREQUAL ".git") #omit .git directory
+        if (${directory} STREQUAL ".git")
             continue()
         endif ()
         set(filelist "")
@@ -21,7 +21,6 @@ macro(FlatCopy curdir destination)
         endif ()
     endforeach ()
 endmacro()
-
 
 # Zip files from directory into flat zip
 macro(ZipDirectory destination extention)
@@ -52,14 +51,13 @@ macro(ClearTimeStamp file)
     endif ()
 endmacro()
 
-
 # Zip files from directory into flat zip
 macro(FlatZipDirectory curdir destination extention)
     make_directory(${destination})
     file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
 
     foreach (directory ${directories})
-        if (${directory} STREQUAL ".git") #omit .git directory
+        if (${directory} STREQUAL ".git")
             continue()
         endif ()
         set(filelist "")
