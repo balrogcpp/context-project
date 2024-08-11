@@ -94,7 +94,7 @@ RUN mkdir build && cd build \
 #    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
 #    && cd ${CONTEXT_HOME} && mkdir build && cd build \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-#    && cmake --build . --target GradleBuild \
+#    && cmake --build . --target Gradle \
 #    && cmake --build . --target GradleClear \
 #    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle $ANDROID_HOME \
 #    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
