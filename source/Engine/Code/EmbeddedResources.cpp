@@ -1,14 +1,10 @@
 /// created by Andrey Vasiliev
 
-#ifdef NDEBUG
-
 #include <OgreRoot.h>
 #include <OgreZip.h>
 
 #if __has_include("programs.zip.h")
 #include "programs.zip.h"
-#endif
-
 #endif
 
 namespace gge {

@@ -45,9 +45,9 @@ RUN apt-get update \
     && apt-get clean \
     && mkdir build && cd build \
     && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-    && cmake --build . --target Contrib \
+    && cmake --build . --config Release --target Contrib \
     && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-    && cmake --build . --target package \
+    && cmake --build . --config Release --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
     && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get -y autoremove --purge \
@@ -57,27 +57,27 @@ RUN apt-get update \
 # win32
 RUN mkdir build && cd build \
     && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
-    && cmake --build . --target Contrib \
+    && cmake --build . --config Release --target Contrib \
     && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
-    && cmake --build . --target package \
+    && cmake --build . --config Release --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # apple x86_64
 #RUN mkdir build && cd build \
 #    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
-#    && cmake --build . --target Contrib \
+#    && cmake --build . --config Release --target Contrib \
 #    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
-#    && cmake --build . --target package \
+#    && cmake --build . --config Release --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # apple aarch64
 #RUN mkdir build && cd build \
 #    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
-#    && cmake --build . --target Contrib \
+#    && cmake --build . --config Release --target Contrib \
 #    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
-#    && cmake --build . --target package \
+#    && cmake --build . --config Release --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
@@ -94,8 +94,8 @@ RUN mkdir build && cd build \
 #    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
 #    && cd ${CONTEXT_HOME} && mkdir build && cd build \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-#    && cmake --build . --target Gradle \
-#    && cmake --build . --target GradleClear \
+#    && cmake --build . --config Release --target Gradle \
+#    && cmake --build . --config Release --target GradleClear \
 #    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle $ANDROID_HOME \
 #    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
 #    && apt-get -y autoremove --purge \
