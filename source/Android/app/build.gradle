@@ -19,7 +19,7 @@ android {
         versionName    '1.0'
         externalNativeBuild {
             cmake {
-                arguments
+                // arguments '-DCMAKE_BUILD_TYPE=Release'
             }
         }
     }
@@ -46,7 +46,7 @@ android {
             def date = zonedDate.format("YYYYMMdd'T'HHMMSS'Z'")
             def sha1 = System.getenv("GIT_SHA1") ?: "0.1"
             def deploy = System.getenv("GRADLE_DEPLOY")
-            if (variant.name == "release") {
+            if (deploy && variant.name == "release") {
                 outputFileName = "tests-${sha1}-android-arm64-${date}.apk"
              } else {
                 outputFileName = "tests-${sha1}-android-arm64-${variant.name}.apk"

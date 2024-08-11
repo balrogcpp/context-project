@@ -90,6 +90,7 @@ if (NOT GENERATE_HEADER)
     return()
 endif ()
 
+if (NOT EXISTS Zip2Cpp.cpp)
 file(WRITE Zip2Cpp.cpp
         "#define _CRT_SECURE_NO_WARNINGS\n"
         "\n"
@@ -213,6 +214,7 @@ file(WRITE Zip2Cpp.cpp
         "}\n"
         "\n"
 )
+endif ()
 
 if (NOT CPP_COMPILER)
     find_program(CPP_COMPILER NAMES c++ clang++ g++ cl bcc32 bcc xlc PATHS ENV PATH NO_DEFAULT_PATH)
