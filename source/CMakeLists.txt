@@ -100,8 +100,9 @@ target_link_libraries(Tests PUBLIC Engine ${ENGINE_LIBRARIES})
 add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${ASSETS_DIR}/assets -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID})
 
-add_dependencies(Tests Assets)
-
+if (ANDROID)
+    add_dependencies(Tests Assets)
+endif ()
 
 # post-build, pre-package
 #if (RELEASE)
