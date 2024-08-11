@@ -14,8 +14,7 @@ file(MAKE_DIRECTORY ${ASSETS_DIR_ANDROID})
 add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=zip -DGENERATE_HEADER=1 -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR})
 
-add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${ASSETS_DIR}/assets -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-        COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+add_custom_target(Assets ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${ASSETS_DIR}/assets -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID})
 
 #
@@ -97,9 +96,7 @@ target_link_directories(Tests PUBLIC ${ENGINE_LINK_DIRS})
 target_precompile_headers(Tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
 set_target_properties(Tests PROPERTIES OUTPUT_NAME "app")
 target_link_libraries(Tests PUBLIC Engine ${ENGINE_LIBRARIES})
-if (ANDROID)
-    add_dependencies(Tests Assets)
-endif ()
+add_dependencies(Tests Assets)
 
 
 # post-build, pre-package
@@ -134,11 +131,8 @@ endif ()
 
 #cpack
 set(PACKAGE_NAME "tests")
-# if (RELEASE)
-    # set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
-# else ()
-    set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${CMAKE_BUILD_TYPE_LOWER})
-# endif ()
+# set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
+set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${CMAKE_BUILD_TYPE_LOWER})
 if (LINUX)
     install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
 else ()

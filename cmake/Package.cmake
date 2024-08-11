@@ -53,7 +53,7 @@ endmacro()
 
 # Zip files from directory into flat zip
 macro(FlatZipDirectory curdir destination extention)
-    make_directory(${destination})
+    file(MAKE_DIRECTORY ${destination})
     file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
 
     foreach (directory ${directories})
@@ -220,6 +220,8 @@ if (NOT CPP_COMPILER)
     message(FATAL_ERROR "CXX compiler not found manually")
 endif ()
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CPP_COMPILER} ${CMAKE_CURRENT_BINARY_DIR}/Zip2Cpp.cpp -o zip2cpp)
+if (NOT EXISTS ${ASSETS_DIR}/zip2cpp AND NOT EXISTS ${ASSETS_DIR}/zip2cpp.exe)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ${CPP_COMPILER} ${CMAKE_CURRENT_BINARY_DIR}/Zip2Cpp.cpp -o zip2cpp)
+endif ()
 execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${ASSETS_DIR} ./zip2cpp programs)
 execute_process(COMMAND ${CMAKE_COMMAND} -E rm -rf ${ASSETS_DIR}/programs.zip)
