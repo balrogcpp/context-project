@@ -120,7 +120,6 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
 //    if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
 
     depth = depth * 0.5 + 0.5;
-    //depth -= 0.001;
     float shadow = 0.0;
     mat2 R = getRandomRotationMatrix(gl_FragCoord.xy);
 
@@ -141,9 +140,9 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
 
 //    if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
 
+        texDepth = texDepth * (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH) + PSSM_GLOBAL_MIN_DEPTH;
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
         sampled = (1.0 - (4.0 * (1.0 - sampled)));
-        texDepth = texDepth * (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH) + PSSM_GLOBAL_MIN_DEPTH;
         shadow += max(sampled, step(depth, texDepth));
     }
 
