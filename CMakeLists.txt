@@ -18,26 +18,24 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
-    file(TO_CMAKE_PATH "${CMAKE_BINARY_DIR}" BINARY_DIR)
-    string(TOLOWER ${BINARY_DIR} BINARY_DIR_LOWER)
-    if (BINARY_DIR_LOWER MATCHES "debug$")
+    if (CMAKE_BINARY_DIR MATCHES "Debug$")
         set(CMAKE_BUILD_TYPE "Debug")
-    elseif (BINARY_DIR_LOWER MATCHES "relwithdebinfo$")
+    elseif (CMAKE_BINARY_DIR MATCHES "RelWithDebInfo$")
         set(CMAKE_BUILD_TYPE "RelWithDebInfo")
-    elseif (BINARY_DIR_LOWER MATCHES "release$")
+    elseif (CMAKE_BINARY_DIR MATCHES "Release$")
         set(CMAKE_BUILD_TYPE "Release")
     else ()
         # default
         set(CMAKE_BUILD_TYPE "RelWithDebInfo")
     endif ()
-    # https://issuetracker.google.com/issues/37128614
-    # Gradle build RelWithDebInfo by default
-    if (ANDROID AND BINARY_DIR_LOWER MATCHES "relwithdebinfo$")
-        set(CMAKE_BUILD_TYPE "Release")
-    endif ()
 endif ()
 message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
+# https://issuetracker.google.com/issues/37128614
+# Gradle build RelWithDebInfo by default
+if (ANDROID AND CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
+    set(CMAKE_BUILD_TYPE "Release")
+endif ()
 
 # enabled only Release, RelWithDebInfo, Debug build types
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
