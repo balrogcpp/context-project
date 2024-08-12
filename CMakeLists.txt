@@ -11,18 +11,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
 # cmake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-
 # default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
-    if (CMAKE_BINARY_DIR MATCHES "Debug$")
+    if (CMAKE_BINARY_DIR MATCHES "debug$")
         set(CMAKE_BUILD_TYPE "Debug")
-    elseif (CMAKE_BINARY_DIR MATCHES "RelWithDebInfo$")
+    elseif (CMAKE_BINARY_DIR MATCHES "relwithdebinfo$")
         set(CMAKE_BUILD_TYPE "RelWithDebInfo")
-    elseif (CMAKE_BINARY_DIR MATCHES "Release$")
+    elseif (CMAKE_BINARY_DIR MATCHES "release$")
         set(CMAKE_BUILD_TYPE "Release")
     else ()
         # default
@@ -46,26 +44,21 @@ if (NOT ${CMAKE_BUILD_TYPE_LOWER} IN_LIST ALLOWED_BUILD_TYPES_LOWER)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
 
-
 # include modules
 include(Platform)
 include(GitHash)
 include(ProcessorCount)
 
-
 # set parallel level
 processorcount(PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
-
 
 # set artifact dir
 set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
 file(MAKE_DIRECTORY ${ARTIFACT_DIR})
 
-
 # contrib
 add_subdirectory(contrib)
-
 
 # engine sources
 add_subdirectory(source)

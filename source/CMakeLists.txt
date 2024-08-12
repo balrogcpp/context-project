@@ -5,7 +5,6 @@ include(TimeStampEraser)
 include(BuildVariables)
 include(DateTime)
 
-
 # assets
 set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
 set(ASSETS_DIR_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/Android/app/assets)
@@ -24,7 +23,6 @@ endif ()
 # this required to to disable windows upscaling @hdp monitors @windows
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.hpp)
 
-
 # engine vs project folders
 file(GLOB_RECURSE SHADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Programs/*)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Engine PREFIX "Engine" FILES ${ENGINE_SOURCE_FILES})
@@ -35,7 +33,6 @@ if (MSVC)
 elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
     set_source_files_properties(${SHADER_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 endif ()
-
 
 # adjust flags if required
 if (MSVC AND RELWITHDEBINFO)
@@ -49,7 +46,6 @@ if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif ()
 
-
 # static library
 add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(Engine ${ENGINE_INCLUDE_DIRS})
@@ -62,8 +58,7 @@ if (RELEASE OR ANDROID)
     add_dependencies(Engine Programs)
 endif ()
 
-
-# Tests vs project folders
+# tests vs project folders
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.hpp)
 file(GLOB_RECURSE ASSET_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Assets/*)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Source PREFIX "Tests" FILES ${SAMPLE_SOURCE_FILES})
@@ -79,7 +74,6 @@ if (MINGW)
 elseif (MSVC)
     list(APPEND SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/app.manifest)
 endif ()
-
 
 # executable
 if (NOT ANDROID)
@@ -110,7 +104,6 @@ endif ()
 #    include(ReallySmallPostBuild)
 #endif ()
 
-
 # install
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${DEPS_ROOT}/bin/*.dll)
@@ -125,14 +118,12 @@ else ()
     install(FILES "${FILE_DIR}/app.html" "${FILE_DIR}/app.js" "${FILE_DIR}/app.wasm" "${FILE_DIR}/app.data" "${FILE_DIR}/app.worker.js" DESTINATION .)
 endif ()
 
-
 # package
 if (RELEASE)
     set(CPACK_INSTALL_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake")
     set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPreBuild.cmake")
     set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPostBuild.cmake")
 endif ()
-
 
 #cpack
 set(PACKAGE_NAME "tests")
@@ -152,17 +143,16 @@ else ()
 endif ()
 include(CPack)
 
-
-# Android
+# android
 if (WIN32)
     set(GRADLEW_COMMAND gradlew.bat)
 else ()
     set(GRADLEW_COMMAND sh gradlew)
 endif ()
-if (${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "MinSizeRel")
-    set(GRADLE_BUILD_TYPE "release")
-elseif (${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "RelWithDebInfo" OR ${CMAKE_BUILD_TYPE_NORMALISED} STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE MATCHES debug)
     set(GRADLE_BUILD_TYPE "debug")
+else ()
+    set(GRADLE_BUILD_TYPE "release")
 endif ()
 
 add_custom_target(Gradle
