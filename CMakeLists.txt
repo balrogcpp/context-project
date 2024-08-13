@@ -16,11 +16,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
-    if (CMAKE_BINARY_DIR MATCHES "debug$")
+    string(TOLOWER ${CMAKE_BINARY_DIR} CMAKE_BINARY_DIR_LOWER)
+    if (CMAKE_BINARY_DIR_LOWER MATCHES "debug$")
         set(CMAKE_BUILD_TYPE "Debug")
-    elseif (CMAKE_BINARY_DIR MATCHES "relwithdebinfo$")
+    elseif (CMAKE_BINARY_DIR_LOWER MATCHES "relwithdebinfo$")
         set(CMAKE_BUILD_TYPE "RelWithDebInfo")
-    elseif (CMAKE_BINARY_DIR MATCHES "release$")
+    elseif (CMAKE_BINARY_DIR_LOWER MATCHES "release$")
         set(CMAKE_BUILD_TYPE "Release")
     else ()
         # default
