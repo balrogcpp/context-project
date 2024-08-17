@@ -6,7 +6,7 @@ uniform sampler2D RT;
 uniform vec2 TexelSize;
 
 // https://github.com/Experience-Monks/glsl-fast-gaussian-blur/blob/5dbb6e97aa43d4be9369bdd88e835f47023c5e2a/5.glsl
-vec3 Gauss5(sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 Gauss5(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
     vec2 off = tsize * vec2(0.0, 1.3333333333333333);
     vec3 A = textureLod(tex, uv, 0.0).rgb;

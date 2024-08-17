@@ -56,7 +56,7 @@ float FresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
     }
 }
 
-vec3 perturb(sampler2D tex, const vec2 coords, float bend)
+vec3 perturb(const sampler2D tex, const vec2 coords, float bend)
 {
     vec3 col = vec3(0.0, 0.0, 0.0);
 

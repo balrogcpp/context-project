@@ -95,10 +95,10 @@ mat2 getRandomRotationMatrix(const vec2 fragCoord) {
 float FetchTerraShadow(const vec2 uv)
 {
     float shadow = 0.0;
-    float phi = InterleavedGradientNoise(uv);
+    mat2 R = getRandomRotationMatrix(gl_FragCoord.xy);
 
     for (int i = 0; i < 4; ++i) {
-        vec2 offset = vogel_disk_4[(i + int(phi)) % 4] * 2.0 * TexelSize3;
+        vec2 offset = R * (vogel_disk_4[i] * 2.0);
         shadow += texture2D(TerraLightTex, uv + offset).x;
     }
     shadow *= 0.25;
@@ -117,7 +117,6 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
 {
     vec2 uv = lightSpacePos.xy;
     float depth = lightSpacePos.z;
-//    if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
 
     depth = depth * 0.5 + 0.5;
     float shadow = 0.0;
@@ -138,12 +137,10 @@ float CalcShadow(const highp vec3 lightSpacePos, int index)
         else if (index == 3)
             texDepth = textureLod(ShadowTex3, uv + offset * TexelSize9, 0.0).x;
 
-//    if (texDepth >= 1.0 || texDepth <= -1.0) return 1.0;
-
         texDepth = texDepth * (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH) + PSSM_GLOBAL_MIN_DEPTH;
         float sampled = saturate(exp(max(PSSM_ESM_MIN, PSSM_ESM_K * (texDepth - depth))));
         sampled = (1.0 - (4.0 * (1.0 - sampled)));
-        shadow += max(sampled, step(depth, texDepth));
+        shadow += sampled;
     }
 
     shadow /= float(PSSM_FILTER_SIZE);

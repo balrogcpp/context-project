@@ -6,7 +6,7 @@ uniform sampler2D RT;
 uniform vec2 TexelSize;
 
 // https://github.com/Experience-Monks/glsl-fast-gaussian-blur/blob/5dbb6e97aa43d4be9369bdd88e835f47023c5e2a/13.glsl
-vec3 Gauss13(sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 Gauss13(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
     vec2 off1 = tsize * vec2(0.0, 1.411764705882353);
     vec2 off2 = tsize * vec2(0.0, 3.2941176470588234);
