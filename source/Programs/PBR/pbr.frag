@@ -239,7 +239,7 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 {
 #ifdef HAS_NORMALMAP
-    return normalize(mul(tbn, texture2D(NormalTex, uv.xy).xyz * 2.0 - 1.0));
+    return normalize(mul(tbn, texture(NormalTex, uv.xy).xyz * 2.0 - 1.0));
 #else
     return tbn[2];
 #endif
@@ -249,7 +249,7 @@ vec3 GetNormal(const vec2 uv, const vec3 position)
 {
 #ifndef HAS_TANGENTS
 #if defined(TERRA_NORMALMAP)
-    vec3 n = texture2D(TerraNormalTex, UV).xyz * 2.0 - 1.0;
+    vec3 n = texture(TerraNormalTex, UV).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     vec3 t = normalize(cross(n ,b));
     highp mat3 tbn = mtxFromCols(t, b, n);
@@ -294,7 +294,7 @@ vec3 GetORM(const vec2 uv, float spec)
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * (1.0 - spec), 0.0);
 #endif
 #ifdef HAS_ORM
-    orm *= texture2D(OrmTex, uv).rgb;
+    orm *= texture(OrmTex, uv).rgb;
 #endif
 
     return clamp(orm, vec3(0.0, MIN_PERCEPTUAL_ROUGHNESS, 0.0), vec3(1.0, 1.0, 1.0));
@@ -347,7 +347,7 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
 {
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * color, 1.0);
 #ifdef HAS_BASECOLORMAP
-    albedo *= texture2D(AlbedoTex, uv);
+    albedo *= texture(AlbedoTex, uv);
 #endif
 
 #ifdef HAS_ALPHA
@@ -362,7 +362,7 @@ vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #ifdef HAS_EMISSIVEMAP
-    emission += texture2D(EmissiveTex, uv).rgb;
+    emission += texture(EmissiveTex, uv).rgb;
 #endif
     return SRGBtoLINEAR(emission) * SurfaceSpecularColour.b;
 }
@@ -479,7 +479,7 @@ void main()
 
 #ifdef HAS_SSR
     vec3 ssr = vec3(0.0, 0.0, 0.0);
-    if (dDepth <= 0.001) ssr = texture2D(ReflTex, nuv).rgb;
+    if (dDepth <= 0.001) ssr = texture(ReflTex, nuv).rgb;
     if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
 #endif
 

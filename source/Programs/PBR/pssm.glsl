@@ -99,7 +99,7 @@ float FetchTerraShadow(const vec2 uv)
 
     for (int i = 0; i < 4; ++i) {
         vec2 offset = R * (vogel_disk_4[i] * 2.0);
-        shadow += texture2D(TerraLightTex, uv + offset).x;
+        shadow += textureLod(TerraLightTex, uv + offset, 0.0).x;
     }
     shadow *= 0.25;
 

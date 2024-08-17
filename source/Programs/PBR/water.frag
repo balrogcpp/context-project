@@ -66,22 +66,22 @@ vec3 perturb(const sampler2D tex, const vec2 coords, float bend)
 
     // might need to swizzle, not sure
     vec2 nCoord = coords * (scale * 0.04) + windDir * Time * (windSpeed * 0.03);
-    col += texture2D(tex, nCoord + vec2(-Time * 0.005, -Time * 0.01)).rgb * 0.20;
+    col += texture(tex, nCoord + vec2(-Time * 0.005, -Time * 0.01)).rgb * 0.20;
 
     nCoord = coords * (scale * 0.1) + windDir * Time * (windSpeed * 0.05) - (col.xy / col.z) * bend;
-    col += texture2D(tex, nCoord + vec2(+Time * 0.01, +Time * 0.005)).rgb * 0.20;
+    col += texture(tex, nCoord + vec2(+Time * 0.01, +Time * 0.005)).rgb * 0.20;
 
     nCoord = coords * (scale * 0.25) + windDir * Time * (windSpeed * 0.1) - (col.xy / col.z) * bend;
-    col += texture2D(tex, nCoord + vec2(-Time * 0.02, -Time * 0.03)).rgb * 0.20;
+    col += texture(tex, nCoord + vec2(-Time * 0.02, -Time * 0.03)).rgb * 0.20;
 
     nCoord = coords * (scale * 0.5) + windDir * Time * (windSpeed * 0.2) - (col.xy / col.z) * bend;
-    col += texture2D(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
+    col += texture(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
 
     nCoord = coords * (scale * 1.0) + windDir * Time * (windSpeed * 1.0) - (col.xy / col.z) * bend;
-    col += texture2D(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
+    col += texture(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
 
     nCoord = coords * (scale * 2.0) + windDir * Time * (windSpeed * 1.3) - (col.xy / col.z) * bend;
-    col += texture2D(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
+    col += texture(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
 
     return col;
 }
@@ -103,19 +103,19 @@ void main()
     float normalFade = 1.0 - min(exp(-fragDepth / 40.0), 1.0);
 
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
-    vec3 normal0 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
+    vec3 normal0 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time * WindSpeed * 0.08;
-    vec3 normal1 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015)).xyz - 1.0;
+    vec3 normal1 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015)).xyz - 1.0;
 
     nCoord = vPosition.xz * WaveScale * 0.25 + WindDirection * Time * WindSpeed * 0.07;
-    vec3 normal2 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.04, -Time * 0.03)).xyz - 1.0;
+    vec3 normal2 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.04, -Time * 0.03)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
-    vec3 normal3 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
+    vec3 normal3 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
 
 //    nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
-//    vec3 normal4 = 2.0 * texture2D(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;
+//    vec3 normal4 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;
 //    nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time * WindSpeed * 0.7;
-//    vec3 normal5 = 2.0 * texture2D(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
+//    vec3 normal5 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
 
     vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y
     + normal2 * MidWaves.x + normal3 * MidWaves.y
@@ -296,7 +296,7 @@ void main()
     // if(abs(causticdepth) < 0.1)
     //{
     //    vec2 uv_offset = Time * vec2(0.05, 0.04);
-    //    float foam_noise = clamp(pow(texture2D(FoamTex, (vUV0*20.0) - uv_offset).r, 10.0)*40.0, 0.0, 0.2);
+    //    float foam_noise = clamp(pow(texture(FoamTex, (vUV0*20.0) - uv_offset).r, 10.0)*40.0, 0.0, 0.2);
     //    float foam_mix = clamp(pow((1.0-(depth) + foam_noise), 8.0) * foam_noise * 0.4, 0.0, 1.0);
     //    color = mix(color, vec3(1.0, 1.0, 1.0), foam_mix);
     //}

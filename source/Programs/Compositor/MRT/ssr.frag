@@ -28,7 +28,7 @@ vec2 BinarySearch(vec3 direction, inout vec3 hitCoord)
         vec4 nuv = mulMat4x4Half3(ProjMatrix, hitCoord);
         nuv.xy /= nuv.w;
 
-        float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);
+        float sampleDepth = texture(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);
 
         direction *= 0.5;
 
@@ -51,7 +51,7 @@ vec2 RayCast(vec3 direction, inout vec3 hitCoord)
         vec4 nuv  = mulMat4x4Half3(ProjMatrix, hitCoord);
         nuv.xy /= nuv.w;
 
-        float sampleDepth = texture2D(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);
+        float sampleDepth = texture(DepthTex, nuv.xy).x * (FarClipDistance - NearClipDistance);
         float dDepth = -hitCoord.z - sampleDepth;
 
         // Is the difference between the starting and sampled depths smaller than the width of the unit cube?
@@ -84,11 +84,11 @@ in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    float clampedPixelDepth = texture2D(NormalTex, vUV0).x;
-    vec3 normal = unpack(texture2D(NormalTex, vUV0).y);
+    float clampedPixelDepth = texture(NormalTex, vUV0).x;
+    vec3 normal = unpack(texture(NormalTex, vUV0).y);
 
     if (normal == vec3(0.0, 0.0, 0.0)) {
-        FragColor.rgb = texture2D(ColorTex, vUV0).rgb;
+        FragColor.rgb = texture(ColorTex, vUV0).rgb;
         return;
     }
 
@@ -108,7 +108,7 @@ void main()
     float fresnel = Fresnel(reflected, normal);
 
     if (hitPixel != vec2(-1.0, -1.0)) {
-        vec3 ssr = texture2D(ColorTex, hitPixel).rgb * error * fresnel;
+        vec3 ssr = texture(ColorTex, hitPixel).rgb * error * fresnel;
         FragColor.rgb = ssr;
     } else {
         FragColor.rgb = vec3(0.0, 0.0, 0.0);
