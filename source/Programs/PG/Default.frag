@@ -18,7 +18,7 @@ in vec4 oUV;
 in vec4 oColour;
 void main()
 {
-    vec4 s = texture2D(texTex, oUV.xy);
+    vec4 s = texture(texTex, oUV.xy);
     vec3 color = s.rgb;
     float alpha = s.a;
     float fogCoord = gl_FragCoord.z / gl_FragCoord.w;

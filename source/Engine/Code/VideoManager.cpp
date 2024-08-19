@@ -147,7 +147,7 @@ void ScanLocation(const string &path, const string &groupName) {
 
     if (it->is_directory())
       ogreResourceManager.addResourceLocation(fullPath, "FileSystem", groupName);
-    else if (it->is_regular_file() && (fileExtention == ".bin" || fileExtention == ".zip"))
+    else if (it->is_regular_file() && fileExtention == ".zip")
       ogreResourceManager.addResourceLocation(fullPath, "Zip", groupName);
   }
 }
@@ -201,21 +201,17 @@ void VideoManager::LoadResources() {
   }
 
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
-  const char *FILE_SYSTEM = "FileSystem";
-  const char *ZIP = "Zip";
-  const char *APKZIP = "APKZip";
-  const char *EMZIP = "EmbeddedZip";
+  const int SCAN_DEPTH = 4;
   const char *PROGRAMS_ZIP = "programs.bin";
   const char *ASSETS_ZIP = "assets.bin";
-  const int SCAN_DEPTH = 4;
   const char *PROGRAMS_DIR = "source/Programs";
   const char *ASSETS_DIR = "source/Tests/Assets";
 
 #if defined(DESKTOP)
   if (!FindPath("programs.bin").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("programs.bin"), ZIP, Ogre::RGN_INTERNAL);
+    ogreResourceManager.addResourceLocation(FindPath("programs.bin"), "Zip", Ogre::RGN_INTERNAL);
   } else if (!FindPath("programs.zip").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("programs.zip"), ZIP, Ogre::RGN_INTERNAL);
+    ogreResourceManager.addResourceLocation(FindPath("programs.zip"), "Zip", Ogre::RGN_INTERNAL);
   } else if (!FindPath("programs").empty()) {
     ScanLocation(FindPath("programs"), Ogre::RGN_INTERNAL);
   } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
@@ -225,9 +221,9 @@ void VideoManager::LoadResources() {
   }
 
   if (!FindPath("assets.bin").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("assets.bin"), ZIP, Ogre::RGN_DEFAULT);
+    ogreResourceManager.addResourceLocation(FindPath("assets.bin"), "Zip", Ogre::RGN_DEFAULT);
   } else if (!FindPath("assets.zip").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("assets.zip"), ZIP, Ogre::RGN_DEFAULT);
+    ogreResourceManager.addResourceLocation(FindPath("assets.zip"), "Zip", Ogre::RGN_DEFAULT);
   } else if (!FindPath("assets").empty()) {
     ScanLocation(FindPath("assets"), Ogre::RGN_DEFAULT);
   } else if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty()) {
@@ -236,10 +232,10 @@ void VideoManager::LoadResources() {
 
 #elif defined(ANDROID)
   InitEmbeddedResources();
-  ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
+  ogreResourceManager.addResourceLocation(ASSETS_ZIP, "APKZip", Ogre::RGN_DEFAULT);
 #else
   InitEmbeddedResources();
-  ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
+  ogreResourceManager.addResourceLocation(ASSETS_ZIP, "Zip", Ogre::RGN_DEFAULT);
 #endif
 
   ogreResourceManager.initialiseResourceGroup(Ogre::RGN_INTERNAL);
