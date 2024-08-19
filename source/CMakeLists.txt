@@ -54,9 +54,7 @@ target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/
 add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${ASSETS_DIR}/programs -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=zip -DGENERATE_HEADER=1 -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/programs.zip.h ${CMAKE_BINARY_DIR})
 
-if (RELEASE OR ANDROID)
-    add_dependencies(Engine Programs)
-endif ()
+add_dependencies(Engine Programs)
 
 # tests vs project folders
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.hpp)
