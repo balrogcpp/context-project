@@ -32,17 +32,17 @@ message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 # https://issuetracker.google.com/issues/37128614
 # Gradle build RelWithDebInfo by default
-if (ANDROID AND CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
+string(TOLOWER ${CMAKE_BINARY_DIR} CMAKE_BINARY_DIR_LOWER)
+if (ANDROID AND CMAKE_BUILD_TYPE_LOWER MATCHES "relwithdebinfo")
     set(CMAKE_BUILD_TYPE "Release")
 endif ()
 
 # enabled only Release, RelWithDebInfo, Debug build types
-string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 set(ALLOWED_BUILD_TYPES "Release;RelWithDebInfo;Debug")
 set(ALLOWED_BUILD_TYPES_LOWER ${ALLOWED_BUILD_TYPES})
 list(TRANSFORM ALLOWED_BUILD_TYPES_LOWER TOLOWER)
 if (NOT ${CMAKE_BUILD_TYPE_LOWER} IN_LIST ALLOWED_BUILD_TYPES_LOWER)
-    message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
+    message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid cmake build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
 
 # include modules
