@@ -8,6 +8,7 @@ set(_assets_included true)
 # Zip files from directory into flat zip
 macro(FlatZipDirectory curdir destination extention)
     file(MAKE_DIRECTORY ${destination})
+    file(REMOVE_RECURSE ${destination})
     file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
 
     foreach (directory ${directories})
