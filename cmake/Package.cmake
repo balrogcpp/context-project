@@ -7,19 +7,9 @@ set(_assets_included true)
 
 # Zip files from directory into flat zip
 macro(FlatZipDirectory curdir destination extention)
-    file(MAKE_DIRECTORY ${destination})
-    file(REMOVE_RECURSE ${destination})
-    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
-
-    foreach (directory ${directories})
-        if (IS_DIRECTORY ${curdir}/${directory})
-            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
-            list(APPEND filelist ${files})
-        else ()
-            liset(APPEND filelist ${curdir}/${directory})
-        endif ()
-    endforeach ()
-
+    get_filename_component(PARENT_DIR ${destination}.${extention} DIRECTORY ABSOLUTE)
+    file(MAKE_DIRECTORY ${PARENT_DIR})
+    file(GLOB_RECURSE filelist LIST_DIRECTORIES false ${curdir} ${curdir}/*)
     execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${curdir} ${CMAKE_COMMAND} -E tar cf ${destination}.${extention} --format=zip --mtime=2019-01-01 ${filelist})
 endmacro()
 
