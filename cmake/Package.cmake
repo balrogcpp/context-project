@@ -1,19 +1,9 @@
 # include guard
-if (_assets_included)
+if (_package_included)
     return()
-endif (_assets_included)
-set(_assets_included true)
+endif (_package_included)
+set(_package_included true)
 
-# clears timestamp
-macro(ClearTimeStampDirectory destination)
-    if (CMAKE_HOST_UNIX)
-        execute_process(COMMAND find ${destination} -type f -exec touch -t 201901010000 {} +)
-    elseif (CMAKE_HOST_WIN32)
-        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | Where-Object {! $_.PSIsContainer} | ForEach-Object{$_.CreationTime = (\"1 January 2019 00:00:00\")}")
-        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | Where-Object {! $_.PSIsContainer} | ForEach-Object{$_.LastWriteTime = (\"1 January 2019 00:00:00\")}")
-        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | Where-Object {! $_.PSIsContainer} | ForEach-Object{$_.LastAccessTime = (\"1 January 2019 00:00:00\")}")
-    endif ()
-endmacro()
 
 # Zip files from directory into flat zip
 macro(FlatZipDirectory curdir destination extention)
