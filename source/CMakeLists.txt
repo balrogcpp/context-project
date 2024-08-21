@@ -1,7 +1,6 @@
 # macro insert_dependency and c++ flags, includes and libraries
 include(CppFlags)
 include(Platform)
-include(TimeStampEraser)
 include(BuildVariables)
 include(DateTime)
 
@@ -96,12 +95,6 @@ if (ANDROID)
     add_dependencies(Tests Assets)
 endif ()
 
-# post-build, pre-package
-#if (RELEASE)
-#    set(TARGET_NAME "Tests")
-#    include(ReallySmallPostBuild)
-#endif ()
-
 # install
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${DEPS_ROOT}/bin/*.dll)
@@ -116,14 +109,9 @@ else ()
     install(FILES "${FILE_DIR}/app.html" "${FILE_DIR}/app.js" "${FILE_DIR}/app.wasm" "${FILE_DIR}/app.data" "${FILE_DIR}/app.worker.js" DESTINATION .)
 endif ()
 
-# package
-if (RELEASE)
-    set(CPACK_INSTALL_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/TimeStampEraser.cmake")
-    set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPreBuild.cmake")
-    set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPostBuild.cmake")
-endif ()
-
-#cpack
+# cpack
+set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPreBuild.cmake")
+set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPostBuild.cmake")
 set(PACKAGE_NAME "tests")
 # set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
 set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_FULL}-${CMAKE_BUILD_TYPE_LOWER})

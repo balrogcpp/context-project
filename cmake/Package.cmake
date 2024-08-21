@@ -4,15 +4,27 @@ if (_assets_included)
 endif (_assets_included)
 set(_assets_included true)
 
+# clears timestamp
+macro(ClearTimeStampDirectory destination)
+    if (CMAKE_HOST_UNIX)
+        execute_process(COMMAND find ${destination} -type f -exec touch -t 201901010000 {} +)
+    elseif (CMAKE_HOST_WIN32)
+        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | ForEach-Object{$_.CreationTime = (\"1 January 2019 00:00:00\")}")
+        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | ForEach-Object{$_.LastWriteTime = (\"1 January 2019 00:00:00\")}")
+        execute_process(COMMAND powershell "Get-ChildItem -force ${destination} * | ForEach-Object{$_.LastAccessTime = (\"1 January 2019 00:00:00\")}")
+    endif ()
+endmacro()
 
 # Zip files from directory into flat zip
 macro(FlatZipDirectory curdir destination extention)
+    if (CMAKE_HOST_WIN32)
+        ClearTimeStampDirectory(${curdir})
+    endif ()
     get_filename_component(PARENT_DIR ${destination}.${extention} DIRECTORY ABSOLUTE)
     file(MAKE_DIRECTORY ${PARENT_DIR})
     file(GLOB_RECURSE filelist LIST_DIRECTORIES false ${curdir} ${curdir}/*)
     execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${curdir} ${CMAKE_COMMAND} -E tar cf ${destination}.${extention} --format=zip --mtime=2019-01-01 ${filelist})
 endmacro()
-
 
 # do the job
 FlatZipDirectory(${INPUT} ${OUTPUT} ${FORMAT})
