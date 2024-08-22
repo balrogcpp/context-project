@@ -88,8 +88,8 @@ target_precompile_headers(Tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/p
 set_target_properties(Tests PROPERTIES OUTPUT_NAME "app")
 target_link_libraries(Tests PUBLIC Engine ${ENGINE_LIBRARIES})
 
-add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${ASSETS_DIR}/assets -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=bin -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.bin ${ASSETS_DIR_ANDROID})
+add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${ASSETS_DIR}/assets -DASSETS_DIR=${ASSETS_DIR} -DFORMAT=zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSETS_DIR}/assets.zip ${ASSETS_DIR_ANDROID})
 
 if (ANDROID)
     add_dependencies(Tests Assets)
@@ -103,7 +103,7 @@ endif ()
 install(TARGETS Tests RUNTIME DESTINATION .)
 if (NOT EMSCRIPTEN)
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-    install(FILES ${ASSETS_DIR}/assets.bin DESTINATION .)
+    install(FILES ${ASSETS_DIR}/assets.zip DESTINATION .)
 else ()
     set(FILE_DIR $<TARGET_FILE_DIR:Tests>)
     install(FILES "${FILE_DIR}/app.html" "${FILE_DIR}/app.js" "${FILE_DIR}/app.wasm" "${FILE_DIR}/app.data" "${FILE_DIR}/app.worker.js" DESTINATION .)
