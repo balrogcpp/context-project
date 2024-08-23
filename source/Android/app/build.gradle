@@ -40,20 +40,14 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    android.applicationVariants.all { variant ->
+    applicationVariants.all { variant ->
         variant.outputs.all {
             def zonedDate = ZonedDateTime.now(ZoneOffset.UTC)
             def date = zonedDate.format("YYYYMMdd'T'HHMMSS'Z'")
-            def sha1 = System.getenv("GIT_SHA1") ?: "0.1"
-            def deploy = System.getenv("GRADLE_DEPLOY")
-            if (deploy && variant.name == "release") {
-                outputFileName = "tests-${sha1}-android-arm64-${date}.apk"
-             } else {
-                outputFileName = "tests-${sha1}-android-arm64-${variant.name}.apk"
-             }
-            if (deploy) {
-                outputFileName = "../../../artifacts/" + outputFileName
-            }
+            def gitCommitHash = 'git rev-parse --verify --short HEAD'.execute().text.trim()
+            def sha1 = gitCommitHash ?: System.getenv("GIT_SHA1")
+            outputFileName = "tests-${gitCommitHash}-android-arm64-${variant.name}.apk"
+            outputFileName = "../../../../../../../artifacts/" + outputFileName
         }
     }
     sourceSets.main {

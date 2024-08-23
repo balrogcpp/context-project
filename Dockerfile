@@ -5,6 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/var/build
 ARG DEPS_DIR=${CONTEXT_HOME}/contrib
 ARG GIT_SHA
+ENV GIT_SHA_SHORT=${GIT_SHA}
 WORKDIR ${CONTEXT_HOME}
 
 
@@ -44,9 +45,9 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get clean \
     && mkdir build && cd build \
-    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target Contrib \
-    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
     && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
@@ -56,27 +57,27 @@ RUN apt-get update \
 
 # win32
 RUN mkdir build && cd build \
-    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target Contrib \
-    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # apple x86_64
 #RUN mkdir build && cd build \
-#    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target Contrib \
-#    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # apple aarch64
 #RUN mkdir build && cd build \
-#    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target Contrib \
-#    && cmake -DGIT_SHA_SHORT=$GIT_SHA -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 

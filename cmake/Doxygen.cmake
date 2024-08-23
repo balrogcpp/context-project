@@ -34,7 +34,7 @@ if (${DOXYGEN_FOUND})
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
             USES_TERMINAL
-            )
+    )
 else ()
     message(STATUS "Doxygen not found. Doxygen generation disabled")
 endif ()
@@ -50,7 +50,7 @@ if (${LATEX_PDFLATEX_FOUND})
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
             USES_TERMINAL
-            )
+    )
 else ()
     message(STATUS "Latex PDF not found. PDF generation disabled")
 endif ()

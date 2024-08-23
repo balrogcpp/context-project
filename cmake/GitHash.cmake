@@ -5,10 +5,12 @@ endif (_githash_included)
 set(_githash_included true)
 
 
+set(GIT_SHA $ENV{GIT_SHA})
+set(GIT_SHA_SHORT $ENV{GIT_SHA_SHORT})
+
 find_package(Git QUIET)
 
-
-if (NOT GIT_SHA AND NOT GIT_SHA_SHORT AND GIT_FOUND AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/.git)
+if (NOT GIT_SHA AND NOT GIT_SHA_SHORT)
     if (EXISTS ${CMAKE_SOURCE_DIR}/.git/index AND GIT_FOUND)
         execute_process(
                 COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD

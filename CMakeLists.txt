@@ -32,7 +32,7 @@ message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 # https://issuetracker.google.com/issues/37128614
 # Gradle build RelWithDebInfo by default
-string(TOLOWER ${CMAKE_BINARY_DIR} CMAKE_BINARY_DIR_LOWER)
+string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 if (ANDROID AND CMAKE_BUILD_TYPE_LOWER MATCHES "relwithdebinfo")
     set(CMAKE_BUILD_TYPE "Release")
 endif ()
