@@ -1130,6 +1130,43 @@ externalproject_add(Target_sqlite
 )
 
 
+check_stamp(Target_libarchive)
+externalproject_add(Target_libarchive
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        DEPENDS
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libarchive
+        GIT_REPOSITORY https://github.com/libarchive/libarchive.git
+        GIT_TAG v3.7.4
+        GIT_SHALLOW true
+        GIT_SUBMODULES_RECURSE true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=Release
+        -DENABLE_WERROR=OFF
+        -DENABLE_CPIO=OFF
+        -DENABLE_CAT=OFF
+        -DENABLE_UNZIP=OFF
+        -DENABLE_TEST=OFF
+        -DBUILD_SHARED_LIBS=OFF
+        -DENABLE_INSTALL=OFF
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${CREATE_PATCH_STAMP}
+)
+
+
 set(PROTOBUF_VERSION 27.3)
 find_package(Protobuf QUIET)
 if (Protobuf_PROTOC_EXECUTABLE)

@@ -13,12 +13,13 @@ macro(FlatZipDirectory curdir destination)
     endif ()
     file(GLOB_RECURSE filelist LIST_DIRECTORIES false RELATIVE ${curdir} ${curdir} ${curdir}/*)
     find_program(ZIP_EXE NAMES zip PATHS ENV PATH)
-    find_program(TAR_EXE NAMES tar PATHS ENV PATH)
+    find_program(TAR_EXE NAMES bsdtar tar PATHS ENV PATH)
+    execute_process(COMMAND ${TAR_EXE} --version OUTPUT_VARIABLE TAR_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    if (ZIP_EXE)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${curdir} ${ZIP_EXE} -rq -D -X ${destination} ${filelist})
-    elseif (TAR_EXE AND CMAKE_HOST_WIN32)
+    if (TAR_EXE AND TAR_VERSION MATCHES zlib)
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${curdir} ${TAR_EXE} caf ${destination} ${filelist})
+    elseif (ZIP_EXE)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${curdir} ${ZIP_EXE} -rq -D -X ${destination} ${filelist})
     else ()
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${curdir} ${CMAKE_COMMAND} -E tar cf ${destination} --format=zip --mtime=2019-01-01 ${filelist})
     endif ()
@@ -32,7 +33,7 @@ if (NOT GENERATE_HEADER)
 endif ()
 
 if (NOT EXISTS Zip2Cpp.cpp)
-    file(WRITE Zip2Cpp.cpp
+    file(WRITE ${CMAKE_BINARY_DIR}/Zip2Cpp.cpp
             "#define _CRT_SECURE_NO_WARNINGS\n"
             "\n"
             "#include <fstream>\n"

@@ -46,7 +46,7 @@ set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
 set(ENGINE_INCLUDE_DIRS
         ${ENGINE_SOURCE_DIR}
         ${ENGINE_SOURCE_DIR}/Code
-        ${CMAKE_BINARY_DIR}
+        ${CMAKE_BINARY_DIR}/source
         ${DEPS_ROOT}/include
 )
 
