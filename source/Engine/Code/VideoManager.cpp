@@ -171,7 +171,7 @@ void InitOgreRenderSystemD3D11();
 #ifdef OGRE_BUILD_RENDERSYSTEM_D3D9
 void InitOgreRenderSystemD3D9();
 #endif
-void InitEmbeddedResources();
+bool InitEmbeddedResources();
 
 void VideoManager::LoadResources() {
 #ifdef ANDROID
@@ -202,27 +202,16 @@ void VideoManager::LoadResources() {
 
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
   const int SCAN_DEPTH = 4;
-  const char *PROGRAMS_ZIP = "programs.bin";
-  const char *ASSETS_ZIP = "assets.bin";
+  const char *ASSETS_ZIP = "assets.zip";
   const char *PROGRAMS_DIR = "source/Programs";
   const char *ASSETS_DIR = "source/Tests/Assets";
 
 #if defined(DESKTOP)
-  if (!FindPath("programs.bin").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("programs.bin"), "Zip", Ogre::RGN_INTERNAL);
-  } else if (!FindPath("programs.zip").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("programs.zip"), "Zip", Ogre::RGN_INTERNAL);
-  } else if (!FindPath("programs").empty()) {
-    ScanLocation(FindPath("programs"), Ogre::RGN_INTERNAL);
-  } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
+  if (!InitEmbeddedResources()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-  } else {
-    InitEmbeddedResources();
   }
 
-  if (!FindPath("assets.bin").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("assets.bin"), "Zip", Ogre::RGN_DEFAULT);
-  } else if (!FindPath("assets.zip").empty()) {
+  if (!FindPath("assets.zip").empty()) {
     ogreResourceManager.addResourceLocation(FindPath("assets.zip"), "Zip", Ogre::RGN_DEFAULT);
   } else if (!FindPath("assets").empty()) {
     ScanLocation(FindPath("assets"), Ogre::RGN_DEFAULT);

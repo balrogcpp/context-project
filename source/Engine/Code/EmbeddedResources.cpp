@@ -3,18 +3,19 @@
 #include <OgreRoot.h>
 #include <OgreZip.h>
 
-#if __has_include("programs.zip.h")
-#include "programs.zip.h"
+#if __has_include("programs.h")
+#include "programs.h"
 #endif
 
 namespace gge {
 
-void InitEmbeddedResources() {
-  auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
-
-#if __has_include("programs.zip.h")
+bool InitEmbeddedResources() {
+#if __has_include("programs.h")
   Ogre::EmbeddedZipArchiveFactory::addEmbbeddedFile("programs.zip", programs_zip, sizeof(programs_zip), nullptr);
-  ogreResourceManager.addResourceLocation("programs.zip", "EmbeddedZip", Ogre::RGN_INTERNAL);
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation("programs.zip", "EmbeddedZip", Ogre::RGN_INTERNAL);
+  return true;
+#else
+  retune false;
 #endif
 }
 

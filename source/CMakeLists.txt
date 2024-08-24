@@ -45,7 +45,7 @@ include_directories(Engine ${ENGINE_INCLUDE_DIRS})
 target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
 
 add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -DGENERATE_HEADER=1 -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
-
+set_target_properties(Programs PROPERTIES FOLDER "Helpers")
 add_dependencies(Engine Programs)
 
 # tests vs project folders
@@ -85,7 +85,8 @@ if (ANDROID)
     add_custom_target(Assets ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_SOURCE_DIR}/Android/app/assets/assets.zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
     add_dependencies(Tests Assets)
 else ()
-    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${CMAKE_BINARY_DIR}/assets.zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
+    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/assets.zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
+    set_target_properties(Assets PROPERTIES FOLDER "Helpers")
 endif ()
 
 # install
@@ -96,7 +97,7 @@ endif ()
 install(TARGETS Tests RUNTIME DESTINATION .)
 if (NOT EMSCRIPTEN)
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-    install(FILES ${CMAKE_BINARY_DIR}/assets.zip DESTINATION .)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.zip DESTINATION .)
 else ()
     set(FILE_DIR $<TARGET_FILE_DIR:Tests>)
     install(FILES "${FILE_DIR}/app.html" "${FILE_DIR}/app.js" "${FILE_DIR}/app.wasm" "${FILE_DIR}/app.data" "${FILE_DIR}/app.worker.js" DESTINATION .)
@@ -139,5 +140,5 @@ add_custom_target(Gradle
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${GRADLEW_COMMAND} clean
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
 )
-
 add_custom_target(GradleClear COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build app/assets)
+set_target_properties(Gradle GradleClear PROPERTIES FOLDER "Helpers")
