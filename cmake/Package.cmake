@@ -18,6 +18,9 @@ macro(FlatZipDirectory curdir destination)
     find_program(TAR_EXE NAMES bsdtar tar PATHS ENV PATH)
     execute_process(COMMAND ${TAR_EXE} --version OUTPUT_VARIABLE TAR_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+    # bsdtar generates same output as 'cmake -E tar --format=zip' on linux
+    # on windows cmake tar is not stable, so using windows build-in tar instead
+    # by default use zip command if available, as it avoids generation of extra field
     if (ZIP_EXE)
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${curdir} ${ZIP_EXE} -rq -D -X ${destination} ${filelist})
     elseif (TAR_EXE AND TAR_VERSION MATCHES zlib)
