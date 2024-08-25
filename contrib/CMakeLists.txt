@@ -1130,15 +1130,15 @@ externalproject_add(Target_sqlite
 )
 
 
-check_stamp(Target_libarchive)
-externalproject_add(Target_libarchive
+check_stamp(Target_bsdtar)
+externalproject_add(Target_bsdtar
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libarchive
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_bsdtar
         GIT_REPOSITORY https://github.com/libarchive/libarchive.git
         GIT_TAG v3.7.4
         GIT_SHALLOW true
