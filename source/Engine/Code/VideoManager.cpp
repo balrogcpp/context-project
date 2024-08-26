@@ -4,7 +4,13 @@
 #include "VideoManager.h"
 #include "CompositorManager.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
+#include "EmbeddedResources.h"
 #include "Platform.h"
+#include "RenderSystemD3D11.h"
+#include "RenderSystemD3D9.h"
+#include "RenderSystemGL.h"
+#include "RenderSystemGL3.h"
+#include "RenderSystemGLES2.h"
 #include "imgui_impl_sdl2.h"
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>
@@ -155,23 +161,6 @@ void ScanLocation(const string &path, const string &groupName) {
 }  // namespace
 
 namespace gge {
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-void InitOgreRenderSystemGL3();
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-void InitOgreRenderSystemGLES2();
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-void InitOgreRenderSystemGL();
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_D3D11
-void InitOgreRenderSystemD3D11();
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_D3D9
-void InitOgreRenderSystemD3D9();
-#endif
-bool InitEmbeddedResources();
 
 void VideoManager::LoadResources() {
 #ifdef ANDROID
