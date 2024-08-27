@@ -16,7 +16,7 @@ ARG NINJA_VERSION=1.12.1
 ARG PROTOC_VERSION=27.3
 ARG UPX_VERSION=4.2.4
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends git \
+    && apt-get -y install --no-install-recommends git strip-nondeterminism \
     && apt-get clean \
     && git config --global http.postBuffer 1048576000 \
     && git config --global https.postBuffer 1048576000 \
