@@ -720,9 +720,9 @@ externalproject_add(Target_pugixml
 )
 
 
-if(OGRE_BUILD_ASSIMP)
+if (OGRE_BUILD_ASSIMP)
     set(ASSIMP_TARGET Target_assimp)
-endif()
+endif ()
 check_stamp_patch(Target_OGRE ogre-14.2.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
@@ -1130,15 +1130,15 @@ externalproject_add(Target_sqlite
 )
 
 
-check_stamp(Target_bsdtar)
-externalproject_add(Target_bsdtar
+check_stamp(Target_libarchive)
+externalproject_add(Target_libarchive
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_bsdtar
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libarchive
         GIT_REPOSITORY https://github.com/libarchive/libarchive.git
         GIT_TAG v3.7.4
         GIT_SHALLOW true
