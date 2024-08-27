@@ -6,11 +6,7 @@
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "EmbeddedResources.h"
 #include "Platform.h"
-#include "RenderSystemD3D11.h"
-#include "RenderSystemD3D9.h"
-#include "RenderSystemGL.h"
-#include "RenderSystemGL3.h"
-#include "RenderSystemGLES2.h"
+#include "RenderSystems.h"
 #include "imgui_impl_sdl2.h"
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>

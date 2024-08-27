@@ -3,6 +3,10 @@
 
 namespace gge {
 
+void InitOgreRenderSystemD3D9();
+void InitOgreRenderSystemD3D11();
+void InitOgreRenderSystemGL();
 void InitOgreRenderSystemGLES2();
+void InitOgreRenderSystemGL3();
 
 }  // namespace gge
