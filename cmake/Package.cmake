@@ -47,7 +47,7 @@ if (NOT GENERATE_HEADER)
 endif ()
 
 if (NOT EXISTS Zip2Cpp.cpp)
-    file(WRITE ${CMAKE_BINARY_DIR}/Zip2Cpp.cpp
+    file(WRITE Zip2Cpp.cpp
             "#define _CRT_SECURE_NO_WARNINGS\n"
             "\n"
             "#include <fstream>\n"
@@ -183,4 +183,4 @@ if (NOT EXISTS zip2cpp AND NOT EXISTS zip2cpp.exe)
     execute_process(COMMAND ${CPP_COMPILER} Zip2Cpp.cpp -o zip2cpp)
 endif ()
 execute_process(COMMAND ./zip2cpp programs)
-file(COPY_FILE programs.zip.h programs.h ONLY_IF_DIFFERENT)
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different programs.zip.h programs.h)
