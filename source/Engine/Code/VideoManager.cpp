@@ -192,16 +192,22 @@ void VideoManager::LoadResources() {
   const char *ASSETS_DIR = "source/Tests/Assets";
 
 #if defined(DESKTOP)
-  if (!InitEmbeddedResources()) {
+#ifdef _DEBUG
+  if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty())
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+  else
+#endif
+  {
+    InitEmbeddedResources();
   }
 
-  if (!FindPath("assets.zip").empty()) {
-    ogreResourceManager.addResourceLocation(FindPath("assets.zip"), "Zip", Ogre::RGN_DEFAULT);
-  } else if (!FindPath("assets").empty()) {
-    ScanLocation(FindPath("assets"), Ogre::RGN_DEFAULT);
-  } else if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty()) {
-    ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
+#ifdef _DEBUG
+  if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty())
+    ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+  else
+#endif
+  {
+    if (!FindPath("assets.zip").empty()) ogreResourceManager.addResourceLocation(FindPath("assets.zip"), "Zip", Ogre::RGN_DEFAULT);
   }
 
 #elif defined(ANDROID)
@@ -814,7 +820,7 @@ void VideoManager::InitOgreRTSS() {
   shaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
 
   // Add listener
-  // Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
+  Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
 }
 
 void VideoManager::OnSetUp() {
