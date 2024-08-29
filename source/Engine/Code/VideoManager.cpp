@@ -203,7 +203,7 @@ void VideoManager::LoadResources() {
 
 #ifdef DEBUG
   if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty())
-    ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+    ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
   else
 #endif
   {
