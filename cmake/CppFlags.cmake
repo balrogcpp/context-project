@@ -35,9 +35,12 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GN
                 string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${PROCESSOR_COUNT}")
             endif ()
         endif ()
+    elseif (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "debug")
+        string(APPEND CMAKE_CXX_FLAGS " -D_DEBUG -DDEBUG")
+        string(APPEND CMAKE_C_FLAGS " -D_DEBUG -DDEBUG")
     elseif (${CMAKE_BUILD_TYPE_LOWER} MATCHES "deb")
-        string(APPEND CMAKE_CXX_FLAGS " -D_DEBUG")
-        string(APPEND CMAKE_C_FLAGS " -D_DEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -DDEBUG")
+        string(APPEND CMAKE_C_FLAGS " -DDEBUG")
     endif ()
 
     if (ENABLE_FASTMATH)
@@ -124,6 +127,11 @@ elseif (MSVC)
 
     string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /utf-8 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
     string(APPEND CMAKE_C_FLAGS " /MP /GS- /GF /utf-8")
+
+    if (${CMAKE_BUILD_TYPE_LOWER} MATCHES "deb")
+        string(APPEND CMAKE_CXX_FLAGS " /DDEBUG")
+        string(APPEND CMAKE_C_FLAGS " /DDEBUG")
+    endif()
 
     if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "release")
         string(APPEND CMAKE_CXX_FLAGS " /Ot /GL")

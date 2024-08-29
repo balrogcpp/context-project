@@ -186,13 +186,13 @@ void VideoManager::LoadResources() {
   }
 
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
-  const int SCAN_DEPTH = 4;
+  const int SCAN_DEPTH = 3;
   const char *ASSETS_ZIP = "assets.zip";
   const char *PROGRAMS_DIR = "source/Programs";
   const char *ASSETS_DIR = "source/Tests/Assets";
 
 #if defined(DESKTOP)
-#ifdef _DEBUG
+#ifdef DEBUG
   if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty())
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   else
@@ -201,7 +201,7 @@ void VideoManager::LoadResources() {
     InitEmbeddedResources();
   }
 
-#ifdef _DEBUG
+#ifdef DEBUG
   if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty())
     ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   else
