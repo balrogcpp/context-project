@@ -1,0 +1,55 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d45eb225..3e81536c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -38,7 +38,7 @@ SET(CMAKE_POLICY_DEFAULT_CMP0012 NEW)
+ SET(CMAKE_POLICY_DEFAULT_CMP0074 NEW)
+ SET(CMAKE_POLICY_DEFAULT_CMP0092 NEW)
+ 
+-CMAKE_MINIMUM_REQUIRED( VERSION 3.22 )
++CMAKE_MINIMUM_REQUIRED( VERSION 3.10 )
+ 
+ # Experimental USD importer: disabled, need to opt-in
+ # Note: assimp github PR automatic checks will fail the PR due to compiler warnings in
+@@ -515,11 +515,11 @@ ELSE()
+     FIND_PACKAGE(ZLIB)
+   ENDIF()
+ 
+-  IF ( NOT ZLIB_FOUND AND NOT ASSIMP_BUILD_ZLIB )
++  IF ( 0 )
+     message( FATAL_ERROR
+       "Build configured with -DASSIMP_BUILD_ZLIB=OFF but unable to find zlib"
+     )
+-  ELSEIF( NOT ZLIB_FOUND )
++  ELSEIF( 0 )
+     MESSAGE(STATUS "compiling zlib from sources")
+     INCLUDE(CheckIncludeFile)
+     INCLUDE(CheckTypeSize)
+diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
+index 9b270862..9a0858fe 100644
+--- a/code/CMakeLists.txt
++++ b/code/CMakeLists.txt
+@@ -42,7 +42,7 @@
+ # 3) Add libassimp using the file lists (eliminates duplication of file names between
+ #    source groups and library command)
+ #
+-cmake_minimum_required( VERSION 3.22 )
++cmake_minimum_required( VERSION 3.10 )
+ SET( HEADER_PATH ../include/assimp )
+ 
+ if(NOT ANDROID AND ASSIMP_ANDROID_JNIIOSYSTEM)
+diff --git a/contrib/unzip/ioapi.c b/contrib/unzip/ioapi.c
+index 782d3246..35c66498 100644
+--- a/contrib/unzip/ioapi.c
++++ b/contrib/unzip/ioapi.c
+@@ -19,6 +19,10 @@
+ #define FOPEN_FUNC(filename, mode) fopen(filename, mode)
+ #define FTELLO_FUNC(stream) ftello(stream)
+ #define FSEEKO_FUNC(stream, offset, origin) fseeko(stream, offset, origin)
++#elif defined(__ANDROID__) && __ANDROID_MIN_SDK_VERSION__ < 24
++#define FOPEN_FUNC(filename, mode) fopen(filename, mode)
++#define FTELLO_FUNC(stream) ftell(stream)
++#define FSEEKO_FUNC(stream, offset, origin) fseek(stream, offset, origin)
+ #else
+ #define FOPEN_FUNC(filename, mode) fopen64(filename, mode)
+ #define FTELLO_FUNC(stream) ftello64(stream)

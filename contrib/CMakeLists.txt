@@ -556,7 +556,7 @@ externalproject_add(Target_ZZIP
 )
 
 
-check_stamp_patch(Target_assimp assimp-5.4.0.patch)
+check_stamp_patch(Target_assimp assimp-5.4.3.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -566,7 +566,7 @@ externalproject_add(Target_assimp
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
-        GIT_TAG v5.4.2
+        GIT_TAG v5.4.3
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
