@@ -117,15 +117,11 @@ std::string GetBinaryDir() {
 
 std::string FindPath(const std::string &path, int depth = 0) {
   std::string result = path;
-  std::string buffer = GetBinaryDir();
-
-  if (fs::exists(buffer.append(path))) {
-    return buffer;
-  }
+  std::string buffer = GetBinaryDir().append(path);
 
   for (int i = 0; i < depth; i++) {
     if (fs::exists(result))
-      return result;
+      return fs::canonical(result).string();
     else
       result = std::string("../").append(result);
   }
@@ -140,6 +136,7 @@ void ScanLocation(const string &path, const string &groupName) {
     LogError("[ScanLocation]", "path is not directory");
     return;
   }
+
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
   ogreResourceManager.addResourceLocation(path, "FileSystem", groupName);
 
@@ -193,18 +190,18 @@ void VideoManager::LoadResources() {
 
 #if defined(DESKTOP)
 #ifdef DEBUG
-  if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty())
+  if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-  else
+  } else
 #endif
   {
     InitEmbeddedResources();
   }
 
 #ifdef DEBUG
-  if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty())
+  if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
-  else
+  } else
 #endif
   {
     if (!FindPath("assets.zip").empty()) ogreResourceManager.addResourceLocation(FindPath("assets.zip"), "Zip", Ogre::RGN_DEFAULT);

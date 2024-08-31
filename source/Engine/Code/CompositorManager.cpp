@@ -172,7 +172,7 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("MotionBlur", true);
+  AddCompositor("MotionBlur", false);
   AddCompositor("FXAA", true);
   AddCompositor("HDR", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);

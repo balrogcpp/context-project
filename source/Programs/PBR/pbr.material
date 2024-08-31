@@ -25,7 +25,7 @@ sampler SSAO
 }
 sampler ReflTex
 {
-    filtering none
+    filtering bilinear
     tex_address_mode border
     tex_border_colour 0 0 0 1
 }
@@ -329,7 +329,7 @@ abstract material TERRA
                 param_named ShadowTex2      int 8
                 param_named ShadowTex3      int 9
                 param_named SpecularEnvTex int 10
-                param_named_auto TexelSize3  inverse_texture_size 3
+                // param_named_auto TexelSize3  inverse_texture_size 3
                 param_named_auto TexelSize4  inverse_texture_size 4
                 param_named_auto TexelSize6  inverse_texture_size 6
                 param_named_auto TexelSize7  inverse_texture_size 7
