@@ -119,7 +119,7 @@ std::string FindPath(const std::string &path, int depth = 0) {
   std::string result = path;
   std::string buffer = GetBinaryDir().append(path);
 
-  for (int i = 0; i < depth; i++) {
+  for (int i = 0; i <= depth; i++) {
     if (fs::exists(result))
       return fs::canonical(result).string();
     else
@@ -183,9 +183,10 @@ void VideoManager::LoadResources() {
   }
 
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
-  const int SCAN_DEPTH = 3;
-  const char *ASSETS_ZIP = "assets.zip";
+  const int SCAN_DEPTH = 2;
+  const char *PROGRAMS_ZIP = "programs.zip";
   const char *PROGRAMS_DIR = "source/Programs";
+  const char *ASSETS_ZIP = "assets.zip";
   const char *ASSETS_DIR = "source/Tests/Assets";
 
 #if defined(DESKTOP)
@@ -204,7 +205,7 @@ void VideoManager::LoadResources() {
   } else
 #endif
   {
-    if (!FindPath("assets.zip").empty()) ogreResourceManager.addResourceLocation(FindPath("assets.zip"), "Zip", Ogre::RGN_DEFAULT);
+    if (!FindPath(ASSETS_ZIP).empty()) ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), "Zip", Ogre::RGN_DEFAULT);
   }
 
 #elif defined(ANDROID)
