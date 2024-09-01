@@ -126,7 +126,7 @@ endif ()
 
 
 # list of third-party targets
-check_stamp_patch(Target_SDL2 sdl2-2.30.3.patch)
+check_stamp_patch(Target_SDL2 sdl2-2.30.7.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -136,7 +136,7 @@ externalproject_add(Target_SDL2
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.30.6
+        GIT_TAG release-2.30.7
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
