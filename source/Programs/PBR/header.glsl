@@ -72,6 +72,3 @@ out vec4 FragColor;
 #define mtxFromCols(a, b, c) transpose(mat3(a, b, c))
 //#include "OgreUnifiedShader.h"
 #endif
-#if defined(OGRE_FRAGMENT_SHADER) && defined(HAS_MRT)
-#include "mrt.glsl"
-#endif

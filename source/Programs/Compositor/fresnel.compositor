@@ -8,7 +8,7 @@ compositor Fresnel
     technique
     {
         compositor_logic DeferredLogic
-        texture reflection target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa
+        texture reflection target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa
 
         target reflection
         {

@@ -5,7 +5,6 @@
 uniform highp mat4 WorldViewProj;
 
 in highp vec3 vertex;
-
 out highp vec2 vUV0;
 void main()
 {

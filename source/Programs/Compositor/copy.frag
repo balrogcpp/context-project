@@ -4,7 +4,8 @@
 
 uniform sampler2D RT;
 
+in highp vec2 vUV0;
 void main()
 {
-    FragColor = texelFetch(RT, ivec2(gl_FragCoord.xy), 0);
+    FragColor = textureLod(RT, vUV0, 0.0);
 }
