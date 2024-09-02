@@ -1,17 +1,17 @@
 // created by Andrey Vasiliev
 
-import STD from std.compositor
-
-compositor FXAA : STD
+compositor FXAA
 {
     technique
     {
+        texture_ref mrt MRT mrt
+
         target_output
         {
             pass render_quad
             {
                 material FXAA
-                input 0 rt
+                input 0 mrt 0
             }
         }
     }

@@ -120,9 +120,17 @@ material Linear : Filter
     {
         pass
         {
+            vertex_program_ref CopyVert {}
+
             fragment_program_ref linear
             {
                 param_named RT int 0
+            }
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
             }
         }
     }
@@ -186,11 +194,11 @@ material Bilateral : Filter
                 param_named_auto TexelSize inverse_texture_size 0
             }
 
-			texture_unit DepthTex
+			texture_unit RT
             {
                 texture black.dds
                 tex_address_mode clamp
-                filtering none
+                filtering bilinear
             }
         }
     }

@@ -1,5 +1,7 @@
 // created by Andrey Vasiliev
 
+import STD from std.compositor
+
 compositor MRT
 {
     technique
@@ -7,33 +9,12 @@ compositor MRT
         compositor_logic DeferredLogic
         // 0 color; 1 depth + normals; 2 velocity;
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_GR PF_R8G8_SNORM no_fsaa depth_pool 1 chain_scope
-        texture rt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R no_fsaa depth_pool 1 chain_scope
+        texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
         texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_GR no_fsaa depth_pool 0
         texture ssr target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
-
-        target mrt
-        {
-            pass clear {}
-            pass render_scene { last_render_queue 90 }
-        }
-
-        target rt
-        {
-            pass render_quad
-            {
-                material Copy2x
-                input 0 mrt 0
-                input 1 mrt 1
-            }
-        }
-
-        target mrt
-        {
-            pass render_scene { first_render_queue 95 }
-            shadows off
-        }
 
         target depth
         {
@@ -56,15 +37,40 @@ compositor MRT
             }
         }
 
-        target_output
+        target mrt
+        {
+            pass clear {}
+            pass render_scene
+            {
+                last_render_queue 90
+            }
+        }
+/*
+        target rt0
         {
             pass render_quad
             {
-                identifier 1
                 material Copy
                 input 0 mrt 0
             }
         }
+        target rt1
+        {
+            pass render_quad
+            {
+                material Copy
+                input 0 mrt 1
+            }
+        }
+        target mrt
+        {
+            shadows off
+            pass render_scene
+            {
+                first_render_queue 95
+            }
+        }
+*/
     }
 }
 
@@ -80,13 +86,19 @@ compositor RTT
             pass clear {}
             pass render_scene {}
         }
+    }
+}
 
+compositor Copyback : STD
+{
+    technique
+    {
         target_output
         {
             pass render_quad
             {
                 material Copy
-                input 0 rt
+                input 0 mrt 0
             }
         }
     }
