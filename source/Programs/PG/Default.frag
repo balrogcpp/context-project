@@ -2,7 +2,6 @@
 
 #define HAS_MRT
 #include "header.glsl"
-#include "mrt.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
 
@@ -35,5 +34,5 @@ void main()
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fogCoord, normalize(CameraPosition - vPosition), LightDir0.xyz, CameraPosition);
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), (fogCoord - NearClipDistance) / (FarClipDistance - NearClipDistance));
+    FragColor = vec4(color, alpha);
 }

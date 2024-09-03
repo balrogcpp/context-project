@@ -3,11 +3,11 @@
 
 #include "header.glsl"
 #include "math.glsl"
-#include "mrt.glsl"
 
 uniform sampler2D DepthTex;
-uniform sampler2D NormalTex;
+//uniform sampler2D NormalTex;
 uniform mat4 ProjMatrix;
+uniform vec2 TexelSize;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 
@@ -16,6 +16,47 @@ vec3 hash(const vec3 a)
     vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
     b += dot(b, b.yxz + 19.19);
     return fract((b.xxy + b.yxx) * b.zyx);
+}
+
+vec3 GetCameraVec(const vec2 uv)
+{
+    // Returns the vector from camera to the specified position on the camera plane (uv argument), located one unit away from the camera
+    // This vector is not normalized.
+    // The nice thing about this setup is that the returned vector from this function can be simply multiplied with the linear depth to get pixel's position relative to camera position.
+    // This particular function does not account for camera rotation or position or FOV at all (since we don't need it for AO)
+    // TODO: AO is dependent on FOV, this function is not!
+    // The outcome of using this simplified function is that the effective AO range is larger when using larger FOV
+    // Use something more accurate to get proper FOV-independent world-space range, however you will likely also have to adjust the SSAO constants below
+    const float aspect = 1.0;
+    return vec3(uv.x * -2.0 + 1.0, uv.y * 2.0 * aspect - aspect, 1.0);
+}
+
+vec3 getNormal(const vec2 tc_original)
+{
+    // Depth of the current pixel
+    float dhere = textureLod(DepthTex, tc_original, 0.0).x;
+    // Vector from camera to the current pixel's position
+    vec3 ray = GetCameraVec(tc_original) * dhere;
+
+    const float normalSampleDist = 1.0;
+
+    // Calculate normal from the 4 neighbourhood pixels
+    vec2 uv = tc_original + vec2(TexelSize.x * normalSampleDist, 0.0);
+    vec3 p1 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+
+    uv = tc_original + vec2(0.0, TexelSize.y * normalSampleDist);
+    vec3 p2 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+
+    uv = tc_original + vec2(-TexelSize.x * normalSampleDist, 0.0);
+    vec3 p3 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+
+    uv = tc_original + vec2(0.0, -TexelSize.y * normalSampleDist);
+    vec3 p4 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+
+    vec3 normal1 = normalize(cross(p1, p2));
+    vec3 normal2 = normalize(cross(p3, p4));
+
+    return normalize(normal1 + normal2);
 }
 
 in highp vec2 vUV0;
@@ -52,7 +93,7 @@ void main()
     // random normal lookup from a texture and expand to [-1..1]
     // IN.ray will be distorted slightly due to interpolation
     // it should be normalized here
-    float clampedPixelDepth = textureLod(NormalTex, vUV0, 0.0).x;
+    float clampedPixelDepth = textureLod(DepthTex, vUV0, 0.0).x;
     float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
     vec3 viewPos = vRay * clampedPixelDepth;
     float invDepth = 1.0 - clampedPixelDepth;
@@ -60,12 +101,8 @@ void main()
 
     // By computing Z manually, we lose some accuracy under extreme angles
     // considering this is just for bias, this loss is acceptable
-    vec3 normal = unpack(textureLod(NormalTex, vUV0, 0.0).y);
-
-    if(normal == vec3(0.0, 0.0, 0.0) || clampedPixelDepth > 0.5) {
-        FragColor.r = 1.0;
-        return;
-    }
+//    vec3 normal = unpack(textureLod(NormalTex, vUV0, 0.0).y);
+    vec3 normal = getNormal(vUV0);
 
     // Accumulated occlusion factor
     float occ = 0.0;

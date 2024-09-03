@@ -1,0 +1,31 @@
+import STD from std.compositor
+
+compositor GTAO : STD
+{
+    technique
+    {
+        texture_ref ssao MRT ssao
+        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
+
+        target depth
+        {
+            pass render_quad
+            {
+                identifier 11
+                material Linear
+                input 0 mrt 1
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                identifier 10
+                quad_normals camera_far_corners_view_space
+                material GTAO
+                input 0 depth
+            }
+        }
+    }
+}

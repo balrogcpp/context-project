@@ -18,7 +18,6 @@ fragment_program water_fs glsl glsles hlsl
     default_params
     {
         param_named_auto CameraPosition camera_position
-        param_named_auto ViewMatrix view_matrix
         param_named_auto ViewportSize viewport_size
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params

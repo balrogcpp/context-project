@@ -2,7 +2,7 @@
 
 #define HAS_MRT
 #include "header.glsl"
-#include "mrt.glsl"
+#include "tonemap.glsl"
 #include "math.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
@@ -45,7 +45,6 @@ uniform sampler2D TerraNormalTex;
 uniform sampler2D TerraLightTex;
 #endif
 
-uniform vec2 TexelSize3;
 uniform vec2 TexelSize4;
 uniform vec2 TexelSize6;
 #if !defined(SHADOWMAP_ATLAS)
@@ -246,7 +245,7 @@ vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 #endif
 }
 
-vec3 GetNormal(const vec2 uv, const vec3 position)
+mat3 GetTBN(const vec2 uv, const vec3 position)
 {
 #ifndef HAS_TANGENTS
 #if defined(TERRA_NORMALMAP)
@@ -254,10 +253,10 @@ vec3 GetNormal(const vec2 uv, const vec3 position)
     vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     vec3 t = normalize(cross(n ,b));
     highp mat3 tbn = mtxFromCols(t, b, n);
-    return GetNormal(tbn, uv);
+    return tbn;
 #elif defined(PAGED_GEOMETRY)
     highp mat3 tbn = mtxFromCols(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 1.0, 0.0));
-    return GetNormal(tbn, uv);
+    return tbn;
 #else
 
     highp vec3 pos_dx = dFdx(position);
@@ -278,11 +277,11 @@ vec3 GetNormal(const vec2 uv, const vec3 position)
     t = normalize(t - n * dot(n, t));
     highp vec3 b = normalize(cross(n, t));
     tbn = mtxFromCols(t, b, n);
-
+    return tbn;
 #endif
 #endif
 
-    return vec3(0.0, 0.0, 0.0);
+    return mat3(vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0));
 }
 
 vec3 GetORM(const vec2 uv, float spec)
@@ -457,7 +456,8 @@ void main()
 #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
     N = GetNormal(vTBN, uv);
 #else
-    N = GetNormal(uv, vPosition);
+    highp mat3 tbn = GetTBN(uv, vPosition);
+    N = GetNormal(tbn, uv);
 #endif
 
     float ssao = 1.0;
@@ -468,7 +468,7 @@ void main()
     float dDepth = (clampedDepth - occ.g);
 #endif
 #ifdef HAS_AO
-    if (dDepth <= 0.001) ssao = GetAO(fragCoord, occ.r, occ.g);
+    ssao = GetAO(fragCoord, occ.r, occ.g);
 #endif
 
     // Roughness is authored as perceptual roughness; as is convention,
@@ -485,7 +485,6 @@ void main()
 #endif
 
     color += evaluateIBL(pixel);
-
     color += EvaluateDirectionalLight(pixel, vPosition1);
     color += EvaluateLocalLights(pixel, vPosition, vPosition1);
 
@@ -503,5 +502,5 @@ void main()
 #endif
 #endif
 
-    EvaluateBuffer(vec4(color, alpha), clampedDepth, mulMat3x3Float3(ViewMatrix, N), StaticObj * fragVelocity.xy);
+    FragColor = SafeHDR(vec4(color, alpha));
 }

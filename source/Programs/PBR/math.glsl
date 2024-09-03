@@ -4,7 +4,11 @@
 #define HALF_EPSILON    1.0e-4
 #define PI              3.14159265359
 // Clamp HDR value within a safe range
-//#define SafeHDR(x) min(x, HALF_MAX)
+#define SafeHDR(x) min(x, 65504.0)
+
+//float sq(float x) {
+//    return x * x;
+//}
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
 float fstep(float x, float y) {

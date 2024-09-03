@@ -1,5 +1,7 @@
 // created by Andrey Vasiliev
 
+import STD from std.compositor
+
 compositor FXAA
 {
     technique
@@ -11,7 +13,7 @@ compositor FXAA
             pass render_quad
             {
                 material FXAA
-                input 0 mrt 0
+                input 0 mrt
             }
         }
     }

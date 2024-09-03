@@ -1,32 +1,25 @@
 // created by Andrey Vasiliev
 
 import RayCast from stdquad.material
-import Filter from filters.material
 
-fragment_program ssao glsl glsles hlsl
+fragment_program gtao glsl glsles hlsl
 {
-	source ssao.frag
+	source gtao.frag
 }
 
-material SSAO : RayCast
+material GTAO : RayCast
 {
     technique
     {
         pass
         {
-            fragment_program_ref ssao
+            fragment_program_ref gtao
             {
                 param_named DepthTex int 0
-                param_named NormalTex int 1
+                param_named_auto TexelSize inverse_texture_size 0
             }
 
             texture_unit DepthTex
-            {
-                texture black.dds
-                tex_address_mode mirror
-                filtering none
-            }
-            texture_unit NormalTex
             {
                 texture black.dds
                 tex_address_mode mirror

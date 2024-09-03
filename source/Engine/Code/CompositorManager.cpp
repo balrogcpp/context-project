@@ -172,6 +172,7 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
+  AddCompositor("GTAO", true);
   AddCompositor("Copyback", false);
   AddCompositor("FXAA", true);
   AddCompositor("HDR", true);
@@ -405,7 +406,13 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
 
   } else if (pass_id == 10) {  // 10 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
+    fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
+    fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
+
+  } else if (pass_id == 11) {  // 11 = SSAO
+    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
 
@@ -550,24 +557,24 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
       tex->setCompositorReference("MRT", "rt1", 0);
     }
   }
-  if (auto *tex = pass->getTextureUnitState("ShadowAtlas")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "shadowmap");
-    }
-  }
+  //  if (auto *tex = pass->getTextureUnitState("ShadowAtlas")) {
+  //    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+  //      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+  //      tex->setCompositorReference("MRT", "shadowmap");
+  //    }
+  //  }
   if (auto *tex = pass->getTextureUnitState("SSAO")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "ssao");
     }
   }
-  if (auto *tex = pass->getTextureUnitState("SSR")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "ssr");
-    }
-  }
+  //  if (auto *tex = pass->getTextureUnitState("SSR")) {
+  //    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+  //      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+  //      tex->setCompositorReference("MRT", "ssr");
+  //    }
+  //  }
 }
 
 }  // namespace gge
