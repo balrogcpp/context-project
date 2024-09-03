@@ -87,9 +87,7 @@ vec3 FxaaLerp3(const vec3 a, const vec3 b, float amountOfA) {
 }
 
 vec4 FxaaTexOff(const sampler2D tex, const vec2 pos, const vec2 off, const vec2 rcpFrame) {
-    float x = pos.x + off.x * rcpFrame.x;
-    float y = pos.y + off.y * rcpFrame.y;
-    return textureLod(tex, vec2(x, y), 0.0);
+    return textureLod(tex, pos + off * rcpFrame, 0.0);
 }
 
 // pos is the output of FxaaVertexShader interpolated across screen.
@@ -228,9 +226,13 @@ vec3 FxaaPixelShader(const sampler2D tex, const vec2 pos, const vec2 rcpFrame)
     return FxaaLerp3(rgbL, rgbF, blendL);
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    vec3 color = FxaaPixelShader(RT, vUV0, TexelSize);
+    vec2 size = vec2(textureSize(RT, 0));
+    vec2 tsize = 1.0 / size;
+    vec2 uv = gl_FragCoord.xy / size;
+    uv.y = 1.0 - uv.y;
+
+    vec3 color = FxaaPixelShader(RT, uv, tsize);
     FragColor.rgb = color;
 }

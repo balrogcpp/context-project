@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import STD from stdquad.material
+import StdQuad from stdquad.material
 
 //----------------------------------------------------------------------------------------------------------------------
 // Tent downsampling
@@ -33,7 +33,7 @@ fragment_program lumEnd glsl glsles hlsl
     }
 }
 
-material BrightFBO : STD
+material BrightFBO : StdQuad
 {
     technique
     {
@@ -42,7 +42,6 @@ material BrightFBO : STD
             fragment_program_ref brightFBO
             {
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
             }
 
             texture_unit RT
@@ -55,7 +54,7 @@ material BrightFBO : STD
     }
 }
 
-material LumStart : STD
+material LumStart : StdQuad
 {
     technique
     {
@@ -71,7 +70,7 @@ material LumStart : STD
     }
 }
 
-material LumIt : STD
+material LumIt : StdQuad
 {
     technique
     {
@@ -80,13 +79,12 @@ material LumIt : STD
             fragment_program_ref lumIt
             {
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
             }
         }
     }
 }
 
-material LumEnd : STD
+material LumEnd : StdQuad
 {
     technique
     {
@@ -96,7 +94,6 @@ material LumEnd : STD
             {
                 param_named RT int 0
                 param_named Lum int 1
-                param_named_auto TexelSize inverse_texture_size 0
             }
 
             texture_unit Lum
@@ -114,7 +111,7 @@ fragment_program HDR glsl glsles hlsl
     source hdr.frag
 }
 
-material HDR : STD
+material HDR : StdQuad
 {
 	technique
 	{
@@ -126,7 +123,6 @@ material HDR : STD
                 param_named BrightTex int 1
                 param_named Lum int 2
                 param_named DirtTex int 3
-                param_named_auto TexelSize inverse_texture_size 1
 			}
 
 			texture_unit BrightTex

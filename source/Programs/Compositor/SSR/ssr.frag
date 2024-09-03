@@ -6,7 +6,6 @@
 
 #include "header.glsl"
 #include "math.glsl"
-#include "mrt.glsl"
 
 #define MAX_BIN_SEARCH_COUNT 10
 #define MAX_RAY_MARCH_COUNT 30

@@ -386,25 +386,7 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
-  if (pass_id == 1) {  // 1 = MRT
-    if (IsCompositorEnabled("CubeMap")) {
-      auto &cube = compositorChain->getCompositor("CubeMap")->getTextureInstance("cube", 0);
-      auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
-      static bool copied = false;
-      if (!copied) {
-        cube->copyToTexture(ibl);
-        copied = true;
-      }
-    }
-  } else if (pass_id == 2) {  // 2 = MRT
-    auto &mrt0 = compositorChain->getCompositor("MRT")->getTextureInstance("mrt", 0);
-    auto &mrt1 = compositorChain->getCompositor("MRT")->getTextureInstance("mrt", 1);
-    auto rt0 = compositorChain->getCompositor("MRT")->getTextureInstance("rt", 0);
-    auto rt1 = compositorChain->getCompositor("MRT")->getTextureInstance("rt", 1);
-    mrt0->copyToTexture(rt0);
-    mrt1->copyToTexture(rt1);
-
-  } else if (pass_id == 10) {  // 10 = SSAO
+  if (pass_id == 10) {  // 10 = SSAO
     const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());

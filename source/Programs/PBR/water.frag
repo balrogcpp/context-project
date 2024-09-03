@@ -2,7 +2,6 @@
 
 #define HAS_MRT
 #include "header.glsl"
-#include "mrt.glsl"
 #include "math.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"

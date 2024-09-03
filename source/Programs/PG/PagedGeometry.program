@@ -38,8 +38,6 @@ fragment_program Default_AlphaTest glsl glsles hlsl
         param_named_auto LightDir0 light_direction 0
         param_named_auto FogColour fog_colour
         param_named_auto FogParams fog_params
-        param_named_auto FarClipDistance far_clip_distance
-        param_named_auto NearClipDistance near_clip_distance
     }
 }
 
@@ -51,7 +49,5 @@ fragment_program Default_AlphaTest_NoFog glsl glsles hlsl
 
     default_params
     {
-        param_named_auto FarClipDistance far_clip_distance
-        param_named_auto NearClipDistance near_clip_distance
     }
 }

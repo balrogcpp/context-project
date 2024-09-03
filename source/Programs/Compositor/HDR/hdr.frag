@@ -7,8 +7,6 @@ uniform sampler2D BrightTex;
 uniform sampler2D DirtTex;
 uniform sampler2D Lum;
 
-uniform vec2 TexelSize;
-
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 vec3 Upscale9(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
@@ -43,13 +41,17 @@ vec3 tonemap(const highp vec3 x) {
     return unreal(x);
 }
 
-in highp vec2 vUV0;
 void main()
 {
+    vec2 size = vec2(textureSize(RT, 0));
+    vec2 tsize = 1.0 / size;
+    vec2 uv = gl_FragCoord.xy / size;
+    uv.y = 1.0 - uv.y;
+
     float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
-    vec3 bloom = Upscale9(BrightTex, vUV0, TexelSize).rgb;
-    vec3 color = textureLod(RT, vUV0, 0.0).rgb;
-    vec3 dirt = textureLod(DirtTex, vUV0, 0.0).rgb * 10.0;
+    vec3 bloom = Upscale9(BrightTex, uv, tsize).rgb;
+    vec3 color = texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb;
+    vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
     FragColor.rgb = unreal(color * lum);
 }
