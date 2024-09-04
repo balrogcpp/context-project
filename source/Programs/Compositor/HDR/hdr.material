@@ -2,36 +2,6 @@
 
 import StdQuad from stdquad.material
 
-//----------------------------------------------------------------------------------------------------------------------
-// Tent downsampling
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program brightFBO glsl glsles hlsl
-{
-	source fbo.frag
-}
-
-fragment_program lumStart glsl glsles hlsl
-{
-	source lumStart.frag
-}
-
-fragment_program lumIt glsl glsles hlsl
-{
-	source lumIt.frag
-}
-
-fragment_program lumEnd glsl glsles hlsl
-{
-	source lumEnd.frag
-
-    default_params
-    {
-        //param_named Exposure float3 553.5833 5.0 10.0
-        //param_named Exposure float3 138.5833 5 10
-        param_named Exposure float3 228.485283992 5 6.5
-        param_named_auto timeSinceLast frame_time 1
-    }
-}
 
 material BrightFBO : StdQuad
 {
@@ -63,7 +33,6 @@ material LumStart : StdQuad
             fragment_program_ref lumStart
             {
                 param_named RT int 0
-                param_named_auto TexSize packed_texture_size 0
                 param_named_auto ViewportSize viewport_size
             }
         }
@@ -101,6 +70,48 @@ material LumEnd : StdQuad
                 texture grey.dds
                 tex_address_mode clamp
                 filtering none
+            }
+        }
+    }
+}
+
+material Upscale9 : StdQuad
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref upscale9
+            {
+                param_named RT int 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+        }
+    }
+}
+
+material Downscale13 : StdQuad
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref downscale13
+            {
+                param_named RT int 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
             }
         }
     }

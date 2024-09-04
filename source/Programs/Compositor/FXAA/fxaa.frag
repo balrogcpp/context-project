@@ -3,7 +3,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform vec2 TexelSize;
 
 //https://github.com/libretro/glsl-shaders/blob/master/anti-aliasing/shaders/fxaa.glsl
 

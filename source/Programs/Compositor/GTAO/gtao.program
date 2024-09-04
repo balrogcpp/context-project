@@ -1,0 +1,11 @@
+// created by Andrey Vasiliev
+
+fragment_program gtao glsl glsles hlsl
+{
+	source max4.frag
+}
+
+fragment_program max4 glsl glsles hlsl
+{
+	source max4.frag
+}

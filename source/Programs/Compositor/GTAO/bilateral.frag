@@ -4,7 +4,6 @@
 
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
-uniform vec2 TexelSize;
 
 #define KERNEL_RADIUS 3
 
@@ -45,22 +44,26 @@ vec3 BlurFunction(const vec2 uv, float r, const vec3 center_c, float center_d, i
 }
 
 
-in highp vec2 vUV0;
 void main()
 {
-    vec3  center_c = textureLod(RT, vUV0, 0.0).rgb;
-    float center_d = textureLod(DepthTex, vUV0, 0.0).x;
+    vec2 size = vec2(textureSize(RT, 0));
+    vec2 tsize = 1.0 / size;
+    vec2 uv = gl_FragCoord.xy / size;
+    uv.y = 1.0 - uv.y;
+
+    vec3  center_c = textureLod(RT, uv, 0.0).rgb;
+    float center_d = textureLod(DepthTex, uv, 0.0).x;
 
     vec3  c_total = center_c;
     float w_total = 1.0;
 
     for (int r = 1; r <= KERNEL_RADIUS; ++r)
     {
-        c_total += BlurFunction(vUV0 + TexelSize * float(r), float(r), center_c, center_d, w_total);
+        c_total += BlurFunction(uv + tsize * float(r), float(r), center_c, center_d, w_total);
     }
     for (int r = 1; r <= KERNEL_RADIUS; ++r)
     {
-        c_total += BlurFunction(vUV0 - TexelSize * float(r), float(r), center_c, center_d, w_total);
+        c_total += BlurFunction(uv - tsize * float(r), float(r), center_c, center_d, w_total);
     }
 
     FragColor.rgb = c_total / w_total;

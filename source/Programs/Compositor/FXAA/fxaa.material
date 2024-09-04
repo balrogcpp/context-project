@@ -23,7 +23,6 @@ material FXAA : STD
             fragment_program_ref fxaa_fp
 			{
                 param_named RT int 0
-				param_named_auto TexelSize inverse_texture_size 0
 			}
 
 			texture_unit RT

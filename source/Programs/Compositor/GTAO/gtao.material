@@ -1,10 +1,28 @@
 // created by Andrey Vasiliev
 
+import STD from stdquad.material
 import RayCast from stdquad.material
 
-fragment_program gtao glsl glsles hlsl
+material Linear : STD
 {
-	source gtao.frag
+    technique
+    {
+        pass
+        {
+            vertex_program_ref CopyVert {}
+
+            fragment_program_ref max4
+            {
+                param_named RT int 0
+            }
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
 }
 
 material GTAO : RayCast
@@ -16,7 +34,6 @@ material GTAO : RayCast
             fragment_program_ref gtao
             {
                 param_named DepthTex int 0
-                param_named_auto TexelSize inverse_texture_size 0
             }
 
             texture_unit DepthTex

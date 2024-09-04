@@ -4,11 +4,11 @@
 
 uniform sampler2D RT;
 
-// https://github.com/asylum2010/Asylum_Tutorials/blob/master/Media/ShadersGL/gtaospatialdenoiser.frag
+// https://github.com/asylum2010/Asylum_Tutorials/blob/4f2bc39a8ae69db1ceb59e9a763ef91c7b3dc6de/Media/ShadersGL/gtaospatialdenoiser.frag
 void main()
 {
     // NOTE: 4x4 filter offsets image
-    ivec2 loc = ivec2(gl_FragCoord.xy) - ivec2(2);
+    ivec2 loc = ivec2(gl_FragCoord.xy) - ivec2(2, 2);
     float totalao = 0.0;
 
     // NOTE: textureGather requires GL 4

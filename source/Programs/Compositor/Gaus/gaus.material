@@ -12,7 +12,7 @@ abstract material Filter
             polygon_mode_overrideable false
             lighting off
 
-			vertex_program_ref StdQuad {}
+			vertex_program_ref CopyVert {}
 
 			texture_unit RT
             {
@@ -33,7 +33,6 @@ material Filter5Y : Filter
 			fragment_program_ref gauss5y
 			{
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
 			}
 		}
 	}
@@ -48,7 +47,6 @@ material Filter5X : Filter
 			fragment_program_ref gauss5x
             {
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
             }
 		}
 	}
@@ -63,7 +61,6 @@ material Filter9Y : Filter
 			fragment_program_ref gauss9y
 			{
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
 			}
 		}
 	}
@@ -78,7 +75,6 @@ material Filter9X : Filter
 			fragment_program_ref gauss9x
             {
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
             }
 		}
 	}
@@ -93,7 +89,6 @@ material Filter13Y : Filter
 			fragment_program_ref gauss13y
 			{
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
 			}
 		}
 	}
@@ -108,62 +103,9 @@ material Filter13X : Filter
 			fragment_program_ref gauss13x
             {
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
             }
 		}
 	}
-}
-
-material Linear : Filter
-{
-    technique
-    {
-        pass
-        {
-            vertex_program_ref CopyVert {}
-
-            fragment_program_ref linear
-            {
-                param_named RT int 0
-            }
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
-        }
-    }
-}
-
-material Upscale9 : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref upscale9
-            {
-                param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
-            }
-        }
-    }
-}
-
-material Downscale13 : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref downscale13
-            {
-                param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
-            }
-        }
-    }
 }
 
 material Box4 : Filter
@@ -175,7 +117,6 @@ material Box4 : Filter
             fragment_program_ref box4
             {
                 param_named RT int 0
-                param_named_auto TexelSize inverse_texture_size 0
             }
         }
     }
@@ -191,7 +132,6 @@ material Bilateral : Filter
             {
                 param_named RT int 0
                 param_named DepthTex int 1
-                param_named_auto TexelSize inverse_texture_size 0
             }
 
 			texture_unit RT

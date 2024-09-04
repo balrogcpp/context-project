@@ -1,0 +1,39 @@
+// created by Andrey Vasiliev
+
+fragment_program downscale13 glsl glsles hlsl
+{
+	source downscale13.frag
+}
+
+fragment_program upscale9 glsl glsles hlsl
+{
+	source upscale9.frag
+}
+
+fragment_program brightFBO glsl glsles hlsl
+{
+	source fbo.frag
+}
+
+fragment_program lumStart glsl glsles hlsl
+{
+	source lumStart.frag
+}
+
+fragment_program lumIt glsl glsles hlsl
+{
+	source lumIt.frag
+}
+
+fragment_program lumEnd glsl glsles hlsl
+{
+	source lumEnd.frag
+
+    default_params
+    {
+        //param_named Exposure float3 553.5833 5.0 10.0
+        //param_named Exposure float3 138.5833 5 10
+        param_named Exposure float3 228.485283992 5 6.5
+        param_named_auto timeSinceLast frame_time 1
+    }
+}

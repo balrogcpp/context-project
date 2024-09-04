@@ -3,7 +3,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform vec2 TexelSize;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 vec3 Downscale13(const sampler2D tex, const vec2 uv, const vec2 tsize)
@@ -31,8 +30,12 @@ vec3 Downscale13(const sampler2D tex, const vec2 uv, const vec2 tsize)
     return c;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Downscale13(RT, vUV0, TexelSize);
+    vec2 size = vec2(textureSize(RT, 0));
+    vec2 tsize = 1.0 / size;
+    vec2 uv = 2.0 * gl_FragCoord.xy / size;
+    uv.y = 1.0 - uv.y;
+
+    FragColor.rgb = Downscale13(RT, uv, tsize);
 }

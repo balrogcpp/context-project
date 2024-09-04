@@ -3,14 +3,13 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform vec2 TexelSize;
 
 // https://github.com/Experience-Monks/glsl-fast-gaussian-blur/blob/5dbb6e97aa43d4be9369bdd88e835f47023c5e2a/13.glsl
 vec3 Gauss13(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    vec2 off1 = tsize * vec2(0.0, 1.411764705882353);
-    vec2 off2 = tsize * vec2(0.0, 3.2941176470588234);
-    vec2 off3 = tsize * vec2(0.0, 5.176470588235294);
+    vec2 off1 = tsize * vec2(1.411764705882353, 0.0);
+    vec2 off2 = tsize * vec2(3.2941176470588234, 0.0);
+    vec2 off3 = tsize * vec2(5.176470588235294, 0.0);
     vec3 A = textureLod(tex, uv, 0.0).rgb;
     vec3 B = textureLod(tex, uv + off1, 0.0).rgb;
     vec3 C = textureLod(tex, uv - off1, 0.0).rgb;
@@ -27,8 +26,12 @@ vec3 Gauss13(const sampler2D tex, const vec2 uv, const vec2 tsize)
     return c;
 }
 
-in highp vec2 vUV0;
 void main()
 {
-    FragColor.rgb = Gauss13(RT, vUV0, TexelSize);
+    vec2 size = vec2(textureSize(RT, 0));
+    vec2 tsize = 1.0 / size;
+    vec2 uv = gl_FragCoord.xy / size;
+    uv.y = 1.0 - uv.y;
+
+    FragColor.rgb = Gauss13(RT, uv, tsize);
 }

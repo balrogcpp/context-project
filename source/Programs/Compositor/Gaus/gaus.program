@@ -30,21 +30,6 @@ fragment_program gauss13x glsl glsles hlsl
 	source gauss13x.frag
 }
 
-fragment_program linear glsl glsles hlsl
-{
-	source linear.frag
-}
-
-fragment_program downscale13 glsl glsles hlsl
-{
-	source downscale13.frag
-}
-
-fragment_program upscale9 glsl glsles hlsl
-{
-	source upscale9.frag
-}
-
 fragment_program box4 glsl glsles hlsl
 {
 	source box4.frag

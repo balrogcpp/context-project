@@ -3,7 +3,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform vec4 TexSize;
 uniform vec4 ViewportSize;
 
 float luminance(const vec3 col) {

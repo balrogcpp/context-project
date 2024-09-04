@@ -22,9 +22,6 @@ uniform sampler2D EmissiveTex;
 #ifdef HAS_AO
 uniform sampler2D OccTex;
 #endif
-#ifdef HAS_SSR
-uniform sampler2D ReflTex;
-#endif
 #if MAX_SHADOW_TEXTURES > 0
 #if defined(SHADOWMAP_ATLAS)
 uniform sampler2D ShadowTex;
@@ -462,12 +459,10 @@ void main()
 
     float ssao = 1.0;
 
-#if defined(HAS_AO) || defined(HAS_SSR)
+#if defined(HAS_AO)
     vec2 nuv = fragCoord + fragVelocity;
     vec2 occ = textureLod(OccTex, fragCoord, 0.0).rg;
     float dDepth = (clampedDepth - occ.g);
-#endif
-#ifdef HAS_AO
     ssao = GetAO(fragCoord, occ.r, occ.g);
 #endif
 
@@ -477,12 +472,6 @@ void main()
     // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.
     PixelParams pixel;
     getPixelParams(albedo, orm, ssao, pixel);
-
-#ifdef HAS_SSR
-    vec3 ssr = vec3(0.0, 0.0, 0.0);
-    if (dDepth <= 0.001) ssr = texture(ReflTex, nuv).rgb;
-    if (ssr != vec3(0.0, 0.0, 0.0)) color = mix(color, ssr, orm.b);
-#endif
 
     color += evaluateIBL(pixel);
     color += EvaluateDirectionalLight(pixel, vPosition1);
