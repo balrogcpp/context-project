@@ -1,10 +1,13 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
+#include "tonemap.glsl"
 
 uniform sampler2D RT;
 
 void main()
 {
-    FragColor = texelFetch(RT, ivec2(gl_FragCoord.xy), 0);
+    vec2 uv = gl_FragCoord.xy;
+    uv.y = textureSize(RT, 0).y - uv.y;
+    FragColor.rgb = inverseTonemapSRGB(texelFetch(RT, ivec2(uv), 0).rgb);
 }

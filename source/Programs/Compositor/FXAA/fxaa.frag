@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
+#include "tonemap.glsl"
 
 uniform sampler2D RT;
 
@@ -78,7 +79,7 @@ FXAA_SUBPIX_CAP - Insures fine detail is not completely removed.
 // FxaaLuma() will range 0.0 to 2.963210702.
 float FxaaLuma(const vec3 rgb) {
     //return rgb.y * (0.587/0.299) + rgb.x;
-    return dot(rgb, vec3(0.2126, 0.7152, 0.0722));
+    return dot(sqrt(rgb), vec3(0.2126, 0.7152, 0.0722));
 }
 
 vec3 FxaaLerp3(const vec3 a, const vec3 b, float amountOfA) {
@@ -233,5 +234,5 @@ void main()
     uv.y = 1.0 - uv.y;
 
     vec3 color = FxaaPixelShader(RT, uv, tsize);
-    FragColor.rgb = color;
+    FragColor.rgb = inverseTonemapSRGB(color);
 }

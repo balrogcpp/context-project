@@ -3,7 +3,7 @@
 // Clamps color between 0 and 1 smoothly
 vec3 SkyLightExpose(const vec3 color)
 {
-    return 1.0 - exp(-0.05 * color);
+    return 1.0 - exp(-0.1 * color);
 }
 //vec3 SkyLightExpose(const vec3 color, float exposure)
 //{

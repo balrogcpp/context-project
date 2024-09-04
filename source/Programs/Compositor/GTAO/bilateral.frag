@@ -5,28 +5,10 @@
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
 
-#define KERNEL_RADIUS 3
-
 // https://github.com/nvpro-samples/gl_ssao/blob/f6b010dc7a05346518cd13d3368d8d830a382ed9/bilateralblur.frag.glsl
 
-/*
- * Copyright (c) 2014-2021, NVIDIA CORPORATION.  All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * SPDX-FileCopyrightText: Copyright (c) 2014-2021 NVIDIA CORPORATION
- * SPDX-License-Identifier: Apache-2.0
- */
+#define KERNEL_RADIUS 3
+
 vec3 BlurFunction(const vec2 uv, float r, const vec3 center_c, float center_d, inout float w_total)
 {
     vec3 c = textureLod(RT, uv, 0.0).rgb;

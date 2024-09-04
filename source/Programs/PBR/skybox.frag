@@ -56,15 +56,11 @@ void main()
     // Apply exposure.
     color = SRGBtoLINEAR(color);
 
-    if (gamma <= 2.0 * PI / 360.0 && sunZenith > 0.0) {
-        color = LightColor0 * 100.0;
-    }
-
-//    color = clouds(vUV0, color, LightColor0, -LightDir0, 0.0);
+//    color = clouds(vUV0, color, LightColor0, -LightDir0, 1.0);
 
     // Fog
 //    color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, 100.0, V, -LightDir0.xyz, vec3(0.0, 0.0, 0.0));
+//    color = ApplyFog(color, FogParams.x, FogColour.rgb, 100.0, V, -LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
     FragColor = SafeHDR(vec4(color, 1.0));
 }

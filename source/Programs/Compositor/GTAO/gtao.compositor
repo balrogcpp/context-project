@@ -12,7 +12,7 @@ compositor GTAO : STD
             pass render_quad
             {
                 identifier 11
-                material Linear
+                material DepthDownscaleMax
                 input 0 mrt 1
             }
         }

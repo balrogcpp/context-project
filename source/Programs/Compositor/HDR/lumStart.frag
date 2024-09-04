@@ -3,7 +3,6 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
-uniform vec4 ViewportSize;
 
 float luminance(const vec3 col) {
     return dot(col, vec3(0.2126, 0.7152, 0.0722));
@@ -25,15 +24,6 @@ void main()
     //pixel and skip 15, then repeat. We perform:
     //(ViewportResolution / TargetResolution) / 4
     // float lum = Downscale4x4(RT, vUV0);
-//    vec2 ratio = (TexSize.xy * ViewportSize.zw) * 0.25;
-//    vec2 tsize = ratio * TexSize.zw;
-
-//    vec2 size = vec2(textureSize(RT, 0));
-//    vec2 uv = gl_FragCoord.xy / size;
-//    uv.y = 1.0 - uv.y;
-//
-//    vec2 ratio = (size / vec2(64.0, 64.0)) * 0.25;
-//    vec2 tsize = (1.0 / size) * ratio;
 
     ivec2 uv = ivec2(gl_FragCoord.xy);
     ivec2 tsize = textureSize(RT, 0).xy / (ivec2(64, 64) * 4);

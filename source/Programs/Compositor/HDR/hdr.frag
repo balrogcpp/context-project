@@ -29,16 +29,26 @@ vec3 Upscale9(const sampler2D tex, const vec2 uv, const vec2 tsize)
     return c;
 }
 
+// Standard box filtering
+vec3 UpsampleBox(const sampler2D tex, const vec2 uv, const vec2 tsize)
+{
+    vec4 d = tsize.xyxy * vec4(-1.0, -1.0, 1.0, 1.0) * 0.5;
+
+    vec3 s;
+    s =  textureLod(tex, uv + d.xy, 0.0).rgb;
+    s += textureLod(tex, uv + d.zy, 0.0).rgb;
+    s += textureLod(tex, uv + d.xw, 0.0).rgb;
+    s += textureLod(tex, uv + d.zw, 0.0).rgb;
+
+    return s * (1.0 / 4.0);
+}
+
 // Unreal 3, Documentation: "Color Grading"
 // Adapted to be close to Tonemap_ACES, with similar range
 // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
 vec3 unreal(const highp vec3 x)
 {
     return x / (x + 0.155) * 1.019;
-}
-
-vec3 tonemap(const highp vec3 x) {
-    return unreal(x);
 }
 
 void main()
@@ -49,7 +59,7 @@ void main()
     uv.y = 1.0 - uv.y;
 
     float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
-    vec3 bloom = Upscale9(BrightTex, uv, tsize).rgb;
+    vec3 bloom = UpsampleBox(BrightTex, uv, tsize).rgb;
     vec3 color = texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb;
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);

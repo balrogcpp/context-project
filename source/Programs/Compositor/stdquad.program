@@ -20,7 +20,7 @@ vertex_program RayCast glsl glsles hlsl
 	}
 }
 
-fragment_program CopyFrag glsl glsles hlsl
+fragment_program Copy glsl glsles hlsl
 {
 	source copy.frag
 }

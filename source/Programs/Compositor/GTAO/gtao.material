@@ -3,7 +3,7 @@
 import StdQuad from stdquad.material
 import RayCast from stdquad.material
 
-material Linear : StdQuad
+material DepthDownscaleMax : StdQuad
 {
     technique
     {

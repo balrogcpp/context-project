@@ -452,5 +452,5 @@ void main()
 #endif
 #endif
 
-    FragColor = SafeHDR(vec4(color, alpha));
+    FragColor = SafeHDR(vec4(unreal(color), alpha));
 }

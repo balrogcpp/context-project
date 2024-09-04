@@ -1,5 +1,15 @@
 // created by Andrey Vasiliev
 
+fragment_program downscale4 glsl glsles hlsl
+{
+	source downscale4.frag
+}
+
+fragment_program upscale4 glsl glsles hlsl
+{
+	source upscale4.frag
+}
+
 fragment_program downscale13 glsl glsles hlsl
 {
 	source downscale13.frag

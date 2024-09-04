@@ -2,8 +2,32 @@
 
 import StdQuad from stdquad.material
 
+abstract material Filter
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+            lighting off
 
-material BrightFBO : StdQuad
+			vertex_program_ref StdQuad {}
+
+			texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+		}
+	}
+}
+
+
+material BrightFBO : Filter
 {
     technique
     {
@@ -12,13 +36,6 @@ material BrightFBO : StdQuad
             fragment_program_ref brightFBO
             {
                 param_named RT int 0
-            }
-
-            texture_unit RT
-            {
-                texture grey.dds
-                tex_address_mode clamp
-                filtering bilinear
             }
         }
     }
@@ -74,7 +91,7 @@ material LumEnd : StdQuad
     }
 }
 
-material Upscale9 : StdQuad
+material Upscale9 : Filter
 {
     technique
     {
@@ -84,18 +101,11 @@ material Upscale9 : StdQuad
             {
                 param_named RT int 0
             }
-
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
         }
     }
 }
 
-material Downscale13 : StdQuad
+material Downscale13 : Filter
 {
     technique
     {
@@ -104,13 +114,6 @@ material Downscale13 : StdQuad
             fragment_program_ref downscale13
             {
                 param_named RT int 0
-            }
-
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
             }
         }
     }
@@ -141,14 +144,12 @@ material HDR : StdQuad
                 tex_address_mode clamp
                 filtering bilinear
             }
-
 			texture_unit Lum
             {
                 texture white.dds
                 tex_address_mode clamp
                 filtering none
             }
-
 			texture_unit DirtTex
             {
                 texture black.dds

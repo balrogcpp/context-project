@@ -86,7 +86,7 @@ material Copy
 
             vertex_program_ref StdQuad {}
 
-            fragment_program_ref CopyFrag
+            fragment_program_ref Copy
             {
                 param_named RT int 0
             }

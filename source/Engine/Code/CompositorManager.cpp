@@ -175,7 +175,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("GTAO", false);
   AddCompositor("Copyback", false);
   AddCompositor("FXAA", true);
-  AddCompositor("HDR", true);
+  AddCompositor("PBB", true);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("MotionBlur", false);
   AddCompositor("Pause", false);

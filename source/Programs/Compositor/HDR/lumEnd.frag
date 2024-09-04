@@ -17,13 +17,6 @@ float Box4()
     c += texelFetch(RT, uv + ivec2(-1, 1), 0).r;
     c += texelFetch(RT, uv + ivec2(1, 1), 0).r;
 
-    //    vec4 d = tsize.xyxy * vec4(-1.0, -1.0, 1.0, 1.0);
-    //
-    //    float c = textureLod(tex, uv + d.xy, 0.0).r;
-    //    c += textureLod(tex, uv + d.zy, 0.0).r;
-    //    c += textureLod(tex, uv + d.xw, 0.0).r;
-    //    c += textureLod(tex, uv + d.zw, 0.0).r;
-    //
     return c * 0.25;
 }
 
