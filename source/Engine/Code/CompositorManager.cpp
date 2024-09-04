@@ -172,7 +172,7 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("GTAO", true);
+  AddCompositor("GTAO", false);
   AddCompositor("Copyback", false);
   AddCompositor("FXAA", true);
   AddCompositor("HDR", true);
@@ -476,18 +476,18 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   rend->getWorldTransforms(&MVP);
   vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
 
-  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-    auto *entity = subentity->getParent();
-    auto mass = entity->getUserObjectBindings().getUserAny("mass");
-    if (entity->getMesh()->isReloadable() && mass.has_value() && Ogre::any_cast<Real>(mass) == 0.0) {
-      Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
-      rend->getUserObjectBindings().setUserAny(MVP);
-      if (prevMVP.has_value()) {
-        vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-        fp->setNamedConstant("StaticObj", 1.0f);
-      }
-    }
-  }
+  //  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
+  //    auto *entity = subentity->getParent();
+  //    auto mass = entity->getUserObjectBindings().getUserAny("mass");
+  //    if (entity->getMesh()->isReloadable() && mass.has_value() && Ogre::any_cast<Real>(mass) == 0.0) {
+  //      Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
+  //      rend->getUserObjectBindings().setUserAny(MVP);
+  //      if (prevMVP.has_value()) {
+  //        vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
+  //        fp->setNamedConstant("StaticObj", 1.0f);
+  //      }
+  //    }
+  //  }
 
   if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
@@ -518,45 +518,23 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   }
 
   if (auto *tex = pass->getTextureUnitState("RefractionTex")) {
-    auto &mrt0 = compositorChain->getCompositor("MRT")->getTextureInstance("mrt", 0);
-    auto rt0 = compositorChain->getCompositor("MRT")->getTextureInstance("rt0", 0);
-    rt0->setNumMipmaps(0);
-    mrt0->copyToTexture(rt0);
-
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "rt0", 0);
     }
   }
   if (auto *tex = pass->getTextureUnitState("DepthTex")) {
-    auto &mrt1 = compositorChain->getCompositor("MRT")->getTextureInstance("mrt", 1);
-    auto rt1 = compositorChain->getCompositor("MRT")->getTextureInstance("rt1", 0);
-    rt1->setNumMipmaps(0);
-    mrt1->copyToTexture(rt1);
-
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "rt1", 0);
     }
   }
-  //  if (auto *tex = pass->getTextureUnitState("ShadowAtlas")) {
-  //    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-  //      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-  //      tex->setCompositorReference("MRT", "shadowmap");
-  //    }
-  //  }
   if (auto *tex = pass->getTextureUnitState("SSAO")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "ssao");
     }
   }
-  //  if (auto *tex = pass->getTextureUnitState("SSR")) {
-  //    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-  //      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-  //      tex->setCompositorReference("MRT", "ssr");
-  //    }
-  //  }
 }
 
 }  // namespace gge

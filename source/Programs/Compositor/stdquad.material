@@ -23,7 +23,7 @@ abstract material RayCast
 		}
 	}
 }
-
+/*
 abstract material STD
 {
     technique
@@ -47,7 +47,7 @@ abstract material STD
         }
     }
 }
-
+*/
 abstract material StdQuad
 {
     technique
@@ -60,7 +60,7 @@ abstract material StdQuad
             polygon_mode_overrideable false
             lighting off
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             texture_unit RT
             {
@@ -84,7 +84,7 @@ material Copy
             polygon_mode_overrideable false
             lighting off
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref CopyFrag
             {
@@ -113,7 +113,7 @@ material Copy2x
             polygon_mode_overrideable false
             lighting off
 
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref Copy2x
             {

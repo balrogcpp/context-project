@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-abstract material Filter
+abstract material Gauss
 {
 	technique
 	{
@@ -12,7 +12,7 @@ abstract material Filter
             polygon_mode_overrideable false
             lighting off
 
-			vertex_program_ref CopyVert {}
+			vertex_program_ref StdQuad {}
 
 			texture_unit RT
             {
@@ -24,7 +24,7 @@ abstract material Filter
 	}
 }
 
-material Filter5Y : Filter
+material Gauss5Y : Gauss
 {
 	technique
 	{
@@ -38,7 +38,7 @@ material Filter5Y : Filter
 	}
 }
 
-material Filter5X : Filter
+material Gauss5X : Gauss
 {
 	technique
 	{
@@ -52,7 +52,7 @@ material Filter5X : Filter
 	}
 }
 
-material Filter9Y : Filter
+material Gauss9Y : Gauss
 {
 	technique
 	{
@@ -66,7 +66,7 @@ material Filter9Y : Filter
 	}
 }
 
-material Filter9X : Filter
+material Gauss9X : Gauss
 {
 	technique
 	{
@@ -80,7 +80,7 @@ material Filter9X : Filter
 	}
 }
 
-material Filter13Y : Filter
+material Gauss13Y : Gauss
 {
 	technique
 	{
@@ -94,7 +94,7 @@ material Filter13Y : Filter
 	}
 }
 
-material Filter13X : Filter
+material Gauss13X : Gauss
 {
 	technique
 	{
@@ -106,40 +106,4 @@ material Filter13X : Filter
             }
 		}
 	}
-}
-
-material Box4 : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref box4
-            {
-                param_named RT int 0
-            }
-        }
-    }
-}
-
-material Bilateral : Filter
-{
-    technique
-    {
-        pass
-        {
-            fragment_program_ref bilateral
-            {
-                param_named RT int 0
-                param_named DepthTex int 1
-            }
-
-			texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering bilinear
-            }
-        }
-    }
 }

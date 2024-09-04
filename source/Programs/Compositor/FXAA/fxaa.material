@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import STD from stdquad.material
+import StdQuad from stdquad.material
 
 vertex_program fxaa_vp glsl glsles hlsl
 {
@@ -12,7 +12,7 @@ fragment_program fxaa_fp glsl glsles hlsl
     source fxaa.frag
 }
 
-material FXAA : STD
+material FXAA : StdQuad
 {
 	technique
 	{

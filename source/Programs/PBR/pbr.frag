@@ -42,7 +42,6 @@ uniform sampler2D TerraNormalTex;
 uniform sampler2D TerraLightTex;
 #endif
 
-uniform vec2 TexelSize4;
 uniform vec2 TexelSize6;
 #if !defined(SHADOWMAP_ATLAS)
 uniform vec2 TexelSize7;
@@ -365,45 +364,6 @@ vec3 GetEmission(const vec2 uv)
 }
 
 
-#ifdef HAS_AO
-#define KERNEL_RADIUS 3
-
-// https://github.com/nvpro-samples/gl_ssao/blob/f6b010dc7a05346518cd13d3368d8d830a382ed9/bilateralblur.frag.glsl
-float BlurFunction(const vec2 uv, float r, const float center_c, float center_d, inout float w_total)
-{
-    vec2 occ = textureLod(OccTex, uv, 0.0).rg;
-    float c = occ.r;
-    float d = occ.g;
-
-    const float sharpness = 1.0;
-    const float BlurSigma = float(KERNEL_RADIUS) * 0.5;
-    const float BlurFalloff = 1.0 / (2.0 * BlurSigma * BlurSigma);
-
-    float ddiff = (d - center_d) * sharpness;
-    float w = exp2(-r * r * BlurFalloff - ddiff * ddiff);
-    w_total += w;
-
-    return c * w;
-}
-
-float GetAO(const vec2 uv, float center_c, float center_d)
-{
-    float c_total = center_c;
-    float w_total = 1.0;
-
-    for (int r = 1; r <= KERNEL_RADIUS; ++r)
-    {
-        c_total += BlurFunction(uv + TexelSize4 * float(r), float(r), center_c, center_d, w_total);
-    }
-    for (int r = 1; r <= KERNEL_RADIUS; ++r)
-    {
-        c_total += BlurFunction(uv - TexelSize4 * float(r), float(r), center_c, center_d, w_total);
-    }
-
-    return c_total/w_total;
-}
-#endif
-
 in highp vec3 vPosition;
 in highp vec3 vPosition1;
 in mediump vec4 vPrevScreenPosition;
@@ -462,8 +422,9 @@ void main()
 #if defined(HAS_AO)
     vec2 nuv = fragCoord + fragVelocity;
     vec2 occ = textureLod(OccTex, fragCoord, 0.0).rg;
-    float dDepth = (clampedDepth - occ.g);
-    ssao = GetAO(fragCoord, occ.r, occ.g);
+//    float dDepth = (clampedDepth - occ.g);
+//    ssao = GetAO(fragCoord, occ.r, occ.g);
+    ssao = occ.r;
 #endif
 
     // Roughness is authored as perceptual roughness; as is convention,

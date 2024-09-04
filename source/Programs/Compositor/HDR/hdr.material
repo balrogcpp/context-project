@@ -33,7 +33,6 @@ material LumStart : StdQuad
             fragment_program_ref lumStart
             {
                 param_named RT int 0
-                param_named_auto ViewportSize viewport_size
             }
         }
     }

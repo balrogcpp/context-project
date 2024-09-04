@@ -1,15 +1,15 @@
 // created by Andrey Vasiliev
 
-import STD from stdquad.material
+import StdQuad from stdquad.material
 import RayCast from stdquad.material
 
-material Linear : STD
+material Linear : StdQuad
 {
     technique
     {
         pass
         {
-            vertex_program_ref CopyVert {}
+            vertex_program_ref StdQuad {}
 
             fragment_program_ref max4
             {
@@ -20,6 +20,34 @@ material Linear : STD
                 texture black.dds
                 tex_address_mode clamp
                 filtering none
+            }
+        }
+    }
+}
+
+material Bilateral : StdQuad
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref bilateral
+            {
+                param_named RT int 0
+                param_named DepthTex int 1
+            }
+
+			texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
+            }
+			texture_unit Depth
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering bilinear
             }
         }
     }

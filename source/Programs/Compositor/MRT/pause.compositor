@@ -162,7 +162,7 @@ compositor FullScreenBlur_
             //only_initial on
             pass render_quad
             {
-                material Filter13X
+                material Gauss13X
                 input 0 rt
             }
         }
@@ -172,7 +172,7 @@ compositor FullScreenBlur_
             //only_initial on
             pass render_quad
             {
-                material Filter13Y
+                material Gauss13Y
                 input 0 rtx
             }
         }
@@ -182,7 +182,7 @@ compositor FullScreenBlur_
             //only_initial on
             pass render_quad
             {
-                material Filter13X
+                material Gauss13X
                 input 0 rty
             }
         }
@@ -192,7 +192,7 @@ compositor FullScreenBlur_
             //only_initial on
             pass render_quad
             {
-                material Filter13Y
+                material Gauss13Y
                 input 0 rtx1
             }
         }

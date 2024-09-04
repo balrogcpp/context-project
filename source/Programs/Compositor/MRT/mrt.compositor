@@ -14,12 +14,22 @@ compositor MRT
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
         texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
 
+
         target mrt
         {
             pass clear {}
             pass render_scene
             {
                 last_render_queue 90
+            }
+        }
+
+        target ssao
+        {
+            pass clear
+            {
+                buffers colour
+                colour_value 1 1 1 1
             }
         }
 /*
