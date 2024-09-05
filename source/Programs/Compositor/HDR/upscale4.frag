@@ -15,7 +15,7 @@ vec3 UpsampleBox(const sampler2D tex, const vec2 uv, const vec2 tsize)
     s += textureLod(tex, uv + d.xw, 0.0).rgb;
     s += textureLod(tex, uv + d.zw, 0.0).rgb;
 
-    return s * (1.0 / 4.0);
+    return s * 0.25;
 }
 
 void main()

@@ -2,6 +2,7 @@
 
 #define HAS_MRT
 #include "header.glsl"
+#include "tonemap.glsl"
 #include "math.glsl"
 #include "srgb.glsl"
 #include "fog.glsl"
@@ -62,5 +63,5 @@ void main()
 //    color = ApplyFog(color, FogParams.x, FogColour.rgb, 200.0 * pow8(1.0 - V.y) - 25.0, V, LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 //    color = ApplyFog(color, FogParams.x, FogColour.rgb, 100.0, V, -LightDir0.xyz, vec3(0.0, 0.0, 0.0));
 
-    FragColor = SafeHDR(vec4(color, 1.0));
+    FragColor = vec4(tonemap(color), 1.0);
 }

@@ -1,11 +1,17 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
+#include "tonemap.glsl"
 
 uniform sampler2D RT;
 
+vec3 FromSRGB(const vec3 v)
+{
+    return pow(v, vec3(2.2, 2.2, 2.2));
+}
+
 float luminance(const vec3 col) {
-    return dot(col, vec3(0.2126, 0.7152, 0.0722));
+    return dot(inverseTonemapSRGB(col), vec3(0.2126, 0.7152, 0.0722));
 }
 
 //const vec2 c_offsets[16] = vec2[16]
@@ -50,7 +56,7 @@ void main()
     c += log(I * 1024.0) + log(J * 1024.0) + log(K * 1024.0) + log(L * 1024.0);
     c += log(M * 1024.0) + log(N * 1024.0) + log(O * 1024.0) + log(P * 1024.0);
 
-    float lum = c / 16.0;
+    float lum = c * 0.0625; // /= 16.0;
 
     FragColor.r = lum;
 }

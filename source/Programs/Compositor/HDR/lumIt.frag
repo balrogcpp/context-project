@@ -13,7 +13,7 @@ void main()
     c += texelFetch(RT, uv + ivec2(1, 0), 0).r;
     c += texelFetch(RT, uv + ivec2(1, 1), 0).r;
 
-    float lum = c * (1.0 / 4.0);
+    float lum = c * 0.25;
 
     FragColor.r = lum;
 }

@@ -173,9 +173,9 @@ void CompositorManager::OnSetUp() {
 
   AddCompositor("MRT", true);
   AddCompositor("GTAO", false);
-  AddCompositor("Copyback", false);
-  AddCompositor("FXAA", true);
-  AddCompositor("PBB", true);
+  AddCompositor("Copyback", RenderSystemIsGLES2());
+  AddCompositor("FXAA", !RenderSystemIsGLES2());
+  AddCompositor("HDR", !RenderSystemIsGLES2());
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("MotionBlur", false);
   AddCompositor("Pause", false);
@@ -190,12 +190,12 @@ void CompositorManager::OnClean() { viewport->removeListener(this); }
 
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
   auto *compositor = compositorManager->addCompositor(viewport, name, position);
-  ASSERTION(compositor, "[CompositorManager] Failed to add MRT compositor");
+  ASSERTION(compositor, "[CompositorManager] Failed to add compositor " + name);
   compositorManager->setCompositorEnabled(viewport, name, enable);
 }
 
 void CompositorManager::EnableCompositor(const string &name, bool enable) {
-  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] Compositor not found: " + name);
   compositorManager->setCompositorEnabled(viewport, name, enable);
 }
 
@@ -462,15 +462,14 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);
   }
 
-  if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
-    for (auto *it : pass->getTextureUnitStates()) {
-      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-        it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      }
-    }
-
-    return;
-  }
+//  if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
+//    for (auto *it : pass->getTextureUnitStates()) {
+//      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+//        it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+//      }
+//    }
+//    return;
+//  }
 
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);

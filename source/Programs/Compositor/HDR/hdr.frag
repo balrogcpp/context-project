@@ -44,14 +44,6 @@ vec3 UpsampleBox(const sampler2D tex, const vec2 uv, const vec2 tsize)
     return s * (1.0 / 4.0);
 }
 
-// Unreal 3, Documentation: "Color Grading"
-// Adapted to be close to Tonemap_ACES, with similar range
-// Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-// vec3 unreal(const highp vec3 x)
-// {
-//     return x / (x + 0.155) * 1.019;
-// }
-
 void main()
 {
     vec2 size = vec2(textureSize(RT, 0));
