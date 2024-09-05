@@ -17,13 +17,17 @@ uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
-in highp vec2 vUV0;
 in vec4 offset;
 void main()
 {
+	vec2 size = vec2(textureSize(rt_input, 0));
+    vec2 tsize = 1.0 / size;
+    vec2 uv = gl_FragCoord.xy / size;
+    uv.y = 1.0 - uv.y;
+
 #if SMAA_REPROJECTION
-	FragColor.rgb = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex, velocityTex).rgb;
+	FragColor.rgb = SMAANeighborhoodBlendingPS(uv, offset, rt_input, blendTex, velocityTex).rgb;
 #else
-	FragColor.rgb = SMAANeighborhoodBlendingPS(vUV0, offset, rt_input, blendTex).rgb;
+	FragColor.rgb = SMAANeighborhoodBlendingPS(uv, offset, rt_input, blendTex).rgb;
 #endif
 }

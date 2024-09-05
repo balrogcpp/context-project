@@ -19,21 +19,25 @@ uniform vec4 ViewportSize;
 
 #include "smaa.glsl"
 
-in highp vec2 vUV0;
 in vec4 offset[3];
 void main()
 {
+	vec2 size = vec2(textureSize(rt_input, 0));
+    vec2 tsize = 1.0 / size;
+    vec2 uv = gl_FragCoord.xy / size;
+    uv.y = 1.0 - uv.y;
+
 #if !SMAA_EDGE_DETECTION_MODE || SMAA_EDGE_DETECTION_MODE == 2
 	#if SMAA_PREDICATION
-		FragColor.rg = SMAAColorEdgeDetectionPS(vUV0, offset, rt_input, depthTex);
+		FragColor.rg = SMAAColorEdgeDetectionPS(uv, offset, rt_input, depthTex);
 	#else
-		FragColor.rg = SMAAColorEdgeDetectionPS(vUV0, offset, rt_input);
+		FragColor.rg = SMAAColorEdgeDetectionPS(uv, offset, rt_input);
 	#endif
 #else
 	#if SMAA_PREDICATION
-		FragColor.rg = SMAALumaEdgeDetectionPS(vUV0, offset, rt_input, depthTex);
+		FragColor.rg = SMAALumaEdgeDetectionPS(uv, offset, rt_input, depthTex);
 	#else
-		FragColor.rg = SMAALumaEdgeDetectionPS(vUV0, offset, rt_input);
+		FragColor.rg = SMAALumaEdgeDetectionPS(uv, offset, rt_input);
 	#endif
 #endif
 }

@@ -281,6 +281,7 @@ void VideoManager::CheckGPU() {
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_MIPMAP_LOD_BIAS), "Texture mipmaps support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_BUFFER_INSTANCE_DATA), "Instancing support required");
 #if defined(DESKTOP)
   if (RenderSystemIsGL3()) {
