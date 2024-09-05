@@ -234,5 +234,5 @@ void main()
     uv.y = 1.0 - uv.y;
 
     vec3 color = FxaaPixelShader(RT, uv, tsize);
-    FragColor.rgb = inverseTonemapSRGB(color);
+    FragColor.rgb = color;
 }

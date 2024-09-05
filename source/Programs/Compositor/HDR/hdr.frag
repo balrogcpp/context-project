@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
 #include "header.glsl"
+#include "tonemap.glsl"
 
 uniform sampler2D RT;
 uniform sampler2D BrightTex;
@@ -46,10 +47,10 @@ vec3 UpsampleBox(const sampler2D tex, const vec2 uv, const vec2 tsize)
 // Unreal 3, Documentation: "Color Grading"
 // Adapted to be close to Tonemap_ACES, with similar range
 // Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-vec3 unreal(const highp vec3 x)
-{
-    return x / (x + 0.155) * 1.019;
-}
+// vec3 unreal(const highp vec3 x)
+// {
+//     return x / (x + 0.155) * 1.019;
+// }
 
 void main()
 {
@@ -60,7 +61,7 @@ void main()
 
     float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
     vec3 bloom = UpsampleBox(BrightTex, uv, tsize).rgb;
-    vec3 color = texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb;
+    vec3 color = inverseTonemapSRGB(texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb);
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
     FragColor.rgb = unreal(color * lum);
