@@ -10,7 +10,7 @@ compositor MRT
         // 0 color; 1 depth + normals; 2 velocity;
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_DEPTH32 no_fsaa depth_pool 1 chain_scope
         texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0 chain_scope
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
         texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
 

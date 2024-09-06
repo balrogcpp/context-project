@@ -277,8 +277,12 @@ void VideoManager::CheckGPU() {
   const auto *ogreRenderSystemCommon = dynamic_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_PROGRAM), "Vertex shader support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_FRAGMENT_PROGRAM), "Fragment shader support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_USER_CLIP_PLANES), "User clip planes support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_1D), "1D texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_3D), "3D texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_NON_POWER_OF_2_TEXTURES), "Non power of 2 textures support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_2D_ARRAY), "Texture array support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_MIPMAP_LOD_BIAS), "Texture mipmaps support required");
@@ -300,7 +304,7 @@ void VideoManager::CheckGPU() {
 #endif
   if (RenderSystemIsGL3()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-    ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(3, 3), "OpenGL 3.3 is not supported");
+    ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(4, 3), "OpenGL 3.3 is not supported");
 #endif
   } else if (RenderSystemIsGLES2()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
