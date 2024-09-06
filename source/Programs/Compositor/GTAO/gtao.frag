@@ -5,9 +5,7 @@
 #include "math.glsl"
 
 uniform sampler2D DepthTex;
-//uniform sampler2D NormalTex;
 uniform mat4 ProjMatrix;
-uniform vec2 TexelSize;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 
@@ -31,32 +29,48 @@ vec3 GetCameraVec(const vec2 uv)
     return vec3(uv.x * -2.0 + 1.0, uv.y * 2.0 * aspect - aspect, 1.0);
 }
 
+vec3 MinDiff(const vec3 P, const vec3 Pr, const vec3 Pl)
+{
+    vec3 V1 = Pr - P;
+    vec3 V2 = P - Pl;
+    return (dot(V1,V1) < dot(V2,V2)) ? V1 : V2;
+}
+
 vec3 getNormal(const vec2 tc_original)
 {
-    // Depth of the current pixel
-    float dhere = textureLod(DepthTex, tc_original, 0.0).x;
-    // Vector from camera to the current pixel's position
-    vec3 ray = GetCameraVec(tc_original) * dhere;
+    vec2 tsize = 1.0 / textureSize(DepthTex, 0).xy;
 
-    const float normalSampleDist = 1.0;
+    vec3 P = GetCameraVec(tc_original) * textureLod(DepthTex, tc_original, 0.0).x;
+    vec3 Pr = GetCameraVec(tc_original + vec2(tsize.x, 0.0)) * textureLod(DepthTex, tc_original + vec2(tsize.x, 0.0), 0.0).x;
+    vec3 Pl = GetCameraVec(tc_original + vec2(-tsize.x, 0.0)) * textureLod(DepthTex, tc_original + vec2(-tsize.x, 0.0), 0.0).x;
+    vec3 Pt = GetCameraVec(tc_original + vec2(0.0, tsize.y)) * textureLod(DepthTex, tc_original + vec2(0.0, tsize.y), 0.0).x;
+    vec3 Pb = GetCameraVec(tc_original + vec2(0.0, -tsize.y)) * textureLod(DepthTex, tc_original + vec2(0.0, -tsize.y), 0.0).x;
+    return normalize(cross(MinDiff(P, Pr, Pl), MinDiff(P, Pt, Pb)) * textureLod(DepthTex, tc_original, 0.0).x);
 
-    // Calculate normal from the 4 neighbourhood pixels
-    vec2 uv = tc_original + vec2(TexelSize.x * normalSampleDist, 0.0);
-    vec3 p1 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
-
-    uv = tc_original + vec2(0.0, TexelSize.y * normalSampleDist);
-    vec3 p2 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
-
-    uv = tc_original + vec2(-TexelSize.x * normalSampleDist, 0.0);
-    vec3 p3 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
-
-    uv = tc_original + vec2(0.0, -TexelSize.y * normalSampleDist);
-    vec3 p4 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
-
-    vec3 normal1 = normalize(cross(p1, p2));
-    vec3 normal2 = normalize(cross(p3, p4));
-
-    return normalize(normal1 + normal2);
+//    // Depth of the current pixel
+//    float dhere = textureLod(DepthTex, tc_original, 0.0).x;
+//    // Vector from camera to the current pixel's position
+//    vec3 ray = GetCameraVec(tc_original) * dhere;
+//
+//    const float normalSampleDist = 1.0;
+//
+//    // Calculate normal from the 4 neighbourhood pixels
+//    vec2 uv = tc_original + vec2(tsize.x * normalSampleDist, 0.0);
+//    vec3 p1 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+//
+//    uv = tc_original + vec2(0.0, tsize.y * normalSampleDist);
+//    vec3 p2 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+//
+//    uv = tc_original + vec2(-tsize.x * normalSampleDist, 0.0);
+//    vec3 p3 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+//
+//    uv = tc_original + vec2(0.0, -tsize.y * normalSampleDist);
+//    vec3 p4 = ray - GetCameraVec(uv) * textureLod(DepthTex, uv, 0.0).x;
+//
+//    vec3 normal1 = normalize(cross(p1, p2));
+//    vec3 normal2 = normalize(cross(p3, p4));
+//
+//    return normalize(normal1 + normal2);
 }
 
 in highp vec2 vUV0;
@@ -127,10 +141,14 @@ void main()
         occ += clamp(pow(1.0 - rangeCheck, 10.0) + rangeCheck + 0.6666667 * sqrt(clampedPixelDepth), 0.0, 1.0);
     }
 
-    // normalise
-    occ /= float(NUM_BASE_SAMPLES);
-    occ = sqrt(occ * occ * occ);
+//    FragColor.rgb = vec3(clampedPixelDepth*100);
+//    FragColor.rgb = (normal * 0.5 + 0.5);
+//    FragColor.rgb = vec3(GetCameraVec(vUV0) * 100 * textureLod(DepthTex, vUV0, 0.0).x);
 
-    // amplify and saturate if necessary
+//    // normalise
+    occ /= float(NUM_BASE_SAMPLES);
+//    occ = sqrt(occ * occ * occ);
+
+//    // amplify and saturate if necessary
     FragColor.rg = vec2(occ, clampedPixelDepth);
 }

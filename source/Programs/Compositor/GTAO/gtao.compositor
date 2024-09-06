@@ -17,7 +17,7 @@ compositor GTAO : STD
             }
         }
 
-        target ssao
+        target_output
         {
             pass render_quad
             {

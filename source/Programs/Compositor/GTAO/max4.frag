@@ -20,6 +20,9 @@ void main()
 
     float y = FarClipDistance / NearClipDistance;
     float x = (1.0 - y);
+//    float w = 1.0 / FarClipDistance;
+//    float z = x * w;
     float fDepth = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
     FragColor.r = 1.0 / (fDepth * x + y);
+//    FragColor.r = 1.0 / (fDepth * z + w);
 }

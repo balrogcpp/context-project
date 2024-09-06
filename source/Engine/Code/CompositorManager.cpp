@@ -172,13 +172,13 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("GTAO", false);
-  AddCompositor("Copyback", RenderSystemIsGLES2());
-  AddCompositor("FXAA", !RenderSystemIsGLES2());
-  AddCompositor("HDR", !RenderSystemIsGLES2());
-  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
-  AddCompositor("MotionBlur", false);
-  AddCompositor("Pause", false);
+  AddCompositor("GTAO", true);
+  //  AddCompositor("Copyback", RenderSystemIsGLES2());
+  //  AddCompositor("FXAA", !RenderSystemIsGLES2());
+  //  AddCompositor("HDR", !RenderSystemIsGLES2());
+  //  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
+  //  AddCompositor("MotionBlur", false);
+  //  AddCompositor("Pause", false);
 
   // reg as viewport listener
   viewport->addListener(this);
@@ -386,54 +386,53 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 }
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
+  const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+  fp->setIgnoreMissingParams(true);
+
   if (pass_id == 10) {  // 10 = SSAO
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
 
   } else if (pass_id == 11) {  // 11 = SSAO
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
 
   } else if (pass_id == 20) {  // 20 = SSR
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
     fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
 
   } else if (pass_id == 30) {  // 14 = MotionBlur
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setNamedConstant("WorldViewProjMatrix", viewProj);
     fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
-  } else if (pass_id == 40) {  // 40 = KinoFog
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    const auto &ll = sceneManager->_getLightsAffectingFrustum();
-    fp->setNamedConstant("CameraPosition", camera->getRealPosition());
-    fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
-    fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
-    fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
-    if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
-    auto *tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(2);
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("CubeMap", "cube");
-    }
+    //  } else if (pass_id == 40) {  // 40 = KinoFog
+    //    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    //    const auto &ll = sceneManager->_getLightsAffectingFrustum();
+    //    fp->setNamedConstant("CameraPosition", camera->getRealPosition());
+    //    fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
+    //    fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
+    //    fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
+    //    if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
+    //    auto *tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(2);
+    //    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+    //      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+    //      tex->setCompositorReference("CubeMap", "cube");
+    //    }
 
-  } else if (pass_id == 12) {  // 12 = GodRays
-    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    for (auto *l : sceneManager->_getLightsAffectingFrustum()) {
-      if (l->getType() == Light::LT_DIRECTIONAL) {
-        fp->setNamedConstant("LightPosition", GetLightScreenSpaceCoords(l, camera));
-        break;
-      }
-    }
-
-  } else if (pass_id == 99) {  // 99 = FullScreenBlur
+    //  } else if (pass_id == 12) {  // 12 = GodRays
+    //    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    //    for (auto *l : sceneManager->_getLightsAffectingFrustum()) {
+    //      if (l->getType() == Light::LT_DIRECTIONAL) {
+    //        fp->setNamedConstant("LightPosition", GetLightScreenSpaceCoords(l, camera));
+    //        break;
+    //      }
+    //    }
+    //
+    //  } else if (pass_id == 99) {  // 99 = FullScreenBlur
   }
 }
 
@@ -462,14 +461,11 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
     fp->setNamedConstant("PssmSplitPoints", pssmPoints);
   }
 
-//  if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
-//    for (auto *it : pass->getTextureUnitStates()) {
-//      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-//        it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-//      }
-//    }
-//    return;
-//  }
+  if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
+    for (auto *it : pass->getTextureUnitStates())
+      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+    return;
+  }
 
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);

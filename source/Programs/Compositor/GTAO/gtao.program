@@ -2,7 +2,7 @@
 
 fragment_program gtao glsl glsles hlsl
 {
-	source max4.frag
+	source gtao.frag
 }
 
 fragment_program max4 glsl glsles hlsl
