@@ -2,6 +2,7 @@
 
 #define HAS_MRT
 #include "header.glsl"
+#include "tonemap.glsl"
 #include "math.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
@@ -112,15 +113,14 @@ void main()
     nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
     vec3 normal3 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
 
-//    nCoord = vWorldPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
-//    vec3 normal4 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;
-//    nCoord = vWorldPosition.xz * WaveScale * 2.0 + WindDirection * Time * WindSpeed * 0.7;
-//    vec3 normal5 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
+    nCoord = vPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
+    vec3 normal4 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;
+    nCoord = vPosition.xz * WaveScale * 2.0 + WindDirection * Time * WindSpeed * 0.7;
+    vec3 normal5 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
 
     vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y
     + normal2 * MidWaves.x + normal3 * MidWaves.y
-//    + normal4 * SmallWaves.x + normal5 * SmallWaves.y
-    );
+    + normal4 * SmallWaves.x + normal5 * SmallWaves.y);
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vPosition);
@@ -129,8 +129,7 @@ void main()
     // normal for light scattering
     highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
                                    + normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1
-//                                   + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1
-    );
+                                   + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1);
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);
@@ -144,10 +143,7 @@ void main()
     float fresnel = FresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = textureLod(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0), 0.0).rgb;
-#ifdef FORCE_TONEMAP
-    reflection = Inverse_Tonemap_Unreal(reflection);
-#endif
+    vec3 reflection = inverseTonemapSRGB(textureLod(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0), 0.0).rgb);
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
@@ -160,21 +156,20 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = textureLod(DepthTex, fragCoord - refrOffset * 0.9, 0.0).x * (FarClipDistance - NearClipDistance) + NearClipDistance;
+    float refractedDepth = textureLod(DepthTex, fragCoord - refrOffset * 2.0, 0.0).x;
+    refractedDepth = refractedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
     highp float surfaceDepth = fragDepth;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
-#ifndef GL_ES
+#if !defined(GL_ES)
     vec3 refraction;
     refraction.r = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade, 0.0).r;
     refraction.g = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).g;
     refraction.b = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade, 0.0).b;
+    refraction = inverseTonemapSRGB(refraction);
 #else
-    vec3 refraction = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).rgb;
-#endif
-#ifdef FORCE_TONEMAP
-    refraction = Inverse_Tonemap_Unreal(refraction);
+    vec3 refraction = inverseTonemapSRGB(textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).rgb);
 #endif
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);
@@ -247,24 +242,9 @@ void main()
     causticdepth = 1.0 - saturate(causticdepth / Visibility);
     causticdepth = saturate(causticdepth);
 
-//    vec3 normalMap = perturb(CausticTex, causticPos.xz, causticdepth) * 2.0 - 1.0;
-//    normalMap = normalMap.xzy;
-//    normalMap.xz *= -1;
-//    vec3 causticnorm = normalMap;
-
-//    float fresnel = pow(saturate(dot(_WorldSpaceLightPos0.xyz, causticnorm)), 2.0);
-
     float causticR = 1.0 - perturb(CausticTex, vPosition.xz, causticdepth).z;
 
     float caustics = saturate(pow(causticR * 5.5, 5.5 * causticdepth)) * NdotL * SunFade * causticdepth;
-
-    // not yet implemented
-    //if(causticFringe)
-    //{
-    //    float causticG = 1.0-perturb(NormalSampler,causticPos.st+(1.0-causticdepth)*aberration,causticdepth).z;
-    //    float causticB = 1.0-perturb(NormalSampler,causticPos.st+(1.0-causticdepth)*aberration*2.0,causticdepth).z;
-    //    caustics = clamp(pow(vec3(causticR,causticG,causticB)*5.5,vec3(5.5*causticdepth)),0.0,1.0)*NdotL*_SunFade*causticdepth;
-    //}
 
     vec3 underwaterSunLight = saturate((sunLight + 0.9) - (1.0 - caustics)) * causticdepth + (sunLight * caustics);
 
@@ -277,8 +257,6 @@ void main()
 
     vec3 color = vec3(sunLight + skyLight * 0.7 + groundLight * 0.8) * darkness;
 
-    waterColor = SRGBtoLINEAR(waterColor);
-    watercolor = SRGBtoLINEAR(watercolor);
     waterColor = mix(waterColor * 0.3 * SunFade, waterColor, SunTransmittance);
 
     //vec3 fogging = mix((refraction * 0.2 + 0.8) * mix(vec3(1.2, 0.95, 0.58) * 0.8, vec3(1.1, 0.85, 0.5) * 0.8, shorewetcut) * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
@@ -292,19 +270,8 @@ void main()
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog1 / WaterExtinction));
     }
 
-    // foam not implementer
-    // if(abs(causticdepth) < 0.1)
-    //{
-    //    vec2 uv_offset = Time * vec2(0.05, 0.04);
-    //    float foam_noise = clamp(pow(texture(FoamTex, (vUV0*20.0) - uv_offset).r, 10.0)*40.0, 0.0, 0.2);
-    //    float foam_mix = clamp(pow((1.0-(depth) + foam_noise), 8.0) * foam_noise * 0.4, 0.0, 1.0);
-    //    color = mix(color, vec3(1.0, 1.0, 1.0), foam_mix);
-    //}
-
     color += LightColor0 * specular;
-#ifdef FORCE_FOG
     color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
-#endif
 
-    FragColor = vec4(color, 1.0);
+    FragColor = vec4(tonemap(color), 1.0);
 }

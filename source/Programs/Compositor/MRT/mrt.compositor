@@ -8,10 +8,11 @@ compositor MRT
     {
         compositor_logic DeferredLogic
         // 0 color; 1 depth + normals; 2 velocity;
-        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_DEPTH32 no_fsaa depth_pool 1 chain_scope
-        texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
+        texture mrt target_width target_height PF_R11G11B10_FLOAT PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1 chain_scope
+        texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R8G8B8 no_fsaa depth_pool 0 chain_scope
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
+
+        texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
         texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
 
         target mrt
@@ -23,7 +24,7 @@ compositor MRT
             }
         }
 
-        target ssao
+        target ao
         {
             pass clear
             {
@@ -31,23 +32,26 @@ compositor MRT
                 colour_value 1 1 1 1
             }
         }
-/*
+
         target rt0
         {
             pass render_quad
             {
-                material Copy
+                material Copy2x
                 input 0 mrt 0
             }
         }
+
         target rt1
         {
             pass render_quad
             {
-                material Copy
+                identifier 11
+                material DepthDownscaleMax
                 input 0 mrt 1
             }
         }
+
         target mrt
         {
             shadows off
@@ -56,7 +60,6 @@ compositor MRT
                 first_render_queue 95
             }
         }
-*/
     }
 }
 

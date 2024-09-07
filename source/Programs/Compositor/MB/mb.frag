@@ -21,7 +21,6 @@ uniform float FrameTime;
 #endif
 #endif
 
-in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {

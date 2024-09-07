@@ -4,18 +4,8 @@ compositor GTAO : STD
 {
     technique
     {
-        texture_ref ssao MRT ssao
-        texture depth target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
-
-        target depth
-        {
-            pass render_quad
-            {
-                identifier 11
-                material DepthDownscaleMax
-                input 0 mrt 1
-            }
-        }
+        texture_ref ao MRT ao
+        texture_ref rt1 MRT rt1
 
         target_output
         {
@@ -24,7 +14,8 @@ compositor GTAO : STD
                 identifier 10
                 quad_normals camera_far_corners_view_space
                 material GTAO
-                input 0 depth
+                input 0 mrt 1
+                input 1 mrt 1
             }
         }
     }

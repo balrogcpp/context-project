@@ -70,19 +70,19 @@ material Water
 
             texture_unit ReflectionTex
             {
-                texture blue.dds
+                texture black.dds
                 tex_address_mode clamp
                 filtering none
             }
             texture_unit RefractionTex
             {
-                texture black.dds
+                content_type compositor MRT rt0
                 tex_address_mode clamp
                 filtering none
             }
             texture_unit DepthTex
             {
-                texture black.dds
+                content_type compositor MRT rt1
                 tex_address_mode clamp
                 filtering none
             }
