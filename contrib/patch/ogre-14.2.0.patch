@@ -312,6 +312,19 @@ index f89e9a16c..eec4a06c8 100644
  #ifdef HAVE_ZLIB
  #include <zlib.h>
  static Ogre::uchar* custom_zlib_compress(Ogre::uchar* data, int data_len, int* out_len, int /*quality*/)
+diff --git a/RenderSystems/GL3Plus/src/OgreGL3PlusPixelFormat.cpp b/RenderSystems/GL3Plus/src/OgreGL3PlusPixelFormat.cpp
+index f1f6c5d1e..415c92f36 100644
+--- a/RenderSystems/GL3Plus/src/OgreGL3PlusPixelFormat.cpp
++++ b/RenderSystems/GL3Plus/src/OgreGL3PlusPixelFormat.cpp
+@@ -180,7 +180,7 @@ namespace Ogre  {
+             {GL_NONE, GL_NONE, GL_COMPRESSED_RGBA_ASTC_12x12_KHR},// PF_ASTC_RGBA_12X12_LDR
+             {GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_DEPTH_COMPONENT32}, // PF_DEPTH32
+             {GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT32F}, // PF_DEPTH32F
+-            {GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_DEPTH24_STENCIL8}, // PF_DEPTH24_STENCIL8
++            {GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_DEPTH_COMPONENT24}, // PF_DEPTH24_STENCIL8
+     };
+ 
+     GLenum GL3PlusPixelUtil::getGLOriginFormat(PixelFormat pf)
 diff --git a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
 index 5cb052037..4d5a1e514 100644
 --- a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
@@ -342,12 +355,15 @@ diff --git a/RenderSystems/GLES2/src/OgreGLES2PixelFormat.cpp b/RenderSystems/GL
 index 7e1578e23..67d540432 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2PixelFormat.cpp
 +++ b/RenderSystems/GLES2/src/OgreGLES2PixelFormat.cpp
-@@ -267,7 +267,7 @@ namespace Ogre {
+@@ -265,9 +265,9 @@ namespace Ogre {
+             {GL_NONE, GL_NONE, GL_COMPRESSED_RGBA_ASTC_10x10_KHR},// PF_ASTC_RGBA_10X10_LDR
+             {GL_NONE, GL_NONE, GL_COMPRESSED_RGBA_ASTC_12x10_KHR},// PF_ASTC_RGBA_12X10_LDR
              {GL_NONE, GL_NONE, GL_COMPRESSED_RGBA_ASTC_12x12_KHR},// PF_ASTC_RGBA_12X12_LDR
-             {GL_NONE, GL_NONE, GL_NONE}, // PF_DEPTH32
+-            {GL_NONE, GL_NONE, GL_NONE}, // PF_DEPTH32
++            {GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_DEPTH_COMPONENT32_OES}, // PF_DEPTH32
              {GL_NONE, GL_NONE, GL_NONE}, // PF_DEPTH32F
 -            {GL_NONE, GL_NONE, GL_NONE}, // PF_DEPTH24_STENCIL8
-+            {GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_DEPTH24_STENCIL8}, // PF_DEPTH24_STENCIL8
++            {GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_DEPTH_COMPONENT24_OES}, // PF_DEPTH24_STENCIL8
      };
  
      void GLES2PixelUtil::useSizedFormats()
