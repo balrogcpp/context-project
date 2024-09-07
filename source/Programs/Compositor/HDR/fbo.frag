@@ -28,10 +28,8 @@ float KarisAverage(const vec3 col)
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
 void main()
 {
-    vec2 size = vec2(textureSize(RT, 0));
-    vec2 tsize = 1.0 / size;
-    vec2 uv = 2.0 * gl_FragCoord.xy / size;
-    uv.y = 1.0 - uv.y;
+    vec2 uv = (2.0 * gl_FragCoord.xy) / vec2(textureSize(RT, 0));
+    vec2 tsize = 1.0 / vec2(textureSize(RT, 0));
 
     vec3 A = inverseTonemap(textureLod(RT, uv + tsize * vec2(-1.0, -1.0), 0.0).rgb);
     vec3 B = inverseTonemap(textureLod(RT, uv + tsize * vec2( 0.0, -1.0), 0.0).rgb);

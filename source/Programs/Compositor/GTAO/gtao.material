@@ -15,11 +15,21 @@ material DepthDownscaleMax : StdQuad
             {
                 param_named RT int 0
             }
-            texture_unit RT
+        }
+    }
+}
+
+material Normals : StdQuad
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref StdQuad {}
+
+            fragment_program_ref normals
             {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
+                param_named DepthTex int 0
             }
         }
     }
@@ -62,9 +72,16 @@ material GTAO : RayCast
             fragment_program_ref gtao
             {
                 param_named DepthTex int 0
+                param_named NormalTex int 1
             }
 
             texture_unit DepthTex
+            {
+                texture black.dds
+                tex_address_mode mirror
+                filtering none
+            }
+            texture_unit NormalTex
             {
                 texture black.dds
                 tex_address_mode mirror

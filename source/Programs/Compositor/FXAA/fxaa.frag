@@ -232,9 +232,8 @@ vec3 FxaaPixelShader(const sampler2D tex, const vec2 pos, const vec2 rcpFrame)
 
 void main()
 {
-    vec2 size = vec2(textureSize(RT, 0));
-    vec2 tsize = 1.0 / size;
-    vec2 uv = gl_FragCoord.xy / size;
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
+    vec2 tsize = 1.0 / vec2(textureSize(RT, 0));
     uv.y = 1.0 - uv.y;
 
     vec3 color = FxaaPixelShader(RT, uv, tsize);

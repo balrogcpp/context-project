@@ -304,7 +304,7 @@ void VideoManager::CheckGPU() {
 #endif
   if (RenderSystemIsGL3()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-    ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(4, 3), "OpenGL 3.3 is not supported");
+    ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(4, 3), "OpenGL 4.3 is not supported");
 #endif
   } else if (RenderSystemIsGLES2()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2

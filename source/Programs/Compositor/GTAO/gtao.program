@@ -9,3 +9,8 @@ fragment_program max4 glsl glsles hlsl
 {
 	source max4.frag
 }
+
+fragment_program normals glsl glsles hlsl
+{
+	source normals.frag
+}

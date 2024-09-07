@@ -21,6 +21,5 @@ void main()
     float fDepth = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
 #endif
 
-
     FragColor.r = 1.0 / (fDepth * ZBufferParams.x + ZBufferParams.y);
 }

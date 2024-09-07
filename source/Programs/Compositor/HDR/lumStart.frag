@@ -29,7 +29,6 @@ void main()
     //We would need 64x64 samples, but we only sample 4x4, therefore we sample one
     //pixel and skip 15, then repeat. We perform:
     //(ViewportResolution / TargetResolution) / 4
-    // float lum = Downscale4x4(RT, vUV0);
 
     ivec2 uv = ivec2(gl_FragCoord.xy);
     ivec2 tsize = textureSize(RT, 0).xy / (ivec2(64, 64) * 4);

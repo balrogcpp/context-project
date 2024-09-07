@@ -32,7 +32,7 @@ compositor MRT
                 colour_value 1 1 1 1
             }
         }
-
+/*
         target rt0
         {
             pass render_quad
@@ -60,6 +60,7 @@ compositor MRT
                 first_render_queue 95
             }
         }
+*/
     }
 }
 
@@ -71,7 +72,7 @@ compositor Copyback : STD
         {
             pass render_quad
             {
-                material Copy
+                material Copyback
                 input 0 mrt
             }
         }

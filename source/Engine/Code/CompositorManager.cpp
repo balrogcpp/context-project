@@ -389,11 +389,6 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   fp->setIgnoreMissingParams(true);
   float far = camera->getFarClipDistance();
   float near = camera->getNearClipDistance();
-  float y = far / near;
-  float x = 1.0 - y;
-  float w = y / far;
-  float z = x / far;
-  Vector4f ZBufferParams(x, y, z, w);
 
   if (pass_id == 10) {  // 10 = SSAO
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
@@ -401,7 +396,11 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("NearClipDistance", near);
   }
   if (pass_id == 11) {  // 11 = SSAO
-    fp->setNamedConstant("ZBufferParams", ZBufferParams);
+    float y = far / near;
+    float x = 1.0 - y;
+    float w = y / far;
+    float z = x / far;
+    fp->setNamedConstant("ZBufferParams", Vector4f(x, y, z, w));
 
   } else if (pass_id == 30) {  // 14 = MotionBlur
     fp->setNamedConstant("WorldViewProjMatrix", viewProj);

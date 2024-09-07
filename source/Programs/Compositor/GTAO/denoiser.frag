@@ -32,5 +32,5 @@ void main()
     totalao += texelFetch(RT, loc + ivec2(2, 3), 0).r;
     totalao += texelFetch(RT, loc + ivec2(3, 3), 0).r;
 
-    FragColor.r = totalao / 16.0;
+    FragColor.r = totalao * 0.0625;
 }

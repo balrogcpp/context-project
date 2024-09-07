@@ -28,10 +28,8 @@ vec3 Upscale9(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
 void main()
 {
-    vec2 size = vec2(textureSize(RT, 0));
-    vec2 tsize = 1.0 / size;
-    vec2 uv = 0.5 * gl_FragCoord.xy / size;
-    uv.y = 1.0 - uv.y;
+    vec2 tsize = 1.0 / vec2(textureSize(RT, 0));
+    vec2 uv = (0.5 * gl_FragCoord.xy) / vec2(textureSize(RT, 0));
 
     FragColor.rgb = Upscale9(RT, uv, tsize);
 }
