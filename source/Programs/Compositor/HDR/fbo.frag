@@ -31,19 +31,19 @@ void main()
     vec2 uv = (2.0 * gl_FragCoord.xy) / vec2(textureSize(RT, 0));
     vec2 tsize = 1.0 / vec2(textureSize(RT, 0));
 
-    vec3 A = inverseTonemap(textureLod(RT, uv + tsize * vec2(-1.0, -1.0), 0.0).rgb);
-    vec3 B = inverseTonemap(textureLod(RT, uv + tsize * vec2( 0.0, -1.0), 0.0).rgb);
-    vec3 C = inverseTonemap(textureLod(RT, uv + tsize * vec2( 1.0, -1.0), 0.0).rgb);
-    vec3 D = inverseTonemap(textureLod(RT, uv + tsize * vec2(-0.5, -0.5), 0.0).rgb);
-    vec3 E = inverseTonemap(textureLod(RT, uv + tsize * vec2( 0.5, -0.5), 0.0).rgb);
-    vec3 F = inverseTonemap(textureLod(RT, uv + tsize * vec2(-1.0,  0.0), 0.0).rgb);
-    vec3 G = inverseTonemap(textureLod(RT, uv                           , 0.0).rgb);
-    vec3 H = inverseTonemap(textureLod(RT, uv + tsize * vec2( 1.0,  0.0), 0.0).rgb);
-    vec3 I = inverseTonemap(textureLod(RT, uv + tsize * vec2(-0.5,  0.5), 0.0).rgb);
-    vec3 J = inverseTonemap(textureLod(RT, uv + tsize * vec2( 0.5,  0.5), 0.0).rgb);
-    vec3 K = inverseTonemap(textureLod(RT, uv + tsize * vec2(-1.0,  1.0), 0.0).rgb);
-    vec3 L = inverseTonemap(textureLod(RT, uv + tsize * vec2( 0.0,  1.0), 0.0).rgb);
-    vec3 M = inverseTonemap(textureLod(RT, uv + tsize * vec2( 1.0,  1.0), 0.0).rgb);
+    vec3 A = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2(-1.0, -1.0), 0.0).rgb);
+    vec3 B = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2( 0.0, -1.0), 0.0).rgb);
+    vec3 C = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2( 1.0, -1.0), 0.0).rgb);
+    vec3 D = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2(-0.5, -0.5), 0.0).rgb);
+    vec3 E = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2( 0.5, -0.5), 0.0).rgb);
+    vec3 F = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2(-1.0,  0.0), 0.0).rgb);
+    vec3 G = inverseTonemapSRGB(textureLod(RT, uv                           , 0.0).rgb);
+    vec3 H = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2( 1.0,  0.0), 0.0).rgb);
+    vec3 I = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2(-0.5,  0.5), 0.0).rgb);
+    vec3 J = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2( 0.5,  0.5), 0.0).rgb);
+    vec3 K = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2(-1.0,  1.0), 0.0).rgb);
+    vec3 L = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2( 0.0,  1.0), 0.0).rgb);
+    vec3 M = inverseTonemapSRGB(textureLod(RT, uv + tsize * vec2( 1.0,  1.0), 0.0).rgb);
 
     vec3 c1 = (D + E + I + J) * 0.125;
     vec3 c2 = (A + B + G + F) * 0.03125;

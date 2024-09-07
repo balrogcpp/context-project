@@ -44,112 +44,74 @@ float Falloff(float dist2, float cosh)
     return 2.0 * clamp((dist2 - 0.16) / (4.0 - 0.16), 0.0, 1.0);
 }
 
-//#define MAX_RAND_SAMPLES 14
-//#define RADIUS 0.21 // 0.105
-//#define INVSQ3 0.57735026918962576451
-//#define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
-//
-//const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
-//    vec3[](
-//    vec3(1.0, 0.0, 0.0),
-//    vec3(-1.0, 0.0, 0.0),
-//    vec3(0.0, 1.0, 0.0),
-//    vec3(0.0, -1.0, 0.0),
-//    vec3(0.0, 0.0, 1.0),
-//    vec3(0.0, 0.0, -1.0),
-//    vec3( INVSQ3,  INVSQ3,  INVSQ3),
-//    vec3(-INVSQ3,  INVSQ3,  INVSQ3),
-//    vec3( INVSQ3, -INVSQ3,  INVSQ3),
-//    vec3( INVSQ3,  INVSQ3, -INVSQ3),
-//    vec3(-INVSQ3, -INVSQ3,  INVSQ3),
-//    vec3(-INVSQ3,  INVSQ3, -INVSQ3),
-//    vec3( INVSQ3, -INVSQ3, -INVSQ3),
-//    vec3(-INVSQ3, -INVSQ3, -INVSQ3)
-//);
+#define MAX_RAND_SAMPLES 14
+#define RADIUS 0.21 // 0.105
+#define INVSQ3 0.57735026918962576451
+#define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
+
+const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+   vec3[](
+   vec3(1.0, 0.0, 0.0),
+   vec3(-1.0, 0.0, 0.0),
+   vec3(0.0, 1.0, 0.0),
+   vec3(0.0, -1.0, 0.0),
+   vec3(0.0, 0.0, 1.0),
+   vec3(0.0, 0.0, -1.0),
+   vec3( INVSQ3,  INVSQ3,  INVSQ3),
+   vec3(-INVSQ3,  INVSQ3,  INVSQ3),
+   vec3( INVSQ3, -INVSQ3,  INVSQ3),
+   vec3( INVSQ3,  INVSQ3, -INVSQ3),
+   vec3(-INVSQ3, -INVSQ3,  INVSQ3),
+   vec3(-INVSQ3,  INVSQ3, -INVSQ3),
+   vec3( INVSQ3, -INVSQ3, -INVSQ3),
+   vec3(-INVSQ3, -INVSQ3, -INVSQ3)
+);
 
 //in highp vec2 vUV0;
 in highp vec3 vRay;
 void main()
 {
-    vec2 uv = gl_FragCoord.xy / vec2(textureSize(DepthTex, 0) * 2.0);
+    vec2 uv = 0.5 * gl_FragCoord.xy / vec2(textureSize(DepthTex, 0).xy);
     uv.y = 1.0 - uv.y;
 
-    vec3 viewNormal = textureLod(NormalTex, uv, 0.0).xyz * 2.0 - 1.0;
-    vec3 randomVec = normalize(hash(uv.xyy));
+    vec3 normal = textureLod(NormalTex, uv, 0.0).xyz;
 
-    vec3 viewPosition = getScreenSpacePos(uv, vRay);
-    //vec3 viewNormal = reconstructNormal(viewPosition);
-//    vec3 viewNormal = normalize( texture( gBuf_normals, inPs.uv0 ).xyz * 2.0 - 1.0 );
-//    vec3 randomVec = getRandomVec(inPs.uv0);
+   // Depth of the current pixel
+   vec3 ray = vRay;
 
-    vec3 tangent = normalize(randomVec - viewNormal * dot(randomVec, viewNormal));
-    vec3 bitangent = cross(viewNormal, tangent);
-    mat3 TBN = mat3(tangent, bitangent, viewNormal);
+   // random normal lookup from a texture and expand to [-1..1]
+   // IN.ray will be distorted slightly due to interpolation
+   // it should be normalized here
+   float clampedPixelDepth = textureLod(DepthTex, uv, 0.0).x;
+   float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+   vec3 viewPos = ray * clampedPixelDepth;
+   vec3 randN = normalize(hash(viewPos.xyz));
 
-    float occlusion = 0.0;
-    for(int i = 0; i < 8; ++i)
-    {
-        for(int a = 0; a < 8; ++a)
-        {
-//            vec3 sNoise = sampleDirs[(a << 3u) + i].xyz;
+   // Accumulated occlusion factor
+   float occlusion = 0.0;
+   for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
+       // Reflected direction to move in for the sphere
+       // (based on random samples and a random texture sample)
+       // bias the random direction away from the normal
+       // this tends to minimize self occlusion
+       vec3 randomDir = normalize(reflect(RAND_SAMPLES[i], randN) + normal);
 
-            // get sample position
-            vec3 oSample = TBN * randomVec; // From tangent to view-space
-            oSample = viewPosition + oSample * kernelRadius;
+       vec3 oSample = viewPos + randomDir * RADIUS;
+       vec4 nuv = mulMat4x4Half3(ProjMatrix, oSample);
+       nuv.xy /= nuv.w;
 
-            // project sample position
-            vec4 offset = vec4(oSample, 1.0);
-            offset = ProjMatrix * offset; // from view to clip-space
-            offset.xyz /= offset.w; // perspective divide
-            offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
-            offset.y = 1.0 - offset.y;
+       // Compute occlusion based on the (scaled) Z difference
+       float clampedSampleDepth = textureLod(DepthTex, nuv.xy, 0.0).x;
+       float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
+       float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * step(oSample.z, clampedSampleDepth);
 
-            float sampleDepth = getScreenSpacePos(offset.xy, vRay).z;
+       // This is a sample occlusion function, you can always play with
+       // other ones, like 1.0 / (1.0 + zd * zd) and stuff
+       occlusion += clamp(pow(1.0 - rangeCheck, 10.0) + rangeCheck, 0.0, 1.0);
+   }
 
-            float rangeCheck = smoothstep(0.0, 1.0, kernelRadius / abs(viewPosition.z - sampleDepth));
-            occlusion += (sampleDepth >= oSample.z ? 1.0 : 0.0) * rangeCheck;
-
-        }
-    }
-    occlusion = 1.0 - (occlusion * invKernelSize);
-//    occlusion /= 64;
-
-//    // Depth of the current pixel
-//    vec3 ray = vRay;
-//
-//    // random normal lookup from a texture and expand to [-1..1]
-//    // IN.ray will be distorted slightly due to interpolation
-//    // it should be normalized here
-//    float clampedPixelDepth = textureLod(DepthTex, uv, 0.0).x;
-//    float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
-//    vec3 viewPos = ray * clampedPixelDepth;
-//    vec3 randN = normalize(hash(viewPos.xyz));
-//
-//    // Accumulated occlusion factor
-//    float occ = 0.0;
-//    for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
-//        // Reflected direction to move in for the sphere
-//        // (based on random samples and a random texture sample)
-//        // bias the random direction away from the normal
-//        // this tends to minimize self occlusion
-//        vec3 randomDir = normalize(reflect(RAND_SAMPLES[i], randN) + normal);
-//
-//        vec3 oSample = viewPos + randomDir * RADIUS;
-//        vec4 nuv = mulMat4x4Half3(ProjMatrix, oSample);
-//        nuv.xy /= nuv.w;
-//
-//        // Compute occlusion based on the (scaled) Z difference
-//        float clampedSampleDepth = textureLod(DepthTex, nuv.xy, 0.0).x;
-//        float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
-//        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * step(oSample.z, clampedSampleDepth);
-//
-//        // This is a sample occlusion function, you can always play with
-//        // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-//        occ += clamp(pow(1.0 - rangeCheck, 10.0) + rangeCheck, 0.0, 1.0);
-//    }
-//
-//    // normalise
-//    occ /= float(NUM_BASE_SAMPLES);
+   // normalise
+   occlusion /= float(NUM_BASE_SAMPLES);
 
     FragColor.rgb = vec3(occlusion);
 }
