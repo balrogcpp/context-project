@@ -8,7 +8,6 @@ compositor GTAO : STD
     {
         texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa
         texture gbuf1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture normal target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture_ref ao MRT ao
 
         target gbuf
@@ -34,17 +33,7 @@ compositor GTAO : STD
             }
         }
 
-        target normal
-        {
-            pass render_quad
-            {
-                identifier 11
-                material Normals
-                input 0 gbuf
-            }
-        }
-
-        target ao
+        target_output
         {
             pass render_quad
             {
@@ -52,16 +41,7 @@ compositor GTAO : STD
                 quad_normals camera_far_corners_view_space
                 material GTAO
                 input 0 gbuf1
-                input 1 normal
-            }
-        }
-
-        target ao
-        {
-            pass render_quad
-            {
-                material Denoiser
-                input 0 ao
+                input 1 gbuf
             }
         }
     }

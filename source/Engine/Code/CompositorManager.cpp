@@ -399,6 +399,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", far);
     fp->setNamedConstant("NearClipDistance", near);
+    fp->setNamedConstant("ZBufferParams", ZBufferParams);
   }
   if (pass_id == 11) {  // 11 = SSAO
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
