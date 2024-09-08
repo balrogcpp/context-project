@@ -10,7 +10,17 @@ fragment_program max4 glsl glsles hlsl
 	source max4.frag
 }
 
+fragment_program tolinear glsl glsles hlsl
+{
+	source tolinear.frag
+}
+
 fragment_program normals glsl glsles hlsl
 {
 	source normals.frag
+}
+
+fragment_program denoiser glsl glsles hlsl
+{
+	source denoiser.frag
 }

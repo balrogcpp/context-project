@@ -68,8 +68,7 @@ const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
 in highp vec3 vRay;
 void main()
 {
-    vec2 uv = 0.5 * gl_FragCoord.xy / vec2(textureSize(DepthTex, 0).xy);
-    uv.y = 1.0 - uv.y;
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(DepthTex, 0).xy);
 
     vec3 normal = textureLod(NormalTex, uv, 0.0).xyz;
 

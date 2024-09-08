@@ -3,15 +3,40 @@
 import StdQuad from stdquad.material
 import RayCast from stdquad.material
 
-material DepthDownscaleMax : StdQuad
+material DepthDownscaleMax
 {
     technique
     {
         pass
         {
+            cull_hardware none
+            polygon_mode_overrideable false
+            lighting off
+
             vertex_program_ref StdQuad {}
 
             fragment_program_ref max4
+            {
+                param_named RT int 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
+material ToLinear : StdQuad
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref tolinear
             {
                 param_named RT int 0
             }
@@ -25,11 +50,23 @@ material Normals : StdQuad
     {
         pass
         {
-            vertex_program_ref StdQuad {}
-
             fragment_program_ref normals
             {
                 param_named DepthTex int 0
+            }
+        }
+    }
+}
+
+material Denoiser : StdQuad
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref denoiser
+            {
+                param_named RT int 0
             }
         }
     }

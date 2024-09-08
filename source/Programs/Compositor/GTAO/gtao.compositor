@@ -4,25 +4,30 @@ compositor GTAO : STD
 {
     technique
     {
-        texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
-        texture gbuf2 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa
+        texture gbuf1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture normal target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture_ref ao MRT ao
 
         target gbuf
         {
+            pass clear
+            {
+                buffers depth
+            }
             pass render_quad
             {
-                identifier 11
                 material DepthDownscaleMax
                 input 0 mrt 1
             }
         }
-        target gbuf2
+
+        target gbuf1
         {
             pass render_quad
             {
-                material Copy
+                identifier 11
+                material ToLinear
                 input 0 gbuf
             }
         }
@@ -37,16 +42,25 @@ compositor GTAO : STD
             }
         }
 
-        target_output
+        target ao
         {
             pass render_quad
             {
                 identifier 10
                 quad_normals camera_far_corners_view_space
                 material GTAO
-                input 0 gbuf2
+                input 0 gbuf1
                 input 1 normal
             }
         }
+
+        /*target ao
+        {
+            pass render_quad
+            {
+                material Denoiser
+                input 0 ao
+            }
+        }*/
     }
 }

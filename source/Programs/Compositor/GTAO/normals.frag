@@ -5,7 +5,7 @@
 #include "math.glsl"
 
 uniform sampler2D DepthTex;
-uniform vec4 ZBufferParams;
+uniform highp vec4 ZBufferParams;
 
 vec3 GetCameraVec(const vec2 uv)
 {
@@ -38,13 +38,18 @@ vec3 MinDiff(const vec3 P, const vec3 Pr, const vec3 Pl)
     return (dot(V1,V1) < dot(V2,V2)) ? V1 : V2;
 }
 
+float Linear01Depth(const highp float z)
+{
+    return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
+}
+
 vec3 getNormal(const sampler2D tex, const vec2 uv, const vec2 tsize)
 {
-    vec3 P = GetCameraVec(uv) * textureLod(tex, uv, 0.0).x;
-    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * textureLod(tex, uv + tsize * vec2(1.0, 0.0), 0.0).x;
-    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * textureLod(tex, uv + tsize * vec2(-1.0, 0.0), 0.0).x;
-    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * textureLod(tex, uv + tsize * vec2(0.0, 1.0), 0.0).x;
-    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * textureLod(tex, uv + tsize * vec2(0.0, -1.0), 0.0).x;
+    vec3 P = GetCameraVec(uv) * Linear01Depth(textureLod(tex, uv, 0.0).x);
+    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(1.0, 0.0), 0.0).x);
+    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(-1.0, 0.0), 0.0).x);
+    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(0.0, 1.0), 0.0).x);
+    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(0.0, -1.0), 0.0).x);
 
     return normalize(cross(MinDiff(P, Pr, Pl), MinDiff(P, Pt, Pb)));
 }
