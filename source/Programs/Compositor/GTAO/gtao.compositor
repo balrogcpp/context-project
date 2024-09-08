@@ -1,3 +1,5 @@
+// created by Andrey Vasiliev
+
 import STD from std.compositor
 
 compositor GTAO : STD
@@ -54,13 +56,13 @@ compositor GTAO : STD
             }
         }
 
-        /*target ao
+        target ao
         {
             pass render_quad
             {
                 material Denoiser
                 input 0 ao
             }
-        }*/
+        }
     }
 }

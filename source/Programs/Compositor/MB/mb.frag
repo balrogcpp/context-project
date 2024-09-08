@@ -5,45 +5,42 @@
 
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
-uniform sampler2D VelocityTex;
-uniform vec2 TexSize;
+uniform vec4 ZBufferParams;
 uniform mat4 InvViewMatrix;
 uniform mat4 WorldViewProjMatrix;
 uniform mat4 ViewProjPrev;
-uniform vec4 ViewportSize;
 uniform float FrameTime;
 
-#ifndef MAX_SAMPLES
-#ifndef GL_ES
 #define MAX_SAMPLES 8
-#else
-#define MAX_SAMPLES 8
-#endif
-#endif
+
+float Linear01Depth(const highp float z)
+{
+    return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
+}
+
 
 in highp vec3 vRay;
 void main()
 {
-    vec3 color = textureLod(RT, vUV0, 0.0).rgb;
-    float depth = textureLod(DepthTex, vUV0, 0.0).x;
-    vec2 velocity = textureLod(VelocityTex, vUV0, 0.0).xy;
+    vec2 uv = vec2(gl_FragCoord.xy) / vec2(textureSize(RT, 0));
 
-    if (velocity == vec2(0.0, 0.0)) {
-        vec3 viewPos = vRay * depth;
-        vec4 worldPos = mulMat4x4Half3(InvViewMatrix, viewPos.xyz);
-        worldPos.xyz /= worldPos.w;
+    vec3 color = textureLod(RT, uv, 0.0).rgb;
+    float depth = Linear01Depth(textureLod(DepthTex, vec2(uv.x, 1.0 - uv.y), 0.0).x);
 
-        vec4 nuv = mulMat4x4Half3(ViewProjPrev, worldPos.xyz);
-        nuv.xy /= nuv.w;
+    vec3 viewPos = vRay * depth;
+    vec4 worldPos = mulMat4x4Half3(InvViewMatrix, viewPos.xyz);
+    worldPos.xyz /= worldPos.w;
 
-        vec4 olduv = mulMat4x4Half3(WorldViewProjMatrix, worldPos.xyz);
-        olduv.xy /= olduv.w;
+    vec4 nuv = mulMat4x4Half3(ViewProjPrev, worldPos.xyz);
+    nuv.xy /= nuv.w;
 
-        velocity = (nuv.xy - olduv.xy);
-    }
+    vec4 olduv = mulMat4x4Half3(WorldViewProjMatrix, worldPos.xyz);
+    olduv.xy /= olduv.w;
 
-    velocity *= 16.6666666667 /  FrameTime;
-    float speed = length(velocity * ViewportSize.xy);
+    vec2 velocity = (nuv.xy - olduv.xy);
+
+//    velocity *= 16.6666666667 /  FrameTime;
+    float speed = length(velocity * vec2(textureSize(RT, 0)));
     float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
     float invSamples = 1.0 / nSamples;
     float counter = 1.0;
@@ -52,11 +49,11 @@ void main()
         if (int(nSamples) <= i) break;
 
         vec2 offset = (float(i) * invSamples - 0.5) * velocity;
-        float dDepth = (depth - textureLod(DepthTex, vUV0 + offset, 0.0).r);
-        if (dDepth > 0.001) break;
-        color += textureLod(RT, vUV0 + offset, 0.0).rgb;
+        color += textureLod(RT, uv + offset, 0.0).rgb;
         counter += 1.0;
     }
 
-    FragColor.rgb = color / counter;
+    color /= counter;
+
+    FragColor.rgb = color;
 }

@@ -2,28 +2,26 @@
 
 import RayCast from stdquad.material
 
-fragment_program Blur glsl glsles hlsl
+fragment_program mb glsl glsles hlsl
 {
-    source blur.frag
+    source mb.frag
 
     default_params
     {
         param_named_auto FrameTime frame_time 1000
-        param_named_auto ViewportSize viewport_size
     }
 }
 
-material Blur : RayCast
+material MB : RayCast
 {
 	technique
 	{
 		pass
 		{
-            fragment_program_ref Blur
+            fragment_program_ref mb
 			{
                 param_named RT int 0
                 param_named DepthTex int 1
-                param_named VelocityTex int 2
 			}
 
             texture_unit RT
@@ -33,12 +31,6 @@ material Blur : RayCast
                 filtering none
             }
             texture_unit Depth
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
-            texture_unit Velocity
             {
                 texture black.dds
                 tex_address_mode clamp

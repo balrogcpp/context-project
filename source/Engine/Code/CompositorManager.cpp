@@ -177,7 +177,7 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", !RenderSystemIsGLES2());
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("HDR", !RenderSystemIsGLES2());
-  //  AddCompositor("MB", false);
+  AddCompositor("MB", false);
 
   // reg as viewport listener
   viewport->addListener(this);
@@ -389,6 +389,11 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   fp->setIgnoreMissingParams(true);
   float far = camera->getFarClipDistance();
   float near = camera->getNearClipDistance();
+  float y = far / near;
+  float x = 1.0 - y;
+  float w = y / far;
+  float z = x / far;
+  Vector4f ZBufferParams = Vector4f(x, y, z, w);
 
   if (pass_id == 10) {  // 10 = SSAO
     fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
@@ -396,13 +401,10 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     fp->setNamedConstant("NearClipDistance", near);
   }
   if (pass_id == 11) {  // 11 = SSAO
-    float y = far / near;
-    float x = 1.0 - y;
-    float w = y / far;
-    float z = x / far;
-    fp->setNamedConstant("ZBufferParams", Vector4f(x, y, z, w));
+    fp->setNamedConstant("ZBufferParams", ZBufferParams);
 
   } else if (pass_id == 30) {  // 14 = MotionBlur
+    fp->setNamedConstant("ZBufferParams", ZBufferParams);
     fp->setNamedConstant("WorldViewProjMatrix", viewProj);
     fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
