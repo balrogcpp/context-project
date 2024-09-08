@@ -518,7 +518,7 @@ void VideoManager::InitOgreSceneManager() {
     for (int i = 0; i < shadowTexCount; i++) {
       Ogre::ShadowTextureConfig texConfig = sceneManager->getShadowTextureConfigList().at(i);
       texConfig.depthBufferPoolId = 2;
-      texConfig.height = shadowTexSize / (floor(i / 3) + 1);
+      texConfig.height = shadowTexSize / (floor(i / 2) + 1);
       texConfig.width = texConfig.height;
       if (RenderSystemIsGLES2()) {
         texConfig.height /= 2;

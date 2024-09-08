@@ -125,11 +125,7 @@ vec3 specularDFG(const PixelParams pixel) {
 }
 
 vec3 decodeDataForIBL(const vec3 data) {
-#if defined(FORCE_TONEMAP)
-    return (data);
-#else
-    return tonemap(data);
-#endif
+    return LINEARtoSRGB(data);
 }
 
 //------------------------------------------------------------------------------

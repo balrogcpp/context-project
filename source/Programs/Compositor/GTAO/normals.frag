@@ -17,7 +17,6 @@ vec3 GetCameraVec(const vec2 uv)
     // The outcome of using this simplified function is that the effective AO range is larger when using larger FOV
     // Use something more accurate to get proper FOV-independent world-space range, however you will likely also have to adjust the SSAO constants below
     const float aspect = 1.0;
-    //    return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, -1.0);
     return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, 1.0);
 }
 

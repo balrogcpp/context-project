@@ -10,9 +10,6 @@ uniform mat4 ProjMatrix;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
 
-const float kernelRadius = 1.0;
-const float invKernelSize = 1.0 / kernelRadius;
-
 vec3 hash(const vec3 a)
 {
     vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
