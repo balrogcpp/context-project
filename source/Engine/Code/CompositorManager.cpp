@@ -172,12 +172,12 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("GTAO", false);
-  AddCompositor("Copyback", RenderSystemIsGLES2());
-  AddCompositor("FXAA", !RenderSystemIsGLES2());
+  AddCompositor("GTAO", !RenderSystemIsGLES2());
+  AddCompositor("Copyback", true);
+  AddCompositor("FXAA", false);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
-  AddCompositor("HDR", !RenderSystemIsGLES2());
-  AddCompositor("MB", false);
+  AddCompositor("HDR", false);
+  //  AddCompositor("MB", false);
 
   // reg as viewport listener
   viewport->addListener(this);
