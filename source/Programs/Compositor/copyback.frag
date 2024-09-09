@@ -3,10 +3,11 @@
 #include "header.glsl"
 
 uniform sampler2D RT;
+uniform vec4 ViewportSize;
 
 void main()
 {
-    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
+    vec2 uv = gl_FragCoord.xy * ViewportSize.zw;
     uv.y = 1.0 - uv.y;
 
     FragColor = textureLod(RT, uv, 0.0);

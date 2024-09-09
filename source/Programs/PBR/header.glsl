@@ -28,7 +28,7 @@
 #extension GL_OES_standard_derivatives : enable
 #endif
 precision mediump float;
-precision lowp int;
+precision mediump int;
 precision lowp sampler2D;
 precision lowp samplerCube;
 #endif

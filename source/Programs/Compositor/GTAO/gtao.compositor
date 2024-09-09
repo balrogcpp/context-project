@@ -6,8 +6,9 @@ compositor GTAO : STD
 {
     technique
     {
-        texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa
+        texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1
         texture gbuf1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture_ref ao MRT ao
 
         target gbuf
@@ -33,7 +34,7 @@ compositor GTAO : STD
             }
         }
 
-        target ao
+        target ssao
         {
             pass render_quad
             {
@@ -42,6 +43,15 @@ compositor GTAO : STD
                 material GTAO
                 input 0 gbuf1
                 input 1 gbuf
+            }
+        }
+
+        target ao
+        {
+            pass render_quad
+            {
+                material Denoiser
+                input 0 ssao
             }
         }
     }

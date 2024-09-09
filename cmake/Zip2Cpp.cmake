@@ -1,8 +1,8 @@
 # include guard
-if (_package_included)
+if (_zip2cpp_included)
     return()
-endif (_package_included)
-set(_package_included true)
+endif (_zip2cpp_included)
+set(_zip2cpp_included true)
 
 
 # Zip files from directory into flat zip
@@ -19,6 +19,7 @@ macro(FlatZipDirectory curdir destination)
     set(ZIP_VERSION ${CMAKE_MATCH_1})
     find_program(TAR_EXE NAMES bsdtar tar)
     execute_process(COMMAND ${TAR_EXE} --version OUTPUT_VARIABLE TAR_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+    find_package(Java COMPONENTS Development QUIET)
     find_program(STRIP_EXE NAMES strip-nondeterminism)
 
     # bsdtar generates same output as 'cmake -E tar --format=zip' on linux
@@ -28,10 +29,15 @@ macro(FlatZipDirectory curdir destination)
         message("Using zip ${ZIP_VERSION} to archive assets")
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${PARENT_DIR} ${ZIP_EXE} -FSrq -D -X ${destination} ${filelist})
     elseif (TAR_EXE AND TAR_VERSION MATCHES zlib)
-        message("Zip not found, using tar to archive assets")
+        string(REGEX MATCH "bsdtar ([0-9/.]*)" _ "${TAR_VERSION}")
+        set(TAR_VERSION ${CMAKE_MATCH_1})
+        message("Zip not found. Using bsdtar ${TAR_VERSION} to archive assets")
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${PARENT_DIR} ${TAR_EXE} caf ${destination} ${filelist})
+    elseif (Java_Development_FOUND)
+        message("Zip or bsdtar not found. Using jar ${Java_VERSION} to archive assets")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${PARENT_DIR} ${Java_JAR_EXECUTABLE} -cfM ${destination} ${filelist})
     else ()
-        message("Zip or bsdtar not found, using cmake command-line to archive assets")
+        message("Zip or bsdtar not found. Using cmake ${CMAKE_VERSION} to archive assets")
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${PARENT_DIR} ${CMAKE_COMMAND} -E tar cf ${destination} --format=zip ${filelist})
     endif ()
     if (STRIP_EXE)

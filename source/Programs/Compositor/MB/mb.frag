@@ -39,7 +39,7 @@ void main()
 
     vec2 velocity = (nuv.xy - olduv.xy);
 
-//    velocity *= 16.6666666667 /  FrameTime;
+    velocity *= 16.6666666667 /  FrameTime;
     float speed = length(velocity * vec2(textureSize(RT, 0)));
     float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
     float invSamples = 1.0 / nSamples;

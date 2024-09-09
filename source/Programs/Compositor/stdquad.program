@@ -28,6 +28,11 @@ fragment_program Copy glsl glsles hlsl
 fragment_program Copyback glsl glsles hlsl
 {
 	source copyback.frag
+
+    default_params
+    {
+        param_named_auto ViewportSize viewport_size
+    }
 }
 
 fragment_program Copy2x glsl glsles hlsl

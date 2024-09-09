@@ -24,3 +24,8 @@ fragment_program denoiser glsl glsles hlsl
 {
 	source denoiser.frag
 }
+
+fragment_program gtaocombine glsl glsles hlsl
+{
+	source gtaocombine.frag
+}
