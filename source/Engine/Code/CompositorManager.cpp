@@ -172,12 +172,12 @@ void CompositorManager::OnSetUp() {
   rt->addListener(this);
 
   AddCompositor("MRT", true);
-  AddCompositor("GTAO", !RenderSystemIsGLES2());
+  AddCompositor("SSAO", false);
   AddCompositor("Copyback", true);
   AddCompositor("FXAA", false);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
   AddCompositor("HDR", false);
-  //  AddCompositor("MB", false);
+  // AddCompositor("MB", false);
 
   // reg as viewport listener
   viewport->addListener(this);
@@ -396,7 +396,7 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   Vector4f ZBufferParams = Vector4f(x, y, z, w);
 
   if (pass_id == 10) {  // 10 = SSAO
-//    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
+                        //    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", far);
     fp->setNamedConstant("NearClipDistance", near);
     fp->setNamedConstant("ZBufferParams", ZBufferParams);

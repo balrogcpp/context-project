@@ -54,17 +54,16 @@ vec3 GetCameraVec(const vec2 uv)
     return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, 1.0);
 }
 
-#define SSAO_LIMIT 10
+#define SSAO_LIMIT 100
 #define SSAO_SAMPLES 4
 #define SSAO_RADIUS 2.5
 #define SSAO_FALLOFF 1.5
 #define SSAO_THICKNESSMIX 0.2
-#define SSAO_MAX_STRIDE 3
+#define SSAO_MAX_STRIDE 32
 
 void SliceSample(const vec2 tc_base, const vec2 aoDir, int i, float targetMip, const vec3 ray, const vec3 v, inout float closest)
 {
     vec2 uv = tc_base + aoDir * float(i);
-//    float depth = textureLod(DepthTex, uv, targetMip).x;
     float depth = Linear01Depth(textureLod(DepthTex, uv, 0.0).x);
     // Vector from current pixel to current slice sample
     vec3 p = GetCameraVec(uv) * depth - ray;
@@ -116,11 +115,11 @@ vec3 hash(const vec3 a)
     return fract((b.xxy + b.yxx) * b.zyx);
 }
 
-vec3 getScreenSpacePos(const vec2 uv, const vec3 cameraNormal)
-{
-    float linearDepth = textureLod(DepthTex, uv, 0.0).x;
-    return cameraNormal * linearDepth;
-}
+// vec3 getScreenSpacePos(const vec2 uv, const vec3 cameraNormal)
+// {
+//     float linearDepth = textureLod(DepthTex, uv, 0.0).x;
+//     return cameraNormal * linearDepth;
+// }
 
 float Falloff(float dist2, float cosh)
 {
@@ -154,13 +153,13 @@ const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
 void main()
 {
     vec2 viewsizediv = 1.0 / vec2(textureSize(DepthTex, 0));
-    vec2 uv = 2.0 * gl_FragCoord.xy * viewsizediv;
+    vec2 uv = gl_FragCoord.xy * viewsizediv;
 
     vec3 normal = getNormal(DepthTex, uv, viewsizediv);
     normal.z = -normal.z;
 
     // Depth of the current pixel
-    float dhere = textureLod(DepthTex, uv, 0.0).x;
+    float dhere = Linear01Depth(textureLod(DepthTex, uv, 0.0).x);
     // Vector from camera to the current pixel's position
     vec3 ray = GetCameraVec(uv) * dhere;
 
@@ -255,5 +254,5 @@ void main()
     float h2 = n + min(h2a - n, PI_HALF);
 
     float visibility = mix(1.0, IntegrateArc(h1, h2, n), length(projectedNormal));
-    FragColor.rgb = vec3(normal);
+    FragColor.r = visibility;
 }

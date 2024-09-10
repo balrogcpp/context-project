@@ -2,15 +2,14 @@
 
 import STD from std.compositor
 
-compositor GTAO : STD
+compositor SSAO : STD
 {
     technique
     {
-        //texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1
-        //texture gbuf1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture_ref ao MRT ao
-/*
+
         target gbuf
         {
             pass clear
@@ -24,33 +23,33 @@ compositor GTAO : STD
             }
         }
 
-        target gbuf1
-        {
-            pass render_quad
-            {
-                identifier 11
-                material ToLinear
-                input 0 gbuf
-            }
-        }
-*/
         target ssao
         {
             pass render_quad
             {
                 identifier 10
                 material GTAO
-                input 0 mrt 1
+                input 0 gbuf
             }
         }
 
-        target_output
+        target ao
         {
             pass render_quad
             {
-                material Copyback
+                identifier 10
+                material Denoiser
                 input 0 ssao
             }
         }
+
+        // target_output
+        // {
+        //     pass render_quad
+        //     {
+        //         material Copyback
+        //         input 0 ao
+        //     }
+        // }
     }
 }

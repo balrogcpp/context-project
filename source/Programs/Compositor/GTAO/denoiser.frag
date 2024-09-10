@@ -15,7 +15,7 @@ void main()
 
 #if !defined(GL_ES)
     vec2 tsize = 1.0 / vec2(textureSize(RT, 0));
-    vec2 uv = loc / vec2(textureSize(RT, 0));
+    vec2 uv = vec2(loc) * tsize;
 
     vec4 g1 = textureGather(RT, uv, 0);
     vec4 g2 = textureGather(RT, uv + tsize * vec2(2.0, 0.0), 0);
