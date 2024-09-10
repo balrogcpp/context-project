@@ -17,17 +17,3 @@ abstract compositor STD
         }
     }
 }
-
-abstract compositor Bypass
-{
-    technique
-    {
-        compositor_logic DeferredLogic
-        texture_ref mrt MRT mrt
-
-        target_output
-        {
-            input previous
-        }
-    }
-}

@@ -17,7 +17,7 @@ list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 # check dependencies
 find_package(Vulkan)
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(X11 QUIET)
+    find_package(X11)
 endif ()
 insert_dependency_static(Bullet)
 insert_dependency_static2(Lua LUA_LIBRARY)

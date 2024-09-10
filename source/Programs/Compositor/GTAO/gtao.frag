@@ -5,7 +5,7 @@
 #include "math.glsl"
 
 uniform sampler2D DepthTex;
-uniform sampler2D NormalTex;
+//uniform sampler2D NormalTex;
 uniform mat4 ProjMatrix;
 uniform float FarClipDistance;
 uniform float NearClipDistance;
@@ -22,12 +22,17 @@ const float spacialOffset = 1.0;
 #define PI 3.1415926535897932384626433832795
 #define PI_HALF 1.5707963267948966192313216916398
 
+float Linear01Depth(const highp float z)
+{
+    return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
+}
+
 // [Eberly2014] GPGPU Programming for Games and Science
 float GTAOFastAcos(float x)
 {
     float res = -0.156583 * abs(x) + PI_HALF;
     res *= sqrt(1.0 - abs(x));
-    return x >= 0 ? res : PI - res;
+    return x >= 0.0 ? res : PI - res;
 }
 
 float IntegrateArc(float h1, float h2, float n)
@@ -58,8 +63,9 @@ vec3 GetCameraVec(const vec2 uv)
 
 void SliceSample(const vec2 tc_base, const vec2 aoDir, int i, float targetMip, const vec3 ray, const vec3 v, inout float closest)
 {
-    vec2 uv = tc_base + aoDir * i;
-    float depth = textureLod(DepthTex, uv, targetMip).x;
+    vec2 uv = tc_base + aoDir * float(i);
+//    float depth = textureLod(DepthTex, uv, targetMip).x;
+    float depth = Linear01Depth(textureLod(DepthTex, uv, 0.0).x);
     // Vector from current pixel to current slice sample
     vec3 p = GetCameraVec(uv) * depth - ray;
     // Cosine of the horizon angle of the current sample
@@ -90,11 +96,6 @@ vec3 MinDiff(const vec3 P, const vec3 Pr, const vec3 Pl)
     vec3 V1 = Pr - P;
     vec3 V2 = P - Pl;
     return (dot(V1,V1) < dot(V2,V2)) ? V1 : V2;
-}
-
-float Linear01Depth(const highp float z)
-{
-    return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
 }
 
 vec3 getNormal(const sampler2D tex, const vec2 uv, const vec2 tsize)
@@ -153,9 +154,9 @@ const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
 void main()
 {
     vec2 viewsizediv = 1.0 / vec2(textureSize(DepthTex, 0));
-    vec2 uv = gl_FragCoord.xy * viewsizediv;
+    vec2 uv = 2.0 * gl_FragCoord.xy * viewsizediv;
 
-    vec3 normal = getNormal(NormalTex, uv, viewsizediv);
+    vec3 normal = getNormal(DepthTex, uv, viewsizediv);
     normal.z = -normal.z;
 
     // Depth of the current pixel
@@ -204,13 +205,13 @@ void main()
 
     // Calculate the distance between samples (direction vector scale) so that the world space AO radius remains constant but also clamp to avoid cache trashing
     // viewsizediv = vec2(1.0 / sreenWidth, 1.0 / screenHeight)
-    float stride = min((1.0 / length(ray)) * SSAO_LIMIT, SSAO_MAX_STRIDE);
+    float stride = min((1.0 / length(ray)) * float(SSAO_LIMIT), float(SSAO_MAX_STRIDE));
     vec2 dirMult = viewsizediv.xy * stride;
     // Get the view vector (normalized vector from pixel to camera)
     vec3 v = normalize(-ray);
 
     // Calculate slice direction from pixel's position
-    float dirAngle = (PI / 16.0) * (((int(gl_FragCoord.x) + int(gl_FragCoord.y) & 3) << 2) + (int(gl_FragCoord.x) & 3)) + angleOffset;
+    float dirAngle = (PI / 16.0) * (float((int(gl_FragCoord.x) + int(gl_FragCoord.y) & 3) << 2) + float(int(gl_FragCoord.x) & 3)) + angleOffset;
     vec2 aoDir = dirMult * vec2(sin(dirAngle), cos(dirAngle));
 
     // Project world space normal to the slice plane
@@ -226,13 +227,14 @@ void main()
     float c1 = -1.0;
     float c2 = -1.0;
 
-    vec2 tc_base = uv + aoDir * (0.25 * ((int(gl_FragCoord.y) - int(gl_FragCoord.x)) & 3) - 0.375 + spacialOffset);
+    vec2 tc_base = uv + aoDir * (0.25 * float((int(gl_FragCoord.y) - int(gl_FragCoord.x)) & 3) - 0.375 + spacialOffset);
 
     const float minMip = 0.0;
     const float maxMip = 3.0;
     const float mipScale = 1.0 / 12.0;
 
-    float targetMip = floor(clamp(pow(stride, 1.3) * mipScale, minMip, maxMip));
+//    float targetMip = floor(clamp(pow(stride, 1.3) * mipScale, minMip, maxMip));
+    float targetMip = 0.0;
 
     // Find horizons of the slice
     for(int i = -1; i >= -SSAO_SAMPLES; i--)
@@ -253,5 +255,5 @@ void main()
     float h2 = n + min(h2a - n, PI_HALF);
 
     float visibility = mix(1.0, IntegrateArc(h1, h2, n), length(projectedNormal));
-    FragColor.rgb = vec3(visibility);
+    FragColor.rgb = vec3(normal);
 }

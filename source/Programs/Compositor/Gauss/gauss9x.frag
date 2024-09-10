@@ -24,8 +24,8 @@ vec3 Gauss9X(const sampler2D tex, const vec2 uv, const vec2 tsize)
 
 void main()
 {
-    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
     vec2 tsize = 1.0 / vec2(textureSize(RT, 0));
+    vec2 uv = gl_FragCoord.xy * tsize;
 
     FragColor.rgb = Gauss9X(RT, uv, tsize);
 }

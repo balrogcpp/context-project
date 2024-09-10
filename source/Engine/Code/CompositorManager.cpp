@@ -396,12 +396,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   Vector4f ZBufferParams = Vector4f(x, y, z, w);
 
   if (pass_id == 10) {  // 10 = SSAO
-    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
+//    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
     fp->setNamedConstant("FarClipDistance", far);
     fp->setNamedConstant("NearClipDistance", near);
-    fp->setNamedConstant("ZBufferParams", ZBufferParams);
-  }
-  if (pass_id == 11) {  // 11 = SSAO
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
 
   } else if (pass_id == 30) {  // 14 = MotionBlur
