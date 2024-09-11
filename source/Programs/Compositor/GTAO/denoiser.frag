@@ -15,15 +15,15 @@ void main()
 #if !defined(GL_ES)
     vec2 uv = vec2(gl_FragCoord.xy - vec2(1.5, 1.5)) / vec2(textureSize(RT, 0));
 
-    vec4 g1 = textureGather(RT, uv, 0);
+    vec4 g1 = textureGatherOffset(RT, uv, ivec2(0, 0), 0);
     vec4 g2 = textureGatherOffset(RT, uv, ivec2(2, 0), 0);
     vec4 g3 = textureGatherOffset(RT, uv, ivec2(0, 2), 0);
     vec4 g4 = textureGatherOffset(RT, uv, ivec2(2, 2), 0);
 
-    totalao += g1.x + g1.y + g1.z + g1.w;
-    totalao += g2.x + g2.y + g2.z + g2.w;
-    totalao += g3.x + g3.y + g3.z + g3.w;
-    totalao += g4.x + g4.y + g4.z + g4.w;
+    totalao += dot(g1, vec4(1.0, 1.0, 1.0, 1.0));
+    totalao += dot(g2, vec4(1.0, 1.0, 1.0, 1.0));
+    totalao += dot(g3, vec4(1.0, 1.0, 1.0, 1.0));
+    totalao += dot(g4, vec4(1.0, 1.0, 1.0, 1.0));
 
 #else
     ivec2 loc = ivec2(gl_FragCoord.xy) - ivec2(2, 2);
