@@ -5,12 +5,7 @@
 #include "math.glsl"
 
 uniform sampler2D DepthTex;
-//uniform sampler2D NormalTex;
-uniform mat4 ProjMatrix;
-uniform float FarClipDistance;
-uniform float NearClipDistance;
 uniform vec4 ZBufferParams;
-
 
 // Used to get vector from camera to pixel
 //const float aspect 1.0;
@@ -24,7 +19,7 @@ const float spacialOffset = 1.0;
 
 float Linear01Depth(const highp float z)
 {
-    return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
+    return 1.0 / (z * ZBufferParams.z + ZBufferParams.w);
 }
 
 // [Eberly2014] GPGPU Programming for Games and Science
@@ -125,31 +120,7 @@ float Falloff(float dist2, float cosh)
 {
     return 2.0 * clamp((dist2 - 0.16) / (4.0 - 0.16), 0.0, 1.0);
 }
-/*
-#define MAX_RAND_SAMPLES 14
-#define RADIUS 0.21 // 0.105
-#define INVSQ3 0.57735026918962576451
-#define NUM_BASE_SAMPLES MAX_RAND_SAMPLES
 
-const vec3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
-   vec3[](
-   vec3(1.0, 0.0, 0.0),
-   vec3(-1.0, 0.0, 0.0),
-   vec3(0.0, 1.0, 0.0),
-   vec3(0.0, -1.0, 0.0),
-   vec3(0.0, 0.0, 1.0),
-   vec3(0.0, 0.0, -1.0),
-   vec3( INVSQ3,  INVSQ3,  INVSQ3),
-   vec3(-INVSQ3,  INVSQ3,  INVSQ3),
-   vec3( INVSQ3, -INVSQ3,  INVSQ3),
-   vec3( INVSQ3,  INVSQ3, -INVSQ3),
-   vec3(-INVSQ3, -INVSQ3,  INVSQ3),
-   vec3(-INVSQ3,  INVSQ3, -INVSQ3),
-   vec3( INVSQ3, -INVSQ3, -INVSQ3),
-   vec3(-INVSQ3, -INVSQ3, -INVSQ3)
-);
-*/
-//in highp vec3 vRay;
 void main()
 {
     vec2 viewsizediv = 1.0 / vec2(textureSize(DepthTex, 0));
@@ -162,45 +133,6 @@ void main()
     float dhere = Linear01Depth(textureLod(DepthTex, uv, 0.0).x);
     // Vector from camera to the current pixel's position
     vec3 ray = GetCameraVec(uv) * dhere;
-
-/*
-    // Depth of the current pixel
-    vec3 ray = vRay;
-
-    // random normal lookup from a texture and expand to [-1..1]
-    // IN.ray will be distorted slightly due to interpolation
-    // it should be normalized here
-    float clampedPixelDepth = textureLod(DepthTex, uv, 0.0).x;
-    float pixelDepth = clampedPixelDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
-    vec3 viewPos = ray * clampedPixelDepth;
-    vec3 randN = normalize(hash(viewPos.xyz));
-
-    // Accumulated visibility factor
-    float visibility = 0.0;
-    for (int i = 0; i < NUM_BASE_SAMPLES; ++i) {
-        // Reflected direction to move in for the sphere
-        // (based on random samples and a random texture sample)
-        // bias the random direction away from the normal
-        // this tends to minimize self visibility
-        vec3 randomDir = normalize(reflect(RAND_SAMPLES[i], randN) + normal);
-
-        vec3 oSample = viewPos + randomDir * RADIUS;
-        vec4 nuv = mulMat4x4Half3(ProjMatrix, oSample);
-        nuv.xy /= nuv.w;
-
-        // Compute visibility based on the (scaled) Z difference
-        float clampedSampleDepth = textureLod(DepthTex, nuv.xy, 0.0).x;
-        float sampleDepth = clampedSampleDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
-        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / (pixelDepth - sampleDepth)) * step(oSample.z, clampedSampleDepth);
-
-        // This is a sample visibility function, you can always play with
-        // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        visibility += clamp(pow(1.0 - rangeCheck, 10.0) + rangeCheck, 0.0, 1.0);
-    }
-
-    // normalise
-    visibility /= float(NUM_BASE_SAMPLES);
-*/
 
     // Calculate the distance between samples (direction vector scale) so that the world space AO radius remains constant but also clamp to avoid cache trashing
     // viewsizediv = vec2(1.0 / sreenWidth, 1.0 / screenHeight)

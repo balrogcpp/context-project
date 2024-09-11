@@ -395,31 +395,14 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   float z = x / far;
   Vector4f ZBufferParams = Vector4f(x, y, z, w);
 
-  if (pass_id == 10) {  // 10 = SSAO
-                        //    fp->setNamedConstant("ProjMatrix", Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix());
-    fp->setNamedConstant("FarClipDistance", far);
-    fp->setNamedConstant("NearClipDistance", near);
+  if (pass_id == 10) {
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
 
-  } else if (pass_id == 30) {  // 14 = MotionBlur
+  } else if (pass_id == 30) {
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
     fp->setNamedConstant("WorldViewProjMatrix", viewProj);
     fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
-
-    //  } else if (pass_id == 40) {  // 40 = KinoFog
-    //    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    //    const auto &ll = sceneManager->_getLightsAffectingFrustum();
-    //    fp->setNamedConstant("CameraPosition", camera->getRealPosition());
-    //    fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
-    //    fp->setNamedConstant("FarClipDistance", camera->getFarClipDistance());
-    //    fp->setNamedConstant("NearClipDistance", camera->getNearClipDistance());
-    //    if (!ll.empty()) fp->setNamedConstant("LightDir0", ll[0]->getDerivedDirection());
-    //    auto *tex = mat->getTechnique(0)->getPass(0)->getTextureUnitState(2);
-    //    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-    //      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-    //      tex->setCompositorReference("CubeMap", "cube");
-    //    }
 
     //  } else if (pass_id == 12) {  // 12 = GodRays
     //    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();

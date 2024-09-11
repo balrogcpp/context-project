@@ -21,6 +21,6 @@ void main()
     highp float fDepth = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
 #endif
 
-//    FragColor.x = fDepth;
-    gl_FragDepth = fDepth;
+    FragColor.x = fDepth;
+//    gl_FragDepth = fDepth;
 }
