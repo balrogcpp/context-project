@@ -9,19 +9,17 @@ uniform sampler2D DirtTex;
 uniform sampler2D Lum;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
-vec3 Upscale9(const sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 Upscale9(const sampler2D tex, const vec2 uv)
 {
-    vec4 d = tsize.xyxy * vec4(1.0, 1.0, -1.0, 0.0);
-
-    vec3 A = textureLod(tex, uv - d.xy, 0.0).rgb;
-    vec3 B = textureLod(tex, uv - d.wy, 0.0).rgb;
-    vec3 C = textureLod(tex, uv - d.zy, 0.0).rgb;
-    vec3 D = textureLod(tex, uv + d.zw, 0.0).rgb;
-    vec3 E = textureLod(tex, uv       , 0.0).rgb;
-    vec3 F = textureLod(tex, uv + d.xw, 0.0).rgb;
-    vec3 G = textureLod(tex, uv + d.zy, 0.0).rgb;
-    vec3 H = textureLod(tex, uv + d.wy, 0.0).rgb;
-    vec3 I = textureLod(tex, uv + d.xy, 0.0).rgb;
+    vec3 A = textureLodOffset(tex, uv, 0.0, ivec2(-1, -1)).rgb;
+    vec3 B = textureLodOffset(tex, uv, 0.0, ivec2( 0, -1)).rgb;
+    vec3 C = textureLodOffset(tex, uv, 0.0, ivec2( 1, -1)).rgb;
+    vec3 D = textureLodOffset(tex, uv, 0.0, ivec2(-1,  1)).rgb;
+    vec3 E = textureLodOffset(tex, uv, 0.0, ivec2( 0,  0)).rgb;
+    vec3 F = textureLodOffset(tex, uv, 0.0, ivec2( 1,  0)).rgb;
+    vec3 G = textureLodOffset(tex, uv, 0.0, ivec2(-1,  1)).rgb;
+    vec3 H = textureLodOffset(tex, uv, 0.0, ivec2( 0,  1)).rgb;
+    vec3 I = textureLodOffset(tex, uv, 0.0, ivec2( 1,  1)).rgb;
 
     vec3 c = E * 0.25;
     c += (B + D + F + H) * 0.125;
@@ -30,27 +28,24 @@ vec3 Upscale9(const sampler2D tex, const vec2 uv, const vec2 tsize)
     return c;
 }
 
-// Standard box filtering
-vec3 UpsampleBox(const sampler2D tex, const vec2 uv, const vec2 tsize)
+// https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L43
+vec3 UpsampleBox(const sampler2D tex, const vec2 uv)
 {
-    vec4 d = tsize.xyxy * vec4(-1.0, -1.0, 1.0, 1.0) * 0.5;
+    vec3 o;
+    o =  textureLodOffset(tex, uv, 0.0, ivec2(-1, -1)).rgb;
+    o += textureLodOffset(tex, uv, 0.0, ivec2( 1, -1)).rgb;
+    o += textureLodOffset(tex, uv, 0.0, ivec2(-1,  1)).rgb;
+    o += textureLodOffset(tex, uv, 0.0, ivec2( 1,  1)).rgb;
 
-    vec3 c;
-    c =  textureLod(tex, uv + d.xy, 0.0).rgb;
-    c += textureLod(tex, uv + d.zy, 0.0).rgb;
-    c += textureLod(tex, uv + d.xw, 0.0).rgb;
-    c += textureLod(tex, uv + d.zw, 0.0).rgb;
-
-    return c * 0.25;
+    return o * 0.25;
 }
 
 void main()
 {
-    vec2 tsize = 1.0 / vec2(textureSize(RT, 0));
-    vec2 uv = gl_FragCoord.xy * tsize;
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
 
     float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
-    vec3 bloom = UpsampleBox(BrightTex, uv, tsize).rgb;
+    vec3 bloom = UpsampleBox(BrightTex, uv).rgb;
     vec3 color = inverseTonemapSRGB(texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb);
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
