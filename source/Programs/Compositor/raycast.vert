@@ -2,13 +2,16 @@
 
 #include "header.glsl"
 
-uniform highp mat4 WorldViewProj;
-
-in highp vec3 vertex;
 in highp vec3 normal;
 out highp vec3 vRay;
 void main()
 {
-    gl_Position = mul(WorldViewProj, vec4(vertex, 1.0));
+    vec4 positions[4] = vec4[4](
+		vec4(-1.0, -1.0, 0.0, 1.0),
+		vec4(1.0, -1.0, 0.0, 1.0),
+		vec4(-1.0, 1.0, 0.0, 1.0),
+		vec4(1.0, 1.0, 0.0, 1.0));
+
+    gl_Position = positions[gl_VertexID];
     vRay = normal.xyz;
 }

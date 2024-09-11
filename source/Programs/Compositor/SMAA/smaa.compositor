@@ -11,12 +11,15 @@ compositor SMAA : STD
 
 		target edges
 		{
-			pass clear {}
-			
+			pass clear 
+			{
+				buffers colour
+			}
+
 			pass render_quad
 			{
 				material SMAA/EdgeDetection
-				input 0 rt
+				input 0 mrt 0
 				//input 1 mrt 1
 			}
 		}
@@ -35,7 +38,7 @@ compositor SMAA : STD
 			pass render_quad
 			{
 				material SMAA/NeighborhoodBlending
-				input 0 rt
+				input 0 mrt 0
 				input 1 blend
 				//input 2 mrt 2
 			}

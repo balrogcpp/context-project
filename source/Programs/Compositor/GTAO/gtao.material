@@ -80,7 +80,7 @@ material Combine : StdQuad
     {
         pass
         {
-            fragment_program_ref mod
+            fragment_program_ref gtaocombine
             {
                 param_named RT int 0
                 param_named AO int 1
