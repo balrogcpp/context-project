@@ -20,17 +20,6 @@ vec3 GetCameraVec(const vec2 uv)
     return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, 1.0);
 }
 
-//vec3 UVToView(vec2 uv, float eye_z)
-//{
-//    return vec3((uv * control.projInfo.xy + control.projInfo.zw) * (control.projOrtho != 0 ? 1. : eye_z), eye_z);
-//}
-
-//vec3 FetchViewPos(vec2 UV)
-//{
-//    float ViewDepth = textureLod(texLinearDepth,UV,0).x;
-//    return UVToView(UV, ViewDepth);
-//}
-
 vec3 MinDiff(const vec3 P, const vec3 Pr, const vec3 Pl)
 {
     vec3 V1 = Pr - P;

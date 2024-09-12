@@ -16,5 +16,4 @@ void main()
 #endif
 
     FragColor.r = (gl_FragCoord.z - PSSM_GLOBAL_MIN_DEPTH) / (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH);
-//    FragColor.r = gl_FragCoord.z;
 }

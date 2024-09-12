@@ -7,16 +7,17 @@ compositor SSAO : STD
     technique
     {
         //texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1
-        texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
+        texture gbuf0 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
+        texture gbuf1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture_ref ao MRT ao
 
         target gbuf
         {
-            pass clear
-            {
-                buffers depth
-            }
+            // pass clear
+            // {
+            //     buffers depth
+            // }
             pass render_quad
             {
                 material DepthDownscaleMax
@@ -24,13 +25,22 @@ compositor SSAO : STD
             }
         }
 
+        // target gbuf1
+        // {
+        //     pass render_quad
+        //     {
+        //         material Copy
+        //         input 0 gbuf0
+        //     }
+        // }
+
         target ssao
         {
             pass render_quad
             {
                 identifier 10
                 material GTAO
-                input 0 gbuf
+                input 0 gbuf0
             }
         }
 
@@ -38,7 +48,6 @@ compositor SSAO : STD
         {
             pass render_quad
             {
-                identifier 10
                 material Denoiser
                 input 0 ssao
             }

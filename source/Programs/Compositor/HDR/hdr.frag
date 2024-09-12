@@ -28,7 +28,7 @@ vec3 Upscale9(const sampler2D tex, const vec2 uv)
     return c;
 }
 
-// https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L43
+// https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L78
 vec3 UpsampleBox(const sampler2D tex, const vec2 uv)
 {
     vec3 o;

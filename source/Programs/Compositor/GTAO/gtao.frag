@@ -4,8 +4,8 @@
 #include "header.glsl"
 #include "math.glsl"
 
-uniform sampler2D DepthTex;
-uniform vec4 ZBufferParams;
+uniform highp sampler2D DepthTex;
+uniform highp vec4 ZBufferParams;
 
 // Used to get vector from camera to pixel
 //const float aspect 1.0;
