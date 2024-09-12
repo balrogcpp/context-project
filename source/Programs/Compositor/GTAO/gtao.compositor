@@ -12,7 +12,7 @@ compositor SSAO : STD
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture_ref ao MRT ao
 
-        target gbuf
+        target gbuf0
         {
             // pass clear
             // {
