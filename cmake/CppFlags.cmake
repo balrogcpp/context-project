@@ -124,8 +124,8 @@ elseif (MSVC)
         string(REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /utf-8 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
-    string(APPEND CMAKE_C_FLAGS " /MP /GS- /GF /utf-8")
+    string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /source-charset:utf-8 /execution-charset:utf-8 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
+    string(APPEND CMAKE_C_FLAGS " /MP /GS- /GF /source-charset:utf-8 /execution-charset:utf-8")
 
     if (${CMAKE_BUILD_TYPE_LOWER} MATCHES "deb")
         string(APPEND CMAKE_CXX_FLAGS " /DDEBUG")
