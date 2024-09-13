@@ -72,21 +72,6 @@ void CompositorManager::OnUpdate(float time) {
   viewProjPrev = viewProj;
   viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix();
 
-  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-    auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get());
-    int pssmCount = pssm->getSplitCount();
-    const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-    pssmPoints.w = sceneManager->getShadowFarDistance();
-    for (unsigned int i = 0; i < Ogre::Math::Clamp<Ogre::uint32>(pssmCount, 0, 4); i++) {
-      pssmPoints[i] = splitPointList[i + 1];
-    }
-  } else {
-    pssmPoints = Ogre::Vector4(0.0, 0.0, 0.0, sceneManager->getShadowFarDistance());
-  }
-
-  pssmChanged = pssmPointsPrev != pssmPoints;
-  pssmPointsPrev = pssmPoints;
-
   ArHosekSkyModelState *states[3];
   Ogre::Vector3f sunDir;
   if (sceneManager->hasLight("Sun")) {
@@ -387,18 +372,19 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
-  float far = camera->getFarClipDistance();
-  float near = camera->getNearClipDistance();
-  float y = far / near;
-  float x = 1.0 - y;
-  float w = y / far;
-  float z = x / far;
-  Vector4f ZBufferParams = Vector4f(x, y, z, w);
 
   if (pass_id == 10) {
+    float far = camera->getFarClipDistance();
+    float near = camera->getNearClipDistance();
+    Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
+
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
 
   } else if (pass_id == 30) {
+    float far = camera->getFarClipDistance();
+    float near = camera->getNearClipDistance();
+    Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
+
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
     fp->setNamedConstant("WorldViewProjMatrix", viewProj);
     fp->setNamedConstant("ViewProjPrev", viewProjPrev);
@@ -431,17 +417,18 @@ void CompositorManager::notifyResourcesCreated(bool forResizeOnly) {
 
 void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                                  const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
-  if (!pass->getLightingEnabled() || !pass->getPolygonModeOverrideable() || !pass->hasVertexProgram() || !pass->hasFragmentProgram()) return;
+  if (!pass->getLightingEnabled() || !pass->getPolygonModeOverrideable()) return;
 
   const auto &fp = pass->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
   const auto &vp = pass->getVertexProgramParameters();
   vp->setIgnoreMissingParams(true);
 
-  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE && pssmChanged) {
-    fp->setNamedConstant("PssmSplitPoints", pssmPoints);
+  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+    const Ogre::PSSMShadowCameraSetup::SplitPointList &splits =
+        dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
+    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits[2], splits[3], sceneManager->getShadowFarDistance()));
   }
-
   if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
     for (auto *it : pass->getTextureUnitStates())
       if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
@@ -477,19 +464,19 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   if (!IsCompositorEnabled("MRT")) return;
 
   if (auto *tex = pass->getTextureUnitState("IBL")) {
-    if (IsCompositorEnabled("CubeMap")) {
-      auto &cube = compositorChain->getCompositor("CubeMap")->getTextureInstance("cube", 0);
-      auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
-      static bool copied = false;
-      if (!copied) {
-        cube->copyToTexture(ibl);
-        copied = true;
-      }
-    }
+    //  if (IsCompositorEnabled("CubeMap")) {
+    //    auto &cube = compositorChain->getCompositor("CubeMap")->getTextureInstance("cube", 0);
+    //    auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
+    //    static bool copied = false;
+    //    if (!copied) {
+    //      cube->copyToTexture(ibl);
+    //      copied = true;
+    //    }
+    //  }
 
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      if (IsCompositorEnabled("CubeMap")) tex->setCompositorReference("MRT", "ibl");
+      if (IsCompositorEnabled("CubeMap")) tex->setCompositorReference("CubeMap", "cube");
     }
   }
 

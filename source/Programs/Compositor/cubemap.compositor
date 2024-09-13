@@ -25,7 +25,7 @@ compositor CubeMap
     technique
     {
         compositor_logic DeferredLogic
-        texture cube 128 128 PF_R11G11B10_FLOAT cubic no_fsaa
+        texture cube 16 16 PF_R11G11B10_FLOAT cubic no_fsaa
 
         target cube 0 : cubemap_target {}
         target cube 1 : cubemap_target {}

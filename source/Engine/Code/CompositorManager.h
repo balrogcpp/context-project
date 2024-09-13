@@ -74,8 +74,8 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Camera* camera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
   Ogre::Viewport* viewport = nullptr;
-  Ogre::Vector4 pssmPoints;
-  Ogre::Vector4 pssmPointsPrev;
+  //Ogre::Vector4 pssmPoints;
+  //Ogre::Vector4 pssmPointsPrev;
   float hosekParamsArray[10 * 3];
   bool pssmChanged;
 };
