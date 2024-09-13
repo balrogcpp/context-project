@@ -64,8 +64,6 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Plane plane;
   bool fixedViewportSize;
   std::queue<std::pair<std::string, bool>> compositorList;
-  Ogre::Matrix4 viewProj;
-  Ogre::Matrix4 viewProjPrev;
 
   std::array<Ogre::Vector3, 10> hosekParams;
   Ogre::CompositorManager* compositorManager = nullptr;
@@ -74,8 +72,6 @@ class CompositorManager : public System<CompositorManager>,
   Ogre::Camera* camera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
   Ogre::Viewport* viewport = nullptr;
-  //Ogre::Vector4 pssmPoints;
-  //Ogre::Vector4 pssmPointsPrev;
   float hosekParamsArray[10 * 3];
   bool pssmChanged;
 };

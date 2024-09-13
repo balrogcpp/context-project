@@ -69,9 +69,6 @@ CompositorManager::CompositorManager() : fixedViewportSize(false), plane(Vector3
 CompositorManager::~CompositorManager() = default;
 
 void CompositorManager::OnUpdate(float time) {
-  viewProjPrev = viewProj;
-  viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix();
-
   ArHosekSkyModelState *states[3];
   Ogre::Vector3f sunDir;
   if (sceneManager->hasLight("Sun")) {
@@ -146,9 +143,9 @@ void CompositorManager::OnSetUp() {
   cubeCamera = sceneManager->createCamera("CubeCamera");
   cubeCamera->setFOVy(Ogre::Degree(90.0));
   cubeCamera->setAspectRatio(1.0);
-  cubeCamera->setNearClipDistance(1.0);
+  cubeCamera->setNearClipDistance(camera->getNearClipDistance());
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
-  sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y)->attachObject(cubeCamera);
+  sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::ZERO)->attachObject(cubeCamera);
   AddCompositor("CubeMap", true, 0);
   auto *rt = compositorChain->getCompositor("CubeMap")->getRenderTarget("cube");
   rt->removeAllViewports();
@@ -386,8 +383,8 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
 
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
-    fp->setNamedConstant("WorldViewProjMatrix", viewProj);
-    fp->setNamedConstant("ViewProjPrev", viewProjPrev);
+    //    fp->setNamedConstant("WorldViewProjMatrix", viewProj);
+    //    fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
 
     //  } else if (pass_id == 12) {  // 12 = GodRays
@@ -437,20 +434,10 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
 
   Ogre::Matrix4 MVP;
   rend->getWorldTransforms(&MVP);
-  vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * MVP);
-
-  //  if (auto *subentity = dynamic_cast<Ogre::SubEntity *>(rend)) {
-  //    auto *entity = subentity->getParent();
-  //    auto mass = entity->getUserObjectBindings().getUserAny("mass");
-  //    if (entity->getMesh()->isReloadable() && mass.has_value() && Ogre::any_cast<Real>(mass) == 0.0) {
-  //      Ogre::Any prevMVP = rend->getUserObjectBindings().getUserAny();
-  //      rend->getUserObjectBindings().setUserAny(MVP);
-  //      if (prevMVP.has_value()) {
-  //        vp->setNamedConstant("WorldViewProjPrev", viewProjPrev * Ogre::any_cast<Ogre::Matrix4>(prevMVP));
-  //        fp->setNamedConstant("StaticObj", 1.0f);
-  //      }
-  //    }
-  //  }
+  Ogre::Matrix4 viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * MVP;
+  Ogre::Any prevProj = rend->getUserObjectBindings().getUserAny();
+  rend->getUserObjectBindings().setUserAny(viewProj);
+  if (prevProj.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevProj));
 
   if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
