@@ -4,14 +4,6 @@ include(Platform)
 include(BuildVariables)
 include(DateTime)
 
-#if (ANY_NOT_FOUND)
-#    message(WARNING "Not all dependencies are available. Build will fails, please build contrib target first (cmake --build . --target contrib). Exiting...")
-#    if (ANDROID)
-#        add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Android/app/src/main/cpp/main.cpp)
-#        add_dependencies(AndroidDummy Contrib)
-#        return()
-#    endif ()
-#endif ()
 
 # this required to to disable windows upscaling @hdp monitors @windows
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.hpp)

@@ -1360,7 +1360,7 @@ endif ()
 macro(add_external_target package)
     find_package(${package})
     if (NOT ${package}_FOUND)
-        add_dependencies(Contrib Target_${package})
+        add_dependencies(External Target_${package})
     endif ()
 endmacro()
 
