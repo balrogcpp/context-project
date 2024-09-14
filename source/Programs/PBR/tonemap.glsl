@@ -39,7 +39,7 @@ vec3 Inverse_Tonemap_Unreal(const vec3 x) {
 vec3 inverseTonemap(vec3 linear) {
     // Linear input
     linear = clamp(linear, 0.0, 1.0);
-    return Inverse_Tonemap_Unreal(pow(linear, vec3(1.0 / 2.2)));
+    return Inverse_Tonemap_Unreal(pow(linear, vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2)));
 }
 
 /**

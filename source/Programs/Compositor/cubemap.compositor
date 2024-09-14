@@ -33,5 +33,7 @@ compositor CubeMap
         target cube 3 : cubemap_target {}
         target cube 4 : cubemap_target {}
         target cube 5 : cubemap_target {}
+
+        target_output { input previous }
     }
 }

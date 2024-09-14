@@ -18,9 +18,6 @@ fragment_program SkyBoxFp glsl glsles hlsl
     {
         param_named_auto LightDir0 light_direction 0
         param_named_auto LightColor0 light_diffuse_colour_power_scaled 0
-        param_named_auto FogColour fog_colour
-        param_named_auto FogParams fog_params
-        //param_named_auto Time time
     }
 }
 
@@ -36,7 +33,7 @@ material SkyBox
 		pass
 		{
             lighting off
-            depth_write off
+            //depth_write off
             cull_hardware none
 
 			vertex_program_ref SkyBoxVp {}

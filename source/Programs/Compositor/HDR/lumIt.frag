@@ -12,7 +12,7 @@ float DownsampleBox4Tap(const sampler2D tex, const ivec2 uv)
     vec4 g = textureGather(tex, uv / vec2(textureSize(tex, 0)), 0);
     float o = dot(g, vec4(1.0, 1.0, 1.0, 1.0));
 #else
-    float c = texelFetch(tex, uv, 0).r;
+    float o = texelFetch(tex, uv, 0).r;
     o += texelFetch(tex, uv + ivec2(0, 1), 0).r;
     o += texelFetch(tex, uv + ivec2(1, 0), 0).r;
     o += texelFetch(tex, uv + ivec2(1, 1), 0).r;

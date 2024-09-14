@@ -13,14 +13,11 @@ compositor Fresnel
         target reflection
         {
             shadows off
-            pass clear
-            {
-                colour_value 0.1 0.2 0.8 1.0
-            }
-            pass render_scene
-            {
-                last_render_queue 90
-            }
+            pass clear { colour_value 0.1 0.2 0.8 1.0 }
+            pass render_scene { last_render_queue 90 }
+
         }
+
+        target_output { input previous }
     }
 }

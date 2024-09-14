@@ -45,8 +45,8 @@ vec3 HosekWilkie(const highp vec3 uv, const highp vec3 lightDir, const vec3 coef
 
     highp vec3 V = normalize(uv);
     vec3 N = normalize(lightDir);
-    V.y = abs(V.y);
-    if (abs(V.y) < 0.001) V.y = 0.001;
+//    V.y = abs(V.y);
+//    if (abs(V.y) < 0.001) V.y = 0.001;
     float cos_theta = clamp(V.y, 0.0, 1.0);
     float cos_gamma = dot(V, N);
     float gamma = acos(cos_gamma);
