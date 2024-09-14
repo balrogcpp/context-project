@@ -265,62 +265,62 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   }
 }
 
-//  source https://wiki.ogre3d.org/GetScreenspaceCoords
-static Ogre::Vector4 GetScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
-  if (!object->isInScene()) {
-    return Ogre::Vector4::ZERO;
-  }
-
-  const Ogre::AxisAlignedBox &AABB = object->getWorldBoundingBox(true);
-
-  /**
-   * If you need the point above the object instead of the center point:
-   * This snippet derives the average point between the top-most corners of the bounding box
-   * Ogre::Vector3 point = (AABB.getCorner(AxisAlignedBox::FAR_LEFT_TOP)
-   *    + AABB.getCorner(AxisAlignedBox::FAR_RIGHT_TOP)
-   *    + AABB.getCorner(AxisAlignedBox::NEAR_LEFT_TOP)
-   *    + AABB.getCorner(AxisAlignedBox::NEAR_RIGHT_TOP)) / 4;
-   */
-
-  // Get the center point of the object's bounding box
-  Ogre::Vector3 center = AABB.getCenter();
-  Ogre::Vector4 point = Ogre::Vector4(center, 1.0);
-
-  // Is the camera facing that point? If not, return false
-  Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
-  if (cameraPlane.getSide(center) != Ogre::Plane::NEGATIVE_SIDE) {
-    return Ogre::Vector4::ZERO;
-  }
-
-  // Transform the 3D point into screen space
-  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
-  point /= point.w;
-
-  return point;
-}
-
-static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
-  Ogre::Vector4 point = Ogre::Vector4::ZERO;
-
-  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
-    point = Ogre::Vector4(-light->getDerivedDirection(), 0.0);
-  else
-    point = Ogre::Vector4(light->getDerivedPosition(), 1.0);
-
-  Ogre::Vector3 v = point.xyz().normalisedCopy();
-  Ogre::Vector3 l = camera->getDerivedOrientation().zAxis().normalisedCopy();
-  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * point;
-  point /= point.w;
-
-  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
-    point.w = Ogre::Math::saturate(-v.dotProduct(l));
-  else
-    point.w = Ogre::Math::saturate(v.dotProduct(l));
-
-  point.w = Ogre::Math::Abs(Ogre::Math::Sin(point.w * Ogre::Math::HALF_PI));
-
-  return point;
-}
+////  source https://wiki.ogre3d.org/GetScreenspaceCoords
+//static Ogre::Vector4 GetScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
+//  if (!object->isInScene()) {
+//    return Ogre::Vector4::ZERO;
+//  }
+//
+//  const Ogre::AxisAlignedBox &AABB = object->getWorldBoundingBox(true);
+//
+//  /**
+//   * If you need the point above the object instead of the center point:
+//   * This snippet derives the average point between the top-most corners of the bounding box
+//   * Ogre::Vector3 point = (AABB.getCorner(AxisAlignedBox::FAR_LEFT_TOP)
+//   *    + AABB.getCorner(AxisAlignedBox::FAR_RIGHT_TOP)
+//   *    + AABB.getCorner(AxisAlignedBox::NEAR_LEFT_TOP)
+//   *    + AABB.getCorner(AxisAlignedBox::NEAR_RIGHT_TOP)) / 4;
+//   */
+//
+//  // Get the center point of the object's bounding box
+//  Ogre::Vector3 center = AABB.getCenter();
+//  Ogre::Vector4 point = Ogre::Vector4(center, 1.0);
+//
+//  // Is the camera facing that point? If not, return false
+//  Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
+//  if (cameraPlane.getSide(center) != Ogre::Plane::NEGATIVE_SIDE) {
+//    return Ogre::Vector4::ZERO;
+//  }
+//
+//  // Transform the 3D point into screen space
+//  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
+//  point /= point.w;
+//
+//  return point;
+//}
+//
+//static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
+//  Ogre::Vector4 point = Ogre::Vector4::ZERO;
+//
+//  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
+//    point = Ogre::Vector4(-light->getDerivedDirection(), 0.0);
+//  else
+//    point = Ogre::Vector4(light->getDerivedPosition(), 1.0);
+//
+//  Ogre::Vector3 v = point.xyz().normalisedCopy();
+//  Ogre::Vector3 l = camera->getDerivedOrientation().zAxis().normalisedCopy();
+//  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * point;
+//  point /= point.w;
+//
+//  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
+//    point.w = Ogre::Math::saturate(-v.dotProduct(l));
+//  else
+//    point.w = Ogre::Math::saturate(v.dotProduct(l));
+//
+//  point.w = Ogre::Math::Abs(Ogre::Math::Sin(point.w * Ogre::Math::HALF_PI));
+//
+//  return point;
+//}
 
 void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
