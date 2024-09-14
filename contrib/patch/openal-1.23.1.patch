@@ -6,7 +6,7 @@ index 55644b0..3e632e2 100644
  # CMake build file list for OpenAL
  
 -cmake_minimum_required(VERSION 3.0.2)
-+cmake_minimum_required(VERSION 3.5)
++cmake_minimum_required(VERSION 3.15)
  
  if(APPLE)
      # The workaround for try_compile failing with code signing

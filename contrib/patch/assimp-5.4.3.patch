@@ -7,7 +7,7 @@ index d45eb225..3e81536c 100644
  SET(CMAKE_POLICY_DEFAULT_CMP0092 NEW)
  
 -CMAKE_MINIMUM_REQUIRED( VERSION 3.22 )
-+CMAKE_MINIMUM_REQUIRED( VERSION 3.10 )
++CMAKE_MINIMUM_REQUIRED( VERSION 3.15 )
  
  # Experimental USD importer: disabled, need to opt-in
  # Note: assimp github PR automatic checks will fail the PR due to compiler warnings in
@@ -34,7 +34,7 @@ index 9b270862..9a0858fe 100644
  #    source groups and library command)
  #
 -cmake_minimum_required( VERSION 3.22 )
-+cmake_minimum_required( VERSION 3.10 )
++cmake_minimum_required( VERSION 3.15 )
  SET( HEADER_PATH ../include/assimp )
  
  if(NOT ANDROID AND ASSIMP_ANDROID_JNIIOSYSTEM)

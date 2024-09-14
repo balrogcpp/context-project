@@ -7,7 +7,7 @@ index 31c5e66..9202eaa 100644
  SET(CMAKE_POLICY_DEFAULT_CMP0092 NEW)
  
 -CMAKE_MINIMUM_REQUIRED( VERSION 3.22 )
-+CMAKE_MINIMUM_REQUIRED( VERSION 3.10 )
++CMAKE_MINIMUM_REQUIRED( VERSION 3.15 )
  
  # Disabled importers: m3d for 5.1 or later
  ADD_DEFINITIONS( -DASSIMP_BUILD_NO_M3D_IMPORTER)
@@ -34,7 +34,7 @@ index 0a7be62..b6a3c62 100644
  #    source groups and library command)
  #
 -cmake_minimum_required( VERSION 3.22 )
-+cmake_minimum_required( VERSION 3.10 )
++cmake_minimum_required( VERSION 3.15 )
  SET( HEADER_PATH ../include/assimp )
  
  if(NOT ANDROID AND ASSIMP_ANDROID_JNIIOSYSTEM)

@@ -1,10 +1,8 @@
 # cmake min version
 cmake_minimum_required(VERSION 3.18.0)
 
-
 # project version
-project(ENGINE VERSION 0.1.0)
-
+project(Engine VERSION 0.1.0)
 
 # cxx standard
 set(CMAKE_CXX_STANDARD 20)
@@ -43,7 +41,7 @@ set(ALLOWED_BUILD_TYPES "Release;RelWithDebInfo;Debug")
 set(ALLOWED_BUILD_TYPES_LOWER ${ALLOWED_BUILD_TYPES})
 list(TRANSFORM ALLOWED_BUILD_TYPES_LOWER TOLOWER)
 if (NOT ${CMAKE_BUILD_TYPE_LOWER} IN_LIST ALLOWED_BUILD_TYPES_LOWER)
-    message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid cmake build type. Valid are ${ALLOWED_BUILD_TYPES}")
+    message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not one of ${ALLOWED_BUILD_TYPES}")
 endif ()
 
 # include modules
@@ -59,7 +57,30 @@ set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
 set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
 file(MAKE_DIRECTORY ${ARTIFACT_DIR})
 
-# contrib
+# external targets
+file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/external)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/external)
+
+execute_process(
+        COMMAND ${CMAKE_COMMAND}
+        -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        ${CMAKE_SOURCE_DIR}/contrib
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external
+)
+
+execute_process(
+        COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target External
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external
+)
+
 add_subdirectory(contrib)
 
 # engine sources
