@@ -1372,9 +1372,12 @@ externalproject_add(Target_GameNetworkingSockets
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     add_custom_target(External ALL COMMAND ${CMAKE_COMMAND} -E true)
 endif ()
+add_custom_target(ExternalAll COMMAND ${CMAKE_COMMAND} -E true)
+set_target_properties(ExternalAll PROPERTIES FOLDER "ExternalProjectTargets")
 
 macro(add_external_target package)
     find_package(${package})
+    add_dependencies(ExternalAll Target_${package})
     if (NOT ${package}_FOUND)
         add_dependencies(External Target_${package})
     endif ()

@@ -77,7 +77,7 @@ execute_process(
 )
 
 execute_process(
-        COMMAND ${CMAKE_COMMAND} --build . -j ${CMAKE_BUILD_PARALLEL_LEVEL}  --config ${CMAKE_BUILD_TYPE} --target External
+        COMMAND ${CMAKE_COMMAND} --build . -j ${CMAKE_BUILD_PARALLEL_LEVEL}  --config ${CMAKE_BUILD_TYPE}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external
 )
 
