@@ -21,11 +21,11 @@ vec3 Upscale9(const sampler2D tex, const vec2 uv)
     vec3 H = textureLodOffset(tex, uv, 0.0, ivec2( 0,  1)).rgb;
     vec3 I = textureLodOffset(tex, uv, 0.0, ivec2( 1,  1)).rgb;
 
-    vec3 c = E * 0.25;
-    c += (B + D + F + H) * 0.125;
-    c += (A + C + G + I) * 0.0625;
+    vec3 o = E * 0.25;
+    o += (B + D + F + H) * 0.125;
+    o += (A + C + G + I) * 0.0625;
 
-    return c;
+    return o;
 }
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L78
@@ -49,5 +49,5 @@ void main()
     vec3 color = inverseTonemapSRGB(texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb);
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
-    FragColor.rgb = unreal(color * lum);
+    FragColor.rgb = tonemap(color * lum);
 }

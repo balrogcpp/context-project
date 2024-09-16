@@ -51,11 +51,11 @@ void main()
     vec3 c4 = (F + G + L + K) * 0.03125;
     vec3 c5 = (G + H + M + L) * 0.03125;
 
-    vec3 c = c1 * KarisAverage(c1);
-    c += c2 * KarisAverage(c2);
-    c += c3 * KarisAverage(c3);
-    c += c4 * KarisAverage(c4);
-    c += c5 * KarisAverage(c5);
+    vec3 o = c1 * KarisAverage(c1);
+    o += c2 * KarisAverage(c2);
+    o += c3 * KarisAverage(c3);
+    o += c4 * KarisAverage(c4);
+    o += c5 * KarisAverage(c5);
 
-    FragColor.rgb = max(c, 0.0001);
+    FragColor.rgb = max(o, 0.0001);
 }

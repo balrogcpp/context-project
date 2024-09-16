@@ -2,16 +2,6 @@
 
 #define SRGB_FAST_APPROXIMATION
 
-float toSRGB(float x)
-{
-    return (x < 0.0031308 ? x * 12.92 : 1.055 * pow(x, 0.41666) - 0.055);
-}
-
-float fromSRGB(float x)
-{
-    return (x <= 0.040449907) ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);
-}
-
 vec3 SRGBtoLINEAR(const vec3 srgb)
 {
 #if defined(SRGB_FAST_APPROXIMATION)
@@ -19,17 +9,19 @@ vec3 SRGBtoLINEAR(const vec3 srgb)
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
     return srgb * srgb;
 #else
-    return vec3(fromSRGB(srgb.x), fromSRGB(srgb.y), fromSRGB(srgb.z));
+    vec3 bLess = step(vec3(0.040449907, 0.040449907, 0.040449907), srgb);
+    return mix(srgb / 12.92, pow((srgb + 0.055) / 1.055, vec3(2.4, 2.4, 2.4)), bLess);
 #endif
 }
 
-vec3 LINEARtoSRGB(const vec3 col)
+vec3 LINEARtoSRGB(const vec3 lin)
 {
 #if defined(SRGB_FAST_APPROXIMATION)
-    return pow(col, vec3(0.45454545, 0.45454545, 0.45454545));
+    return pow(lin, vec3(0.45454545, 0.45454545, 0.45454545));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
-    return sqrt(col);
+    return sqrt(lin);
 #else
-    return vec3(toSRGB(col.x), toSRGB(col.y), toSRGB(col.z));
+    vec3 bLess = step(vec3(0.0031308, 0.0031308, 0.0031308), lin);
+    return mix(lin * 12.92, 1.055 * pow(lin, vec3(0.41666, 0.41666, 0.41666)) - 0.055, bLess);
 #endif
 }

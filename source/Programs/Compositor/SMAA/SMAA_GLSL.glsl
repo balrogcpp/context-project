@@ -10,24 +10,16 @@
 	#define SMAA_GLSL_3 1
 #endif
 
-#include "srgb.glsl"
-
 vec4 toSRGB(const vec4 col)
 {
-#ifndef FORCE_TONEMAP
-	return vec4(LINEARtoSRGB(col.rgb), col.a);
-#else
+	//return vec4(sqrt(col.xyz), col.a);
 	return col;
-#endif
 }
 
 vec4 fromSRGB(const vec4 srgb)
 {
-#ifndef FORCE_TONEMAP
-	return vec4(SRGBtoLINEAR(srgb.rgb), srgb.a);
-#else
+	//return vec4(srgb.rgb * srgb.rgb, srgb.a);
 	return srgb;
-#endif
 }
 
 #endif // SMAA_GLSL

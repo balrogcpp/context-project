@@ -17,11 +17,11 @@ vec3 Upscale9(const sampler2D tex, const vec2 uv)
     vec3 H = textureLodOffset(tex, uv, 0.0, ivec2( 0,  1)).rgb;
     vec3 I = textureLodOffset(tex, uv, 0.0, ivec2( 1,  1)).rgb;
 
-    vec3 c = E * 0.25;
-    c += (B + D + F + H) * 0.125;
-    c += (A + C + G + I) * 0.0625;
+    vec3 o = E * 0.25;
+    o += (B + D + F + H) * 0.125;
+    o += (A + C + G + I) * 0.0625;
 
-    return c;
+    return o;
 }
 
 void main()
