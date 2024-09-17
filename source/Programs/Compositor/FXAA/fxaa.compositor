@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-import STD from std.compositor
+import STD from mrt.compositor
 
 compositor FXAA
 {
