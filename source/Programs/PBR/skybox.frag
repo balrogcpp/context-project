@@ -11,6 +11,25 @@ uniform vec3 LightDir0;
 uniform vec3 HosekParams[10];
 uniform float Time;
 
+// http://h14s.p5r.org/2012/09/0x5f3759df.html, [Drobot2014a] Low Level Optimizations for GCN, https://blog.selfshadow.com/publications/s2016-shading-course/activision/s2016_pbs_activision_occlusion.pdf slide 63
+float fastSqrt(float x) {
+    return (float( 0x1fbd1df5 + ( int( x ) >> 1 ) ));
+}
+
+float acosFast(float x) {
+    // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
+    // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
+    float y = abs(x);
+    float p = -0.1565827 * y + 1.570796;
+    p *= fastSqrt(1.0 - y);
+    return x >= 0.0 ? p : PI - p;
+}
+
+float acosFastPositive(float x) {
+    float p = -0.1565827 * x + 1.570796;
+    return p * fastSqrt(1.0 - x);
+}
+
 // Phase function
 float henyey_greenstein(const float cos_theta, const float g) {
     const float k = 0.0795774715459;
@@ -25,6 +44,7 @@ float pow5(const float x) {
     float x2 = x * x;
     return x2 * x2 * x;
 }
+
 
 // Simple Analytic sky. In a real project you should use a texture
 vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
@@ -49,7 +69,7 @@ vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
     const float mie_zenith_size = 1.25e3;
 
     float zenith_angle = clamp(dot(vec3(0.0, 1.0, 0.0), light_dir), -1.0, 1.0);
-    float sun_energy = max(0.0, 1.0 - exp(-((PI * 0.5) - acos(zenith_angle)))) * SUN_ENERGY * LIGHT0_ENERGY;
+    float sun_energy = max(0.0, 1.0 - exp(-((PI * 0.5) - acosFastPositive(zenith_angle)))) * SUN_ENERGY * LIGHT0_ENERGY;
     float sun_fade = 1.0 - clamp(1.0 - exp(light_dir.y), 0.0, 1.0);
 
     // Rayleigh coefficients.
@@ -59,7 +79,7 @@ vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
     vec3 mie_beta = turbidity * mie * mie_color.rgb * 0.000434;
 
     // optical length
-    float zenith = acos(max(0.0, dot(vec3(0.0, 1.0, 0.0), eye_dir)));
+    float zenith = acosFastPositive(max(0.0, dot(vec3(0.0, 1.0, 0.0), eye_dir)));
     float optical_mass = 1.0 / (cos(zenith) + 0.15 * pow(93.885 - degrees(zenith), -1.253));
     float rayleigh_scatter = rayleigh_zenith_size * optical_mass;
     float mie_scatter = mie_zenith_size * optical_mass;
@@ -211,7 +231,7 @@ vec3 HosekWilkie(const highp vec3 V, const highp vec3 N)
 
     float cos_theta = clamp(V.y, 0.0, 1.0);
     float cos_gamma = dot(V, N);
-    float gamma = acos(cos_gamma);
+    float gamma = acosFastPositive(cos_gamma);
     float cos_gamma2 = cos_gamma * cos_gamma;
     vec3 I2 = I * I;
 
@@ -225,6 +245,6 @@ vec3 HosekWilkie(const highp vec3 V, const highp vec3 N)
 in highp vec3 vUV0;
 void main()
 {
-    vec3 color = HosekWilkie(normalize(vUV0), -normalize(LightDir0));
+    vec3 color = HosekWilkie(normalize(vUV0), -LightDir0);
     FragColor = vec4(SafeHDR(color), 1.0);
 }
