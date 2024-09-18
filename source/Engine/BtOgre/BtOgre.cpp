@@ -14,7 +14,7 @@
  */
 
 #include "BtOgre.h"
-#if (OGRE_THREAD_SUPPORT > 0)
+#if OGRE_THREAD_SUPPORT > 0
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
@@ -201,7 +201,7 @@ DynamicsWorld::DynamicsWorld(const Vector3& gravity)
   mCollisionConfig.reset(new btDefaultCollisionConfiguration());
   mBroadphase.reset(new btDbvtBroadphase());
 
-#if (OGRE_THREAD_SUPPORT > 0)
+#if OGRE_THREAD_SUPPORT > 0
   mScheduler.reset(btCreateDefaultTaskScheduler());
   OgreAssert(mScheduler, "[BtOgre] Bullet physics: no task scheduler available");
   btSetTaskScheduler(mScheduler.get());
@@ -712,7 +712,7 @@ void DebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btV
   else if (mLines.getCurrentVertexCount() == 0)
     mLines.beginUpdate(0);
 
-  ColourValue col(color.x(), color.x(), color.z());
+  ColourValue col(color.x(), color.y(), color.z());
   mLines.position(convert(from));
   mLines.colour(col);
   mLines.position(convert(to));
