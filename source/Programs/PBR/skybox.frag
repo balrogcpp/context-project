@@ -9,25 +9,19 @@
 uniform vec3 LightColor0;
 uniform vec3 LightDir0;
 uniform vec3 HosekParams[10];
-uniform float Time;
 
-// http://h14s.p5r.org/2012/09/0x5f3759df.html, [Drobot2014a] Low Level Optimizations for GCN, https://blog.selfshadow.com/publications/s2016-shading-course/activision/s2016_pbs_activision_occlusion.pdf slide 63
-float fastSqrt(float x) {
-    return (float( 0x1fbd1df5 + ( int( x ) >> 1 ) ));
-}
-
-float acosFast(float x) {
+float acosFast(const float x) {
     // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
     // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
     float y = abs(x);
     float p = -0.1565827 * y + 1.570796;
-    p *= fastSqrt(1.0 - y);
+    p *= sqrt(1.0 - y);
     return x >= 0.0 ? p : PI - p;
 }
 
-float acosFastPositive(float x) {
+float acosFastPositive(const float x) {
     float p = -0.1565827 * x + 1.570796;
-    return p * fastSqrt(1.0 - x);
+    return p * sqrt(1.0 - x);
 }
 
 // Phase function
@@ -245,6 +239,6 @@ vec3 HosekWilkie(const highp vec3 V, const highp vec3 N)
 in highp vec3 vUV0;
 void main()
 {
-    vec3 color = HosekWilkie(normalize(vUV0), -LightDir0);
-    FragColor = vec4(SafeHDR(color), 1.0);
+    vec3 color = HosekWilkie(normalize(vUV0), -normalize(LightDir0));
+    FragColor = vec4(color, 1.0);
 }
