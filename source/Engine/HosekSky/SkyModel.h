@@ -3,5 +3,5 @@
 #include <OgrePrerequisites.h>
 #include <vector>
 
-std::vector<float> getHosekParams(Ogre::Vector3f sunDir);
-void applyHosekParams(Ogre::Vector3f sunDir, const std::string& material);
+std::array<float, 30> getHosekParams(Ogre::Vector3f sunDir);
+void applyHosekParams(Ogre::Vector3f sunDir, const Ogre::MaterialPtr& material, const std::string& uniform);

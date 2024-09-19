@@ -41,7 +41,7 @@ CompositorManager::~CompositorManager() = default;
 
 void CompositorManager::OnUpdate(float time) {
   Vector3f sunDir = sunDir = -sceneManager->getLight("Sun")->getDerivedDirection().normalisedCopy();
-  applyHosekParams(sunDir, "SkyBox");
+  applyHosekParams(sunDir, Ogre::MaterialManager::getSingleton().getByName("SkyBox"), "HosekParams");
 }
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
