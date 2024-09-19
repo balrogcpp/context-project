@@ -1,5 +1,6 @@
 #include "SkyModel.h"
 #include "ArHosekSkyModel.h"
+#include "OgreRoot.h"
 
 namespace {
 // Useful shader functions
@@ -16,7 +17,9 @@ inline float Mix(float x, float y, float s) { return x + (y - x) * s; }
 
 std::vector<float> getHosekParams(Ogre::Vector3f sunDir) {
   ArHosekSkyModelState *states[3];
-  std::array<Ogre::Vector3, 10> hosekParams;
+  std::array<Ogre::Vector3f, 10> hosekParams;
+  std::vector<float> hosekParamsArray(30);
+  // static Ogre::Vector3f sunDirOld;
 
   Ogre::Vector3f albedo = Ogre::Vector3f(1.0f);
   sunDir.y = Clamp(sunDir.y, 0.0, 1.0);
@@ -30,11 +33,33 @@ std::vector<float> getHosekParams(Ogre::Vector3f sunDir) {
 
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 3; j++) hosekParams[i][j] = states[j]->configs[j][i];
+
   hosekParams[9] = Ogre::Vector3(states[0]->radiances[0], states[1]->radiances[1], states[2]->radiances[2]);
 
-  std::vector<float> hosekParamsArray(30);
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
 
+  // if (sunDirOld != sunDir) {
+  //   auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName(material);
+  //   auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+  //   fp->setIgnoreMissingParams(true);
+  //   fp->setNamedConstant("HosekParams", hosekParamsArray.data(), hosekParamsArray.size());
+  // }
+
+  // sunDirOld = sunDir;
   return hosekParamsArray;
+}
+
+void applyHosekParams(Ogre::Vector3f sunDir, const std::string &material) {
+  static Ogre::Vector3f sunDirOld;
+  std::vector<float> hosekParamsArray = getHosekParams(sunDir);
+
+  if (sunDirOld != sunDir) {
+    auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName(material);
+    auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    fp->setIgnoreMissingParams(true);
+    fp->setNamedConstant("HosekParams", hosekParamsArray.data(), hosekParamsArray.size());
+  }
+
+  sunDirOld = sunDir;
 }

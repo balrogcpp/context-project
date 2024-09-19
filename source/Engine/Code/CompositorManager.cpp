@@ -40,24 +40,8 @@ CompositorManager::CompositorManager() : fixedViewportSize(false), plane(Vector3
 CompositorManager::~CompositorManager() = default;
 
 void CompositorManager::OnUpdate(float time) {
-  static Vector3f sunDirOld;
-  Vector3f sunDir;
-
-  if (sceneManager->hasLight("Sun")) {
-    sunDir = -sceneManager->getLight("Sun")->getDerivedDirection().normalisedCopy();
-  } else {
-    sunDir = Vector3::ZERO;
-  }
-
-  if (sunDirOld != sunDir) {
-    auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
-    auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
-    vector<float> hosekParams = getHosekParams(sunDir);
-    fp->setNamedConstant("HosekParams", hosekParams.data(), hosekParams.size());
-  }
-
-  sunDirOld = sunDir;
+  Vector3f sunDir = sunDir = -sceneManager->getLight("Sun")->getDerivedDirection().normalisedCopy();
+  applyHosekParams(sunDir, "SkyBox");
 }
 
 void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
