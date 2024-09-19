@@ -117,12 +117,6 @@ macro(check_stamp_patch TARGET PATCH)
     endif ()
 endmacro()
 
-if (NOT CMAKE_CROSSCOMPILING)
-    set(BUILD_NATIVE ON)
-else ()
-    set(BUILD_NATIVE OFF)
-endif ()
-
 
 # list of third-party targets
 check_stamp_patch(Target_SDL2 sdl2-2.30.7.patch)
@@ -846,7 +840,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_SAMPLES=OFF
         -DOGRE_INSTALL_SAMPLES_SOURCE=OFF
         -DOGRE_INSTALL_SAMPLES=OFF
-        -DOGRE_BUILD_TOOLS=${BUILD_NATIVE}
+        -DOGRE_BUILD_TOOLS=OFF
         -DOGRE_BUILD_XSIEXPORTER=OFF
         -DOGRE_INSTALL_PDB=OFF
         -DOGRE_INSTALL_DOCS=OFF

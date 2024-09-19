@@ -15,11 +15,10 @@ inline float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) 
 inline float Mix(float x, float y, float s) { return x + (y - x) * s; }
 }  // namespace
 
-std::vector<float> getHosekParams(Ogre::Vector3f sunDir) {
+std::array<float, 30> getHosekParams(Ogre::Vector3f sunDir) {
   ArHosekSkyModelState *states[3];
   std::array<Ogre::Vector3f, 10> hosekParams;
-  std::vector<float> hosekParamsArray(30);
-  // static Ogre::Vector3f sunDirOld;
+  std::array<float, 30> hosekParamsArray;
 
   Ogre::Vector3f albedo = Ogre::Vector3f(1.0f);
   sunDir.y = Clamp(sunDir.y, 0.0, 1.0);
@@ -39,26 +38,17 @@ std::vector<float> getHosekParams(Ogre::Vector3f sunDir) {
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
 
-  // if (sunDirOld != sunDir) {
-  //   auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName(material);
-  //   auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-  //   fp->setIgnoreMissingParams(true);
-  //   fp->setNamedConstant("HosekParams", hosekParamsArray.data(), hosekParamsArray.size());
-  // }
-
-  // sunDirOld = sunDir;
   return hosekParamsArray;
 }
 
-void applyHosekParams(Ogre::Vector3f sunDir, const std::string &material) {
+void applyHosekParams(Ogre::Vector3f sunDir, const Ogre::MaterialPtr &material, const std::string &uniform) {
   static Ogre::Vector3f sunDirOld;
-  std::vector<float> hosekParamsArray = getHosekParams(sunDir);
+  auto hosekParamsArray = getHosekParams(sunDir);
 
   if (sunDirOld != sunDir) {
-    auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName(material);
-    auto fp = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+    auto fp = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
-    fp->setNamedConstant("HosekParams", hosekParamsArray.data(), hosekParamsArray.size());
+    fp->setNamedConstant(uniform, hosekParamsArray.data(), hosekParamsArray.size());
   }
 
   sunDirOld = sunDir;
