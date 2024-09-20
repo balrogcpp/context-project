@@ -416,9 +416,7 @@ void VideoManager::InitOgreRoot() {
   Ogre::FreeImageCodec::startup();
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
-#ifdef USE_ASSIMP_PLUGIN
   Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
-#endif
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
   Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePlugin());
