@@ -8,7 +8,6 @@
 
 uniform vec3 LightColor0;
 uniform vec3 LightDir0;
-uniform vec3 HosekParams[10];
 
 float acosFast(const float x) {
     // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
@@ -24,6 +23,7 @@ float acosFastPositive(const float x) {
     return p * sqrt(1.0 - x);
 }
 
+#if 0
 // Phase function
 float henyey_greenstein(const float cos_theta, const float g) {
     const float k = 0.0795774715459;
@@ -106,7 +106,7 @@ vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
 
     vec3 color = (Lin + L0) * 0.04;
     color = pow(color, vec3(1.0 / (1.2 + (1.2 * sun_fade))));
-    color *= 0.1;
+//    color *= 0.1;
 //    color = 2.0 / (1.0 + exp(-0.1 * color)) - 1.0;
 //    color = 1.0 - exp(-1.0 * color);
     return tonemap(color);
@@ -209,6 +209,9 @@ vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
     atmoColour += sunDisk * p_skyLightAbsorption;
     return tonemap(atmoColour);
 }
+#endif
+
+uniform vec3 HosekParams[10];
 
 vec3 HosekWilkie(const highp vec3 V, const highp vec3 N)
 {
