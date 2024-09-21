@@ -17,9 +17,9 @@ macro(FlatZipDirectory curdir destination)
     execute_process(COMMAND ${ZIP_EXE} --version OUTPUT_VARIABLE ZIP_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     string(REGEX MATCH "Zip ([0-9/.]*)" _ "${ZIP_VERSION}")
     set(ZIP_VERSION ${CMAKE_MATCH_1})
+    find_package(Java COMPONENTS Development QUIET)
     find_program(TAR_EXE NAMES bsdtar tar)
     execute_process(COMMAND ${TAR_EXE} --version OUTPUT_VARIABLE TAR_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-    find_package(Java COMPONENTS Development QUIET)
 
     # bsdtar generates same output as 'cmake -E tar --format=zip' on linux
     # on windows cmake tar is not stable, so using windows build-in tar instead
