@@ -35,7 +35,8 @@ endif ()
 add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(Engine ${ENGINE_INCLUDE_DIRS})
 target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
-add_custom_target(Programs ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/cmake/Zip2Cpp.cmake)
+add_custom_target(Programs COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
+                            COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/cmake/Zip2Cpp.cmake)
 set_target_properties(Programs PROPERTIES FOLDER "Helpers")
 add_dependencies(Engine Programs)
 

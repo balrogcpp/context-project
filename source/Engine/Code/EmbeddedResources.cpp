@@ -1,6 +1,6 @@
 /// created by Andrey Vasiliev
 
-#include <OgreRoot.h>
+#include <OgreResourceManager.h>
 #include <OgreZip.h>
 
 #if __has_include("programs.h")
@@ -15,7 +15,7 @@ bool InitEmbeddedResources() {
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation("programs.zip", "EmbeddedZip", Ogre::RGN_INTERNAL);
   return true;
 #else
-  retune false;
+  return false;
 #endif
 }
 

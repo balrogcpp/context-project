@@ -6,6 +6,7 @@
 #define	UNIVERSALCLOCK_H
 
 //#include "CaelumPrerequisites.h"
+#include <OgrePrerequisites.h>
 
 namespace Caelum {
     // Caelum needs a lot of precission for astronomical calculations.

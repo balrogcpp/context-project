@@ -7,6 +7,7 @@
 #define CAELUM__ASTRONOMY_H
 
 //#include "CaelumPrerequisites.h"
+#include <OgreRenderQueue.h>
 /** Caelum namespace
  *
  *  All of %Caelum is inside this namespace (except for macros).

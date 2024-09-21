@@ -1,8 +1,8 @@
 # include guard
-if (_package_included)
+if (_zip2cpp_included)
     return()
-endif (_package_included)
-set(_package_included true)
+endif (_zip2cpp_included)
+set(_zip2cpp_included true)
 
 
 # Zip files from directory into flat zip
@@ -20,7 +20,6 @@ macro(FlatZipDirectory curdir destination)
     find_program(TAR_EXE NAMES bsdtar tar)
     execute_process(COMMAND ${TAR_EXE} --version OUTPUT_VARIABLE TAR_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     find_package(Java COMPONENTS Development QUIET)
-    find_program(STRIP_EXE NAMES strip-nondeterminism)
 
     # bsdtar generates same output as 'cmake -E tar --format=zip' on linux
     # on windows cmake tar is not stable, so using windows build-in tar instead
@@ -40,14 +39,17 @@ macro(FlatZipDirectory curdir destination)
         message("Zip or bsdtar not found. Using cmake ${CMAKE_VERSION} to archive assets")
         execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${PARENT_DIR} ${CMAKE_COMMAND} -E tar cf ${destination} --format=zip ${filelist})
     endif ()
-    if (STRIP_EXE)
-        execute_process(COMMAND ${STRIP_EXE} ${destination})
-    endif ()
 endmacro()
 
 # do the job
 FlatZipDirectory(${INPUT} ${OUTPUT})
+find_program(STRIP_EXE NAMES strip-nondeterminism)
+if (STRIP_EXE)
+    execute_process(COMMAND ${STRIP_EXE} ${OUTPUT})
+    return()
+endif ()
 
+# generated with https://tomeko.net/online_tools/cpp_text_escape.php?lang=en
 if (NOT EXISTS stripzip_app.c)
     file(WRITE stripzip_app.c
             "/**\n"
@@ -222,7 +224,7 @@ if (NOT EXISTS stripzip_app.c)
             "  fseek(zf, eocd_header.cd_offset_in_first_disk, SEEK_SET);\n"
             "  size_t dir_entry;\n"
             "  for (dir_entry = 0; dir_entry < eocd_header.total_num_entries_cd; dir_entry++) {\n"
-            "    printf(\"Now purifying entry %lu / %u (offset 0x08%lx) \", dir_entry + 1, eocd_header.total_num_entries_cd, ftell(zf));\n"
+            "    //printf(\"Now purifying entry %lu / %u (offset 0x08%lx) \", dir_entry + 1, eocd_header.total_num_entries_cd, ftell(zf));\n"
             "\n"
             "    central_directory_header_t cd_header = {0};\n"
             "    fread(&cd_header, sizeof(cd_header), 1, zf);\n"
@@ -303,7 +305,7 @@ if (NOT EXISTS stripzip_app.c)
 endif ()
 
 if (NOT C_COMPILER)
-    find_program(C_COMPILER NAMES cc clang gcc cl bcc32 bcc xlc PATHS ENV PATH NO_DEFAULT_PATH)
+    find_program(C_COMPILER NAMES cc clang gcc cl icc bcc32 bcc xlc PATHS ENV PATH NO_DEFAULT_PATH)
 endif ()
 if (NOT C_COMPILER)
     message(FATAL_ERROR "C compiler not found manually")
@@ -313,5 +315,4 @@ if (NOT EXISTS stripzip_app AND NOT EXISTS stripzip_app.exe)
 endif ()
 
 get_filename_component(FILE_NAME ${OUTPUT} ABSOLUTE)
-message(${FILE_NAME})
 execute_process(COMMAND ${CMAKE_CURRENT_BINARY_DIR}/stripzip_app ${FILE_NAME})

@@ -6,7 +6,6 @@
 #include "math.glsl"
 #include "srgb.glsl"
 
-uniform vec3 LightColor0;
 uniform vec3 LightDir0;
 
 float acosFast(const float x) {
@@ -24,6 +23,8 @@ float acosFastPositive(const float x) {
 }
 
 #if 0
+uniform vec3 LightColor0;
+
 // Phase function
 float henyey_greenstein(const float cos_theta, const float g) {
     const float k = 0.0795774715459;
