@@ -56,6 +56,7 @@ if (STRIP_EXE)
     return()
 endif ()
 
+# based on https://github.com/KittyHawkCorp/stripzip/blob/d55bce7ead2711328e2867adad28c908add62a3a/src/stripzip_app.c
 # generated with https://tomeko.net/online_tools/cpp_text_escape.php?lang=en
 if (NOT EXISTS stripzip_app.c)
     file(WRITE stripzip_app.c

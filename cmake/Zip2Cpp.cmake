@@ -5,36 +5,10 @@ endif (_zip2cpp_included)
 set(_zip2cpp_included true)
 
 
+# based on https://github.com/OGRECave/ogre/blob/v13.6.5/Tools/OgreZip2Cpp/src/OgreZip2Cpp.cpp
+# converted with https://tomeko.net/online_tools/cpp_text_escape.php?lang=en
 if (NOT EXISTS Zip2Cpp.cpp)
     file(WRITE Zip2Cpp.cpp
-            "/*\n"
-            "-----------------------------------------------------------------------------\n"
-            "This source file is part of OGRE\n"
-            "    (Object-oriented Graphics Rendering Engine)\n"
-            "For the latest info, see http://www.ogre3d.org/\n"
-            "\n"
-            "Copyright (c) 2000-2014 Torus Knot Software Ltd\n"
-            "\n"
-            "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
-            "of this software and associated documentation files (the \"Software\"), to deal\n"
-            "in the Software without restriction, including without limitation the rights\n"
-            "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
-            "copies of the Software, and to permit persons to whom the Software is\n"
-            "furnished to do so, subject to the following conditions:\n"
-            "\n"
-            "The above copyright notice and this permission notice shall be included in\n"
-            "all copies or substantial portions of the Software.\n"
-            "\n"
-            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
-            "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
-            "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
-            "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
-            "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
-            "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
-            "THE SOFTWARE.\n"
-            "-----------------------------------------------------------------------------\n"
-            "*/\n"
-            "\n"
             "// this tool helps to embed zip files in programs.\n"
             "// if convert the zip file to a cpp file that should be added to the program build.\n"
             "// read more about it on this forum thread: http://www.ogre3d.org/forums/viewtopic.php?f=4&t=62181\n"
