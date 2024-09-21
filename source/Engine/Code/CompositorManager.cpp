@@ -40,7 +40,7 @@ CompositorManager::CompositorManager() : fixedViewportSize(false), plane(Vector3
 CompositorManager::~CompositorManager() = default;
 
 void CompositorManager::OnUpdate(float time) {
-  Vector3f sunDir = sunDir = -sceneManager->getLight("Sun")->getDerivedDirection().normalisedCopy();
+  Vector3f sunDir = -sceneManager->getLight("Sun")->getDerivedDirection().normalisedCopy();
   applyHosekParams(sunDir, Ogre::MaterialManager::getSingleton().getByName("SkyBox"), "HosekParams");
 }
 

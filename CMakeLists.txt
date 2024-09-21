@@ -8,10 +8,6 @@ project(Engine VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
-
-# cmake module path
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
@@ -43,6 +39,14 @@ list(TRANSFORM ALLOWED_BUILD_TYPES_LOWER TOLOWER)
 if (NOT ${CMAKE_BUILD_TYPE_LOWER} IN_LIST ALLOWED_BUILD_TYPES_LOWER)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not one of ${ALLOWED_BUILD_TYPES}")
 endif ()
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
+if (CMAKE_BUILD_TYPE_LOWER MATCHES "debug")
+    string(APPEND CMAKE_MSVC_RUNTIME_LIBRARY "Debug")
+endif ()
+
+# cmake module path
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # include modules
 include(Platform)
