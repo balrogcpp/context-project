@@ -736,7 +736,7 @@ externalproject_add(Target_pugixml
 )
 
 
-check_stamp_patch(Target_OGRE ogre-14.2.0.patch)
+check_stamp_patch(Target_OGRE ogre-14.3.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -746,7 +746,7 @@ externalproject_add(Target_OGRE
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-        GIT_TAG v14.2.6
+        GIT_TAG v14.3.0
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false

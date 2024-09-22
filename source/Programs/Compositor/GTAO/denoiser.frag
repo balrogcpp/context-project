@@ -12,7 +12,7 @@ void main()
     // NOTE: 4x4 filter offsets image
     // NOTE: textureGather requires GL 4
 
-#if !defined(GL_ES)
+#if __VERSION__ > 330
     vec2 uv = vec2(gl_FragCoord.xy - vec2(1.5, 1.5)) / vec2(textureSize(RT, 0));
 
     vec4 g1 = textureGatherOffset(RT, uv, ivec2(0, 0), 0);

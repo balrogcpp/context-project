@@ -7,9 +7,8 @@ uniform sampler2D RT;
 // https://github.com/OGRECave/ogre-next/blob/359a28aaaeb37812978775c7976c5028f9c7fb4b/Samples/Media/2.0/scripts/materials/Common/GLSL/DepthDownscaleMax_ps.glsl
 void main()
 {
-#if !defined(GL_ES)
+#if __VERSION__ > 330
     highp vec4 c = textureGather(RT, 2.0 * gl_FragCoord.xy / vec2(textureSize(RT, 0)), 0);
-
     highp float fDepth = max(max(c.x, c.y), max(c.z, c.w));
 #else
     ivec2 uv = ivec2(gl_FragCoord.xy * 2.0);
