@@ -23,7 +23,6 @@ float acosFastPositive(const float x) {
 }
 
 #if 0
-uniform vec3 LightColor0;
 
 // Phase function
 float henyey_greenstein(const float cos_theta, const float g) {
@@ -102,7 +101,7 @@ vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
     float sunAngularDiameterCos = cos(SOL_SIZE * sun_disk_scale);
     float sunAngularDiameterCos2 = cos(SOL_SIZE * sun_disk_scale*0.5);
     float sundisk = smoothstep(sunAngularDiameterCos, sunAngularDiameterCos2, cos_theta);
-    vec3 L0 = (sun_energy * 1900.0 * extinction) * sundisk * LightColor0;
+    vec3 L0 = (sun_energy * 1900.0 * extinction) * sundisk;
     // Note: Add nightime here: L0 += night_sky * extinction
 
     vec3 color = (Lin + L0) * 0.04;
