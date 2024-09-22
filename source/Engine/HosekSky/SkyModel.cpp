@@ -15,10 +15,9 @@ inline float AngleBetween(const Ogre::Vector3 &dir0, const Ogre::Vector3 &dir1) 
 inline float Mix(float x, float y, float s) { return x + (y - x) * s; }
 }  // namespace
 
-std::array<float, 30> getHosekParams(Ogre::Vector3f sunDir) {
+std::vector<Ogre::Vector3f> getHosekParams(Ogre::Vector3f sunDir) {
   ArHosekSkyModelState *states[3];
-  std::array<Ogre::Vector3f, 10> hosekParams;
-  std::array<float, 30> hosekParamsArray;
+  std::vector<Ogre::Vector3f> hosekParams(10);
 
   Ogre::Vector3f albedo = Ogre::Vector3f(1.0f);
   sunDir.y = Clamp(sunDir.y, 0.0, 1.0);
@@ -35,17 +34,18 @@ std::array<float, 30> getHosekParams(Ogre::Vector3f sunDir) {
 
   hosekParams[9] = Ogre::Vector3(states[0]->radiances[0], states[1]->radiances[1], states[2]->radiances[2]);
 
-  for (int i = 0; i < 10; i++)
-    for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
-
-  return hosekParamsArray;
+  return hosekParams;
 }
 
 void applyHosekParams(Ogre::Vector3f sunDir, const Ogre::MaterialPtr &material, const std::string &uniform) {
   static Ogre::Vector3f sunDirOld;
-  auto hosekParamsArray = getHosekParams(sunDir);
 
   if (sunDirOld != sunDir) {
+    std::vector<Ogre::Vector3f> hosekParams = getHosekParams(sunDir);
+    std::array<float, 30> hosekParamsArray{};
+    for (int i = 0; i < 10; i++)
+      for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
+
     auto fp = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
     fp->setNamedConstant(uniform, hosekParamsArray.data(), hosekParamsArray.size());
