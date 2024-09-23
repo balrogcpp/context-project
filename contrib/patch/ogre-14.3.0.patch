@@ -11,7 +11,7 @@ index 7f6a28ce2..861009898 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ade278ef3..ff97eb496 100644
+index ade278ef3..707b289b4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -39,6 +39,15 @@ index ade278ef3..ff97eb496 100644
  elseif (APPLE AND NOT APPLE_IOS)
    # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
    set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
+@@ -330,7 +330,7 @@ option(OGRE_BUILD_COMPONENT_RTSHADERSYSTEM "Build RTShader System component" TRU
+ cmake_dependent_option(OGRE_BUILD_RTSHADERSYSTEM_SHADERS "Build RTShader System FFP shaders" TRUE "OGRE_BUILD_COMPONENT_RTSHADERSYSTEM" FALSE)
+ 
+ cmake_dependent_option(OGRE_BUILD_SAMPLES "Build Ogre demos" TRUE "OGRE_BUILD_COMPONENT_OVERLAY;OGRE_BUILD_COMPONENT_BITES" FALSE)
+-cmake_dependent_option(OGRE_BUILD_TOOLS "Build the command-line tools" TRUE "pugixml_FOUND;NOT APPLE_IOS;NOT WINDOWS_STORE;NOT WINDOWS_PHONE" FALSE)
++cmake_dependent_option(OGRE_BUILD_TOOLS "Build the command-line tools" TRUE "NOT CMAKE_CROSSCOMPILING;pugixml_FOUND;NOT APPLE_IOS;NOT WINDOWS_STORE;NOT WINDOWS_PHONE" FALSE)
+ cmake_dependent_option(OGRE_BUILD_XSIEXPORTER "Build the Softimage exporter" FALSE "Softimage_FOUND" FALSE)
+ cmake_dependent_option(OGRE_BUILD_LIBS_AS_FRAMEWORKS "Build frameworks for libraries on OS X." TRUE "APPLE;NOT OGRE_BUILD_PLATFORM_APPLE_IOS" FALSE)
+ cmake_dependent_option(OGRE_BUILD_TESTS "Build the unit tests & PlayPen" FALSE "OGRE_BUILD_COMPONENT_BITES" FALSE)
 @@ -373,7 +373,7 @@ cmake_dependent_option(OGRE_INSTALL_SAMPLES "Install Ogre demos." TRUE "OGRE_BUI
  option(OGRE_INSTALL_TOOLS "Install Ogre tools." TRUE)
  option(OGRE_INSTALL_DOCS "Install documentation." TRUE)
