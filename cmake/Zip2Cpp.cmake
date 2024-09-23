@@ -144,7 +144,7 @@ if (NOT EXISTS Zip2Cpp.cpp)
 endif ()
 
 if (NOT CPP_COMPILER)
-    find_program(CPP_COMPILER NAMES c++ clang++ g++ cl icc bcc32 bcc xlc PATHS ENV PATH NO_DEFAULT_PATH)
+    find_program(CPP_COMPILER NAMES c++ clang++ g++ cl icc bcc32 bcc xlc)
 endif ()
 if (NOT CPP_COMPILER)
     message(FATAL_ERROR "CXX compiler not found manually")

@@ -1371,7 +1371,7 @@ add_custom_target(ExternalClearAll COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PRE
 set_target_properties(ExternalBuildAll ExternalClearAll PROPERTIES FOLDER "ExternalProjectTargets")
 
 macro(add_external_target package)
-    find_package(${package})
+    find_package(${package} NO_CMAKE_SYSTEM_PATH)
     add_dependencies(ExternalBuildAll Target_${package})
     if (NOT ${package}_FOUND)
         add_dependencies(External Target_${package})
