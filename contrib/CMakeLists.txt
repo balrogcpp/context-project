@@ -182,6 +182,10 @@ externalproject_add(Target_OIS
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        COMMAND ${CREATE_DOWNLOAD_STAMP}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
@@ -194,7 +198,7 @@ externalproject_add(Target_OIS
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
-        ${GLUE_CMAKE_EXTRA_FLAGS}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOIS_BUILD_SHARED_LIBS=OFF
         -DOIS_BUILD_DEMOS=OFF
         TEST_AFTER_INSTALL ON
@@ -994,7 +998,7 @@ externalproject_add(Target_sol2
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_sol2
         GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-        GIT_TAG v3.3.0
+        GIT_TAG v3.3.1
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
@@ -1169,7 +1173,7 @@ externalproject_add(Target_libarchive
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libarchive
         GIT_REPOSITORY https://github.com/libarchive/libarchive.git
-        GIT_TAG v3.7.4
+        GIT_TAG v3.7.6
         GIT_SHALLOW true
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
@@ -1371,7 +1375,7 @@ add_custom_target(ExternalClearAll COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PRE
 set_target_properties(ExternalBuildAll ExternalClearAll PROPERTIES FOLDER "ExternalProjectTargets")
 
 macro(add_external_target package)
-    find_package(${package} NO_CMAKE_SYSTEM_PATH)
+    find_package(${package})
     add_dependencies(ExternalBuildAll Target_${package})
     if (NOT ${package}_FOUND)
         add_dependencies(External Target_${package})
