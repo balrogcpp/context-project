@@ -30,24 +30,11 @@ endif ()
 
 # receives target name and defines STAMP_FILE, UPDATE_PLACEHOLDER and PATCH_PLACEHOLDER commands
 macro(check_stamp TARGET)
-    set(STAMP_FILE_DOWNLOAD ${DEPS_SOURCE_LOCATION}/${TARGET}_download)
     set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
     set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
 
-    if (CMAKE_CROSSCOMPILING)
-        set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    else ()
-        unset(BUILD_PLACEHOLDER)
-        unset(CONFIGURE_PLACEHOLDER)
-        unset(INSTALL_PLACEHOLDER)
-    endif ()
-
-    if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
         unset(DOWNLOAD_PLACEHOLDER)
@@ -56,24 +43,11 @@ endmacro()
 
 
 macro(check_stamp_option TARGET OPTION)
-    set(STAMP_FILE_DOWNLOAD ${DEPS_SOURCE_LOCATION}/${TARGET}_download)
     set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
     set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
 
-    if (OPTION)
-        set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    else ()
-        unset(BUILD_PLACEHOLDER)
-        unset(CONFIGURE_PLACEHOLDER)
-        unset(INSTALL_PLACEHOLDER)
-    endif ()
-
-    if ((EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD}) OR OPTION)
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
         unset(DOWNLOAD_PLACEHOLDER)
@@ -83,37 +57,23 @@ endmacro()
 
 # same as check_stamp but also applies patch file after update
 macro(check_stamp_patch TARGET PATCH)
-    set(STAMP_FILE_DOWNLOAD ${DEPS_SOURCE_LOCATION}/${TARGET}_download)
-    set(STAMP_FILE_PATCH ${DEPS_SOURCE_LOCATION}/${TARGET}_patch)
-    set(CREATE_DOWNLOAD_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_DOWNLOAD})
-    set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E touch ${STAMP_FILE_PATCH})
+    set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
 
-    if (NOT EXISTS ${DEPS_PATCH_LOCATION}/${PATCH})
+    if (NOT EXISTS ${PATCH_PATH})
         message(FATAL_ERROR "Patch file ${PATCH} not found")
     endif ()
 
-    if (CMAKE_CROSSCOMPILING)
-        set(BUILD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        set(CONFIGURE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        set(INSTALL_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    else ()
-        unset(BUILD_PLACEHOLDER)
-        unset(CONFIGURE_PLACEHOLDER)
-        unset(INSTALL_PLACEHOLDER)
-    endif ()
-
-    if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
+    if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
         unset(DOWNLOAD_PLACEHOLDER)
     endif ()
 
-    if (EXISTS ${STAMP_FILE_PATCH} AND NOT IS_DIRECTORY ${STAMP_FILE_PATCH})
-        set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    else ()
-        set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} reset --hard)
+    execute_process(COMMAND "${GIT_EXECUTABLE}" "apply" "--check" "-q" "--ignore-space-change" ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err)
+    if (NOT checkout_err)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
+    else ()
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     endif ()
 endmacro()
 
@@ -134,8 +94,6 @@ externalproject_add(Target_SDL2
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -163,8 +121,6 @@ externalproject_add(Target_SDL2
         -DHIDAPI=OFF
         -DSDL_HIDAPI=OFF
         -DSDL_HIDAPI_JOYSTICK=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -183,8 +139,6 @@ externalproject_add(Target_OIS
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -201,8 +155,6 @@ externalproject_add(Target_OIS
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOIS_BUILD_SHARED_LIBS=OFF
         -DOIS_BUILD_DEMOS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -221,8 +173,6 @@ externalproject_add(Target_Bullet
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -263,8 +213,6 @@ externalproject_add(Target_Bullet
         -DUSE_MSVC_AVX=ON
         -DUSE_MSVC_FAST_FLOATINGPOINT=ON
         -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -283,8 +231,6 @@ externalproject_add(Target_OpenAL
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -314,8 +260,6 @@ externalproject_add(Target_OpenAL
         -DALSOFT_BACKEND_JACK=OFF
         -DLIBTYPE=SHARED
         -DALSOFT_OSX_FRAMEWORK=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -334,8 +278,6 @@ externalproject_add(Target_Ogg
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -356,8 +298,6 @@ externalproject_add(Target_Ogg
         -DBUILD_SHARED_LIBS=OFF
         -DBUILD_FRAMEWORK=OFF
         -DBUILD_TESTING=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -376,8 +316,6 @@ externalproject_add(Target_Vorbis
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -394,8 +332,6 @@ externalproject_add(Target_Vorbis
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include
         -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -413,8 +349,6 @@ externalproject_add(Target_Theora
         GIT_SHALLOW false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/cmake/FindOgg.cmake
         CMAKE_ARGS
@@ -432,8 +366,6 @@ externalproject_add(Target_Theora
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include
         -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -452,8 +384,6 @@ externalproject_add(Target_FreeType
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -480,8 +410,6 @@ externalproject_add(Target_FreeType
         -DFT_DISABLE_BROTLI=ON
         -DFT_ENABLE_ERROR_STRINGS=OFF
         -DBUILD_SHARED_LIBS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -500,8 +428,6 @@ externalproject_add(Target_zlib
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -567,8 +493,6 @@ externalproject_add(Target_ZZIP
         -DZZIPDOCS=OFF
         -DZZIPTEST=OFF
         -DZZIPBINS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -587,8 +511,6 @@ externalproject_add(Target_assimp
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -672,8 +594,6 @@ externalproject_add(Target_assimp
         -DASSIMP_BUILD_STEP_IMPORTER=OFF
         -DASSIMP_BUILD_M3D_IMPORTER=OFF
         -DASSIMP_BUILD_IQM_IMPORTER=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -692,14 +612,10 @@ externalproject_add(Target_imgui
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E true
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -718,8 +634,6 @@ externalproject_add(Target_pugixml
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -735,8 +649,6 @@ externalproject_add(Target_pugixml
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -755,8 +667,6 @@ externalproject_add(Target_OGRE
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -873,8 +783,6 @@ externalproject_add(Target_OgreProcedural
         GIT_SHALLOW false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -899,8 +807,6 @@ externalproject_add(Target_OgreProcedural
         -DOgreProcedural_BUILD_TESTS=OFF
         -DOgreProcedural_BUILD_DOCS=OFF
         -DOgreProcedural_STATIC=ON
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -918,8 +824,6 @@ externalproject_add(Target_ParticleUniverse
         GIT_SHALLOW false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -942,8 +846,6 @@ externalproject_add(Target_ParticleUniverse
         -DBUILD_SHARED_LIBS=OFF
         -DPU_BUILD_SAMPLES=OFF
         -DPU_BUILD_TOOLS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -957,8 +859,6 @@ externalproject_add(Target_Lua
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
         CMAKE_ARGS
@@ -983,8 +883,6 @@ externalproject_add(Target_Lua
         -DLUA_USE_RELATIVE_LOADLIB=OFF
         -DLUA_USE_POSIX=OFF
         -DLUA_USE_DLOPEN=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1003,8 +901,6 @@ externalproject_add(Target_sol2
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1027,8 +923,6 @@ externalproject_add(Target_sol2
         -DLUA_FOUND=ON
         -DCREATE_LUALIB_TARGET=OFF
         -DCMAKE_DISABLE_FIND_PACKAGE_Lua=ON
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1047,8 +941,6 @@ externalproject_add(Target_LibreSSL
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchLibreSSL.cmake
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1068,8 +960,6 @@ externalproject_add(Target_LibreSSL
         -DLIBRESSL_APPS=OFF
         -DLIBRESSL_TESTS=OFF
         -DENABLE_ASM=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1089,8 +979,6 @@ externalproject_add(Target_cpr
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1109,8 +997,6 @@ externalproject_add(Target_cpr
         -DCPR_ENABLE_CURL_HTTP_ONLY=ON
         -DCPR_USE_SYSTEM_CURL=OFF
         -DCURL_ZLIB=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1129,8 +1015,6 @@ externalproject_add(Target_sqlite
         GIT_SUBMODULES_RECURSE false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1158,8 +1042,6 @@ externalproject_add(Target_sqlite
         -DSQLITECPP_USE_ASAN=OFF
         -DSQLITECPP_INTERNAL_SQLITE=ON
         -DSQLITECPP_DISABLE_STD_FILESYSTEM=ON
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1178,8 +1060,6 @@ externalproject_add(Target_libarchive
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1195,8 +1075,6 @@ externalproject_add(Target_libarchive
         -DENABLE_TEST=OFF
         -DBUILD_SHARED_LIBS=OFF
         -DENABLE_INSTALL=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1242,8 +1120,6 @@ externalproject_add(Target_protoc
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1262,8 +1138,6 @@ externalproject_add(Target_protoc
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
         -Dprotobuf_WITH_ZLIB=OFF
         -Dprotobuf_DISABLE_RTTI=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1285,8 +1159,6 @@ externalproject_add(Target_protobuf
         GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1311,8 +1183,6 @@ externalproject_add(Target_protobuf
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
         -Dprotobuf_WITH_ZLIB=OFF
         -Dprotobuf_DISABLE_RTTI=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
@@ -1331,8 +1201,6 @@ externalproject_add(Target_GameNetworkingSockets
         GIT_PROGRESS false
         GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
-        COMMAND ${CREATE_DOWNLOAD_STAMP}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -1361,8 +1229,6 @@ externalproject_add(Target_GameNetworkingSockets
         -DMSVC_CRT_STATIC=OFF
         -DOPENSSL_USE_STATIC_LIBS=ON
         -DProtobuf_USE_STATIC_LIBS=ON
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
