@@ -28,34 +28,45 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s")
 endif ()
 
-# receives target name and defines STAMP_FILE, UPDATE_PLACEHOLDER and PATCH_PLACEHOLDER commands
-macro(check_stamp TARGET)
-    set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
 
+macro(create_target_patch TARGET REPO TAG PATCH)
+    set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
+
+    if (NOT EXISTS ${PATCH_PATH})
+        message(FATAL_ERROR "Patch file ${PATCH} not found")
+    endif ()
+
+    execute_process(COMMAND ${GIT_EXECUTABLE} tag WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} OUTPUT_VARIABLE head_rev)
+    string(STRIP "${head_rev}" head_rev)
     if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        if (${head_rev} STREQUAL ${TAG})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        else ()
+            file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
+        endif ()
     else ()
-        unset(DOWNLOAD_PLACEHOLDER)
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
+    endif ()
+
+    execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err)
+    if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
+    else ()
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     endif ()
 endmacro()
 
-
-macro(check_stamp_option TARGET OPTION)
-    set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    set(CREATE_PATCH_STAMP ${CMAKE_COMMAND} -E true)
-
+macro(create_target TARGET REPO TAG)
     if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
-        unset(DOWNLOAD_PLACEHOLDER)
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
     endif ()
+
+    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
 endmacro()
 
-
-# same as check_stamp but also applies patch file after update
 macro(check_stamp_patch TARGET PATCH)
     set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
 
@@ -69,30 +80,36 @@ macro(check_stamp_patch TARGET PATCH)
         unset(DOWNLOAD_PLACEHOLDER)
     endif ()
 
-    execute_process(COMMAND "${GIT_EXECUTABLE}" "apply" "--check" "-q" "--ignore-space-change" ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err)
-    if (NOT checkout_err)
+    execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err)
+    if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
     else ()
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     endif ()
 endmacro()
 
+macro(check_stamp TARGET)
+    if (NOT EXISTS ${PATCH_PATH})
+        message(FATAL_ERROR "Patch file ${PATCH} not found")
+    endif ()
+
+    if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(DOWNLOAD_PLACEHOLDER)
+    endif ()
+
+    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+endmacro()
+
 
 # list of third-party targets
-check_stamp_patch(Target_SDL2 sdl2-2.30.7.patch)
+create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.30.7 sdl2-2.30.7.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.30.7
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -124,20 +141,12 @@ externalproject_add(Target_SDL2
 )
 
 
-check_stamp(Target_OIS)
+create_target(Target_OIS https://github.com/wgois/OIS.git v1.5.1)
 externalproject_add(Target_OIS
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OIS
-        GIT_REPOSITORY https://github.com/wgois/OIS.git
-        GIT_TAG v1.5.1
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -161,17 +170,12 @@ externalproject_add(Target_OIS
 check_stamp(Target_Bullet)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Bullet
         GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
         GIT_TAG 3.25
         GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -216,20 +220,12 @@ externalproject_add(Target_Bullet
 )
 
 
-check_stamp_patch(Target_OpenAL openal-1.23.1.patch)
+create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.23.1 openal-1.23.1.patch)
 externalproject_add(Target_OpenAL
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenAL
-        GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-        GIT_TAG 1.23.1
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -250,6 +246,7 @@ externalproject_add(Target_OpenAL
         -DALSOFT_UTILS=OFF
         -DALSOFT_EXAMPLES=OFF
         -DALSOFT_CONFIG=OFF
+        -DALSOFT_INSTALL_CONFIG=OFF
         -DALSOFT_EAX=OFF
         -DALSOFT_BACKEND_SDL2=OFF
         -DALSOFT_BACKEND_SNDIO=OFF
@@ -263,20 +260,13 @@ externalproject_add(Target_OpenAL
 )
 
 
-check_stamp_patch(Target_Ogg ogg-1.3.5.patch)
+create_target_patch(Target_Ogg https://github.com/xiph/ogg.git v1.3.5 ogg-1.3.5.patch)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_OpenAL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Ogg
-        GIT_REPOSITORY https://github.com/xiph/ogg.git
-        GIT_TAG v1.3.5
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -301,20 +291,13 @@ externalproject_add(Target_Ogg
 )
 
 
-check_stamp_patch(Target_Vorbis vorbis-1.3.7.patch)
+create_target_patch(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7 vorbis-1.3.7.patch)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_Ogg
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Vorbis
-        GIT_REPOSITORY https://github.com/xiph/vorbis.git
-        GIT_TAG v1.3.7
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -338,8 +321,6 @@ externalproject_add(Target_Vorbis
 check_stamp(Target_Theora)
 externalproject_add(Target_Theora
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_Ogg
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
@@ -369,20 +350,12 @@ externalproject_add(Target_Theora
 )
 
 
-check_stamp(Target_FreeType)
+create_target(Target_FreeType https://github.com/freetype/freetype.git VER-2-13-2)
 externalproject_add(Target_FreeType
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_FreeType
-        GIT_REPOSITORY https://github.com/freetype/freetype.git
-        GIT_TAG VER-2-13-2
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -413,20 +386,12 @@ externalproject_add(Target_FreeType
 )
 
 
-check_stamp(Target_zlib)
+create_target(Target_zlib https://github.com/madler/zlib.git v1.3.1)
 externalproject_add(Target_zlib
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
-        GIT_REPOSITORY https://github.com/madler/zlib.git
-        GIT_TAG v1.3.1
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -451,24 +416,17 @@ externalproject_add(Target_zlib
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -rf
         lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
-        COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
-check_stamp(Target_ZZIP)
+create_target(Target_ZZIP https://github.com/gdraheim/zziplib.git v0.13.74)
 externalproject_add(Target_ZZIP
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ZZIP
-        GIT_REPOSITORY https://github.com/gdraheim/zziplib.git
-        GIT_TAG v0.13.74
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
@@ -499,8 +457,6 @@ externalproject_add(Target_ZZIP
 check_stamp_patch(Target_assimp assimp-5.4.3.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
@@ -508,8 +464,6 @@ externalproject_add(Target_assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
         GIT_TAG v5.4.3
         GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -597,20 +551,12 @@ externalproject_add(Target_assimp
 )
 
 
-check_stamp(Target_imgui)
+create_target(Target_imgui https://github.com/ocornut/imgui.git v1.90.8)
 externalproject_add(Target_imgui
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.90.8 #v1.90.8 fails to compile
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
@@ -619,20 +565,12 @@ externalproject_add(Target_imgui
 )
 
 
-check_stamp(Target_pugixml)
+create_target(Target_pugixml https://github.com/zeux/pugixml.git v1.14)
 externalproject_add(Target_pugixml
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_pugixml
-        GIT_REPOSITORY https://github.com/zeux/pugixml.git
-        GIT_TAG v1.14
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -655,8 +593,6 @@ externalproject_add(Target_pugixml
 check_stamp_patch(Target_OGRE ogre-14.3.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_imgui Target_pugixml
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
@@ -664,8 +600,6 @@ externalproject_add(Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
         GIT_TAG v14.3.0
         GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -765,23 +699,18 @@ externalproject_add(Target_OGRE
         TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${DEPS_SOURCE_LOCATION}/Target_OGRE/RenderSystems/GLSupport/include/GLSL
         ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2/GLSL
-        COMMAND ${CREATE_PATCH_STAMP}
 )
 
 
 check_stamp(Target_OgreProcedural)
 externalproject_add(Target_OgreProcedural
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_OGRE
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural
         GIT_REPOSITORY https://github.com/OGRECave/ogre-procedural.git
         GIT_TAG 4ca681bf88de5c05b863555cf0a34cd0c44ad794
-        GIT_SHALLOW false
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -813,8 +742,6 @@ externalproject_add(Target_OgreProcedural
 check_stamp(Target_ParticleUniverse)
 externalproject_add(Target_ParticleUniverse
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_OGRE
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
@@ -822,7 +749,6 @@ externalproject_add(Target_ParticleUniverse
         GIT_REPOSITORY https://github.com/OGRECave/particleuniverse.git
         GIT_TAG fa7467748e0e2402a7f700125a0af391d733aa9d
         GIT_SHALLOW false
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -852,9 +778,6 @@ externalproject_add(Target_ParticleUniverse
 check_stamp(Target_Lua)
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
@@ -886,22 +809,15 @@ externalproject_add(Target_Lua
 )
 
 
-check_stamp_patch(Target_sol2 sol2-3.3.0.patch)
+create_target(Target_sol2 https://github.com/ThePhD/sol2.git v3.3.1)
 externalproject_add(Target_sol2
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_Lua
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_sol2
-        GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-        GIT_TAG v3.3.1
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchSOL2.cmake
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
@@ -926,20 +842,12 @@ externalproject_add(Target_sol2
 )
 
 
-check_stamp(Target_LibreSSL)
+create_target(Target_LibreSSL https://github.com/PowerShell/LibreSSL.git V3.9.2.0)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
-        GIT_REPOSITORY https://github.com/PowerShell/LibreSSL.git
-        GIT_TAG V3.9.2.0
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchLibreSSL.cmake
         CMAKE_ARGS
@@ -963,12 +871,9 @@ externalproject_add(Target_LibreSSL
 )
 
 
-check_stamp_patch(Target_cpr cpr-1.10.5.patch)
+create_target_patch(Target_cpr https://github.com/libcpr/cpr.git 1.10.5 cpr-1.10.5.patch)
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         DEPENDS Target_LibreSSL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
@@ -976,7 +881,6 @@ externalproject_add(Target_cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
         GIT_TAG 1.10.5
         GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
@@ -1000,20 +904,12 @@ externalproject_add(Target_cpr
 )
 
 
-check_stamp(Target_sqlite)
+create_target(Target_sqlite https://github.com/SRombauts/SQLiteCpp.git 3.3.1)
 externalproject_add(Target_sqlite
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_sqlite
-        GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
-        GIT_TAG 3.3.1
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE false
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -1045,20 +941,12 @@ externalproject_add(Target_sqlite
 )
 
 
-check_stamp(Target_libarchive)
+create_target(Target_libarchive https://github.com/libarchive/libarchive.git v3.7.6)
 externalproject_add(Target_libarchive
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libarchive
-        GIT_REPOSITORY https://github.com/libarchive/libarchive.git
-        GIT_TAG v3.7.6
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -1078,47 +966,12 @@ externalproject_add(Target_libarchive
 )
 
 
-set(PROTOBUF_VERSION 27.3)
-find_package(Protobuf QUIET)
-if (Protobuf_PROTOC_EXECUTABLE)
-    execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE} --version OUTPUT_VARIABLE PROTOC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if (PROTOC_VERSION)
-        if (${PROTOC_VERSION} STREQUAL "libprotoc ${PROTOBUF_VERSION}")
-            set(PROTOC_FOUND 1)
-            message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE} (${PROTOC_VERSION})")
-        else ()
-            set(PROTOC_FOUND 0)
-            message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE} (${PROTOC_VERSION}). Required version is ${PROTOBUF_VERSION}")
-        endif ()
-    else ()
-        set(PROTOC_FOUND 0)
-        message(STATUS "protoc not found")
-    endif ()
-else ()
-    set(PROTOC_FOUND 0)
-    message(STATUS "protoc not found")
-endif ()
-if (NOT PROTOC_FOUND)
-    if (CMAKE_CROSSCOMPILING)
-        set(BUILD_PROTOC_CROSS ON)
-    else ()
-        set(BUILD_PROTOC_NATIVE ON)
-    endif ()
-endif ()
-check_stamp(Target_protoc)
+create_target(Target_protoc https://github.com/protocolbuffers/protobuf.git v27.3)
 externalproject_add(Target_protoc
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
-        GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-        GIT_TAG v${PROTOBUF_VERSION}
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protoc
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -1141,23 +994,18 @@ externalproject_add(Target_protoc
 )
 
 
-if (BUILD_PROTOC_CROSS)
-    set(PROTOBUF_DEPENDS Target_protoc)
+if (CMAKE_CROSSCOMPILING)
+    set(BUILD_PROTOC Target_protoc)
+else ()
+    set(BUILD_NATIVE_COMPILER ON)
 endif ()
-check_stamp_option(Target_protobuf BUILD_PROTOC_CROSS)
+create_target(Target_protobuf https://github.com/protocolbuffers/protobuf.git v27.3)
 externalproject_add(Target_protobuf
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
-        DEPENDS ${PROTOBUF_DEPENDS}
+        DEPENDS ${BUILD_PROTOC}
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
-        GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-        GIT_TAG v${PROTOBUF_VERSION}
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -1178,7 +1026,7 @@ externalproject_add(Target_protobuf
         -Dprotobuf_BUILD_TESTS=OFF
         -Dprotobuf_BUILD_EXAMPLES=OFF
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
-        -Dprotobuf_BUILD_PROTOC_BINARIES=${BUILD_PROTOC_NATIVE}
+        -Dprotobuf_BUILD_PROTOC_BINARIES=${BUILD_NATIVE_COMPILER}
         -Dprotobuf_BUILD_SHARED_LIBS=OFF
         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
         -Dprotobuf_WITH_ZLIB=OFF
@@ -1186,17 +1034,15 @@ externalproject_add(Target_protobuf
 )
 
 
-check_stamp_patch(Target_GameNetworkingSockets gns-de03d74.patch)
+check_stamp_patch(Target_GameNetworkingSockets gns-62b3951.patch)
 externalproject_add(Target_GameNetworkingSockets
         EXCLUDE_FROM_ALL true
-        BUILD_ALWAYS false
-        BUILD_IN_SOURCE false
         DEPENDS Target_LibreSSL Target_protobuf
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GameNetworkingSockets
         GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
-        GIT_TAG de03d74226eb3b9a299e05f5fff93965d3dce2d9
+        GIT_TAG 62b395172f157ca4f01eea3387d1131400f8d604
         GIT_SHALLOW false
         GIT_PROGRESS false
         GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
@@ -1241,27 +1087,45 @@ add_custom_target(ExternalClearAll COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PRE
 set_target_properties(ExternalBuildAll ExternalClearAll PROPERTIES FOLDER "ExternalProjectTargets")
 
 macro(add_external_target package)
-    find_package(${package})
+    find_package(${package} NO_SYSTEM_ENVIRONMENT_PATH)
     add_dependencies(ExternalBuildAll Target_${package})
     if (NOT ${package}_FOUND)
-        add_dependencies(External Target_${package})
+        if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+            add_dependencies(External Target_${package})
+        endif ()
     endif ()
 endmacro()
 
-#
-if (NOT EMSCRIPTEN)
-    add_external_target(SDL2)
-endif ()
-if (BUILD_CURL_LIBS)
-    add_external_target(cpr)
-endif ()
-if (BUILD_WEBSOCKET_LIBS)
-    add_external_target(GameNetworkingSockets)
-endif ()
-add_external_target(sol2)
-add_external_target(Bullet)
+macro(find_package_static package)
+    set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
+    find_package(${package} NO_SYSTEM_ENVIRONMENT_PATH)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ${_OLD_FIND_SUFFIXES})
+    unset(_OLD_FIND_SUFFIXES)
+endmacro()
+
+macro(add_external_target_static package)
+    find_package_static(${package})
+    add_dependencies(ExternalBuildAll Target_${package})
+    if (NOT ${package}_FOUND)
+        if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+            add_dependencies(External Target_${package})
+        endif ()
+    endif ()
+endmacro()
+
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
+find_package(OpenAL)
 add_external_target(OGRE)
-add_external_target(Vorbis)
-add_external_target(Theora)
+add_external_target_static(Bullet)
+add_external_target_static(SDL2)
+add_external_target_static(Vorbis)
+add_external_target_static(Theora)
+add_external_target_static(sol2)
+if (BUILD_CURL_LIBS)
+    add_external_target_static(cpr)
+endif ()
+if (BUILD_WEBSOCKET_LIBS)
+    add_external_target_static(GameNetworkingSockets)
+endif ()

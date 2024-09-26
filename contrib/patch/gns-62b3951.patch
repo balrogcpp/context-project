@@ -1,0 +1,115 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9796b83..7086e5b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -116,7 +116,7 @@ if (USE_CRYPTO STREQUAL "OpenSSL")
+ 		endif()
+ 		check_symbol_exists(EVP_MD_CTX_free openssl/evp.h OPENSSL_NEW_ENOUGH)
+ 		if (NOT OPENSSL_NEW_ENOUGH)
+-			message(FATAL_ERROR "Cannot find EVP_MD_CTX_free in OpenSSL headers/libs for the target architecture.  Check that you're using OpenSSL 1.1.0 or later.")
++			#message(FATAL_ERROR "Cannot find EVP_MD_CTX_free in OpenSSL headers/libs for the target architecture.  Check that you're using OpenSSL 1.1.0 or later.")
+ 		endif()
+ 	cmake_pop_check_state()
+ 	cmake_push_check_state()
+@@ -131,7 +131,7 @@ if (USE_CRYPTO STREQUAL "OpenSSL")
+ endif()
+ 
+ if(USE_CRYPTO25519 STREQUAL "OpenSSL" AND NOT OPENSSL_HAS_25519_RAW)
+-	message(FATAL_ERROR "Cannot find (EVP_PKEY_get_raw_public_key in OpenSSL headers/libs for the target architecture.  Please use -DUSE_CRYPTO25519=Reference or upgrade OpenSSL to 1.1.1 or later")
++	#message(FATAL_ERROR "Cannot find (EVP_PKEY_get_raw_public_key in OpenSSL headers/libs for the target architecture.  Please use -DUSE_CRYPTO25519=Reference or upgrade OpenSSL to 1.1.1 or later")
+ endif()
+ 
+ if(USE_CRYPTO STREQUAL "libsodium" OR USE_CRYPTO25519 STREQUAL "libsodium")
+@@ -190,7 +190,7 @@ function(set_target_common_gns_properties TGT)
+ 			target_compile_options(${TGT} PRIVATE -fno-stack-protector)
+ 		endif()
+ 	else()
+-		message(FATAL_ERROR "Could not identify your target operating system")
++		#message(FATAL_ERROR "Could not identify your target operating system")
+ 	endif()
+ 
+ 	if(NOT CMAKE_SYSTEM_NAME MATCHES Windows)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 8dd9f2a..ef1d995 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -301,12 +301,12 @@ macro(set_clientlib_target_properties GNS_TARGET)
+ 				set_target_properties(${GNS_TARGET} PROPERTIES LINK_FLAGS "/LTCG /SUBSYSTEM:WINDOWS")
+ 			endif()
+ 		endif()
+-		target_link_libraries(${GNS_TARGET} PUBLIC ws2_32 crypt32 winmm Iphlpapi)
++		target_link_libraries(${GNS_TARGET} PUBLIC ws2_32 crypt32 winmm iphlpapi)
+ 		if(USE_CRYPTO STREQUAL "BCrypt")
+ 			target_link_libraries(${GNS_TARGET} PUBLIC bcrypt)
+ 		endif()
+ 	else()
+-		message(FATAL_ERROR "Could not identify your target operating system")
++		#message(FATAL_ERROR "Could not identify your target operating system")
+ 	endif()
+ 
+ 	add_sanitizers(${GNS_TARGET})
+diff --git a/src/external/steamwebrtc/CMakeLists.txt b/src/external/steamwebrtc/CMakeLists.txt
+index c93386f..2ef0692 100644
+--- a/src/external/steamwebrtc/CMakeLists.txt
++++ b/src/external/steamwebrtc/CMakeLists.txt
+@@ -698,7 +698,7 @@ if(WIN32)
+ 		crypt32
+ 		winmm
+ 		Secur32
+-		Iphlpapi
++		iphlpapi
+ 		)
+ elseif(CMAKE_SYSTEM_NAME MATCHES Darwin)
+ 	target_sources(webrtc-lite PRIVATE
+diff --git a/src/public/minbase/minbase_endian.h b/src/public/minbase/minbase_endian.h
+index f9ad35f..d6867e7 100644
+--- a/src/public/minbase/minbase_endian.h
++++ b/src/public/minbase/minbase_endian.h
+@@ -38,7 +38,7 @@ inline T WordSwapC( T w )
+ template <typename T>
+ inline T DWordSwapC( T dw )
+ {
+-	PLAT_COMPILE_TIME_ASSERT( sizeof( T ) == sizeof(uint32) );
++	//PLAT_COMPILE_TIME_ASSERT( sizeof( T ) == sizeof(uint32) );
+ 	uint32 temp;
+ #if defined( _MSC_VER ) || defined( __ICC )
+ 	temp = _byteswap_ulong( *(uint32*)&dw );
+diff --git a/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp b/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp
+index 951f51d..e4d3578 100644
+--- a/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp
++++ b/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp
+@@ -55,9 +55,9 @@
+ 	#include <combaseapi.h>
+ #endif
+ 
+-// Time low level send/recv calls and packet processing
+-//#define STEAMNETWORKINGSOCKETS_LOWLEVEL_TIME_SOCKET_CALLS
+-
++#ifdef __MINGW32__
++#include <mswsock.h>
++#endif
+ #include <tier0/memdbgon.h>
+ 
+ TRACELOGGING_DECLARE_PROVIDER( HTraceLogging_SteamNetworkingSockets );
+@@ -1109,7 +1109,7 @@ public:
+ 				wsaMsg.Control.buf = control;
+ 				memset( control, 0, sizeof(control) );
+ 
+-				CMSGHDR *cmsg = WSA_CMSG_FIRSTHDR(&wsaMsg);
++               auto *cmsg = WSA_CMSG_FIRSTHDR(&wsaMsg);
+ 				cmsg->cmsg_len = WSA_CMSG_LEN(sizeof(INT));
+ 				cmsg->cmsg_level = (destAddress.ss_family == AF_INET) ? IPPROTO_IP : IPPROTO_IPV6;
+ 				cmsg->cmsg_type = (destAddress.ss_family == AF_INET) ? IP_ECN : IPV6_ECN;
+diff --git a/src/tier0/dbg.cpp b/src/tier0/dbg.cpp
+index dd31cc3..2fb0f2e 100644
+--- a/src/tier0/dbg.cpp
++++ b/src/tier0/dbg.cpp
+@@ -89,7 +89,7 @@ bool Plat_IsInDebugSession()
+ #elif IsNintendoSwitch()
+ 	return false;
+ #else
+-	#error "HALP"
++        return false;
+ #endif
+ }
+ 
