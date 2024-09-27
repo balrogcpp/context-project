@@ -161,5 +161,5 @@ elseif (MSVC)
     endif ()
 
 else ()
-    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} is not known")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} is not supported")
 endif ()
