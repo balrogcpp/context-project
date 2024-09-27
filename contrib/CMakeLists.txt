@@ -739,42 +739,6 @@ externalproject_add(Target_OgreProcedural
 )
 
 
-check_stamp(Target_ParticleUniverse)
-externalproject_add(Target_ParticleUniverse
-        EXCLUDE_FROM_ALL true
-        DEPENDS Target_OGRE
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ParticleUniverse
-        GIT_REPOSITORY https://github.com/OGRECave/particleuniverse.git
-        GIT_TAG fa7467748e0e2402a7f700125a0af391d733aa9d
-        GIT_SHALLOW false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
-        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}
-        -DCMAKE_SHARED_LINKER_FLAGS=${CMAKE_SHARED_LINKER_FLAGS}
-        -DCMAKE_STATIC_LINKER_FLAGS=${CMAKE_STATIC_LINKER_FLAGS}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DBUILD_SHARED_LIBS=OFF
-        -DPU_BUILD_SAMPLES=OFF
-        -DPU_BUILD_TOOLS=OFF
-)
-
-
 check_stamp(Target_Lua)
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
@@ -878,10 +842,6 @@ externalproject_add(Target_cpr
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpr
-        GIT_REPOSITORY https://github.com/libcpr/cpr.git
-        GIT_TAG 1.10.5
-        GIT_SHALLOW true
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -1087,7 +1047,7 @@ add_custom_target(ExternalClearAll COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PRE
 set_target_properties(ExternalBuildAll ExternalClearAll PROPERTIES FOLDER "ExternalProjectTargets")
 
 macro(add_external_target package)
-    find_package(${package} NO_SYSTEM_ENVIRONMENT_PATH)
+    find_package(${package} PATHS ${DEPS_ROOT} NO_DEFAULT_PATH)
     add_dependencies(ExternalBuildAll Target_${package})
     if (NOT ${package}_FOUND)
         if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -1099,18 +1059,16 @@ endmacro()
 macro(find_package_static package)
     set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
-    find_package(${package} NO_SYSTEM_ENVIRONMENT_PATH)
+    find_package(${package})
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${_OLD_FIND_SUFFIXES})
     unset(_OLD_FIND_SUFFIXES)
 endmacro()
 
 macro(add_external_target_static package)
-    find_package_static(${package})
+    find_package_static(${package} PATHS ${DEPS_ROOT} NO_DEFAULT_PATH)
     add_dependencies(ExternalBuildAll Target_${package})
-    if (NOT ${package}_FOUND)
-        if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-            add_dependencies(External Target_${package})
-        endif ()
+    if (NOT ${package}_FOUND AND (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR))
+        add_dependencies(External Target_${package})
     endif ()
 endmacro()
 
@@ -1121,7 +1079,7 @@ add_external_target_static(Bullet)
 add_external_target_static(SDL2)
 add_external_target_static(Vorbis)
 add_external_target_static(Theora)
-add_external_target(sol2)
+add_external_target_static(sol2)
 if (BUILD_CURL_LIBS)
     add_external_target_static(cpr)
 endif ()
