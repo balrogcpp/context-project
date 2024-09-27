@@ -165,7 +165,6 @@ externalproject_add(Target_OIS
 )
 
 
-#check_stamp(Target_Bullet)
 create_target(Target_Bullet https://github.com/bulletphysics/bullet3.git 3.25)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
@@ -586,7 +585,6 @@ externalproject_add(Target_pugixml
 )
 
 
-# check_stamp_patch(Target_OGRE ogre-14.3.0.patch)
 create_target_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.3.0 ogre-14.3.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
@@ -689,10 +687,6 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_TESTS=OFF
         -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
         -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${DEPS_SOURCE_LOCATION}/Target_OGRE/RenderSystems/GLSupport/include/GLSL
-        ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2/GLSL
 )
 
 
