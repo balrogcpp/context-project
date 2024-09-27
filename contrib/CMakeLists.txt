@@ -165,15 +165,13 @@ externalproject_add(Target_OIS
 )
 
 
-check_stamp(Target_Bullet)
+#check_stamp(Target_Bullet)
+create_target(Target_Bullet https://github.com/bulletphysics/bullet3.git 3.25)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Bullet
-        GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-        GIT_TAG 3.25
-        GIT_SHALLOW true
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -588,16 +586,14 @@ externalproject_add(Target_pugixml
 )
 
 
-check_stamp_patch(Target_OGRE ogre-14.3.0.patch)
+# check_stamp_patch(Target_OGRE ogre-14.3.0.patch)
+create_target_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.3.0 ogre-14.3.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         DEPENDS Target_imgui Target_pugixml
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
-        GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-        GIT_TAG v14.3.0
-        GIT_SHALLOW true
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -1079,7 +1075,6 @@ add_external_target_static(Vorbis)
 add_external_target_static(Theora)
 add_external_target_static(Bullet)
 add_external_target_static(SDL2)
-add_external_target_static(sol2)
 if (BUILD_CURL_LIBS)
     add_external_target_static(cpr)
 endif ()
