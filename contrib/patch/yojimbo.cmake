@@ -128,6 +128,8 @@ target_link_libraries(soak
     netcode
     reliable
 )
+
+install(TARGETS netcode tlsf reliable client server loopback soak)
 endif ()
 
 if (0)
@@ -146,6 +148,5 @@ target_link_libraries(test
 target_compile_definitions(test PRIVATE SERIALIZE_ENABLE_TESTS=1)
 endif ()
 
-install(TARGETS yojimbo sodium EXPORT yojimboConfig PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/yojimbo)
-# install(TARGETS netcode tlsf reliable client server loopback soak)
+install(TARGETS yojimbo sodium EXPORT yojimboConfig PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/yojimbo)
 install(EXPORT yojimboConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/yojimbo)
