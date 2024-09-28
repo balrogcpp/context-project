@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 # https://github.com/sweetdream165/yojimbo-cmake/blob/510da499965f71b741f1155c6e1d8901bc8f3ad9/CMakeLists.txt
 # https://github.com/mas-bandwidth/yojimbo/issues/133
 
-project(yojimbo VERSION 1.2.5)
+project(Yojimbo VERSION 1.2.5)
 # Includedirs  
 include_directories(
     .
@@ -25,9 +25,6 @@ add_compile_definitions(
     $<$<CONFIG:Release>:NETCODE_RELEASE>
     $<$<CONFIG:Release>:RELIABLE_RELEASE>
 )
-# Out directories
-# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/lib)
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/run)
 
 # SODIUM
 file(GLOB sodium_SRC
@@ -75,6 +72,9 @@ file(GLOB yojimbo_H
 add_library(yojimbo STATIC ${yojimbo_SRC})
 target_link_libraries(yojimbo sodium)
 set_target_properties(yojimbo PROPERTIES PUBLIC_HEADER "${yojimbo_H}")
+target_include_directories(yojimbo INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/yojimbo/include>)
+install(TARGETS yojimbo sodium EXPORT yojimboConfig PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/yojimbo)
+install(EXPORT yojimboConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/yojimbo)
 
 if (WIN32 OR UNIX)
 # CLIENT
@@ -132,7 +132,7 @@ target_link_libraries(soak
 install(TARGETS netcode tlsf reliable client server loopback soak)
 endif ()
 
-if (0)
+if (YOJIMBO_BUILD_TEST)
 # TEST
 add_executable(test
     test.cpp
@@ -146,7 +146,5 @@ target_link_libraries(test
     reliable
 )
 target_compile_definitions(test PRIVATE SERIALIZE_ENABLE_TESTS=1)
+install(TARGETS test)
 endif ()
-
-install(TARGETS yojimbo sodium EXPORT yojimboConfig PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/yojimbo)
-install(EXPORT yojimboConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/yojimbo)
