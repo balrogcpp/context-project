@@ -914,48 +914,15 @@ externalproject_add(Target_libarchive
 )
 
 
-create_target(Target_protoc https://github.com/protocolbuffers/protobuf.git v27.3)
-externalproject_add(Target_protoc
+create_target(Target_yojimbo https://github.com/mas-bandwidth/yojimbo.git v1.2.5)
+externalproject_add(Target_yojimbo
         EXCLUDE_FROM_ALL true
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protoc
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_yojimbo
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=Release
-        -DCMAKE_CXX_STANDARD=17
-        -DABSL_PROPAGATE_CXX_STD=ON
-        -Dprotobuf_BUILD_TESTS=OFF
-        -Dprotobuf_BUILD_EXAMPLES=OFF
-        -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
-        -Dprotobuf_BUILD_PROTOC_BINARIES=ON
-        -Dprotobuf_BUILD_SHARED_LIBS=OFF
-        -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
-        -Dprotobuf_WITH_ZLIB=OFF
-        -Dprotobuf_DISABLE_RTTI=OFF
-)
-
-
-if (CMAKE_CROSSCOMPILING)
-    set(BUILD_PROTOC Target_protoc)
-else ()
-    set(BUILD_NATIVE_COMPILER ON)
-endif ()
-create_target(Target_protobuf https://github.com/protocolbuffers/protobuf.git v27.3)
-externalproject_add(Target_protobuf
-        EXCLUDE_FROM_ALL true
-        DEPENDS ${BUILD_PROTOC}
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/yojimbo.cmake ${DEPS_SOURCE_LOCATION}/Target_yojimbo/CMakeLists.txt
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
@@ -969,61 +936,119 @@ externalproject_add(Target_protobuf
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DCMAKE_CXX_STANDARD=17
-        -DABSL_PROPAGATE_CXX_STD=ON
-        -Dprotobuf_BUILD_TESTS=OFF
-        -Dprotobuf_BUILD_EXAMPLES=OFF
-        -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
-        -Dprotobuf_BUILD_PROTOC_BINARIES=${BUILD_NATIVE_COMPILER}
-        -Dprotobuf_BUILD_SHARED_LIBS=OFF
-        -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
-        -Dprotobuf_WITH_ZLIB=OFF
-        -Dprotobuf_DISABLE_RTTI=OFF
 )
 
 
-check_stamp_patch(Target_GameNetworkingSockets gns-62b3951.patch)
-externalproject_add(Target_GameNetworkingSockets
-        EXCLUDE_FROM_ALL true
-        DEPENDS Target_LibreSSL Target_protobuf
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GameNetworkingSockets
-        GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
-        GIT_TAG 62b395172f157ca4f01eea3387d1131400f8d604
-        GIT_SHALLOW false
-        GIT_PROGRESS false
-        GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DCMAKE_CXX_STANDARD=17
-        -DABSL_PROPAGATE_CXX_STD=ON
-        -DBUILD_STATIC_LIB=ON
-        -DBUILD_SHARED_LIB=OFF
-        -DBUILD_EXAMPLES=OFF
-        -DBUILD_TESTS=OFF
-        -DBUILD_TOOLS=OFF
-        -DENABLE_ICE=ON
-        -DUSE_STEAMWEBRTC=OFF
-        -DLTO=OFF
-        -DUSE_CRYPTO25519=OpenSSL
-        -DMSVC_CRT_STATIC=OFF
-        -DOPENSSL_USE_STATIC_LIBS=ON
-        -DProtobuf_USE_STATIC_LIBS=ON
-)
+# create_target(Target_protoc https://github.com/protocolbuffers/protobuf.git v27.3)
+# externalproject_add(Target_protoc
+#         EXCLUDE_FROM_ALL true
+#         PREFIX ${DEPS_PREFIX_LOCATION}
+#         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+#         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protoc
+#         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+#         PATCH_COMMAND ${PATCH_PLACEHOLDER}
+#         CMAKE_ARGS
+#         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+#         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+#         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+#         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+#         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+#         -DCMAKE_BUILD_TYPE=Release
+#         -DCMAKE_CXX_STANDARD=17
+#         -DABSL_PROPAGATE_CXX_STD=ON
+#         -Dprotobuf_BUILD_TESTS=OFF
+#         -Dprotobuf_BUILD_EXAMPLES=OFF
+#         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
+#         -Dprotobuf_BUILD_PROTOC_BINARIES=ON
+#         -Dprotobuf_BUILD_SHARED_LIBS=OFF
+#         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+#         -Dprotobuf_WITH_ZLIB=OFF
+#         -Dprotobuf_DISABLE_RTTI=OFF
+# )
+
+
+# if (CMAKE_CROSSCOMPILING)
+#     set(BUILD_PROTOC Target_protoc)
+# else ()
+#     set(BUILD_NATIVE_COMPILER ON)
+# endif ()
+# create_target(Target_protobuf https://github.com/protocolbuffers/protobuf.git v27.3)
+# externalproject_add(Target_protobuf
+#         EXCLUDE_FROM_ALL true
+#         DEPENDS ${BUILD_PROTOC}
+#         PREFIX ${DEPS_PREFIX_LOCATION}
+#         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+#         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_protobuf
+#         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+#         PATCH_COMMAND ${PATCH_PLACEHOLDER}
+#         CMAKE_ARGS
+#         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+#         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+#         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+#         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+#         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+#         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+#         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+#         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+#         -DANDROID_NDK=${ANDROID_NDK}
+#         -DANDROID_ABI=${ANDROID_ABI}
+#         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+#         -DCMAKE_CXX_STANDARD=17
+#         -DABSL_PROPAGATE_CXX_STD=ON
+#         -Dprotobuf_BUILD_TESTS=OFF
+#         -Dprotobuf_BUILD_EXAMPLES=OFF
+#         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON
+#         -Dprotobuf_BUILD_PROTOC_BINARIES=${BUILD_NATIVE_COMPILER}
+#         -Dprotobuf_BUILD_SHARED_LIBS=OFF
+#         -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+#         -Dprotobuf_WITH_ZLIB=OFF
+#         -Dprotobuf_DISABLE_RTTI=OFF
+# )
+
+
+# check_stamp_patch(Target_GameNetworkingSockets gns-62b3951.patch)
+# externalproject_add(Target_GameNetworkingSockets
+#         EXCLUDE_FROM_ALL true
+#         DEPENDS Target_LibreSSL Target_protobuf
+#         PREFIX ${DEPS_PREFIX_LOCATION}
+#         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+#         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GameNetworkingSockets
+#         GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
+#         GIT_TAG 62b395172f157ca4f01eea3387d1131400f8d604
+#         GIT_SHALLOW false
+#         GIT_PROGRESS false
+#         GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
+#         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+#         PATCH_COMMAND ${PATCH_PLACEHOLDER}
+#         CMAKE_ARGS
+#         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+#         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+#         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+#         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+#         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+#         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+#         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+#         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+#         -DANDROID_NDK=${ANDROID_NDK}
+#         -DANDROID_ABI=${ANDROID_ABI}
+#         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+#         -DCMAKE_CXX_STANDARD=17
+#         -DABSL_PROPAGATE_CXX_STD=ON
+#         -DBUILD_STATIC_LIB=ON
+#         -DBUILD_SHARED_LIB=OFF
+#         -DBUILD_EXAMPLES=OFF
+#         -DBUILD_TESTS=OFF
+#         -DBUILD_TOOLS=OFF
+#         -DENABLE_ICE=ON
+#         -DUSE_STEAMWEBRTC=OFF
+#         -DLTO=OFF
+#         -DUSE_CRYPTO25519=OpenSSL
+#         -DMSVC_CRT_STATIC=OFF
+#         -DOPENSSL_USE_STATIC_LIBS=ON
+#         -DProtobuf_USE_STATIC_LIBS=ON
+# )
 
 
 # list of dependency targets

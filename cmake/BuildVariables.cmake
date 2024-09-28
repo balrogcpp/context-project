@@ -17,7 +17,6 @@ macro(find_package_static package)
     unset(_OLD_FIND_SUFFIXES)
 endmacro()
 
-
 # check dependencies
 #find_package_static(Lua)
 #find_package_static(sol2)
@@ -83,7 +82,4 @@ if (cpr_FOUND)
 endif ()
 if (CURL_FOUND)
     list(APPEND ENGINE_LIBRARIES CURL::libcurl)
-endif ()
-if (GameNetworkingSockets_FOUND)
-    list(APPEND ENGINE_LIBRARIES GameNetworkingSockets::static)
 endif ()
