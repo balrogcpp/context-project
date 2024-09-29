@@ -45,7 +45,14 @@ set(OGRE_PREFIX_PATH
 
 
 find_path(OGRE_INCLUDE_DIR NAMES OgreRoot.h PATHS ${OGRE_PREFIX_PATH} PATH_SUFFIXES "OGRE")
-
+file(READ ${OGRE_INCLUDE_DIR}/OgreBuildSettings.h OGRE_BUILD_SETTINGS)
+string(REGEX MATCH "#define OGRE_VERSION_MAJOR ([0-9/.]*)" _ "${OGRE_BUILD_SETTINGS}")
+set(OGRE_VERSION_MAJOR ${CMAKE_MATCH_1})
+string(REGEX MATCH "#define OGRE_VERSION_MINOR ([0-9/.]*)" _ "${OGRE_BUILD_SETTINGS}")
+set(OGRE_VERSION_MINOR ${CMAKE_MATCH_1})
+string(REGEX MATCH "#define OGRE_VERSION_PATCH ([0-9/.]*)" _ "${OGRE_BUILD_SETTINGS}")
+set(OGRE_VERSION_PATCH ${CMAKE_MATCH_1})
+set(OGRE_VERSION "${OGRE_VERSION_MAJOR}.${OGRE_VERSION_MINOR}.${OGRE_VERSION_PATCH}")
 
 if (OGRE_STATIC)
     set(OGRE_POSTFIX "Static")
@@ -93,7 +100,10 @@ find_library(OGRE_PCZ_LIBRARY Plugin_PCZSceneManager${OGRE_POSTFIX} PATHS ${OGRE
 # to TRUE if all listed variables are TRUE.
 include(FindPackageHandleStandardArgs)
 set(FPHSA_NAME_MISMATCHED TRUE)
-find_package_handle_standard_args(OGRE DEFAULT_MSG OGRE_INCLUDE_DIR OGRE_MAIN_LIBRARY)
+find_package_handle_standard_args(OGRE 
+    REQUIRED_VARS OGRE_INCLUDE_DIR OGRE_MAIN_LIBRARY
+    VERSION_VAR OGRE_VERSION
+    )
 
 
 macro(find_package_static package)
@@ -119,7 +129,7 @@ endif ()
 if (OGRE_OVERLAY_LIBRARY)
     list(APPEND OGRE_LIBRARIES ${OGRE_OVERLAY_LIBRARY})
     list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR}/Overlay)
-    if (OGRE_REQUIRE_FREETYPE)
+    if (OGRE_VERSION VERSION_LESS 13.0.0)
         find_package_static(Freetype)
         if (FREETYPE_FOUND)
             list(APPEND OGRE_LIBRARIES ${FREETYPE_LIBRARIES})
@@ -250,7 +260,7 @@ endif ()
 if (OGRE_MAIN_LIBRARY)
     list(APPEND OGRE_LIBRARIES ${OGRE_MAIN_LIBRARY})
     list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR})
-    if (OGRE_REQUIRE_ZLIB)
+    if (OGRE_VERSION VERSION_LESS 13.0.0)
         find_package_static(ZLIB)
         if (ZLIB_FOUND)
             list(APPEND OGRE_LIBRARIES ${ZLIB_LIBRARIES})
