@@ -80,7 +80,7 @@ execute_process(
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        ${CMAKE_SOURCE_DIR}/contrib
+        ${CMAKE_SOURCE_DIR}/external
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external
 )
 
@@ -89,7 +89,7 @@ execute_process(
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external
 )
 
-add_subdirectory(contrib)
+add_subdirectory(external)
 
 # engine sources
 add_subdirectory(source)
