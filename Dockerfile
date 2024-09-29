@@ -3,7 +3,7 @@ FROM balrogcpp/clang_cross:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/var/build
-ARG DEPS_DIR=${CONTEXT_HOME}/contrib
+ARG DEPS_DIR=${CONTEXT_HOME}/external
 ARG GIT_SHA
 ENV GIT_SHA_SHORT=${GIT_SHA}
 WORKDIR ${CONTEXT_HOME}
@@ -35,7 +35,7 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
 COPY ./source ./source
-COPY ./contrib ./contrib
+COPY ./external ./external
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
@@ -47,7 +47,7 @@ RUN apt-get update \
     && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
-    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
+    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build \
     && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get -y autoremove --purge \
     && apt-get clean
@@ -57,21 +57,21 @@ RUN apt-get update \
 RUN mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
-    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
+    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
 
 
 # apple x86_64
 #RUN mkdir build && cd build \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target package \
-#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
+#    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
 
 
 # apple aarch64
 #RUN mkdir build && cd build \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target package \
-#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
+#    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
 
 
 # android
@@ -89,7 +89,7 @@ RUN mkdir build && cd build \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target Gradle \
 #    && cmake --build . --config Release --target GradleClear \
-#    && rm -rf build ../contrib/build ../contrib/sdk /root/.android /root/.gradle $ANDROID_HOME \
+#    && rm -rf build ../external/build ../external/sdk /root/.android /root/.gradle $ANDROID_HOME \
 #    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
 #    && apt-get -y autoremove --purge \
 #    && apt-get clean

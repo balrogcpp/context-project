@@ -7,6 +7,6 @@
 /source/Android/app/assets/
 /source/Android/app/build/
 !/CMakeLists.txt/
-!/contrib/CMakeLists.txt/
-!/contrib/patch/
-!/contrib/download/
+!/external/CMakeLists.txt/
+!/external/patch/
+!/external/download/
