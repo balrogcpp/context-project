@@ -286,7 +286,7 @@ externalproject_add(Target_Ogg
 )
 
 
-create_target_patch(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7 vorbis-1.3.7.patch)
+create_target(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
         DEPENDS Target_Ogg
