@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.15)
 # https://github.com/mas-bandwidth/yojimbo/issues/133
 
 project(Yojimbo VERSION 1.2.5)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Includedirs  
 include_directories(
         .

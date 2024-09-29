@@ -49,7 +49,7 @@ macro(create_target_patch TARGET REPO TAG PATCH)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
     endif ()
 
-    execute_process(COMMAND ${GIT_EXECUTABLE} apply -q --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err)
+    execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
     if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
     else ()
@@ -89,7 +89,7 @@ macro(check_stamp_patch TARGET PATCH)
         unset(DOWNLOAD_PLACEHOLDER)
     endif ()
 
-    execute_process(COMMAND ${GIT_EXECUTABLE} apply -q --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err)
+    execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
     if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
     else ()
@@ -262,7 +262,7 @@ externalproject_add(Target_OpenAL
 )
 
 
-create_target(Target_Ogg https://github.com/xiph/ogg.git v1.3.5)
+create_target_patch(Target_Ogg https://github.com/xiph/ogg.git v1.3.5 ogg-1.3.5.patch)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         DEPENDS Target_OpenAL
@@ -293,7 +293,7 @@ externalproject_add(Target_Ogg
 )
 
 
-create_target(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7)
+create_target_patch(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7 vorbis-1.3.7.patch)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
         DEPENDS Target_Ogg
@@ -317,6 +317,7 @@ externalproject_add(Target_Vorbis
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include
         -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a
+        -DBUILD_SHARED_LIBS=OFF
 )
 
 
@@ -330,7 +331,6 @@ externalproject_add(Target_Theora
         GIT_REPOSITORY https://github.com/xiph/theora.git
         GIT_TAG 7180717276af1ebc7da15c83162d6c5d6203aabf
         GIT_SHALLOW false
-        GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/cmake/FindOgg.cmake
@@ -938,7 +938,6 @@ externalproject_add(Target_yojimbo
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}
-        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
@@ -1023,7 +1022,6 @@ externalproject_add(Target_yojimbo
 #         GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
 #         GIT_TAG 62b395172f157ca4f01eea3387d1131400f8d604
 #         GIT_SHALLOW false
-#         GIT_PROGRESS false
 #         GIT_SUBMODULES src/external/curve25519-donna src/external/ed25519-donna src/external/picojson src/external/sha1-wpa
 #         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
 #         PATCH_COMMAND ${PATCH_PLACEHOLDER}
@@ -1100,9 +1098,5 @@ add_external_target_static(Vorbis)
 add_external_target_static(Theora)
 add_external_target_static(Bullet)
 add_external_target_static(SDL2)
-if (BUILD_CURL_LIBS)
-    add_external_target_static(cpr)
-endif ()
-if (BUILD_WEBSOCKET_LIBS)
-    add_external_target_static(GameNetworkingSockets)
-endif ()
+#add_external_target_static(sol2)
+#add_external_target_static(yojimbo)

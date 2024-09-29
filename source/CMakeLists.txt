@@ -129,10 +129,6 @@ else ()
     set(GRADLE_BUILD_TYPE "release")
 endif ()
 
-add_custom_target(Gradle
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${GRADLEW_COMMAND} clean
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE}
-)
+add_custom_target(Gradle COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${GRADLEW_COMMAND} assemble${GRADLE_BUILD_TYPE})
 add_custom_target(GradleClear COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/Android ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build app/assets)
 set_target_properties(Gradle GradleClear PROPERTIES FOLDER "Helpers")
