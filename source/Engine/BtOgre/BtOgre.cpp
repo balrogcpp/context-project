@@ -356,7 +356,7 @@ void VertexIndexToShape::addAnimatedVertexData(const VertexData* vertex_data, co
                                                const Mesh::IndexMap* indexMap)
 {
   // Get the bone index element
-  OgreAssertDbg2(vertex_data);
+  OgreAssertDbg(vertex_data);
 
   const VertexData* data = blend_data;
   const unsigned int prev_size = mVertexCount;
@@ -372,7 +372,7 @@ void VertexIndexToShape::addAnimatedVertexData(const VertexData* vertex_data, co
   // Get the positional buffer element
   {
     const VertexElement* posElem = data->vertexDeclaration->findElementBySemantic(VES_POSITION);
-    OgreAssertDbg2(posElem);
+    OgreAssertDbg(posElem);
     HardwareVertexBufferSharedPtr vbuf = data->vertexBufferBinding->getBuffer(posElem->getSource());
     const unsigned int vSize = (unsigned int)vbuf->getVertexSize();
 
@@ -397,7 +397,7 @@ void VertexIndexToShape::addAnimatedVertexData(const VertexData* vertex_data, co
   }
   {
     const VertexElement* bneElem = vertex_data->vertexDeclaration->findElementBySemantic(VES_BLEND_INDICES);
-    OgreAssertDbg2(bneElem);
+    OgreAssertDbg(bneElem);
 
     HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(bneElem->getSource());
     const unsigned int vSize = (unsigned int)vbuf->getVertexSize();
@@ -522,7 +522,7 @@ Vector3 VertexIndexToShape::getSize()
 //------------------------------------------------------------------------------------------------
 btConvexHullShape* VertexIndexToShape::createConvex()
 {
-  OgreAssertDbg2(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
+  OgreAssertDbg(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
 
   btConvexHullShape* shape = new btConvexHullShape((btScalar*)&mVertexBuffer[0].x, mVertexCount, sizeof(Vector3));
 
@@ -533,7 +533,7 @@ btConvexHullShape* VertexIndexToShape::createConvex()
 //------------------------------------------------------------------------------------------------
 btBvhTriangleMeshShape* VertexIndexToShape::createTrimesh()
 {
-  OgreAssertDbg2(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
+  OgreAssertDbg(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
 
   unsigned int numFaces = mIndexCount / 3;
 

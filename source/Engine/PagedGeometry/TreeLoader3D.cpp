@@ -182,7 +182,7 @@ TreeLoader3D::deleteTrees(const Vector3 &position, Real radius, Entity *type)
 	} else {
 		//Only scan entities of the given type
 		it = pageGridList.find(type);
-		OgreAssertDbg2(it != pageGridList.end());
+		OgreAssertDbg(it != pageGridList.end());
 		end = it; ++end;
 	}
 
@@ -273,7 +273,7 @@ TreeLoader3D::deleteTrees(TBounds area, Ogre::Entity *type)
 	} else {
 		//Only scan entities of the given type
 		it = pageGridList.find(type);
-		OgreAssertDbg2(it != pageGridList.end());
+		OgreAssertDbg(it != pageGridList.end());
 		end = it; ++end;
 	}
 
@@ -368,7 +368,7 @@ std::vector<void*> TreeLoader3D::findTrees(const Ogre::Vector3 &position, Real r
 	} else {
 		//Only scan entities of the given type
 		it = pageGridList.find(type);
-		OgreAssertDbg2(it != pageGridList.end());
+		OgreAssertDbg(it != pageGridList.end());
 		end = it; ++end;
 	}
 

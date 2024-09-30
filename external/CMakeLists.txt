@@ -29,7 +29,6 @@ endif ()
 
 macro(create_target_patch TARGET REPO TAG PATCH)
     set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
-
     if (NOT EXISTS ${PATCH_PATH})
         message(FATAL_ERROR "Patch file ${PATCH} not found")
     endif ()
@@ -41,6 +40,8 @@ macro(create_target_patch TARGET REPO TAG PATCH)
     if(NOT RES_LEN EQUAL 0)
         if ("${head_rev}" STREQUAL ${TAG})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+            execute_process(COMMAND ${GIT_EXECUTABLE} reset --hard WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
+            execute_process(COMMAND ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
@@ -98,10 +99,6 @@ macro(check_stamp_patch TARGET PATCH)
 endmacro()
 
 macro(check_stamp TARGET)
-    if (NOT EXISTS ${PATCH_PATH})
-        message(FATAL_ERROR "Patch file ${PATCH} not found")
-    endif ()
-
     if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
@@ -456,16 +453,13 @@ externalproject_add(Target_ZZIP
 )
 
 
-check_stamp_patch(Target_assimp assimp-5.4.3.patch)
+create_target_patch(Target_assimp https://github.com/assimp/assimp.git v5.4.3 assimp-5.4.3.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_assimp
-        GIT_REPOSITORY https://github.com/assimp/assimp.git
-        GIT_TAG v5.4.3
-        GIT_SHALLOW true
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS

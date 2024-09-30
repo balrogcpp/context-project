@@ -65,7 +65,7 @@ mBBOrigin               (BBO_CENTER),
 mFadeVisibleDist        (0.f),
 mFadeInvisibleDist      (0.f)
 {
-   OgreAssertDbg2(rootSceneNode);
+   OgreAssertDbg(rootSceneNode);
 
    //Fall back to BB_METHOD_COMPATIBLE if vertex shaders are not available
    if (method == BB_METHOD_ACCELERATED)
@@ -305,7 +305,7 @@ void StaticBillboardSet::build()
       {
          pSubMesh->indexData->indexStart = 0;
          pSubMesh->indexData->indexCount = 6 * billboardCount;
-         OgreAssertDbg2(pSubMesh->indexData->indexCount <= std::numeric_limits<Ogre::uint16>::max() && "To many indices. Use 32 bit indices");
+         OgreAssertDbg(pSubMesh->indexData->indexCount <= std::numeric_limits<Ogre::uint16>::max() && "To many indices. Use 32 bit indices");
          Ogre::HardwareIndexBufferSharedPtr &ptrIndBuf = pSubMesh->indexData->indexBuffer;
          ptrIndBuf = HardwareBufferManager::getSingleton().createIndexBuffer(HardwareIndexBuffer::IT_16BIT,
             pSubMesh->indexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, true);
@@ -364,7 +364,7 @@ void StaticBillboardSet::setMaterial(const String &materialName, const Ogre::Str
       //Update material reference list
       if (mFadeEnabled)
       {
-         OgreAssertDbg2(mPtrFadeMaterial);
+         OgreAssertDbg(mPtrFadeMaterial);
          SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
       }
       else if (mPtrMaterial)
@@ -407,12 +407,12 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
          //Update material reference list
          if (mFadeEnabled)
          {
-            OgreAssertDbg2(mPtrFadeMaterial);
+            OgreAssertDbg(mPtrFadeMaterial);
             SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
          }
          else
          {
-            OgreAssertDbg2(mPtrMaterial);
+            OgreAssertDbg(mPtrMaterial);
             SBMaterialRef::removeMaterialRef(mPtrMaterial);
          }
 
@@ -432,8 +432,8 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
          if (mFadeEnabled)
          {
             //Update material reference list
-            OgreAssertDbg2(mPtrFadeMaterial);
-            OgreAssertDbg2(mPtrMaterial);
+            OgreAssertDbg(mPtrFadeMaterial);
+            OgreAssertDbg(mPtrMaterial);
             SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
             SBMaterialRef::addMaterialRef(mPtrMaterial, mBBOrigin);
 
@@ -454,7 +454,7 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
 ///
 void StaticBillboardSet::setTextureStacksAndSlices(Ogre::uint16 stacks, Ogre::uint16 slices)
 {
-   OgreAssertDbg2(stacks != 0 && slices != 0 && "division by zero");
+   OgreAssertDbg(stacks != 0 && slices != 0 && "division by zero");
    mfUFactor = 1.0f / slices;
    mfVFactor = 1.0f / stacks;
 }
@@ -465,7 +465,7 @@ void StaticBillboardSet::setTextureStacksAndSlices(Ogre::uint16 stacks, Ogre::ui
 MaterialPtr StaticBillboardSet::getFadeMaterial(const Ogre::MaterialPtr &protoMaterial,
                                                 Real visibleDist_, Real invisibleDist_)
 {
-   OgreAssertDbg2(protoMaterial);
+   OgreAssertDbg(protoMaterial);
 
    Ogre::StringStream materialSignature;
    materialSignature << mEntityName << "|";
@@ -645,7 +645,7 @@ void StaticBillboardSet::updateAll(const Vector3 &cameraDirection, const char* f
 ///
 void StaticBillboardSet::setBillboardOrigin(BillboardOrigin origin)
 {
-   OgreAssertDbg2((origin == BBO_CENTER || origin == BBO_BOTTOM_CENTER) && "Invalid origin - only BBO_CENTER and BBO_BOTTOM_CENTER is supported");
+   OgreAssertDbg((origin == BBO_CENTER || origin == BBO_BOTTOM_CENTER) && "Invalid origin - only BBO_CENTER and BBO_BOTTOM_CENTER is supported");
    mBBOrigin = origin;
    if (mRenderMethod != BB_METHOD_ACCELERATED)
       mpFallbackBillboardSet->setBillboardOrigin(origin);
