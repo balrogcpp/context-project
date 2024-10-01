@@ -77,36 +77,26 @@ macro(create_target TARGET REPO TAG)
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
 endmacro()
 
-macro(check_stamp_patch TARGET PATCH)
-    set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
+# macro(check_stamp_patch TARGET PATCH)
+#     set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
 
-    if (NOT EXISTS ${PATCH_PATH})
-        message(FATAL_ERROR "Patch file ${PATCH} not found")
-    endif ()
+#     if (NOT EXISTS ${PATCH_PATH})
+#         message(FATAL_ERROR "Patch file ${PATCH} not found")
+#     endif ()
 
-    if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    else ()
-        unset(DOWNLOAD_PLACEHOLDER)
-    endif ()
+#     if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
+#         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+#     else ()
+#         unset(DOWNLOAD_PLACEHOLDER)
+#     endif ()
 
-    execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
-    if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
-    else ()
-        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    endif ()
-endmacro()
-
-macro(check_stamp TARGET)
-    if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    else ()
-        unset(DOWNLOAD_PLACEHOLDER)
-    endif ()
-
-    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-endmacro()
+#     execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
+#     if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
+#         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
+#     else ()
+#         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+#     endif ()
+# endmacro()
 
 
 # list of third-party targets
@@ -318,7 +308,6 @@ externalproject_add(Target_Vorbis
 )
 
 
-check_stamp(Target_Theora)
 externalproject_add(Target_Theora
         EXCLUDE_FROM_ALL true
         DEPENDS Target_Ogg
@@ -328,7 +317,6 @@ externalproject_add(Target_Theora
         GIT_REPOSITORY https://github.com/xiph/theora.git
         GIT_TAG 7180717276af1ebc7da15c83162d6c5d6203aabf
         GIT_SHALLOW false
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/cmake/FindOgg.cmake
         CMAKE_ARGS
@@ -684,7 +672,6 @@ externalproject_add(Target_OGRE
 )
 
 
-check_stamp(Target_OgreProcedural)
 externalproject_add(Target_OgreProcedural
         EXCLUDE_FROM_ALL true
         DEPENDS Target_OGRE
@@ -693,8 +680,6 @@ externalproject_add(Target_OgreProcedural
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural
         GIT_REPOSITORY https://github.com/OGRECave/ogre-procedural.git
         GIT_TAG 4ca681bf88de5c05b863555cf0a34cd0c44ad794
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
@@ -717,13 +702,13 @@ externalproject_add(Target_OgreProcedural
 )
 
 
-check_stamp(Target_Lua)
+create_target(Target_Lua https://github.com/lua/lua.git v5.4.7)
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
-        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
         CMAKE_ARGS
@@ -739,7 +724,6 @@ externalproject_add(Target_Lua
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DLUA_VERSION=5.4.7
         -DLUA_EXE=OFF
         -DLUA_DOC=OFF
         -DLUA_BUILD_WLUA=OFF

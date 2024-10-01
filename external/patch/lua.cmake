@@ -1,6 +1,11 @@
+# Copyright (C) 2007-2015 LuaDist.
+# Created by Peter Drahoš, Peter Kapec
+# Redistribution and use of this file is allowed according to the terms of the MIT license.
+# For details see the COPYRIGHT file distributed with LuaDist.
+# Please note that the package source code is licensed under its own license.
+
 cmake_minimum_required(VERSION 3.15)
 project(lua C)
-
 
 # installation directories
 set(INSTALL_BIN bin CACHE PATH "Where to install binaries to.")
@@ -274,7 +279,7 @@ set(LUA_PATH "LUA_PATH" CACHE STRING "Environment variable to use as package.pat
 set(LUA_CPATH "LUA_CPATH" CACHE STRING "Environment variable to use as package.cpath.")
 set(LUA_INIT "LUA_INIT" CACHE STRING "Environment variable for initial script.")
 set(LUA_EXE "LUA_EXE" CACHE STRING "Build lua executables.")
-set(LUA_VERSION "5.4.4" CACHE STRING "Lua version to fetch")
+set(LUA_VERSION "5.4.7" CACHE STRING "Lua version to fetch")
 
 option(LUA_USE_C89 "Use only C89 features." OFF)
 option(LUA_USE_RELATIVE_LOADLIB "Use modified loadlib.c with support for relative paths on posix systems." ON)
@@ -350,18 +355,19 @@ endif ()
 
 
 # fetch lua sources from official git mirror
-if (NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/lua)
+set(LUA_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
+if (NOT ${LUA_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR} AND NOT IS_DIRECTORY ${LUA_SOURCE_DIR})
     find_package(Git REQUIRED)
-    execute_process(COMMAND ${GIT_EXECUTABLE} clone -b v${LUA_VERSION} --depth 1 --recursive https://github.com/lua/lua.git lua WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone -b v${LUA_VERSION} --depth 1 https://github.com/lua/lua.git lua WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif ()
 
 ## SOURCES
 # Sources and headers
 include_directories(lua ${CMAKE_CURRENT_BINARY_DIR})
-file(GLOB SRC_LIB ${CMAKE_SOURCE_DIR}/lua/*.c)
-list(REMOVE_ITEM SRC_LIB ${CMAKE_SOURCE_DIR}/lua/lua.c ${CMAKE_SOURCE_DIR}/lua/luac.c ${CMAKE_SOURCE_DIR}/lua/onelua.c)
-set(SRC_LUA ${CMAKE_SOURCE_DIR}/lua/lua.c)
-set(SRC_LUAC ${CMAKE_SOURCE_DIR}/lua/luac.c)
+file(GLOB SRC_LIB ${LUA_SOURCE_DIR}/*.c)
+list(REMOVE_ITEM SRC_LIB ${LUA_SOURCE_DIR}/lua.c ${LUA_SOURCE_DIR}/luac.c ${LUA_SOURCE_DIR}/onelua.c)
+set(SRC_LUA ${LUA_SOURCE_DIR}/lua.c)
+set(SRC_LUAC ${LUA_SOURCE_DIR}/luac.c)
 
 ## BUILD
 # Create lua library
@@ -383,7 +389,7 @@ endif ()
 
 # On windows a variant of the lua interpreter without console output needs to be built
 if (LUA_BUILD_WLUA)
-    add_executable(wlua WIN32 lua/wmain.c ${SRC_LUA})
+    add_executable(wlua WIN32 ${LUA_SOURCE_DIR}/wmain.c ${SRC_LUA})
     target_link_libraries(wlua liblua)
     install_executable(wlua)
 endif ()
@@ -392,4 +398,4 @@ if (LUA_EXE)
     install_executable(lua)
 endif ()
 install_library(liblua)
-install_header(lua/lua.h lua/lualib.h lua/lauxlib.h lua/luaconf.h)
+install_header(${LUA_SOURCE_DIR}/lua.h ${LUA_SOURCE_DIR}/lualib.h ${LUA_SOURCE_DIR}/lauxlib.h ${LUA_SOURCE_DIR}/luaconf.h)
