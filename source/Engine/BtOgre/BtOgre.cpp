@@ -176,26 +176,34 @@ class VertexIndexToShape
 };
 
 /// wrapper with automatic memory management
-class RigidBody
+class CollisionObject
 {
-  btRigidBody* mBtBody;
-  btDynamicsWorld* mBtWorld;
+protected:
+    btCollisionObject* mBtBody;
+    btCollisionWorld* mBtWorld;
 
  public:
-  RigidBody(btRigidBody* btBody, btDynamicsWorld* btWorld) : mBtBody(btBody), mBtWorld(btWorld) {}
-  ~RigidBody()
+    CollisionObject(btCollisionObject* btBody, btCollisionWorld* btWorld) : mBtBody(btBody), mBtWorld(btWorld) {}
+    virtual ~CollisionObject()
   {
-    mBtWorld->removeRigidBody(mBtBody);
-    delete (EntityCollisionListener*)mBtBody->getUserPointer();
-    delete mBtBody->getMotionState();
+    mBtWorld->removeCollisionObject(mBtBody);
     delete mBtBody->getCollisionShape();
     delete mBtBody;
   }
+};
+class RigidBody : public CollisionObject
+{
+public:
+  using CollisionObject::CollisionObject;
 
-  btRigidBody* getBtBody() const { return mBtBody; }
+  ~RigidBody()
+  {
+      delete (EntityCollisionListener*)(mBtBody)->getUserPointer();
+      delete ((btRigidBody*)mBtBody)->getMotionState();
+  }
 };
 
-DynamicsWorld::DynamicsWorld(const Vector3& gravity)
+DynamicsWorld::DynamicsWorld(const Vector3& gravity) : CollisionWorld(NULL) // prevent CollisionWorld from creating a world
 {
   // Bullet initialisation.
   mCollisionConfig.reset(new btDefaultCollisionConfiguration());
@@ -213,20 +221,16 @@ DynamicsWorld::DynamicsWorld(const Vector3& gravity)
 #else
   mDispatcher.reset(new btCollisionDispatcher(mCollisionConfig.get()));
   mSolver.reset(new btSequentialImpulseConstraintSolver());
-  mBtWorld = new btDiscreteDynamicsWorld(mDispatcher.get(), mBroadphase.get(), mSolver.get(), mCollisionConfig.get());
+  mBroadphase.reset(new btDbvtBroadphase());
 #endif
-
-  mBtWorld->setGravity(convert(gravity));
-  mBtWorld->setInternalTickCallback(onTick);
+  auto btworld = new btDiscreteDynamicsWorld(mDispatcher.get(), mBroadphase.get(), mSolver.get(), mCollisionConfig.get());
+  btworld->setGravity(convert(gravity));
+  btworld->setInternalTickCallback(onTick);
+  mBtWorld = btworld;
 }
 
-btRigidBody* DynamicsWorld::addRigidBody(float mass, Entity* ent, ColliderType ct, CollisionListener* listener,
-                                         int group, int mask)
+static btCollisionShape* getCollisionShape(Entity* ent, ColliderType ct)
 {
-  auto node = ent->getParentSceneNode();
-  OgreAssert(node, "entity must be attached");
-  RigidBodyState* state = new RigidBodyState(node);
-
   if (ent->hasSkeleton())
   {
     ent->addSoftwareAnimationRequest(false);
@@ -260,26 +264,56 @@ btRigidBody* DynamicsWorld::addRigidBody(float mass, Entity* ent, ColliderType c
   if (ent->hasSkeleton())
     ent->removeSoftwareAnimationRequest(false);
 
+    return cs;
+}
+
+btRigidBody* DynamicsWorld::addRigidBody(float mass, Entity* ent, ColliderType ct, CollisionListener* listener,
+                                         int group, int mask)
+{
+    auto node = ent->getParentSceneNode();
+    OgreAssert(node, "entity must be attached");
+    RigidBodyState* state = new RigidBodyState(node);
+
+    btCollisionShape* cs = getCollisionShape(ent, ct);
+
   btVector3 inertia(0, 0, 0);
   if (mass != 0) // mass = 0 -> static
-    cs->calculateLocalInertia(mass, inertia);
+  cs->calculateLocalInertia(mass, inertia);
 
   auto rb = new btRigidBody(mass, state, cs, inertia);
-  mBtWorld->addRigidBody(rb, group, mask);
+  getBtWorld()->addRigidBody(rb, group, mask);
   rb->setUserPointer(new EntityCollisionListener{ent, listener});
 
   // transfer ownership to node
-  auto bodyWrapper = std::make_shared<RigidBody>(rb, mBtWorld);
-  node->getUserObjectBindings().setUserAny("BtRigidBody", bodyWrapper);
+  auto objWrapper = std::make_shared<RigidBody>(rb, mBtWorld);
+  node->getUserObjectBindings().setUserAny("BtCollisionObject", objWrapper);
 
   return rb;
+}
+
+btCollisionObject* CollisionWorld::addCollisionObject(Entity* ent, ColliderType ct, int group, int mask)
+{
+    auto node = ent->getParentSceneNode();
+    OgreAssert(node, "entity must be attached");
+
+    btCollisionShape* cs = getCollisionShape(ent, ct);
+
+    auto co = new btCollisionObject();
+    co->setCollisionShape(cs);
+    mBtWorld->addCollisionObject(co, group, mask);
+
+    // transfer ownership to node
+    auto objWrapper = std::make_shared<CollisionObject>(co, mBtWorld);
+    node->getUserObjectBindings().setUserAny("BtCollisionObject", objWrapper);
+
+    return co;
 }
 
 struct RayResultCallbackWrapper : public btCollisionWorld::RayResultCallback
 {
   BtOgre::RayResultCallback* mCallback;
   float mMaxDistance;
-  RayResultCallbackWrapper(BtOgre::RayResultCallback* callback, float maxDist)
+    RayResultCallbackWrapper(BtOgre::RayResultCallback* callback, float maxDist)
       : mCallback(callback), mMaxDistance(maxDist)
   {
   }
@@ -291,7 +325,7 @@ struct RayResultCallbackWrapper : public btCollisionWorld::RayResultCallback
   }
 };
 
-void DynamicsWorld::rayTest(const Ray& ray, RayResultCallback* callback, float maxDist)
+void CollisionWorld::rayTest(const Ray& ray, RayResultCallback* callback, float maxDist)
 {
   RayResultCallbackWrapper wrapper(callback, maxDist);
   btVector3 from = convert(ray.getOrigin());
@@ -299,7 +333,7 @@ void DynamicsWorld::rayTest(const Ray& ray, RayResultCallback* callback, float m
   mBtWorld->rayTest(from, to, wrapper);
 }
 
-DynamicsWorld::~DynamicsWorld() { delete mBtWorld; }
+CollisionWorld::~CollisionWorld() { delete mBtWorld; }
 
 /*
  * =============================================================================================
@@ -356,7 +390,7 @@ void VertexIndexToShape::addAnimatedVertexData(const VertexData* vertex_data, co
                                                const Mesh::IndexMap* indexMap)
 {
   // Get the bone index element
-  OgreAssertDbg(vertex_data);
+  assert(vertex_data);
 
   const VertexData* data = blend_data;
   const unsigned int prev_size = mVertexCount;
@@ -372,7 +406,7 @@ void VertexIndexToShape::addAnimatedVertexData(const VertexData* vertex_data, co
   // Get the positional buffer element
   {
     const VertexElement* posElem = data->vertexDeclaration->findElementBySemantic(VES_POSITION);
-    OgreAssertDbg(posElem);
+    assert(posElem);
     HardwareVertexBufferSharedPtr vbuf = data->vertexBufferBinding->getBuffer(posElem->getSource());
     const unsigned int vSize = (unsigned int)vbuf->getVertexSize();
 
@@ -397,7 +431,7 @@ void VertexIndexToShape::addAnimatedVertexData(const VertexData* vertex_data, co
   }
   {
     const VertexElement* bneElem = vertex_data->vertexDeclaration->findElementBySemantic(VES_BLEND_INDICES);
-    OgreAssertDbg(bneElem);
+    assert(bneElem);
 
     HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(bneElem->getSource());
     const unsigned int vSize = (unsigned int)vbuf->getVertexSize();
@@ -522,7 +556,7 @@ Vector3 VertexIndexToShape::getSize()
 //------------------------------------------------------------------------------------------------
 btConvexHullShape* VertexIndexToShape::createConvex()
 {
-  OgreAssertDbg(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
+  assert(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
 
   btConvexHullShape* shape = new btConvexHullShape((btScalar*)&mVertexBuffer[0].x, mVertexCount, sizeof(Vector3));
 
@@ -533,7 +567,7 @@ btConvexHullShape* VertexIndexToShape::createConvex()
 //------------------------------------------------------------------------------------------------
 btBvhTriangleMeshShape* VertexIndexToShape::createTrimesh()
 {
-  OgreAssertDbg(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
+  assert(mVertexCount && (mIndexCount >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
 
   unsigned int numFaces = mIndexCount / 3;
 

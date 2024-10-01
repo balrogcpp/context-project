@@ -84,47 +84,59 @@ struct RayResultCallback
     };
 
 /// simplified wrapper with automatic memory management
-class DynamicsWorld
-    {
-        std::unique_ptr<btCollisionConfiguration> mCollisionConfig;
+class CollisionWorld
+{
+protected:
+    std::unique_ptr<btCollisionConfiguration> mCollisionConfig;
     std::unique_ptr<btCollisionDispatcher> mDispatcher;
     std::unique_ptr<btConstraintSolver> mSolver;
     std::unique_ptr<btBroadphaseInterface> mBroadphase;
+    btCollisionWorld* mBtWorld;
 #if (OGRE_THREAD_SUPPORT > 0)
     std::unique_ptr<btITaskScheduler> mScheduler;
     std::unique_ptr<btConstraintSolver> mSolverPool;
 #endif
-    btDynamicsWorld* mBtWorld;
 
-    public:
-    explicit DynamicsWorld(const Ogre::Vector3& gravity);
-    ~DynamicsWorld();
-    DynamicsWorld(btDynamicsWorld* btWorld) : mBtWorld(btWorld) {}
+public:
+    CollisionWorld(btCollisionWorld* btWorld) : mBtWorld(btWorld) {}
+    virtual ~CollisionWorld();
 
-    btRigidBody* addRigidBody(float mass, Ogre::Entity* ent, ColliderType ct, CollisionListener* listener = nullptr,
-    int group = 1, int mask = -1);
-
-    btDynamicsWorld* getBtWorld() const { return mBtWorld; }
+    btCollisionObject* addCollisionObject(Ogre::Entity* ent, ColliderType ct, int group = 1, int mask = -1);
 
     void rayTest(const Ogre::Ray& ray, RayResultCallback* callback, float maxDist = 1000);
-    };
+ };
+
+/// simplified wrapper with automatic memory management
+class DynamicsWorld : public CollisionWorld
+{
+    std::unique_ptr<btConstraintSolver> mSolver;
+
+public:
+    explicit DynamicsWorld(const Ogre::Vector3& gravity);
+    DynamicsWorld(btDynamicsWorld* btWorld) : CollisionWorld(btWorld) {}
+
+    btRigidBody* addRigidBody(float mass, Ogre::Entity* ent, ColliderType ct, CollisionListener* listener = nullptr,
+                              int group = 1, int mask = -1);
+
+    btDynamicsWorld* getBtWorld() const { return (btDynamicsWorld*)mBtWorld; }
+};
 
 class DebugDrawer : public btIDebugDraw
 {
-Ogre::SceneNode* mNode;
-btDynamicsWorld* mWorld;
+  Ogre::SceneNode* mNode;
+  btCollisionWorld* mWorld;
 
-Ogre::ManualObject mLines;
-int mDebugMode;
+  Ogre::ManualObject mLines;
+  int mDebugMode;
 
 public:
-DebugDrawer(Ogre::SceneNode* node, btDynamicsWorld* world)
-: mNode(node), mWorld(world), mLines(""), mDebugMode(DBG_DrawWireframe)
-{
-  mLines.setCastShadows(false);
-  mNode->attachObject(&mLines);
-  mWorld->setDebugDrawer(this);
-}
+    DebugDrawer(Ogre::SceneNode* node, btCollisionWorld* world)
+        : mNode(node), mWorld(world), mLines(""), mDebugMode(DBG_DrawWireframe)
+    {
+      mLines.setCastShadows(false);
+      mNode->attachObject(&mLines);
+      mWorld->setDebugDrawer(this);
+    }
 
 void update()
 {
