@@ -68,7 +68,7 @@ DensityMap::~DensityMap()
 
 DensityMap::DensityMap(TexturePtr map, MapChannel channel)
 {
-	OgreAssertDbg(map.isNull() == false);
+	assert(map.isNull() == false);
 	filter = MAPFILTER_BILINEAR;
 
 	//Add self to selfList
@@ -121,7 +121,7 @@ DensityMap::DensityMap(TexturePtr map, MapChannel channel)
 //Make sure a density map exists before calling this.
 Ogre::Real DensityMap::_getDensityAt_Unfiltered(Ogre::Real x, Ogre::Real z, const TRect<Real> &mapBounds)
 {
-	OgreAssertDbg(pixels.getData());
+	assert(pixels.getData());
 
 	// Early out if the coordinates are outside map bounds.
 	if(x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom)
@@ -139,7 +139,7 @@ Ogre::Real DensityMap::_getDensityAt_Unfiltered(Ogre::Real x, Ogre::Real z, cons
 //Make sure a density map exists before calling this.
 Ogre::Real DensityMap::_getDensityAt_Bilinear(Ogre::Real x, Ogre::Real z, const TRect<Ogre::Real> &mapBounds)
 {
-	OgreAssertDbg(pixels.getData());
+	assert(pixels.getData());
 
 	// Early out if the coordinates are outside map bounds.
 	if(x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom)
@@ -219,7 +219,7 @@ ColorMap::~ColorMap()
 
 ColorMap::ColorMap(TexturePtr map, MapChannel channel)
 {
-	OgreAssertDbg(map.isNull() == false);
+	assert(map.isNull() == false);
 	filter = MAPFILTER_BILINEAR;
 
 	//Add self to selfList
@@ -277,7 +277,7 @@ ColorMap::ColorMap(TexturePtr map, MapChannel channel)
 //Returns the color map value at the given location
 uint32 ColorMap::_getColorAt(Ogre::Real x, Ogre::Real z, const RealRect &mapBounds)
 {
-	OgreAssertDbg(pixels.getData());
+	assert(pixels.getData());
 
 	// Early out if the coordinates are outside map bounds.
 	if(x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom)
@@ -316,7 +316,7 @@ uint32 ColorMap::_interpolateColor(uint32 color1, uint32 color2, Ogre::Real rati
 
 uint32 ColorMap::_getColorAt_Bilinear(Ogre::Real x, Ogre::Real z, const TRect<Real> &mapBounds)
 {
-	OgreAssertDbg(pixels.getData());
+	assert(pixels.getData());
 
 	// Early out if the coordinates are outside map bounds.
 	if(x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom)

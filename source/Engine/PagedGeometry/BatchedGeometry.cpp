@@ -54,7 +54,7 @@ m_Built              (false),
 m_vecCenter          (Ogre::Vector3::ZERO),
 m_BoundsUndefined    (true)
 {
-   OgreAssertDbg(rootSceneNode);
+   assert(rootSceneNode);
    if(s_vertexType2Size[0] != 0)
       return;
    
@@ -382,7 +382,7 @@ void BatchedGeometry::clear()
 ///
 void BatchedGeometry::_updateRenderQueue(RenderQueue *queue)
 {
-   OgreAssertDbg(isVisible() && "Ogre core code must detect that this MovableObject invisible");
+   assert(isVisible() && "Ogre core code must detect that this MovableObject invisible");
 
    // SVA speed up adding
    Ogre::RenderQueueGroup *rqg = queue->getQueueGroup(getRenderQueueGroup());
@@ -455,7 +455,7 @@ m_RequireVertexColors   (false),
 m_pSubMesh              (0),
 m_pParentGeom           (parent)
 {
-   OgreAssertDbg(ent);
+   assert(ent);
    m_pSubMesh = ent->getSubMesh();
 
    const Ogre::MaterialPtr &parentMaterial = ent->getMaterial();
@@ -483,9 +483,9 @@ m_pParentGeom           (parent)
    if (blendIndices && blendWeights)
    {
       //Check for format errors
-      OgreAssertDbg(blendIndices->getSource() == blendWeights->getSource()
+      assert(blendIndices->getSource() == blendWeights->getSource()
          && "Blend indices and weights should be in the same buffer");
-      OgreAssertDbg(blendIndices->getSize() + blendWeights->getSize() == m_pVertexData->vertexBufferBinding->getBuffer(blendIndices->getSource())->getVertexSize()
+      assert(blendIndices->getSize() + blendWeights->getSize() == m_pVertexData->vertexBufferBinding->getBuffer(blendIndices->getSource())->getVertexSize()
          && "Blend indices and blend buffers should have buffer to themselves!");
 
       //Remove the blend weights
@@ -520,7 +520,7 @@ void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &posi
                                              const Quaternion &orientation, const Vector3 &scale,
                                              const Ogre::ColourValue &color, void* userData)
 {
-   OgreAssertDbg(!m_Built);
+   assert(!m_Built);
 
    //Add this submesh to the queue
    QueuedMesh newMesh(ent->getSubMesh(), position, orientation, scale, color, userData);
@@ -536,7 +536,7 @@ void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &posi
 ///
 void BatchedGeometry::SubBatch::build()
 {
-   OgreAssertDbg(!m_Built);
+   assert(!m_Built);
 
    HardwareIndexBuffer::IndexType srcIndexType = m_pSubMesh->indexData->indexBuffer->getType();
    HardwareIndexBuffer::IndexType destIndexType =                             // type of index buffer

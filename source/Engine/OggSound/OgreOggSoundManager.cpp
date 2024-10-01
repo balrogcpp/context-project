@@ -54,7 +54,7 @@ namespace OgreOggSound
 
 	OgreOggSoundManager& OgreOggSoundManager::getSingleton()
 	{
-		OgreAssertDbg( msSingleton );  return *msSingleton;
+		assert( msSingleton );  return *msSingleton;
 	}
 
 	/// @copydoc Ogre::Singleton::getSingletonPtr()

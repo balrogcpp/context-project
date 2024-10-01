@@ -78,7 +78,7 @@ ImpostorPage::~ImpostorPage()
       }
       else
       {
-         OgreAssertDbg(false && "Who must delete scene node???");
+         assert(false && "Who must delete scene node???");
       }
 
       ResourceGroupManager::getSingleton().destroyResourceGroup("Impostors");
@@ -90,7 +90,7 @@ ImpostorPage::~ImpostorPage()
 ///
 void ImpostorPage::init(PagedGeometry *geom, const Ogre::Any &data)
 {
-   OgreAssertDbg(geom && "Null pointer to PagedGeometry");
+   assert(geom && "Null pointer to PagedGeometry");
 	m_pSceneMgr    = geom->getSceneManager();
 	m_pPagedGeom   = geom;
 		
@@ -652,7 +652,7 @@ void ImpostorTexture::renderTextures(bool force)
 
 #ifdef IMPOSTOR_FILE_SAVE
 	//Delete RTT texture
-	OgreAssertDbg(renderTexture);
+	assert(renderTexture);
 
 	if (TextureManager::getSingletonPtr())
 		TextureManager::getSingleton().remove(renderTexture);

@@ -189,7 +189,7 @@ TreeLoader2D::deleteTrees(const Ogre::Vector3 &position, Ogre::Real radius, Enti
 	} else {
 		//Only scan entities of the given type
 		it = pageGridList.find(type);
-		OgreAssertDbg(it != pageGridList.end());
+		assert(it != pageGridList.end());
 		end = it; ++end;
 	}
 
@@ -281,7 +281,7 @@ TreeLoader2D::deleteTrees(TBounds area, Ogre::Entity *type)
 	} else {
 		//Only scan entities of the given type
 		it = pageGridList.find(type);
-		OgreAssertDbg(it != pageGridList.end());
+		assert(it != pageGridList.end());
 		end = it; ++end;
 	}
 
@@ -376,7 +376,7 @@ std::vector<void*> TreeLoader2D::findTrees(const Ogre::Vector3 &position, Real r
 	} else {
 		//Only scan entities of the given type
 		it = pageGridList.find(type);
-		OgreAssertDbg(it != pageGridList.end());
+		assert(it != pageGridList.end());
 		end = it; ++end;
 	}
 

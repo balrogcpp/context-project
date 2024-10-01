@@ -133,7 +133,7 @@ static void onTick(btDynamicsWorld* world, btScalar timeStep)
 
 class VertexIndexToShape
 {
- public:
+public:
   VertexIndexToShape(const Affine3& transform = Affine3::IDENTITY);
   VertexIndexToShape(Renderable* rend, const Affine3& transform = Affine3::IDENTITY);
   VertexIndexToShape(const Entity* entity, const Affine3& transform = Affine3::IDENTITY);
@@ -182,7 +182,7 @@ protected:
     btCollisionObject* mBtBody;
     btCollisionWorld* mBtWorld;
 
- public:
+public:
     CollisionObject(btCollisionObject* btBody, btCollisionWorld* btWorld) : mBtBody(btBody), mBtWorld(btWorld) {}
     virtual ~CollisionObject()
   {
@@ -207,22 +207,20 @@ DynamicsWorld::DynamicsWorld(const Vector3& gravity) : CollisionWorld(NULL) // p
 {
   // Bullet initialisation.
   mCollisionConfig.reset(new btDefaultCollisionConfiguration());
-  mBroadphase.reset(new btDbvtBroadphase());
-
 #if OGRE_THREAD_SUPPORT > 0
   mScheduler.reset(btCreateDefaultTaskScheduler());
   OgreAssert(mScheduler, "[BtOgre] Bullet physics: no task scheduler available");
   btSetTaskScheduler(mScheduler.get());
   mSolverPool.reset(new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT));
-
   mDispatcher.reset(new btCollisionDispatcherMt(mCollisionConfig.get()));
   mSolver.reset(new btSequentialImpulseConstraintSolverMt());
   mBtWorld = new btDiscreteDynamicsWorldMt(mDispatcher.get(), mBroadphase.get(), static_cast<btConstraintSolverPoolMt*>(mSolverPool.get()), mSolver.get(), mCollisionConfig.get());
 #else
   mDispatcher.reset(new btCollisionDispatcher(mCollisionConfig.get()));
   mSolver.reset(new btSequentialImpulseConstraintSolver());
-  mBroadphase.reset(new btDbvtBroadphase());
 #endif
+
+  mBroadphase.reset(new btDbvtBroadphase());
   auto btworld = new btDiscreteDynamicsWorld(mDispatcher.get(), mBroadphase.get(), mSolver.get(), mCollisionConfig.get());
   btworld->setGravity(convert(gravity));
   btworld->setInternalTickCallback(onTick);
