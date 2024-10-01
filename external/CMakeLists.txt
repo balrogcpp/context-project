@@ -100,7 +100,7 @@ endmacro()
 
 
 # list of third-party targets
-create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.30.7 sdl2-2.30.7.patch)
+create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.30.8 sdl2-2.30.7.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
