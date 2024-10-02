@@ -10,8 +10,9 @@ material DepthDownscaleMax
         pass
         {
             cull_hardware none
-            depth_check off
-            depth_write off
+            // depth_check off
+            depth_func always_pass
+            depth_write on
             polygon_mode_overrideable false
             lighting off
 
