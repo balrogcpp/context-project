@@ -82,7 +82,9 @@ target_include_directories(yojimbo INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL
 install(TARGETS yojimbo EXPORT yojimboConfig PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/yojimbo)
 install(EXPORT yojimboConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/yojimbo)
 
-if (WIN32 OR UNIX)
+include(CMakeDependentOption)
+cmake_dependent_option(YOJIMBO_EXE "Build yojimbo executables" ON "WIN32 OR UNIX;NOT CMAKE_CROSSCOMPILING" OFF)
+if (YOJIMBO_EXE)
     # CLIENT
     add_executable(client
             client.cpp
