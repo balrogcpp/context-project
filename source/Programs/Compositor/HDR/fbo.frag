@@ -26,6 +26,7 @@ float KarisAverage(const vec3 col)
 
 // Karis filter based on
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L15
+out vec3 FragColor;
 void main()
 {
     vec2 tsize = 1.0 / vec2(textureSize(RT, 0));

@@ -376,6 +376,7 @@ in mediump mat3 vTBN;
 #ifdef HAS_VERTEXCOLOR
 in mediump vec3 vColor;
 #endif
+out vec4 FragColor;
 void main()
 {
     vec3 color = vec3(0.0, 0.0, 0.0);

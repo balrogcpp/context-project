@@ -18,6 +18,7 @@ uniform vec4 ViewportSize;
 #include "smaa.glsl"
 
 in vec4 offset;
+out vec3 FragColor;
 void main()
 {
 	vec2 size = vec2(textureSize(rt_input, 0));

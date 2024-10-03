@@ -15,6 +15,7 @@ uniform vec4 ViewportSize;
 
 in vec2 pixcoord0;
 in vec4 offset[3];
+out vec4 FragColor;
 void main()
 {
 	vec2 size = vec2(textureSize(edgeTex, 0));

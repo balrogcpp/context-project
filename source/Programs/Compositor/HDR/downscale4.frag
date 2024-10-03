@@ -16,6 +16,7 @@ vec3 DownsampleBox4Tap(const sampler2D tex, const vec2 uv, const vec2 tsize)
     return o * 0.25;
 }
 
+out vec3 FragColor;
 void main()
 {
     FragColor.rgb = DownsampleBox4Tap(RT, 2.0 * gl_FragCoord.xy / vec2(textureSize(RT, 0)));

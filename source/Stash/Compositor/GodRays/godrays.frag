@@ -31,6 +31,7 @@ vec3 GodRays(sampler2D tex, const vec2 uv, const vec2 lightPos, float density, f
 }
 
 in highp vec2 vUV0;
+out vec3 FragColor;
 void main()
 {
     vec3 color = GodRays(FBO, vUV0, LightPosition.xy, Density, Weight * LightPosition.w, Decay, Exposure);

@@ -89,6 +89,7 @@ vec3 perturb(const sampler2D tex, const vec2 coords, float bend)
 
 in highp vec3 vPosition;
 in highp vec2 vUV0;
+out vec4 FragColor;
 void main()
 {
     vec3 SunTransmittance = max(1.0 - exp(LightDir0.y * SunExtinction), 0.0);

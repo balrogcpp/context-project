@@ -40,12 +40,6 @@ precision lowp samplerCube;
 #endif
 #ifdef OGRE_FRAGMENT_SHADER
 #define varying in
-#ifdef HAS_MRT
-out vec4 FragData[MAX_MRT_TEXTURES];
-#define FragColor FragData[MRT_COLOR]
-#else
-out vec4 FragColor;
-#endif
 #endif
 //#define texture1D texture
 //#define texture2D texture

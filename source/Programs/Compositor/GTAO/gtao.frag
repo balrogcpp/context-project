@@ -121,6 +121,7 @@ float Falloff(float dist2, float cosh)
     return 2.0 * clamp((dist2 - 0.16) / (4.0 - 0.16), 0.0, 1.0);
 }
 
+out float FragColor;
 void main()
 {
     vec2 viewsizediv = 1.0 / vec2(textureSize(DepthTex, 0));
@@ -186,5 +187,5 @@ void main()
     float h2 = n + min(h2a - n, PI_HALF);
 
     float visibility = mix(1.0, IntegrateArc(h1, h2, n), length(projectedNormal));
-    FragColor.r = visibility;
+    FragColor = visibility;
 }

@@ -240,6 +240,7 @@ vec3 HosekWilkie(const highp vec3 V, const highp vec3 N)
 }
 
 in highp vec3 vUV0;
+out vec4 FragColor;
 void main()
 {
     vec3 color = HosekWilkie(normalize(vUV0), -normalize(LightDir0));

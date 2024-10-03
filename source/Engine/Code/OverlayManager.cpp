@@ -8,6 +8,7 @@
 using namespace std;
 
 namespace {
+
 bool showMenu = false;
 ImFont *font = nullptr;
 }  // namespace

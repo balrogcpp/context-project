@@ -29,6 +29,7 @@ vec2 RestoreTexCoord(const vec3 viewPos, const mat4 invViewMatrix, const mat4 vi
 
 in highp vec2 vUV0;
 in highp vec3 vRay;
+out vec3 FragColor;
 void main()
 {
     // pixel was rendered this frame = use it

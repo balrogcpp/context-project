@@ -21,7 +21,8 @@ float DownsampleBox4Tap(const sampler2D tex, const ivec2 uv)
     return o * 0.25;
 }
 
+out float FragColor;
 void main()
 {
-    FragColor.r = DownsampleBox4Tap(RT, ivec2(gl_FragCoord.xy * 2.0));
+    FragColor = DownsampleBox4Tap(RT, ivec2(gl_FragCoord.xy * 2.0));
 }

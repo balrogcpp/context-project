@@ -5,6 +5,7 @@
 uniform sampler2D RT;
 uniform vec4 ViewportSize;
 
+out vec4 FragColor;
 void main()
 {
     vec2 uv = gl_FragCoord.xy * ViewportSize.zw;

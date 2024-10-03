@@ -28,6 +28,7 @@ uniform mediump sampler2D ShadowMap7;
 #endif
 
 in highp vec2 vUV0;
+out float FragColor;
 void main()
 {
 #if MAX_SHADOW_TEXTURES > 0

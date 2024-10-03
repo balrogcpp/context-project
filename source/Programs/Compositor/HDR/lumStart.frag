@@ -22,6 +22,7 @@ float luminance(const vec3 col) {
 //vec2( 2, 2 ), vec2( 3, 2 ), vec2( 2, 3 ), vec2( 3, 3 )
 //);
 //  https://github.com/OGRECave/ogre-next/blob/v2.3.1/Samples/Media/2.0/scripts/materials/HDR/GLSL/DownScale01_SumLumStart_ps.glsl
+out float FragColor;
 void main()
 {
     //Compute how many pixels we have to skip because we can't sample them all
@@ -57,5 +58,5 @@ void main()
 
     float lum = c * 0.0625; // /= 16.0;
 
-    FragColor.r = lum;
+    FragColor = lum;
 }

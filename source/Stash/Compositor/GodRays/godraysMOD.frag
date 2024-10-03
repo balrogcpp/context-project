@@ -27,6 +27,7 @@ vec3 Upscale9(sampler2D tex, const vec2 uv, const vec2 tsize)
 }
 
 in highp vec2 vUV0;
+out vec3 FragColor;
 void main()
 {
     vec3 color = textureLod(RT, vUV0, 0.0).rgb;

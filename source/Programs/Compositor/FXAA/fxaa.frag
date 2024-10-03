@@ -230,6 +230,7 @@ vec3 FxaaPixelShader(const sampler2D tex, const vec2 pos, const vec2 rcpFrame)
     return FxaaLerp3(rgbL, rgbF, blendL);
 }
 
+out vec3 FragColor;
 void main()
 {
     vec2 tsize = 1.0 / vec2(textureSize(RT, 0));

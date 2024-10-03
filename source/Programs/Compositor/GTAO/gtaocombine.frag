@@ -16,6 +16,7 @@ vec3 MultiBounce(float visibility, const vec3 albedo) {
     return max(vec3(visibility, visibility, visibility), ((visibility * a + b) * visibility + c) * visibility);
 }
 
+out vec3 FragColor;
 void main()
 {
     vec2 uv = vec2(gl_FragCoord.xy) / vec2(textureSize(RT, 0));

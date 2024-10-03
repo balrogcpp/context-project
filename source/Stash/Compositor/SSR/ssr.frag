@@ -81,6 +81,7 @@ float Fresnel(const vec3 direction, const vec3 normal)
 
 in highp vec2 vUV0;
 in highp vec3 vRay;
+out vec3 FragColor;
 void main()
 {
     float clampedPixelDepth = texture(NormalTex, vUV0).x;

@@ -5,6 +5,7 @@
 uniform sampler2D RT;
 
 // https://github.com/asylum2010/Asylum_Tutorials/blob/4f2bc39a8ae69db1ceb59e9a763ef91c7b3dc6de/Media/ShadersGL/gtaospatialdenoiser.frag
+out float FragColor;
 void main()
 {
     float totalao = 0.0;
@@ -49,5 +50,5 @@ void main()
     totalao += texelFetch(RT, loc + ivec2(3, 3), 0).r;
 #endif
 
-    FragColor.r = totalao * 0.0625;
+    FragColor = totalao * 0.0625;
 }

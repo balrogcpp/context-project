@@ -25,7 +25,7 @@ vec3 BlurFunction(const vec2 uv, float r, const vec3 center_c, float center_d, i
     return c*w;
 }
 
-
+out vec3 FragColor;
 void main()
 {
     vec2 size = vec2(textureSize(RT, 0));

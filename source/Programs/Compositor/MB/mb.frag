@@ -20,6 +20,7 @@ float Linear01Depth(const highp float z)
 
 
 in highp vec3 vRay;
+out vec3 FragColor;
 void main()
 {
     vec2 uv = vec2(gl_FragCoord.xy) / vec2(textureSize(RT, 0));

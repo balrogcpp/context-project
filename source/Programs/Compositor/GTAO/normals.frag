@@ -43,6 +43,7 @@ vec3 getNormal(const sampler2D tex, const vec2 uv, const vec2 tsize)
     return normalize(cross(MinDiff(P, Pr, Pl), MinDiff(P, Pt, Pb)));
 }
 
+out vec3 FragColor;
 void main()
 {
     vec2 tsize = 1.0 / vec2(textureSize(DepthTex, 0).xy);

@@ -27,6 +27,7 @@ float DownsampleBox4Tap(const sampler2D tex, const ivec2 uv)
     return o * 0.25;
 }
 
+out float FragColor;
 void main()
 {
     ivec2 uv = ivec2(gl_FragCoord.xy * 2.0);
@@ -36,5 +37,5 @@ void main()
     float oldLum = texelFetch(Lum, ivec2(0, 0), 0).r;
 
     //Adapt luminicense based 75% per second.
-    FragColor.r = mix(newLum, oldLum, pow(0.25, timeSinceLast));
+    FragColor = mix(newLum, oldLum, pow(0.25, timeSinceLast));
 }
