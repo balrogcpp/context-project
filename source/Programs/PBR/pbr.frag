@@ -332,7 +332,7 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
 #endif
 
 #ifdef HAS_ALPHA
-float computeMaskedAlpha(float a) {
+float computeMaskedAlpha(const float a) {
     // Use derivatives to smooth alpha tested edges
     return (a - 0.5) / max(fwidth(a), 1e-3) + 0.5;
 }

@@ -6,16 +6,16 @@
 // Clamp HDR value within a safe range
 #define SafeHDR(x) min(x, 65504.0)
 
-//float sq(float x) {
+//float sq(const float x) {
 //    return x * x;
 //}
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
-float fstep(float x, float y) {
+float fstep(const float x, float y) {
     return saturate(((y - x) - HALF_EPSILON) * HALF_MAX);
 }
 
-float fsign(float x) {
+float fsign(const float x) {
     return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
 }
 

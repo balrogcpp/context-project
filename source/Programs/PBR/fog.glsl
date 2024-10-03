@@ -1,10 +1,10 @@
-vec3 ApplyFog(const vec3 color, float fogParam, const vec3 fogColor, highp float dist)
+vec3 ApplyFog(const vec3 color, float fogParam, const vec3 fogColor, const highp float dist)
 {
     float fogAmount = 1.0 - exp(-dist * fogParam);
     return mix(color, fogColor, fogAmount);
 }
 
-float pow8(float x)
+float pow8(const float x)
 {
     float x2 = x * x;
     float x4 = x2 * x2;

@@ -7,7 +7,7 @@ uniform sampler2D Lum;
 uniform vec3 Exposure;
 uniform float timeSinceLast;
 
-float expose(float color, const vec3 exposure) {
+float expose(const float color, const vec3 exposure) {
     return exposure.x / exp(clamp(color, exposure.y, exposure.z));
 }
 

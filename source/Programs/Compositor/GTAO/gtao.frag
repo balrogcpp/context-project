@@ -23,14 +23,14 @@ float Linear01Depth(const highp float z)
 }
 
 // [Eberly2014] GPGPU Programming for Games and Science
-float GTAOFastAcos(float x)
+float GTAOFastAcos(const float x)
 {
     float res = -0.156583 * abs(x) + PI_HALF;
     res *= sqrt(1.0 - abs(x));
     return x >= 0.0 ? res : PI - res;
 }
 
-float IntegrateArc(float h1, float h2, float n)
+float IntegrateArc(const float h1, const float h2, const float n)
 {
     float cosN = cos(n);
     float sinN = sin(n);
@@ -116,7 +116,7 @@ vec3 hash(const vec3 a)
 //     return cameraNormal * linearDepth;
 // }
 
-float Falloff(float dist2, float cosh)
+float Falloff(const float dist2, const float cosh)
 {
     return 2.0 * clamp((dist2 - 0.16) / (4.0 - 0.16), 0.0, 1.0);
 }

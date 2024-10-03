@@ -7,7 +7,7 @@
 /**
  * Computes a specular occlusion term from the ambient occlusion term.
  */
-float computeSpecularAO(float NoV, float visibility, float roughness) {
+float computeSpecularAO(const float NoV, const float visibility, const float roughness) {
 #if SPECULAR_AMBIENT_OCCLUSION == 1
     return saturate(pow(NoV + visibility, exp2(-16.0 * roughness - 1.0)) - 1.0 + visibility);
 #else
@@ -20,7 +20,7 @@ float computeSpecularAO(float NoV, float visibility, float roughness) {
  * The albedo term is meant to be the diffuse color or f0 for the diffuse and
  * specular terms respectively.
  */
-vec3 gtaoMultiBounce(float visibility, const vec3 albedo) {
+vec3 gtaoMultiBounce(const float visibility, const vec3 albedo) {
     // Jimenez et al. 2016, "Practical Realtime Strategies for Accurate Indirect Occlusion"
     vec3 a =  2.0404 * albedo - 0.3324;
     vec3 b = -4.7951 * albedo + 0.6417;
@@ -29,19 +29,19 @@ vec3 gtaoMultiBounce(float visibility, const vec3 albedo) {
     return max(vec3(visibility, visibility, visibility), ((visibility * a + b) * visibility + c) * visibility);
 }
 
-void multiBounceAO(float visibility, const vec3 albedo, inout vec3 color) {
+void multiBounceAO(const float visibility, const vec3 albedo, inout vec3 color) {
 #if MULTI_BOUNCE_AMBIENT_OCCLUSION == 1
     color *= gtaoMultiBounce(visibility, albedo);
 #endif
 }
 
-void multiBounceSpecularAO(float visibility, const vec3 albedo, inout vec3 color) {
+void multiBounceSpecularAO(const float visibility, const vec3 albedo, inout vec3 color) {
 #if MULTI_BOUNCE_AMBIENT_OCCLUSION == 1 && SPECULAR_AMBIENT_OCCLUSION == 1
     color *= gtaoMultiBounce(visibility, albedo);
 #endif
 }
 
-float singleBounceAO(float visibility) {
+float singleBounceAO(const float visibility) {
 #if MULTI_BOUNCE_AMBIENT_OCCLUSION == 1
     return 1.0;
 #else
@@ -50,7 +50,7 @@ float singleBounceAO(float visibility) {
 }
 
 // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-vec3 EnvBRDFApprox(float roughness, float NoV)
+vec3 EnvBRDFApprox(const float roughness, const float NoV)
 {
     const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
     const vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
@@ -61,7 +61,7 @@ vec3 EnvBRDFApprox(float roughness, float NoV)
     return vec3(AB.yx, 0.0);
 }
 
-vec3 EnvBRDFApproxNonmetal(float roughness, float NoV)
+vec3 EnvBRDFApproxNonmetal(const float roughness, const float NoV)
 {
     // Same as EnvBRDFApprox(0.04, Roughness, NoV)
     const vec2 c0 = vec2(-1.0, -0.0275);
@@ -71,7 +71,7 @@ vec3 EnvBRDFApproxNonmetal(float roughness, float NoV)
     return vec3(a004, a004, 0.0);
 }
 
-vec3 EnvDFGLazarov(float gloss, float ndotv)
+vec3 EnvDFGLazarov(const float gloss, const float ndotv)
 {
     const vec4 p0 = vec4(0.5745, 1.548, -0.02397, 1.301);
     const vec4 p1 = vec4(0.5753, -0.2511, -0.02066, 0.4755);
@@ -88,7 +88,7 @@ vec3 EnvDFGLazarov(float gloss, float ndotv)
 }
 
 // https://knarkowicz.wordpress.com/2014/12/27/analytical-dfg-term-for-ibl/
-vec3 EnvDFGPolynomial(float gloss, float ndotv)
+vec3 EnvDFGPolynomial(const float gloss, const float ndotv)
 {
     float x = gloss;
     float y = ndotv;
@@ -137,14 +137,14 @@ vec3 decodeDataForIBL(const vec3 data) {
 //------------------------------------------------------------------------------
 
 #ifdef HAS_LUT
-vec3 PrefilteredDFG_LUT(float lod, float NoV) {
+vec3 PrefilteredDFG_LUT(const float lod, const float NoV) {
     // coord = sqrt(linear_roughness), which is the mapping used by cmgen.
     // SNiLD: Y is flipped for Ogre because there is no tool to flip the actual
     //        texture that is in 16-bit float RGBA DDS format.
     return textureLod(LUTtex, vec2(NoV, 1.0 - lod), 0.0).rgb;
 }
 
-vec3 prefilteredDFG(float perceptualRoughness, float NoV) {
+vec3 prefilteredDFG(const float perceptualRoughness, const float NoV) {
     // PrefilteredDFG_LUT() takes a LOD, which is sqrt(roughness) = perceptualRoughness
     return PrefilteredDFG_LUT(perceptualRoughness, NoV);
 }
@@ -155,22 +155,22 @@ vec3 diffuseIrradiance(const vec3 n) {
     return decodeDataForIBL(textureLod(SpecularEnvTex, n, 6.0).rgb);
 }
 
-float perceptualRoughnessToLod(float perceptualRoughness) {
+float perceptualRoughnessToLod(const float perceptualRoughness) {
     // The mapping below is a quadratic fit for log2(perceptualRoughness)+iblMaxMipLevel when
     // iblMaxMipLevel is 4. We found empirically that this mapping works very well for
     // a 256 cubemap with 5 levels used. But also scales well for other iblMaxMipLevel values.
     return 6.0 * perceptualRoughness * (2.0 - perceptualRoughness);
 }
 
-vec3 prefilteredRadiance(const vec3 n, float perceptualRoughness) {
+vec3 prefilteredRadiance(const vec3 n, const float perceptualRoughness) {
     return decodeDataForIBL(textureLod(SpecularEnvTex, n, perceptualRoughnessToLod(perceptualRoughness)).rgb);
 }
 
-vec3 getSpecularDominantDirection(const vec3 n, const vec3 r, float roughness) {
+vec3 getSpecularDominantDirection(const vec3 n, const vec3 r, const float roughness) {
     return mix(r, n, roughness * roughness);
 }
 
-vec3 getReflectedVector(float roughness) {
+vec3 getReflectedVector(const float roughness) {
     vec3 r = reflect(-V, N);
     r = getSpecularDominantDirection(N, r, roughness);
     r.z *= -1.0;

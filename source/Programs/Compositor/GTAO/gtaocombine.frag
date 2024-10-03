@@ -7,7 +7,7 @@ uniform sampler2D RT;
 uniform sampler2D AO;
 
 // https://github.com/asylum2010/Asylum_Tutorials/blob/423e5edfaee7b5ea450a450e65f2eabf641b2482/Media/ShadersGL/gtaocombine.frag#L11
-vec3 MultiBounce(float visibility, const vec3 albedo) {
+vec3 MultiBounce(const float visibility, const vec3 albedo) {
     // Jimenez et al. 2016, "Practical Realtime Strategies for Accurate Indirect Occlusion"
     vec3 a =  2.0404 * albedo - 0.3324;
     vec3 b = -4.7951 * albedo + 0.6417;

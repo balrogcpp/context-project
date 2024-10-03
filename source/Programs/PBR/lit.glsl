@@ -11,24 +11,24 @@
 #define MIN_N_DOT_V 1e-4
 
 // Chan 2018, "Material Advances in Call of Duty: WWII"
-float computeMicroShadowing(float NoL, float visibility) {
+float computeMicroShadowing(const float NoL, float visibility) {
     float aperture = inversesqrt(1.0 - visibility);
     float microShadow = saturate(NoL * aperture);
     return microShadow * microShadow;
 }
 
-float clampNoV(float NoV) {
+float clampNoV(const float NoV) {
     // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
     return max(NoV, MIN_N_DOT_V);
 }
 
 // Computes x^5 using only multiply operations.
-float pow5(float x) {
+float pow5(const float x) {
     float x2 = x * x;
     return x2 * x2 * x;
 }
 
-float sq(float x) {
+float sq(const float x) {
     return x * x;
 }
 
@@ -40,7 +40,7 @@ vec3 computeDiffuseColor(const vec3 baseColor, float metallic) {
     return baseColor.rgb * (1.0 - metallic);
 }
 
-float computeDielectricF0(float reflectance) {
+float computeDielectricF0(const float reflectance) {
     return 0.16 * reflectance * reflectance;
 }
 
@@ -52,24 +52,24 @@ float computeMetallicFromSpecularColor(const vec3 specularColor) {
     return max3(specularColor);
 }
 
-float computeRoughnessFromGlossiness(float glossiness) {
+float computeRoughnessFromGlossiness(const float glossiness) {
     return 1.0 - glossiness;
 }
 
-float computeRoughnessFromSpec(float specularity) {
+float computeRoughnessFromSpec(const float specularity) {
     return 1.0 - specularity/128.0;
 }
 
-float perceptualRoughnessToRoughness(float perceptualRoughness) {
+float perceptualRoughnessToRoughness(const float perceptualRoughness) {
     return perceptualRoughness * perceptualRoughness;
 }
 
-float roughnessToPerceptualRoughness(float roughness) {
+float roughnessToPerceptualRoughness(const float roughness) {
     return sqrt(roughness);
 }
 
 // https://google.github.io/filament/Filament.md.html#materialsystem/specularbrdf/geometricshadowing(specularg)
-float V_SmithGGXCorrelated(float roughness, float NoV, float NoL) {
+float V_SmithGGXCorrelated(const float roughness, const float NoV, const float NoL) {
     // Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"
     float a2 = roughness * roughness;
     // TODO: lambdaV can be pre-computed for all the lights, it should be moved out of this function
@@ -82,14 +82,14 @@ float V_SmithGGXCorrelated(float roughness, float NoV, float NoL) {
     return saturateMediump(v);
 }
 
-float V_SmithGGXCorrelated_Fast(float roughness, float NoV, float NoL) {
+float V_SmithGGXCorrelated_Fast(const float roughness, const float NoV, const float NoL) {
     // Hammon 2017, "PBR Diffuse Lighting for GGX+Smith Microsurfaces"
     float v = 0.5 / mix(2.0 * NoL * NoV, NoL + NoV, roughness);
     return saturateMediump(v);
 }
 
-float V_SmithGGXCorrelated_Anisotropic(float at, float ab, float ToV, float BoV,
-        float ToL, float BoL, float NoV, float NoL) {
+float V_SmithGGXCorrelated_Anisotropic(const float at, const float ab, const float ToV, const float BoV,
+        const float ToL, const float BoL, const float NoV, const float NoL) {
     // Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"
     // TODO: lambdaV can be pre-computed for all the lights, it should be moved out of this function
     float lambdaV = NoL * length(vec3(at * ToV, ab * BoV, NoV));
@@ -98,18 +98,18 @@ float V_SmithGGXCorrelated_Anisotropic(float at, float ab, float ToV, float BoV,
     return saturateMediump(v);
 }
 
-float V_Kelemen(float LoH) {
+float V_Kelemen(const float LoH) {
     // Kelemen 2001, "A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling"
     return saturateMediump(0.25 / (LoH * LoH));
 }
 
-float V_Neubelt(float NoV, float NoL) {
+float V_Neubelt(const float NoV, const float NoL) {
     // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
     return saturateMediump(1.0 / (4.0 * (NoL + NoV - NoL * NoV)));
 }
 
 // https://google.github.io/filament/Filament.md.html#materialsystem/specularbrdf/normaldistributionfunction(speculard)
-float D_GGX(float roughness, float NoH, const vec3 h) {
+float D_GGX(const float roughness, const float NoH, const vec3 h) {
     // Walter et al. 2007, "Microfacet Models for Refraction through Rough Surfaces"
 
     // In mediump, there are two problems computing 1.0 - NoH^2
@@ -136,7 +136,7 @@ float D_GGX(float roughness, float NoH, const vec3 h) {
     return saturateMediump(d);
 }
 
-float D_Charlie(float roughness, float NoH) {
+float D_Charlie(const float roughness, const float NoH) {
     // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
     float invAlpha  = 1.0 / roughness;
     float cos2h = NoH * NoH;
@@ -144,17 +144,17 @@ float D_Charlie(float roughness, float NoH) {
     return (2.0 + invAlpha) * pow(sin2h, invAlpha * 0.5) / (2.0 * PI);
 }
 
-vec3 F_Schlick(const vec3 f0, float f90, float VoH) {
+vec3 F_Schlick(const vec3 f0, const float f90, const float VoH) {
     // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
     return f0 + (f90 - f0) * pow5(1.0 - VoH);
 }
 
-vec3 F_Schlick(const vec3 f0, float VoH) {
+vec3 F_Schlick(const vec3 f0, const float VoH) {
     float f = pow5(1.0 - VoH);
     return f + f0 * (1.0 - f);
 }
 
-float F_Schlick(float f0, float f90, float VoH) {
+float F_Schlick(const float f0, const float f90, const float VoH) {
     return f0 + (f90 - f0) * pow5(1.0 - VoH);
 }
 
@@ -162,7 +162,7 @@ float Fd_Lambert() {
     return 1.0 / PI;
 }
 
-float Fd_Burley(float roughness, float NoV, float NoL, float LoH) {
+float Fd_Burley(const float roughness, const float NoV, const float NoL, const float LoH) {
     // Burley 2012, "Physically-Based Shading at Disney"
     float f90 = 0.5 + 2.0 * roughness * LoH * LoH;
     float lightScatter = F_Schlick(1.0, f90, NoL);
@@ -171,7 +171,7 @@ float Fd_Burley(float roughness, float NoV, float NoL, float LoH) {
 }
 
 // Energy conserving wrap diffuse term, does *not* include the divide by pi
-float Fd_Wrap(float NoL, float w) {
+float Fd_Wrap(const float NoL, const float w) {
     return saturate((NoL + w) / sq(1.0 + w));
 }
 
@@ -179,11 +179,11 @@ float Fd_Wrap(float NoL, float w) {
 // Specular BRDF dispatch
 //------------------------------------------------------------------------------
 
-float distribution(float roughness, float NoH, const vec3 h) {
+float distribution(const float roughness, const float NoH, const vec3 h) {
     return D_GGX(roughness, NoH, h);
 }
 
-float visibility(float roughness, float NoV, float NoL) {
+float visibility(const float roughness, const float NoV, const float NoL) {
 #ifndef GL_ES
     return V_SmithGGXCorrelated(roughness, NoV, NoL);
 #else
@@ -191,7 +191,7 @@ float visibility(float roughness, float NoV, float NoL) {
 #endif
 }
 
-vec3 fresnel(const vec3 f0, float LoH) {
+vec3 fresnel(const vec3 f0, const float LoH) {
 #ifdef GL_ES
     return F_Schlick(f0, LoH); // f90 = 1.0
 #else
@@ -217,7 +217,7 @@ vec3 fresnel(const vec3 f0, float LoH) {
  * on the Cook-Torrance microfacet model, it uses cheaper terms than the surface
  * BRDF's specular lobe (see brdf.fs).
  */
-vec3 surfaceShading(const Light light, const PixelParams pixel, float occlusion) {
+vec3 surfaceShading(const Light light, const PixelParams pixel, const float occlusion) {
     vec3 h = normalize(V + light.l);
 
     float NoV = shading_NoV;
