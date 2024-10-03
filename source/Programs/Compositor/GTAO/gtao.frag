@@ -56,7 +56,7 @@ vec3 GetCameraVec(const vec2 uv)
 #define SSAO_THICKNESSMIX 0.2
 #define SSAO_MAX_STRIDE 32
 
-void SliceSample(const vec2 tc_base, const vec2 aoDir, int i, float targetMip, const vec3 ray, const vec3 v, inout float closest)
+void SliceSample(const vec2 tc_base, const vec2 aoDir, int i, const float targetMip, const vec3 ray, const vec3 v, inout float closest)
 {
     vec2 uv = tc_base + aoDir * float(i);
     float depth = Linear01Depth(textureLod(DepthTex, uv, 0.0).x);

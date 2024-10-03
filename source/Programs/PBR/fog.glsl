@@ -1,4 +1,4 @@
-vec3 ApplyFog(const vec3 color, float fogParam, const vec3 fogColor, const highp float dist)
+vec3 ApplyFog(const vec3 color, const float fogParam, const vec3 fogColor, const highp float dist)
 {
     float fogAmount = 1.0 - exp(-dist * fogParam);
     return mix(color, fogColor, fogAmount);
@@ -12,7 +12,7 @@ float pow8(const float x)
 }
 
 // https://iquilezles.org/articles/fog/
-vec3 ApplyFog(const vec3 color, float fogParam, vec3 fogColor, const highp float dist, const vec3 camDir, const vec3 lightDir, const highp vec3 camPos)
+vec3 ApplyFog(const vec3 color, const float fogParam, vec3 fogColor, const highp float dist, const vec3 camDir, const vec3 lightDir, const highp vec3 camPos)
 {
     float a = fogParam;
     float b = fogParam;

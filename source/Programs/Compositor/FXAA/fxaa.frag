@@ -86,7 +86,7 @@ float FxaaLuma(const vec3 rgb) {
     return dot(ToSRGB(rgb), vec3(0.2126, 0.7152, 0.0722));
 }
 
-vec3 FxaaLerp3(const vec3 a, const vec3 b, float amountOfA) {
+vec3 FxaaLerp3(const vec3 a, const vec3 b, const float amountOfA) {
     return (vec3(-amountOfA, -amountOfA, -amountOfA) * b) + ((a * vec3(amountOfA, amountOfA, amountOfA)) + b);
 }
 
