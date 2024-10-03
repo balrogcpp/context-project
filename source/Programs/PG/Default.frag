@@ -28,12 +28,7 @@ void main()
     if(alpha < 0.5 || oColour.a < 0.5) discard;
 #endif
 
-#ifdef FORCE_TONEMAP
-    color = SRGBtoLINEAR(color);
-#endif
-#ifdef FORCE_FOG
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fogCoord, normalize(CameraPosition - vPosition), LightDir0.xyz, CameraPosition);
-#endif
 
     FragColor = vec4(color, alpha);
 }

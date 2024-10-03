@@ -1,5 +1,13 @@
 // created by Andrey Vasiliev
 
+#define TONEMAP_UNREAL 1
+#define TONEMAP_FILMIC 2
+#ifdef GL_ES
+    #define USE_TONEMAP TONEMAP_UNREAL
+#else
+    #define USE_TONEMAP TONEMAP_FILMIC
+#endif
+
 vec3 Tonemap_Unreal(const vec3 x) {
     // Unreal, Documentation: "Color Grading"
     // Adapted to be close to Tonemap_ACES, with similar range
@@ -30,7 +38,11 @@ vec3 Inverse_Tonemap_Filmic(const vec3 x) {
 }
 
 vec3 tonemap(const vec3 x) {
+#if USE_TONEMAP == TONEMAP_FILMIC
     return Tonemap_Filmic(x);
+#elif USE_TONEMAP == TONEMAP_UNREAL
+    return Tonemap_Unreal(x);
+#endif
 }
 
 /**
@@ -42,7 +54,11 @@ vec3 tonemap(const vec3 x) {
  */
 vec3 inverseTonemapSRGB(const vec3 color) {
     // sRGB input
+#if USE_TONEMAP == TONEMAP_FILMIC
     return Inverse_Tonemap_Filmic(pow(clamp(color, 0.0, 1.0), vec3(2.2, 2.2, 2.2)));
+#elif USE_TONEMAP == TONEMAP_UNREAL
+    return Inverse_Tonemap_Unreal(clamp(color, 0.0, 1.0));
+#endif
 }
 
 /**
@@ -54,7 +70,11 @@ vec3 inverseTonemapSRGB(const vec3 color) {
  */
 vec3 inverseTonemap(const vec3 linear) {
     // Linear input
+#if USE_TONEMAP == TONEMAP_FILMIC
     return Inverse_Tonemap_Filmic(clamp(linear, 0.0, 1.0));
+#elif USE_TONEMAP == TONEMAP_UNREAL
+    return Inverse_Tonemap_Unreal(pow(clamp(linear, 0.0, 1.0), vec3(1.0/2.2, 1.0/2.2, 1.0/2.2)));
+#endif
 }
 
 vec3 Tonemap_ACES(const vec3 x) {

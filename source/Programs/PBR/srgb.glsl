@@ -1,6 +1,10 @@
 // created by Andrey Vasiliev
 
-#define SRGB_FAST_APPROXIMATION
+#ifdef GL_ES
+    #define SRGB_VERY_FAST_APPROXIMATION
+#else
+    #define SRGB_FAST_APPROXIMATION
+#endif
 
 vec3 SRGBtoLINEAR(const vec3 srgb)
 {
@@ -17,7 +21,7 @@ vec3 SRGBtoLINEAR(const vec3 srgb)
 vec3 LINEARtoSRGB(const vec3 lin)
 {
 #if defined(SRGB_FAST_APPROXIMATION)
-    return pow(lin, vec3(0.45454545, 0.45454545, 0.45454545));
+    return pow(lin, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
     return sqrt(lin);
 #else
