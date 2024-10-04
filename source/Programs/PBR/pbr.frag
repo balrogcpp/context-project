@@ -383,14 +383,12 @@ void main()
 
 #ifdef HAS_UV
     vec2 uv = vUV0;
-    vec2 uv1 = vUV0;
     UV = vUV0;
 #ifdef TERRA_LIGHTMAP
     uv *= TexScale;
 #endif
 #else
     const vec2 uv = vec2(0.0, 0.0);
-    const vec2 uv1 = vec2(0.0, 0.0);
 #endif
 #ifdef HAS_VERTEXCOLOR
     vec4 colour = GetAlbedo(uv, vColor);

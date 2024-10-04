@@ -6,13 +6,12 @@ compositor SSAO : STD
 {
     technique
     {
-        texture gbuf0 target_width_scaled 0.5 target_height_scaled 0.5 PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1
-        //texture gbuf0 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
+        texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
         //texture gbuf1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture_ref ao MRT ao
 
-        target gbuf0
+        target gbuf
         {
             pass render_quad
             {
@@ -26,7 +25,7 @@ compositor SSAO : STD
         //     pass render_quad
         //     {
         //         material Copy
-        //         input 0 gbuf0
+        //         input 0 gbuf
         //     }
         // }
 
@@ -36,7 +35,7 @@ compositor SSAO : STD
             {
                 identifier 10
                 material GTAO
-                input 0 gbuf0
+                input 0 gbuf
             }
         }
 
