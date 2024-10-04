@@ -45,7 +45,7 @@ add_library(sodium STATIC ${sodium_SRC})
 set_target_properties(sodium PROPERTIES PUBLIC_HEADER "${sodium_H}")
 target_include_directories(sodium INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/sodium>)
 install(TARGETS sodium EXPORT sodiumConfig PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/sodium)
-install(EXPORT sodiumConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/sodium)
+install(EXPORT sodiumConfig NAMESPACE sodium:: DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/sodium)
 
 # NETCODE
 add_library(netcode STATIC
@@ -80,7 +80,7 @@ target_link_libraries(yojimbo sodium)
 set_target_properties(yojimbo PROPERTIES PUBLIC_HEADER "${yojimbo_H}")
 target_include_directories(yojimbo INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/yojimbo>)
 install(TARGETS yojimbo EXPORT yojimboConfig PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/yojimbo)
-install(EXPORT yojimboConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/yojimbo)
+install(EXPORT yojimboConfig NAMESPACE yojimbo:: DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/yojimbo)
 
 include(CMakeDependentOption)
 cmake_dependent_option(YOJIMBO_EXE "Build yojimbo executables" ON "WIN32 OR UNIX;NOT CMAKE_CROSSCOMPILING" OFF)
