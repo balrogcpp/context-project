@@ -323,22 +323,10 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
-
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
-    //    fp->setNamedConstant("WorldViewProjMatrix", viewProj);
-    //    fp->setNamedConstant("ViewProjPrev", viewProjPrev);
+    fp->setNamedConstant("WorldViewProjMatrix", viewProj);
+    fp->setNamedConstant("ViewProjPrev", viewProjPrev);
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
-
-    //  } else if (pass_id == 12) {  // 12 = GodRays
-    //    const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    //    for (auto *l : sceneManager->_getLightsAffectingFrustum()) {
-    //      if (l->getType() == Light::LT_DIRECTIONAL) {
-    //        fp->setNamedConstant("LightPosition", GetLightScreenSpaceCoords(l, camera));
-    //        break;
-    //      }
-    //    }
-    //
-    //  } else if (pass_id == 99) {  // 99 = FullScreenBlur
   }
 }
 
@@ -393,16 +381,6 @@ void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const O
   if (!IsCompositorEnabled("MRT")) return;
 
   if (auto *tex = pass->getTextureUnitState("IBL")) {
-    //  if (IsCompositorEnabled("CubeMap")) {
-    //    auto &cube = compositorChain->getCompositor("CubeMap")->getTextureInstance("cube", 0);
-    //    auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
-    //    static bool copied = false;
-    //    if (!copied) {
-    //      cube->copyToTexture(ibl);
-    //      copied = true;
-    //    }
-    //  }
-
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       if (IsCompositorEnabled("CubeMap")) tex->setCompositorReference("CubeMap", "cube");
