@@ -13,9 +13,9 @@ float DownsampleBox4Tap(const sampler2D tex, const ivec2 uv)
     float o = dot(g, vec4(1.0, 1.0, 1.0, 1.0));
 #else
     float o = texelFetch(tex, uv, 0).r;
-    o += texelFetch(tex, uv + ivec2(0, 1), 0).r;
-    o += texelFetch(tex, uv + ivec2(1, 0), 0).r;
-    o += texelFetch(tex, uv + ivec2(1, 1), 0).r;
+    o += texelFetchOffset(tex, uv, 0, ivec2(0, 1)).r;
+    o += texelFetchOffset(tex, uv, 0, ivec2(1, 0)).r;
+    o += texelFetchOffset(tex, uv, 0, ivec2(1, 1)).r;
 #endif
 
     return o * 0.25;

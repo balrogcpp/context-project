@@ -19,6 +19,6 @@ void main()
     // highp float fDepth3 = texelFetch(RT, uv + ivec2(1, 1), 0).x;
 
     // FragColor = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
-    FragColor = texelFetch(RT, ivec2(gl_FragCoord.xy * 2.0), 0);
+    FragColor = texelFetch(RT, ivec2(gl_FragCoord.xy * 2.0), 0).x;
 #endif
 }
