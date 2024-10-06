@@ -324,8 +324,11 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
     float near = camera->getNearClipDistance();
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
+    Ogre::Matrix4 viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix();
+    static Matrix4 viewProjPrev;
     fp->setNamedConstant("WorldViewProjMatrix", viewProj);
     fp->setNamedConstant("ViewProjPrev", viewProjPrev);
+    viewProjPrev = viewProj;
     fp->setNamedConstant("InvViewMatrix", camera->getViewMatrix().inverse());
   }
 }
