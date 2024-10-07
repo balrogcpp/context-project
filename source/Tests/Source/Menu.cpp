@@ -22,7 +22,11 @@ void Menu::OnSetUp() {
   //light->setCastShadows(true);
   //lNode->setDirection({40.659888, -40.0, -30.950829});
   //light->name
-  GetComponent<SceneManager>().LoadFromFile("1.scene");
+
+  //auto *rootNode = sceneManager->getRootSceneNode();
+  //rootNode->loadChildren(filename);
+
+  //GetComponent<SceneManager>().LoadFromFile("1.scene");
 }
 
 void Menu::OnUpdate(float time) {}

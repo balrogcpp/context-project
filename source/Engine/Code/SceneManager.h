@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "SinbadCharacterController.h"
 #include "System.h"
 #include <Ogre.h>
 
@@ -27,8 +26,6 @@ class SceneManager final : public System<SceneManager> {
   void OnUpdate(float time) override;
 
  protected:
-  std::unique_ptr<SinbadCharacterController> sinbad;
-
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *sceneManager = nullptr;
   Ogre::Camera *camera = nullptr;

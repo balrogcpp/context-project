@@ -34,11 +34,11 @@ in highp vec4 tangent;
 in highp vec3 colour;
 #endif
 #ifdef HAS_UV
-//#ifndef VERTEX_COMPRESSION
+#ifndef VERTEX_COMPRESSION
 in highp vec2 uv0;
-//#else
-//in highp float uv0;
-//#endif // VERTEX_COMPRESSION
+#else
+in highp float uv0;
+#endif // VERTEX_COMPRESSION
 #ifdef PAGED_GEOMETRY
 in highp vec4 uv1;
 in highp vec4 uv2;
@@ -111,7 +111,7 @@ void main()
     highp vec4 position = vertex;
     highp vec2 uv = uv0;
 #else
-    highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0.x, 1.0);
+    highp vec4 position = posIndexToObjectSpace * vec4(vertex.xy, uv0, 1.0);
     highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 

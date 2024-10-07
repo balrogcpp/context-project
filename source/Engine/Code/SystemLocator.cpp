@@ -2,14 +2,6 @@
 
 #include "pch.h"
 #include "SystemLocator.h"
-#include "SDLListener.h"
-#include <SDL2/SDL_messagebox.h>
-#ifdef _WIN32
-extern "C" {
-__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
-}
-#endif
 
 using namespace std;
 
@@ -31,8 +23,8 @@ void SystemLocator::Init() {
   InputSequencer::GetInstance().RegWindowListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 
-  compositor = make_unique<CompositorManager>();
-  RegComponent(compositor.get(), true);
+  //compositor = make_unique<CompositorManager>();
+  //RegComponent(compositor.get(), true);
 
   overlay = make_unique<OverlayManager>();
   RegComponent(overlay.get(), true);
@@ -40,13 +32,11 @@ void SystemLocator::Init() {
   physics = make_unique<PhysicsManager>();
   RegComponent(physics.get());
 
-#ifndef __EMSCRIPTEN__
   audio = make_unique<AudioManager>();
   RegComponent(audio.get());
-#endif
 
-  scene = make_unique<SceneManager>();
-  RegComponent(scene.get(), true);
+  //scene = make_unique<SceneManager>();
+  //RegComponent(scene.get(), true);
 
   terrain = make_unique<TerrainManager>();
   RegComponent(terrain.get());
@@ -161,8 +151,7 @@ void SystemLocator::FrameControl() {
       this_thread::sleep_for(remainingTime - remainingTime % 1ms);
 
       // busy loop
-      while (chrono::steady_clock::now() < t2 + remainingTime) {
-      }
+      while (chrono::steady_clock::now() < t2 + remainingTime) {}
     } else {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps * 2) - frameTime;
       this_thread::sleep_for(remainingTime);
@@ -171,5 +160,4 @@ void SystemLocator::FrameControl() {
 
   t1 = chrono::steady_clock::now();
 }
-
 }  // namespace gge

@@ -25,13 +25,9 @@ void SceneManager::OnSetUp() {
 void SceneManager::OnClean() {
   sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneManager->clearScene();
-  InputSequencer::GetInstance().UnregDeviceListener(sinbad.get());
-  sinbad.reset();
 }
 
-void SceneManager::OnUpdate(float time) {
-  if (sinbad) sinbad->Update(time);
-}
+void SceneManager::OnUpdate(float time) {}
 
 static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
   auto &forests = GetComponent<ForestsManager>();
@@ -54,10 +50,10 @@ void SceneManager::LoadFromFile(const std::string &filename) {
     ProcessNode(dynamic_cast<Ogre::SceneNode *>(it));
   }
 
-  if (!sinbad && sceneManager->hasCamera("Camera")) {
-    sinbad = make_unique<SinbadCharacterController>(sceneManager->getCamera("Camera"));
-    InputSequencer::GetInstance().RegDeviceListener(sinbad.get());
-  }
+  //if (!sinbad && sceneManager->hasCamera("Camera")) {
+  //  sinbad = make_unique<SinbadCharacterController>(sceneManager->getCamera("Camera"));
+  //  InputSequencer::GetInstance().RegDeviceListener(sinbad.get());
+  //}
 
   // search for TerrainGroup
   const auto &objBindings = sceneManager->getRootSceneNode()->getUserObjectBindings();
@@ -102,7 +98,7 @@ void SceneManager::ProcessLight(Ogre::Light *light) {
 }
 
 void SceneManager::ProcessEntity(const std::string &name) { ProcessEntity(sceneManager->getEntity(name)); }
-
+/*
 // snippet helps to parse vertex buffers
 namespace {
 #define INT10_MAX ((1 << 9) - 1)
@@ -189,7 +185,7 @@ void EncodeNormals(Ogre::Entity *entity) {
   }
 }
 }  // namespace
-
+*/
 void SceneManager::ProcessEntity(Ogre::Entity *entity) {
   if (entity->getName().rfind("GrassLDR", 0)) {
     Ogre::SceneNode *node = entity->getParentSceneNode();
