@@ -64,7 +64,7 @@ macro(create_target TARGET REPO TAG)
     file(GLOB RESULT ${DEPS_SOURCE_LOCATION}/${TARGET})
     list(LENGTH RESULT RES_LEN)
     if(NOT RES_LEN EQUAL 0)
-        if ("${head_rev}" STREQUAL ${TAG})
+        if ("${head_rev}" MATCHES ${TAG})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
@@ -563,7 +563,6 @@ externalproject_add(Target_pugixml
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
