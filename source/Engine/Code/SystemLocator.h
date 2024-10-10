@@ -1,16 +1,11 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "AudioManager.h"
 #include "CompositorManager.h"
-#include "ForestsManager.h"
-#include "PhysicsManager.h"
 #include "SDLListener.h"
 #include "SceneManager.h"
 #include "Singleton.h"
-#include "TerrainManager.h"
 #include "VideoManager.h"
-#include "OverlayManager.h"
 #include <OgreFrameListener.h>
 
 namespace gge {
@@ -60,11 +55,5 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   std::unique_ptr<VideoManager> video;
   std::unique_ptr<SceneManager> scene;
   std::unique_ptr<CompositorManager> compositor;
-  std::unique_ptr<PhysicsManager> physics;
-  std::unique_ptr<AudioManager> audio;
-  std::unique_ptr<TerrainManager> terrain;
-  std::unique_ptr<ForestsManager> forests;
-  std::unique_ptr<OverlayManager> overlay;
 };
-
 }  // namespace gge

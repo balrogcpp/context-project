@@ -97,7 +97,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 
   /// Register SDLWindowPtr input listener
   inline void RegWindowListener(WindowListener *p) noexcept {
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
     if (!SDL_GetEventFilter(nullptr, nullptr)) {
       auto callback = [](void *userdata, SDL_Event *event) { return InputSequencer::GetInstance().HandleAppEvents(userdata, event); };
       SDL_SetEventFilter(callback, nullptr);

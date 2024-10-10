@@ -4,6 +4,7 @@
 #include "SceneManager.h"
 #include "SystemLocator.h"
 #include <PagedGeometry/PagedGeometryAll.h>
+#include <Terrain/OgreTerrainGroup.h>
 
 using namespace std;
 using namespace Ogre;
@@ -30,16 +31,16 @@ void SceneManager::OnClean() {
 void SceneManager::OnUpdate(float time) {}
 
 static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
-  auto &forests = GetComponent<ForestsManager>();
-  unsigned long long generator = 0;
-  std::string key = base + to_string(generator++);
-  Ogre::Any value = objBindings.getUserAny(key);
+  //auto &forests = GetComponent<ForestsManager>();
+  //unsigned long long generator = 0;
+  //std::string key = base + to_string(generator++);
+  //Ogre::Any value = objBindings.getUserAny(key);
 
-  while (value.has_value()) {
-    forests.RegPagedGeometry(Ogre::any_cast<Forests::PagedGeometry *>(value));
-    key = base + to_string(generator++);
-    value = objBindings.getUserAny(key);
-  }
+  //while (value.has_value()) {
+  //  forests.RegPagedGeometry(Ogre::any_cast<Forests::PagedGeometry *>(value));
+  //  key = base + to_string(generator++);
+  //  value = objBindings.getUserAny(key);
+  //}
 }
 
 void SceneManager::LoadFromFile(const std::string &filename) {
@@ -71,8 +72,8 @@ void SceneManager::LoadFromFile(const std::string &filename) {
 
     //terrainGroup->saveAllTerrains(true, true);
 
-    GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
-    GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup.get());
+    //GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
+    //GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup.get());
   }
 
   // search for GrassPage
@@ -88,13 +89,13 @@ void SceneManager::LoadFromFile(const std::string &filename) {
 void SceneManager::ProcessCamera(Ogre::Camera *camera) {
   Ogre::SceneNode *node = camera->getParentSceneNode();
   Ogre::Vector3 position = node->getPosition();
-  node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
+  //node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
 }
 
 void SceneManager::ProcessLight(Ogre::Light *light) {
   Ogre::SceneNode *node = light->getParentSceneNode();
   Ogre::Vector3 position = node->getPosition();
-  node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
+  //node->translate(0.0, GetComponent<TerrainManager>().GetHeight(position.x, position.z), 0.0);
 }
 
 void SceneManager::ProcessEntity(const std::string &name) { ProcessEntity(sceneManager->getEntity(name)); }
@@ -232,7 +233,7 @@ void SceneManager::ProcessEntity(Ogre::Entity *entity) {
   }
   auto objBindings = entity->getUserObjectBindings();
   if (objBindings.getUserAny("proxy").has_value()) {
-    gge::GetComponent<gge::PhysicsManager>().ProcessData(entity);
+    //gge::GetComponent<gge::PhysicsManager>().ProcessData(entity);
   }
 }
 

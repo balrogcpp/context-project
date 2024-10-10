@@ -7,8 +7,23 @@
 #include <Ogre.h>
 #include <OgreImGuiOverlay.h>
 
-namespace gge {
+// forward declaration
+namespace Ogre {
+class Terrain;
+class TerrainGroup;
+}  // namespace Ogre
 
+namespace BtOgre {
+class DynamicsWorld;
+class DebugDrawer;
+}  // namespace BtOgre
+
+namespace OgreOggSound {
+class Root;
+class OgreOggSoundManager;
+}  // namespace OgreOggSound
+
+namespace gge {
 class VideoManager final : public WindowListener, public System<VideoManager> {
  protected:
   class ShaderResolver;
@@ -52,6 +67,7 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void OnUpdate(float time) override;
 
  protected:
+  void CheckGPU();
   void MakeWindow();
   void InitOgreRoot();
   void InitSDL();
@@ -59,7 +75,9 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   void InitOgreOverlay();
   void LoadResources();
   void InitOgreSceneManager();
-  void CheckGPU();
+  void InitTerrain();
+  void InitOgreAudio();
+  void InitBtOgre();
 
   /// WindowListener impl
   void OnEvent(const SDL_Event& event) override;
@@ -84,6 +102,9 @@ class VideoManager final : public WindowListener, public System<VideoManager> {
   Ogre::SceneManager* sceneManager = nullptr;
   Ogre::Camera* camera = nullptr;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
+  std::shared_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
+  std::unique_ptr<OgreOggSound::Root> audioRoot;
+  std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
+  std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
 };
-
 }  // namespace gge

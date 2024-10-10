@@ -23,26 +23,11 @@ void SystemLocator::Init() {
   InputSequencer::GetInstance().RegWindowListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 
-  //compositor = make_unique<CompositorManager>();
-  //RegComponent(compositor.get(), true);
+  // compositor = make_unique<CompositorManager>();
+  // RegComponent(compositor.get(), true);
 
-  overlay = make_unique<OverlayManager>();
-  RegComponent(overlay.get(), true);
-
-  physics = make_unique<PhysicsManager>();
-  RegComponent(physics.get());
-
-  audio = make_unique<AudioManager>();
-  RegComponent(audio.get());
-
-  //scene = make_unique<SceneManager>();
-  //RegComponent(scene.get(), true);
-
-  terrain = make_unique<TerrainManager>();
-  RegComponent(terrain.get());
-
-  forests = make_unique<ForestsManager>();
-  RegComponent(forests.get());
+  // scene = make_unique<SceneManager>();
+  // RegComponent(scene.get(), true);
 }
 
 void SystemLocator::OnQuit() {}
@@ -149,8 +134,6 @@ void SystemLocator::FrameControl() {
     if (!_sleep) {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps) - frameTime;
       this_thread::sleep_for(remainingTime - remainingTime % 1ms);
-
-      // busy loop
       while (chrono::steady_clock::now() < t2 + remainingTime) {}
     } else {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps * 2) - frameTime;
