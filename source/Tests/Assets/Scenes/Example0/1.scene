@@ -2,8 +2,8 @@
 <scene author="balrog" formatVersion="1.1">
     <nodes>
         <node name="Sun">
-            <direction x="40.659888" y="-20.0" z="-30.950829"/>
-            <light name="Sun" powerScale="0.4" type="directional" castShadows="1"/>
+            <direction x="40.659888" y="-50.0" z="-30.950829"/>
+            <light name="Sun" powerScale="1" type="directional" castShadows="1"/>
         </node>
 <!--        <node name="Light0">-->
 <!--            <position x="0" y="10" z="0"/>-->
@@ -29,7 +29,7 @@
             </camera>
         </node>
         <node name="Helmet">
-            <position x="0" y="2" z="-2.0"/>
+            <position x="0" y="-2" z="-2.0"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
             <scale x="2" y="2" z="2"/>
             <entity meshFile="DamagedHelmet.mesh" name="Helmet2">

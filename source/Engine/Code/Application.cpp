@@ -46,7 +46,7 @@ void Application::Init() {
 void Application::LoopBody() {
   InputSequencer::GetInstance().Capture();
   if (!sleep) video->RenderFrame();
-    // FrameControl();
+  FrameControl();
 
 #ifdef EMSCRIPTEN
   if (exiting) {
@@ -59,10 +59,10 @@ void Application::FrameControl() {
   static auto t1 = chrono::steady_clock::now();
   auto t2 = chrono::steady_clock::now();
 
-  if (lockFps || _sleep) {
+  if (lockFps || sleep) {
     auto frameTime = t2 - t1;
 
-    if (!_sleep) {
+    if (!sleep) {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps) - frameTime;
       this_thread::sleep_for(remainingTime - remainingTime % 1ms);
       while (chrono::steady_clock::now() < t2 + remainingTime) {

@@ -71,7 +71,6 @@ void SceneManager::LoadFromFile(const std::string &filename) {
     }
 
     //terrainGroup->saveAllTerrains(true, true);
-
     //GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     //GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup.get());
   }

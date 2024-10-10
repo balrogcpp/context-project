@@ -26,7 +26,7 @@ void Menu::OnSetUp() {
   //auto *rootNode = sceneManager->getRootSceneNode();
   //rootNode->loadChildren(filename);
 
-  //GetComponent<SceneManager>().LoadFromFile("1.scene");
+  GetComponent<SceneManager>().LoadFromFile("1.scene");
 }
 
 void Menu::OnUpdate(float time) {}

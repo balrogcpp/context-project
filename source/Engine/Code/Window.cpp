@@ -5,31 +5,26 @@
 #include "Platform.h"
 #include <Ogre.h>
 #include <SDL2/SDL_syswm.h>
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#if defined(ANDROID)
 #define MANUAL_GL_CONTROL
 #endif
 
 using namespace std;
 
-namespace {
-inline void ParseSDLError(bool result, const char *message = "") {
+inline static void ParseSDLError(bool result, const char *message = "") {
   if (!result) LogError(message, SDL_GetError());
 }
-}  // namespace
 
 namespace gge {
 
 Window::Window()
-    : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI),
+    : sdlFlags(SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE),
       vsyncInt(1),
       sizeX(1270),
       display(0),
       sizeY(720),
       fullscreen(false),
       id(0) {
-#ifdef EMSCRIPTEN
-  sdlFlags |= SDL_WINDOW_RESIZABLE;
-#endif
 #ifdef MOBILE
   vsyncInt = 2;
   fullscreen = true;
@@ -42,7 +37,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   this->sizeX = width;
   this->sizeY = height;
   this->camera = camera;
-  sdlFlags = flags;
+  //sdlFlags = flags;
   SDL_DisplayMode displayMode;
   int screenWidth = 0, screenHeight = 0;
 
@@ -150,7 +145,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   ogreViewport = renderTarget->addViewport(camera);
 
   // android is not completely ok without it
-#ifdef ANDROID
+#if defined(ANDROID)
   SetSize(sizeX, sizeY);
 #endif
 
@@ -249,21 +244,21 @@ void Window::SetIcon(const char *icon) {
 }
 
 void Window::SetGrabMouse(bool grab) {
-#ifndef MOBILE  // This breaks input @Android >9.0
+#if !defined(ANDROID) // This breaks input @Android >9.0
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
 #endif
 }
 
 void Window::SetMouseRelativeMode(bool relative) {
-#ifndef MOBILE  // This breaks input @Android >9.0
+#if !defined(ANDROID)  // This breaks input @Android >9.0
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
 #endif
 }
 
 void Window::SetShowCursor(bool show) {
-#ifndef MOBILE  // This breaks input @Android >9.0
+#if !defined(ANDROID)  // This breaks input @Android >9.0
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   show ? SDL_ShowCursor(SDL_ENABLE) : SDL_ShowCursor(SDL_DISABLE);
 #endif
