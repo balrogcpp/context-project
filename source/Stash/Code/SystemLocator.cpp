@@ -23,11 +23,11 @@ void SystemLocator::Init() {
   InputSequencer::GetInstance().RegWindowListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 
-  // compositor = make_unique<CompositorManager>();
-  // RegComponent(compositor.get(), true);
+  compositor = make_unique<CompositorManager>();
+  RegComponent(compositor.get(), true);
 
-  // scene = make_unique<SceneManager>();
-  // RegComponent(scene.get(), true);
+  scene = make_unique<SceneManager>();
+  RegComponent(scene.get(), true);
 }
 
 void SystemLocator::OnQuit() {}
@@ -134,7 +134,8 @@ void SystemLocator::FrameControl() {
     if (!_sleep) {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps) - frameTime;
       this_thread::sleep_for(remainingTime - remainingTime % 1ms);
-      while (chrono::steady_clock::now() < t2 + remainingTime) {}
+      while (chrono::steady_clock::now() < t2 + remainingTime) {
+      }
     } else {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps * 2) - frameTime;
       this_thread::sleep_for(remainingTime);

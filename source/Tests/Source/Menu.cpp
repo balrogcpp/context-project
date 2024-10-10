@@ -2,13 +2,13 @@
 
 #include "pch.h"
 #include "Menu.h"
-#include "SystemLocator.h"
+#include "Application.h"
 
 using namespace std;
 
 namespace gge {
 
-void Menu::OnClean() { GetComponent<SystemLocator>().OnClean(); }
+void Menu::OnClean() {}
 
 void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {}
 

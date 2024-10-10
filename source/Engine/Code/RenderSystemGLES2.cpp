@@ -9,8 +9,6 @@
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 
 namespace gge {
-
 void InitOgreRenderSystemGLES2() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem()); }
-
 }  // namespace gge
 #endif  // OGRE_BUILD_RENDERSYSTEM_GLES2

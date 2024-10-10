@@ -2,11 +2,11 @@
 
 #include "pch.h"
 #include "Game.h"
-#include "SystemLocator.h"
+#include "Application.h"
 
 namespace gge {
 
-void Game::OnClean() { GetComponent<SystemLocator>().OnClean(); }
+void Game::OnClean() {}
 void Game::OnSetUp() {}
 void Game::OnUpdate(float time) {}
 

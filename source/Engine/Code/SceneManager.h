@@ -17,7 +17,6 @@ class SceneManager final : public System<SceneManager> {
   void ProcessEntity(Ogre::Entity *entity);
   void ProcessEntity(const std::string &name);
   void ProcessNode(Ogre::SceneNode *node);
-
   Ogre::SceneManager *GetOgreScene();
 
   /// System impl

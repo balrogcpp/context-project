@@ -65,15 +65,11 @@ class CompositorManager : public System<CompositorManager>,
   bool fixedViewportSize;
   std::queue<std::pair<std::string, bool>> compositorList;
 
-  std::array<Ogre::Vector3, 10> hosekParams;
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
   Ogre::SceneManager* sceneManager = nullptr;
   Ogre::Camera* camera = nullptr;
   Ogre::Camera* cubeCamera = nullptr;
   Ogre::Viewport* viewport = nullptr;
-  float hosekParamsArray[10 * 3];
-  bool pssmChanged;
 };
-
 }  // namespace gge
