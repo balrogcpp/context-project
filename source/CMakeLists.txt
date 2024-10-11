@@ -37,8 +37,8 @@ endif ()
 add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(Engine ${ENGINE_INCLUDE_DIRS})
 target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
-add_custom_target(Programs COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake
-                            COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/cmake/Zip2Cpp.cmake)
+add_custom_target(Programs COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Programs -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake
+                            COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/CMake/Zip2Cpp.cmake)
 set_target_properties(Programs PROPERTIES FOLDER "Helpers")
 add_dependencies(Engine Programs)
 
@@ -76,10 +76,10 @@ set_target_properties(Tests PROPERTIES OUTPUT_NAME "app")
 target_link_libraries(Tests PUBLIC Engine ${ENGINE_LIBRARIES})
 
 if (ANDROID)
-    add_custom_target(Assets ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_SOURCE_DIR}/Android/app/assets/assets.zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
+    add_custom_target(Assets ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_SOURCE_DIR}/Android/app/assets/assets.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake)
     add_dependencies(Tests Assets)
 else ()
-    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/assets.zip -P ${CMAKE_SOURCE_DIR}/cmake/Package.cmake)
+    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/assets.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake)
     set_target_properties(Assets PROPERTIES FOLDER "Helpers")
 endif ()
 
@@ -98,8 +98,8 @@ else ()
 endif ()
 
 # cpack
-set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPreBuild.cmake")
-set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CpackPostBuild.cmake")
+set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/CMake/CpackPreBuild.cmake")
+set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/CMake/CpackPostBuild.cmake")
 set(PACKAGE_NAME "tests")
 # set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_SHORT_NORMALISED}-${DATE_TIME_CPACK})
 set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_FULL}-${CMAKE_BUILD_TYPE_LOWER})

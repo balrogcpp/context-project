@@ -46,7 +46,7 @@ if (CMAKE_BUILD_TYPE_LOWER MATCHES "debug")
 endif ()
 
 # cmake module path
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
 # include modules
 include(Platform)
@@ -58,7 +58,7 @@ processorcount(PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
 
 # set artifact dir
-set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
+set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 file(MAKE_DIRECTORY ${ARTIFACT_DIR})
 
 # external targets
@@ -80,7 +80,7 @@ execute_process(
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        ${CMAKE_SOURCE_DIR}/external
+        ${CMAKE_SOURCE_DIR}/External
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/contrib
 )
 
@@ -89,7 +89,7 @@ execute_process(
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/contrib
 )
 
-add_subdirectory(external)
+add_subdirectory(External)
 
 # engine sources
-add_subdirectory(source)
+add_subdirectory(Source)
