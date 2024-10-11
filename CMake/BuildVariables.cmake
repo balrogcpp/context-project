@@ -37,12 +37,12 @@ find_package(OGRE)
 
 
 # engine
-set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
+set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source/Engine)
 set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
 set(ENGINE_INCLUDE_DIRS
         ${ENGINE_SOURCE_DIR}
         ${ENGINE_SOURCE_DIR}/Code
-        ${CMAKE_BINARY_DIR}/source
+        ${CMAKE_BINARY_DIR}/Source
         ${DEPS_ROOT}/include
 )
 
