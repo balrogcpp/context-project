@@ -7,7 +7,7 @@ set(_buildvariables_included true)
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH false)
-set(CMAKE_FIND_USE_PACKAGE_REGISTRYf false)
+set(CMAKE_FIND_USE_PACKAGE_REGISTRY false)
 
 macro(find_package_static package)
     set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
