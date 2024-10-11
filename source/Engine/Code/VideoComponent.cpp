@@ -240,7 +240,7 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
 namespace gge {
 
 void VideoComponent::LoadResources() {
-#ifdef ANDROID
+#if defined(__ANDROID__)
   JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
   jclass classActivity = env->FindClass("android/app/Activity");
   jclass classResources = env->FindClass("android/content/res/Resources");
@@ -274,7 +274,7 @@ void VideoComponent::LoadResources() {
   const char *ASSETS_DIR = "source/Tests/Assets";
 
 #if defined(DESKTOP)
-#ifdef DEBUG
+#if defined(DEBUG)
   if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   } else
@@ -283,7 +283,7 @@ void VideoComponent::LoadResources() {
     InitEmbeddedResources();
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   if (!FindPath(ASSETS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
   } else
@@ -332,7 +332,7 @@ VideoComponent::~VideoComponent() {
 
 void VideoComponent::OnUpdate(float time) {
   dynamicWorld->getBtWorld()->stepSimulation(time, 4, 1.0 / 60.0);
-  //if (debugView) debugDrawer->update();
+  // if (debugView) debugDrawer->update();
 
   if (imguiOverlay) {
     ImGui_ImplSDL2_NewFrame();
@@ -872,7 +872,7 @@ void VideoComponent::RebuildOverlayFontAtlas() {
 }
 
 ImFont *VideoComponent::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
-                                     const ImWchar *ranges) {
+                                       const ImWchar *ranges) {
   typedef std::vector<ImWchar> CodePointRange;
   std::vector<CodePointRange> mCodePointRanges;
   ImGuiIO &io = ImGui::GetIO();
