@@ -92,22 +92,22 @@ void toTangentFrame(const highp vec4 q, out highp vec3 n, out highp vec3 t) {
 out highp vec3 vPosition;
 out highp vec3 vPosition1;
 out mediump vec4 vPrevScreenPosition;
-#ifdef HAS_UV
+#if defined(HAS_UV)
 out highp vec2 vUV0;
 #endif
 #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
 out mediump mat3 vTBN;
 #endif
-#ifdef HAS_VERTEXCOLOR
+#if defined(HAS_VERTEXCOLOR)
 out mediump vec3 vColor;
 #endif
 void main()
 {
-#ifdef HAS_VERTEXCOLOR
+#if defined(HAS_VERTEXCOLOR)
     vColor = (colour != vec3(0.0, 0.0, 0.0)) ? colour : vec3(1.0, 1.0, 1.0);
 #endif
 
-#ifndef VERTEX_COMPRESSION
+#if !defined(VERTEX_COMPRESSION)
     highp vec4 position = vertex;
     highp vec2 uv = uv0;
 #else
@@ -115,11 +115,11 @@ void main()
     highp vec2 uv = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
-#ifdef HAS_UV
+#if defined(HAS_UV)
     vUV0 = uv;
 #endif
 
-#ifdef PAGED_GEOMETRY
+#if defined(PAGED_GEOMETRY)
     if (uv2.x == 0.0)
         position += step(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
     else

@@ -7,19 +7,19 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 
-#ifdef HAS_BASECOLORMAP
+#if defined(HAS_BASECOLORMAP)
 uniform sampler2D AlbedoTex;
 #endif
-#ifdef HAS_NORMALMAP
+#if defined(HAS_NORMALMAP)
 uniform sampler2D NormalTex;
 #endif
-#ifdef HAS_ORM
+#if defined(HAS_ORM)
 uniform sampler2D OrmTex;
 #endif
-#ifdef HAS_EMISSIVEMAP
+#if defined(HAS_EMISSIVEMAP)
 uniform sampler2D EmissiveTex;
 #endif
-#ifdef HAS_AO
+#if defined(HAS_AO)
 uniform sampler2D OccTex;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
@@ -32,13 +32,13 @@ uniform sampler2D ShadowTex2;
 uniform sampler2D ShadowTex3;
 #endif
 #endif
-#ifdef HAS_IBL
+#if defined(HAS_IBL)
 uniform samplerCube SpecularEnvTex;
 #endif
-#ifdef TERRA_NORMALMAP
+#if defined(TERRA_NORMALMAP)
 uniform sampler2D TerraNormalTex;
 #endif
-#ifdef TERRA_LIGHTMAP
+#if defined(TERRA_LIGHTMAP)
 uniform sampler2D TerraLightTex;
 #endif
 
@@ -145,7 +145,7 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
     if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
     float visibility = 1.0;
 
-#ifdef TERRA_LIGHTMAP
+#if defined(TERRA_LIGHTMAP)
     visibility = FetchTerraShadow(UV);
     if (visibility < 0.001) return vec3(0.0, 0.0, 0.0);
 #endif
@@ -234,7 +234,7 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 // or from the interpolated mesh normal and tangent attributes.
 vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 {
-#ifdef HAS_NORMALMAP
+#if defined(HAS_NORMALMAP)
     return normalize(mul(tbn, texture(NormalTex, uv.xy).xyz * 2.0 - 1.0));
 #else
     return tbn[2];
@@ -243,7 +243,7 @@ vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 
 mat3 GetTBN(const vec2 uv, const vec3 position)
 {
-#ifndef HAS_TANGENTS
+#if !defined(HAS_TANGENTS)
 #if defined(TERRA_NORMALMAP)
     vec3 n = texture(TerraNormalTex, UV).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
@@ -257,14 +257,14 @@ mat3 GetTBN(const vec2 uv, const vec3 position)
 
     highp vec3 pos_dx = dFdx(position);
     highp vec3 pos_dy = dFdy(position);
-#ifdef HAS_UV
+#if defined(HAS_UV)
     highp vec3 tex_dx = max(dFdx(vec3(uv, 0.0)), vec3(0.001, 0.001, 0.001));
     highp vec3 tex_dy = max(dFdy(vec3(uv, 0.0)), vec3(0.001, 0.001, 0.001));
 #else
     const highp vec3 tex_dx = vec3(0.001, 0.001, 0.001);
     const highp vec3 tex_dy = vec3(0.001, 0.001, 0.001);
 #endif
-#ifdef HAS_NORMALS
+#if defined(HAS_NORMALS)
     vec3 n = vNormal;
 #else
     vec3 n = cross(pos_dx, pos_dy);
@@ -282,14 +282,14 @@ mat3 GetTBN(const vec2 uv, const vec3 position)
 
 vec3 GetORM(const vec2 uv, float spec)
 {
-#ifndef TERRA_NORMALMAP
+#if !defined(TERRA_NORMALMAP)
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
 #else
     //https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
     // converting phong specular value to material roughness
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r * (1.0 - spec), 0.0);
 #endif
-#ifdef HAS_ORM
+#if defined(HAS_ORM)
     orm *= texture(OrmTex, uv).rgb;
 #endif
 
@@ -331,10 +331,17 @@ void getPixelParams(const vec3 baseColor, const vec3 orm, float ssao, inout Pixe
 }
 #endif
 
-#ifdef HAS_ALPHA
+#if defined(HAS_ALPHA)
 float computeMaskedAlpha(const float a) {
     // Use derivatives to smooth alpha tested edges
     return (a - 0.5) / max(fwidth(a), 1e-3) + 0.5;
+}
+
+void applyAlphaMask(inout vec4 baseColor) {
+    baseColor.a = computeMaskedAlpha(baseColor.a);
+    if (baseColor.a <= 0.0) {
+        discard;
+    }
 }
 #endif
 
@@ -342,11 +349,11 @@ float computeMaskedAlpha(const float a) {
 vec4 GetAlbedo(const vec2 uv, const vec3 color)
 {
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * color, 1.0);
-#ifdef HAS_BASECOLORMAP
+#if defined(HAS_BASECOLORMAP)
     albedo *= texture(AlbedoTex, uv);
 #endif
 
-#ifdef HAS_ALPHA
+#if defined(HAS_ALPHA)
     if (albedo.a <= SurfaceAlphaRejection) {
         discard;
     }
@@ -357,7 +364,7 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
 vec3 GetEmission(const vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
-#ifdef HAS_EMISSIVEMAP
+#if defined(HAS_EMISSIVEMAP)
     emission += texture(EmissiveTex, uv).rgb;
 #endif
     return SRGBtoLINEAR(emission) * SurfaceSpecularColour.b;
@@ -367,13 +374,13 @@ vec3 GetEmission(const vec2 uv)
 in highp vec3 vPosition;
 in highp vec3 vPosition1;
 in mediump vec4 vPrevScreenPosition;
-#ifdef HAS_UV
+#if defined(HAS_UV)
 in highp vec2 vUV0;
 #endif
 #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
 in mediump mat3 vTBN;
 #endif
-#ifdef HAS_VERTEXCOLOR
+#if defined(HAS_VERTEXCOLOR)
 in mediump vec3 vColor;
 #endif
 out vec4 FragColor;
@@ -381,16 +388,16 @@ void main()
 {
     vec3 color = vec3(0.0, 0.0, 0.0);
 
-#ifdef HAS_UV
+#if defined(HAS_UV)
     vec2 uv = vUV0;
     UV = vUV0;
-#ifdef TERRA_LIGHTMAP
+#if defined(TERRA_LIGHTMAP)
     uv *= TexScale;
 #endif
 #else
     const vec2 uv = vec2(0.0, 0.0);
 #endif
-#ifdef HAS_VERTEXCOLOR
+#if defined(HAS_VERTEXCOLOR)
     vec4 colour = GetAlbedo(uv, vColor);
 #else
     vec4 colour = GetAlbedo(uv, vec3(1.0, 1.0, 1.0));
@@ -443,7 +450,7 @@ void main()
 
     color += emission;
 
-#ifdef FORCE_FOG
+#if defined(FORCE_FOG)
 #if MAX_LIGHTS > 0
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fragDepth, V, LightDirectionArray[0].xyz, CameraPosition);
 #else
