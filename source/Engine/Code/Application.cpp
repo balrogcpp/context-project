@@ -22,7 +22,7 @@ Application::Application() : exiting(false), sleep(false) {
 Application::~Application() { InputSequencer::GetInstance().UnregWindowListener(this); }
 
 void Application::Init() {
-  video = make_unique<VideoManager>();
+  video = make_unique<VideoComponent>();
   video->OnSetUp();
   componentList.push_back(video.get());
   preRenderList.push_back(video.get());
@@ -30,12 +30,12 @@ void Application::Init() {
   InputSequencer::GetInstance().RegWindowListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 
-  compositor = make_unique<CompositorManager>();
+  compositor = make_unique<CompositorComponent>();
   compositor->OnSetUp();
   componentList.push_back(compositor.get());
   preRenderList.push_back(compositor.get());
 
-  scene = make_unique<SceneManager>();
+  scene = make_unique<SceneComponent>();
   scene->OnSetUp();
   componentList.push_back(scene.get());
   preRenderList.push_back(scene.get());

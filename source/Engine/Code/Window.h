@@ -58,7 +58,7 @@ class Window : public WindowListener {
 
 
  protected:
-  friend class VideoManager;
+  friend class VideoComponent;
 
   /// WindowListener impl
   void OnEvent(const SDL_Event& event) override;

@@ -1,7 +1,7 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
-#include "CompositorManager.h"
+#include "CompositorComponent.h"
 #include "HosekSky/SkyModel.h"
 #include <OgreCustomCompositionPass.h>
 
@@ -35,11 +35,11 @@ class RenderShadowsPass : public Ogre::CustomCompositionPass {
   }
 };
 
-CompositorManager::CompositorManager() : fixedViewportSize(false), plane(Vector3(0, 1, 0), 0) {}
+CompositorComponent::CompositorComponent() : fixedViewportSize(false), plane(Vector3(0, 1, 0), 0) {}
 
-CompositorManager::~CompositorManager() = default;
+CompositorComponent::~CompositorComponent() = default;
 
-void CompositorManager::OnUpdate(float time) {
+void CompositorComponent::OnUpdate(float time) {
   const auto &ll = sceneManager->_getLightsAffectingFrustum();
   if (!ll.empty() && ll[0]->getType() == Ogre::Light::LT_DIRECTIONAL) {
     Vector3f sunDir = -ll[0]->getDerivedDirection().normalisedCopy();
@@ -47,13 +47,13 @@ void CompositorManager::OnUpdate(float time) {
   }
 }
 
-void CompositorManager::SetSleep(bool sleep) { _sleep = sleep; }
+void CompositorComponent::SetSleep(bool sleep) { _sleep = sleep; }
 
-void CompositorManager::compositorInstanceCreated(Ogre::CompositorInstance *newInstance) { newInstance->addListener(this); }
+void CompositorComponent::compositorInstanceCreated(Ogre::CompositorInstance *newInstance) { newInstance->addListener(this); }
 
-void CompositorManager::compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) { destroyedInstance->removeListener(this); }
+void CompositorComponent::compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) { destroyedInstance->removeListener(this); }
 
-void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void CompositorComponent::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   string name = evt.source->getName();
   if (name.find("reflection") != string::npos) {
     if (plane.getSide(camera->getRealPosition()) != Ogre::Plane::NEGATIVE_SIDE)
@@ -64,7 +64,7 @@ void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt
   }
 }
 
-void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void CompositorComponent::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   string name = evt.source->getName();
   if (name.find("reflection") != string::npos) {
     camera->disableCustomNearClipPlane();
@@ -72,7 +72,7 @@ void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &ev
   }
 }
 
-void CompositorManager::OnSetUp() {
+void CompositorComponent::OnSetUp() {
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
   compositorManager->registerCompositorLogic("DeferredLogic", this);
@@ -112,36 +112,36 @@ void CompositorManager::OnSetUp() {
   sceneManager->addRenderObjectListener(this);
 }
 
-void CompositorManager::OnClean() { viewport->removeListener(this); }
+void CompositorComponent::OnClean() { viewport->removeListener(this); }
 
-void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
+void CompositorComponent::AddCompositor(const string &name, bool enable, int position) {
   auto *compositor = compositorManager->addCompositor(viewport, name, position);
   ASSERTION(compositor, "[CompositorManager] Failed to add compositor " + name);
   compositorManager->setCompositorEnabled(viewport, name, enable);
 }
 
-void CompositorManager::EnableCompositor(const string &name, bool enable) {
+void CompositorComponent::EnableCompositor(const string &name, bool enable) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] Compositor not found: " + name);
   compositorManager->setCompositorEnabled(viewport, name, enable);
 }
 
-bool CompositorManager::IsCompositorInChain(const std::string &name) {
+bool CompositorComponent::IsCompositorInChain(const std::string &name) {
   return compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS;
 }
 
-bool CompositorManager::IsCompositorEnabled(const std::string &name) {
+bool CompositorComponent::IsCompositorEnabled(const std::string &name) {
   if (compositorChain->getCompositorPosition(name) == Ogre::CompositorChain::NPOS) return false;
   size_t index = compositorChain->getCompositorPosition(name);
   return compositorChain->getCompositor(index)->getEnabled();
 }
 
-void CompositorManager::SetCompositorScale(const std::string &name, float scale) {
+void CompositorComponent::SetCompositorScale(const std::string &name, float scale) {
   ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
   size_t index = compositorChain->getCompositorPosition(name);
 }
 
-void CompositorManager::SetFixedViewport(bool fixed) { fixedViewportSize = fixed; }
-void CompositorManager::SetFixedViewportSize(int x, int y) {
+void CompositorComponent::SetFixedViewport(bool fixed) { fixedViewportSize = fixed; }
+void CompositorComponent::SetFixedViewportSize(int x, int y) {
   fixedViewportSize = (x > 0) && (y > 0);
 
   if (!fixedViewportSize) {
@@ -176,25 +176,25 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
   }
 }
 
-void CompositorManager::CacheCompositorChain() {
+void CompositorComponent::CacheCompositorChain() {
   // remove compositors that have to be changed
   for (const auto &it : compositorChain->getCompositorInstances()) {
     compositorList.push(make_pair(it->getCompositor()->getName(), it->getEnabled()));
   }
 }
 
-void CompositorManager::RemoveAllCompositors() { compositorChain->removeAllCompositors(); }
+void CompositorComponent::RemoveAllCompositors() { compositorChain->removeAllCompositors(); }
 
-void CompositorManager::DisableRendering() {
+void CompositorComponent::DisableRendering() {
   compositorChain->getCompositor(0)->getTechnique()->getTargetPass(0)->getPass(1)->setType(Ogre::CompositionPass::PT_CLEAR);
   compositorChain->_markDirty();
 }
-void CompositorManager::EnableRendering() {
+void CompositorComponent::EnableRendering() {
   compositorChain->getCompositor(0)->getTechnique()->getTargetPass(0)->getPass(1)->setType(Ogre::CompositionPass::PT_RENDERSCENE);
   compositorChain->_markDirty();
 }
 
-void CompositorManager::ApplyCachedCompositorChain() {
+void CompositorComponent::ApplyCachedCompositorChain() {
   // compositors are automatically resized according to actual viewport size when added to chain
   while (!compositorList.empty()) {
     const std::string compositorName = compositorList.front().first;
@@ -214,8 +214,8 @@ void CompositorManager::ApplyCachedCompositorChain() {
   }
 }
 
-void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) { camera = viewport->getCamera(); }
-void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
+void CompositorComponent::viewportCameraChanged(Ogre::Viewport *viewport) { camera = viewport->getCamera(); }
+void CompositorComponent::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   // don't update if viewport size handled manually
   if (fixedViewportSize) {
     return;
@@ -311,7 +311,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 //   return point;
 // }
 
-void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
+void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
 
@@ -336,9 +336,9 @@ void CompositorManager::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Materia
   }
 }
 
-void CompositorManager::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
+void CompositorComponent::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
 
-void CompositorManager::notifyResourcesCreated(bool forResizeOnly) {
+void CompositorComponent::notifyResourcesCreated(bool forResizeOnly) {
   if (IsCompositorInChain("Fresnel")) {
     auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
     if (rt) {
@@ -348,7 +348,7 @@ void CompositorManager::notifyResourcesCreated(bool forResizeOnly) {
   }
 }
 
-void CompositorManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
+void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                                  const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
   if (!pass->getLightingEnabled() || !pass->getPolygonModeOverrideable()) return;
 

@@ -1,8 +1,8 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
-#include "VideoManager.h"
-#include "CompositorManager.h"
+#include "VideoComponent.h"
+#include "CompositorComponent.h"
 #include "EmbeddedResources.h"
 #include "Platform.h"
 #include "RenderSystems.h"
@@ -239,7 +239,7 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
 
 namespace gge {
 
-void VideoManager::LoadResources() {
+void VideoComponent::LoadResources() {
 #ifdef ANDROID
   JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
   jclass classActivity = env->FindClass("android/app/Activity");
@@ -304,7 +304,7 @@ void VideoManager::LoadResources() {
   ogreResourceManager.initialiseAllResourceGroups();
 }
 
-VideoManager::VideoManager()
+VideoComponent::VideoComponent()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
@@ -322,7 +322,7 @@ VideoManager::VideoManager()
 #endif
 }
 
-VideoManager::~VideoManager() {
+VideoComponent::~VideoComponent() {
   if (imguiOverlay) {
     ImGui_ImplSDL2_Shutdown();
   }
@@ -330,7 +330,7 @@ VideoManager::~VideoManager() {
   SDL_Quit();
 }
 
-void VideoManager::OnUpdate(float time) {
+void VideoComponent::OnUpdate(float time) {
   dynamicWorld->getBtWorld()->stepSimulation(time, 4, 1.0 / 60.0);
   //if (debugView) debugDrawer->update();
 
@@ -339,26 +339,26 @@ void VideoManager::OnUpdate(float time) {
   }
 }
 
-void VideoManager::OnEvent(const SDL_Event &event) {
+void VideoComponent::OnEvent(const SDL_Event &event) {
   if (imguiOverlay) {
     ImGui_ImplSDL2_ProcessEvent(&event);
   }
 }
 
-void VideoManager::OnClean() {
+void VideoComponent::OnClean() {
   InputSequencer::GetInstance().UnregWindowListener(this);
   sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneManager->clearScene();
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
 }
 
-Window &VideoManager::GetWindow(int number) { return windowList[0]; }
+Window &VideoComponent::GetWindow(int number) { return windowList[0]; }
 
-Window &VideoManager::GetMainWindow() { return *mainWindow; }
+Window &VideoComponent::GetMainWindow() { return *mainWindow; }
 
-void VideoManager::ShowWindow(bool show, int index) { windowList[index].Show(show); }
+void VideoComponent::ShowWindow(bool show, int index) { windowList[index].Show(show); }
 
-void VideoManager::CheckGPU() {
+void VideoComponent::CheckGPU() {
   const auto *ogreRenderSystem = ogreRoot->getRenderSystem();
   const auto *ogreRenderCapabilities = ogreRenderSystem->getCapabilities();
   const auto *ogreRenderSystemCommon = dynamic_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
@@ -397,7 +397,7 @@ void VideoManager::CheckGPU() {
   }
 }
 
-void VideoManager::InitSDL() {
+void VideoComponent::InitSDL() {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
@@ -444,7 +444,7 @@ class DefaultLogListener final : public Ogre::LogListener {
 };
 #endif
 
-void VideoManager::InitOgreRoot() {
+void VideoComponent::InitOgreRoot() {
   ogreLogFile = "runtime.log";
 
 #if defined(NDEBUG) && defined(ANDROID)
@@ -514,7 +514,7 @@ void VideoManager::InitOgreRoot() {
   ogreRoot->initialise(false);
 }
 
-void VideoManager::MakeWindow() {
+void VideoComponent::MakeWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
   camera = sceneManager->createCamera("Camera");
@@ -524,7 +524,7 @@ void VideoManager::MakeWindow() {
   InputSequencer::GetInstance().RegWindowListener(mainWindow);
 }
 
-void VideoManager::InitOgreOverlay() {
+void VideoComponent::InitOgreOverlay() {
   auto *ogreOverlay = new Ogre::OverlaySystem();
   imguiOverlay = new Ogre::ImGuiOverlay();
   ImGui_ImplSDL2_InitForOpenGL(windowList[0].sdlWindow, windowList[0].glContext);
@@ -575,7 +575,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
   }
 };
 
-void VideoManager::InitOgreSceneManager() {
+void VideoComponent::InitOgreSceneManager() {
   sceneManager->setFog(Ogre::FOG_EXP, Ogre::ColourValue(0.5, 0.6, 0.7), 0.003);
   sceneManager->setSkyBox(true, "SkyBox", 500, false);
   sceneManager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));  // Ogre::ColourValue(0.5, 0.6, 0.7)
@@ -629,7 +629,7 @@ void VideoManager::InitOgreSceneManager() {
   }
 }
 
-void VideoManager::InitTerrain() {
+void VideoComponent::InitTerrain() {
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
 
@@ -644,7 +644,7 @@ void VideoManager::InitTerrain() {
   terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(0.0, -1.0, -0.0).normalisedCopy());
 }
 
-void VideoManager::InitOgreAudio() {
+void VideoComponent::InitOgreAudio() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -654,13 +654,13 @@ void VideoManager::InitOgreAudio() {
   audioRoot->initialise();
 }
 
-void VideoManager::InitBtOgre() {
+void VideoComponent::InitBtOgre() {
   dynamicWorld = make_unique<BtOgre::DynamicsWorld>(Ogre::Vector3(0.0, -9.8, 0.0));
   auto *rootNode = sceneManager->getRootSceneNode();
   debugDrawer = make_unique<BtOgre::DebugDrawer>(rootNode->createChildSceneNode(), dynamicWorld->getBtWorld());
 }
 
-void VideoManager::EnableShadows(bool enable) {
+void VideoComponent::EnableShadows(bool enable) {
   shadowEnabled = enable;
   if (shadowEnabled) {
     sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
@@ -680,60 +680,60 @@ void VideoManager::EnableShadows(bool enable) {
   }
 }
 
-bool VideoManager::IsShadowEnabled() { return sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE; }
-void VideoManager::SetShadowTexSize(unsigned short size) { sceneManager->setShadowTextureSize(size); }
-unsigned short VideoManager::GetShadowTexSize() { return IsShadowEnabled() ? sceneManager->getShadowTextureConfigList()[0].height : 0; }
+bool VideoComponent::IsShadowEnabled() { return sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE; }
+void VideoComponent::SetShadowTexSize(unsigned short size) { sceneManager->setShadowTextureSize(size); }
+unsigned short VideoComponent::GetShadowTexSize() { return IsShadowEnabled() ? sceneManager->getShadowTextureConfigList()[0].height : 0; }
 
-void VideoManager::SetTexFiltering(unsigned int type, int anisotropy) {
+void VideoComponent::SetTexFiltering(unsigned int type, int anisotropy) {
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(static_cast<Ogre::TextureFilterOptions>(type));
   Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
-std::vector<float> VideoManager::GetPSSMSplitPoints() { return pssmSplitPointList; }
+std::vector<float> VideoComponent::GetPSSMSplitPoints() { return pssmSplitPointList; }
 
-int VideoManager::GetDisplaySizeX(int index) {
+int VideoComponent::GetDisplaySizeX(int index) {
   SDL_DisplayMode displayMode;
   return !SDL_GetCurrentDisplayMode(index, &displayMode) ? displayMode.w : -1;
 }
 
-int VideoManager::GetDisplaySizeY(int index) {
+int VideoComponent::GetDisplaySizeY(int index) {
   SDL_DisplayMode displayMode;
   return !SDL_GetCurrentDisplayMode(index, &displayMode) ? displayMode.h : -1;
 }
 
-float VideoManager::GetDisplayDPI(int index) {
+float VideoComponent::GetDisplayDPI(int index) {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
   return !res ? ddpi : 1.0;
 }
 
-float VideoManager::GetDisplayHDPI(int index) {
+float VideoComponent::GetDisplayHDPI(int index) {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
   return !res ? hdpi : 1.0;
 }
 
-float VideoManager::GetDisplayVDPI(int index) {
+float VideoComponent::GetDisplayVDPI(int index) {
   SDL_DisplayMode displayMode;
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
   return !res ? vdpi : 1.0;
 }
 
-void VideoManager::ClearScene() {
+void VideoComponent::ClearScene() {
   sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneManager->clearScene();
 }
 
-void VideoManager::UnloadResources() {
+void VideoComponent::UnloadResources() {
   sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneManager->clearScene();
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
 }
 
-class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {
+class VideoComponent::ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
   explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGen(shaderGenerator) {}
 
@@ -822,7 +822,7 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGen = nullptr;
 };
 
-void VideoManager::RenderFrame() {
+void VideoComponent::RenderFrame() {
   ogreRoot->renderOneFrame();
 
   for (const auto &it : windowList) {
@@ -830,7 +830,7 @@ void VideoManager::RenderFrame() {
   }
 }
 
-void VideoManager::ShowOverlay(bool show) {
+void VideoComponent::ShowOverlay(bool show) {
   if (show) {
     imguiOverlay->show();
     ShaderResolver::ResolveMaterial("ImGui/material", Ogre::RGN_INTERNAL);
@@ -839,7 +839,7 @@ void VideoManager::ShowOverlay(bool show) {
   }
 }
 
-void VideoManager::ShowOgreProfiler(bool show) {
+void VideoComponent::ShowOgreProfiler(bool show) {
 #if OGRE_PROFILING == 1
   if (show) {
     Ogre::FontManager::getSingleton().load("SdkTrays/Value", Ogre::RGN_INTERNAL);
@@ -850,7 +850,7 @@ void VideoManager::ShowOgreProfiler(bool show) {
 #endif
 }
 
-void VideoManager::RebuildOverlayFontAtlas() {
+void VideoComponent::RebuildOverlayFontAtlas() {
   ImGuiIO &io = ImGui::GetIO();
   unsigned char *pixels;
   int width, height;
@@ -871,7 +871,7 @@ void VideoManager::RebuildOverlayFontAtlas() {
   }
 }
 
-ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
+ImFont *VideoComponent::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
                                      const ImWchar *ranges) {
   typedef std::vector<ImWchar> CodePointRange;
   std::vector<CodePointRange> mCodePointRanges;
@@ -906,17 +906,17 @@ ImFont *VideoManager::AddOverlayFont(const std::string &name, const int size, co
   return res;
 }
 
-void VideoManager::EnableGamepadNav(bool enable) {
+void VideoComponent::EnableGamepadNav(bool enable) {
   ImGuiIO &io = ImGui::GetIO();
   enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableGamepad;
 }
 
-void VideoManager::EnableKeyboardNav(bool enable) {
+void VideoComponent::EnableKeyboardNav(bool enable) {
   ImGuiIO &io = ImGui::GetIO();
   enable ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard : io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
 }
 
-void VideoManager::InitOgreRTSS() {
+void VideoComponent::InitOgreRTSS() {
   bool result = Ogre::RTShader::ShaderGenerator::initialize();
   ASSERTION(result, "[VideoManager] OGRE RTSS init failed");
   auto &shaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
@@ -939,7 +939,7 @@ void VideoManager::InitOgreRTSS() {
   Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
 }
 
-void VideoManager::OnSetUp() {
+void VideoComponent::OnSetUp() {
   // reg as input listener
   InputSequencer::GetInstance().RegWindowListener(this);
 

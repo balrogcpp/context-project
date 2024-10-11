@@ -284,7 +284,7 @@ if (NOT EXISTS stripzip_app.c)
 endif ()
 
 if (NOT C_COMPILER)
-    find_program(C_COMPILER NAMES cc clang gcc cl icc bcc32 bcc xlc)
+    find_program(C_COMPILER NAMES cl cc gcc clang icc bcc32 bcc xlc)
 endif ()
 if (NOT C_COMPILER)
     message(FATAL_ERROR "C compiler not found manually")

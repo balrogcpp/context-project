@@ -1,12 +1,12 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "System.h"
+#include "Component.h"
 
 namespace gge {
 
 
-class TemplateManager final : public System<TemplateManager> {
+class TemplateManager final : public Component<TemplateManager> {
  public:
   TemplateManager();
   virtual ~TemplateManager();

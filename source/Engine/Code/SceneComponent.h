@@ -1,15 +1,15 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "System.h"
+#include "Component.h"
 #include <Ogre.h>
 
 namespace gge {
 
-class SceneManager final : public System<SceneManager> {
+class SceneComponent final : public Component<SceneComponent> {
  public:
-  SceneManager();
-  virtual ~SceneManager();
+  SceneComponent();
+  virtual ~SceneComponent();
 
   void LoadFromFile(const std::string &filename);
   void ProcessCamera(Ogre::Camera *camera);

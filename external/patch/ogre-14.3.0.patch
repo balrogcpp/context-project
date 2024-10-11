@@ -11,7 +11,7 @@ index 7f6a28c..8610098 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ade278e..707b289 100644
+index ade278e..d97e599 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -77,7 +77,7 @@ index 81b94a4..9e2e070 100644
      }
      //-----------------------------------------------------------------------
 diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
-index 458419b..3c7bb14 100644
+index 458419b..d0eb34e 100644
 --- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 +++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 @@ -178,7 +178,7 @@ namespace Ogre
@@ -106,7 +106,27 @@ index 483f9f3..0b87d5d 100644
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
- diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
+diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
+index ef6be0b..4cbec3a 100644
+--- a/OgreMain/include/OgreException.h
++++ b/OgreMain/include/OgreException.h
+@@ -275,11 +275,11 @@ namespace Ogre {
+         static OGRE_NORETURN void throwException(
+             Exception::ExceptionCodes code,
+             const String& desc,
+-            const String& src, const char* file, long line)
+-        {
++            const String& src, const char* file, long line) {
++        #if OGRE_ASSERT_MODE == 2 || (OGRE_ASSERT_MODE == 1 && !defined(OGRE_DEBUG_MODE))
+             _throwException(code, code, desc, src, file, line);
+-        }
+-    };
++        #endif
++    }};
+     
+ 
+     
+diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
 index 7100c33..11c636e 100644
 --- a/OgreMain/src/OgreRoot.cpp
 +++ b/OgreMain/src/OgreRoot.cpp
@@ -258,7 +278,7 @@ index 7e1578e..09b3549 100644
  
      void GLES2PixelUtil::useSizedFormats()
 diff --git a/RenderSystems/GLSupport/CMakeLists.txt b/RenderSystems/GLSupport/CMakeLists.txt
-index e591cb2..07df474 100644
+index e591cb2..3a5b9e1 100644
 --- a/RenderSystems/GLSupport/CMakeLists.txt
 +++ b/RenderSystems/GLSupport/CMakeLists.txt
 @@ -104,7 +104,7 @@ elseif (UNIX)

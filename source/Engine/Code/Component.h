@@ -8,7 +8,7 @@ namespace gge {
 
 /// @class ComponentI
 /// Component interface. Components are
-class SystemI {
+class ComponentI {
  public:
   virtual void OnSetUp() = 0;
   virtual void OnUpdate(float time) = 0;
@@ -21,13 +21,13 @@ class SystemI {
 };
 
 template <typename T>
-class System : public SystemI, public Singleton<T> {};
+class Component : public ComponentI, public Singleton<T> {};
 
 /// Template helper function
 /// @return pointer to component instance (all components are Singletons)
 template <typename T>
 T* GetComponentPtr() {
-  static T* ptr = System<T>::GetInstancePtr();
+  static T* ptr = Component<T>::GetInstancePtr();
   return ptr;
 }
 
@@ -35,7 +35,7 @@ T* GetComponentPtr() {
 /// @return reference to component instance (all components are Singletons)
 template <typename T>
 T& GetComponent() {
-  static T& ref = *System<T>::GetInstancePtr();
+  static T& ref = *Component<T>::GetInstancePtr();
   return ref;
 }
 

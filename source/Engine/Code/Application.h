@@ -2,11 +2,11 @@
 
 #pragma once
 #include "AppStateManager.h"
-#include "CompositorManager.h"
+#include "CompositorComponent.h"
 #include "SDLListener.h"
-#include "SceneManager.h"
+#include "SceneComponent.h"
 #include "Singleton.h"
-#include "VideoManager.h"
+#include "VideoComponent.h"
 #include <OgreFrameListener.h>
 
 namespace gge {
@@ -48,13 +48,13 @@ class Application final : Ogre::FrameListener, WindowListener, DynamicSingleton<
   bool sleep;
   bool lockFps;
   int targetFps;
-  std::vector<SystemI *> componentList;
-  std::vector<SystemI *> preRenderList;
-  std::vector<SystemI *> queueRenderList;
-  std::vector<SystemI *> postRenderList;
-  std::unique_ptr<VideoManager> video;
-  std::unique_ptr<SceneManager> scene;
-  std::unique_ptr<CompositorManager> compositor;
+  std::vector<ComponentI *> componentList;
+  std::vector<ComponentI *> preRenderList;
+  std::vector<ComponentI *> queueRenderList;
+  std::vector<ComponentI *> postRenderList;
+  std::unique_ptr<VideoComponent> video;
+  std::unique_ptr<SceneComponent> scene;
+  std::unique_ptr<CompositorComponent> compositor;
 };
 
 }  // namespace gge

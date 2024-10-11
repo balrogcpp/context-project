@@ -3,7 +3,7 @@
 #pragma once
 #include "SDLListener.h"
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 #include <OgreFrameListener.h>
 #include <map>
 #include <memory>
@@ -28,7 +28,7 @@ class AppStateImpl : public AppState {
   void OnClean() override {}
 };
 
-class AppStateManager final : public Ogre::FrameListener, public System<AppStateManager> {
+class AppStateManager final : public Ogre::FrameListener, public Component<AppStateManager> {
  public:
   AppStateManager();
   virtual ~AppStateManager();

@@ -1,7 +1,7 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
-#include "SceneManager.h"
+#include "SceneComponent.h"
 #include "Application.h"
 #include <PagedGeometry/PagedGeometryAll.h>
 #include <Terrain/OgreTerrainGroup.h>
@@ -11,10 +11,10 @@ using namespace Ogre;
 
 namespace gge {
 
-SceneManager::SceneManager() {}
-SceneManager::~SceneManager() {}
+SceneComponent::SceneComponent() {}
+SceneComponent::~SceneComponent() {}
 
-void SceneManager::OnSetUp() {
+void SceneComponent::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "[SceneManager] ogreRoot is not initialised");
   sceneManager = ogreRoot->getSceneManager("Default");
@@ -23,12 +23,12 @@ void SceneManager::OnSetUp() {
   camera = sceneManager->getCamera("Camera");
 }
 
-void SceneManager::OnClean() {
+void SceneComponent::OnClean() {
   sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneManager->clearScene();
 }
 
-void SceneManager::OnUpdate(float time) {}
+void SceneComponent::OnUpdate(float time) {}
 
 static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
   //auto &forests = GetComponent<ForestsManager>();
@@ -43,7 +43,7 @@ static void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::
   //}
 }
 
-void SceneManager::LoadFromFile(const std::string &filename) {
+void SceneComponent::LoadFromFile(const std::string &filename) {
   auto *rootNode = sceneManager->getRootSceneNode();
   rootNode->loadChildren(filename);
 
@@ -85,19 +85,19 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   }
 }
 
-void SceneManager::ProcessCamera(Ogre::Camera *camera) {
+void SceneComponent::ProcessCamera(Ogre::Camera *camera) {
   Ogre::SceneNode *node = camera->getParentSceneNode();
   Ogre::Vector3 position = node->getPosition();
 }
 
-void SceneManager::ProcessLight(Ogre::Light *light) {
+void SceneComponent::ProcessLight(Ogre::Light *light) {
   Ogre::SceneNode *node = light->getParentSceneNode();
   Ogre::Vector3 position = node->getPosition();
 }
 
-void SceneManager::ProcessEntity(const std::string &name) { ProcessEntity(sceneManager->getEntity(name)); }
+void SceneComponent::ProcessEntity(const std::string &name) { ProcessEntity(sceneManager->getEntity(name)); }
 
-void SceneManager::ProcessEntity(Ogre::Entity *entity) {
+void SceneComponent::ProcessEntity(Ogre::Entity *entity) {
   if (entity->getName().rfind("GrassLDR", 0)) {
     Ogre::SceneNode *node = entity->getParentSceneNode();
     Ogre::Vector3 position = node->getPosition();
@@ -146,7 +146,7 @@ void SceneManager::ProcessEntity(Ogre::Entity *entity) {
   }
 }
 
-void SceneManager::ProcessNode(Ogre::SceneNode *node) {
+void SceneComponent::ProcessNode(Ogre::SceneNode *node) {
   for (auto it : node->getAttachedObjects()) {
     if (auto camera = dynamic_cast<Ogre::Camera *>(it)) {
       Ogre::LogManager::getSingleton().logMessage("[ProcessNode] Node: " + node->getName() + "  Camera: " + it->getName());
@@ -182,6 +182,6 @@ void SceneManager::ProcessNode(Ogre::SceneNode *node) {
   }
 }
 
-Ogre::SceneManager *SceneManager::GetOgreScene() { return sceneManager; }
+Ogre::SceneManager *SceneComponent::GetOgreScene() { return sceneManager; }
 
 }  // namespace gge

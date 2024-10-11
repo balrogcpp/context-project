@@ -2,7 +2,7 @@
 
 #pragma once
 #include "SDLListener.h"
-#include "System.h"
+#include "Component.h"
 #include "Window.h"
 #include <Ogre.h>
 #include <OgreImGuiOverlay.h>
@@ -24,13 +24,13 @@ class OgreOggSoundManager;
 }  // namespace OgreOggSound
 
 namespace gge {
-class VideoManager final : public WindowListener, public System<VideoManager> {
+class VideoComponent final : public WindowListener, public Component<VideoComponent> {
  protected:
   class ShaderResolver;
 
  public:
-  VideoManager();
-  virtual ~VideoManager();
+  VideoComponent();
+  virtual ~VideoComponent();
 
   void RenderFrame();
   Window& GetWindow(int number = 0);

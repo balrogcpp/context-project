@@ -19,7 +19,7 @@ int main()
     gge::Application app;
     app.Init();
 
-    GetComponent<VideoManager>().ShowWindow(true);
+    GetComponent<VideoComponent>().ShowWindow(true);
     GetComponent<AppStateManager>().RegAppState(std::make_shared<Menu>());
     GetComponent<AppStateManager>().SetActiveAppState("Menu");
 

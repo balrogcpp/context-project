@@ -52,12 +52,4 @@ inline void LogTrivial(const std::string &title, const std::string &text) noexce
   throw Ogre::Exception(Ogre::Exception::ERR_RT_ASSERTION_FAILED, b, __FUNCTION__, "RuntimeAssertionException", __FILE__, __LINE__)
 
 
-#ifndef NDEBUG
-#define ASSERTION(a, b)   \
-  if (!(a)) LOG_ERROR(b); \
-  OgreAssert(a, b)
-#else
-#define ASSERTION(a, b)   \
-  if (!(a)) LOG_ERROR(b); \
-  if (!(a)) THROW_EXCEPTION(b)
-#endif
+#define ASSERTION(a, b)

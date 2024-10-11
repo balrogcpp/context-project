@@ -1,22 +1,22 @@
 // This source file is part of gge Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "System.h"
+#include "Component.h"
 #include <Ogre.h>
 #include <OgreCompositorLogic.h>
 #include <queue>
 
 namespace gge {
 
-class CompositorManager : public System<CompositorManager>,
+class CompositorComponent : public Component<CompositorComponent>,
                           public Ogre::CompositorInstance::Listener,
                           public Ogre::CompositorLogic,
                           public Ogre::Viewport::Listener,
                           public Ogre::RenderTargetListener,
                           public Ogre::RenderObjectListener {
  public:
-  CompositorManager();
-  virtual ~CompositorManager();
+  CompositorComponent();
+  virtual ~CompositorComponent();
 
   void AddCompositor(const std::string& name, bool enable, int position = -1);
   void EnableCompositor(const std::string& name, bool enable);
