@@ -55,7 +55,7 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
-#ifdef DESKTOP
+#if defined(DESKTOP)
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
     || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
@@ -94,7 +94,7 @@ using namespace std;
 
 namespace {
 
-#ifdef DESKTOP
+#if defined(DESKTOP)
 // based on tensorflow GetBinaryDir
 // https://github.com/tensorflow/tensorflow/blob/e895d5ca395c2362df4f5c8f08b68501b41f8a98/tensorflow/stream_executor/cuda/cuda_gpu_executor.cc#L202
 std::string GetBinaryDir() {
@@ -406,7 +406,7 @@ void VideoComponent::InitSDL() {
   if (!result) LogError("SDL_Init failed", SDL_GetError());
   ASSERTION(!result, "Failed to init SDL");
 
-#ifdef DESKTOP
+#if defined(DESKTOP)
   string path = FindPath("gamecontrollerdb.txt", 1);
   if (!path.empty()) {
     result = SDL_GameControllerAddMappingsFromFile(path.c_str());
@@ -416,21 +416,21 @@ void VideoComponent::InitSDL() {
 #endif
 }
 
-class MutedLogListener final : public Ogre::LogListener {
+class VideoComponent::MutedLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
                      bool &skipThisMessage) override {}
 };
 
-#ifdef DESKTOP
-class DefaultLogListener final : public Ogre::LogListener {
+#if defined(DESKTOP)
+class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
                      bool &skipThisMessage) override {
-    static std::ofstream of(GetBinaryDir() + "/" + logName);
-    static bool isOpen = of.is_open();
+    //static std::ofstream of(GetBinaryDir() + "/" + logName);
+    static std::ofstream of(logName);
 
-    if (isOpen) {
+    if (of.is_open()) {
       std::stringstream ss;
       ss << "[" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count() << "] ";
       ss << message << '\n';
@@ -447,15 +447,15 @@ class DefaultLogListener final : public Ogre::LogListener {
 void VideoComponent::InitOgreRoot() {
   ogreLogFile = "runtime.log";
 
-#if defined(NDEBUG) && defined(ANDROID)
+#if defined(NDEBUG) && defined(__ANDROID__)
   ogreMinLogLevel = Ogre::LML_CRITICAL;
 #else
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
 #endif
 
-#ifdef DESKTOP
+#if defined(DESKTOP)
   ogreLogManager = std::make_unique<Ogre::LogManager>();
-  ogreLogManager->createLog(ogreLogFile, false, false, true);
+  ogreLogManager->createLog(ogreLogFile, false, true, true);
   ogreLogManager->getDefaultLog()->addListener(new DefaultLogListener());
 
   auto tc = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -468,7 +468,7 @@ void VideoComponent::InitOgreRoot() {
 
   Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
 
-#ifdef DESKTOP
+#if defined(DESKTOP)
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)

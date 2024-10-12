@@ -27,6 +27,8 @@ namespace gge {
 class VideoComponent final : public WindowListener, public Component<VideoComponent> {
  protected:
   class ShaderResolver;
+  class DefaultLogListener;
+  class MutedLogListener;
 
  public:
   VideoComponent();
