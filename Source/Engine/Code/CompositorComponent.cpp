@@ -88,15 +88,9 @@ void CompositorComponent::OnSetUp() {
   cubeCamera = sceneManager->createCamera("CubeCamera");
   cubeCamera->setFOVy(Ogre::Degree(90.0));
   cubeCamera->setAspectRatio(1.0);
-  cubeCamera->setNearClipDistance(camera->getNearClipDistance());
+  cubeCamera->setNearClipDistance(camera->getFarClipDistance() / 10.0);
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
   sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::ZERO)->attachObject(cubeCamera);
-  AddCompositor("CubeMap", true, 0);
-  auto *rt = compositorChain->getCompositor("CubeMap")->getRenderTarget("cube");
-  rt->removeAllViewports();
-  rt->removeAllListeners();
-  rt->addViewport(cubeCamera);
-  rt->addListener(this);
 
   AddCompositor("MRT", true);
   AddCompositor("SSAO", false);
@@ -349,7 +343,7 @@ void CompositorComponent::notifyResourcesCreated(bool forResizeOnly) {
 }
 
 void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
-                                                 const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
+                                                   const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {
   if (!pass->getLightingEnabled() || !pass->getPolygonModeOverrideable()) return;
 
   const auto &fp = pass->getFragmentProgramParameters();
@@ -389,7 +383,7 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   if (auto *tex = pass->getTextureUnitState("IBL")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      if (IsCompositorEnabled("CubeMap")) tex->setCompositorReference("CubeMap", "cube");
+      tex->setCompositorReference("MRT", "cube");
     }
   }
 

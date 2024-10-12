@@ -1,7 +1,5 @@
 // created by Andrey Vasiliev
 
-//import STD from mrt.compositor
-
 //----------------------------------------------------------------------------------------------------------------------
 // STD
 //----------------------------------------------------------------------------------------------------------------------
@@ -17,6 +15,24 @@ abstract compositor STD
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+// Abstract node to avoid copy & paste
+//----------------------------------------------------------------------------------------------------------------------
+abstract target cubemap_target
+{
+    shadows off
+    only_initial on
+
+    pass clear {}
+    pass render_scene
+    {
+        first_render_queue 90
+        last_render_queue 90
+        camera CubeCamera align_to_face
+    }
+}
+
 compositor MRT
 {
     technique
@@ -28,7 +44,14 @@ compositor MRT
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
 
         texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        texture ibl 128 128 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 global_scope
+        texture cube 32 32 PF_R11G11B10_FLOAT cubic no_fsaa chain_scope
+
+        target cube 0 : cubemap_target {}
+        target cube 1 : cubemap_target {}
+        target cube 2 : cubemap_target {}
+        target cube 3 : cubemap_target {}
+        target cube 4 : cubemap_target {}
+        target cube 5 : cubemap_target {}
 
         target mrt
         {
