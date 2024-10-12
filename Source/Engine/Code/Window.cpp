@@ -5,7 +5,7 @@
 #include "Platform.h"
 #include <Ogre.h>
 #include <SDL2/SDL_syswm.h>
-#if defined(ANDROID)
+#if defined(__ANDROID__)
 #define MANUAL_GL_CONTROL
 #endif
 
@@ -145,7 +145,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   ogreViewport = renderTarget->addViewport(camera);
 
   // android is not completely ok without it
-#if defined(ANDROID)
+#if defined(__ANDROID__)
   SetSize(sizeX, sizeY);
 #endif
 
@@ -244,21 +244,21 @@ void Window::SetIcon(const char *icon) {
 }
 
 void Window::SetGrabMouse(bool grab) {
-#if !defined(ANDROID) // This breaks input @Android >9.0
+#if !defined(__ANDROID__) // This breaks input @Android >9.0
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
 #endif
 }
 
 void Window::SetMouseRelativeMode(bool relative) {
-#if !defined(ANDROID)  // This breaks input @Android >9.0
+#if !defined(__ANDROID__)  // This breaks input @Android >9.0
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
 #endif
 }
 
 void Window::SetShowCursor(bool show) {
-#if !defined(ANDROID)  // This breaks input @Android >9.0
+#if !defined(__ANDROID__)  // This breaks input @Android >9.0
   ASSERTION(sdlWindow, "sdlWindow not initialised");
   show ? SDL_ShowCursor(SDL_ENABLE) : SDL_ShowCursor(SDL_DISABLE);
 #endif

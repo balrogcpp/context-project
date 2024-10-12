@@ -154,7 +154,7 @@ void OverlayManager::OnUpdate(float time) {
   flags[0] = 1;
 #endif
 
-#ifndef ANDROID
+#if !defined(__ANDROID__)
   if (ImGui::Checkbox("Fullscreen", &flags[0])) {
 #ifndef WIN32
     window.SetFullscreen(flags[0]);

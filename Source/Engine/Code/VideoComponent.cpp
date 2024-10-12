@@ -294,7 +294,7 @@ void VideoComponent::LoadResources() {
     if (!FindPath(ASSETS_ZIP).empty()) ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), "Zip", Ogre::RGN_DEFAULT);
   }
 
-#elif defined(ANDROID)
+#elif defined(__ANDROID__)
   InitEmbeddedResources();
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, "APKZip", Ogre::RGN_DEFAULT);
 #else
@@ -379,7 +379,7 @@ void VideoComponent::CheckGPU() {
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_ANISOTROPY), "DXT compression support required");
   }
-#elif defined(ANDROID)
+#elif defined(__ANDROID__)
   if (RenderSystemIsGLES2()) {
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
   }
