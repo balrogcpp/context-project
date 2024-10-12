@@ -50,4 +50,6 @@ inline void LogTrivial(const std::string &title, const std::string &text) noexce
 #define LOG_ERROR(b) LogError(Ogre::Exception::ERR_RT_ASSERTION_FAILED, b, __FUNCTION__, "RuntimeAssertionException", __FILE__, __LINE__)
 #define THROW_EXCEPTION(b) throw Ogre::Exception(Ogre::Exception::ERR_RT_ASSERTION_FAILED, b, __FUNCTION__, "RuntimeAssertionException", __FILE__, __LINE__)
 
-#define ASSERTION(a, b)
+#define ASSERTION(a, b)   \
+  if (!(a)) { LOG_ERROR(b); } \
+  if (!(a)) { THROW_EXCEPTION(b); }
