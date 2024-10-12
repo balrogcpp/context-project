@@ -34,10 +34,10 @@ RUN apt-get update \
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
-COPY ./source ./source
-COPY ./external ./external
+COPY ./Source ./Source
+COPY ./External ./External
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./cmake ./cmake
+COPY ./CMake ./CMake
 
 
 # linux x86_64
@@ -45,7 +45,7 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get clean \
     && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
     && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build \
     && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
@@ -55,21 +55,21 @@ RUN apt-get update \
 
 # win32
 RUN mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
     && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
 
 
 # apple x86_64
 #RUN mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-x64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple-x64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
 
 
 # apple aarch64
 #RUN mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
 
@@ -86,7 +86,7 @@ RUN mkdir build && cd build \
 #    && unzip -q tools.zip && rm tools.zip \
 #    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
 #    && cd ${CONTEXT_HOME} && mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target Gradle \
 #    && cmake --build . --config Release --target GradleClear \
 #    && rm -rf build ../external/build ../external/sdk /root/.android /root/.gradle $ANDROID_HOME \

@@ -63,7 +63,7 @@ index 81b94a4..9e2e070 100644
      {
          OverlayContainer* container = dynamic_cast<OverlayContainer*>(mProfileGui);
 -        if (container)
-+        if (0)
++        if (false)
          {
              while (!container->getChildren().empty())
              {
@@ -106,26 +106,6 @@ index 483f9f3..0b87d5d 100644
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
-diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
-index ef6be0b..4cbec3a 100644
---- a/OgreMain/include/OgreException.h
-+++ b/OgreMain/include/OgreException.h
-@@ -275,11 +275,11 @@ namespace Ogre {
-         static OGRE_NORETURN void throwException(
-             Exception::ExceptionCodes code,
-             const String& desc,
--            const String& src, const char* file, long line)
--        {
-+            const String& src, const char* file, long line) {
-+        #if OGRE_ASSERT_MODE == 2 || (OGRE_ASSERT_MODE == 1 && !defined(OGRE_DEBUG_MODE))
-             _throwException(code, code, desc, src, file, line);
--        }
--    };
-+        #endif
-+    }};
-     
- 
-     
 diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
 index 7100c33..11c636e 100644
 --- a/OgreMain/src/OgreRoot.cpp
