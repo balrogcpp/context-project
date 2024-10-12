@@ -5,11 +5,6 @@ fragment_program gtao glsl glsles hlsl
 	source gtao.frag
 }
 
-fragment_program max4 glsl glsles hlsl
-{
-	source max4.frag
-}
-
 fragment_program tolinear glsl glsles hlsl
 {
 	source tolinear.frag

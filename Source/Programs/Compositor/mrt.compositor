@@ -70,7 +70,7 @@ compositor MRT
                 colour_value 1 1 1 1
             }
         }
-/*
+
         target rt0
         {
             pass render_quad
@@ -84,7 +84,6 @@ compositor MRT
         {
             pass render_quad
             {
-                identifier 11
                 material DepthDownscaleMax
                 input 0 mrt 1
             }
@@ -98,7 +97,6 @@ compositor MRT
                 first_render_queue 95
             }
         }
-*/
     }
 }
 

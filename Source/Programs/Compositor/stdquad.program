@@ -29,3 +29,8 @@ fragment_program Copy2x glsl glsles hlsl
 {
 	source copy2x.frag
 }
+
+fragment_program max4 glsl glsles hlsl
+{
+	source max4.frag
+}

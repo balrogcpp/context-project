@@ -101,16 +101,18 @@ std::string GetBinaryDir() {
 #ifndef MAX_PATH
 #define MAX_PATH 1024
 #endif
+
   char buffer[MAX_PATH] = {0};
-#ifdef APPLE
+
+#if defined(__APPLE__)
   uint32_t bufferSize = 0;
   _NSGetExecutablePath(nullptr, &bufferSize);
   char unresolvedPath[bufferSize];
   _NSGetExecutablePath(unresolvedPath, &bufferSize);
   realpath(unresolvedPath, buffer);
-#elif defined(WINDOWS)
+#elif defined(_WIN32)
   GetModuleFileNameA(NULL, buffer, MAX_PATH);
-#elif defined(LINUX)
+#else
   readlink("/proc/self/exe", buffer, MAX_PATH);
 #endif
   buffer[MAX_PATH - 1] = 0;
