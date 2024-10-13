@@ -37,8 +37,8 @@ endif ()
 add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(Engine ${ENGINE_INCLUDE_DIRS})
 target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
-add_custom_target(Programs COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/Source/Programs -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake
-                            COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_CURRENT_BINARY_DIR}/programs.zip -P ${CMAKE_SOURCE_DIR}/CMake/Zip2Cpp.cmake)
+add_custom_target(Programs COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/Source/Programs -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/Programs.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake
+                            COMMAND ${CMAKE_COMMAND} -DINPUT=${CMAKE_CURRENT_BINARY_DIR}/Programs.zip -P ${CMAKE_SOURCE_DIR}/CMake/Zip2Cpp.cmake)
 set_target_properties(Programs PROPERTIES FOLDER "Helpers")
 add_dependencies(Engine Programs)
 
@@ -76,10 +76,10 @@ target_precompile_headers(Tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/p
 target_link_libraries(Tests PUBLIC Engine ${ENGINE_LIBRARIES})
 
 if (ANDROID)
-    add_custom_target(Assets ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/Source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_SOURCE_DIR}/Android/app/assets/assets.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake)
+    add_custom_target(Assets ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/Source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_SOURCE_DIR}/Android/app/assets/Assets.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake)
     add_dependencies(Tests Assets)
 else ()
-    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/Source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/assets.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake)
+    add_custom_target(Assets ALL ${CMAKE_COMMAND} -DINPUT=${CMAKE_SOURCE_DIR}/Source/Tests/Assets -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/Assets.zip -P ${CMAKE_SOURCE_DIR}/CMake/Package.cmake)
     set_target_properties(Assets PROPERTIES FOLDER "Helpers")
 endif ()
 
@@ -91,7 +91,7 @@ endif ()
 install(TARGETS Tests RUNTIME DESTINATION .)
 if (NOT EMSCRIPTEN)
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets.zip DESTINATION .)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Assets.zip DESTINATION .)
 else ()
     set(FILE_DIR $<TARGET_FILE_DIR:Tests>)
     install(FILES "${FILE_DIR}/app.html" "${FILE_DIR}/app.js" "${FILE_DIR}/app.wasm" "${FILE_DIR}/app.data" "${FILE_DIR}/app.worker.js" DESTINATION .)

@@ -46,8 +46,8 @@ android {
             def date = zonedDate.format("YYYYMMdd'T'HHMMSS'Z'")
             def gitCommitHash = 'git rev-parse --verify --short HEAD'.execute().text.trim()
             def sha1 = gitCommitHash ?: System.getenv("GIT_SHA1")
-            outputFileName = "tests-${gitCommitHash}-android-arm64-${variant.name}.apk"
-            outputFileName = "../../../../../../../artifacts/" + outputFileName
+            outputFileName = "Tests-${gitCommitHash}-android-arm64-${variant.name}.apk"
+            outputFileName = "../../../../../../../Artifacts/" + outputFileName
         }
     }
     sourceSets.main {

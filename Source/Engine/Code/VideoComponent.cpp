@@ -270,9 +270,9 @@ void VideoComponent::LoadResources() {
 
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
   const int SCAN_DEPTH = 2;
-  const char *PROGRAMS_ZIP = "programs.zip";
+  const char *PROGRAMS_ZIP = "Programs.zip";
   const char *PROGRAMS_DIR = "Source/Programs";
-  const char *ASSETS_ZIP = "assets.zip";
+  const char *ASSETS_ZIP = "Assets.zip";
   const char *ASSETS_DIR = "Source/Tests/Assets";
 
 #if defined(DESKTOP)
