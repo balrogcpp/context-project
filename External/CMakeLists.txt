@@ -865,7 +865,7 @@ externalproject_add(Target_sqlite
 )
 
 
-create_target(Target_libarchive https://github.com/libarchive/libarchive.git v3.7.6)
+create_target(Target_libarchive https://github.com/libarchive/libarchive.git v3.7.7)
 externalproject_add(Target_libarchive
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
