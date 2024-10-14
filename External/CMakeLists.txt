@@ -4,14 +4,19 @@ project(External)
 
 # externalproject_add and c++ flags
 include(ExternalProject)
-include(Platform)
 include(CppFlags)
 
 # externalproject_add require git
 find_package(Git REQUIRED)
 
-
 # cached variables
+if (${CMAKE_GENERATOR} MATCHES "^Visual")
+    set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}-${CMAKE_VS_PLATFORM_NAME}-${CMAKE_CXX_COMPILER_ID}")
+else ()
+    set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_CXX_COMPILER_ID}")
+endif ()
+string(TOLOWER ${TOOLCHAIN_FULL} TOOLCHAIN_FULL)
+message(${TOOLCHAIN_FULL})
 string(TOLOWER ${TOOLCHAIN_FULL} TOOLCHAIN_FULL_LOWER)
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 set(CMAKE_GENERATOR_LIST "${CMAKE_GENERATOR}")

@@ -1,8 +1,6 @@
 # macro insert_dependency and c++ flags, includes and libraries
 include(CppFlags)
-include(Platform)
 include(BuildVariables)
-include(DateTime)
 
 
 # this required to to disable windows upscaling @hdp monitors @windows
@@ -15,13 +13,12 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Programs PREFIX "Programs" FILES $
 list(APPEND ENGINE_SOURCE_FILES ${SHADER_FILES})
 if (${CMAKE_GENERATOR} MATCHES "^Visual")
     set_source_files_properties(${SHADER_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
-    # set_property(SOURCE ${SHADER_FILES} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
 elseif (${CMAKE_GENERATOR} MATCHES "Xcode")
     set_source_files_properties(${SHADER_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 endif ()
 
 # adjust flags if required
-if (MSVC AND RELWITHDEBINFO)
+if (MSVC AND CMAKE_BUILD_TYPE_LOWER MATCHES "relwithdebinfo")
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
 endif ()
 # link fix for old version of assimp
@@ -103,7 +100,7 @@ set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/CMake/CpackPreBuild.cmake")
 set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/CMake/CpackPostBuild.cmake")
 set(PACKAGE_NAME "Tests")
 set(ARTIFACT_NAME ${PACKAGE_NAME}-${GIT_SHA_SHORT}-${TOOLCHAIN_FULL}-${CMAKE_BUILD_TYPE_LOWER})
-if (LINUX)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
 else ()
     install(FILES DESTINATION .)

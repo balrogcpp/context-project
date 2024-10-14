@@ -47,7 +47,6 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
 # include modules
-include(Platform)
 include(GitHash)
 include(ProcessorCount)
 
