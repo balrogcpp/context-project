@@ -1,12 +1,12 @@
 *
 
-!/cmake/
-!/source/
-/source/Android/.gradle/
-/source/Android/app/.cxx/
-/source/Android/app/assets/
-/source/Android/app/build/
+!/CMake/
+!/Source/
+/Source/Android/.gradle/
+/Source/Android/app/.cxx/
+/Source/Android/app/assets/
+/Source/Android/app/build/
 !/CMakeLists.txt/
-!/external/CMakeLists.txt/
-!/external/patch/
-!/external/download/
+!/External/CMakeLists.txt/
+!/External/patch/
+!/External/download/
