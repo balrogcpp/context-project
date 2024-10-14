@@ -2,9 +2,7 @@
 cmake_minimum_required(VERSION 3.18.0)
 
 # project version
-project(Engine VERSION 0.1.0)
-
-# cxx standard
+project(Engine CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
