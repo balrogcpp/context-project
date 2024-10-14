@@ -5,7 +5,7 @@ endif (_platform_included)
 set(_platform_included true)
 
 
-if (${CMAKE_GENERATOR} MATCHES "Visual^")
+if (${CMAKE_GENERATOR} MATCHES "^Visual")
     set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}-${CMAKE_VS_PLATFORM_NAME}-${CMAKE_CXX_COMPILER_ID}")
 else ()
     set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_CXX_COMPILER_ID}")
