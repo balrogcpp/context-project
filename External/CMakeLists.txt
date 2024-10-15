@@ -875,12 +875,12 @@ externalproject_add(Target_sqlite
 )
 
 
-create_target(Target_rapidjson https://github.com/Tencent/rapidjson.git v1.1.0)
-externalproject_add(Target_rapidjson
+create_target(Target_json https://github.com/nlohmann/json.git v3.11.3)
+externalproject_add(Target_json
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_rapidjson
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_json
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -896,10 +896,8 @@ externalproject_add(Target_rapidjson
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DRAPIDJSON_BUILD_DOC=OFF
-        -DRAPIDJSON_BUILD_EXAMPLES=OFF
-        -DRAPIDJSON_BUILD_TESTS=OFF
-        -DRAPIDJSON_HAS_STDSTRING=OFF
+        -DJSON_BuildTests=OFF
+        -DJSON_MultipleHeaders=OFF
 )
 
 
@@ -925,46 +923,6 @@ externalproject_add(Target_rapidyaml
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
 )
-
-
-
-create_target(Target_OGRE2 https://github.com/OGRECave/ogre-next.git v2.3.3)
-externalproject_add(Target_OGRE2
-        EXCLUDE_FROM_ALL true
-        DEPENDS Target_ZZIP Target_FreeType Target_rapidjson
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE2
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DOGRE_STATIC=ON
-        -DOGRE_USE_NEW_PROJECT_NAME=ON
-        -DOGRE_CONFIG_UNIX_NO_X11=OFF
-        -DOGRE_DEPENDENCIES_DIR=${DEPS_ROOT}
-        -DOGRE_ASSERT_MODE=2
-        -DOGRE_RESTRICT_ALIASING=ON
-        -DOGRE_CONFIG_ENABLE_FREEIMAGE=OFF
-        -DOGRE_CONFIG_ENABLE_STBI=ON
-        -DOGRE_BUILD_RENDERSYSTEM_D3D11=OFF
-        -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
-        -DOGRE_INSTALL_DOCS=OFF
-        -DOGRE_INSTALL_PDB=OFF
-        -DOGRE_CONFIG_THREAD_PROVIDER=std
-        -DCMAKE_SKIP_INSTALL_RPATH=ON
-        )
 
 
 create_target(Target_yojimbo https://github.com/mas-bandwidth/yojimbo.git v1.2.5)
