@@ -8,5 +8,5 @@
 /Source/Android/app/build/
 !/CMakeLists.txt/
 !/External/CMakeLists.txt/
-!/External/patch/
-!/External/download/
+!/External/Patch/
+!/External/Download/
