@@ -416,41 +416,6 @@ externalproject_add(Target_zlib
 )
 
 
-create_target(Target_ZZIP https://github.com/gdraheim/zziplib.git v0.13.74)
-externalproject_add(Target_ZZIP
-        EXCLUDE_FROM_ALL true
-        DEPENDS Target_zlib
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ZZIP
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DBUILD_SHARED_LIBS=OFF
-        -DBUILD_STATIC_LIBS=ON
-        -DMSVC_STATIC_RUNTIME=OFF
-        -DZZIPMMAPPED=OFF
-        -DZZIPFSEEKO=OFF
-        -DZZIPWRAP=OFF
-        -DZZIPSDL=OFF
-        -DZZIPDOCS=OFF
-        -DZZIPTEST=OFF
-        -DZZIPBINS=OFF
-)
-
-
 create_target_patch(Target_assimp https://github.com/assimp/assimp.git v5.4.3 assimp-5.4.3.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
@@ -681,36 +646,6 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_TESTS=OFF
         -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
         -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
-)
-
-
-externalproject_add(Target_OgreProcedural
-        EXCLUDE_FROM_ALL true
-        DEPENDS Target_OGRE
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural
-        GIT_REPOSITORY https://github.com/OGRECave/ogre-procedural.git
-        GIT_TAG 4ca681bf88de5c05b863555cf0a34cd0c44ad794
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DOgreProcedural_UNITY_BUILD=OFF
-        -DOgreProcedural_BUILD_SAMPLES=OFF
-        -DOgreProcedural_BUILD_TESTS=OFF
-        -DOgreProcedural_BUILD_DOCS=OFF
-        -DOgreProcedural_STATIC=ON
 )
 
 
