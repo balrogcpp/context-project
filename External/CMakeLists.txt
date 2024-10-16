@@ -87,29 +87,8 @@ macro(create_target TARGET REPO TAG)
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
 endmacro()
 
-# macro(check_stamp_patch TARGET PATCH)
-#     set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
-
-#     if (NOT EXISTS ${PATCH_PATH})
-#         message(FATAL_ERROR "Patch file ${PATCH} not found")
-#     endif ()
-
-#     if (EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-#         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-#     else ()
-#         unset(DOWNLOAD_PLACEHOLDER)
-#     endif ()
-
-#     execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
-#     if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-#         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
-#     else ()
-#         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-#     endif ()
-# endmacro()
 
 
-# list of third-party targets
 create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.30.8 sdl2-2.30.7.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
@@ -144,32 +123,6 @@ externalproject_add(Target_SDL2
         -DHIDAPI=OFF
         -DSDL_HIDAPI=OFF
         -DSDL_HIDAPI_JOYSTICK=OFF
-)
-
-
-create_target(Target_OIS https://github.com/wgois/OIS.git v1.5.1)
-externalproject_add(Target_OIS
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OIS
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DOIS_BUILD_SHARED_LIBS=OFF
-        -DOIS_BUILD_DEMOS=OFF
 )
 
 
@@ -347,7 +300,7 @@ externalproject_add(Target_Theora
 )
 
 
-create_target(Target_FreeType https://github.com/freetype/freetype.git VER-2-13-2)
+create_target(Target_FreeType https://github.com/freetype/freetype.git VER-2-13-3)
 externalproject_add(Target_FreeType
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -612,9 +565,9 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_Freetype=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_FreeImage=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=OFF
         -DIMGUI_DIR=${DEPS_SOURCE_LOCATION}/Target_imgui
-        -DOGRE_BUILD_COMPONENT_BITES=OFF
+        -DOGRE_BUILD_COMPONENT_BITES=ON
         -DOGRE_BUILD_COMPONENT_BULLET=OFF
         -DOGRE_BITES_STATIC_PLUGINS=ON
         -DOGRE_BUILD_COMPONENT_PAGING=ON
