@@ -300,42 +300,6 @@ externalproject_add(Target_Theora
 )
 
 
-create_target(Target_FreeType https://github.com/freetype/freetype.git VER-2-13-3)
-externalproject_add(Target_FreeType
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_FreeType
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_PNG=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_BrotliDec=ON
-        -DFT_DISABLE_ZLIB=ON
-        -DFT_DISABLE_BZIP2=ON
-        -DFT_DISABLE_PNG=ON
-        -DFT_DISABLE_HARFBUZZ=ON
-        -DFT_DISABLE_BROTLI=ON
-        -DFT_ENABLE_ERROR_STRINGS=OFF
-        -DBUILD_SHARED_LIBS=OFF
-)
-
-
 create_target(Target_zlib https://github.com/madler/zlib.git v1.3.1)
 externalproject_add(Target_zlib
         EXCLUDE_FROM_ALL true
@@ -763,38 +727,12 @@ externalproject_add(Target_sqlite
 )
 
 
-create_target(Target_json https://github.com/nlohmann/json.git v3.11.3)
-externalproject_add(Target_json
+create_target(Target_toml https://github.com/marzer/tomlplusplus.git v3.4.0)
+externalproject_add(Target_toml
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_json
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DJSON_BuildTests=OFF
-        -DJSON_MultipleHeaders=OFF
-)
-
-
-create_target(Target_rapidyaml https://github.com/biojppm/rapidyaml.git v0.7.2)
-externalproject_add(Target_rapidyaml
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_rapidyaml
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_toml
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
