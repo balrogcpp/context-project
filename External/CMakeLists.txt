@@ -328,7 +328,7 @@ externalproject_add(Target_zlib
         -DAMD64=OFF
         -DASM686=OFF
         TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -rf
+        TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -f
         lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
 )
 
@@ -464,7 +464,7 @@ externalproject_add(Target_pugixml
 create_target_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.3.0 ogre-14.3.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_imgui Target_pugixml
+        DEPENDS Target_SDL2 Target_imgui Target_pugixml
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -541,7 +541,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_COMPONENT_TERRAIN=ON
         -DOGRE_BUILD_PLUGIN_FREEIMAGE=OFF
         -DOGRE_BUILD_PLUGIN_EXRCODEC=OFF
-        -DOGRE_BUILD_PLUGIN_ASSIMP=ON
+        -DOGRE_BUILD_PLUGIN_ASSIMP=OFF
         -DOGRE_BUILD_PLUGIN_STBI=ON
         -DOGRE_BUILD_PLUGIN_RSIMAGE=OFF
         -DOGRE_BUILD_PLUGIN_BSP=OFF
@@ -846,6 +846,5 @@ add_external_target(OGRE)
 add_external_target_static(Vorbis)
 add_external_target_static(Theora)
 add_external_target_static(Bullet)
-add_external_target_static(SDL2)
 # add_external_target_static(sol2)
 # add_external_target_static(yojimbo)
