@@ -300,43 +300,9 @@ externalproject_add(Target_Theora
 )
 
 
-create_target(Target_zlib https://github.com/madler/zlib.git v1.3.1)
-externalproject_add(Target_zlib
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DBUILD_SHARED_LIBS=OFF
-        -DZLIB_BUILD_EXAMPLES=OFF
-        -DCMAKE_DEBUG_POSTFIX=
-        -DAMD64=OFF
-        -DASM686=OFF
-        TEST_AFTER_INSTALL ON
-        TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -f
-        lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
-)
-
-
 create_target_patch(Target_assimp https://github.com/assimp/assimp.git v5.4.3 assimp-5.4.3.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_assimp
@@ -352,12 +318,11 @@ externalproject_add(Target_assimp
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DASSIMP_HUNTER_ENABLED=OFF
-        -DASSIMP_BUILD_ZLIB=OFF
+        -DASSIMP_BUILD_ZLIB=ON
         -DASSIMP_BUILD_MINIZIP=OFF
         -DASSIMP_WARNINGS_AS_ERRORS=OFF
         -DASSIMP_BUILD_SAMPLES=OFF

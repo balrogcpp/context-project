@@ -16,12 +16,12 @@ index d45eb225..3e81536c 100644
    ENDIF()
  
 -  IF ( NOT ZLIB_FOUND AND NOT ASSIMP_BUILD_ZLIB )
-+  IF ( 0 )
++  IF ( NOT ZLIB_FOUND AND NOT ASSIMP_BUILD_ZLIB )
      message( FATAL_ERROR
        "Build configured with -DASSIMP_BUILD_ZLIB=OFF but unable to find zlib"
      )
 -  ELSEIF( NOT ZLIB_FOUND )
-+  ELSEIF( 0 )
++  ELSEIF( ASSIMP_BUILD_ZLIB )
      MESSAGE(STATUS "compiling zlib from sources")
      INCLUDE(CheckIncludeFile)
      INCLUDE(CheckTypeSize)
