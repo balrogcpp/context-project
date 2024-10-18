@@ -842,7 +842,7 @@ endmacro()
 
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
-add_external_target(OGRE)
+add_external_target_static(OGRE)
 add_external_target_static(Vorbis)
 add_external_target_static(Theora)
 add_external_target_static(Bullet)
