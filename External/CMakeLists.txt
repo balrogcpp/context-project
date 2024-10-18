@@ -429,7 +429,7 @@ externalproject_add(Target_pugixml
 create_target_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.3.0 ogre-14.3.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_SDL2 Target_imgui Target_pugixml
+        DEPENDS Target_SDL2 Target_imgui
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -521,7 +521,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_SAMPLES=OFF
         -DOGRE_INSTALL_SAMPLES_SOURCE=OFF
         -DOGRE_INSTALL_SAMPLES=OFF
-        -DOGRE_BUILD_TOOLS=ON
+        -DOGRE_BUILD_TOOLS=OFF
         -DOGRE_BUILD_XSIEXPORTER=OFF
         -DOGRE_INSTALL_PDB=OFF
         -DOGRE_INSTALL_DOCS=OFF
