@@ -405,7 +405,7 @@ externalproject_add(Target_imgui
 create_target_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.3.0 ogre-14.3.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_SDL2 Target_imgui
+        DEPENDS Target_imgui
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -472,7 +472,7 @@ externalproject_add(Target_OGRE
         -DCMAKE_DISABLE_FIND_PACKAGE_FreeImage=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=OFF
         -DIMGUI_DIR=${DEPS_SOURCE_LOCATION}/Target_imgui
-        -DOGRE_BUILD_COMPONENT_BITES=ON
+        -DOGRE_BUILD_COMPONENT_BITES=OFF
         -DOGRE_BUILD_COMPONENT_BULLET=OFF
         -DOGRE_BITES_STATIC_PLUGINS=ON
         -DOGRE_BUILD_COMPONENT_PAGING=ON
@@ -783,9 +783,10 @@ endmacro()
 
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
-add_external_target_static(OGRE)
+add_external_target(OGRE)
 add_external_target_static(Vorbis)
 add_external_target_static(Theora)
 add_external_target_static(Bullet)
+add_external_target_static(SDL2)
 # add_external_target_static(sol2)
 # add_external_target_static(yojimbo)

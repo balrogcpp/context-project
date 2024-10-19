@@ -41,23 +41,23 @@ COPY ./CMake ./CMake
 
 
 # linux x86_64
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-    && apt-get clean \
-    && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-    && cmake --build . --config Release --target package \
-    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build \
-    && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-    && apt-get -y autoremove --purge \
-    && apt-get clean
+#RUN apt-get update \
+#    && apt-get -y install --no-install-recommends libxaw7-dev libxrandr-dev libxrender-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+#    && apt-get clean \
+#    && mkdir build && cd build \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+#    && cmake --build . --config Release --target package \
+#    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build \
+#    && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+#    && apt-get -y autoremove --purge \
+#    && apt-get clean
 
 
 # win32
-RUN mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
-    && cmake --build . --config Release --target package \
-    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
+#RUN mkdir build && cd build \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
+#    && cmake --build . --config Release --target package \
+#    && rm -rf ../artifacts/_CPack_Packages ../external/build ../external/sdk ../build
 
 
 # apple x86_64
@@ -75,21 +75,20 @@ RUN mkdir build && cd build \
 
 
 # android
-#ARG ANDROID_CMD_VERSION=11076708
-#ARG ANDROID_JAVA_MAJOR=17
-#ENV ANDROID_HOME=/opt/android-sdk
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
-#    && apt-get clean \
-#    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
-#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
-#    && unzip -q tools.zip && rm tools.zip \
-#    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
-#    && cd ${CONTEXT_HOME} && mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-#    && cmake --build . --config Release --target Gradle \
-#    && cmake --build . --config Release --target GradleClear \
-#    && rm -rf build ../external/build ../external/sdk /root/.android /root/.gradle $ANDROID_HOME \
-#    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
-#    && apt-get -y autoremove --purge \
-#    && apt-get clean
+ARG ANDROID_CMD_VERSION=11076708
+ARG ANDROID_JAVA_MAJOR=17
+ENV ANDROID_HOME=/opt/android-sdk
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
+    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
+    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
+    && unzip -q tools.zip && rm tools.zip \
+    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
+    && cd ${CONTEXT_HOME} && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DDISABLE_DEPENDENCIES_BUILD=ON -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake --build . --config Release --target Gradle \
+    && cmake --build . --config Release --target GradleClear \
+    && rm -rf build ../external/build ../external/sdk /root/.android /root/.gradle $ANDROID_HOME \
+    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
+    && apt-get -y autoremove --purge \
+    && apt-get clean
