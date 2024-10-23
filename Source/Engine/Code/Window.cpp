@@ -117,6 +117,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int display, int 
   renderParams["gama"] = "false";
   renderParams["FSAA"] = "0";
   renderParams["preserveContext"] = "true";
+  renderParams["currentEGLSurface"] = "true";
 #ifdef MANUAL_GL_CONTROL
   renderParams["currentGLContext"] = "true";
   renderParams["externalGLControl"] = "true";
