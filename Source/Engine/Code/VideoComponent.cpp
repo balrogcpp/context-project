@@ -34,9 +34,7 @@
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <OgreTerrainMaterialGenerator.h>
 #include <Terrain/OgreTerrainGroup.h>
-#ifdef OGRE_BUILD_COMPONENT_PAGING
 #include <Terrain/OgreTerrainPaging.h>
-#endif
 #endif
 #ifdef OGRE_BUILD_COMPONENT_PAGING
 #include <Paging/OgrePaging.h>
@@ -429,7 +427,7 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
                      bool &skipThisMessage) override {
-    //static std::ofstream of(GetBinaryDir() + "/" + logName);
+    // static std::ofstream of(GetBinaryDir() + "/" + logName);
     static std::ofstream of(logName);
 
     if (of.is_open()) {

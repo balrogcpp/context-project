@@ -422,6 +422,7 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
 
     // Create the camera
     Camera* pCamera = nullptr;
+
     if (mSceneMgr->hasCamera(name))
       pCamera = mSceneMgr->getCamera(name);
     else
@@ -430,6 +431,7 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
     // construct a scenenode is no parent
     if (!pParent)
         pParent = mAttachNode->createChildSceneNode(name);
+
     if (!pCamera->getParentSceneNode())
         pParent->attachObject(pCamera);
 
@@ -819,9 +821,6 @@ void DotSceneLoaderB::processSkyBox(pugi::xml_node& XMLNode)
     String material = getAttrib(XMLNode, "material", "BaseWhite");
     Real distance = getAttribReal(XMLNode, "distance", 5000);
     bool drawFirst = getAttribBool(XMLNode, "drawFirst", true);
-    bool active = getAttribBool(XMLNode, "active", false);
-    if (!active)
-        return;
 
     // Process rotation (?)
     Quaternion rotation = Quaternion::IDENTITY;
