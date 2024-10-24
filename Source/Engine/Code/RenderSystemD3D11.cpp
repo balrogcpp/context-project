@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 /// \file Compilation failes with both GL3 and GLES2 headers included
 
-#include "pch.h"
 #include <OgreComponents.h>
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_D3D11

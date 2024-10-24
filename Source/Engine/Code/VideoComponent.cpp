@@ -857,7 +857,7 @@ void VideoComponent::RebuildOverlayFontAtlas() {
 
   if (auto mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL)) {
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-// doesn't work at windows
+// doesn't work for windows
 #ifdef WIN32
     Ogre::TextureManager::getSingleton().unload("ImGui/FontTex", Ogre::RGN_INTERNAL);
     Ogre::TextureManager::getSingleton().remove("ImGui/FontTex", Ogre::RGN_INTERNAL);
