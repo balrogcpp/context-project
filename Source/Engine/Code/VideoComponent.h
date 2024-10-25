@@ -1,9 +1,8 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "SDLListener.h"
 #include "Component.h"
-#include "Window.h"
+#include "SDLListener.h"
 #include <Ogre.h>
 #include <OgreImGuiOverlay.h>
 
@@ -35,9 +34,9 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   virtual ~VideoComponent();
 
   void RenderFrame();
-  Window& GetWindow(int number = 0);
-  Window& GetMainWindow();
-  void ShowWindow(bool show, int index = 0);
+//  Window& GetWindow(int number = 0);
+//  Window& GetMainWindow();
+  void ShowWindow(bool show);
 
   void UnloadResources();
   void ClearScene();
@@ -82,10 +81,35 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   void InitBtOgre();
 
   /// WindowListener impl
+  void OnSizeChanged(int x, int y, uint32_t id) override;
   void OnEvent(const SDL_Event& event) override;
 
-  Window* mainWindow = nullptr;
-  std::vector<Window> windowList;
+//  struct Window {
+    std::string title = "My Window";
+    bool fullscreen = true;
+    int display = 0;
+    int sizeX = 1270;
+    int sizeY = 720;
+    uint32_t sdlFlags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
+    int vsyncInt = 1;
+    uint32_t id;
+//  };
+
+  SDL_Window* sdlWindow = nullptr;
+  SDL_GLContext glContext = nullptr;
+  Ogre::RenderWindow* ogreWindow = nullptr;
+  Ogre::RenderTarget* renderTarget = nullptr;
+  Ogre::Viewport* ogreViewport = nullptr;
+
+  Ogre::Root* ogreRoot = nullptr;
+  Ogre::SceneManager* sceneManager = nullptr;
+  Ogre::Camera* camera = nullptr;
+  Ogre::ImGuiOverlay* imguiOverlay = nullptr;
+  std::shared_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
+  std::unique_ptr<OgreOggSound::Root> audioRoot;
+  std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
+  std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
+
   std::string ogreLogFile;
   unsigned short ogreMinLogLevel;
   std::unique_ptr<Ogre::LogManager> ogreLogManager;
@@ -99,14 +123,5 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   int shadowTexCount;
   int pssmSplitCount;
   float pssmSplitPadding;
-
-  Ogre::Root* ogreRoot = nullptr;
-  Ogre::SceneManager* sceneManager = nullptr;
-  Ogre::Camera* camera = nullptr;
-  Ogre::ImGuiOverlay* imguiOverlay = nullptr;
-  std::shared_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
-  std::unique_ptr<OgreOggSound::Root> audioRoot;
-  std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
-  std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
 };
 }  // namespace gge

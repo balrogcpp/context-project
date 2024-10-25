@@ -1,6 +1,6 @@
 #include "SkyModel.h"
 #include "ArHosekSkyModel.h"
-#include "OgreTechnique.h"
+#include <OgreTechnique.h>
 
 namespace {
 // Useful shader functions
