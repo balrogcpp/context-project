@@ -6,9 +6,6 @@ set(_buildvariables_included true)
 
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
-set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH false)
-set(CMAKE_FIND_USE_PACKAGE_REGISTRY false)
-
 
 macro(add_external_package package)
     if (DISABLE_DEPENDENCIES_BUILD)
@@ -34,12 +31,20 @@ endmacro()
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_package(OGRE)
+
+set(CMAKE_FIND_USE_PACKAGE_ROOT_PATH FALSE)
+#set(CMAKE_FIND_USE_CMAKE_PATH FALSE)
+set(CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH FALSE)
+set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH FALSE)
+#set(CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY FALSE)
+set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH FALSE)
+#set(CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY FALSE)
+
 add_external_package_static(SDL2)
 add_external_package_static(Bullet)
 add_external_package_static(OpenAL)
 add_external_package_static(Ogg)
 add_external_package_static(Vorbis)
-add_external_package_static(Theora)
 # add_external_package_static(sol2)
 # add_external_package_static(CURL)
 # add_external_package_static(cpr)
@@ -49,12 +54,7 @@ add_external_package_static(Theora)
 # engine
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source/Engine)
 set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
-set(ENGINE_INCLUDE_DIRS
-        ${ENGINE_SOURCE_DIR}
-        ${ENGINE_SOURCE_DIR}/Code
-        ${CMAKE_BINARY_DIR}/Source
-        ${DEPS_ROOT}/include
-)
+set(ENGINE_INCLUDE_DIRS ${ENGINE_SOURCE_DIR} ${ENGINE_SOURCE_DIR}/Code ${CMAKE_BINARY_DIR}/Source ${DEPS_ROOT}/include)
 
 
 if (OGRE_FOUND)

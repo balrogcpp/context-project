@@ -32,9 +32,6 @@ set(DEPS_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/Patch)
 set(DEPS_INCLUDE_DIR ${DEPS_ROOT}/include CACHE PATH "")
 set(DEPS_LIB_DIR ${DEPS_ROOT}/lib CACHE PATH "")
 set(DEPS_BIN_DIR ${DEPS_ROOT}/bin CACHE PATH "")
-if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU") AND NOT MSVC)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s")
-endif ()
 
 
 macro(create_target_patch TARGET REPO TAG PATCH)
@@ -422,7 +419,6 @@ externalproject_add(Target_OGRE
         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
@@ -738,7 +734,6 @@ externalproject_add(Target_yojimbo
         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
@@ -754,8 +749,13 @@ add_custom_target(ExternalClearAll COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PRE
 set_target_properties(ExternalBuildAll ExternalClearAll PROPERTIES FOLDER "Helpers")
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
-set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH false)
-set(CMAKE_FIND_USE_PACKAGE_REGISTRY false)
+set(CMAKE_FIND_USE_PACKAGE_ROOT_PATH FALSE)
+#set(CMAKE_FIND_USE_CMAKE_PATH FALSE)
+set(CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH FALSE)
+set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH FALSE)
+#set(CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY FALSE)
+set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH FALSE)
+#set(CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY FALSE)
 
 macro(add_external_target package)
     find_package(${package})
@@ -787,7 +787,6 @@ add_external_target(OGRE)
 add_external_target_static(SDL2)
 add_external_target_static(Bullet)
 add_external_target_static(Vorbis)
-add_external_target_static(Theora)
 # add_external_target_static(sol2)
 # add_external_target_static(cpr)
 # find_package(sodium QUIET)
