@@ -46,10 +46,10 @@ RUN apt-get update \
 
 
 # win32
-#RUN mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
-#    && cmake --build . --config Release --target package \
-#    && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build
+RUN mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
+    && cmake --build . --config Release --target package \
+    && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build
 
 
 # apple x86_64

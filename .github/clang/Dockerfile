@@ -22,14 +22,14 @@ ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
 ARG BINUTILS_VERSION=2.43
 ARG MINGW_VERSION=12.0.0
-ARG GCC_VERSION=14.1.0
+ARG GCC_VERSION=14.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=11
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 1000 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -q -O - | tar -xz \
     && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -q -O - | tar -xJ \
     && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -q -O - | tar -xJ \
@@ -128,7 +128,6 @@ RUN apt-get update \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
 
 
-# clang; libgcc-7 is for ubuntu 18.04, newer ubuntus has newer libgcc
 ARG CLANG_MAJOR=18
 ARG STDLIB_APT_MAJOR=11
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
@@ -141,30 +140,31 @@ RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERS
     && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
     && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 1000 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1000
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1000 \
+    && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} 1000
 ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 
 # apple
-COPY ./tarballs ./tarballs
-ARG OSXCROSS_ROOT=/opt/osxcross
-ARG OSXCROSS_GIT_HASH=fd32ecc6e0786369272be2da670bc9b5849b215a
-ARG CMAKE_VERSION=3.29.6
-ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends git python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
-    && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-    && export PATH="${CMAKE_HOME}/bin:${PATH}" \
-    && git clone https://github.com/tpoechtrager/osxcross.git \
-    && cd osxcross \
-    && git checkout ${OSXCROSS_GIT_HASH} \
-    && cp -r ../tarballs . && rm -rf ../tarballs \
-    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
-    && rm -rf ../osxcross \
-    && rm -rf ${CMAKE_HOME} \
-    && apt-get -y purge git python lzma-dev libxml2-dev libssl-dev libbz2-dev \
-    && apt-get -y autoremove --purge \
-    && apt-get clean
-ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
+#COPY ./tarballs ./tarballs
+#ARG OSXCROSS_ROOT=/opt/osxcross
+#ARG OSXCROSS_GIT_HASH=fd32ecc6e0786369272be2da670bc9b5849b215a
+#ARG CMAKE_VERSION=3.29.6
+#ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
+#RUN apt-get update \
+#    && apt-get -y install --no-install-recommends git python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
+#    && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+#    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+#    && export PATH="${CMAKE_HOME}/bin:${PATH}" \
+#    && git clone https://github.com/tpoechtrager/osxcross.git \
+#    && cd osxcross \
+#    && git checkout ${OSXCROSS_GIT_HASH} \
+#    && cp -r ../tarballs . && rm -rf ../tarballs \
+#    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
+#    && rm -rf ../osxcross \
+#    && rm -rf ${CMAKE_HOME} \
+#    && apt-get -y purge git python lzma-dev libxml2-dev libssl-dev libbz2-dev \
+#    && apt-get -y autoremove --purge \
+#    && apt-get clean
+#ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
+#ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
