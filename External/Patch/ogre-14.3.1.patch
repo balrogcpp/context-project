@@ -11,7 +11,7 @@ index 7f6a28c..8610098 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ade278e..d97e599 100644
+index c5d23d7..064845d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -55,7 +55,7 @@ index 41bd634..a419aa2 100644
  endif()
  
 diff --git a/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp b/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp
-index 81b94a4..9e2e070 100644
+index 81b94a4..d9e523a 100644
 --- a/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp
 +++ b/Components/Overlay/src/OgreOverlayProfileSessionListener.cpp
 @@ -108,7 +108,7 @@ namespace Ogre
@@ -190,7 +190,7 @@ index 10283f5..8cb4ec1 100644
    target_link_libraries(Codec_STBI PRIVATE ZLIB::ZLIB)
  endif()
 diff --git a/PlugIns/STBICodec/src/OgreSTBICodec.cpp b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
-index f89e9a1..eec4a06 100644
+index c5a4d4b..8ba1d30 100644
 --- a/PlugIns/STBICodec/src/OgreSTBICodec.cpp
 +++ b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
 @@ -41,7 +41,7 @@ THE SOFTWARE.
@@ -337,3 +337,29 @@ index 269a2a1..9a3f9a4 100644
  
          return mHeight;
      }
+diff --git a/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp b/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp
+index 0343ddd..34e3f4c 100644
+--- a/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp
++++ b/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp
+@@ -257,7 +257,7 @@ namespace Ogre {
+ 				#endif
+ 			#endif
+ 		#else
+-			static const TCHAR staticVar;
++			static TCHAR staticVar;
+ 			GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, &staticVar, &hinst);
+ 		#endif
+         
+diff --git a/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp b/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp
+index db19925..3ab914c 100644
+--- a/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp
++++ b/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp
+@@ -83,7 +83,7 @@ namespace Ogre {
+ 				#endif
+ 			#endif
+ 		#else
+-			static const TCHAR staticVar;
++			static TCHAR staticVar;
+ 			GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, &staticVar, &hInst);
+ 		#endif
+ 
