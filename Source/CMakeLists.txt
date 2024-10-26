@@ -26,10 +26,6 @@ endif ()
 #if (MSVC AND assimp_FOUND AND assimp_VERSION VERSION_LESS 5.2)
 #    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
 #endif ()
-if (EMSCRIPTEN)
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " --preload-file ${ASSETS_DIR}/@. --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/Engine/shell_minimal.html")
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-endif ()
 
 # static library
 add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})

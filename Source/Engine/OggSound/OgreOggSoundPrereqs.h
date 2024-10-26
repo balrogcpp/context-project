@@ -82,6 +82,10 @@
 #	define _OGGSOUND_EXPORT
 #endif
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+	#define AL_LIBTYPE_STATIC
+#endif
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #if HAVE_ALEXT == 1

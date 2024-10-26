@@ -3,12 +3,12 @@
 #include "pch.h"
 #include "VideoComponent.h"
 #include "CompositorComponent.h"
+#include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "EmbeddedResources.h"
+#include "OggSound/OgreOggSoundRoot.h"
 #include "Platform.h"
 #include "RenderSystems.h"
 #include "imgui_impl_sdl2.h"
-#include <OggSound/OgreOggSoundRoot.h>
-#include <SDL2/SDL_syswm.h>
 #if defined(__ANDROID__)
 #define MANUAL_GL_CONTROL
 #endif
@@ -30,8 +30,6 @@
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
 #include <Plugins/DotScene/OgreDotSceneLoader.h>
-#else
-#include "DotSceneLoaderB/DotSceneLoaderB.h"
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
 #include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
@@ -55,6 +53,7 @@
 #endif
 #include <Ogre.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -608,8 +607,8 @@ void VideoComponent::MakeWindow() {
   renderParams["gama"] = "false";
   renderParams["FSAA"] = "0";
   renderParams["preserveContext"] = "true";
-  renderParams["currentEGLSurface"] = "true";
 #ifdef MANUAL_GL_CONTROL
+  renderParams["currentEGLSurface"] = "true";
   renderParams["currentGLContext"] = "true";
   renderParams["externalGLControl"] = "true";
 #endif

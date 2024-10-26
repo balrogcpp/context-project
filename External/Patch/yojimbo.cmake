@@ -83,8 +83,8 @@ install(TARGETS yojimbo EXPORT yojimboConfig PUBLIC_HEADER DESTINATION ${CMAKE_I
 install(EXPORT yojimboConfig NAMESPACE yojimbo:: DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/yojimbo)
 
 include(CMakeDependentOption)
-cmake_dependent_option(YOJIMBO_EXE "Build yojimbo executables" ON "WIN32 OR UNIX;NOT CMAKE_CROSSCOMPILING" OFF)
-if (YOJIMBO_EXE)
+cmake_dependent_option(YOJIMBO_BUILD_EXE "Build yojimbo executables" ON "WIN32 OR UNIX;NOT CMAKE_CROSSCOMPILING" OFF)
+if (YOJIMBO_BUILD_EXE)
     # CLIENT
     add_executable(client
             client.cpp
@@ -140,6 +140,7 @@ if (YOJIMBO_EXE)
     install(TARGETS netcode tlsf reliable client server loopback soak)
 endif ()
 
+option(YOJIMBO_BUILD_TEST "Build yojimbo tests" OFF)
 if (YOJIMBO_BUILD_TEST)
     # TEST
     add_executable(test
