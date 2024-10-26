@@ -34,22 +34,22 @@ COPY ./CMake ./CMake
 
 # linux x86_64
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends libglew-dev libxrandr-dev libxaw7-dev \
+    && apt-get -y install --no-install-recommends libx11-dev libxrandr-dev libglew-dev \
     && apt-get clean \
     && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
     && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build \
-    && apt-get -y purge libglew-dev libxrandr-dev libxaw7-dev \
+    && apt-get -y purge libx11-dev libxrandr-dev libglew-dev \
     && apt-get -y autoremove --purge \
     && apt-get clean
 
 
 # win32
-RUN mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
-    && cmake --build . --config Release --target package \
-    && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build
+#RUN mkdir build && cd build \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
+#    && cmake --build . --config Release --target package \
+#    && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build
 
 
 # apple x86_64

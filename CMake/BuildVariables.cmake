@@ -40,17 +40,31 @@ add_external_package_static(Vorbis)
 # add_external_package_static(cpr)
 # add_external_package_static(sodium)
 # add_external_package_static(yojimbo)
-set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH TRUE)
 
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_package(OGRE)
+set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH TRUE)
+
+if (OGRE_GL3_LIBRARY)
+    find_package(OpenGL)
+    if (OPENGL_FOUND)
+        list(APPEND OGRE_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+        list(APPEND OGRE_LIBRARIES ${OPENGL_LIBRARIES})
+    endif ()
+endif ()
+if (OGRE_GLES2_LIBRARY)
+    find_package(OpenGL)
+    if (OpenGL_EGL_FOUND)
+        list(APPEND OGRE_INCLUDE_DIRS ${OPENGL_EGL_INCLUDE_DIRS})
+        list(APPEND OGRE_LIBRARIES ${OPENGL_egl_LIBRARY})
+    endif ()
+endif()
 
 # engine
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source/Engine)
 set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
 set(ENGINE_INCLUDE_DIRS ${ENGINE_SOURCE_DIR} ${ENGINE_SOURCE_DIR}/Code ${CMAKE_BINARY_DIR}/Source ${DEPS_ROOT}/include)
-
 
 if (OGRE_FOUND)
     list(APPEND ENGINE_LIBRARIES ${OGRE_LIBRARIES})

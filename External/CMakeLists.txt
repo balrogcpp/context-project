@@ -53,7 +53,7 @@ macro(create_target_patch TARGET REPO TAG PATCH)
     string(STRIP "${head_rev}" head_rev)
     file(GLOB RESULT ${DEPS_SOURCE_LOCATION}/${TARGET})
     list(LENGTH RESULT RES_LEN)
-    if(NOT RES_LEN EQUAL 0)
+    if (NOT RES_LEN EQUAL 0)
         if ("${head_rev}" MATCHES ${TAG})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
             execute_process(COMMAND ${GIT_EXECUTABLE} reset --hard WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
@@ -79,7 +79,7 @@ macro(create_target TARGET REPO TAG)
     string(STRIP "${head_rev}" head_rev)
     file(GLOB RESULT ${DEPS_SOURCE_LOCATION}/${TARGET})
     list(LENGTH RESULT RES_LEN)
-    if(NOT RES_LEN EQUAL 0)
+    if (NOT RES_LEN EQUAL 0)
         if ("${head_rev}" MATCHES ${TAG})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         else ()
@@ -92,7 +92,6 @@ macro(create_target TARGET REPO TAG)
 
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
 endmacro()
-
 
 
 create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.30.8 sdl2-2.30.7.patch)
@@ -651,12 +650,12 @@ externalproject_add(Target_cpr
 )
 
 
-create_target(Target_sqlite https://github.com/SRombauts/SQLiteCpp.git 3.3.1)
-externalproject_add(Target_sqlite
+create_target(Target_SQLiteCpp https://github.com/SRombauts/SQLiteCpp.git 3.3.1)
+externalproject_add(Target_SQLiteCpp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_sqlite
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SQLiteCpp
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -689,12 +688,12 @@ externalproject_add(Target_sqlite
 )
 
 
-create_target(Target_toml https://github.com/marzer/tomlplusplus.git v3.4.0)
-externalproject_add(Target_toml
+create_target(Target_tomlplusplus https://github.com/marzer/tomlplusplus.git v3.4.0)
+externalproject_add(Target_tomlplusplus
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_toml
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_tomlplusplus
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -781,13 +780,14 @@ endmacro()
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_target(OpenAL)
-add_external_target(OGRE)
 add_external_target_static(SDL2)
 add_external_target_static(Bullet)
 add_external_target_static(Vorbis)
-# add_external_target_static(sol2)
-# add_external_target_static(cpr)
-# find_package(sodium QUIET)
-# add_external_target_static(yojimbo)
-
+add_external_target_static(OGRE)
+#add_external_target_static(sol2)
+#add_external_target_static(cpr)
+#find_package(sodium)
+#add_external_target_static(yojimbo)
+#add_external_target_static(tomlplusplus)
+#add_external_target_static(SQLiteCpp)
 set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH TRUE)
