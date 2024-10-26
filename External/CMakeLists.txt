@@ -621,7 +621,7 @@ externalproject_add(Target_LibreSSL
 )
 
 
-create_target_patch(Target_cpr https://github.com/libcpr/cpr.git 1.11.0 cpr-1.11.0.patch)
+create_target_patch(Target_cpr https://github.com/libcpr/cpr.git 1.10.5 cpr-1.10.5.patch)
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
         DEPENDS Target_LibreSSL
