@@ -472,7 +472,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_PLUGIN_GLSLANG=OFF
         -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
         -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=ON
-        -DOGRE_BUILD_RENDERSYSTEM_GLES2=ON
+        -DOGRE_BUILD_RENDERSYSTEM_GLES2=OFF
         -DOGRE_BUILD_RENDERSYSTEM_GL=OFF
         -DOGRE_GLSUPPORT_USE_EGL=OFF
         -DOGRE_USE_WAYLAND=OFF
@@ -752,13 +752,7 @@ add_custom_target(ExternalClearAll COMMAND ${CMAKE_COMMAND} -E rm -rf ${DEPS_PRE
 set_target_properties(ExternalBuildAll ExternalClearAll PROPERTIES FOLDER "Helpers")
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
-set(CMAKE_FIND_USE_PACKAGE_ROOT_PATH FALSE)
-#set(CMAKE_FIND_USE_CMAKE_PATH FALSE)
-set(CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH FALSE)
-set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH FALSE)
-#set(CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY FALSE)
 set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH FALSE)
-#set(CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY FALSE)
 
 macro(add_external_target package)
     find_package(${package})
@@ -770,7 +764,7 @@ endmacro()
 
 macro(find_package_static package)
     set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".sl" ".dylib" ".dll.a")
     find_package(${package})
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${_OLD_FIND_SUFFIXES})
     unset(_OLD_FIND_SUFFIXES)
@@ -795,3 +789,5 @@ add_external_target_static(Vorbis)
 # add_external_target_static(cpr)
 # find_package(sodium QUIET)
 # add_external_target_static(yojimbo)
+
+set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH TRUE)

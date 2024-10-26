@@ -17,7 +17,7 @@ endmacro()
 
 macro(add_external_package_static package)
     set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".sl" ".dylib" ".dll.a")
     if (DISABLE_DEPENDENCIES_BUILD)
         find_package(${package})
     else ()
@@ -28,17 +28,7 @@ macro(add_external_package_static package)
 endmacro()
 
 # check dependencies
-set(OGRE_STATIC 1)
-set(OGRE_IGNORE_ENV 1)
-add_external_package(OGRE)
-
-set(CMAKE_FIND_USE_PACKAGE_ROOT_PATH FALSE)
-#set(CMAKE_FIND_USE_CMAKE_PATH FALSE)
-set(CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH FALSE)
-set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH FALSE)
-#set(CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY FALSE)
 set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH FALSE)
-#set(CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY FALSE)
 
 add_external_package(OpenAL)
 add_external_package_static(SDL2)
@@ -50,6 +40,11 @@ add_external_package_static(Vorbis)
 # add_external_package_static(cpr)
 # add_external_package_static(sodium)
 # add_external_package_static(yojimbo)
+set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH TRUE)
+
+set(OGRE_STATIC 1)
+set(OGRE_IGNORE_ENV 1)
+add_external_package(OGRE)
 
 # engine
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source/Engine)
