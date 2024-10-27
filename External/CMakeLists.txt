@@ -180,9 +180,9 @@ externalproject_add(Target_Bullet
 
 create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.23.1 openal-1.23.1.patch)
 if (WIN32 OR ANDROID OR IOS)
-    set(OPENAL_LIBTYPE STATIC)
+    set(OPENAL_LIBTYPE "STATIC")
 else ()
-    set(OPENAL_LIBTYPE SHARED)
+    set(OPENAL_LIBTYPE "SHARED")
 endif ()
 externalproject_add(Target_OpenAL
         EXCLUDE_FROM_ALL true
