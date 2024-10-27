@@ -224,7 +224,7 @@ externalproject_add(Target_OpenAL
 )
 
 
-create_target(Target_Ogg https://github.com/xiph/ogg.git v1.3.5)
+create_target_patch(Target_Ogg https://github.com/xiph/ogg.git v1.3.5 ogg-1.3.5.patch)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -255,7 +255,7 @@ externalproject_add(Target_Ogg
 )
 
 
-create_target(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7)
+create_target_patch(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7 vorbis-1.3.7.patch)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
         DEPENDS Target_Ogg
@@ -263,7 +263,8 @@ externalproject_add(Target_Vorbis
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Vorbis
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Vorbis/cmake/FindOgg.cmake
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindOgg.cmake ${DEPS_SOURCE_LOCATION}/Target_Vorbis/cmake/FindOgg.cmake
         CMAKE_ARGS
         -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
         -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
