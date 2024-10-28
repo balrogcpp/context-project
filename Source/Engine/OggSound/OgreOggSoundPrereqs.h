@@ -41,7 +41,7 @@
  * 1 - OGRE-native multithreading
  */
 #ifndef OGGSOUND_THREADED
-	#define OGGSOUND_THREADED (OGRE_THREAD_SUPPORT > 0)
+#       define OGGSOUND_THREADED (OGRE_THREAD_SUPPORT > 0)
 #endif
 
 /**
@@ -59,7 +59,7 @@
  * 1 - Enable EFX support with Creative OpenAL SDK 1.1
  * 2 - Enable EFX support with OpenAL Soft SDK
  */
-#define OGGSOUND_HAVE_EFX 0
+#define OGGSOUND_HAVE_EFX 2
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #	pragma warning( disable : 4244 )
