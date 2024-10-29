@@ -107,6 +107,7 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
   std::shared_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
   std::unique_ptr<OgreOggSound::Root> audioRoot;
+  OgreOggSound::OgreOggSoundManager* oggSoundManager = nullptr;
   std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
   std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
 

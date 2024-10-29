@@ -297,7 +297,9 @@ void VideoComponent::LoadResources() {
   } else
 #endif
   {
-    if (!FindPath(ASSETS_ZIP).empty()) ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), "Zip", Ogre::RGN_DEFAULT);
+    if (!FindPath(ASSETS_ZIP).empty()) {
+      ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), "Zip", Ogre::RGN_DEFAULT);
+    }
   }
 
 #elif defined(__ANDROID__)
@@ -520,18 +522,19 @@ void VideoComponent::InitOgreRoot() {
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
   Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePlugin());
-#else
-  Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
 #endif
+
+  Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
   ogreRoot->initialise(false);
 }
 
 void VideoComponent::MakeWindow() {
   camera = sceneManager->createCamera("Camera");
+  sceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(camera);
 
   SDL_DisplayMode displayMode;
   int screenWidth = 0, screenHeight = 0;
@@ -644,7 +647,6 @@ void VideoComponent::MakeWindow() {
   camera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
   camera->setAutoAspectRatio(true);
   id = SDL_GetWindowID(sdlWindow);
-  //  mainWindow.Create("Demo0", camera, 0, 1270, 720, 0);
   camera->setNearClipDistance(0.1);
   camera->setFarClipDistance(1000.0);
 }
@@ -770,13 +772,13 @@ void VideoComponent::InitTerrain() {
 }
 
 void VideoComponent::InitOgreAudio() {
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  _putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
-#endif
   audioRoot = make_unique<OgreOggSound::Root>();
   audioRoot->initialise();
+  oggSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+  oggSoundManager->init();
+  oggSoundManager->setResourceGroupName(Ogre::RGN_AUTODETECT);
+  auto *listener = oggSoundManager->getListener();
+  camera->getParentSceneNode()->attachObject(listener);
 }
 
 void VideoComponent::InitBtOgre() {
@@ -1075,9 +1077,9 @@ void VideoComponent::OnSetUp() {
   MakeWindow();
   CheckGPU();
   InitOgreRTSS();
+  InitOgreAudio();
   InitOgreOverlay();
   LoadResources();
-  InitOgreAudio();
   InitBtOgre();
   InitOgreSceneManager();
 }
