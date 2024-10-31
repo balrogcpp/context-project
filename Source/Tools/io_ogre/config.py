@@ -145,8 +145,8 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin') or sys.
         path = _CONFIG_DEFAULTS_UNIX[ tag ]
         if path.startswith('~'):
             _CONFIG_DEFAULTS_UNIX[ tag ] = os.path.expanduser( path )
-        elif tag.startswith('OGRETOOLS') and not os.path.isfile( path ):
-            _CONFIG_DEFAULTS_UNIX[ tag ] = os.path.join( '/usr/bin', os.path.split( path )[-1] )
+        #elif tag.startswith('OGRETOOLS') and not os.path.isfile( path ):
+        #    _CONFIG_DEFAULTS_UNIX[ tag ] = os.path.join( '/usr/local/bin', os.path.split( path )[-1] )
     del tag
     del path
 
