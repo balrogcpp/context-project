@@ -12,10 +12,10 @@ vec3 Gauss5(const sampler2D tex, const vec2 uv, const vec2 tsize)
     vec3 B = textureLod(tex, uv + off, 0.0).rgb;
     vec3 C = textureLod(tex, uv - off, 0.0).rgb;
 
-    vec3 c1 = A * 0.29411764705882354;
-    vec3 c2 = (B + C) * 0.35294117647058826;
+    vec3 o = A * 0.29411764705882354;
+    o += (B + C) * 0.35294117647058826;
 
-    return c1 + c2;
+    return o;
 }
 
 out vec3 FragColor;

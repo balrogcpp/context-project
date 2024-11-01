@@ -21,13 +21,13 @@ vec3 Downscale13(const sampler2D tex, const vec2 uv, const vec2 tsize)
     vec3 L = textureLod(tex, uv + tsize * vec2( 0.0,  1.0), 0.0).rgb;
     vec3 M = textureLod(tex, uv + tsize * vec2( 1.0,  1.0), 0.0).rgb;
 
-    vec3 c = (D + E + I + J) * 0.125;
-    c += (A + B + G + F) * 0.03125;
-    c += (B + C + H + G) * 0.03125;
-    c += (F + G + L + K) * 0.03125;
-    c += (G + H + M + L) * 0.03125;
+    vec3 o = (D + E + I + J) * 0.125;
+    o += (A + B + G + F) * 0.03125;
+    o += (B + C + H + G) * 0.03125;
+    o += (F + G + L + K) * 0.03125;
+    o += (G + H + M + L) * 0.03125;
 
-    return c;
+    return o;
 }
 
 out vec3 FragColor;

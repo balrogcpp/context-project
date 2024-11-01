@@ -18,12 +18,12 @@ vec3 Gauss13(const sampler2D tex, const vec2 uv, const vec2 tsize)
     vec3 F = textureLod(tex, uv + off3, 0.0).rgb;
     vec3 G = textureLod(tex, uv - off3, 0.0).rgb;
 
-    vec3 c = A * 0.1964825501511404;
-    c += (B + C) * 0.2969069646728344;
-    c += (D + E) * 0.09447039785044732;
-    c += (F + G) * 0.010381362401148057;
+    vec3 o = A * 0.1964825501511404;
+    o += (B + C) * 0.2969069646728344;
+    o += (D + E) * 0.09447039785044732;
+    o += (F + G) * 0.010381362401148057;
 
-    return c;
+    return o;
 }
 
 out vec3 FragColor;
