@@ -121,7 +121,7 @@ _CONFIG_DEFAULTS_WINDOWS = {
     'OGRETOOLS_XML_CONVERTER' : 'C:\\Program Files\\OGRE\\bin\\OgreXMLConverter.exe',
     'OGRETOOLS_MESH_UPGRADER' : 'C:\\Program Files\\OGRE\\bin\\OgreMeshUpgrader.exe',
     'MESH_PREVIEWER' : 'ogre-meshviewer.bat',
-    'IMAGE_MAGICK_CONVERT' : 'C:\\Program Files\\ImageMagick\\magick.exe',
+    'IMAGE_MAGICK_CONVERT' : 'magick.exe',
     'USER_MATERIALS' : '',
     'SHADER_PROGRAMS' : 'C:\\'
 }
