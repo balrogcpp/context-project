@@ -35,9 +35,7 @@
 #include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-#include <OgreTerrainMaterialGenerator.h>
 #include <Terrain/OgreTerrainGroup.h>
-#include <Terrain/OgreTerrainPaging.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_PAGING
 #include <Paging/OgrePaging.h>
