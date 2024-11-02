@@ -185,7 +185,7 @@ index 10283f5..8cb4ec1 100644
  endif()
  
 -if(ZLIB_FOUND)
-+if(0)
++if(FALSE)
    target_compile_definitions(Codec_STBI PRIVATE HAVE_ZLIB)
    target_link_libraries(Codec_STBI PRIVATE ZLIB::ZLIB)
  endif()
