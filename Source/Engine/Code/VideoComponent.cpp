@@ -414,10 +414,6 @@ void VideoComponent::CheckGPU() {
 }
 
 void VideoComponent::InitSDL() {
-#ifdef _MSC_VER
-  SDL_SetMainReady();
-#endif
-
   int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
   if (!result) LogError("SDL_Init failed", SDL_GetError());
   ASSERTION(!result, "Failed to init SDL");
