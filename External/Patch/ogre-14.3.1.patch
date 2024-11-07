@@ -115,7 +115,7 @@ index 7100c33..11c636e 100644
      void Root::unloadPlugins(void)
      {
 -#if OGRE_PLATFORM != OGRE_PLATFORM_EMSCRIPTEN
-+#ifndef OGRE_STATIC_LIB
++#if !defined(OGRE_STATIC_LIB)
          // unload dynamic libs first
          for (PluginLibList::reverse_iterator i = mPluginLibs.rbegin(); i != mPluginLibs.rend(); ++i)
          {
@@ -124,7 +124,7 @@ index 7100c33..11c636e 100644
      void Root::loadPlugin(const String& pluginName)
      {
 -#if OGRE_PLATFORM != OGRE_PLATFORM_EMSCRIPTEN
-+#ifndef OGRE_STATIC_LIB
++#if !defined(OGRE_STATIC_LIB)
          // Load plugin library
          DynLib* lib = DynLibManager::getSingleton().load( pluginName );
          // Store for later unload
@@ -133,7 +133,7 @@ index 7100c33..11c636e 100644
      void Root::unloadPlugin(const String& pluginName)
      {
 -#if OGRE_PLATFORM != OGRE_PLATFORM_EMSCRIPTEN
-+#ifndef OGRE_STATIC_LIB
++#if !defined(OGRE_STATIC_LIB)
          PluginLibList::iterator i;
  
          for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
@@ -307,7 +307,7 @@ index 436c498..45cab51 100644
 -        }
 -
 +        } else { mShaderVersion = renderSystem ? renderSystem->getNativeShadingLanguageVersion() : 120; // should check, if there is free space for replace, but for it is chip and dirty
-+            mSource.replace(0, 18,StringUtil::format("#version %d%s\n//", mShaderVersion, (isGLES && mShaderVersion > 100) ? " es" : (mShaderVersion > 300 ? " core" : ""))); }
++            mSource.replace(0, 18, StringUtil::format("#version %d%s\n//", mShaderVersion, (isGLES && mShaderVersion > 100) ? " es" : (mShaderVersion > 300 ? " core" : ""))); }
          String verStr = std::to_string(mShaderVersion);
  
  #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
