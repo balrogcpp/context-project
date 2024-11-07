@@ -44,11 +44,7 @@ set_source_files_properties(${ASSET_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 
 # executable
 if (NOT ANDROID)
-    if (CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
-        add_executable(Tests WIN32 ${SAMPLE_SOURCE_FILES})
-    else ()
-        add_executable(Tests ${SAMPLE_SOURCE_FILES})
-    endif ()
+    add_executable(Tests WIN32 ${SAMPLE_SOURCE_FILES})
     set_property(TARGET Tests PROPERTY VS_DPI_AWARE "PerMonitor")
 else ()
     add_library(Tests SHARED ${SAMPLE_SOURCE_FILES})

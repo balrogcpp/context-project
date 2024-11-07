@@ -354,7 +354,8 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splits =
         dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
-    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits[2], splits[3], sceneManager->getShadowFarDistance()));
+    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits.size() > 2 ? splits[2] : 0.0, splits.size() > 3 ? splits[3] : 0.0,
+                                                     sceneManager->getShadowFarDistance()));
   }
   if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
     for (auto *it : pass->getTextureUnitStates())
