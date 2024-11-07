@@ -13,49 +13,47 @@
 #define MANUAL_GL_CONTROL
 #endif
 
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+#if defined(OGRE_BUILD_COMPONENT_RTSHADERSYSTEM)
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #endif
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
+#if defined(OGRE_BUILD_PLUGIN_OCTREE)
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
-#ifdef OGRE_BUILD_PLUGIN_STBI
+#if defined(OGRE_BUILD_PLUGIN_STBI)
 #include <Plugins/STBICodec/OgreSTBICodec.h>
 #endif
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
+#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE)
 #include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
 #endif
-#ifdef OGRE_BUILD_PLUGIN_ASSIMP
+#if defined(OGRE_BUILD_PLUGIN_ASSIMP)
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif
-#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
+#if defined(OGRE_BUILD_PLUGIN_DOT_SCENE)
 #include <Plugins/DotScene/OgreDotSceneLoader.h>
 #endif
-#ifdef OGRE_BUILD_PLUGIN_PFX
+#if defined(OGRE_BUILD_PLUGIN_PFX)
 #include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#if defined(OGRE_BUILD_COMPONENT_TERRAIN)
 #include <Terrain/OgreTerrainGroup.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_PAGING
+#if defined(OGRE_BUILD_COMPONENT_PAGING)
 #include <Paging/OgrePaging.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_OVERLAY
+#if defined(OGRE_BUILD_COMPONENT_OVERLAY)
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
-#if defined(OGRE_BUILD_RENDERSYSTEM_GL) || defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) || defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
-#include <OgreGLRenderSystemCommon.h>
-#endif
 #include <Ogre.h>
+#include <OgreGLRenderSystemCommon.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
-#if defined(DESKTOP)
+
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
     || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
@@ -64,18 +62,17 @@ namespace fs = std::filesystem;
 #else
 #include "ghc/filesystem.hpp"
 namespace fs = ghc::filesystem;
-#endif  // <filesystem>
-#endif  // DESKTOP
-#ifdef APPLE
+#endif
+#if defined(__APPLE__)
 #include <mach-o/dyld.h>
 #endif
-#ifdef LINUX
+#if defined(LINUX)
 #include <unistd.h>
 #endif
-#ifdef WINDOWS
+#if defined(_WIN32)
 #include <windows.h>
 #endif
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
 #include <OgreArchiveFactory.h>
 #include <OgreFileSystem.h>
 #include <OgreZip.h>
