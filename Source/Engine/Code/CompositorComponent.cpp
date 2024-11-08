@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "CompositorComponent.h"
 #include "HosekSky/SkyModel.h"
+#include "Platform.h"
 #include <OgreCustomCompositionPass.h>
 
 using namespace std;

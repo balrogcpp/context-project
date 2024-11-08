@@ -9,9 +9,6 @@
 #include "Platform.h"
 #include "RenderSystems.h"
 #include "imgui_impl_sdl2.h"
-#if defined(__ANDROID__)
-#define MANUAL_GL_CONTROL
-#endif
 
 #if defined(OGRE_BUILD_COMPONENT_RTSHADERSYSTEM)
 #include <RTShaderSystem/OgreRTShaderSystem.h>
@@ -66,9 +63,6 @@ namespace fs = ghc::filesystem;
 #if defined(__APPLE__)
 #include <mach-o/dyld.h>
 #endif
-#if defined(LINUX)
-#include <unistd.h>
-#endif
 #if defined(_WIN32)
 #include <windows.h>
 #endif
@@ -86,6 +80,9 @@ namespace fs = ghc::filesystem;
 #include <android/sensor.h>
 #include <jni.h>
 #endif
+#if defined(__ANDROID__)
+#define MANUAL_GL_CONTROL
+#endif
 
 using namespace std;
 
@@ -95,7 +92,7 @@ inline static void ParseSDLError(bool result, const char *message = "") {
   if (!result) LogError(message, SDL_GetError());
 }
 
-#if defined(DESKTOP)
+#if !defined(__ANDROID__)
 // based on tensorflow GetBinaryDir
 // https://github.com/tensorflow/tensorflow/blob/e895d5ca395c2362df4f5c8f08b68501b41f8a98/tensorflow/stream_executor/cuda/cuda_gpu_executor.cc#L202
 std::string GetBinaryDir() {
@@ -156,7 +153,7 @@ void ScanLocation(const string &path, const string &groupName) {
       ogreResourceManager.addResourceLocation(fullPath, "Zip", groupName);
   }
 }
-#endif  // DESKTOP
+#endif
 }  // namespace
 
 namespace Ogre {
@@ -276,7 +273,7 @@ void VideoComponent::LoadResources() {
   const char *ASSETS_ZIP = "Assets.zip";
   const char *ASSETS_DIR = "Source/Tests/Assets";
 
-#if defined(DESKTOP)
+#if !defined(__ANDROID__)
 #if defined(DEBUG)
   if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
@@ -351,7 +348,7 @@ void VideoComponent::OnEvent(const SDL_Event &event) {
 }
 
 void VideoComponent::OnSizeChanged(int x, int y, uint32_t id) {
-#ifndef MOBILE
+#if defined(__ANDROID__)
   if (this->id == id) {
     ogreWindow->resize(x, y);
   }
@@ -384,7 +381,7 @@ void VideoComponent::CheckGPU() {
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_BUFFER_INSTANCE_DATA), "Instancing support required");
-#if defined(DESKTOP)
+#if !defined(__ANDROID__)
   if (RenderSystemIsGL3()) {
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_AUTOMIPMAP_COMPRESSED), "DXT compression support required");
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
@@ -394,7 +391,7 @@ void VideoComponent::CheckGPU() {
   if (RenderSystemIsGLES2()) {
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
   }
-#elif defined(IOS)
+#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
   if (RenderSystemIsGLES2()) {
     ASSERTION(ogreRenderCapabilities->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
   }
@@ -415,7 +412,7 @@ void VideoComponent::InitSDL() {
   if (!result) LogError("SDL_Init failed", SDL_GetError());
   ASSERTION(!result, "Failed to init SDL");
 
-#if defined(DESKTOP)
+#if !defined(__ANDROID__)
   string path = FindPath("gamecontrollerdb.txt", 1);
   if (!path.empty()) {
     result = SDL_GameControllerAddMappingsFromFile(path.c_str());
@@ -431,7 +428,7 @@ class VideoComponent::MutedLogListener final : public Ogre::LogListener {
                      bool &skipThisMessage) override {}
 };
 
-#if defined(DESKTOP)
+#if !defined(__ANDROID__)
 class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
@@ -462,7 +459,7 @@ void VideoComponent::InitOgreRoot() {
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
 #endif
 
-#if defined(DESKTOP)
+#if !defined(__ANDROID__)
   ogreLogManager = std::make_unique<Ogre::LogManager>();
   ogreLogManager->createLog(ogreLogFile, false, true, true);
   ogreLogManager->getDefaultLog()->addListener(new DefaultLogListener());
@@ -477,7 +474,7 @@ void VideoComponent::InitOgreRoot() {
 
   Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
 
-#if defined(DESKTOP)
+#if !defined(__ANDROID__)
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
@@ -488,10 +485,10 @@ void VideoComponent::InitOgreRoot() {
   InitOgreRenderSystemD3D11();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_D3D9)
   InitOgreRenderSystemD3D();
-#endif  // DESKTOP
-#else   // !DESKTOP
+#endif
+#else
   InitOgreRenderSystemGLES2();
-#endif  // DESKTOP
+#endif
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
@@ -658,7 +655,7 @@ void VideoComponent::InitOgreOverlay() {
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
   io.WantSaveIniSettings = false;
-#ifdef MOBILE
+#if defined(__ANDROID__)
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 #endif
 }
