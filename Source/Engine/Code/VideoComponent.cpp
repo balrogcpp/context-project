@@ -96,11 +96,7 @@ inline static void ParseSDLError(bool result, const char *message = "") {
 // based on tensorflow GetBinaryDir
 // https://github.com/tensorflow/tensorflow/blob/e895d5ca395c2362df4f5c8f08b68501b41f8a98/tensorflow/stream_executor/cuda/cuda_gpu_executor.cc#L202
 std::string GetBinaryDir() {
-#ifndef MAX_PATH
-#define MAX_PATH 1024
-#endif
-
-  char buffer[MAX_PATH] = {0};
+  char buffer[4096] = {0};
 
 #if defined(__APPLE__)
   uint32_t bufferSize = 0;
@@ -109,11 +105,12 @@ std::string GetBinaryDir() {
   _NSGetExecutablePath(unresolvedPath, &bufferSize);
   realpath(unresolvedPath, buffer);
 #elif defined(_WIN32)
-  GetModuleFileNameA(NULL, buffer, MAX_PATH);
+  GetModuleFileNameA(NULL, buffer, 4096);
 #else
-  readlink("/proc/self/exe", buffer, MAX_PATH);
+  readlink("/proc/self/exe", buffer, 4096);
 #endif
-  buffer[MAX_PATH - 1] = 0;
+
+  buffer[4096 - 1] = 0;
   auto pos = std::string(buffer).find_last_of("\\/");
   return std::string(buffer).substr(0, pos + 1);
 }

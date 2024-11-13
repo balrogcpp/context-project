@@ -10,7 +10,6 @@ WORKDIR ${CONTEXT_HOME}
 
 # cmake ninja upx
 ARG CMAKE_VERSION=3.29.6
-ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.12.1
 RUN apt-get update \
     && apt-get -y install --no-install-recommends git strip-nondeterminism \
@@ -22,8 +21,7 @@ RUN apt-get update \
     && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+    && mkdir /usr/local && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh
 
 
 COPY ./Source ./Source
