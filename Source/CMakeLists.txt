@@ -15,9 +15,6 @@ set_source_files_properties(${SHADER_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties(${SHADER_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 
 # adjust flags if required
-if (MSVC AND CMAKE_BUILD_TYPE_LOWER MATCHES "relwithdebinfo")
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
-endif ()
 # link fix for old version of assimp
 #find_package(assimp QUIET)
 #if (MSVC AND assimp_FOUND AND assimp_VERSION VERSION_LESS 5.2)
@@ -109,7 +106,7 @@ if (WIN32)
 else ()
     set(GRADLEW_COMMAND sh gradlew)
 endif ()
-if (CMAKE_BUILD_TYPE_LOWER MATCHES debug)
+if (CMAKE_BUILD_TYPE_LOWER MATCHES "debug")
     set(GRADLE_BUILD_TYPE "debug")
 else ()
     set(GRADLE_BUILD_TYPE "release")

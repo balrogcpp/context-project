@@ -82,6 +82,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clan
 elseif (MSVC)
     string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /source-charset:utf-8 /execution-charset:utf-8 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
 
+    if (${CMAKE_BUILD_TYPE_LOWER} MATCHES "relwithdebinfo")
+        string(REPLACE "/SUBSYSTEM:CONSOLE" "/SUBSYSTEM:WINDOWS" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+    endif ()
+
     if (${CMAKE_BUILD_TYPE_LOWER} MATCHES "deb")
         string(APPEND CMAKE_CXX_FLAGS " /DDEBUG")
     endif()
