@@ -16,12 +16,11 @@ RUN apt-get update \
     && apt-get clean \
     && git config --global http.postBuffer 1048576000 \
     && git config --global https.postBuffer 1048576000 \
-    && git config --global core.compression -1 \
     && cd /tmp \
     && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-    && mkdir /usr/local && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh
+    && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr/local && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh
 
 
 COPY ./Source ./Source
