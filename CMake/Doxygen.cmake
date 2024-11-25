@@ -4,7 +4,6 @@ if (_doxygen_included)
 endif (_doxygen_included)
 set(_doxygen_included true)
 
-
 set(CMAKE_FOLDER Doxygen)
 find_package(Doxygen COMPONENTS dot QUIET)
 find_package(LATEX COMPONENTS PDFLATEX QUIET)

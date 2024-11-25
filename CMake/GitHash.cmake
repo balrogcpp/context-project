@@ -4,7 +4,6 @@ if (_githash_included)
 endif (_githash_included)
 set(_githash_included true)
 
-
 set(GIT_SHA $ENV{GIT_SHA})
 set(GIT_SHA_SHORT $ENV{GIT_SHA_SHORT})
 

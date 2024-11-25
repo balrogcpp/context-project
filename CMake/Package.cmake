@@ -4,7 +4,6 @@ if (_zip2cpp_included)
 endif (_zip2cpp_included)
 set(_zip2cpp_included true)
 
-
 # do the job
 get_filename_component(DESTINATION_PARENT_DIR ${OUTPUT} DIRECTORY ABSOLUTE)
 if (DESTINATION_PARENT_DIR)

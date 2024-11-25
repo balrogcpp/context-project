@@ -2,7 +2,6 @@
 include(CppFlags)
 include(BuildVariables)
 
-
 # this required to to disable windows upscaling @hdp monitors @windows
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.hpp)
 

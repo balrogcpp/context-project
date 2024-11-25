@@ -4,7 +4,6 @@ if (_cppflags_included)
 endif (_cppflags_included)
 set(_cppflags_included true)
 
-
 include(CMakeDependentOption)
 include(ProcessorCount)
 

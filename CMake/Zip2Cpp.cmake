@@ -4,7 +4,6 @@ if (_zip2cpp_included)
 endif (_zip2cpp_included)
 set(_zip2cpp_included true)
 
-
 # based on https://github.com/OGRECave/ogre/blob/v13.6.5/Tools/OgreZip2Cpp/src/OgreZip2Cpp.cpp
 # converted with https://tomeko.net/online_tools/cpp_text_escape.php?lang=en
 if (NOT EXISTS Zip2Cpp.cpp)
