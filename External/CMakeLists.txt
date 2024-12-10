@@ -651,9 +651,10 @@ externalproject_add(Target_cpr
 )
 
 
-create_target(Target_httplib https://github.com/yhirose/cpp-httplib.git v0.14.3)
+create_target(Target_httplib https://github.com/yhirose/cpp-httplib.git v0.18.3)
 externalproject_add(Target_httplib
         EXCLUDE_FROM_ALL true
+        DEPENDS Target_LibreSSL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_httplib
