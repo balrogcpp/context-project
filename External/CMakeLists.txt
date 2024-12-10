@@ -674,6 +674,10 @@ externalproject_add(Target_httplib
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DHTTPLIB_USE_OPENSSL_IF_AVAILABLE=OFF
+        -DHTTPLIB_USE_ZLIB_IF_AVAILABLE=OFF
+        -DHTTPLIB_USE_BROTLI_IF_AVAILABLE=OFF
+        -DHTTPLIB_USE_CERTS_FROM_MACOSX_KEYCHAIN=OFF
 )
 
 
@@ -838,6 +842,7 @@ add_external_target_static(Vorbis)
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_target_static(OGRE)
+add_external_target_static(httplib)
 #add_external_target_static(sol2)
 #add_external_target_static(cpr)
 #find_package_static(sodium)
