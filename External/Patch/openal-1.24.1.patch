@@ -1,0 +1,55 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 55644b0..3e632e2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ # CMake build file list for OpenAL
+ 
+-cmake_minimum_required(VERSION 3.13)
++cmake_minimum_required(VERSION 3.15)
+ 
+ if(APPLE)
+     # The workaround for try_compile failing with code signing
+@@ -277,13 +277,13 @@ else()
+             set(C_FLAGS ${C_FLAGS} $<$<COMPILE_LANGUAGE:CXX>:-Wno-c++20-extensions>)
+         endif()
+     endif()
+-
+-    if(ALSOFT_WERROR)
+-        set(C_FLAGS ${C_FLAGS} -Werror)
+-    endif()
+-
+-    # We want RelWithDebInfo to actually include debug stuff (define _DEBUG
+-    # instead of NDEBUG)
++    if (NOT MSVC)
++        string(APPEND CMAKE_CXX_FLAGS " -g0 -s")
++    endif ()
++    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
++        string(APPEND CMAKE_CXX_FLAGS " -femulated-tls")
++    endif ()
++    # We want RelWithDebInfo to actually include debug stuff (define _DEBUG instead of NDEBUG)
+     foreach(flag_var  CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+         if(${flag_var} MATCHES "-DNDEBUG")
+             string(REGEX REPLACE "-DNDEBUG" "-D_DEBUG" ${flag_var} "${${flag_var}}")
+@@ -1450,7 +1450,7 @@ target_compile_options(${IMPL_TARGET} PRIVATE ${C_FLAGS})
+ if(TARGET build_version)
+     add_dependencies(${IMPL_TARGET} build_version)
+ endif()
+-
++find_program(CMAKE_DLLTOOL NAMES "${DLLTOOL}" DOC "dlltool executable")
+ if(WIN32 AND MINGW AND ALSOFT_BUILD_IMPORT_LIB AND NOT LIBTYPE STREQUAL "STATIC")
+     find_program(SED_EXECUTABLE NAMES sed DOC "sed executable")
+     if(NOT SED_EXECUTABLE OR NOT CMAKE_DLLTOOL)
+diff --git a/al/source.cpp b/al/source.cpp
+index cba3386..4fc7292 100644
+--- a/al/source.cpp
++++ b/al/source.cpp
+@@ -21,7 +21,7 @@
+ #include "config.h"
+ 
+ #include "source.h"
+-
++#define __STDC_FORMAT_MACROS
+ #include <algorithm>
+ #include <array>
+ #include <atomic>

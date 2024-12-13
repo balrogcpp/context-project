@@ -178,7 +178,7 @@ externalproject_add(Target_Bullet
 )
 
 
-create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.23.1 openal-1.23.1.patch)
+create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.1 openal-1.24.1.patch)
 if (WIN32 OR ANDROID OR IOS)
     set(OPENAL_LIBTYPE "STATIC")
 else ()
@@ -215,10 +215,13 @@ externalproject_add(Target_OpenAL
         -DALSOFT_BACKEND_SDL2=OFF
         -DALSOFT_BACKEND_SNDIO=OFF
         -DALSOFT_BACKEND_WASAPI=OFF
+        -DALSOFT_BACKEND_OTHERIO=OFF
         -DALSOFT_BACKEND_WINMM=OFF
         -DALSOFT_BACKEND_WAVE=OFF
         -DALSOFT_BACKEND_OSS=OFF
         -DALSOFT_BACKEND_JACK=OFF
+        -DALSOFT_REQUIRE_OBOE=OFF
+        -DALSOFT_BACKEND_PORTAUDIO=OFF
         -DLIBTYPE=${OPENAL_LIBTYPE}
         -DALSOFT_OSX_FRAMEWORK=OFF
 )
