@@ -657,7 +657,6 @@ externalproject_add(Target_cpr
 create_target(Target_httplib https://github.com/yhirose/cpp-httplib.git v0.18.3)
 externalproject_add(Target_httplib
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_LibreSSL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_httplib
@@ -845,11 +844,10 @@ add_external_target_static(Vorbis)
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_target_static(OGRE)
-add_external_target_static(httplib)
+#add_external_target_static(LibreSSL)
+#add_external_target_static(tomlplusplus)
 #add_external_target_static(sol2)
-#add_external_target_static(cpr)
+#add_external_target_static(SQLiteCpp)
 #find_package_static(sodium)
 #add_external_target_static(yojimbo)
-#add_external_target_static(tomlplusplus)
-#add_external_target_static(SQLiteCpp)
 set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH TRUE)
