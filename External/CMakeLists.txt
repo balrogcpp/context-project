@@ -619,6 +619,7 @@ externalproject_add(Target_LibreSSL
         -DLIBRESSL_APPS=OFF
         -DLIBRESSL_TESTS=OFF
         -DENABLE_ASM=OFF
+        -DUSE_STATIC_MSVC_RUNTIMES=ON
 )
 
 
