@@ -561,7 +561,6 @@ externalproject_add(Target_Lua
 create_target(Target_sol2 https://github.com/ThePhD/sol2.git v3.3.1)
 externalproject_add(Target_sol2
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_Lua
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_sol2
@@ -846,7 +845,10 @@ set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_target_static(OGRE)
 #add_external_target_static(LibreSSL)
+#add_external_target_static(httplib)
+#add_external_target_static(json)
 #add_external_target_static(tomlplusplus)
+#add_external_target_static(Lua)
 #add_external_target_static(sol2)
 #add_external_target_static(SQLiteCpp)
 #find_package_static(sodium)
