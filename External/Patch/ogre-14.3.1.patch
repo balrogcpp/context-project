@@ -11,7 +11,7 @@ index 7f6a28c..8610098 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c5d23d7..064845d 100644
+index 15edbe3..1bbe65a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -23,7 +23,7 @@ index c5d23d7..064845d 100644
  
  set(CMAKE_CXX_STANDARD 14)
  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-@@ -330,7 +330,7 @@ option(OGRE_BUILD_COMPONENT_RTSHADERSYSTEM "Build RTShader System component" TRU
+@@ -326,7 +326,7 @@ option(OGRE_BUILD_COMPONENT_RTSHADERSYSTEM "Build RTShader System component" TRU
  cmake_dependent_option(OGRE_BUILD_RTSHADERSYSTEM_SHADERS "Build RTShader System FFP shaders" TRUE "OGRE_BUILD_COMPONENT_RTSHADERSYSTEM" FALSE)
  
  cmake_dependent_option(OGRE_BUILD_SAMPLES "Build Ogre demos" TRUE "OGRE_BUILD_COMPONENT_OVERLAY;OGRE_BUILD_COMPONENT_BITES" FALSE)
@@ -32,7 +32,7 @@ index c5d23d7..064845d 100644
  cmake_dependent_option(OGRE_BUILD_XSIEXPORTER "Build the Softimage exporter" FALSE "Softimage_FOUND" FALSE)
  cmake_dependent_option(OGRE_BUILD_LIBS_AS_FRAMEWORKS "Build frameworks for libraries on OS X." TRUE "APPLE;NOT OGRE_BUILD_PLATFORM_APPLE_IOS" FALSE)
  cmake_dependent_option(OGRE_BUILD_TESTS "Build the unit tests & PlayPen" FALSE "OGRE_BUILD_COMPONENT_BITES" FALSE)
-@@ -373,7 +373,7 @@ cmake_dependent_option(OGRE_INSTALL_SAMPLES "Install Ogre demos." TRUE "OGRE_BUI
+@@ -369,7 +369,7 @@ cmake_dependent_option(OGRE_INSTALL_SAMPLES "Install Ogre demos." TRUE "OGRE_BUI
  option(OGRE_INSTALL_TOOLS "Install Ogre tools." TRUE)
  option(OGRE_INSTALL_DOCS "Install documentation." TRUE)
  cmake_dependent_option(OGRE_INSTALL_PDB "Install debug pdb files" TRUE "MSVC" FALSE)
@@ -107,7 +107,7 @@ index 483f9f3..0b87d5d 100644
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
-index 7100c33..11c636e 100644
+index 7100c33..acbd32c 100644
 --- a/OgreMain/src/OgreRoot.cpp
 +++ b/OgreMain/src/OgreRoot.cpp
 @@ -911,7 +911,7 @@ namespace Ogre {
@@ -177,7 +177,7 @@ index 3b320f7..69edddd 100644
  
      if (!mShadowDebugPass)
 diff --git a/PlugIns/STBICodec/CMakeLists.txt b/PlugIns/STBICodec/CMakeLists.txt
-index 10283f5..8cb4ec1 100644
+index 10283f5..ac57187 100644
 --- a/PlugIns/STBICodec/CMakeLists.txt
 +++ b/PlugIns/STBICodec/CMakeLists.txt
 @@ -28,7 +28,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
@@ -297,7 +297,7 @@ index 0c5d932..209508b 100644
          mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
  
 diff --git a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
-index 436c498..45cab51 100644
+index 436c498..f184c9b 100644
 --- a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
 +++ b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
 @@ -83,8 +83,8 @@ namespace Ogre {
@@ -362,4 +362,17 @@ index db19925..3ab914c 100644
 +			static TCHAR staticVar;
  			GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, &staticVar, &hInst);
  		#endif
+ 
+diff --git a/RenderSystems/Vulkan/CMakeLists.txt b/RenderSystems/Vulkan/CMakeLists.txt
+index ae9340b..e264cd8 100755
+--- a/RenderSystems/Vulkan/CMakeLists.txt
++++ b/RenderSystems/Vulkan/CMakeLists.txt
+@@ -9,7 +9,7 @@
+ 
+ # Configure Vulkan RenderSystem build
+ 
+-file(GLOB HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
++file(GLOB HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
+ list(APPEND HEADER_FILES ${PROJECT_BINARY_DIR}/include/OgreVulkanExports.h)
+ file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/volk.c")
  

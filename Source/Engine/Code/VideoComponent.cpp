@@ -476,6 +476,8 @@ void VideoComponent::InitOgreRoot() {
   InitOgreRenderSystemGL3();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
   InitOgreRenderSystemGLES2();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_VULKAN)
+  InitOgreRenderSystemVulkan();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
   InitOgreRenderSystemGL();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_D3D11)

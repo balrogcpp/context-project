@@ -8,5 +8,6 @@ void InitOgreRenderSystemD3D11();
 void InitOgreRenderSystemGL();
 void InitOgreRenderSystemGLES2();
 void InitOgreRenderSystemGL3();
+void InitOgreRenderSystemVulkan();
 
 }  // namespace gge
