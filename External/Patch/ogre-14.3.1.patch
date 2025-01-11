@@ -1,3 +1,18 @@
+diff --git a/CMake/Dependencies.cmake b/CMake/Dependencies.cmake
+index 21590f4..e0f94e4 100644
+--- a/CMake/Dependencies.cmake
++++ b/CMake/Dependencies.cmake
+@@ -277,8 +277,8 @@ if (NOT (APPLE_IOS OR WINDOWS_STORE OR WINDOWS_PHONE OR ANDROID OR EMSCRIPTEN))
+   macro_log_feature(Cg_FOUND "cg" "C for graphics shader language" "http://developer.nvidia.com/object/cg_toolkit.html")
+ endif ()
+ 
+-# Find Vulkan SDK
+-macro_log_feature(ENV{VULKAN_SDK} "Vulkan SDK" "Vulkan RenderSystem, glslang Plugin. Alternatively use system packages" "https://vulkan.lunarg.com/")
++find_package(Vulkan)
++macro_log_feature(Vulkan_FOUND "Vulkan SDK" "Vulkan RenderSystem, glslang Plugin. Alternatively use system packages" "https://vulkan.lunarg.com/")
+ 
+ # OpenEXR
+ find_package(OpenEXR)
 diff --git a/CMake/Templates/imconfig.h b/CMake/Templates/imconfig.h
 index 7f6a28c..8610098 100644
 --- a/CMake/Templates/imconfig.h
@@ -11,7 +26,7 @@ index 7f6a28c..8610098 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 15edbe3..e7b7e93 100644
+index 15edbe3..5baf79b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -28,7 +43,7 @@ index 15edbe3..e7b7e93 100644
  cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_GLES2 "Build OpenGL ES 2.x RenderSystem" TRUE "OPENGLES2_FOUND;NOT WINDOWS_STORE;NOT WINDOWS_PHONE" FALSE)
  cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_METAL "Build Metal RenderSystem" FALSE "APPLE" FALSE)
 -option(OGRE_BUILD_RENDERSYSTEM_VULKAN "Build Vulkan RenderSystem" FALSE)
-+cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_VULKAN "Build Vulkan RenderSystem" TRUE "DEFINED ENV{VULKAN_SDK}" FALSE)
++cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_VULKAN "Build Vulkan RenderSystem" TRUE "Vulkan_FOUND" FALSE)
  cmake_dependent_option(OGRE_BUILD_PLUGIN_ASSIMP "Build Open Asset Import plugin" TRUE "assimp_FOUND" FALSE)
  cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_TINY "Build Tiny RenderSystem (software-rendering)" FALSE "NOT ANDROID" FALSE)
  option(OGRE_BUILD_PLUGIN_BSP "Build BSP SceneManager plugin" TRUE)
@@ -185,6 +200,24 @@ index 3b320f7..69edddd 100644
          return;
  
      if (!mShadowDebugPass)
+diff --git a/PlugIns/GLSLang/CMakeLists.txt b/PlugIns/GLSLang/CMakeLists.txt
+index 1784460..1d0f60a 100644
+--- a/PlugIns/GLSLang/CMakeLists.txt
++++ b/PlugIns/GLSLang/CMakeLists.txt
+@@ -13,10 +13,10 @@ if(ANDROID)
+         ${ANDROID_NDK}/sources/third_party/shaderc/third_party/)
+     target_link_libraries(Plugin_GLSLangProgramManager PUBLIC OgreMain
+         ${ANDROID_NDK}/sources/third_party/shaderc/libs/c++_static/${ANDROID_ABI}/libshaderc.a)
+-elseif(DEFINED ENV{VULKAN_SDK})
++elseif(Vulkan_FOUND)
+     message(STATUS "Using VULKAN_SDK: $ENV{VULKAN_SDK}")
+-    target_include_directories(Plugin_GLSLangProgramManager SYSTEM PRIVATE $ENV{VULKAN_SDK}/include)
+-    target_link_directories(Plugin_GLSLangProgramManager PUBLIC $ENV{VULKAN_SDK}/lib)
++    target_include_directories(Plugin_GLSLangProgramManager SYSTEM PRIVATE ${Vulkan_INCLUDE_DIRS})
++    target_link_directories(Plugin_GLSLangProgramManager PUBLIC ${Vulkan_LIBRARIES})
+     target_link_libraries(Plugin_GLSLangProgramManager PUBLIC OgreMain shaderc_combined)
+ else()
+   set(GLSLANG_LIBS glslang SPIRV SPIRV-Tools-opt SPIRV-Tools)
 diff --git a/PlugIns/STBICodec/CMakeLists.txt b/PlugIns/STBICodec/CMakeLists.txt
 index 10283f5..ac57187 100644
 --- a/PlugIns/STBICodec/CMakeLists.txt
@@ -373,7 +406,7 @@ index db19925..3ab914c 100644
  		#endif
  
 diff --git a/RenderSystems/Vulkan/CMakeLists.txt b/RenderSystems/Vulkan/CMakeLists.txt
-index ae9340b..e264cd8 100755
+index ae9340b..2367571 100755
 --- a/RenderSystems/Vulkan/CMakeLists.txt
 +++ b/RenderSystems/Vulkan/CMakeLists.txt
 @@ -9,7 +9,7 @@
@@ -385,3 +418,16 @@ index ae9340b..e264cd8 100755
  list(APPEND HEADER_FILES ${PROJECT_BINARY_DIR}/include/OgreVulkanExports.h)
  file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/volk.c")
  
+@@ -18,9 +18,9 @@ set( SOURCE_FILES ${SOURCE_FILES})
+ 
+ add_library(RenderSystem_Vulkan ${OGRE_LIB_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
+ 
+-if(DEFINED ENV{VULKAN_SDK})
+-    target_include_directories(RenderSystem_Vulkan SYSTEM PRIVATE $ENV{VULKAN_SDK}/include)
+-    target_link_directories(RenderSystem_Vulkan PUBLIC $ENV{VULKAN_SDK}/lib)
++if(Vulkan_FOUND)
++    target_include_directories(RenderSystem_Vulkan SYSTEM PRIVATE ${Vulkan_INCLUDE_DIRS})
++    target_link_directories(RenderSystem_Vulkan PUBLIC ${Vulkan_LIBRARIES})
+ endif()
+ 
+ if(WIN32)
