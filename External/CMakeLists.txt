@@ -427,6 +427,9 @@ externalproject_add(Target_pugixml
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DPUGIXML_STATIC_CRT=ON
         -DBUILD_SHARED_LIBS=OFF
+        -DPUGIXML_NO_XPATH=OFF
+        -DPUGIXML_NO_STL=OFF
+        -DPUGIXML_NO_EXCEPTIONS=OFF
 )
 
 
