@@ -43,6 +43,9 @@
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
+#include <RenderSystems/GL3Plus/OgreGLUtil.h>
+#endif
 #include <Ogre.h>
 #include <OgreGLRenderSystemCommon.h>
 #include <SDL2/SDL.h>
@@ -519,7 +522,7 @@ void VideoComponent::InitOgreRoot() {
   ogreRoot->initialise(false);
 }
 
-void VideoComponent::MakeWindow() {
+void VideoComponent::CreateWindow() {
   camera = sceneManager->createCamera("Camera");
   sceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(camera);
 
@@ -530,9 +533,8 @@ void VideoComponent::MakeWindow() {
   if (display < 0) {
     for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
       if (!SDL_GetCurrentDisplayMode(i, &displayMode)) {
-        string buff = "Display #" + to_string(i) + ": " + SDL_GetDisplayName(i) + " " + to_string(displayMode.w) + "x" + to_string(displayMode.h) +
-                      " @" + to_string(displayMode.refresh_rate);
-        Ogre::LogManager::getSingleton().logMessage(buff);
+        Ogre::LogManager::getSingleton().logMessage("Display #" + to_string(i) + ": " + SDL_GetDisplayName(i) + " " + to_string(displayMode.w) + "x" +
+                                                    to_string(displayMode.h) + " @" + to_string(displayMode.refresh_rate));
         int screenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
         int screenDiagI = sqrt(displayMode.w * displayMode.w + displayMode.h * displayMode.h);
         if (screenDiagI > screenDiag) {
@@ -545,9 +547,9 @@ void VideoComponent::MakeWindow() {
   } else if (!SDL_GetCurrentDisplayMode(display, &displayMode)) {
     screenWidth = displayMode.w;
     screenHeight = displayMode.h;
-    string buff = "Display #" + to_string(display) + ": " + SDL_GetDisplayName(display) + " " + to_string(displayMode.w) + "x" +
-                  to_string(displayMode.h) + " @" + to_string(displayMode.refresh_rate);
-    Ogre::LogManager::getSingleton().logMessage(buff);
+    Ogre::LogManager::getSingleton().logMessage("Display #" + to_string(display) + ": " + SDL_GetDisplayName(display) + " " +
+                                                to_string(displayMode.w) + "x" + to_string(displayMode.h) + " @" +
+                                                to_string(displayMode.refresh_rate));
   }
 
   if (sdlFlags & SDL_WINDOW_FULLSCREEN) {
@@ -615,7 +617,15 @@ void VideoComponent::MakeWindow() {
 
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) && OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  if (Ogre::getGLSupport() && fullscreen)
+    ogreWindow = ogreRoot->createRenderWindow("Main", Ogre::getGLSupport()->getVideoModes()[0].width, Ogre::getGLSupport()->getVideoModes()[0].height,
+                                              fullscreen, &renderParams);
+  else
+    ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
+#else
   ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
+#endif
 #ifdef MANUAL_GL_CONTROL
   SDL_GL_SetSwapInterval(vsyncInt);
 #else
@@ -661,8 +671,8 @@ void VideoComponent::InitOgreOverlay() {
 
 class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
  public:
-  DPSMCameraSetup() {}
-  virtual ~DPSMCameraSetup() {}
+  DPSMCameraSetup() = default;
+  ~DPSMCameraSetup() override = default;
 
   static Ogre::ShadowCameraSetupPtr create() { return make_shared<DPSMCameraSetup>(); }
 
@@ -1061,7 +1071,7 @@ void VideoComponent::OnSetUp() {
   // init
   InitOgreRoot();
   InitSDL();
-  MakeWindow();
+  CreateWindow();
   CheckGPU();
   InitOgreRTSS();
   InitOgreAudio();

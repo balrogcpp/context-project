@@ -69,7 +69,7 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
 
  protected:
   void CheckGPU();
-  void MakeWindow();
+  void CreateWindow();
   void InitOgreRoot();
   void InitSDL();
   void InitOgreRTSS();
@@ -86,10 +86,10 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
 
 //  struct Window {
     std::string title = "My Window";
-    bool fullscreen = true;
+    bool fullscreen = false;
     int display = 0;
-    int sizeX = 1270;
-    int sizeY = 720;
+    int sizeX = 1920;
+    int sizeY = 1080;
     uint32_t sdlFlags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
     int vsyncInt = 1;
     uint32_t id;

@@ -121,10 +121,10 @@ externalproject_add(Target_SDL2
         -DSDL_WERROR=OFF
         -DLIBC=ON
         -DSDL_LIBC=ON
-        -DSDL_DIRECTX=ON
-        -DRENDER_METAL=OFF
-        -DSDL_RENDER_METAL=OFF
+        -DSDL_DIRECTX=OFF
+        -DSDL_RENDER_D3D=OFF
         -DSDL_METAL=OFF
+        -DSDL_RENDER_METAL=OFF
         -DSDL_VULKAN=ON
         -DHIDAPI=OFF
         -DSDL_HIDAPI=OFF
