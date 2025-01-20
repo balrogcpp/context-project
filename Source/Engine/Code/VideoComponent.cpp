@@ -704,6 +704,19 @@ void VideoComponent::InitOgreSceneManager() {
   sceneManager->setSkyBox(true, "SkyBox", 500, false);
   sceneManager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));  // Ogre::ColourValue(0.5, 0.6, 0.7)
 
+  auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
+  if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
+
+  terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
+  terrainGlobalOptions->setSkirtSize(0);
+  terrainGlobalOptions->setMaxPixelError(1);
+  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
+  terrainGlobalOptions->setCompositeMapDistance(150.0);
+  terrainGlobalOptions->setCastsDynamicShadows(false);
+  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
+  terrainGlobalOptions->setLightMapSize(512);
+  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(0.0, -1.0, -0.0).normalisedCopy());
+
   if (shadowEnabled) {
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     pssmSetup = make_shared<DPSMCameraSetup>();
@@ -751,21 +764,6 @@ void VideoComponent::InitOgreSceneManager() {
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     sceneManager->setShadowTextureCount(0);
   }
-}
-
-void VideoComponent::InitTerrain() {
-  auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
-  if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
-
-  terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
-  terrainGlobalOptions->setSkirtSize(0);
-  terrainGlobalOptions->setMaxPixelError(1);
-  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-  terrainGlobalOptions->setCompositeMapDistance(150.0);
-  terrainGlobalOptions->setCastsDynamicShadows(false);
-  terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
-  terrainGlobalOptions->setLightMapSize(512);
-  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(0.0, -1.0, -0.0).normalisedCopy());
 }
 
 void VideoComponent::InitOgreAudio() {

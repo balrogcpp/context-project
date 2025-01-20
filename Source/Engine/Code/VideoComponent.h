@@ -34,8 +34,8 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   virtual ~VideoComponent();
 
   void RenderFrame();
-//  Window& GetWindow(int number = 0);
-//  Window& GetMainWindow();
+  //  Window& GetWindow(int number = 0);
+  //  Window& GetMainWindow();
   void ShowWindow(bool show);
 
   void UnloadResources();
@@ -76,7 +76,6 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   void InitOgreOverlay();
   void LoadResources();
   void InitOgreSceneManager();
-  void InitTerrain();
   void InitOgreAudio();
   void InitBtOgre();
 
@@ -84,16 +83,16 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   void OnSizeChanged(int x, int y, uint32_t id) override;
   void OnEvent(const SDL_Event& event) override;
 
-//  struct Window {
-    std::string title = "My Window";
-    bool fullscreen = false;
-    int display = 0;
-    int sizeX = 1920;
-    int sizeY = 1080;
-    uint32_t sdlFlags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
-    int vsyncInt = 1;
-    uint32_t id;
-//  };
+  //  struct Window {
+  std::string title = "My Window";
+  bool fullscreen = false;
+  int display = 0;
+  int sizeX = 1270;
+  int sizeY = 720;
+  uint32_t sdlFlags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
+  int vsyncInt = 1;
+  uint32_t id;
+  //  };
 
   SDL_Window* sdlWindow = nullptr;
   SDL_GLContext glContext = nullptr;
