@@ -447,7 +447,7 @@ externalproject_add(Target_imgui
 )
 
 
-create_target_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.3.2 ogre-14.3.1.patch)
+create_target_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.3.3 ogre-14.3.3.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         DEPENDS Target_imgui
