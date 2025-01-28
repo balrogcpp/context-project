@@ -617,15 +617,18 @@ void VideoComponent::CreateWindow() {
 
   ogreRoot = Ogre::Root::getSingletonPtr();
   ASSERTION(ogreRoot, "ogreRoot not initialised");
+
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) && OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  if (Ogre::getGLSupport() && fullscreen)
-    ogreWindow = ogreRoot->createRenderWindow("Main", Ogre::getGLSupport()->getVideoModes()[0].width, Ogre::getGLSupport()->getVideoModes()[0].height,
-                                              fullscreen, &renderParams);
-  else
-    ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
-#else
-  ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
+  const bool isWayland = getenv("WAYLAND_DISPLAY") != nullptr || strcmp(getenv("XDG_SESSION_TYPE"), "wayland") == 0;
+  const bool isX11 = strcmp(getenv("XDG_SESSION_TYPE"), "x11") == 0 && getenv("WAYLAND_DISPLAY") == nullptr;
+  if (Ogre::getGLSupport() && isX11 && fullscreen) {
+      sizeX = Ogre::getGLSupport()->getVideoModes()[0].width;
+      sizeY = Ogre::getGLSupport()->getVideoModes()[0].height;
+  }
 #endif
+
+  ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
+
 #ifdef MANUAL_GL_CONTROL
   SDL_GL_SetSwapInterval(vsyncInt);
 #else
