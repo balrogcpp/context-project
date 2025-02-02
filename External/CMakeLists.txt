@@ -94,7 +94,7 @@ macro(create_target TARGET REPO TAG)
 endmacro()
 
 
-create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.30.11 sdl2-2.30.10.patch)
+create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.30.12 sdl2-2.30.10.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -433,7 +433,7 @@ externalproject_add(Target_pugixml
 )
 
 
-create_target(Target_imgui https://github.com/ocornut/imgui.git v1.90.8)
+create_target(Target_imgui https://github.com/ocornut/imgui.git v1.91.8)
 externalproject_add(Target_imgui
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
