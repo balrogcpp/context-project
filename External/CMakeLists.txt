@@ -117,6 +117,9 @@ externalproject_add(Target_SDL2
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
+        -DSDL_AUDIO=OFF
+        -DSDL_LOCALE=OFF
+        -DSDL_FILESYSTEM=OFF
         -DSDL_TEST=OFF
         -DSDL_WERROR=OFF
         -DLIBC=ON
@@ -178,7 +181,7 @@ externalproject_add(Target_Bullet
 )
 
 
-create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.1 openal-1.24.1.patch)
+create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.2 openal-1.24.2.patch)
 if (WIN32 OR ANDROID OR IOS)
     set(OPENAL_LIBTYPE "STATIC")
 else ()
@@ -206,6 +209,7 @@ externalproject_add(Target_OpenAL
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DFORCE_STATIC_VCRT=ON
         -DALSOFT_TESTS=OFF
         -DALSOFT_UTILS=OFF
         -DALSOFT_EXAMPLES=OFF

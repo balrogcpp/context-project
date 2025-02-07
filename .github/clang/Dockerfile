@@ -147,7 +147,7 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 # apple
 #COPY ./tarballs ./tarballs
-#ARG OSXCROSS_ROOT=/opt/osxcross
+#ARG OSXCROSS_ROOT=/usr/local/osxcross
 #ARG OSXCROSS_GIT_HASH=29fe6dd35522073c9df5800f8cd1feb4b9a993a8
 #ARG CMAKE_VERSION=3.29.6
 #ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
