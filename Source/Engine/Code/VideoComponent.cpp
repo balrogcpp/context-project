@@ -65,11 +65,9 @@ namespace fs = ghc::filesystem;
 #endif
 #if defined(__APPLE__)
 #include <mach-o/dyld.h>
-#endif
-#if defined(_WIN32)
+#elif defined(_WIN32)
 #include <windows.h>
-#endif
-#if defined(__ANDROID__)
+#elif defined(__ANDROID__)
 #include <OgreArchiveFactory.h>
 #include <OgreFileSystem.h>
 #include <OgreZip.h>
@@ -82,9 +80,9 @@ namespace fs = ghc::filesystem;
 #include <android/native_window_jni.h>
 #include <android/sensor.h>
 #include <jni.h>
-#endif
-#if defined(__ANDROID__)
 #define MANUAL_GL_CONTROL
+#else
+#include <unistd.h>
 #endif
 
 using namespace std;
@@ -522,7 +520,7 @@ void VideoComponent::InitOgreRoot() {
   ogreRoot->initialise(false);
 }
 
-void VideoComponent::CreateWindow() {
+void VideoComponent::InitWindow() {
   camera = sceneManager->createCamera("Camera");
   sceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(camera);
 
@@ -1072,7 +1070,7 @@ void VideoComponent::OnSetUp() {
   // init
   InitOgreRoot();
   InitSDL();
-  CreateWindow();
+  InitWindow();
   CheckGPU();
   InitOgreRTSS();
   InitOgreAudio();

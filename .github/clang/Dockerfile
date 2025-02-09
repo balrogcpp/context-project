@@ -16,15 +16,33 @@ RUN apt-get update \
     && apt-get clean
 
 
+ARG CLANG_MAJOR=18
+ARG STDLIB_APT_MAJOR=9
+RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
+    && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-${STDLIB_APT_MAJOR}-dev libstdc++-${STDLIB_APT_MAJOR}-dev \
+    && sed -i '$d' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get clean \
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 1000 \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1000 \
+    && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} 1000 \
+    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} 1000
+ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
+
+
 # gcc and mingw
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
-ARG BINUTILS_VERSION=2.43
+ARG BINUTILS_VERSION=2.44
 ARG MINGW_VERSION=12.0.0
 ARG GCC_VERSION=14.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
-ARG GCC_APT_MAJOR=11
+ARG GCC_APT_MAJOR=9
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
@@ -128,28 +146,10 @@ RUN apt-get update \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
 
 
-ARG CLANG_MAJOR=18
-ARG STDLIB_APT_MAJOR=11
-RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
-    && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-    && apt-get update \
-    && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-${STDLIB_APT_MAJOR}-dev libstdc++-${STDLIB_APT_MAJOR}-dev \
-    && sed -i '$d' /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get clean \
-    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 1000 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1000 \
-    && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} 1000 \
-    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} 1000
-ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
-
-
 # apple
 #COPY ./tarballs ./tarballs
 #ARG OSXCROSS_ROOT=/usr/local/osxcross
-#ARG OSXCROSS_GIT_HASH=29fe6dd35522073c9df5800f8cd1feb4b9a993a8
+#ARG OSXCROSS_GIT_HASH=611675b5179c4a9a5e33eac6c376ed8f986bab21
 #ARG CMAKE_VERSION=3.29.6
 #ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 #RUN apt-get update \

@@ -69,7 +69,7 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
 
  protected:
   void CheckGPU();
-  void CreateWindow();
+  void InitWindow();
   void InitOgreRoot();
   void InitSDL();
   void InitOgreRTSS();
