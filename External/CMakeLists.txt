@@ -615,7 +615,6 @@ externalproject_add(Target_sol2
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DSOL2_LUA_VERSION=5.4.4
         -DLUA_INCLUDE_DIR=${DEPS_INCLUDE_DIR}
         -DLUA_LIBRARIES=lua
         -DSOL2_BUILD_LUA=OFF
