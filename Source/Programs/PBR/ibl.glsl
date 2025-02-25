@@ -137,10 +137,6 @@ vec3 decodeDataForIBL(const vec3 data) {
 // IBL prefiltered DFG term implementations
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-// IBL environment BRDF dispatch
-//------------------------------------------------------------------------------
-
 #ifdef HAS_LUT
 vec3 PrefilteredDFG_LUT(const float lod, const float NoV) {
     // coord = sqrt(linear_roughness), which is the mapping used by cmgen.
@@ -148,6 +144,10 @@ vec3 PrefilteredDFG_LUT(const float lod, const float NoV) {
     //        texture that is in 16-bit float RGBA DDS format.
     return textureLod(LUTtex, vec2(NoV, 1.0 - lod), 0.0).rgb;
 }
+
+//------------------------------------------------------------------------------
+// IBL environment BRDF dispatch
+//------------------------------------------------------------------------------
 
 vec3 prefilteredDFG(const float perceptualRoughness, const float NoV) {
     // PrefilteredDFG_LUT() takes a LOD, which is sqrt(roughness) = perceptualRoughness
