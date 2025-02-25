@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 #include "SMAA_GLSL.glsl"
 
 #define SMAA_INCLUDE_VS 0

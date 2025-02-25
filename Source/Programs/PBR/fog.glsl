@@ -1,3 +1,8 @@
+// created by Andrey Vasiliev
+//? #version 400
+
+#define saturate(x) clamp(x, 0.0, 1.0)
+
 vec3 ApplyFog(const vec3 color, const float fogParam, const vec3 fogColor, const highp float dist)
 {
     float fogAmount = 1.0 - exp(-dist * fogParam);

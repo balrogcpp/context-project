@@ -1,8 +1,6 @@
 // created by Andrey Vasiliev
+//? #version 400
 // based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
-
-#include "header.glsl"
-#include "math.glsl"
 
 uniform sampler2D DepthTex;
 uniform highp vec4 ZBufferParams;

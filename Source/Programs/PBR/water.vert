@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 
 uniform highp mat4 WorldMatrix;
 uniform highp mat4 WorldViewProjMatrix;
@@ -11,9 +10,9 @@ out highp vec3 vPosition;
 out highp vec2 vUV0;
 void main()
 {
-    highp vec4 world = mul(WorldMatrix, position);
+    highp vec4 world = WorldMatrix * position;
     vPosition = world.xyz / world.w;
 
     vUV0 = uv0.xy;
-    gl_Position = mul(WorldViewProjMatrix, position);
+    gl_Position = WorldViewProjMatrix * position;
 }

@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 
 uniform highp sampler2D RT;
 
@@ -12,13 +11,11 @@ void main()
     highp vec4 c = textureGather(RT, 2.0 * gl_FragCoord.xy / vec2(textureSize(RT, 0)), 0);
     FragColor = max(max(c.x, c.y), max(c.z, c.w));
 #else
-    // ivec2 uv = ivec2(gl_FragCoord.xy * 2.0);
-    // highp float fDepth0 = texelFetch(RT, uv, 0).x;
-    // highp float fDepth1 = texelFetch(RT, uv + ivec2(0, 1), 0).x;
-    // highp float fDepth2 = texelFetch(RT, uv + ivec2(1, 0), 0).x;
-    // highp float fDepth3 = texelFetch(RT, uv + ivec2(1, 1), 0).x;
-    // FragColor = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
-
-    FragColor = texelFetch(RT, ivec2(gl_FragCoord.xy * 2.0), 0).x;
+    ivec2 uv = ivec2(gl_FragCoord.xy * 2.0);
+    highp float fDepth0 = texelFetch(RT, uv, 0).x;
+    highp float fDepth1 = texelFetch(RT, uv + ivec2(0, 1), 0).x;
+    highp float fDepth2 = texelFetch(RT, uv + ivec2(1, 0), 0).x;
+    highp float fDepth3 = texelFetch(RT, uv + ivec2(1, 1), 0).x;
+    FragColor = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
 #endif
 }

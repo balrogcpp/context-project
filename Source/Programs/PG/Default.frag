@@ -1,7 +1,6 @@
 // created by Andrey Vasiliev
+//? #version 400
 
-#define HAS_MRT
-#include "header.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
 
@@ -24,7 +23,7 @@ void main()
     float alpha = s.a;
     float fogCoord = gl_FragCoord.z / gl_FragCoord.w;
 
-#ifdef ALPHA_TEST
+#if defined(ALPHA_TEST)
     if(alpha < 0.5 || oColour.a < 0.5) discard;
 #endif
 

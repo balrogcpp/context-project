@@ -1,10 +1,9 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 
 uniform highp mat4 WorldViewProjMatrix;
 uniform highp mat4 WorldMatrix;
-#ifdef FADE
+#if defined(FADE)
 uniform vec3  camPos;
 uniform float fadeGap;
 uniform float invisibleDist;
@@ -27,16 +26,16 @@ void main()
 	vec4 vCenter = vec4( vertex.x, vertex.y, vertex.z, 1.0 );
 	vec4 vScale = vec4( normal.x, normal.y, normal.x , 1.0 );
 	vec4 position = vCenter + (preRotatedQuad[int(normal.z)] * vScale);
-	gl_Position = mul(WorldViewProjMatrix, position);
+	gl_Position = WorldViewProjMatrix * position;
 
-    highp vec4 world = mul(WorldMatrix, position);
+    highp vec4 world = WorldMatrix * position;
     vPosition = world.xyz / world.w;
 
 	//Color
 	oColour = colour;
 
     //Fade out in the distance
-#ifdef FADE
+#if defined(FADE)
 	float dist = distance(camPos.xz, vertex.xz);
 	oColour.w = (invisibleDist - dist) / fadeGap;
 #endif

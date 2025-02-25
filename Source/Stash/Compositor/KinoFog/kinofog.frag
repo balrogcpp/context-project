@@ -21,8 +21,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "header.glsl"
-#include "math.glsl"
 #include "fog.glsl"
 
 uniform sampler2D RT;

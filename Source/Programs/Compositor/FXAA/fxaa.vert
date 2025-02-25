@@ -1,10 +1,9 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 
 void main()
 {
-    vec4 positions[4] = vec4[4](
+    highp vec4 positions[4] = vec4[4](
 		vec4(-1.0, -1.0, 0.0, 1.0),
 		vec4(1.0, -1.0, 0.0, 1.0),
 		vec4(-1.0, 1.0, 0.0, 1.0),

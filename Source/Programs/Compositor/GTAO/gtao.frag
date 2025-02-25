@@ -1,8 +1,6 @@
 // created by Andrey Vasiliev
+//? #version 400
 // based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
-
-#include "header.glsl"
-#include "math.glsl"
 
 uniform highp sampler2D DepthTex;
 uniform highp vec4 ZBufferParams;
@@ -22,8 +20,15 @@ float Linear01Depth(const highp float z)
     return 1.0 / (z * ZBufferParams.z + ZBufferParams.w);
 }
 
+// http://h14s.p5r.org/2012/09/0x5f3759df.html, [Drobot2014a] Low Level Optimizations for GCN, https://blog.selfshadow.com/publications/s2016-shading-course/activision/s2016_pbs_activision_occlusion.pdf slide 63
+// https://github.com/GameTechDev/XeGTAO/blob/188587a986f94db285c83c99676123019a0fd9b6/Source/Rendering/Shaders/XeGTAO.hlsli#L171
+mediump float GTAOFastSqrt(const mediump float x)
+{
+    return float(0x1fbd1df5 + (int(x) >> 1 ));
+}
+
 // [Eberly2014] GPGPU Programming for Games and Science
-float GTAOFastAcos(const float x)
+float GTAOFastAcos(const mediump float x)
 {
     float res = -0.156583 * abs(x) + PI_HALF;
     res *= sqrt(1.0 - abs(x));

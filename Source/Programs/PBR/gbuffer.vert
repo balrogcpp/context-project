@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 
 uniform highp mat4 WorldViewProjMatrix;
 
@@ -15,5 +14,5 @@ void main()
     vUV0.xy = uv0.xy;
 #endif
 
-   gl_Position = mulMat4x4Float3(WorldViewProjMatrix, vertex.xyz);
+   gl_Position = WorldViewProjMatrix * vertex;
 }

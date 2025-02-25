@@ -1,10 +1,10 @@
 // created by Andrey Vasiliev
+//? #version 400
 
-#include "header.glsl"
 #include "tonemap.glsl"
 
-uniform sampler2D RT;
-uniform sampler2D AO;
+uniform mediump sampler2D RT;
+uniform mediump sampler2D AO;
 
 // https://github.com/asylum2010/Asylum_Tutorials/blob/423e5edfaee7b5ea450a450e65f2eabf641b2482/Media/ShadersGL/gtaocombine.frag#L11
 vec3 MultiBounce(const float visibility, const vec3 albedo) {

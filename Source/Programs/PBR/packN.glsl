@@ -1,6 +1,7 @@
-
+// created by Andrey Vasiliev
+//? #version 400
 // https://community.khronos.org/t/glsl-packing-a-normal-in-a-single-float/52039/13
-//Thanks @paveltumik for the original code in comments
+// Thanks @paveltumik for the original code in comments
 
 //pack:	f1=(f1+1)*0.5; f2=(f2+1)*0.5; res=floor(f1*1000)+f2;
 float PackFloat16bit2(const vec2 src)

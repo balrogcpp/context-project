@@ -1,9 +1,7 @@
 // created by Andrey Vasiliev
+//? #version 400
 
-#ifndef PGEOMETRY_GLSL
-#define PGEOMETRY_GLSL
-
-highp float Hash(highp float x)
+highp float Hash(const highp float x)
 {
     return fract(sin(x) * 43758.5453);
 }
@@ -18,14 +16,14 @@ highp float Noise(const highp vec2 x)
 }
 
 // Apply grass waving animation to vertex
-highp vec4 WaveGrass(const highp vec4 position, highp float time, float frequency, const vec4 direction)
+highp vec4 WaveGrass(const highp vec4 position, const highp float time, const float frequency, const vec4 direction)
 {
     highp float n = Noise(position.xz * time) * 2.0 - 2.0;
     return n * direction;
 }
 
 // Apply tree waving animation to vertex
-highp vec4 WaveTree(const highp vec4 position, highp float time, const vec4 params1, const vec4 params2)
+highp vec4 WaveTree(const highp vec4 position, const highp float time, const vec4 params1, const vec4 params2)
 {
     highp float radiusCoeff = params1.x;
     highp float radiusCoeff2 = radiusCoeff * radiusCoeff;
@@ -36,5 +34,3 @@ highp vec4 WaveTree(const highp vec4 position, highp float time, const vec4 para
 
     return vec4(sin(time + params2.z) * heightCoeff2 * factorX, sin(time + params2.z + position.y + position.x) * radiusCoeff2 * factorY, 0.0, 0.0);
 }
-
-#endif // PGEOMETRY_GLSL

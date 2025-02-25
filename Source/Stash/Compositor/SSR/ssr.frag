@@ -1,11 +1,9 @@
 // created by Andrey Vasiliev
+//? #version 400
 // SSR based on tutorial by Imanol Fotia
 // http://imanolfotia.com/blog/update/2017/03/11/ScreenSpaceReflections.html
 // https://gitlab.com/congard/algine/-/blob/v1.6-alpha/src/resources/shaders/ssr/fragment.glsl
 // https://github.com/lettier/3d-game-shaders-for-beginners/blob/master/demonstration/shaders/fragment/screen-space-reflection.frag
-
-#include "header.glsl"
-#include "math.glsl"
 
 #define MAX_BIN_SEARCH_COUNT 10
 #define MAX_RAY_MARCH_COUNT 30

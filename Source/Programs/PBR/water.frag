@@ -1,9 +1,7 @@
 // created by Andrey Vasiliev
+//? #version 400
 
-#define HAS_MRT
-#include "header.glsl"
 #include "tonemap.glsl"
-#include "math.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
 
@@ -39,7 +37,7 @@ uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
 uniform vec3 SunExtinction;
 
-float FresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
+float FresnelDielectric(const vec3 incoming, const vec3 normal, const float eta)
 {
     // compute fresnel reflectance without explicitly computing
     // the refracted direction
@@ -57,7 +55,7 @@ float FresnelDielectric(const vec3 incoming, const vec3 normal, float eta)
     }
 }
 
-vec3 perturb(const sampler2D tex, const vec2 coords, float bend)
+vec3 perturb(const sampler2D tex, const vec2 coords, const float bend)
 {
     vec3 col = vec3(0.0, 0.0, 0.0);
 

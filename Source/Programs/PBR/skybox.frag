@@ -1,12 +1,12 @@
 // created by Andrey Vasiliev
+//? #version 400
 
-#define HAS_MRT
-#include "header.glsl"
 #include "tonemap.glsl"
-#include "math.glsl"
 #include "srgb.glsl"
 
 uniform vec3 LightDir0;
+
+#define PI 3.14159265359
 
 float acosFast(const float x) {
     // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
@@ -22,14 +22,6 @@ float acosFastPositive(const float x) {
     return p * sqrt(1.0 - x);
 }
 
-#if 0
-
-// Phase function
-float henyey_greenstein(const float cos_theta, const float g) {
-    const float k = 0.0795774715459;
-    return k * (1.0 - g * g) / (pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
-}
-
 float sq(const float x) {
     return x * x;
 }
@@ -39,6 +31,42 @@ float pow5(const float x) {
     return x2 * x2 * x;
 }
 
+float getSunDisk(const float LdotV, const float sunY, const float sunPower)
+{
+    return pow(LdotV, mix(4.0, 8500.0, sunY) * 0.25) * sunPower;
+}
+
+float getMie(const float LdotV, const float sunY)
+{
+    // this is wrong for sure, but taken from original code
+//    return pow(LdotV, mix(1.0, 1.0, sunY));
+    return LdotV;
+}
+
+// See https://en.wikipedia.org/wiki/Rayleigh_distribution
+// It's inspired, not fully based.
+//
+// The formula also gives us the nice property that for inputs
+// where absorption is in range [0; 1] the output i also in range [0; 1]
+vec3 getSkyRayleighAbsorption(const vec3 vDir, const float density)
+{
+    vec3 absorption = -density * vDir;
+    absorption = exp2(absorption) * 2.0;
+    return absorption;
+}
+
+float pow4(const float x)
+{
+    float x2 = x * x;
+    return x2 * x2;
+}
+
+#if 0
+// Phase function
+float henyey_greenstein(const float cos_theta, const float g) {
+    const float k = 0.0795774715459;
+    return k * (1.0 - g * g) / (pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
+}
 
 // Simple Analytic sky. In a real project you should use a texture
 vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
@@ -111,36 +139,7 @@ vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
 //    color = 1.0 - exp(-1.0 * color);
     return tonemap(color);
 }
-
-float getSunDisk(const float LdotV, const float sunY, const float sunPower)
-{
-    return pow(LdotV, mix(4.0, 8500.0, sunY) * 0.25) * sunPower;
-}
-
-float getMie(const float LdotV, const float sunY)
-{
-    // this is wrong for sure, but taken from original code
-//    return pow(LdotV, mix(1.0, 1.0, sunY));
-    return LdotV;
-}
-
-// See https://en.wikipedia.org/wiki/Rayleigh_distribution
-// It's inspired, not fully based.
-//
-// The formula also gives us the nice property that for inputs
-// where absorption is in range [0; 1] the output i also in range [0; 1]
-vec3 getSkyRayleighAbsorption(const vec3 vDir, const float density)
-{
-    vec3 absorption = -density * vDir;
-    absorption = exp2(absorption) * 2.0;
-    return absorption;
-}
-
-float pow4(const float x)
-{
-    float x2 = x * x;
-    return x2 * x2;
-}
+#endif
 
 // https://github.com/OGRECave/ogre-next/blob/2dbbd284e0a03354b6382ac25888bd89f5c76b62/Samples/Media/2.0/scripts/materials/Common/Any/AtmosphereNprSky_ps.any
 vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
@@ -209,7 +208,7 @@ vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
     atmoColour += sunDisk * p_skyLightAbsorption;
     return tonemap(atmoColour);
 }
-#endif
+//#endif
 
 uniform vec3 HosekParams[10];
 
@@ -243,6 +242,6 @@ in highp vec3 vUV0;
 out vec4 FragColor;
 void main()
 {
-    vec3 color = HosekWilkie(normalize(vUV0), -normalize(LightDir0));
+    vec3 color = ogreAtmosphere(normalize(vUV0), -normalize(LightDir0));
     FragColor = vec4(color, 1.0);
 }

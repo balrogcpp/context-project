@@ -1,7 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
-#include "math.glsl"
+//? #version 400
 
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
@@ -16,6 +14,11 @@ uniform float FrameTime;
 float Linear01Depth(const highp float z)
 {
     return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
+}
+
+vec4 mulMat4x4Half3(const mat4 m, const vec3 v)
+{
+    return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
 }
 
 

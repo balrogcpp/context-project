@@ -1,6 +1,9 @@
+// created by Andrey Vasiliev
+//? #version 400
 // https://www.shadertoy.com/view/wslfD7
 // https://www.shadertoy.com/view/wdlBRS
 // Ground albedo and turbidy are baked into the lookup tables
+
 #define ALBEDO 1
 #define TURBIDITY 3
 #define M_PI 3.1415926535897932384626433832795

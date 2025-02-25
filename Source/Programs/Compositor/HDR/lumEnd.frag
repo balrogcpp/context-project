@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 
 uniform sampler2D RT;
 uniform sampler2D Lum;

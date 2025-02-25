@@ -1,4 +1,8 @@
-#ifdef GL_ES
+// created by Andrey Vasiliev
+//? #version 400
+// functions from filament project
+
+#if defined(GL_ES)
 // min roughness such that (MIN_PERCEPTUAL_ROUGHNESS^4) > 0 in fp16 (i.e. 2^(-14/4), rounded up)
 #define MIN_PERCEPTUAL_ROUGHNESS 0.089
 #else
@@ -7,11 +11,13 @@
 
 #define MEDIUMP_FLT_MAX    65504.0
 #define saturateMediump(x) min(x, MEDIUMP_FLT_MAX)
+#define saturate(x) clamp(x, 0.0, 1.0)
 
+#define PI              3.14159265359
 #define MIN_N_DOT_V 1e-4
 
 // Chan 2018, "Material Advances in Call of Duty: WWII"
-float computeMicroShadowing(const float NoL, float visibility) {
+float computeMicroShadowing(const float NoL, const float visibility) {
     float aperture = inversesqrt(1.0 - visibility);
     float microShadow = saturate(NoL * aperture);
     return microShadow * microShadow;
@@ -36,7 +42,7 @@ float max3(const vec3 v) {
     return max(v.x, max(v.y, v.z));
 }
 
-vec3 computeDiffuseColor(const vec3 baseColor, float metallic) {
+vec3 computeDiffuseColor(const vec3 baseColor, const float metallic) {
     return baseColor.rgb * (1.0 - metallic);
 }
 
@@ -44,7 +50,7 @@ float computeDielectricF0(const float reflectance) {
     return 0.16 * reflectance * reflectance;
 }
 
-vec3 computeF0(const vec3 baseColor, float metallic, float reflectance) {
+vec3 computeF0(const vec3 baseColor, const float metallic, const float reflectance) {
     return baseColor.rgb * metallic + (reflectance * (1.0 - metallic));
 }
 
@@ -123,7 +129,7 @@ float D_GGX(const float roughness, const float NoH, const vec3 h) {
     // This computes 1.0 - NoH^2 directly (which is close to zero in the highlights and has
     // enough precision).
     // Overall this yields better performance, keeping all computations in mediump
-#ifdef GL_ES
+#if defined(GL_ES)
     vec3 NxH = cross(N, h);
     float oneMinusNoHSquared = dot(NxH, NxH);
 #else
@@ -184,7 +190,7 @@ float distribution(const float roughness, const float NoH, const vec3 h) {
 }
 
 float visibility(const float roughness, const float NoV, const float NoL) {
-#ifndef GL_ES
+#if !defined(GL_ES)
     return V_SmithGGXCorrelated(roughness, NoV, NoL);
 #else
     return V_SmithGGXCorrelated_Fast(roughness, NoV, NoL);
@@ -192,7 +198,7 @@ float visibility(const float roughness, const float NoV, const float NoL) {
 }
 
 vec3 fresnel(const vec3 f0, const float LoH) {
-#ifdef GL_ES
+#if defined(GL_ES)
     return F_Schlick(f0, LoH); // f90 = 1.0
 #else
     float f90 = saturate(dot(f0, vec3(50.0 * 0.33, 50.0 * 0.33, 50.0 * 0.33)));

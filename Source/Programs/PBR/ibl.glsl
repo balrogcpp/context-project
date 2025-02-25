@@ -1,8 +1,13 @@
+// created by Andrey Vasiliev
+//? #version 400
 // https://google.github.io/filament/Filament.html 5.4.3.1 Diffuse BRDF integration
+
 #if !defined(GL_ES)
 #define MULTI_BOUNCE_AMBIENT_OCCLUSION 1
 #define SPECULAR_AMBIENT_OCCLUSION 1
 #endif
+
+#define saturate(x) clamp(x, 0.0, 1.0)
 
 /**
  * Computes a specular occlusion term from the ambient occlusion term.
@@ -57,7 +62,6 @@ vec3 EnvBRDFApprox(const float roughness, const float NoV)
     vec4 r = roughness * c0 + c1;
     float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
     vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
-//    return specularColor * AB.x + AB.y;
     return vec3(AB.yx, 0.0);
 }
 
@@ -82,8 +86,6 @@ vec3 EnvDFGLazarov(const float gloss, const float ndotv)
     float delta = saturate(t.w);
     float scale = delta - bias;
 
-//    bias *= saturate(50.0 * specularColor.y);
-//    return specularColor * scale + bias;
     return vec3(bias, scale, 0.0);
 }
 
@@ -93,13 +95,18 @@ vec3 EnvDFGPolynomial(const float gloss, const float ndotv)
     float x = gloss;
     float y = ndotv;
 
+    float x2 = x * x;
+    float x3 = x2 * x;
+    float y2 = y * y;
+    float y3 = y2 * y;
+
     const float b1 = -0.1688;
     const float b2 = 1.895;
     const float b3 = 0.9903;
     const float b4 = -4.853;
     const float b5 = 8.404;
     const float b6 = -5.069;
-    float bias = saturate(min(b1 * x + b2 * x * x, b3 + b4 * y + b5 * y * y + b6 * y * y * y));
+    float bias = saturate(min(b1 * x + b2 * x2, b3 + b4 * y + b5 * y2 + b6 * y3));
 
     const float d0 = 0.6045;
     const float d1 = 1.699;
@@ -108,11 +115,9 @@ vec3 EnvDFGPolynomial(const float gloss, const float ndotv)
     const float d4 = 1.404;
     const float d5 = 0.1939;
     const float d6 = 2.661;
-    float delta = saturate(d0 + d1 * x + d2 * y + d3 * x * x + d4 * x * y + d5 * y * y + d6 * x * x * x);
+    float delta = saturate(d0 + d1 * x + d2 * y + d3 * x2 + d4 * x * y + d5 * y2 + d6 * x3);
     float scale = delta - bias;
 
-//    bias *= saturate(50.0 * specularColor.y);
-//    return specularColor * scale + bias;
     return vec3(bias, scale, 0.0);
 }
 
@@ -187,8 +192,7 @@ void evaluateClothIndirectDiffuseBRDF(const PixelParams pixel, inout float diffu
 #endif
 }
 
-void evaluateSubsurfaceIBL(const PixelParams pixel, const vec3 diffuseIrradiance,
-        inout vec3 Fd, inout vec3 Fr) {
+void evaluateSubsurfaceIBL(const PixelParams pixel, const vec3 diffuseIrradiance, inout vec3 Fd, inout vec3 Fr) {
 #if defined(SHADING_MODEL_SUBSURFACE)
     vec3 viewIndependent = diffuseIrradiance;
     vec3 viewDependent = prefilteredRadiance(-shading_view, pixel.roughness, 1.0 + pixel.thickness);

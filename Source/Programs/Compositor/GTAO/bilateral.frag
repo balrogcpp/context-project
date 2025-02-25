@@ -1,6 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
+//? #version 400
 
 uniform sampler2D RT;
 uniform sampler2D DepthTex;
@@ -9,7 +8,7 @@ uniform sampler2D DepthTex;
 
 #define KERNEL_RADIUS 3
 
-vec3 BlurFunction(const vec2 uv, const float r, const vec3 center_c, const float center_d, inout const float w_total)
+vec3 BlurFunction(const vec2 uv, const float r, const vec3 center_c, const float center_d, inout float w_total)
 {
     vec3 c = textureLod(RT, uv, 0.0).rgb;
     float d = textureLod(DepthTex, uv, 0.0).x;

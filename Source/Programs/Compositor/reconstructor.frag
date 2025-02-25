@@ -1,7 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
-#include "mosaic.glsl"
+//? #version 400
 
 uniform sampler2D MRT;
 uniform sampler2D RT;

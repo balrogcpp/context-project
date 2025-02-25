@@ -1,5 +1,5 @@
 // created by Andrey Vasiliev
-
+//? #version 400
 #include "header.glsl"
 
 uniform sampler2D FBO;

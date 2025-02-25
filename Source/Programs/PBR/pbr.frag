@@ -1,11 +1,18 @@
 // created by Andrey Vasiliev
+//? #version 400
 
-#define HAS_MRT
-#include "header.glsl"
-#include "tonemap.glsl"
+#define FORCE_FOG
+#define PSSM_SPLITS 2
+#ifndef MAX_LIGHTS
+#define MAX_LIGHTS 8
+#endif
+#ifndef MAX_SHADOW_TEXTURES
+#define MAX_SHADOW_TEXTURES 4
+#endif
 #include "math.glsl"
-#include "fog.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
+#include "fog.glsl"
 
 #if defined(HAS_BASECOLORMAP)
 uniform sampler2D AlbedoTex;
@@ -235,7 +242,7 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
 {
 #if defined(HAS_NORMALMAP)
-    return normalize(mul(tbn, texture(NormalTex, uv.xy).xyz * 2.0 - 1.0));
+    return normalize(tbn * vec3(texture(NormalTex, uv.xy).xyz * 2.0 - 1.0));
 #else
     return tbn[2];
 #endif
@@ -248,10 +255,10 @@ mat3 GetTBN(const vec2 uv, const vec3 position)
     vec3 n = texture(TerraNormalTex, UV).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
     vec3 t = normalize(cross(n ,b));
-    highp mat3 tbn = mtxFromCols(t, b, n);
+    highp mat3 tbn = mat3(t, b, n);
     return tbn;
 #elif defined(PAGED_GEOMETRY)
-    highp mat3 tbn = mtxFromCols(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 1.0, 0.0));
+    highp mat3 tbn = mat3(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 1.0, 0.0));
     return tbn;
 #else
 
@@ -272,12 +279,12 @@ mat3 GetTBN(const vec2 uv, const vec3 position)
     highp vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
     t = normalize(t - n * dot(n, t));
     highp vec3 b = normalize(cross(n, t));
-    tbn = mtxFromCols(t, b, n);
+    highp mat3 tbn = mat3(t, b, n);
     return tbn;
 #endif
 #endif
 
-    return mat3(vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0));
+    return mat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 }
 
 vec3 GetORM(const vec2 uv, float spec)
@@ -428,8 +435,6 @@ void main()
 #if defined(HAS_AO)
     vec2 nuv = fragCoord + fragVelocity;
     vec2 occ = textureLod(OccTex, fragCoord, 0.0).rg;
-//    float dDepth = (clampedDepth - occ.g);
-//    ssao = GetAO(fragCoord, occ.r, occ.g);
     ssao = occ.r;
 #endif
 

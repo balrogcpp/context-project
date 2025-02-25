@@ -395,11 +395,11 @@ void VideoComponent::CheckGPU() {
   }
 #endif
   if (RenderSystemIsGL3()) {
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
     ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(3, 3), "OpenGL 3.3 is not supported");
 #endif
   } else if (RenderSystemIsGLES2()) {
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+#if defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
     ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(3, 0), "OpenGLES 3.0 is not supported");
 #endif
   }
@@ -431,7 +431,6 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
                      bool &skipThisMessage) override {
-    // static std::ofstream of(GetBinaryDir() + "/" + logName);
     static std::ofstream of(logName);
 
     if (of.is_open()) {
@@ -441,7 +440,7 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
       of << ss.str();
     }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     printf("%s\n", message.c_str());
 #endif
   }
@@ -490,28 +489,28 @@ void VideoComponent::InitOgreRoot() {
   InitOgreRenderSystemGLES2();
 #endif
 
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
+#if defined(OGRE_BUILD_PLUGIN_OCTREE)
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
   sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
   sceneManager = OgreRoot->createSceneManager(Ogre::SMT_DEFAULT, "Default");
 #endif
-#ifdef OGRE_BUILD_PLUGIN_PFX
+#if defined(OGRE_BUILD_PLUGIN_PFX)
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
 #endif
-#ifdef OGRE_BUILD_PLUGIN_STBI
+#if defined(OGRE_BUILD_PLUGIN_STBI)
   Ogre::STBIImageCodec::startup();
 #endif
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
+#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE)
   Ogre::FreeImageCodec::startup();
 #endif
-#ifdef OGRE_BUILD_PLUGIN_ASSIMP
+#if defined(OGRE_BUILD_PLUGIN_ASSIMP)
   Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
 #endif
-#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
+#if defined(OGRE_BUILD_PLUGIN_DOT_SCENE)
   Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePlugin());
 #endif
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#if defined(OGRE_BUILD_COMPONENT_TERRAIN)
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
 #endif
@@ -561,7 +560,7 @@ void VideoComponent::InitWindow() {
     sizeY = screenHeight;
   }
 
-#ifdef MANUAL_GL_CONTROL
+#if defined(MANUAL_GL_CONTROL)
   if (RenderSystemIsGL3()) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -597,7 +596,7 @@ void VideoComponent::InitWindow() {
   renderParams["gama"] = "false";
   renderParams["FSAA"] = "0";
   renderParams["preserveContext"] = "true";
-#ifdef MANUAL_GL_CONTROL
+#if defined(MANUAL_GL_CONTROL)
   renderParams["currentEGLSurface"] = "true";
   renderParams["currentGLContext"] = "true";
   renderParams["externalGLControl"] = "true";
@@ -620,14 +619,14 @@ void VideoComponent::InitWindow() {
   const bool isWayland = getenv("WAYLAND_DISPLAY") != nullptr || strcmp(getenv("XDG_SESSION_TYPE"), "wayland") == 0;
   const bool isX11 = strcmp(getenv("XDG_SESSION_TYPE"), "x11") == 0 && getenv("WAYLAND_DISPLAY") == nullptr;
   if (Ogre::getGLSupport() && isX11 && fullscreen) {
-      sizeX = Ogre::getGLSupport()->getVideoModes()[0].width;
-      sizeY = Ogre::getGLSupport()->getVideoModes()[0].height;
+    sizeX = Ogre::getGLSupport()->getVideoModes()[0].width;
+    sizeY = Ogre::getGLSupport()->getVideoModes()[0].height;
   }
 #endif
 
   ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
 
-#ifdef MANUAL_GL_CONTROL
+#if defined(MANUAL_GL_CONTROL)
   SDL_GL_SetSwapInterval(vsyncInt);
 #else
   ogreWindow->setVSyncEnabled(vsyncInt != 0);
@@ -707,7 +706,6 @@ void VideoComponent::InitOgreSceneManager() {
 
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
-
   terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
   terrainGlobalOptions->setSkirtSize(0);
   terrainGlobalOptions->setMaxPixelError(1);
@@ -716,10 +714,9 @@ void VideoComponent::InitOgreSceneManager() {
   terrainGlobalOptions->setCastsDynamicShadows(false);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
   terrainGlobalOptions->setLightMapSize(512);
-  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(0.0, -1.0, -0.0).normalisedCopy());
+  terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(0.0, -1.0, 0.0).normalisedCopy());
 
   if (shadowEnabled) {
-    Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
     pssmSetup = make_shared<DPSMCameraSetup>();
     sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     sceneManager->setShadowColour(Ogre::ColourValue::Black);
@@ -727,7 +724,7 @@ void VideoComponent::InitOgreSceneManager() {
     sceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance);
     sceneManager->setShadowTextureSize(shadowTexSize);
     sceneManager->setShadowTextureSelfShadow(true);
-    sceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
+    sceneManager->setShadowTexturePixelFormat(Ogre::PixelFormat::PF_DEPTH16);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
@@ -949,7 +946,7 @@ class VideoComponent::ShaderResolver final : public Ogre::MaterialManager::Liste
 
 void VideoComponent::RenderFrame() {
   ogreRoot->renderOneFrame();
-#ifdef MANUAL_GL_CONTROL
+#if defined(MANUAL_GL_CONTROL)
   SDL_GL_SwapWindow(sdlWindow);
 #endif
 }
@@ -982,11 +979,10 @@ void VideoComponent::RebuildOverlayFontAtlas() {
   if (auto mat = Ogre::MaterialManager::getSingleton().getByName("ImGui/material", Ogre::RGN_INTERNAL)) {
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 // doesn't work for windows
-#ifdef WIN32
+#if defined(WIN32)
     Ogre::TextureManager::getSingleton().unload("ImGui/FontTex", Ogre::RGN_INTERNAL);
     Ogre::TextureManager::getSingleton().remove("ImGui/FontTex", Ogre::RGN_INTERNAL);
-    auto tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
-                                                                 Ogre::PF_BYTE_RGBA);
+    auto tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1, Ogre::PF_BYTE_RGBA);
 #else
     auto tex = Ogre::TextureManager::getSingleton().getByName("ImGui/FontTex");
 #endif
@@ -995,8 +991,7 @@ void VideoComponent::RebuildOverlayFontAtlas() {
   }
 }
 
-ImFont *VideoComponent::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
-                                       const ImWchar *ranges) {
+ImFont *VideoComponent::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg, const ImWchar *ranges) {
   typedef std::vector<ImWchar> CodePointRange;
   std::vector<CodePointRange> mCodePointRanges;
   ImGuiIO &io = ImGui::GetIO();

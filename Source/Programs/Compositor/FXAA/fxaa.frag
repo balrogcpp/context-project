@@ -1,7 +1,5 @@
 // created by Andrey Vasiliev
-
-#include "header.glsl"
-#include "tonemap.glsl"
+//? #version 400
 
 uniform sampler2D RT;
 

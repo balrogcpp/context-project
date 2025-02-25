@@ -1,4 +1,5 @@
 // created by Andrey Vasiliev
+//? #version 400
 
 #ifdef GL_ES
     #define SRGB_VERY_FAST_APPROXIMATION

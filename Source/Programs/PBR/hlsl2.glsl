@@ -1,4 +1,6 @@
+//? #version 400
 // from https://github.com/OGRECave/ogre/blob/v13.6.4/Media/Main/GLSL_GL3Support.glsl
+
 #if __VERSION__ == 100
 mat2 transpose(mat2 m)
 {
