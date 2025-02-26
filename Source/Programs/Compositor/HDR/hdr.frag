@@ -3,10 +3,10 @@
 
 #include "tonemap.glsl"
 
-uniform sampler2D RT;
-uniform sampler2D BrightTex;
-uniform sampler2D DirtTex;
-uniform sampler2D Lum;
+uniform mediump sampler2D RT;
+uniform mediump sampler2D BrightTex;
+uniform mediump sampler2D DirtTex;
+uniform mediump sampler2D Lum;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 vec3 Upscale9(const sampler2D tex, const vec2 uv)

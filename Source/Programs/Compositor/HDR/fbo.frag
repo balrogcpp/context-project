@@ -3,7 +3,7 @@
 
 #include "tonemap.glsl"
 
-uniform sampler2D RT;
+uniform mediump sampler2D RT;
 
 // https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
 

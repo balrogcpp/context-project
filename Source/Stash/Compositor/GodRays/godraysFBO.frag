@@ -2,8 +2,8 @@
 //? #version 400
 #include "header.glsl"
 
-uniform sampler2D RT;
-uniform sampler2D DepthTex;
+uniform mediump sampler2D RT;
+uniform mediump sampler2D DepthTex;
 
 in highp vec2 vUV0;
 void main()

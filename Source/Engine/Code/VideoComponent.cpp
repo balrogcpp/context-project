@@ -715,6 +715,7 @@ void VideoComponent::InitOgreSceneManager() {
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
   terrainGlobalOptions->setLightMapSize(512);
   terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(0.0, -1.0, 0.0).normalisedCopy());
+  terrainGlobalOptions->setRenderQueueGroup(Ogre::RENDER_QUEUE_WORLD_GEOMETRY_2);
 
   if (shadowEnabled) {
     pssmSetup = make_shared<DPSMCameraSetup>();

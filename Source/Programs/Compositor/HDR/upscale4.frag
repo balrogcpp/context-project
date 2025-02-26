@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-uniform sampler2D RT;
+uniform mediump sampler2D RT;
 
 // Standard box filtering
 vec3 UpsampleBox(const sampler2D tex, const vec2 uv)

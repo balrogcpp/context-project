@@ -1,8 +1,8 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-uniform sampler2D RT;
-uniform sampler2D DepthTex;
+uniform mediump sampler2D RT;
+uniform mediump sampler2D DepthTex;
 
 // https://github.com/nvpro-samples/gl_ssao/blob/f6b010dc7a05346518cd13d3368d8d830a382ed9/bilateralblur.frag.glsl
 

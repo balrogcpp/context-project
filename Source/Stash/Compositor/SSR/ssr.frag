@@ -12,9 +12,10 @@
 #define LLIMITER 0.1
 #define MIN_RAY_STEP 0.2
 
-uniform sampler2D ColorTex;
-uniform sampler2D DepthTex;
-uniform sampler2D NormalTex;
+uniform mediump sampler2D ColorTex;
+uniform mediump sampler2D DepthTex;
+uniform mediump sampler2D NormalTex;
+
 uniform mat4 ProjMatrix;
 uniform float FarClipDistance;
 uniform float NearClipDistance;

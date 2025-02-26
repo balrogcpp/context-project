@@ -1,8 +1,9 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-uniform sampler2D RT;
-uniform sampler2D Lum;
+uniform mediump sampler2D RT;
+uniform mediump sampler2D Lum;
+
 uniform vec3 Exposure;
 uniform float timeSinceLast;
 

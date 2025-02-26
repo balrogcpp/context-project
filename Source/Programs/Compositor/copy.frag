@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-uniform sampler2D RT;
+uniform mediump sampler2D RT;
 
 out vec4 FragColor;
 void main()

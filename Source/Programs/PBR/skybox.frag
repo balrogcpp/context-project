@@ -2,24 +2,27 @@
 //? #version 400
 
 #include "tonemap.glsl"
-#include "srgb.glsl"
 
 uniform vec3 LightDir0;
 
 #define PI 3.14159265359
+
+float fastSqrt(const float x) {
+    return float(0x1fbd1df5 + (int(x) >> 1));
+}
 
 float acosFast(const float x) {
     // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
     // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
     float y = abs(x);
     float p = -0.1565827 * y + 1.570796;
-    p *= sqrt(1.0 - y);
+    p *= fastSqrt(1.0 - y);
     return x >= 0.0 ? p : PI - p;
 }
 
 float acosFastPositive(const float x) {
     float p = -0.1565827 * x + 1.570796;
-    return p * sqrt(1.0 - x);
+    return p * fastSqrt(1.0 - x);
 }
 
 float sq(const float x) {
@@ -242,6 +245,6 @@ in highp vec3 vUV0;
 out vec4 FragColor;
 void main()
 {
-    vec3 color = ogreAtmosphere(normalize(vUV0), -normalize(LightDir0));
+    vec3 color = HosekWilkie(normalize(vUV0), -normalize(LightDir0));
     FragColor = vec4(color, 1.0);
 }

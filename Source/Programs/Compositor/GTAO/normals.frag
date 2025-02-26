@@ -2,7 +2,7 @@
 //? #version 400
 // based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
 
-uniform sampler2D DepthTex;
+uniform mediump sampler2D DepthTex;
 uniform highp vec4 ZBufferParams;
 
 vec3 GetCameraVec(const vec2 uv)

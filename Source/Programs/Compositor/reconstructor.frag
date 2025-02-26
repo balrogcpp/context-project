@@ -1,11 +1,12 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-uniform sampler2D MRT;
-uniform sampler2D RT;
+uniform mediump sampler2D MRT;
+uniform mediump sampler2D RT;
 uniform sampler2D VelocityTex;
-uniform sampler2D DepthTex;
+uniform mediump sampler2D DepthTex;
 uniform sampler2D DepthOldTex;
+
 uniform vec4 ViewportSize;
 uniform mat4 InvViewMatrix;
 uniform mat4 ViewProjPrev;

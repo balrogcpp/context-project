@@ -31,12 +31,12 @@ uniform sampler2D OccTex;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
 #if defined(SHADOWMAP_ATLAS)
-uniform sampler2D ShadowTex;
+uniform mediump sampler2D ShadowTex;
 #else
-uniform sampler2D ShadowTex0;
-uniform sampler2D ShadowTex1;
-uniform sampler2D ShadowTex2;
-uniform sampler2D ShadowTex3;
+uniform mediump sampler2D ShadowTex0;
+uniform mediump sampler2D ShadowTex1;
+uniform mediump sampler2D ShadowTex2;
+uniform mediump sampler2D ShadowTex3;
 #endif
 #endif
 #if defined(HAS_IBL)

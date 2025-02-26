@@ -5,9 +5,9 @@
 #include "fog.glsl"
 #include "srgb.glsl"
 
-uniform sampler2D ReflectionTex;
-uniform sampler2D RefractionTex;
-uniform sampler2D DepthTex;
+uniform mediump sampler2D ReflectionTex;
+uniform mediump sampler2D RefractionTex;
+uniform mediump sampler2D DepthTex;
 uniform sampler2D NormalTex;
 uniform sampler2D CausticTex;
 uniform sampler2D FoamTex;

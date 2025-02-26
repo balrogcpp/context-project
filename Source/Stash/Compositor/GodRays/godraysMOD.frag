@@ -2,8 +2,8 @@
 //? #version 400
 #include "header.glsl"
 
-uniform sampler2D RT;
-uniform sampler2D FBO;
+uniform mediump sampler2D RT;
+uniform mediump sampler2D FBO;
 uniform vec2 TexelSize;
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
