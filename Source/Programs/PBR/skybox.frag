@@ -209,6 +209,7 @@ vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
 
     atmoColour *= p_finalMultiplier;
     atmoColour += sunDisk * p_skyLightAbsorption;
+
     return tonemap(atmoColour);
 }
 //#endif
@@ -217,16 +218,16 @@ uniform vec3 HosekParams[10];
 
 vec3 HosekWilkie(const highp vec3 V, const highp vec3 N)
 {
-    vec3 A = HosekParams[0];
-    vec3 B = HosekParams[1];
-    vec3 C = HosekParams[2];
-    vec3 D = HosekParams[3];
-    vec3 E = HosekParams[4];
-    vec3 F = HosekParams[5];
-    vec3 G = HosekParams[6];
-    vec3 H = HosekParams[7];
-    vec3 I = HosekParams[8];
-    vec3 Z = HosekParams[9];
+    const vec3 A = HosekParams[0];
+    const vec3 B = HosekParams[1];
+    const vec3 C = HosekParams[2];
+    const vec3 D = HosekParams[3];
+    const vec3 E = HosekParams[4];
+    const vec3 F = HosekParams[5];
+    const vec3 G = HosekParams[6];
+    const vec3 H = HosekParams[7];
+    const vec3 I = HosekParams[8];
+    const vec3 Z = HosekParams[9];
 
     float cos_theta = clamp(V.y, 0.0, 1.0);
     float cos_gamma = dot(V, N);

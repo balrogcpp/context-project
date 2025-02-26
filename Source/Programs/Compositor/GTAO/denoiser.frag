@@ -26,27 +26,27 @@ void main()
     totalao += dot(g4, vec4(1.0, 1.0, 1.0, 1.0));
 
 #else
-    ivec2 loc = ivec2(gl_FragCoord.xy) - ivec2(2, 2);
+    const ivec2 uv = ivec2(gl_FragCoord.xy) - ivec2(2, 2);
 
-    totalao += texelFetch(RT, loc, 0).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(1, 0)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(0, 1)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(1, 1)).r;
+    totalao += texelFetch(RT, uv, 0).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(1, 0)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(0, 1)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(1, 1)).r;
 
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(2, 0)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(3, 0)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(2, 1)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(3, 1)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(2, 0)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(3, 0)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(2, 1)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(3, 1)).r;
 
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(0, 2)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(1, 2)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(0, 3)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(1, 3)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(0, 2)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(1, 2)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(0, 3)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(1, 3)).r;
 
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(2, 2)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(3, 2)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(2, 3)).r;
-    totalao += texelFetchOffset(RT, loc, 0, ivec2(3, 3)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(2, 2)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(3, 2)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(2, 3)).r;
+    totalao += texelFetchOffset(RT, uv, 0, ivec2(3, 3)).r;
 #endif
 
     FragColor = totalao * 0.0625;

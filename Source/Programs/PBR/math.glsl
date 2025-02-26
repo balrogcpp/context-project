@@ -32,7 +32,7 @@ float fstep(const float x, const float y) {
 highp vec4 mulMat4x4Float3(const highp mat4 m, const highp vec3 v) {
     return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
 }
-vec4 mulMat4x4Half3(const mat4 m, const vec3 v) {
+mediump vec4 mulMat4x4Half3(const mediump mat4 m, const mediump vec3 v) {
     return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
 }
 
@@ -45,7 +45,7 @@ vec4 mulMat4x4Half3(const mat4 m, const vec3 v) {
 highp vec3 mulMat3x3Float3(const highp mat4 m, const highp vec3 v) {
     return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
 }
-vec3 mulMat3x3Half3(const mat4 m, const vec3 v) {
+mediump vec3 mulMat3x3Half3(const mediump mat4 m, const mediump vec3 v) {
     return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
 }
 
