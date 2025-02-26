@@ -16,7 +16,7 @@ int main()
 {
   try {
     // main app class object
-    gge::Application app;
+    Application app;
     app.Init();
 
     GetComponent<VideoComponent>().ShowWindow(true);
