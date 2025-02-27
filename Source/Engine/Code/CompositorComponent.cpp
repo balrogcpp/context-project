@@ -11,6 +11,23 @@ using namespace Ogre;
 
 namespace gge {
 
+class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
+ public:
+  GBufferSchemeHandler() = default;
+  virtual ~GBufferSchemeHandler() = default;
+
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName, Ogre::Material *originalMaterial,
+                                        unsigned short lodIndex, const Ogre::Renderable *rend) final {
+    const auto &refMat = originalMaterial->getTechnique(0)->getShadowCasterMaterial();
+    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
+    gBufferTech->setSchemeName(schemeName);
+    Ogre::Pass *gbufPass = gBufferTech->createPass();
+    *gbufPass = *refMat->getTechnique(0)->getPass(0);
+    return gBufferTech;
+  }
+};
+
+
 class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
  public:
   RenderShadows(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport(); }
@@ -76,6 +93,7 @@ void CompositorComponent::postRenderTargetUpdate(const Ogre::RenderTargetEvent &
 void CompositorComponent::OnSetUp() {
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
+  Ogre::MaterialManager::getSingleton().addListener(new GBufferSchemeHandler, "gbuffer");
   compositorManager->registerCompositorLogic("DeferredLogic", this);
   ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
   sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
