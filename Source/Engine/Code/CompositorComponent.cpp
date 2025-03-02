@@ -118,13 +118,14 @@ void CompositorComponent::OnSetUp() {
   sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::ZERO)->attachObject(cubeCamera);
 
   AddCompositor("MRT", 1);
-  AddCompositor("Copyback", 0);
+  //AddCompositor("Copyback", 0);
   AddCompositor("FXAA", 1);
-  AddCompositor("ShowDepth",0);
-  AddCompositor("ShowNormals", 0);
-  AddCompositor("ShowOcclusion", 0);
+  //AddCompositor("ShowDepth",1);
+  //AddCompositor("ShowNormals", 1);
+  //AddCompositor("ShowOcclusion", 1);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", 0);
-  //AddCompositor("HDR", 1);
+  AddCompositor("HDR", 1);
+  //AddCompositor("Fx", 1);
   //AddCompositor("MB", 1);
 
   // reg as viewport listener

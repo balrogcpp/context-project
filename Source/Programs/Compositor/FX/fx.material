@@ -1,0 +1,26 @@
+// created by Andrey Vasiliev
+
+import StdQuad from stdquad.material
+
+fragment_program fx_fp glsl glsles hlsl
+{
+    source fx.frag
+	default_params
+	{
+		param_named_auto Time time
+	}
+}
+
+material Fx : StdQuad
+{
+	technique
+	{
+		pass
+		{
+            fragment_program_ref fx_fp
+			{
+                param_named RT int 0
+			}
+		}
+	}
+}

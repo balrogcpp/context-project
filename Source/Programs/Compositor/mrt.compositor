@@ -27,6 +27,19 @@ abstract target cubemap_target
     pass clear {}
     pass render_scene
     {
+        last_render_queue 95
+        camera CubeCamera align_to_face
+    }
+}
+
+abstract target skybox_target
+{
+    shadows off
+    only_initial on
+
+    pass clear {}
+    pass render_scene
+    {
         first_render_queue 90
         last_render_queue 90
         camera CubeCamera align_to_face
@@ -40,19 +53,20 @@ compositor MRT
         compositor_logic DeferredLogic
         // 0 color; 1 depth + normals; 2 velocity;
         texture mrt target_width target_height PF_FLOAT16_RGB PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1 chain_scope
-        texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R8G8B8 no_fsaa depth_pool 0 chain_scope
+        texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
 
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
         texture cube 256 256 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 chain_scope
+        texture skybox 1024 1024 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 chain_scope
 
-        target cube 0 : cubemap_target {}
-        target cube 1 : cubemap_target {}
-        target cube 2 : cubemap_target {}
-        target cube 3 : cubemap_target {}
-        target cube 4 : cubemap_target {}
-        target cube 5 : cubemap_target {}
+        target cube 0 : skybox_target {}
+        target cube 1 : skybox_target {}
+        target cube 2 : skybox_target {}
+        target cube 3 : skybox_target {}
+        target cube 4 : skybox_target {}
+        target cube 5 : skybox_target {}
 
         target mrt
         {

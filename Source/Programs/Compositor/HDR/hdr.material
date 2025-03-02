@@ -119,11 +119,6 @@ material Downscale13 : Filter
     }
 }
 
-fragment_program HDR glsl glsles hlsl
-{
-    source hdr.frag
-}
-
 material HDR : StdQuad
 {
 	technique

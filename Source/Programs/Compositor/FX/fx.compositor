@@ -1,0 +1,18 @@
+// created by Andrey Vasiliev
+
+import STD from mrt.compositor
+
+compositor Fx : STD
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Fx
+                input 0 rt
+            }
+        }
+    }
+}
