@@ -15,6 +15,5 @@ void main()
     if (textureLod(AlbedoTex, vUV0.xy, 0.0).a < 0.5) discard;
 #endif
 
-    //FragColor = (gl_FragCoord.z - PSSM_GLOBAL_MIN_DEPTH) / (PSSM_GLOBAL_RANGE - PSSM_GLOBAL_MIN_DEPTH);
-    FragColor = gl_FragCoord.z;
+    FragColor = (gl_FragCoord.z - 1.0) / 64.0;
 }

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gge {
 
-void Menu::OnClean() {}
+void Menu::OnClean() { InputSequencer::GetInstance().UnregDeviceListener(cameraMan.get()); }
 
 void Menu::OnKeyEvent(SDL_Scancode key, bool pressed) {}
 
@@ -27,9 +27,11 @@ void Menu::OnSetUp() {
   //rootNode->loadChildren(filename);
 
   GetComponent<SceneComponent>().LoadFromFile("1.scene");
+  cameraMan.reset(new OgreBites::CameraMan(GetComponent<SceneComponent>().GetOgreCamera()->getParentSceneNode()));
+  InputSequencer::GetInstance().RegDeviceListener(cameraMan.get());
 }
 
-void Menu::OnUpdate(float time) {}
+void Menu::OnUpdate(float time) { cameraMan->frameRendered(time); }
 
 void Menu::OnSizeChanged(int x, int y, uint32_t id) {}
 

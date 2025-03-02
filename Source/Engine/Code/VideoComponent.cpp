@@ -307,6 +307,7 @@ void VideoComponent::LoadResources() {
 VideoComponent::VideoComponent()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
+      id(0),
       shadowEnabled(true),
       shadowTexCount(8),
       pssmSplitCount(2),
@@ -587,6 +588,8 @@ void VideoComponent::InitWindow() {
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, sdlFlags);
   ParseSDLError(sdlWindow, "SDL_CreateWindow failed");
   ASSERTION(sdlWindow, "SDL_CreateWindow failed");
+  SDL_SetWindowMouseGrab(sdlWindow, SDL_TRUE);
+  SDL_SetRelativeMouseMode(SDL_TRUE);
 #endif
 
   Ogre::NameValuePairList renderParams;
@@ -725,7 +728,7 @@ void VideoComponent::InitOgreSceneManager() {
     sceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance);
     sceneManager->setShadowTextureSize(shadowTexSize);
     sceneManager->setShadowTextureSelfShadow(true);
-    sceneManager->setShadowTexturePixelFormat(Ogre::PixelFormat::PF_DEPTH16);
+    sceneManager->setShadowTexturePixelFormat(Ogre::PixelFormat::PF_FLOAT16_R);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, pssmSplitCount);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 1);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);

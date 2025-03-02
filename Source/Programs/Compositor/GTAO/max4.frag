@@ -8,14 +8,14 @@ out float FragColor;
 void main()
 {
 #if __VERSION__ > 330
-    vec4 c = textureGather(RT, 2.0 * gl_FragCoord.xy / vec2(textureSize(RT, 0)), 0);
+    highp vec4 c = textureGather(RT, 2.0 * gl_FragCoord.xy / vec2(textureSize(RT, 0)), 0);
     FragColor = max(max(c.x, c.y), max(c.z, c.w));
 #else
     ivec2 uv = ivec2(gl_FragCoord.xy * 2.0);
-    float fDepth0 = texelFetch(RT, uv, 0).x;
-    float fDepth1 = texelFetchOffset(RT, uv, 0, ivec2(0, 1)).x;
-    float fDepth2 = texelFetchOffset(RT, uv, 0, ivec2(1, 0)).x;
-    float fDepth3 = texelFetchOffset(RT, uv, 0, ivec2(1, 1)).x;
+    highp float fDepth0 = texelFetch(RT, uv, 0).x;
+    highp float fDepth1 = texelFetchOffset(RT, uv, 0, ivec2(0, 1)).x;
+    highp float fDepth2 = texelFetchOffset(RT, uv, 0, ivec2(1, 0)).x;
+    highp float fDepth3 = texelFetchOffset(RT, uv, 0, ivec2(1, 1)).x;
     FragColor = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
 #endif
 }

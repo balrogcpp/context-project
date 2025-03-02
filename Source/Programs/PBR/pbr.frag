@@ -380,7 +380,6 @@ vec3 GetEmission(const vec2 uv)
 
 in highp vec3 vPosition;
 in highp vec3 vPosition1;
-in mediump vec4 vPrevScreenPosition;
 #if defined(HAS_UV)
 in highp vec2 vUV0;
 #endif
@@ -416,7 +415,6 @@ void main()
 
     V = normalize(CameraPosition - vPosition);
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
-    vec2 fragVelocity = (vPrevScreenPosition.xy / vPrevScreenPosition.w) - fragCoord;
     float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
 
@@ -433,7 +431,6 @@ void main()
     float ssao = 1.0;
 
 #if defined(HAS_AO)
-    vec2 nuv = fragCoord + fragVelocity;
     vec2 occ = textureLod(OccTex, fragCoord, 0.0).rg;
     ssao = occ.r;
 #endif

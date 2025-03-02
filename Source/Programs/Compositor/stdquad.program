@@ -34,3 +34,13 @@ fragment_program max4 glsl glsles hlsl
 {
 	source max4.frag
 }
+
+fragment_program Debug glsl glsles hlsl
+{
+	source debug.frag
+
+	default_params
+    {
+        param_named_auto ViewportSize viewport_size
+    }
+}

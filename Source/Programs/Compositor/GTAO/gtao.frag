@@ -1,37 +1,32 @@
 // created by Andrey Vasiliev
 //? #version 400
-// based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
+// based on https://forum.derivative.ca/t/implementing-different-ao-algo-gtao-with-glsl/207841/8
 
-uniform highp sampler2D DepthTex;
-uniform highp vec4 ZBufferParams;
-
-// Used to get vector from camera to pixel
-//const float aspect 1.0;
-// These are offsets that change every frame, results are accumulated using temporal filtering in a separate shader
-const float aspect = 1.0;
-const float angleOffset = 1.0;
-const float spacialOffset = 1.0;
+uniform mediump sampler2D DepthTex;
+uniform mediump sampler2D NoiseTex;
+uniform float Time;
 
 #define PI 3.1415926535897932384626433832795
 #define PI_HALF 1.5707963267948966192313216916398
 
-float Linear01Depth(const highp float z)
+float Linear01Depth(const float z)
 {
-    return 1.0 / (z * ZBufferParams.z + ZBufferParams.w);
+    //return 1.0 / (z * ZBufferParams.z + ZBufferParams.w);
+    return z;
 }
 
 // http://h14s.p5r.org/2012/09/0x5f3759df.html, [Drobot2014a] Low Level Optimizations for GCN, https://blog.selfshadow.com/publications/s2016-shading-course/activision/s2016_pbs_activision_occlusion.pdf slide 63
 // https://github.com/GameTechDev/XeGTAO/blob/188587a986f94db285c83c99676123019a0fd9b6/Source/Rendering/Shaders/XeGTAO.hlsli#L171
 float GTAOFastSqrt(const float x)
 {
-    return float(0x1fbd1df5 + (int(x) >> 1));
+    return intBitsToFloat(0x1fbd1df5 + (floatBitsToInt(x) >> 1));
 }
 
 // [Eberly2014] GPGPU Programming for Games and Science
-float GTAOFastAcos(const mediump float x)
+float GTAOFastAcos(const float x)
 {
     float res = -0.156583 * abs(x) + PI_HALF;
-    res *= sqrt(1.0 - abs(x));
+    res *= GTAOFastSqrt(1.0 - abs(x));
     return x >= 0.0 ? res : PI - res;
 }
 
@@ -51,6 +46,8 @@ vec3 GetCameraVec(const vec2 uv)
     // TODO: AO is dependent on FOV, this function is not!
     // The outcome of using this simplified function is that the effective AO range is larger when using larger FOV
     // Use something more accurate to get proper FOV-independent world-space range, however you will likely also have to adjust the SSAO constants below
+    vec2 tsize = textureSize(DepthTex, 0);
+    float aspect = tsize.x / tsize.y;
     return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, 1.0);
 }
 
@@ -76,19 +73,6 @@ void SliceSample(const vec2 tc_base, const vec2 aoDir, int i, const float target
     // Helps avoid overdarkening from thin objects
     closest = mix(closest, current, SSAO_THICKNESSMIX * falloff);
 }
-
-// https://github.com/nvpro-samples/gl_ssao/blob/f6b010dc7a05346518cd13d3368d8d830a382ed9/hbao.frag.glsl
-
-//vec3 UVToView(vec2 uv, float eye_z)
-//{
-//    return vec3((uv * control.projInfo.xy + control.projInfo.zw) * (control.projOrtho != 0 ? 1. : eye_z), eye_z);
-//}
-
-//vec3 FetchViewPos(vec2 UV)
-//{
-//    float ViewDepth = textureLod(texLinearDepth,UV,0).x;
-//    return UVToView(UV, ViewDepth);
-//}
 
 vec3 MinDiff(const vec3 P, const vec3 Pr, const vec3 Pl)
 {
@@ -133,7 +117,10 @@ void main()
     vec2 uv = gl_FragCoord.xy * viewsizediv;
 
     vec3 normal = getNormal(DepthTex, uv, viewsizediv);
-    normal.z = -normal.z;
+
+    vec2 noises	= texelFetch(NoiseTex, ivec2(gl_FragCoord.xy) % 4, 0).xy;
+    float angleOffset = noises.x;
+    float spacialOffset = noises.y;
 
     // Depth of the current pixel
     float dhere = Linear01Depth(textureLod(DepthTex, uv, 0.0).x);

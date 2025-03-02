@@ -22,7 +22,7 @@ abstract compositor STD
 abstract target cubemap_target
 {
     shadows off
-    only_initial on
+    //only_initial on
 
     pass clear {}
     pass render_scene
@@ -43,8 +43,9 @@ compositor MRT
         texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R8G8B8 no_fsaa depth_pool 0 chain_scope
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
 
+        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        texture cube 32 32 PF_R11G11B10_FLOAT cubic no_fsaa chain_scope
+        texture cube 256 256 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 chain_scope
 
         target cube 0 : cubemap_target {}
         target cube 1 : cubemap_target {}
@@ -55,19 +56,48 @@ compositor MRT
 
         target mrt
         {
+            shadows off
             pass clear {}
-            pass render_scene
+			pass render_scene
             {
+                material_scheme gbuffer
                 last_render_queue 90
+            }
+        }
+
+        target rt1
+        {
+            pass render_quad
+            {
+                identifier 10
+                material ToLinear
+                input 0 mrt 1
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material GTAO
+                input 0 rt1
             }
         }
 
         target ao
         {
-            pass clear
+            pass render_quad
             {
-                buffers colour
-                colour_value 1 1 1 1
+                material Denoiser
+                input 0 ssao
+            }
+        }
+
+        target mrt
+        {
+            pass render_scene
+            {
+                last_render_queue 90
             }
         }
 
@@ -80,21 +110,60 @@ compositor MRT
             }
         }
 
-        target rt1
-        {
-            pass render_quad
-            {
-                material DepthDownscaleMax
-                input 0 mrt 1
-            }
-        }
-
         target mrt
         {
             shadows off
             pass render_scene
             {
                 first_render_queue 95
+            }
+        }
+    }
+}
+
+compositor ShowDepth : STD
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Copyback
+                input 0 mrt 1
+            }
+        }
+    }
+}
+
+compositor ShowNormals : STD
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                identifier 10
+                material Normals
+                input 0 mrt 1
+            }
+        }
+    }
+}
+
+compositor ShowOcclusion : STD
+{
+    technique
+    {
+        texture_ref ao MRT ao
+
+        target_output
+        {
+            pass render_quad
+            {
+                material Debug
+                input 0 ao
             }
         }
     }

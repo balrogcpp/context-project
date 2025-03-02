@@ -8,7 +8,7 @@ uniform vec3 LightDir0;
 #define PI 3.14159265359
 
 float fastSqrt(const float x) {
-    return float(0x1fbd1df5 + (int(x) >> 1));
+    return intBitsToFloat(0x1fbd1df5 + (floatBitsToInt(x) >> 1));
 }
 
 float acosFast(const float x) {
@@ -64,7 +64,6 @@ float pow4(const float x)
     return x2 * x2;
 }
 
-#if 0
 // Phase function
 float henyey_greenstein(const float cos_theta, const float g) {
     const float k = 0.0795774715459;
@@ -72,7 +71,7 @@ float henyey_greenstein(const float cos_theta, const float g) {
 }
 
 // Simple Analytic sky. In a real project you should use a texture
-vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
+vec3 godotAtmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
     const float rayleigh = 2.0;
     const vec4 rayleigh_color = vec4(0.26, 0.41, 0.58, 1.0);
     const float mie = 0.005;
@@ -126,7 +125,7 @@ vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
     Lin *= mix(vec3(1.0, 1.0, 1.0), sqrt(sun_energy * ((betaRTheta + betaMTheta) / (rayleigh_beta + mie_beta)) * extinction), clamp(pow5(1.0 - zenith_angle), 0.0, 1.0));
 
     // Hack in the ground color
-    Lin  *= mix(ground_color.rgb, vec3(1.0, 1.0, 1.0), smoothstep(-0.1, 0.1, dot(vec3(0.0, 1.0, 0.0), eye_dir)));
+    //Lin *= mix(ground_color.rgb, vec3(1.0, 1.0, 1.0), smoothstep(-0.1, 0.1, dot(vec3(0.0, 1.0, 0.0), eye_dir)));
 
     // Solar disk and out-scattering
     float sunAngularDiameterCos = cos(SOL_SIZE * sun_disk_scale);
@@ -137,12 +136,9 @@ vec3 atmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
 
     vec3 color = (Lin + L0) * 0.04;
     color = pow(color, vec3(1.0 / (1.2 + (1.2 * sun_fade))));
-//    color *= 0.1;
-//    color = 2.0 / (1.0 + exp(-0.1 * color)) - 1.0;
-//    color = 1.0 - exp(-1.0 * color);
-    return tonemap(color);
+    
+    return 2.0 / (1.0 + exp(-1.0 * color)) - 1.0;
 }
-#endif
 
 // https://github.com/OGRECave/ogre-next/blob/2dbbd284e0a03354b6382ac25888bd89f5c76b62/Samples/Media/2.0/scripts/materials/Common/Any/AtmosphereNprSky_ps.any
 vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
@@ -238,8 +234,8 @@ vec3 HosekWilkie(const highp vec3 V, const highp vec3 N)
     vec3 chi = ((1.0 + cos_gamma2) / pow(1.0 + I2 - 2.0 * (cos_gamma * I), vec3(1.5, 1.5, 1.5)));
     vec3 color = Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * sqrt(cos_theta)));
 
-    // return 2.0 / (1.0 + exp(-0.1 * color)) - 1.0;
-    return 1.0 - exp(-0.1 * color);
+    color = 2.0 / (1.0 + exp(-0.1 * color)) - 1.0;
+    return tonemap(color);
 }
 
 in highp vec3 vUV0;

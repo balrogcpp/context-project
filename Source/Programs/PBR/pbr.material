@@ -180,13 +180,32 @@ abstract material IBL : PBR
     }
 }
 
+material PSSM/paged_caster
+{
+	receive_shadows off
+
+	technique
+	{
+		pass
+		{
+		    depth_bias -1 -1
+			lighting off
+			polygon_mode_overrideable off
+			cull_hardware anticlockwise
+
+			vertex_program_ref PSSM/PG_caster_vs {}
+
+			fragment_program_ref PBR/shadow_caster_alpha_fs {}
+		}
+	}
+}
 abstract material PG : PBR
 {
     receive_shadows off
 
     technique
     {
-        shadow_caster_material PSSM/shadow_caster_alpha
+        shadow_caster_material PSSM/paged_caster
 
         pass
         {
@@ -196,13 +215,32 @@ abstract material PG : PBR
     }
 }
 
+material PSSM/paged0_caster
+{
+	receive_shadows off
+
+	technique
+	{
+		pass
+		{
+		    depth_bias -1 -1
+			lighting off
+			polygon_mode_overrideable off
+			cull_hardware anticlockwise
+
+			vertex_program_ref PSSM/PG0_caster_vs {}
+
+			fragment_program_ref PBR/shadow_caster_alpha_fs {}
+		}
+	}
+}
 abstract material PG0 : PBR
 {
     receive_shadows off
 
     technique
     {
-        shadow_caster_material PSSM/shadow_caster_alpha
+        shadow_caster_material PSSM/paged0_caster
 
         pass
         {
@@ -214,6 +252,25 @@ abstract material PG0 : PBR
     }
 }
 
+material PSSM/terra_caster
+{
+	receive_shadows off
+
+	technique
+	{
+		pass
+		{
+		    depth_bias -1 -1
+			lighting off
+			polygon_mode_overrideable off
+			cull_hardware anticlockwise
+
+			vertex_program_ref PSSM/TERRA_caster_vs {}
+
+			fragment_program_ref PBR/shadow_caster_fs {}
+		}
+	}
+}
 abstract material TERRA
 {
     receive_shadows off
@@ -225,7 +282,7 @@ abstract material TERRA
 
     technique
     {
-        shadow_caster_material PSSM/shadow_caster
+        shadow_caster_material PSSM/terra_caster
 
         pass
         {

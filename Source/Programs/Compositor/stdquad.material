@@ -23,31 +23,7 @@ abstract material RayCast
 		}
 	}
 }
-/*
-abstract material STD
-{
-    technique
-    {
-        pass
-        {
-            cull_hardware none
-            depth_check off
-            depth_write off
-            polygon_mode_overrideable false
-            lighting off
 
-            vertex_program_ref StdQuad {}
-
-            texture_unit RT
-            {
-                texture black.dds
-                tex_address_mode clamp
-                filtering none
-            }
-        }
-    }
-}
-*/
 abstract material StdQuad
 {
     technique
@@ -116,6 +92,35 @@ material Copy
             vertex_program_ref StdQuad {}
 
             fragment_program_ref Copy
+            {
+                param_named RT int 0
+            }
+
+            texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
+material Debug
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+            lighting off
+
+            vertex_program_ref StdQuad {}
+
+            fragment_program_ref Debug
             {
                 param_named RT int 0
             }

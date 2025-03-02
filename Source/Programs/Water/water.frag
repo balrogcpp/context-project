@@ -1,14 +1,16 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-#include "tonemap.glsl"
 #include "fog.glsl"
 #include "srgb.glsl"
+#include "tonemap.glsl"
+
+#define saturate(x) clamp(x, 0.0, 1.0)
 
 uniform mediump sampler2D ReflectionTex;
 uniform mediump sampler2D RefractionTex;
 uniform mediump sampler2D DepthTex;
-uniform sampler2D NormalTex;
+uniform mediump sampler2D NormalTex;
 uniform sampler2D CausticTex;
 uniform sampler2D FoamTex;
 
@@ -142,7 +144,8 @@ void main()
     float fresnel = FresnelDielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
-    vec3 reflection = inverseTonemapSRGB(textureLod(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0), 0.0).rgb);
+    vec3 reflection = textureLod(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0), 0.0).rgb;
+    reflection = inverseTonemapSRGB(reflection);
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
     float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
@@ -156,7 +159,6 @@ void main()
 
     // depth of potential refracted fragment
     float refractedDepth = textureLod(DepthTex, fragCoord - refrOffset * 2.0, 0.0).x;
-    refractedDepth = refractedDepth * (FarClipDistance - NearClipDistance) + NearClipDistance;
     highp float surfaceDepth = fragDepth;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
@@ -168,7 +170,8 @@ void main()
     refraction.b = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade, 0.0).b;
     refraction = inverseTonemapSRGB(refraction);
 #else
-    vec3 refraction = inverseTonemapSRGB(textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).rgb);
+    vec3 refraction = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).rgb;
+    refraction = inverseTonemapSRGB(refraction);
 #endif
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);
@@ -263,6 +266,7 @@ void main()
 
     if (aboveWater) {
         color = mix(fogging, reflection, fresnel * 0.6);
+        //color = refraction;
     } else {
         // scatter and extinction between surface and camera
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);

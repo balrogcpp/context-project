@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 
 import RayCast from stdquad.material
+import StdQuad from stdquad.material
 
 fragment_program mb glsl glsles hlsl
 {
@@ -12,7 +13,7 @@ fragment_program mb glsl glsles hlsl
     }
 }
 
-material MB : RayCast
+material MB : StdQuad
 {
 	technique
 	{

@@ -66,7 +66,7 @@ material Combine : StdQuad
     }
 }
 
-material GTAO : RayCast
+material GTAO : StdQuad
 {
     technique
     {
@@ -75,21 +75,22 @@ material GTAO : RayCast
             fragment_program_ref gtao
             {
                 param_named DepthTex int 0
-                //param_named NormalTex int 1
+                param_named NoiseTex int 1
+                //param_named_auto Time time
             }
 
-            /*texture_unit DepthTex
+            texture_unit DepthTex
             {
                 texture black.dds
                 tex_address_mode mirror
                 filtering none
             }
-            texture_unit NormalTex
+            texture_unit NoiseTex
             {
-                texture black.dds
-                tex_address_mode mirror
+                texture gtao.dds
+                tex_address_mode clamp
                 filtering none
-            }*/
+            }
         }
     }
 }

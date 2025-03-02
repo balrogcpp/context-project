@@ -34,8 +34,6 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   virtual ~VideoComponent();
 
   void RenderFrame();
-  //  Window& GetWindow(int number = 0);
-  //  Window& GetMainWindow();
   void ShowWindow(bool show);
 
   void UnloadResources();

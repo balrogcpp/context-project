@@ -10,8 +10,8 @@ compositor MB : STD
         {
             pass render_quad
             {
+                //quad_normals camera_far_corners_view_space
                 identifier 30
-                quad_normals camera_far_corners_view_space
                 material MB
                 input 0 rt
                 input 1 mrt 1

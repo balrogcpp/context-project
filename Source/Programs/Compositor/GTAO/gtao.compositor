@@ -2,12 +2,11 @@
 
 import STD from mrt.compositor
 
-compositor SSAO : STD
+compositor GTAO : STD
 {
     technique
     {
         texture gbuf target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT32_R no_fsaa depth_pool 0
-        //texture gbuf1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture_ref ao MRT ao
 
@@ -15,25 +14,16 @@ compositor SSAO : STD
         {
             pass render_quad
             {
-                material DepthDownscaleMax
+                identifier 10
+                material ToLinear
                 input 0 mrt 1
             }
         }
-
-        // target gbuf1
-        // {
-        //     pass render_quad
-        //     {
-        //         material Copy
-        //         input 0 gbuf
-        //     }
-        // }
 
         target ssao
         {
             pass render_quad
             {
-                identifier 10
                 material GTAO
                 input 0 gbuf
             }
@@ -47,14 +37,5 @@ compositor SSAO : STD
                 input 0 ssao
             }
         }
-
-        // target_output
-        // {
-        //     pass render_quad
-        //     {
-        //         material Copyback
-        //         input 0 ao
-        //     }
-        // }
     }
 }

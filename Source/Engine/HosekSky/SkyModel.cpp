@@ -47,7 +47,6 @@ void applyHosekParams(Ogre::Vector3f sunDir, const Ogre::MaterialPtr &material, 
       for (int j = 0; j < 3; j++) hosekParamsArray[3 * i + j] = hosekParams[i][j];
 
     auto fp = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    fp->setIgnoreMissingParams(true);
     fp->setNamedConstant(uniform, hosekParamsArray.data(), hosekParamsArray.size());
   }
 

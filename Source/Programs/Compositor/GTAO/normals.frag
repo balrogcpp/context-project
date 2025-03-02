@@ -2,7 +2,7 @@
 //? #version 400
 // based on https://github.com/OGRECave/ogre/blob/v13.6.4/Samples/Media/DeferredShadingMedia/ssao_ps.glsl
 
-uniform mediump sampler2D DepthTex;
+uniform highp sampler2D DepthTex;
 uniform highp vec4 ZBufferParams;
 
 vec3 GetCameraVec(const vec2 uv)
@@ -14,7 +14,8 @@ vec3 GetCameraVec(const vec2 uv)
     // TODO: AO is dependent on FOV, this function is not!
     // The outcome of using this simplified function is that the effective AO range is larger when using larger FOV
     // Use something more accurate to get proper FOV-independent world-space range, however you will likely also have to adjust the SSAO constants below
-    const float aspect = 1.0;
+    vec2 tsize = textureSize(DepthTex, 0);
+    float aspect = tsize.x / tsize.y;
     return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, 1.0);
 }
 
@@ -30,7 +31,7 @@ float Linear01Depth(const highp float z)
     return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
 }
 
-vec3 getNormal(const sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 getNormal(const highp sampler2D tex, const vec2 uv, const vec2 tsize)
 {
     vec3 P = GetCameraVec(uv) * Linear01Depth(textureLod(tex, uv, 0.0).x);
     vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(1.0, 0.0), 0.0).x);
@@ -46,8 +47,9 @@ void main()
 {
     vec2 tsize = 1.0 / vec2(textureSize(DepthTex, 0).xy);
     vec2 uv = gl_FragCoord.xy / vec2(textureSize(DepthTex, 0).xy);
+    uv.y = 1.0 - uv.y;
 
-    vec3 normal = getNormal(DepthTex, uv, tsize);
-    normal.z = -normal.z;
-    FragColor.rgb = vec3(normal);
+    vec3 n = getNormal(DepthTex, uv, tsize);
+    n.z = -n.z;
+    FragColor.rgb = vec3(n);
 }

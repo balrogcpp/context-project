@@ -17,7 +17,10 @@ class SceneComponent final : public Component<SceneComponent> {
   void ProcessEntity(Ogre::Entity *entity);
   void ProcessEntity(const std::string &name);
   void ProcessNode(Ogre::SceneNode *node);
+
+  Ogre::Root *GetOgreRoot() { return Ogre::Root::getSingletonPtr(); }
   Ogre::SceneManager *GetOgreScene();
+  Ogre::Camera *GetOgreCamera() { return camera; };
 
   /// System impl
   void OnSetUp() override;

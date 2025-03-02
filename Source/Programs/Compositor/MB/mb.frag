@@ -8,6 +8,7 @@ uniform mat4 InvViewMatrix;
 uniform mat4 WorldViewProjMatrix;
 uniform mat4 ViewProjPrev;
 uniform float FrameTime;
+uniform float ClampDistance;
 
 #define MAX_SAMPLES 8
 
@@ -21,8 +22,22 @@ vec4 mulMat4x4Half3(const mat4 m, const vec3 v)
     return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
 }
 
+vec3 GetCameraVec(const vec2 uv)
+{
+    // Returns the vector from camera to the specified position on the camera plane (uv argument), located one unit away from the camera
+    // This vector is not normalized.
+    // The nice thing about this setup is that the returned vector from this function can be simply multiplied with the linear depth to get pixel's position relative to camera position.
+    // This particular function does not account for camera rotation or position or FOV at all (since we don't need it for AO)
+    // TODO: AO is dependent on FOV, this function is not!
+    // The outcome of using this simplified function is that the effective AO range is larger when using larger FOV
+    // Use something more accurate to get proper FOV-independent world-space range, however you will likely also have to adjust the SSAO constants below
+    vec2 tsize = textureSize(DepthTex, 0);
+    float aspect = tsize.y / tsize.x;
+    return vec3(-(-uv.y * aspect + aspect),- (uv.x * 2.0 - 1.0), -1.0);
+}
 
-in highp vec3 vRay;
+
+//in highp vec3 vRay;
 out vec3 FragColor;
 void main()
 {
@@ -31,7 +46,10 @@ void main()
     vec3 color = textureLod(RT, uv, 0.0).rgb;
     float depth = Linear01Depth(textureLod(DepthTex, vec2(uv.x, 1.0 - uv.y), 0.0).x);
 
-    vec3 viewPos = vRay * depth;
+    vec3 ray = GetCameraVec(uv) * ClampDistance;
+
+    //vec3 viewPos = vRay * depth;
+    vec3 viewPos = ray * depth;
     vec4 worldPos = mulMat4x4Half3(InvViewMatrix, viewPos.xyz);
     worldPos.xyz /= worldPos.w;
 
@@ -43,7 +61,7 @@ void main()
 
     vec2 velocity = (nuv.xy - olduv.xy);
 
-    velocity *= 16.6666666667 /  FrameTime;
+    velocity *= (16.6666666667 /  FrameTime);
     float speed = length(velocity * vec2(textureSize(RT, 0)));
     float nSamples = ceil(clamp(speed, 1.0, float(MAX_SAMPLES)));
     float invSamples = 1.0 / nSamples;
@@ -59,5 +77,5 @@ void main()
 
     color /= counter;
 
-    FragColor.rgb = color;
+    FragColor = color;
 }

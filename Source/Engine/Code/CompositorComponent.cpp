@@ -18,11 +18,17 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName, Ogre::Material *originalMaterial,
                                         unsigned short lodIndex, const Ogre::Renderable *rend) final {
-    const auto &refMat = originalMaterial->getTechnique(0)->getShadowCasterMaterial();
+    const auto &caster = originalMaterial->getTechnique(0)->getShadowCasterMaterial();
+    const auto &refMat = Ogre::MaterialManager::getSingleton().getByName("GBuffer");
     Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
     gBufferTech->setSchemeName(schemeName);
     Ogre::Pass *gbufPass = gBufferTech->createPass();
-    *gbufPass = *refMat->getTechnique(0)->getPass(0);
+    if (caster) {
+      *gbufPass = *caster->getTechnique(0)->getPass(0);
+      gbufPass->setCullingMode(Ogre::CULL_CLOCKWISE);
+    } else {
+      *gbufPass = *refMat->getTechnique(0)->getPass(0);
+    }
     return gBufferTech;
   }
 };
@@ -111,13 +117,15 @@ void CompositorComponent::OnSetUp() {
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
   sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::ZERO)->attachObject(cubeCamera);
 
-  AddCompositor("MRT", true);
-  AddCompositor("SSAO", false);
-  AddCompositor("Copyback", false);
-  AddCompositor("FXAA", true);
-  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", false);
-  AddCompositor("HDR", false);
-  AddCompositor("MB", false);
+  AddCompositor("MRT", 1);
+  AddCompositor("Copyback", 0);
+  AddCompositor("FXAA", 1);
+  AddCompositor("ShowDepth",0);
+  AddCompositor("ShowNormals", 0);
+  AddCompositor("ShowOcclusion", 0);
+  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", 0);
+  //AddCompositor("HDR", 1);
+  //AddCompositor("MB", 1);
 
   // reg as viewport listener
   viewport->addListener(this);
@@ -332,14 +340,15 @@ void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Mater
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
-
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
 
   } else if (pass_id == 30) {
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
+    fp->setNamedConstant("ClampDistance", far - near);
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
+
     Ogre::Matrix4 viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix();
     static Matrix4 viewProjPrev;
     fp->setNamedConstant("WorldViewProjMatrix", viewProj);
@@ -370,24 +379,24 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   const auto &vp = pass->getVertexProgramParameters();
   vp->setIgnoreMissingParams(true);
 
-  if (sceneManager->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-    const Ogre::PSSMShadowCameraSetup::SplitPointList &splits =
-        dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
-    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits.size() > 2 ? splits[2] : 0.0, splits.size() > 3 ? splits[3] : 0.0,
-                                                     sceneManager->getShadowFarDistance()));
+  if (sceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED) {
+    const Ogre::PSSMShadowCameraSetup::SplitPointList &splits = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
+    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits.size() > 2 ? splits[2] : 0.0, splits.size() > 3 ? splits[3] : 0.0, sceneManager->getShadowFarDistance()));
   }
+
   if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
-    for (auto *it : pass->getTextureUnitStates())
-      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+    for (auto *it : pass->getTextureUnitStates()) {
+      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR)  it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+    }
     return;
   }
 
-  Ogre::Matrix4 MVP;
-  rend->getWorldTransforms(&MVP);
-  Ogre::Matrix4 viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * MVP;
-  Ogre::Any prevProj = rend->getUserObjectBindings().getUserAny();
-  rend->getUserObjectBindings().setUserAny(viewProj);
-  if (prevProj.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevProj));
+  //Ogre::Matrix4 MVP;
+  //rend->getWorldTransforms(&MVP);
+  //Ogre::Matrix4 viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * MVP;
+  //Ogre::Any prevProj = rend->getUserObjectBindings().getUserAny();
+  //rend->getUserObjectBindings().setUserAny(viewProj);
+  //if (prevProj.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevProj));
 
   if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
