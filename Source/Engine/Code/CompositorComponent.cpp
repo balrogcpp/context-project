@@ -120,12 +120,12 @@ void CompositorComponent::OnSetUp() {
   AddCompositor("MRT", 1);
   //AddCompositor("Copyback", 0);
   AddCompositor("FXAA", 1);
+  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", 0);
   //AddCompositor("ShowDepth",1);
   //AddCompositor("ShowNormals", 1);
   //AddCompositor("ShowOcclusion", 1);
-  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", 0);
-  AddCompositor("HDR", 1);
-  //AddCompositor("Fx", 1);
+  // AddCompositor("HDR", 1);
+  AddCompositor("Fx", 1);
   //AddCompositor("MB", 1);
 
   // reg as viewport listener

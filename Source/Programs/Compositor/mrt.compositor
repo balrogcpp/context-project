@@ -35,7 +35,7 @@ abstract target cubemap_target
 abstract target skybox_target
 {
     shadows off
-    only_initial on
+    //only_initial on
 
     pass clear {}
     pass render_scene
@@ -53,13 +53,13 @@ compositor MRT
         compositor_logic DeferredLogic
         // 0 color; 1 depth + normals; 2 velocity;
         texture mrt target_width target_height PF_FLOAT16_RGB PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1 chain_scope
-        texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 chain_scope
-        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
+        texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
 
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0 chain_scope
-        texture cube 256 256 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 chain_scope
-        texture skybox 1024 1024 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0 chain_scope
+        texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture cube 256 256 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0
+        texture skybox 1024 1024 PF_R11G11B10_FLOAT cubic no_fsaa depth_pool 0
 
         target cube 0 : skybox_target {}
         target cube 1 : skybox_target {}
@@ -124,7 +124,7 @@ compositor MRT
             }
         }
 
-        target mrt
+        target_output
         {
             shadows off
             pass render_scene

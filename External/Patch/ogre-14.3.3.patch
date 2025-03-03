@@ -348,7 +348,7 @@ index 436c498..f184c9b 100644
                  StringUtil::format("#version %d%s", mShaderVersion, (isGLES && mShaderVersion > 100) ? " es" : ""));
 -        }
 -
-+        } else { mShaderVersion = renderSystem ? renderSystem->getNativeShadingLanguageVersion() : 120; if (isGLES) mSource.insert(0, "precision mediump float;\nprecision mediump int;\n\n");
++        } else { mShaderVersion = renderSystem ? renderSystem->getNativeShadingLanguageVersion() : 120; if (isGLES) mSource.insert(0, "precision mediump float;\nprecision mediump int;\nprecision mediump sampler2D;\nprecision mediump samplerCube;\n\n");
 +            mSource.insert(0, StringUtil::format("#version %d%s\n\n", mShaderVersion, (isGLES && mShaderVersion > 100) ? " es" : (mShaderVersion > 300 ? " core" : ""))); }
          String verStr = std::to_string(mShaderVersion);
  
