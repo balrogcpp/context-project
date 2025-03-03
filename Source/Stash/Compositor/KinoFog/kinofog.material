@@ -2,7 +2,7 @@
 
 import RayCast from stdquad.material
 
-fragment_program KinoFog glsl glsles hlsl
+fragment_program KinoFog glsl glsles vk
 {
     source kinofog.frag
 

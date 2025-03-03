@@ -3,7 +3,7 @@
 import STD from stdquad.material
 
 
-fragment_program godraysFBO glsl glsles hlsl
+fragment_program godraysFBO glsl glsles vk
 {
 	source godraysFBO.frag
 }
@@ -38,7 +38,7 @@ material GodraysFBO : STD
 }
 
 
-fragment_program godrays glsl glsles hlsl
+fragment_program godrays glsl glsles vk
 {
 	source godrays.frag
 
@@ -72,7 +72,7 @@ material GodRays : STD
     }
 }
 
-fragment_program godraysMOD glsl glsles hlsl
+fragment_program godraysMOD glsl glsles vk
 {
 	source godraysMOD.frag
 }

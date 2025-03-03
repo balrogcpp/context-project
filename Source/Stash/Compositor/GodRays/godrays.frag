@@ -2,7 +2,7 @@
 //? #version 400
 #include "header.glsl"
 
-uniform mediump sampler2D FBO;
+uniform sampler2D FBO;
 uniform int LightCount;
 uniform vec4 LightPosition;
 uniform float Decay;

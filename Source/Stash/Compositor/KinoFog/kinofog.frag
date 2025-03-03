@@ -23,8 +23,8 @@
 
 #include "fog.glsl"
 
-uniform mediump sampler2D RT;
-uniform mediump sampler2D DepthTex;
+uniform sampler2D RT;
+uniform sampler2D DepthTex;
 uniform samplerCube SkyBoxTex;
 uniform highp vec3 CameraPosition;
 uniform vec3 LightDir0;
