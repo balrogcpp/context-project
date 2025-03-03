@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program SkyBoxVp glsl glsles hlsl
+vertex_program SkyBoxVp glsl glsles vk
 {
 	source skybox.vert
 
@@ -10,7 +10,7 @@ vertex_program SkyBoxVp glsl glsles hlsl
     }
 }
 
-fragment_program SkyBoxFp glsl glsles hlsl
+fragment_program SkyBoxFp glsl glsles vk
 {
 	source skybox.frag
 
