@@ -5,6 +5,7 @@
 #include "HosekSky/SkyModel.h"
 #include "Platform.h"
 #include <OgreCustomCompositionPass.h>
+#include <iostream>
 
 using namespace std;
 using namespace Ogre;
@@ -40,7 +41,7 @@ class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
   virtual ~RenderShadows() {}
 
   void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
-    if (sm->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+    if (sm->getShadowTechnique() == Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED) {
       Ogre::Camera *camera = viewport->getCamera();
       auto *context = sm->_pauseRendering();
       sm->prepareShadowTextures(camera, viewport);
@@ -48,14 +49,35 @@ class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
     }
   }
 
- private:
+ protected:
   Ogre::Viewport *viewport = nullptr;
 };
-
 class RenderShadowsPass : public Ogre::CustomCompositionPass {
  public:
   Ogre::CompositorInstance::RenderSystemOperation *createOperation(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) override {
     return OGRE_NEW RenderShadows(instance, pass);
+  }
+};
+
+class PlanarReflection : public Ogre::CompositorInstance::RenderSystemOperation {
+ public:
+  PlanarReflection(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport();
+  }
+  virtual ~PlanarReflection() {}
+
+  void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
+    Ogre::Camera *camera = viewport->getCamera();
+    cout << camera->getViewport()->getTarget()->getName() << '\n';
+    cout << camera->getName() << '\n';
+  }
+
+ protected:
+  Ogre::Viewport *viewport = nullptr;
+};
+class PlanarReflectionPass  : public Ogre::CustomCompositionPass {
+ public:
+  Ogre::CompositorInstance::RenderSystemOperation *createOperation(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) override {
+    return OGRE_NEW PlanarReflection(instance, pass);
   }
 };
 
@@ -78,19 +100,18 @@ void CompositorComponent::compositorInstanceCreated(Ogre::CompositorInstance *ne
 void CompositorComponent::compositorInstanceDestroyed(Ogre::CompositorInstance *destroyedInstance) { destroyedInstance->removeListener(this); }
 
 void CompositorComponent::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-  string name = evt.source->getName();
-  if (name.find("reflection") != string::npos) {
+  if (evt.source->getName().find("reflection") != string::npos) {
     if (plane.getSide(camera->getRealPosition()) != Ogre::Plane::NEGATIVE_SIDE)
       camera->enableCustomNearClipPlane(Ogre::Plane(plane.normal, -plane.d));
     else
       camera->enableCustomNearClipPlane(Ogre::Plane(-plane.normal, -plane.d));
+
     camera->enableReflection(Ogre::Plane(plane.normal, -plane.d));
   }
 }
 
 void CompositorComponent::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-  string name = evt.source->getName();
-  if (name.find("reflection") != string::npos) {
+  if (evt.source->getName().find("reflection") != string::npos) {
     camera->disableCustomNearClipPlane();
     camera->disableReflection();
   }
@@ -106,7 +127,8 @@ void CompositorComponent::OnSetUp() {
   ASSERTION(sceneManager, "[CompositorManager] sceneManager not initialised");
   camera = sceneManager->getCamera("Camera");
   ASSERTION(camera, "[CompositorManager] camera not initialised");
-  compositorManager->registerCustomCompositionPass("RenderShadowMap", new RenderShadowsPass);
+  compositorManager->registerCustomCompositionPass("ShadowMapPass", new RenderShadowsPass);
+  compositorManager->registerCustomCompositionPass("PlanarReflectionPass", new PlanarReflectionPass);
 
   viewport = camera->getViewport();
   compositorChain = compositorManager->getCompositorChain(viewport);
@@ -117,16 +139,22 @@ void CompositorComponent::OnSetUp() {
   cubeCamera->setFarClipDistance(camera->getFarClipDistance());
   sceneManager->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::ZERO)->attachObject(cubeCamera);
 
+  bool debug = 0;
+  bool fxaa = 1;
+  bool smaa = 0;
+  bool hdr = 1;
+  bool mb = 1;
+
   AddCompositor("MRT", 1);
-  //AddCompositor("Copyback", 0);
-  AddCompositor("FXAA", 1);
-  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", 0);
-  //AddCompositor("ShowDepth",1);
-  //AddCompositor("ShowNormals", 1);
-  //AddCompositor("ShowOcclusion", 1);
-  // AddCompositor("HDR", 1);
-  AddCompositor("Fx", 1);
-  //AddCompositor("MB", 1);
+  AddCompositor("FXAA", fxaa);
+  AddCompositor("Copyback", !fxaa);
+  if (!RenderSystemIsGLES2()) AddCompositor("SMAA", smaa);
+  AddCompositor("ShowDepth",0);
+  AddCompositor("ShowNormals", 0);
+  AddCompositor("ShowOcclusion", debug);
+  AddCompositor("MB", mb);
+  AddCompositor("HDR", hdr);
+  AddCompositor("Fx", !hdr);
 
   // reg as viewport listener
   viewport->addListener(this);
@@ -362,8 +390,8 @@ void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Mater
 void CompositorComponent::notifyMaterialSetup(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {}
 
 void CompositorComponent::notifyResourcesCreated(bool forResizeOnly) {
-  if (IsCompositorInChain("Fresnel")) {
-    auto *rt = compositorChain->getCompositor("Fresnel")->getRenderTarget("reflection");
+  if (IsCompositorInChain("MRT")) {
+    auto *rt = compositorChain->getCompositor("MRT")->getRenderTarget("reflection");
     if (rt) {
       rt->removeAllListeners();
       rt->addListener(this);
@@ -380,16 +408,18 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   const auto &vp = pass->getVertexProgramParameters();
   vp->setIgnoreMissingParams(true);
 
-  if (sceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED) {
-    const Ogre::PSSMShadowCameraSetup::SplitPointList &splits = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
-    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits.size() > 2 ? splits[2] : 0.0, splits.size() > 3 ? splits[3] : 0.0, sceneManager->getShadowFarDistance()));
-  }
-
+  // required for correct imposter generation
   if (source->getViewportHeight() == source->getViewportWidth() && source->getViewportHeight() != viewport->getHeight()) {
     for (auto *it : pass->getTextureUnitStates()) {
-      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR)  it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+      if (it->getContentType() == Ogre::TextureUnitState::CONTENT_COMPOSITOR) it->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
     }
     return;
+  }
+
+  // forward pssm parameters to fragment shader
+  if (pLightList->size() > 0 && sceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED) {
+    const Ogre::PSSMShadowCameraSetup::SplitPointList &splits = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
+    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits.size() > 2 ? splits[2] : 0.0, splits.size() > 3 ? splits[3] : 0.0, sceneManager->getShadowFarDistance()));
   }
 
   //Ogre::Matrix4 MVP;
@@ -399,16 +429,9 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   //rend->getUserObjectBindings().setUserAny(viewProj);
   //if (prevProj.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevProj));
 
-  if (auto *tex = pass->getTextureUnitState("ReflectionTex")) {
-    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
-      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      if (!IsCompositorEnabled("Fresnel")) AddCompositor("Fresnel", true, 0);
-      tex->setCompositorReference("Fresnel", "reflection");
-      tex->setProjectiveTexturing(true, camera);
-    }
+  if (!IsCompositorEnabled("MRT")) {
+    return;
   }
-
-  if (!IsCompositorEnabled("MRT")) return;
 
   if (auto *tex = pass->getTextureUnitState("IBL")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {

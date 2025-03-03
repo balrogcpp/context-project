@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-abstract vertex_program Unlit_I_vs glsl glsles hlsl
+abstract vertex_program Unlit_I_vs glsl glsles vk
 {
 	source pbr.vert
     preprocessor_defines HAS_UV
@@ -11,7 +11,7 @@ abstract vertex_program Unlit_I_vs glsl glsles hlsl
     }
 }
 
-abstract fragment_program Unlit_I_fs glsl glsles hlsl
+abstract fragment_program Unlit_I_fs glsl glsles vk
 {
 	source pbr.frag
     preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,MAX_LIGHTS=0,MAX_SHADOW_TEXTURES=0
@@ -30,12 +30,12 @@ abstract fragment_program Unlit_I_fs glsl glsles hlsl
 }
 
 
-abstract vertex_program PBR_I_vs glsl glsles hlsl : Unlit_I_vs
+abstract vertex_program PBR_I_vs glsl glsles vk : Unlit_I_vs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
 
-abstract fragment_program PBR_I_fs glsl glsles hlsl : Unlit_I_fs
+abstract fragment_program PBR_I_fs glsl glsles vk : Unlit_I_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
     default_params
@@ -54,19 +54,19 @@ abstract fragment_program PBR_I_fs glsl glsles hlsl : Unlit_I_fs
     }
 }
 
-abstract fragment_program IBL_I_fs glsl glsles hlsl : PBR_I_fs
+abstract fragment_program IBL_I_fs glsl glsles vk : PBR_I_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
 }
 
-vertex_program Unlit_vs glsl glsles hlsl : Unlit_I_vs {}
-fragment_program Unlit_fs glsl glsles hlsl : Unlit_I_fs {}
-vertex_program PBR_vs glsl glsles hlsl : PBR_I_vs {}
-fragment_program PBR_fs glsl glsles hlsl : PBR_I_fs {}
-vertex_program IBL_vs glsl glsles hlsl : PBR_I_vs {}
-fragment_program IBL_fs glsl glsles hlsl : IBL_I_fs {}
+vertex_program Unlit_vs glsl glsles vk : Unlit_I_vs {}
+fragment_program Unlit_fs glsl glsles vk : Unlit_I_fs {}
+vertex_program PBR_vs glsl glsles vk : PBR_I_vs {}
+fragment_program PBR_fs glsl glsles vk : PBR_I_fs {}
+vertex_program IBL_vs glsl glsles vk : PBR_I_vs {}
+fragment_program IBL_fs glsl glsles vk : IBL_I_fs {}
 
-vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
+vertex_program PG_vs glsl glsles vk : PBR_I_vs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY
     default_params
@@ -74,12 +74,12 @@ vertex_program PG_vs glsl glsles hlsl : PBR_I_vs
         param_named_auto Time time
     }
 }
-vertex_program PSSM/PG_caster_vs glsl glsles hlsl : PG_vs
+vertex_program PSSM/PG_caster_vs glsl glsles vk : PG_vs
 {
     preprocessor_defines HAS_UV,PAGED_GEOMETRY,SHADOWCASTER
 }
 
-fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
+fragment_program PG_fs glsl glsles vk : PBR_I_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA
 
@@ -89,7 +89,7 @@ fragment_program PG_fs glsl glsles hlsl : PBR_I_fs
     }
 }
 
-vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
+vertex_program PG0_vs glsl glsles vk : PBR_I_vs
 {
     preprocessor_defines HAS_UV,HAS_VERTEXCOLOR,PAGED_GEOMETRY
 
@@ -98,12 +98,12 @@ vertex_program PG0_vs glsl glsles hlsl : PBR_I_vs
         param_named_auto Time time
     }
 }
-vertex_program PSSM/PG0_caster_vs glsl glsles hlsl : PG0_vs
+vertex_program PSSM/PG0_caster_vs glsl glsles vk : PG0_vs
 {
     preprocessor_defines HAS_UV,PAGED_GEOMETRY,SHADOWCASTER
 }
 
-fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs
+fragment_program PG0_fs glsl glsles vk : PBR_I_fs
 {
     preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
 
@@ -113,21 +113,21 @@ fragment_program PG0_fs glsl glsles hlsl : PBR_I_fs
     }
 }
 
-vertex_program TERRA_vs glsl glsles hlsl : PBR_I_vs
+vertex_program TERRA_vs glsl glsles vk : PBR_I_vs
 {
     preprocessor_defines HAS_UV,VERTEX_COMPRESSION
 }
-vertex_program PSSM/TERRA_caster_vs glsl glsles hlsl : TERRA_vs
+vertex_program PSSM/TERRA_caster_vs glsl glsles vk : TERRA_vs
 {
     preprocessor_defines VERTEX_COMPRESSION,SHADOWCASTER
 }
 
-fragment_program TERRA_fs glsl glsles hlsl : IBL_I_fs
+fragment_program TERRA_fs glsl glsles vk : IBL_I_fs
 {
     preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
 }
 
-vertex_program PBR/shadow_caster_fs glsl glsles hlsl
+vertex_program PBR/shadow_caster_fs glsl glsles vk
 {
 	source pssm.vert
 	default_params
@@ -135,7 +135,7 @@ vertex_program PBR/shadow_caster_fs glsl glsles hlsl
 		param_named_auto WorldViewProjMatrix worldviewproj_matrix
 	}
 }
-fragment_program PBR/shadow_caster_alpha_fs glsl glsles hlsl
+fragment_program PBR/shadow_caster_alpha_fs glsl glsles vk
 {
 	source pssm.frag
 	preprocessor_defines SHADOWCASTER_ALPHA

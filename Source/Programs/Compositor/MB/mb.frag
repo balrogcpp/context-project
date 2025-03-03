@@ -1,8 +1,8 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-uniform mediump sampler2D RT;
-uniform mediump sampler2D DepthTex;
+uniform sampler2D RT;
+uniform sampler2D DepthTex;
 uniform vec4 ZBufferParams;
 uniform mat4 InvViewMatrix;
 uniform mat4 WorldViewProjMatrix;

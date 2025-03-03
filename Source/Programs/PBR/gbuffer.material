@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program GBuffer_vs glsl glsles hlsl
+vertex_program GBuffer_vs glsl glsles vk
 {
 	source pssm.vert
 
@@ -10,7 +10,7 @@ vertex_program GBuffer_vs glsl glsles hlsl
 	}
 }
 
-fragment_program GBuffer_fs glsl glsles hlsl
+fragment_program GBuffer_fs glsl glsles vk
 {
 	source pssm.frag
 

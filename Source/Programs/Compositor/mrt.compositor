@@ -8,10 +8,14 @@ abstract compositor STD
     technique
     {
         compositor_logic DeferredLogic
+
         texture_ref mrt MRT mrt
         texture rt target_width target_height PF_FLOAT16_RGB no_fsaa depth_pool 0 pooled
 
-        target rt { input previous }
+        target rt
+        {
+            input previous
+        }
     }
 }
 
@@ -19,10 +23,10 @@ abstract compositor STD
 //----------------------------------------------------------------------------------------------------------------------
 // Abstract node to avoid copy & paste
 //----------------------------------------------------------------------------------------------------------------------
-abstract target cubemap_target
+abstract target env_target
 {
     shadows off
-    //only_initial on
+    only_initial on
 
     pass clear {}
     pass render_scene
@@ -51,10 +55,11 @@ compositor MRT
     technique
     {
         compositor_logic DeferredLogic
-        // 0 color; 1 depth + normals; 2 velocity;
+
         texture mrt target_width target_height PF_FLOAT16_RGB PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1 chain_scope
         texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
+        texture reflection target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 1
 
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
@@ -67,6 +72,21 @@ compositor MRT
         target cube 3 : skybox_target {}
         target cube 4 : skybox_target {}
         target cube 5 : skybox_target {}
+
+        //target cube 0 : env_target {}
+        //target cube 1 : env_target {}
+        //target cube 2 : env_target {}
+        //target cube 3 : env_target {}
+        //target cube 4 : env_target {}
+        //target cube 5 : env_target {}
+
+        target reflection
+        {
+            shadows off
+            pass clear {}
+            //pass render_custom PlanarReflectionPass {}
+            pass render_scene { last_render_queue 90 }
+        }
 
         target mrt
         {
@@ -120,11 +140,11 @@ compositor MRT
             pass render_quad
             {
                 material Copy2x
-                input 0 mrt 0
+                input 0 mrt
             }
         }
 
-        target_output
+        target mrt
         {
             shadows off
             pass render_scene

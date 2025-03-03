@@ -1,21 +1,21 @@
 // created by Andrey Vasiliev
 
-vertex_program StdQuad glsl glsles hlsl
+vertex_program StdQuad glsl glsles vk
 {
 	source stdquad.vert
 }
 
-vertex_program RayCast glsl glsles hlsl
+vertex_program RayCast glsl glsles vk
 {
 	source raycast.vert
 }
 
-fragment_program Copy glsl glsles hlsl
+fragment_program Copy glsl glsles vk
 {
 	source copy.frag
 }
 
-fragment_program Copyback glsl glsles hlsl
+fragment_program Copyback glsl glsles vk
 {
 	source copyback.frag
 
@@ -25,17 +25,17 @@ fragment_program Copyback glsl glsles hlsl
     }
 }
 
-fragment_program Copy2x glsl glsles hlsl
+fragment_program Copy2x glsl glsles vk
 {
 	source copy2x.frag
 }
 
-fragment_program max4 glsl glsles hlsl
+fragment_program max4 glsl glsles vk
 {
 	source max4.frag
 }
 
-fragment_program Debug glsl glsles hlsl
+fragment_program Debug glsl glsles vk
 {
 	source debug.frag
 

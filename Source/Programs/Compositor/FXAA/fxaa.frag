@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-uniform mediump sampler2D RT;
+uniform sampler2D RT;
 
 //https://github.com/libretro/glsl-shaders/blob/master/anti-aliasing/shaders/fxaa.glsl
 

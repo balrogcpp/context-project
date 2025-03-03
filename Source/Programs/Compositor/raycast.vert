@@ -5,7 +5,7 @@ in highp vec3 normal;
 out highp vec3 vRay;
 void main()
 {
-    highp vec4 positions[4] = vec4[4](
+    vec4 positions[4] = vec4[4](
 		vec4(-1.0, -1.0, 0.0, 1.0),
 		vec4(1.0, -1.0, 0.0, 1.0),
 		vec4(-1.0, 1.0, 0.0, 1.0),

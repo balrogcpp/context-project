@@ -2,7 +2,7 @@
 
 import StdQuad from stdquad.material
 
-fragment_program fx_fp glsl glsles hlsl
+fragment_program fx_fp glsl glsles vk
 {
     source fx.frag
 	default_params

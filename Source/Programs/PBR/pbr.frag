@@ -31,12 +31,12 @@ uniform sampler2D OccTex;
 #endif
 #if MAX_SHADOW_TEXTURES > 0
 #if defined(SHADOWMAP_ATLAS)
-uniform mediump sampler2D ShadowTex;
+uniform sampler2D ShadowTex;
 #else
-uniform mediump sampler2D ShadowTex0;
-uniform mediump sampler2D ShadowTex1;
-uniform mediump sampler2D ShadowTex2;
-uniform mediump sampler2D ShadowTex3;
+uniform sampler2D ShadowTex0;
+uniform sampler2D ShadowTex1;
+uniform sampler2D ShadowTex2;
+uniform sampler2D ShadowTex3;
 #endif
 #endif
 #if defined(HAS_IBL)
@@ -55,8 +55,6 @@ uniform vec2 TexelSize7;
 uniform vec2 TexelSize8;
 uniform vec2 TexelSize9;
 #endif
-uniform float FarClipDistance;
-uniform float NearClipDistance;
 uniform mat4 ViewMatrix;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
@@ -416,7 +414,6 @@ void main()
     V = normalize(CameraPosition - vPosition);
     vec2 fragCoord = gl_FragCoord.xy * ViewportSize.zw;
     float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
-    float clampedDepth = (fragDepth - NearClipDistance) / (FarClipDistance - NearClipDistance);
 
 #if MAX_LIGHTS > 0
     vec3 orm = GetORM(uv, alpha);

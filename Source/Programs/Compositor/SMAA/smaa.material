@@ -1,7 +1,7 @@
 //
 //	SMAA/EdgeDetection
 //
-vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
+vertex_program SMAA/EdgeDetection_vs glsl glsles vk
 {
 	source SMAA_EdgeDetection.vert
 
@@ -11,7 +11,7 @@ vertex_program SMAA/EdgeDetection_vs glsl glsles hlsl
 	}
 }
 
-fragment_program SMAA/EdgeDetection_ps glsl glsles hlsl
+fragment_program SMAA/EdgeDetection_ps glsl glsles vk
 {
 	source SMAA_EdgeDetection.frag
 }
@@ -56,7 +56,7 @@ material SMAA/EdgeDetection
 //
 //	SMAA/BlendingWeightCalculation
 //
-vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
+vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles vk
 {
 	source SMAA_BlendingWeightCalculation.vert
 
@@ -66,7 +66,7 @@ vertex_program SMAA/BlendingWeightCalculation_vs glsl glsles hlsl
 	}
 }
 
-fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles hlsl
+fragment_program SMAA/BlendingWeightCalculation_ps glsl glsles vk
 {
 	source SMAA_BlendingWeightCalculation.frag
 
@@ -125,7 +125,7 @@ material SMAA/BlendingWeightCalculation
 //
 //	SMAA/NeighborhoodBlending
 //
-vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
+vertex_program SMAA/NeighborhoodBlending_vs glsl glsles vk
 {
 	source SMAA_NeighborhoodBlending.vert
 
@@ -135,7 +135,7 @@ vertex_program SMAA/NeighborhoodBlending_vs glsl glsles hlsl
 	}
 }
 
-fragment_program SMAA/NeighborhoodBlending_ps glsl glsles hlsl
+fragment_program SMAA/NeighborhoodBlending_ps glsl glsles vk
 {
 	source SMAA_NeighborhoodBlending.frag
 

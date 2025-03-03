@@ -7,10 +7,10 @@
 
 #define saturate(x) clamp(x, 0.0, 1.0)
 
-uniform mediump sampler2D ReflectionTex;
-uniform mediump sampler2D RefractionTex;
-uniform mediump sampler2D DepthTex;
-uniform mediump sampler2D NormalTex;
+uniform sampler2D ReflectionTex;
+uniform sampler2D RefractionTex;
+uniform sampler2D DepthTex;
+uniform sampler2D NormalTex;
 uniform sampler2D CausticTex;
 uniform sampler2D FoamTex;
 

@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
+vertex_program PSSM/shadow_caster_alpha_vs glsl glsles vk
 {
 	source pssm.vert
 	preprocessor_defines SHADOWCASTER_ALPHA
@@ -10,7 +10,7 @@ vertex_program PSSM/shadow_caster_alpha_vs glsl glsles hlsl
 	}
 }
 
-fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
+fragment_program PSSM/shadow_caster_alpha_fs glsl glsles vk
 {
 	source pssm.frag
 	preprocessor_defines SHADOWCASTER_ALPHA
@@ -20,7 +20,7 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles hlsl
 	}
 }
 
-vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
+vertex_program PSSM/shadow_caster_vs glsl glsles vk
 {
 	source pssm.vert
 	default_params
@@ -29,7 +29,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles hlsl
 	}
 }
 
-fragment_program PSSM/shadow_caster_fs glsl glsles hlsl
+fragment_program PSSM/shadow_caster_fs glsl glsles vk
 {
 	source pssm.frag
 	default_params

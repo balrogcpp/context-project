@@ -2,12 +2,12 @@
 
 import StdQuad from stdquad.material
 
-vertex_program fxaa_vp glsl glsles hlsl
+vertex_program fxaa_vp glsl glsles vk
 {
     source fxaa.vert
 }
 
-fragment_program fxaa_fp glsl glsles hlsl
+fragment_program fxaa_fp glsl glsles vk
 {
     source fxaa.frag
 }

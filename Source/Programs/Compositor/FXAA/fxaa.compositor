@@ -2,12 +2,10 @@
 
 import STD from mrt.compositor
 
-compositor FXAA
+compositor FXAA : STD
 {
     technique
     {
-        texture_ref mrt MRT mrt
-
         target_output
         {
             pass render_quad

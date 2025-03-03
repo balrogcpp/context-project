@@ -1,0 +1,36 @@
+// created by Andrey Vasiliev
+
+fragment_program gauss5y glsl glsles vk
+{
+	source gauss5y.frag
+}
+
+fragment_program gauss5x glsl glsles vk
+{
+	source gauss5x.frag
+}
+
+fragment_program gauss9y glsl glsles vk
+{
+	source gauss9y.frag
+}
+
+fragment_program gauss9x glsl glsles vk
+{
+	source gauss9x.frag
+}
+
+fragment_program gauss13y glsl glsles vk
+{
+	source gauss13y.frag
+}
+
+fragment_program gauss13x glsl glsles vk
+{
+	source gauss13x.frag
+}
+
+fragment_program box4 glsl glsles vk
+{
+	source box4.frag
+}

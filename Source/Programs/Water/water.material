@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-vertex_program water_vs glsl glsles hlsl
+vertex_program water_vs glsl glsles vk
 {
     source water.vert
 
@@ -11,7 +11,7 @@ vertex_program water_vs glsl glsles hlsl
     }
 }
 
-fragment_program water_fs glsl glsles hlsl
+fragment_program water_fs glsl glsles vk
 {
     source water.frag
 
@@ -68,7 +68,7 @@ material Water
 
             texture_unit ReflectionTex
             {
-                texture black.dds
+                content_type compositor MRT reflection
                 tex_address_mode clamp
                 filtering none
             }

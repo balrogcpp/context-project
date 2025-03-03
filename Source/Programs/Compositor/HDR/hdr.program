@@ -1,41 +1,41 @@
 // created by Andrey Vasiliev
 
-fragment_program downscale4 glsl glsles hlsl
+fragment_program downscale4 glsl glsles vk
 {
 	source downscale4.frag
 }
 
-fragment_program upscale4 glsl glsles hlsl
+fragment_program upscale4 glsl glsles vk
 {
 	source upscale4.frag
 }
 
-fragment_program downscale13 glsl glsles hlsl
+fragment_program downscale13 glsl glsles vk
 {
 	source downscale13.frag
 }
 
-fragment_program upscale9 glsl glsles hlsl
+fragment_program upscale9 glsl glsles vk
 {
 	source upscale9.frag
 }
 
-fragment_program brightFBO glsl glsles hlsl
+fragment_program brightFBO glsl glsles vk
 {
 	source fbo.frag
 }
 
-fragment_program lumStart glsl glsles hlsl
+fragment_program lumStart glsl glsles vk
 {
 	source lumStart.frag
 }
 
-fragment_program lumIt glsl glsles hlsl
+fragment_program lumIt glsl glsles vk
 {
 	source lumIt.frag
 }
 
-fragment_program lumEnd glsl glsles hlsl
+fragment_program lumEnd glsl glsles vk
 {
 	source lumEnd.frag
 
@@ -48,7 +48,7 @@ fragment_program lumEnd glsl glsles hlsl
     }
 }
 
-fragment_program HDR glsl glsles hlsl
+fragment_program HDR glsl glsles vk
 {
     source hdr.frag
     default_params

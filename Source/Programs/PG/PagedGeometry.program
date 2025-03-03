@@ -1,5 +1,5 @@
 // First shader, simple camera-alignment
-vertex_program Sprite_vp glsl glsles hlsl
+vertex_program Sprite_vp glsl glsles vk
 {
     source Sprite.vert
 
@@ -11,7 +11,7 @@ vertex_program Sprite_vp glsl glsles hlsl
 }
 
 // Second shader, camera alignment and distance based fading
-vertex_program SpriteFade_vp glsl glsles hlsl
+vertex_program SpriteFade_vp glsl glsles vk
 {
     source Sprite.vert
 
@@ -26,7 +26,7 @@ vertex_program SpriteFade_vp glsl glsles hlsl
 }
 
 // Default pixel shader
-fragment_program Default_AlphaTest glsl glsles hlsl
+fragment_program Default_AlphaTest glsl glsles vk
 {
     source Default.frag
 
@@ -41,7 +41,7 @@ fragment_program Default_AlphaTest glsl glsles hlsl
     }
 }
 
-fragment_program Default_AlphaTest_NoFog glsl glsles hlsl
+fragment_program Default_AlphaTest_NoFog glsl glsles vk
 {
     source Default.frag
 

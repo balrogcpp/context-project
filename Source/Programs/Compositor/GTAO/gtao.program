@@ -1,26 +1,26 @@
 // created by Andrey Vasiliev
 
-fragment_program gtao glsl glsles hlsl
+fragment_program gtao glsl glsles vk
 {
 	source gtao.frag
 }
 
-fragment_program tolinear glsl glsles hlsl
+fragment_program tolinear glsl glsles vk
 {
 	source tolinear.frag
 }
 
-fragment_program normals glsl glsles hlsl
+fragment_program normals glsl glsles vk
 {
 	source normals.frag
 }
 
-fragment_program denoiser glsl glsles hlsl
+fragment_program denoiser glsl glsles vk
 {
 	source denoiser.frag
 }
 
-fragment_program gtaocombine glsl glsles hlsl
+fragment_program gtaocombine glsl glsles vk
 {
 	source gtaocombine.frag
 }

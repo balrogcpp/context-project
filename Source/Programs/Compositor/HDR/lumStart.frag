@@ -3,7 +3,7 @@
 
 #include "tonemap.glsl"
 
-uniform mediump sampler2D RT;
+uniform sampler2D RT;
 
 vec3 FromSRGB(const vec3 v)
 {

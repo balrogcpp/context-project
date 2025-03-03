@@ -2,8 +2,8 @@
 //? #version 400
 // based on https://forum.derivative.ca/t/implementing-different-ao-algo-gtao-with-glsl/207841/8
 
-uniform mediump sampler2D DepthTex;
-uniform mediump sampler2D NoiseTex;
+uniform sampler2D DepthTex;
+uniform sampler2D NoiseTex;
 uniform float Time;
 
 #define PI 3.1415926535897932384626433832795
