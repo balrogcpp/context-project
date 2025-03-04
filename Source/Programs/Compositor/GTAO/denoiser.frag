@@ -3,6 +3,8 @@
 
 uniform sampler2D RT;
 
+#define SafeHDR(x) min(x, 65504.0)
+
 // https://github.com/asylum2010/Asylum_Tutorials/blob/4f2bc39a8ae69db1ceb59e9a763ef91c7b3dc6de/Media/ShadersGL/gtaospatialdenoiser.frag
 out float FragColor;
 void main()
@@ -49,5 +51,5 @@ void main()
     totalao += texelFetchOffset(RT, uv, 0, ivec2(3, 3)).r;
 #endif
 
-    FragColor = totalao * 0.0625;
+    FragColor = SafeHDR(totalao * 0.0625);
 }

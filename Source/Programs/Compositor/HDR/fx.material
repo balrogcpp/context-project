@@ -20,7 +20,15 @@ material Fx : StdQuad
             fragment_program_ref fx_fp
 			{
                 param_named RT int 0
+				param_named LUT int 1
 			}
+
+			texture_unit LUT
+            {
+                texture lookup.png
+                //tex_address_mode clamp
+                filtering none
+            }
 		}
 	}
 }

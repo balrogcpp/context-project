@@ -23,9 +23,8 @@ http://machinesdontcare.wordpress.com/2009/06/25/3d-perlin-noise-sphere-vertex-s
 
 //? #version 400
 
-const float permTexUnit = 1.0/256.0;		// Perm texture texel-size
-const float permTexUnitHalf = 0.5/256.0;	// Half perm texture texel-size
-const float grainamount = 0.03; //grain amount
+const float permTexUnit = 1.0 / 256.0;		// Perm texture texel-size
+const float permTexUnitHalf = 0.5 / 256.0;	// Half perm texture texel-size
 
 float timer = 0.0;
 
@@ -33,7 +32,7 @@ float timer = 0.0;
 //a random texture generator, but you can also use a pre-computed perturbation texture
 vec4 rnm(const vec2 tc) 
 {
-    float noise =  sin(dot(tc + vec2(timer, timer), vec2(12.9898, 78.233))) * 43758.5453;
+    float noise =  sin(dot(tc + timer, vec2(12.9898, 78.233))) * 43758.5453;
 
 	float noiseR =  fract(noise);
 	float noiseG =  fract(noise * 1.2154); 
@@ -53,7 +52,7 @@ vec3 fade(const vec3 t) {
 
 float pnoise3D(const vec3 p)
 {
-	vec3 pi = permTexUnit*floor(p)+permTexUnitHalf; // Integer part, scaled so +1 moves permTexUnit texel
+	vec3 pi = permTexUnit * floor(p) + permTexUnitHalf; // Integer part, scaled so +1 moves permTexUnit texel
 	// and offset 1/2 texel to sample texel centers
 	vec3 pf = fract(p);     // Fractional part for interpolation
 
@@ -98,19 +97,76 @@ float pnoise3D(const vec3 p)
 	return n_xyz;
 }
 
-vec3 grainHigh(const vec3 col, const highp vec2 texCoord, const float time) 
+vec3 blendSoftLight(const vec3 base, const vec3 blend) {
+  return mix(
+    sqrt(base) * (2.0 * blend - 1.0) + 2.0 * base * (1.0 - blend), 
+    2.0 * base * blend + base * base * (1.0 - 2.0 * blend), 
+    step(base, vec3(0.5, 0.5, 0.5))
+  );
+}
+
+float luma(const vec3 color) {
+  return dot(color, vec3(0.299, 0.587, 0.114));
+}
+
+float sq(const float x) {
+	return x * x;
+}
+
+float pow4(const float x) {
+	float x2 = x * x;
+	return x2 * x2;
+}
+
+vec3 grainHigh(const vec3 color, const highp vec2 uv, const float time) 
 {
     timer = time;
+	highp vec2 texCoord = gl_FragCoord.xy;
 
 	vec3 noise;
     noise.r = pnoise3D(vec3(texCoord, 0.0));
     noise.g = pnoise3D(vec3(texCoord, 1.0));
     noise.b = pnoise3D(vec3(texCoord, 2.0));
 
-    return col + noise * grainamount;
+	//blend the noise over the background, 
+    //i.e. overlay, soft light, additive
+    vec3 blend = blendSoftLight(color, noise);
+
+    //get the luminance of the background
+	float luminance = luma(color);
+
+	//reduce the noise based on some 
+    //threshold of the background luminance
+    //float response = smoothstep(0.05, 0.5, luminance);
+	float response = smoothstep(0.0, 0.03, luminance);
+
+    return mix(blend, color, response * response);
+}
+
+
+vec3 grainMid(const vec3 color, const highp vec2 uv, const float time) 
+{
+    timer = time;
+	highp vec2 texCoord = gl_FragCoord.xy;
+
+	vec3 noise;
+    noise.r = pnoise3D(vec3(texCoord, 0.0));
+    noise.g = pnoise3D(vec3(texCoord, 1.0));
+    noise.b = pnoise3D(vec3(texCoord, 2.0));
+
+	float luminance = luma(color);
+	luminance += smoothstep(0.2, 0.0, luminance);
+	noise = mix(noise, vec3(0.0, 0.0, 0.0), pow4(luminance));
+
+    return color + noise * 0.03;
 }
 
 vec3 grainLow(const vec3 color, const highp vec2 uv, const float time) {
     float noise = (fract(sin(dot(uv * time, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 2.0;
-    return color + noise * 0.03;
+	
+	float luminance = luma(color);
+	luminance += smoothstep(0.2, 0.0, luminance);
+	noise = mix(noise, 0.0, pow4(luminance));
+
+    return color + vec3(noise, noise, noise) * 0.03;
 }

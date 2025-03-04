@@ -142,8 +142,8 @@ void CompositorComponent::OnSetUp() {
   bool debug = 0;
   bool fxaa = 1;
   bool smaa = 0;
-  bool hdr = 1;
-  bool mb = 1;
+  bool hdr = 0;
+  bool mb = 0;
 
   AddCompositor("MRT", 1);
   AddCompositor("FXAA", fxaa);

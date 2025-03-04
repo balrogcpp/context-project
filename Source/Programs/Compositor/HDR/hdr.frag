@@ -8,7 +8,9 @@ uniform sampler2D RT;
 uniform sampler2D BrightTex;
 uniform sampler2D DirtTex;
 uniform sampler2D Lum;
+uniform sampler2D LUT;
 uniform float Time;
+
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
 vec3 Upscale9(const sampler2D tex, const vec2 uv)
@@ -53,9 +55,10 @@ void main()
     vec3 color = inverseTonemapSRGB(texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb);
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
-    color = tonemap(color * lum);
-    color = grainHigh(color, gl_FragCoord.xy, Time);
-    // color = grainLow(color, uv, Time);
-    //color = vignette(color, uv, vec4(1.0, 1.0, 1.0, 1.0), vec4(0.0, 0.0, 0.0, 1.0));
+    color *= lum;
+    color = tonemap(color);
+
+    color = applyPostEffects(color, uv, Time, LUT);
+
     FragColor.rgb = color;
 }
