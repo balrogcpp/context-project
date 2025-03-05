@@ -56,6 +56,7 @@ void main()
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
     color *= lum;
+
     color = tonemap(color);
 
     color = applyPostEffects(color, uv, Time, LUT);

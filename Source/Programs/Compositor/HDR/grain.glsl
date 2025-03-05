@@ -125,8 +125,12 @@ vec3 grainHigh(const vec3 color, const highp vec2 uv, const float time)
 
 	vec3 noise;
     noise.r = pnoise3D(vec3(texCoord, 0.0));
+#if !defined(COLORED_NOISE)
+	noise.gb = noise.rr;
+#else
     noise.g = pnoise3D(vec3(texCoord, 1.0));
     noise.b = pnoise3D(vec3(texCoord, 2.0));
+#endif
 
 	//blend the noise over the background, 
     //i.e. overlay, soft light, additive
@@ -151,8 +155,12 @@ vec3 grainMid(const vec3 color, const highp vec2 uv, const float time)
 
 	vec3 noise;
     noise.r = pnoise3D(vec3(texCoord, 0.0));
+#if !defined(COLORED_NOISE)
+	noise.gb = noise.rr;
+#else
     noise.g = pnoise3D(vec3(texCoord, 1.0));
     noise.b = pnoise3D(vec3(texCoord, 2.0));
+#endif
 
 	float luminance = luma(color);
 	luminance += smoothstep(0.2, 0.0, luminance);
