@@ -49,14 +49,13 @@ out vec3 FragColor;
 void main()
 {
     vec2 uv = gl_FragCoord.xy / vec2(textureSize(RT, 0));
+    vec3 color = inverseTonemapSRGB(texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb);
 
     float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
     vec3 bloom = UpsampleBox(BrightTex, uv).rgb;
-    vec3 color = inverseTonemapSRGB(texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb);
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
     color *= lum;
-
     color = tonemap(color);
 
     color = applyPostEffects(color, uv, Time, LUT);

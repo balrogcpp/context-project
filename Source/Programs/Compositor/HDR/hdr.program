@@ -54,5 +54,7 @@ fragment_program HDR glsl glsles vk
     default_params
     {
         param_named_auto Time time
+		param_named VignetteParams float4 1 1 1 0
+		param_named VignetteColor float3 0 0 0
     }
 }

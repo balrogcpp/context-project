@@ -8,6 +8,8 @@ fragment_program fx_fp glsl glsles vk
 	default_params
 	{
 		param_named_auto Time time
+		param_named VignetteParams float4 1 1 1 0
+		param_named VignetteColor float3 0 0 0
 	}
 }
 
@@ -26,7 +28,7 @@ material Fx : StdQuad
 			texture_unit LUT
             {
                 texture lookup.png
-                //tex_address_mode clamp
+                tex_address_mode clamp
                 filtering none
             }
 		}
