@@ -9,7 +9,6 @@ uniform sampler2D BrightTex;
 uniform sampler2D DirtTex;
 uniform sampler2D Lum;
 uniform sampler2D LUT;
-uniform float Time;
 
 
 // https://github.com/Unity-Technologies/Graphics/blob/f86c03aa3b20de845d1cf1a31ee18aaf14f94b41/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl#L57
@@ -58,7 +57,7 @@ void main()
     color *= lum;
     color = tonemap(color);
 
-    color = applyPostEffects(color, uv, Time, LUT);
+    color = applyPostEffects(color, uv, LUT);
 
     FragColor.rgb = color;
 }
