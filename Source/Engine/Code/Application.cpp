@@ -22,31 +22,37 @@ Application::Application() : exiting(false), sleep(false) {
 Application::~Application() { InputSequencer::GetInstance().UnregWindowListener(this); }
 
 void Application::Init() {
-  video = make_unique<VideoComponent>();
-  video->OnSetUp();
-  componentList.push_back(video.get());
-  preRenderList.push_back(video.get());
+  try {
+    video = make_unique<VideoComponent>();
+    video->OnSetUp();
+    componentList.push_back(video.get());
+    preRenderList.push_back(video.get());
 
-  InputSequencer::GetInstance().RegWindowListener(this);
-  Ogre::Root::getSingleton().addFrameListener(this);
+    InputSequencer::GetInstance().RegWindowListener(this);
+    Ogre::Root::getSingleton().addFrameListener(this);
 
-  compositor = make_unique<CompositorComponent>();
-  compositor->OnSetUp();
-  componentList.push_back(compositor.get());
-  preRenderList.push_back(compositor.get());
+    compositor = make_unique<CompositorComponent>();
+    compositor->OnSetUp();
+    componentList.push_back(compositor.get());
+    preRenderList.push_back(compositor.get());
 
-  scene = make_unique<SceneComponent>();
-  scene->OnSetUp();
-  componentList.push_back(scene.get());
-  preRenderList.push_back(scene.get());
+    scene = make_unique<SceneComponent>();
+    scene->OnSetUp();
+    componentList.push_back(scene.get());
+    preRenderList.push_back(scene.get());
 
-  appStateManager->Init();
+    appStateManager->Init();
+  } catch (std::exception &e) {
+    ErrorWindow("Exception", e.what());
+  } catch (...) {
+    ErrorWindow("Exception", "unknown");
+  }
 }
 
 void Application::LoopBody() {
   InputSequencer::GetInstance().Capture();
   if (!sleep) video->RenderFrame();
-  //FrameControl();
+  // FrameControl();
 
 #ifdef EMSCRIPTEN
   if (exiting) {
@@ -65,7 +71,8 @@ void Application::FrameControl() {
     if (!sleep) {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps) - frameTime;
       this_thread::sleep_for(remainingTime - remainingTime % 1ms);
-      while (chrono::steady_clock::now() < t2 + remainingTime) {}
+      while (chrono::steady_clock::now() < t2 + remainingTime) {
+      }
     } else {
       auto remainingTime = chrono::nanoseconds(1000000000 / targetFps * 2) - frameTime;
       this_thread::sleep_for(remainingTime);
@@ -101,7 +108,6 @@ void Application::Go() {
 #else
   emscripten_set_main_loop_arg(EmscriptenLoop, this, 0, 1);
 #endif
-  // engine->OnClean();
 }
 
 void Application::OnQuit() { exiting = true; }
@@ -141,7 +147,14 @@ bool Application::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 }
 
 int Application::Main() {
-  Go();
+  try {
+    Go();
+  } catch (std::exception &e) {
+    return ErrorWindow("Exception", e.what());
+  } catch (...) {
+    return ErrorWindow("Exception", "unknown");
+  }
+
   return 0;
 }
 
