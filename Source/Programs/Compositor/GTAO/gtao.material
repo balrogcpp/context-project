@@ -40,6 +40,49 @@ material Denoiser : StdQuad
             fragment_program_ref denoiser
             {
                 param_named RT int 0
+                param_named Depth int 1
+            }
+
+            texture_unit Depth
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+    }
+}
+
+material TemporalDenoiser : StdQuad
+{
+    technique
+    {
+        pass
+        {
+            fragment_program_ref gtaotemporaldenoiser
+            {
+                param_named historyBuffer int 0
+                param_named currIteration int 1
+                param_named prevDepthBuffer int 2
+                param_named currDepthBuffer int 3
+            }
+            texture_unit AO
+            {
+                texture white.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit Depth
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit DepthOld
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
             }
         }
     }
@@ -66,17 +109,24 @@ material Combine : StdQuad
     }
 }
 
-material GTAO : StdQuad
+material GTAO
 {
     technique
     {
         pass
         {
+            cull_hardware none
+            depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+            lighting off
+
+            vertex_program_ref StdQuad {}
+
             fragment_program_ref gtao
             {
                 param_named DepthTex int 0
                 param_named NoiseTex int 1
-                //param_named_auto Time time
             }
 
             texture_unit DepthTex

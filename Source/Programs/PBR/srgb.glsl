@@ -22,7 +22,7 @@ vec3 SRGBtoLINEAR(const vec3 srgb)
 vec3 LINEARtoSRGB(const vec3 lin)
 {
 #if defined(SRGB_FAST_APPROXIMATION)
-    return pow(lin, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));
+    return pow(lin, vec3(0.4545, 0.4545, 0.4545));
 #elif defined(SRGB_VERY_FAST_APPROXIMATION)
     return sqrt(lin);
 #else

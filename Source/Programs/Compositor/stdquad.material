@@ -123,9 +123,16 @@ material Debug
             fragment_program_ref Debug
             {
                 param_named RT int 0
+                param_named Depth int 1
             }
 
             texture_unit RT
+            {
+                texture black.dds
+                tex_address_mode clamp
+                filtering none
+            }
+            texture_unit Depth
             {
                 texture black.dds
                 tex_address_mode clamp

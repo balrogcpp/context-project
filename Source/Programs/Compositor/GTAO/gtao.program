@@ -3,6 +3,10 @@
 fragment_program gtao glsl glsles vk
 {
 	source gtao.frag
+	default_params
+	{
+		//param_named_auto Time time
+	}
 }
 
 fragment_program tolinear glsl glsles vk
@@ -18,6 +22,15 @@ fragment_program normals glsl glsles vk
 fragment_program denoiser glsl glsles vk
 {
 	source denoiser.frag
+}
+
+fragment_program gtaotemporaldenoiser glsl glsles vk
+{
+	source gtaotemporaldenoiser.frag
+	default_params
+	{
+		param_named_auto FrameTime frame_time 1
+	}
 }
 
 fragment_program gtaocombine glsl glsles vk

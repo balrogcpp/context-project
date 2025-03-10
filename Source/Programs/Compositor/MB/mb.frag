@@ -31,13 +31,12 @@ vec3 GetCameraVec(const vec2 uv)
     // TODO: AO is dependent on FOV, this function is not!
     // The outcome of using this simplified function is that the effective AO range is larger when using larger FOV
     // Use something more accurate to get proper FOV-independent world-space range, however you will likely also have to adjust the SSAO constants below
-    vec2 tsize = textureSize(DepthTex, 0);
+    vec2 tsize = vec2(textureSize(DepthTex, 0));
     float aspect = tsize.y / tsize.x;
     return vec3(-(-uv.y * aspect + aspect),- (uv.x * 2.0 - 1.0), -1.0);
 }
 
 
-//in highp vec3 vRay;
 out vec3 FragColor;
 void main()
 {
@@ -48,7 +47,6 @@ void main()
 
     vec3 ray = GetCameraVec(uv) * ClampDistance;
 
-    //vec3 viewPos = vRay * depth;
     vec3 viewPos = ray * depth;
     vec4 worldPos = mulMat4x4Half3(InvViewMatrix, viewPos.xyz);
     worldPos.xyz /= worldPos.w;

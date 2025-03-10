@@ -5,7 +5,7 @@ uniform sampler2D RT;
 uniform sampler2D Lum;
 
 uniform vec3 Exposure;
-uniform float timeSinceLast;
+uniform float FrameTime;
 
 float expose(const float color, const vec3 exposure) {
     return exposure.x / exp(clamp(color, exposure.y, exposure.z));
@@ -37,5 +37,5 @@ void main()
     float oldLum = texelFetch(Lum, ivec2(0, 0), 0).r;
 
     //Adapt luminicense based 75% per second.
-    FragColor = mix(newLum, oldLum, pow(0.25, timeSinceLast));
+    FragColor = mix(newLum, oldLum, pow(0.25, FrameTime));
 }

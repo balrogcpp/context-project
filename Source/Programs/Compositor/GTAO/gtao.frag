@@ -118,7 +118,8 @@ void main()
 
     vec3 normal = getNormal(DepthTex, uv, viewsizediv);
 
-    vec2 noises	= texelFetch(NoiseTex, ivec2(gl_FragCoord.xy) % 4, 0).xy;
+    vec2 noises	= texelFetch(NoiseTex, ivec2(gl_FragCoord.xy * Time * 10.0) % 4, 0).xy;
+
     float angleOffset = noises.x;
     float spacialOffset = noises.y;
 

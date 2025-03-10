@@ -142,8 +142,8 @@ void CompositorComponent::OnSetUp() {
   bool debug = 0;
   bool fxaa = 1;
   bool smaa = 0;
-  bool hdr = 0;
-  bool mb = 0;
+  bool hdr = 1;
+  bool mb = 1;
 
   AddCompositor("MRT", 1);
   AddCompositor("FXAA", fxaa);
@@ -151,7 +151,7 @@ void CompositorComponent::OnSetUp() {
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", smaa);
   AddCompositor("ShowDepth",0);
   AddCompositor("ShowNormals", 0);
-  AddCompositor("ShowOcclusion", debug);
+  AddCompositor("ShowOcclusion", 0);
   AddCompositor("MB", mb);
   AddCompositor("HDR", hdr);
   AddCompositor("Fx", !hdr);
@@ -374,7 +374,7 @@ void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Mater
   } else if (pass_id == 30) {
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
-    fp->setNamedConstant("ClampDistance", far - near);
+    fp->setNamedConstant("ClampDistance", far);
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
 
