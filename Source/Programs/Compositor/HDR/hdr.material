@@ -155,7 +155,7 @@ material HDR : StdQuad
 			texture_unit LUT
             {
                 texture 64.png
-                //tex_address_mode clamp
+                tex_address_mode wrap
                 filtering none
             }
 		}

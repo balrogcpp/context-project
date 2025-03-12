@@ -1,7 +1,6 @@
 #include "OgreCameraMan.h"
 #include "OgreSceneManager.h"
 #include <SDL2/SDL.h>
-#include <iostream>
 
 namespace OgreBites {
 

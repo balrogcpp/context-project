@@ -29,7 +29,7 @@ fragment_program gtaotemporaldenoiser glsl glsles vk
 	source gtaotemporaldenoiser.frag
 	default_params
 	{
-		param_named_auto FrameTime frame_time 1
+		//param_named_auto FrameTime frame_time 1
 	}
 }
 

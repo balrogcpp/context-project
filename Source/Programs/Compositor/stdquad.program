@@ -38,9 +38,4 @@ fragment_program max4 glsl glsles vk
 fragment_program Debug glsl glsles vk
 {
 	source debug.frag
-
-	default_params
-    {
-        param_named_auto ViewportSize viewport_size
-    }
 }

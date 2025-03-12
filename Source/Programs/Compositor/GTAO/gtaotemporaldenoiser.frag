@@ -1,5 +1,5 @@
-
-#version 330
+// created by Andrey Vasiliev
+//? #version 400
 
 uniform sampler2D historyBuffer;
 uniform sampler2D currIteration;

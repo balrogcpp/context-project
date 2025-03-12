@@ -446,6 +446,27 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
       tex->setCompositorReference("MRT", "ao");
     }
   }
+
+  if (auto *tex = pass->getTextureUnitState("Refraction")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "rt0");
+    }
+  }
+
+if (auto *tex = pass->getTextureUnitState("Depth")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "rt1");
+    }
+  }
+
+  if (auto *tex = pass->getTextureUnitState("Reflection")) {
+    if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
+      tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+      tex->setCompositorReference("MRT", "reflection");
+    }
+  }
 }
 
 }  // namespace gge

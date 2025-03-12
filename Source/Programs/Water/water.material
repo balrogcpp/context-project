@@ -62,36 +62,38 @@ material Water
                 param_named RefractionTex int 1
                 param_named DepthTex int 2
                 param_named NormalTex int 3
-                param_named CausticTex int 4
+                //param_named CausticTex int 4
                 //param_named FoamTex int 5
             }
 
-            texture_unit ReflectionTex
+            texture_unit Reflection
             {
-                content_type compositor MRT reflection
+                texture black.dds
                 tex_address_mode clamp
                 filtering none
             }
-            texture_unit RefractionTex
+            texture_unit Refraction
             {
-                content_type compositor MRT rt0
+                texture black.dds
                 tex_address_mode clamp
                 filtering none
             }
-            texture_unit DepthTex
+            texture_unit Depth
             {
-                content_type compositor MRT rt1
+                texture white.dds
                 tex_address_mode clamp
                 filtering none
             }
             texture_unit NormalTex
             {
                 texture water-normal.dds
+                tex_address_mode wrap
                 filtering bilinear
             }
             texture_unit CausticTex
             {
                 texture water-normal.dds
+                tex_address_mode wrap
                 filtering bilinear
             }
         }

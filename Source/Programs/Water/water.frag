@@ -2,10 +2,10 @@
 //? #version 400
 
 #include "fog.glsl"
-#include "srgb.glsl"
 #include "tonemap.glsl"
 
 #define saturate(x) clamp(x, 0.0, 1.0)
+#define lerp mix
 
 uniform sampler2D ReflectionTex;
 uniform sampler2D RefractionTex;
@@ -89,7 +89,7 @@ vec3 perturb(const sampler2D tex, const vec2 coords, const float bend)
 
 in highp vec3 vPosition;
 in highp vec2 vUV0;
-out vec4 FragColor;
+out vec3 FragColor;
 void main()
 {
     vec3 SunTransmittance = max(1.0 - exp(LightDir0.y * SunExtinction), 0.0);
@@ -185,12 +185,14 @@ void main()
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-    float fog1 = aboveWater ? saturate((refractedDepth - surfaceDepth) / Visibility) : surfaceDepth / Visibility;
+    //float fog1 = aboveWater ? saturate((refractedDepth - surfaceDepth) / Visibility) : surfaceDepth / Visibility;
+    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
 
     float darkness = Visibility * 2.0;
     darkness = saturate((CameraPosition.y + darkness) / darkness);
-    refraction = mix(refraction, scatterColor, lightScatter);
 
+    refraction = mix(refraction, scatterColor, lightScatter);
+/*
     // underwater
     vec3 waterColor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
     vec3 waterEyePos = vPosition;
@@ -263,18 +265,38 @@ void main()
 
     //vec3 fogging = mix((refraction * 0.2 + 0.8) * mix(vec3(1.2, 0.95, 0.58) * 0.8, vec3(1.1, 0.85, 0.5) * 0.8, shorewetcut) * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
     vec3 fogging = mix(refraction * sunLight * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
+*/
+    vec3 color;
 
-    if (aboveWater) {
-        color = mix(fogging, reflection, fresnel * 0.6);
-        //color = refraction;
-    } else {
+    if (aboveWater)
+    {
+        //color = mix(fogging, reflection, fresnel * 0.6);
+        color = mix(refraction, reflection, fresnel * 0.6);
+
+        // Ground depth:
+        const float beers_law = 2.0;
+        const float depth_offset = -0.75;
+        float 	depth_blend 				 = exp((refractedDepth - surfaceDepth) * -beers_law);
+		depth_blend 				 = clamp(1.0-depth_blend, 0.0, 1.0);	
+	    float	depth_blend_pow				 = clamp(pow(depth_blend, 2.5), 0.0, 1.0);
+       //vec3 	dye_color 					 = mix(color_shallow.rgb, color_deep.rgb, depth_blend_pow);
+       vec3 dye_color = watercolor;
+	   color 						 = mix(refraction*dye_color, dye_color*0.25, depth_blend_pow*0.5);
+    } 
+    // scatter and extinction between surface and camera
+    else
+    {
         // scatter and extinction between surface and camera
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);
-        color = mix(color, watercolor * darkness * ScatterFade, saturate(fog1 / WaterExtinction));
+        color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }
 
     color += LightColor0 * specular;
-    color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
 
-    FragColor = vec4(tonemap(color), 1.0);
+    if (aboveWater)
+    {
+        color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
+    }
+
+    FragColor = tonemap(color);
 }
