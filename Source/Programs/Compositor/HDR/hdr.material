@@ -154,7 +154,7 @@ material HDR : StdQuad
             }
 			texture_unit LUT
             {
-                texture 64.png
+                texture lut.png
                 tex_address_mode wrap
                 filtering none
             }

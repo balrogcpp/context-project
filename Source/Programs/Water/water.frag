@@ -39,7 +39,18 @@ uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
 uniform vec3 SunExtinction;
 
-float FresnelDielectric(const vec3 incoming, const vec3 normal, const float eta)
+float sq(const float x)
+{
+    return x * x;
+}
+
+vec3 intercept(const vec3 lineP, const vec3 lineN, const vec3 planeN, const float planeD)
+{
+    float distance = (planeD - dot(planeN, lineP)) / dot(lineN, planeN);
+    return lineP + lineN * distance;
+}
+
+float fresnel_dielectric(const vec3 incoming, const vec3 normal, const float eta)
 {
     // compute fresnel reflectance without explicitly computing
     // the refracted direction
@@ -114,14 +125,19 @@ void main()
     nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
     vec3 normal3 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
 
+#if 0
     nCoord = vPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
     vec3 normal4 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 2.0 + WindDirection * Time * WindSpeed * 0.7;
     vec3 normal5 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
+#endif
 
     vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y
     + normal2 * MidWaves.x + normal3 * MidWaves.y
-    + normal4 * SmallWaves.x + normal5 * SmallWaves.y);
+#if 0
+    + normal4 * SmallWaves.x + normal5 * SmallWaves.y
+#endif
+    );
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vPosition);
@@ -130,7 +146,10 @@ void main()
     // normal for light scattering
     highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
                                    + normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1
-                                   + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1);
+#if 0
+                                   + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1
+#endif
+    );
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);
@@ -141,7 +160,7 @@ void main()
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
-    float fresnel = FresnelDielectric(-vVec, nVec, ior);
+    float fresnel = fresnel_dielectric(-vVec, nVec, ior);
 
     // texture edge bleed removal is handled by clip plane offset
     vec3 reflection = textureLod(ReflectionTex, fragCoord + nVec.xz * vec2(ReflDistortionAmount, ReflDistortionAmount * 6.0), 0.0).rgb;
@@ -169,9 +188,11 @@ void main()
     refraction.g = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).g;
     refraction.b = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * AberrationAmount) * distortFade, 0.0).b;
     refraction = inverseTonemapSRGB(refraction);
+    refraction = mix(refraction, scatterColor, lightScatter);
 #else
     vec3 refraction = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).rgb;
     refraction = inverseTonemapSRGB(refraction);
+    refraction = mix(refraction, scatterColor, lightScatter);
 #endif
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);
@@ -185,34 +206,10 @@ void main()
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-    //float fog1 = aboveWater ? saturate((refractedDepth - surfaceDepth) / Visibility) : surfaceDepth / Visibility;
-    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
+//    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
 
     float darkness = Visibility * 2.0;
     darkness = saturate((CameraPosition.y + darkness) / darkness);
-
-    refraction = mix(refraction, scatterColor, lightScatter);
-/*
-    // underwater
-    vec3 waterColor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
-    vec3 waterEyePos = vPosition;
-    vec3 diffuse = refraction;
-    float NdotL = max(dot(vec3(0.0, 1.0, 0.0), -LightDir0), 0.0); //float NdotL = max(dot(normal, -LightDir0), 0.0);
-    vec3 sunLight = LightColor0.rgb * NdotL * SunFade;
-
-    // sky illumination
-    float skyBright = max(dot(normal, vec3(0.0, 1.0, 0.0)) * 0.5 + 0.5, 0.0);
-    vec3 skyLight = mix(vec3(1.0, 0.5, 0.0) * 0.05, vec3(0.2, 0.5, 1.0) * 1.5, SunTransmittance);
-    skyLight *= skyBright;
-
-    // ground illumination
-    float groundBright = max(dot(normal, vec3(0.0, -1.0, 0.0)) * 0.5 + 0.5, 0.0);
-    float sunLerp = saturate(1.0 - exp(LightDir0.y));
-    vec3 groundLight = 0.3 * vec3(sunLerp, sunLerp, sunLerp);
-    groundLight *= groundBright;
-
-    vec3 EV = vVec;
-    float underwaterFresnel = pow(saturate(1.0 - dot(normal, EV)), 2.0) * sunLerp;
 
     // water color
     float topfog = (refractedDepth - surfaceDepth) / Visibility;
@@ -220,7 +217,7 @@ void main()
 
     float viewDepth = refractedDepth - surfaceDepth;
 
-    float underfog = viewDepth / Visibility;
+    float underfog = surfaceDepth / Visibility;
     underfog = saturate(underfog);
 
     float depth = refractedDepth - surfaceDepth; // water depth
@@ -232,57 +229,22 @@ void main()
     depth /= Visibility;
     depth = saturate(depth);
 
-    float fog = aboveWater ? topfog : underfog;
-    fog *= shorecut;
-
-//    float darkness = Visibility * 1.5;
-//    darkness = mix(1.0, saturate((CameraPosition.y + darkness) / darkness), shorecut);
+    float fog = aboveWater ? topfog * shorecut : underfog;
+//    fog *= shorecut;
 
     float fogdarkness = Visibility * 2.0;
     fogdarkness = mix(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
 
-    // caustics
-    float causticdepth = refractedDepth - surfaceDepth; // caustic depth
-    causticdepth = 1.0 - saturate(causticdepth / Visibility);
-    causticdepth = saturate(causticdepth);
+    watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
-    float causticR = 1.0 - perturb(CausticTex, vPosition.xz, causticdepth).z;
+    vec3 fogging = mix(refraction, watercolor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
 
-    float caustics = saturate(pow(causticR * 5.5, 5.5 * causticdepth)) * NdotL * SunFade * causticdepth;
-
-    vec3 underwaterSunLight = saturate((sunLight + 0.9) - (1.0 - caustics)) * causticdepth + (sunLight * caustics);
-
-    underwaterSunLight = mix(underwaterSunLight, underwaterSunLight * waterColor, saturate((1.0 - causticdepth) / WaterExtinction));
-    vec3 waterPenetration = saturate(depth / WaterExtinction);
-    skyLight = mix(skyLight, skyLight * waterColor, waterPenetration);
-    groundLight = mix(groundLight, groundLight * waterColor, waterPenetration);
-
-    sunLight = mix(sunLight, mix(underwaterSunLight , (waterColor * 0.8 + 0.4) * SunFade, underwaterFresnel), shorecut);
-
-    vec3 color = vec3(sunLight + skyLight * 0.7 + groundLight * 0.8) * darkness;
-
-    waterColor = mix(waterColor * 0.3 * SunFade, waterColor, SunTransmittance);
-
-    //vec3 fogging = mix((refraction * 0.2 + 0.8) * mix(vec3(1.2, 0.95, 0.58) * 0.8, vec3(1.1, 0.85, 0.5) * 0.8, shorewetcut) * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
-    vec3 fogging = mix(refraction * sunLight * color, waterColor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
-*/
     vec3 color;
 
     if (aboveWater)
     {
-        //color = mix(fogging, reflection, fresnel * 0.6);
-        color = mix(refraction, reflection, fresnel * 0.6);
-
-        // Ground depth:
-        const float beers_law = 2.0;
-        const float depth_offset = -0.75;
-        float 	depth_blend 				 = exp((refractedDepth - surfaceDepth) * -beers_law);
-		depth_blend 				 = clamp(1.0-depth_blend, 0.0, 1.0);	
-	    float	depth_blend_pow				 = clamp(pow(depth_blend, 2.5), 0.0, 1.0);
-       //vec3 	dye_color 					 = mix(color_shallow.rgb, color_deep.rgb, depth_blend_pow);
-       vec3 dye_color = watercolor;
-	   color 						 = mix(refraction*dye_color, dye_color*0.25, depth_blend_pow*0.5);
-    } 
+        color = mix(fogging, reflection, fresnel * 0.6);
+    }
     // scatter and extinction between surface and camera
     else
     {
