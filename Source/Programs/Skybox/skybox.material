@@ -17,6 +17,7 @@ fragment_program SkyBoxFp glsl glsles vk
     default_params
     {
         param_named_auto LightDir0 light_direction 0
+        param_named_auto TIME time
     }
 }
 
@@ -25,7 +26,7 @@ material SkyBox
     receive_shadows off
     transparency_casts_shadows off
 
-    set $CubeTex white.dds
+    //set $CubeTex white.dds
 
 	technique
 	{
@@ -37,7 +38,31 @@ material SkyBox
 
 			vertex_program_ref SkyBoxVp {}
 
-			fragment_program_ref SkyBoxFp {}
+			fragment_program_ref SkyBoxFp 
+            {
+                param_named worlnoise int 0
+                param_named perlworlnoise int 1
+                param_named weathermap int 2
+            }
+
+			texture_unit worlnoise
+            {
+                texture worlnoise.dds 3d
+                tex_address_mode wrap
+                filtering bilinear
+            }
+			texture_unit perlworlnoise
+            {
+                texture perlworlnoise.dds 3d
+                tex_address_mode wrap
+                filtering bilinear
+            }
+			texture_unit weathermap
+            {
+                texture weather.dds
+                tex_address_mode wrap
+                filtering bilinear
+            }
 		}
 	}
 }

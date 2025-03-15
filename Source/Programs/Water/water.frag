@@ -6,6 +6,8 @@
 
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define lerp mix
+#define PI 3.14159265359
+#define HALF_PI 1.570796327
 
 uniform sampler2D ReflectionTex;
 uniform sampler2D RefractionTex;
@@ -39,9 +41,37 @@ uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
 uniform vec3 SunExtinction;
 
+// max absolute error 1.3x10^-3
+// Eberly's odd polynomial degree 5 - respect bounds
+// 4 VGPR, 14 FR (10 FR, 1 QR), 2 scalar
+// input [0, infinity] and output [0, PI/2]
+float atanFastPositive(const float x) 
+{ 
+    float t0 = (x < 1.0) ? x : 1.0 / x;
+    float t1 = t0 * t0;
+    float poly = 0.0872929;
+    poly = -0.301895 + poly * t1;
+    poly = 1.0 + poly * t1;
+    poly = poly * t0;
+    return (x < 1.0) ? poly : HALF_PI - poly;
+}
+
+// 4 VGPR, 16 FR (12 FR, 1 QR), 2 scalar
+// input [-infinity, infinity] and output [-PI/2, PI/2]
+float atanFast(const float x)
+{
+    float t0 = atanFastPositive(abs(x));     
+    return (x < 0.0) ? -t0: t0;
+}
+
 float sq(const float x)
 {
     return x * x;
+}
+
+float pow3(const float x)
+{
+    return (x * x) * x;
 }
 
 vec3 intercept(const vec3 lineP, const vec3 lineN, const vec3 planeN, const float planeD)
@@ -156,7 +186,7 @@ void main()
 
     float s = max(dot(lR, vVec) * 2.0 - 1.2, 0.0);
     float lightScatter = saturate((saturate(dot(-lVec, lNormal) * 0.7 + 0.3) * s) * ScatterAmount) * SunFade * saturate(1.0 - exp(-LightDir0.y));
-    vec3 scatterColor = mix((ScatterColor * vec3(1.0, 0.4, 0.0)), (ScatterColor), SunTransmittance);
+    vec3 scatterColor = mix((ScatterColor * vec3(1.0, 0.4, 0.0)), ScatterColor, SunTransmittance);
 
     // fresnel term
     float ior = aboveWater ? (1.333 / 1.0) : (1.0 / 1.333); // air to water; water to air
@@ -167,11 +197,11 @@ void main()
     reflection = inverseTonemapSRGB(reflection);
 
     const vec3 luminosity = vec3(0.30, 0.59, 0.11);
-    float reflectivity = pow(dot(luminosity, reflection.rgb * 2.0), 3.0);
+    float reflectivity = pow3(dot(luminosity, reflection.rgb * 2.0));
 
     highp vec3 R = reflect(vVec, nVec);
 
-    float specular = min(pow(atan(max(dot(R, -lVec), 0.0) * 1.55), 1000.0) * reflectivity * 8.0, 50.0);
+    float specular = min(pow(atanFastPositive(max(dot(R, -lVec), 0.0) * 1.55), 1000.0) * reflectivity * 8.0, 50.0);
 
     vec2 rcoord = reflect(vVec, nVec).xz;
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
@@ -196,7 +226,7 @@ void main()
 #endif
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);
-    waterSunGradient = saturate(pow(waterSunGradient * 0.7 + 0.3, 2.0));
+    waterSunGradient = saturate(sq(waterSunGradient * 0.7 + 0.3));
     vec3 waterSunColor = (vec3(0.0, 1.0, 0.85) * waterSunGradient);
     waterSunColor *= aboveWater ? 0.25 : 0.5;
 
@@ -204,7 +234,7 @@ void main()
     waterGradient = clamp((waterGradient * 0.5 + 0.5), 0.2, 1.0);
     vec3 watercolor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
 
-    watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
+//    watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
 //    float fog = aboveWater ? 1.0 : surfaceDepth / Visibility;
 
@@ -230,7 +260,6 @@ void main()
     depth = saturate(depth);
 
     float fog = aboveWater ? topfog * shorecut : underfog;
-//    fog *= shorecut;
 
     float fogdarkness = Visibility * 2.0;
     fogdarkness = mix(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
@@ -248,12 +277,11 @@ void main()
     // scatter and extinction between surface and camera
     else
     {
-        // scatter and extinction between surface and camera
         color = mix(min(refraction * 1.2, 1.0), reflection, fresnel);
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }
 
-    color += LightColor0 * specular;
+    color += LightColor0 * 10.0 * specular;
 
     if (aboveWater)
     {

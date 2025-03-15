@@ -34,7 +34,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
   }
 };
 
-
 class RenderShadows : public Ogre::CompositorInstance::RenderSystemOperation {
  public:
   RenderShadows(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport(); }
@@ -61,8 +60,7 @@ class RenderShadowsPass : public Ogre::CustomCompositionPass {
 
 class PlanarReflection : public Ogre::CompositorInstance::RenderSystemOperation {
  public:
-  PlanarReflection(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport();
-  }
+  PlanarReflection(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport(); }
   virtual ~PlanarReflection() {}
 
   void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
@@ -74,7 +72,7 @@ class PlanarReflection : public Ogre::CompositorInstance::RenderSystemOperation 
  protected:
   Ogre::Viewport *viewport = nullptr;
 };
-class PlanarReflectionPass  : public Ogre::CustomCompositionPass {
+class PlanarReflectionPass : public Ogre::CustomCompositionPass {
  public:
   Ogre::CompositorInstance::RenderSystemOperation *createOperation(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) override {
     return OGRE_NEW PlanarReflection(instance, pass);
@@ -149,7 +147,7 @@ void CompositorComponent::OnSetUp() {
   AddCompositor("FXAA", fxaa);
   AddCompositor("Copyback", !fxaa);
   if (!RenderSystemIsGLES2()) AddCompositor("SMAA", smaa);
-  AddCompositor("ShowDepth",0);
+  AddCompositor("ShowDepth", 0);
   AddCompositor("ShowNormals", 0);
   AddCompositor("ShowOcclusion", 0);
   AddCompositor("MB", mb);
@@ -305,61 +303,61 @@ void CompositorComponent::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 }
 
 //  source https://wiki.ogre3d.org/GetScreenspaceCoords
- static Ogre::Vector4 GetScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
-   if (!object->isInScene()) {
-     return Ogre::Vector4::ZERO;
-   }
+static Ogre::Vector4 GetScreenspaceCoords(Ogre::MovableObject *object, Ogre::Camera *camera) {
+  if (!object->isInScene()) {
+    return Ogre::Vector4::ZERO;
+  }
 
-   const Ogre::AxisAlignedBox &AABB = object->getWorldBoundingBox(true);
+  const Ogre::AxisAlignedBox &AABB = object->getWorldBoundingBox(true);
 
-   /**
-    * If you need the point above the object instead of the center point:
-    * This snippet derives the average point between the top-most corners of the bounding box
-    * Ogre::Vector3 point = (AABB.getCorner(AxisAlignedBox::FAR_LEFT_TOP)
-    *    + AABB.getCorner(AxisAlignedBox::FAR_RIGHT_TOP)
-    *    + AABB.getCorner(AxisAlignedBox::NEAR_LEFT_TOP)
-    *    + AABB.getCorner(AxisAlignedBox::NEAR_RIGHT_TOP)) / 4;
-    */
+  /**
+   * If you need the point above the object instead of the center point:
+   * This snippet derives the average point between the top-most corners of the bounding box
+   * Ogre::Vector3 point = (AABB.getCorner(AxisAlignedBox::FAR_LEFT_TOP)
+   *    + AABB.getCorner(AxisAlignedBox::FAR_RIGHT_TOP)
+   *    + AABB.getCorner(AxisAlignedBox::NEAR_LEFT_TOP)
+   *    + AABB.getCorner(AxisAlignedBox::NEAR_RIGHT_TOP)) / 4;
+   */
 
-   // Get the center point of the object's bounding box
-   Ogre::Vector3 center = AABB.getCenter();
-   Ogre::Vector4 point = Ogre::Vector4(center, 1.0);
+  // Get the center point of the object's bounding box
+  Ogre::Vector3 center = AABB.getCenter();
+  Ogre::Vector4 point = Ogre::Vector4(center, 1.0);
 
-   // Is the camera facing that point? If not, return false
-   Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
-   if (cameraPlane.getSide(center) != Ogre::Plane::NEGATIVE_SIDE) {
-     return Ogre::Vector4::ZERO;
-   }
+  // Is the camera facing that point? If not, return false
+  Ogre::Plane cameraPlane = Ogre::Plane(camera->getDerivedOrientation().zAxis(), camera->getDerivedPosition());
+  if (cameraPlane.getSide(center) != Ogre::Plane::NEGATIVE_SIDE) {
+    return Ogre::Vector4::ZERO;
+  }
 
-   // Transform the 3D point into screen space
-   point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
-   point /= point.w;
+  // Transform the 3D point into screen space
+  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix() * point;
+  point /= point.w;
 
-   return point;
- }
+  return point;
+}
 
- static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
-   Ogre::Vector4 point = Ogre::Vector4::ZERO;
+static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera *camera) {
+  Ogre::Vector4 point = Ogre::Vector4::ZERO;
 
-   if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
-     point = Ogre::Vector4(-light->getDerivedDirection(), 0.0);
-   else
-     point = Ogre::Vector4(light->getDerivedPosition(), 1.0);
+  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
+    point = Ogre::Vector4(-light->getDerivedDirection(), 0.0);
+  else
+    point = Ogre::Vector4(light->getDerivedPosition(), 1.0);
 
-   Ogre::Vector3 v = point.xyz().normalisedCopy();
-   Ogre::Vector3 l = camera->getDerivedOrientation().zAxis().normalisedCopy();
-   point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * point;
-   point /= point.w;
+  Ogre::Vector3 v = point.xyz().normalisedCopy();
+  Ogre::Vector3 l = camera->getDerivedOrientation().zAxis().normalisedCopy();
+  point = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * point;
+  point /= point.w;
 
-   if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
-     point.w = Ogre::Math::saturate(-v.dotProduct(l));
-   else
-     point.w = Ogre::Math::saturate(v.dotProduct(l));
+  if (light->getType() == Ogre::Light::LT_DIRECTIONAL)
+    point.w = Ogre::Math::saturate(-v.dotProduct(l));
+  else
+    point.w = Ogre::Math::saturate(v.dotProduct(l));
 
-   point.w = Ogre::Math::Abs(Ogre::Math::Sin(point.w * Ogre::Math::HALF_PI));
+  point.w = Ogre::Math::Abs(Ogre::Math::Sin(point.w * Ogre::Math::HALF_PI));
 
-   return point;
- }
+  return point;
+}
 
 void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -418,16 +416,18 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
 
   // forward pssm parameters to fragment shader
   if (pLightList->size() > 0 && sceneManager->getShadowTechnique() == Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED) {
-    const Ogre::PSSMShadowCameraSetup::SplitPointList &splits = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
-    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits.size() > 2 ? splits[2] : 0.0, splits.size() > 3 ? splits[3] : 0.0, sceneManager->getShadowFarDistance()));
+    const Ogre::PSSMShadowCameraSetup::SplitPointList &splits =
+        dynamic_cast<Ogre::PSSMShadowCameraSetup *>(sceneManager->getShadowCameraSetup().get())->getSplitPoints();
+    fp->setNamedConstant("PssmSplitPoints", Vector4f(splits[1], splits.size() > 2 ? splits[2] : 0.0, splits.size() > 3 ? splits[3] : 0.0,
+                                                     sceneManager->getShadowFarDistance()));
   }
 
-  //Ogre::Matrix4 MVP;
-  //rend->getWorldTransforms(&MVP);
-  //Ogre::Matrix4 viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * MVP;
-  //Ogre::Any prevProj = rend->getUserObjectBindings().getUserAny();
-  //rend->getUserObjectBindings().setUserAny(viewProj);
-  //if (prevProj.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevProj));
+  // Ogre::Matrix4 MVP;
+  // rend->getWorldTransforms(&MVP);
+  // Ogre::Matrix4 viewProj = Ogre::Matrix4::CLIPSPACE2DTOIMAGESPACE * camera->getProjectionMatrix() * camera->getViewMatrix() * MVP;
+  // Ogre::Any prevProj = rend->getUserObjectBindings().getUserAny();
+  // rend->getUserObjectBindings().setUserAny(viewProj);
+  // if (prevProj.has_value()) vp->setNamedConstant("WorldViewProjPrev", Ogre::any_cast<Ogre::Matrix4>(prevProj));
 
   if (!IsCompositorEnabled("MRT")) {
     return;
@@ -454,7 +454,7 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
     }
   }
 
-if (auto *tex = pass->getTextureUnitState("Depth")) {
+  if (auto *tex = pass->getTextureUnitState("Depth")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "rt1");
