@@ -362,6 +362,24 @@ ArHosekSkyModelState  * arhosek_rgb_skymodelstate_alloc_init(
         const double  elevation
         );
 
+double arhosek_tristim_skymodel_radiance(
+        ArHosekSkyModelState  * state,
+        double                  theta,
+        double                  gamma, 
+        int                     channel
+        );
+
+//   Delivers the complete function: sky + sun, including limb darkening.
+//   Please read the above description before using this - there are several
+//   caveats!
+
+double arhosekskymodel_solar_radiance(
+        ArHosekSkyModelState      * state,
+        double                      theta,
+        double                      gamma,
+        double                      wavelength
+        );
+
 #ifndef __cplusplus
 }
 #endif

@@ -9,6 +9,7 @@ uniform sampler3D perlworlnoise;
 uniform sampler2D weathermap;
 
 uniform float TIME;
+uniform vec3 HosekSamples[3];
 
 const float LIGHT0_ENERGY = 1000.0;
 const vec2 wind_direction = vec2(1.0, 0.0);
@@ -119,9 +120,12 @@ vec4 march(const vec3 pos, const vec3 end, vec3 dir, const vec3 ldir, const int 
 	float phase = max(max(henyey_greenstein(costheta, 0.6), henyey_greenstein(costheta, (0.4 - 1.4 * ldir.y))), henyey_greenstein(costheta, -0.2));
 	// Precalculate sun and ambient colors
 	// This should really come from a uniform or texture for performance reasons
-	vec3 atmosphere_sun = atmosphere(ldir, ldir) * LIGHT0_ENERGY * 0.1;
-	vec3 atmosphere_ambient = atmosphere(vec3(1.414214, 1.414214, 0.0), ldir);
-	vec3 atmosphere_ground = atmosphere(vec3(1.414214, -1.414214, 0.0), ldir);
+	//vec3 atmosphere_sun = atmosphere(ldir, ldir) * LIGHT0_ENERGY * 0.1;
+	//vec3 atmosphere_ambient = atmosphere(vec3(1.414214, 1.414214, 0.0), ldir);
+	//vec3 atmosphere_ground = atmosphere(vec3(1.414214, -1.414214, 0.0), ldir);
+	vec3 atmosphere_sun = HosekSamples[0] * LIGHT0_ENERGY * 0.1;
+	vec3 atmosphere_ambient = HosekSamples[1];
+	vec3 atmosphere_ground = HosekSamples[2];
 	
 	const float weather_scale = 0.00006;
 	float time = TIME * 0.001 + 0.005 * _time_offset;
@@ -167,7 +171,8 @@ vec4 march(const vec3 pos, const vec3 end, vec3 dir, const vec3 ldir, const int 
 		}
 	}
 
-	return clamp(vec4(L, alpha), 0.0, 1.0);
+	alpha = clamp(alpha, 0.0, 1.0);
+	return vec4(L, alpha);
 }
 
 

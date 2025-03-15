@@ -327,3 +327,34 @@ ArHosekSkyModelState  * arhosek_rgb_skymodelstate_alloc_init(
     
     return state;
 }
+
+double ArHosekSkyModel_GetRadianceInternal(
+        ArHosekSkyModelConfiguration  configuration, 
+        double                        theta, 
+        double                        gamma
+        )
+{
+    const double expM = exp(configuration[4] * gamma);
+    const double rayM = cos(gamma)*cos(gamma);
+    const double mieM = (1.0 + cos(gamma)*cos(gamma)) / pow((1.0 + configuration[8]*configuration[8] - 2.0*configuration[8]*cos(gamma)), 1.5);
+    const double zenith = sqrt(cos(theta));
+
+    return (1.0 + configuration[0] * exp(configuration[1] / (cos(theta) + 0.01))) *
+            (configuration[2] + configuration[3] * expM + configuration[5] * rayM + configuration[6] * mieM + configuration[7] * zenith);
+}
+
+double arhosek_tristim_skymodel_radiance(
+    ArHosekSkyModelState  * state,
+    double                  theta, 
+    double                  gamma, 
+    int                     channel
+    )
+{
+    return
+        ArHosekSkyModel_GetRadianceInternal(
+            state->configs[channel], 
+            theta, 
+            gamma 
+            ) 
+        * state->radiances[channel];
+}
