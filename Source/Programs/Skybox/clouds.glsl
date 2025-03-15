@@ -95,7 +95,7 @@ float density(const vec3 pip, const vec3 weather, const float mip) {
 	return pow(clamp(base_cloud, 0.0, 1.0), (1.0 - height_fraction) * 0.8 + 0.5);
 }
 
-vec4 march(const vec3 pos, const vec3 end, vec3 dir, const vec3 ldir, const int depth) {
+vec4 march(const vec3 pos, const vec3 end, const vec3 dir, const float ss, const vec3 ldir, const int depth) {
 	const vec3 RANDOM_VECTORS[6] = vec3[](
 		vec3( 0.38051305,  0.92453449, -0.02111345),
 		vec3(-0.50625799, -0.03590792, -0.86163418),
@@ -107,8 +107,8 @@ vec4 march(const vec3 pos, const vec3 end, vec3 dir, const vec3 ldir, const int 
 
 	float T = 1.0;
 	float alpha = 0.0;
-	float ss = length(dir);
-	dir = normalize(dir);
+	//float ss = length(dir);
+	//dir = normalize(dir);
 	vec3 p = pos + dir * hash(pos * 10.0) * ss;
 	const float t_dist = sky_t_radius - sky_b_radius;
 	float lss = (t_dist / 36.0);
@@ -188,8 +188,8 @@ vec3 sky(const vec3 dir, const vec3 ldir) {
 
 		// Take fewer steps towards horizon
 		float steps = (mix(96.0, 54.0, clamp(dot(dir, vec3(0.0, 1.0, 0.0)), 0.0, 1.0)));
-		vec3 raystep = dir * shelldist / steps;
-		vec4 volume = march(start, end, raystep, ldir, int(steps));
+		vec3 raystep = dir;// * shelldist / steps;
+		vec4 volume = march(start, end, raystep, shelldist / steps, ldir, int(steps));
 		vec3 background = atmosphere(dir, ldir);
 
 		// Draw cloud shape

@@ -33,7 +33,6 @@ material SkyBox
 		pass
 		{
             lighting off
-            //depth_write off
             cull_hardware none
 
 			vertex_program_ref SkyBoxVp {}
