@@ -12,7 +12,7 @@
 uniform sampler2D ReflectionTex;
 uniform sampler2D RefractionTex;
 uniform sampler2D DepthTex;
-uniform sampler2D NormalTex;
+uniform sampler3D NormalTex;
 uniform sampler2D CausticTex;
 uniform sampler2D FoamTex;
 
@@ -144,9 +144,9 @@ void main()
 
     float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float normalFade = 1.0 - min(exp(-fragDepth / 40.0), 1.0);
-
+    /*
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
-    vec3 normal0 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
+    vec3 normal0 = 2.0 * texture(vec2NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
     nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time * WindSpeed * 0.08;
     vec3 normal1 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015)).xyz - 1.0;
 
@@ -168,18 +168,26 @@ void main()
     + normal4 * SmallWaves.x + normal5 * SmallWaves.y
 #endif
     );
+    */
+
+    vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
+    vec3 normal = texture(NormalTex, vec3(nCoord+ vec2(-Time * 0.015, -Time * 0.005), Time * 0.1)).rgb;
+    normal = normal * 2.0 - 1.0;
+    normal.z = 1.0;
+    normal = normalize(normal);
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vPosition);
     highp vec3 lVec = -LightDir0.xyz;
 
     // normal for light scattering
-    highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
+/*    highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
                                    + normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1
 #if 0
                                    + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1
 #endif
-    );
+    );*/
+    highp vec3 lNormal = normal;
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);
@@ -288,5 +296,5 @@ void main()
         color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
     }
 
-    FragColor = tonemap(color);
+    FragColor = (color);
 }
