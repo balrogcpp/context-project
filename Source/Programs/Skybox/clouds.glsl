@@ -3,6 +3,7 @@
 
 // Cloud Raymarching based on: A. Schneider. “The Real-Time Volumetric Cloudscapes Of Horizon: Zero Dawn”. ACM SIGGRAPH. Los Angeles, CA: ACM SIGGRAPH, 2015. Web. 26 Aug. 2015.
 
+#define PI 3.14159265359
 
 uniform sampler3D worlnoise;
 uniform sampler3D perlworlnoise;
@@ -15,7 +16,7 @@ const float LIGHT0_ENERGY = 1000.0;
 const vec2 wind_direction = vec2(1.0, 0.0);
 const float wind_speed = 1.0;
 const float _density = 0.05;
-const float cloud_coverage = 0.25;
+const float cloud_coverage = 0.2;
 const float _time_offset = 0.0;
 
 
@@ -175,6 +176,20 @@ vec4 march(const vec3 pos, const vec3 end, const vec3 dir, const float ss, const
 	return vec4(L, alpha);
 }
 
+// https://www.shadertoy.com/view/slSXRW
+vec3 sunWithBloom(const vec3 rayDir, const vec3 sunDir) {
+	const float sun_disk_scale = 2.0;
+    float sunSolidAngle = sun_disk_scale * 0.53 * PI / 180.0;
+    float minSunCosTheta = cos(sunSolidAngle);
+
+    float cosTheta = dot(rayDir, sunDir);
+    if (cosTheta >= minSunCosTheta) return vec3(1.0, 1.0, 1.0);
+
+    float offset = minSunCosTheta - cosTheta;
+    float gaussianBloom = exp(-offset * 50000.0) * 0.5;
+    float invBloom = 1.0 / (0.02 + offset * 300.0) * 0.01;
+    return vec3(gaussianBloom + invBloom);
+}
 
 vec3 sky(const vec3 dir, const vec3 ldir) {
 	vec3 col;
@@ -191,6 +206,10 @@ vec3 sky(const vec3 dir, const vec3 ldir) {
 		vec3 raystep = dir;// * shelldist / steps;
 		vec4 volume = march(start, end, raystep, shelldist / steps, ldir, int(steps));
 		vec3 background = atmosphere(dir, ldir);
+		vec3 sunLum = sunWithBloom(dir, ldir);
+		// Use smoothstep to limit the effect, so it drops off to actual zero.
+		sunLum = smoothstep(0.002, 1.0, sunLum);
+		background += sunLum;
 
 		// Draw cloud shape
 		col = background * (1.0 - volume.a) + volume.xyz;

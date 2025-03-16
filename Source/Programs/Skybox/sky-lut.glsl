@@ -151,7 +151,7 @@ vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
     float p_sunHeight = clamp(p_sunDir.y, 0.0, 1.0);
     float p_lightDensity = p_densityCoeff / pow(max(p_sunHeight, 0.0035), 0.75);
     float p_sunHeightWeight = exp2(-1.0 / p_sunHeight);
-    vec3 p_sunAbsorption = vec3(getSkyRayleighAbsorption( 1.0 - p_skyColour, p_lightDensity));
+    vec3 p_sunAbsorption = vec3(getSkyRayleighAbsorption(1.0 - p_skyColour, p_lightDensity));
     vec3 p_mieAbsorption = pow4(max(1.0 - p_lightDensity, 0.1)) * mix(p_skyColour, vec3(1.0, 1.0, 1.0), p_sunHeightWeight);
     vec3 p_skyLightAbsorption = getSkyRayleighAbsorption( p_skyColour, p_lightDensity );
     float p_finalMultiplier = (0.5 + smoothstep(0.02, 0.4, p_sunHeightWeight)) * p_skyPower;
@@ -185,9 +185,9 @@ vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
     float antiMie = max(p_sunHeightWeight, 0.08);
 
     vec3 skyAbsorption = getSkyRayleighAbsorption(p_skyColour, ptDensity);
-    // const vec3 skyColourGradient = pow3( exp2( -atmoCameraDir.y / p_skyColour ),
+    // const vec3 skyColourGradient = pow3(exp2( -atmoCameraDir.y / p_skyColour),
     //										 mix( 15.5f, 1.5f, pow( p_sunHeightWeight, 0.5f ) ) );
-//    const vec3 skyColourGradient = pow( exp2( -atmoCameraDir.y / p_skyColour ), vec3(1.5, 1.5, 1.5) );
+    // const vec3 skyColourGradient = pow(exp2( -atmoCameraDir.y / p_skyColour ), vec3(1.5, 1.5, 1.5) );
     vec3 skyColourGradient = exp2(-atmoCameraDir.y / p_skyColour * 1.5);
 
     float mie = getMie(LdotV360, p_sunHeightWeight);

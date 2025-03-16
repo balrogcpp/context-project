@@ -6,8 +6,11 @@
 #include "tonemap.glsl"
 
 uniform vec3 LightDir0;
+#if defined(LUT)
+uniform vec4 ViewportSize;
+#endif
 
-
+#if defined(LUT)
 vec2 oct_wrap(const vec2 v) {
 	vec2 signVal;
 	signVal.x = v.x >= 0.0 ? 1.0 : -1.0;
@@ -39,11 +42,22 @@ vec3 oct_to_vec3(const vec2 e) {
 
 	return normalize(n);
 }
+#endif
 
+
+#if !defined(LUT)
 in highp vec3 vUV0;
+#endif
 out vec3 FragColor;
 void main()
 {
+#if !defined(LUT)
     vec3 color = sky(normalize(vUV0), -normalize(LightDir0));
     FragColor = tonemap(color);
+#else
+
+	vec3 uv = oct_to_vec3(vec2(gl_FragCoord.xy * ViewportSize.zw));
+    vec3 color = sky(normalize(uv), -normalize(LightDir0));
+    FragColor = color;
+#endif
 }
