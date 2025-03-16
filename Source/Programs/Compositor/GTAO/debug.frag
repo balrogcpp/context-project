@@ -67,17 +67,17 @@ void main()
     vec2 uv = vec2(gl_FragCoord.xy - vec2(1.5, 1.5)) / vec2(textureSize(Depth, 0));
     uv.y = 1.0 - uv.y;
 
-    float d = LinearDepth(textureLod(Depth, uv, 0).x);
+    float d = LinearDepth(textureLod(Depth, uv, 0.0).x);
 
 #if __VERSION__ > 330
     vec4 ao = textureGather(RT, uv, 0);
     vec4 dg = textureGather(RT, uv, 1);
     vec4 db = textureGather(RT, uv, 2);
 #else
-    vec3 s01 = textureLodOffset(RT, uv, 0, ivec2(0, 1)).rgb;
-    vec3 s11 = textureLodOffset(RT, uv, 0, ivec2(1, 1)).rgb;
-    vec3 s10 = textureLodOffset(RT, uv, 0, ivec2(1, 0)).rgb;
-    vec3 s00 = textureLodOffset(RT, uv, 0, ivec2(0, 0)).rgb;
+    vec3 s01 = textureLodOffset(RT, uv, 0.0, ivec2(0, 1)).rgb;
+    vec3 s11 = textureLodOffset(RT, uv, 0.0, ivec2(1, 1)).rgb;
+    vec3 s10 = textureLodOffset(RT, uv, 0.0, ivec2(1, 0)).rgb;
+    vec3 s00 = textureLodOffset(RT, uv, 0.0, ivec2(0, 0)).rgb;
     vec4 ao = vec4(s01.r, s11.r, s10.r, s00.r);
     vec4 dg = vec4(s01.g, s11.g, s10.g, s00.g);
     vec4 db = vec4(s01.b, s11.b, s10.b, s00.b);
