@@ -155,7 +155,7 @@ index 7fffc0d..4819d9d 100644
 +            case 77: // DXGI_FORMAT_BC3_UNORM
 +                return PF_DXT5;
 +            case 78: // DXGI_FORMAT_BC3_UNORM_SRGB
-+                return PF_DXT5;        
++                return PF_DXT5;
              case 80: // DXGI_FORMAT_BC4_UNORM
                  return PF_BC4_UNORM;
              case 81: // DXGI_FORMAT_BC4_SNORM

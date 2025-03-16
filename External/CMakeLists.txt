@@ -57,7 +57,7 @@ macro(create_target_patch TARGET REPO TAG PATCH)
         if ("${head_rev}" MATCHES ${TAG})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
             execute_process(COMMAND ${GIT_EXECUTABLE} reset --hard WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
-            execute_process(COMMAND ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
+            execute_process(COMMAND ${GIT_EXECUTABLE} apply --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
@@ -68,7 +68,7 @@ macro(create_target_patch TARGET REPO TAG PATCH)
 
     execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
     if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
     else ()
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     endif ()
@@ -438,7 +438,7 @@ externalproject_add(Target_pugixml
 )
 
 
-create_target(Target_imgui https://github.com/ocornut/imgui.git v1.91.8)
+create_target(Target_imgui https://github.com/ocornut/imgui.git v1.91.9)
 externalproject_add(Target_imgui
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
