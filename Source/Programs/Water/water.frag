@@ -4,16 +4,17 @@
 #include "fog.glsl"
 #include "tonemap.glsl"
 
-#define saturate(x) clamp(x, 0.0, 1.0)
+#define saturate(x) clamp((x), 0.0, 1.0)
 #define lerp mix
 #define PI 3.14159265359
 #define HALF_PI 1.570796327
 
 uniform lowp sampler2D ReflectionTex;
 uniform lowp sampler2D RefractionTex;
-uniform mediump sampler2D DepthTex;
-uniform mediump sampler3D NormalTex;
+uniform highp sampler2D DepthTex;
+uniform highp sampler3D NormalTex;
 uniform lowp sampler2D CausticTex;
+
 
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
@@ -39,6 +40,16 @@ uniform float RefrDistortionAmount;
 uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
 uniform vec3 SunExtinction;
+
+vec3 toSRGB(const vec3 col)
+{
+    return sqrt(col);
+}
+
+vec3 fromSRGB(const vec3 srgb)
+{
+    return srgb * srgb;
+}
 
 // max absolute error 1.3x10^-3
 // Eberly's odd polynomial degree 5 - respect bounds
@@ -172,7 +183,7 @@ void main()
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
     vec3 normal = texture(NormalTex, vec3(nCoord+ vec2(-Time * 0.015, -Time * 0.005), Time * 0.1)).rgb;
     normal.xy = normal.xy * 2.0 - 1.0;
-    normal.z = sqrt(saturate(1.0 - dot(normal.xy, normal.xy)));
+    normal.z = sqrt(clamp(1.0 - dot(normal.xy, normal.xy), 0.0, 1.0));
     //normal.z = 1.0;
     //normal = normalize(normal);
 
@@ -220,7 +231,7 @@ void main()
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
-#if 1
+#if !defined(GL_ES)
     vec3 refraction;
     refraction.r = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade, 0.0).r;
     refraction.g = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).g;
@@ -235,12 +246,12 @@ void main()
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);
     waterSunGradient = saturate(sq(waterSunGradient * 0.7 + 0.3));
-    vec3 waterSunColor = (vec3(0.0, 1.0, 0.85) * waterSunGradient);
+    vec3 waterSunColor = fromSRGB(vec3(0.0, 1.0, 0.85)) * waterSunGradient;
     waterSunColor *= aboveWater ? 0.25 : 0.5;
 
     float waterGradient = dot(vVec, vec3(0.0, -1.0, 0.0));
     waterGradient = clamp((waterGradient * 0.5 + 0.5), 0.2, 1.0);
-    vec3 watercolor = (vec3(0.0078, 0.5176, 0.700) + waterSunColor) * waterGradient * 1.5;
+    vec3 watercolor = (fromSRGB(vec3(0.0078, 0.5176, 0.700)) + waterSunColor) * waterGradient * 1.5;
 
 //    watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
@@ -264,8 +275,8 @@ void main()
     float shorecut = aboveWater ? smoothstep(-0.001, 0.001, depth) : smoothstep(-5.0 * max(far, 0.0001), -4.0 * max(far, 0.0001), depth);
     float shorewetcut = smoothstep(-0.18, -0.000, depth + 0.01);
 
-    depth /= Visibility;
-    depth = saturate(depth);
+//    depth /= Visibility;
+//    depth = saturate(depth);
 
     float fog = aboveWater ? topfog * shorecut : underfog;
 
@@ -289,12 +300,12 @@ void main()
         color = mix(color, watercolor * darkness * ScatterFade, saturate(fog / WaterExtinction));
     }
 
-    color += LightColor0 * 10.0 * specular;
+    color += LightColor0 * 40.0 * specular;
 
     if (aboveWater)
     {
         color = ApplyFog(color, FogParams.x, FogColour.rgb, surfaceDepth, vVec, LightDir0.xyz, CameraPosition);
     }
 
-    FragColor = (color);
+    FragColor = tonemap(color);
 }
