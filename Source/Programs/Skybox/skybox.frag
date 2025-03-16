@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 //? #version 400
-
+precision highp float;
 #include "sky-lut.glsl"
 #include "clouds.glsl"
 #include "tonemap.glsl"

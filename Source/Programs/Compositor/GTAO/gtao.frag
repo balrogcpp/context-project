@@ -1,7 +1,7 @@
 // created by Andrey Vasiliev
 //? #version 400
 // based on https://forum.derivative.ca/t/implementing-different-ao-algo-gtao-with-glsl/207841/8
-
+precision highp float;
 uniform sampler2D DepthTex;
 uniform sampler2D NoiseTex;
 uniform float Time;
