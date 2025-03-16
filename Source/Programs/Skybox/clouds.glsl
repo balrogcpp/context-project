@@ -5,9 +5,9 @@
 
 #define PI 3.14159265359
 
-uniform sampler3D worlnoise;
-uniform sampler3D perlworlnoise;
-uniform sampler2D weathermap;
+uniform mediump sampler3D worlnoise;
+uniform mediump sampler3D perlworlnoise;
+uniform mediump sampler2D weathermap;
 
 uniform float TIME;
 uniform vec3 HosekSamples[3];

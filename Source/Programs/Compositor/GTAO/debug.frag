@@ -27,7 +27,7 @@ float unpack(const vec2 depth) {
 // https://github.com/nvpro-samples/gl_ssao/blob/f6b010dc7a05346518cd13d3368d8d830a382ed9/bilateralblur.frag.glsl
 float BlurFunction(const vec2 uv, float r, const float center_c, float center_d, inout float w_total)
 {
-    vec2 occ = texture2D(RT, uv).rg;
+    vec2 occ = texture(RT, uv).rg;
     float c = occ.r;
     float d = occ.g;
 

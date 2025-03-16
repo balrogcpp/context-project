@@ -46,7 +46,7 @@ vec3 GetCameraVec(const vec2 uv)
     // TODO: AO is dependent on FOV, this function is not!
     // The outcome of using this simplified function is that the effective AO range is larger when using larger FOV
     // Use something more accurate to get proper FOV-independent world-space range, however you will likely also have to adjust the SSAO constants below
-    vec2 tsize = textureSize(DepthTex, 0);
+    vec2 tsize = vec2(textureSize(DepthTex, 0));
     float aspect = tsize.x / tsize.y;
     return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, 1.0);
 }

@@ -9,12 +9,12 @@
 #define PI 3.14159265359
 #define HALF_PI 1.570796327
 
-uniform sampler2D ReflectionTex;
-uniform sampler2D RefractionTex;
-uniform sampler2D DepthTex;
-uniform sampler3D NormalTex;
-uniform sampler2D CausticTex;
-uniform sampler2D FoamTex;
+uniform lowp sampler2D ReflectionTex;
+uniform lowp sampler2D RefractionTex;
+uniform mediump sampler2D DepthTex;
+uniform mediump sampler3D NormalTex;
+uniform lowp sampler2D CausticTex;
+uniform lowp sampler2D FoamTex;
 
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
