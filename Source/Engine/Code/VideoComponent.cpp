@@ -380,15 +380,20 @@ void VideoComponent::CheckGPU() {
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_BUFFER_INSTANCE_DATA), "Instancing support required");
+
 #if !defined(__ANDROID__)
   if (RenderSystemIsGL3()) {
-    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_AUTOMIPMAP_COMPRESSED), "DXT compression support required");
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
-    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_ANISOTROPY), "DXT compression support required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_BC4_BC5), "DXT compression support required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_BC6H_BC7), "DXT compression support required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_AUTOMIPMAP_COMPRESSED), "Automipmap generation required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_ANISOTROPY), "Anisotropic filtering required");
   }
 #elif defined(__ANDROID__)
   if (RenderSystemIsGLES2()) {
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC2), "ETC1 compression support required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ASTC), "ASTC compression support required");
   }
 #elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
   if (RenderSystemIsGLES2()) {

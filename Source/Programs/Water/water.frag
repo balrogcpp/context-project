@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 //? #version 400
-
+  precision highp float;
 #include "fog.glsl"
 #include "tonemap.glsl"
 
@@ -14,7 +14,6 @@ uniform lowp sampler2D RefractionTex;
 uniform mediump sampler2D DepthTex;
 uniform mediump sampler3D NormalTex;
 uniform lowp sampler2D CausticTex;
-uniform lowp sampler2D FoamTex;
 
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
@@ -172,9 +171,10 @@ void main()
 
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
     vec3 normal = texture(NormalTex, vec3(nCoord+ vec2(-Time * 0.015, -Time * 0.005), Time * 0.1)).rgb;
-    normal = normal * 2.0 - 1.0;
-    normal.z = 1.0;
-    normal = normalize(normal);
+    normal.xy = normal.xy * 2.0 - 1.0;
+    normal.z = sqrt(saturate(1.0 - dot(normal.xy, normal.xy)));
+    //normal.z = 1.0;
+    //normal = normalize(normal);
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vPosition);
@@ -220,7 +220,7 @@ void main()
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
 
-#if !defined(GL_ES)
+#if 1
     vec3 refraction;
     refraction.r = textureLod(RefractionTex, fragCoord - (refrOffset - rcoord * -AberrationAmount) * distortFade, 0.0).r;
     refraction.g = textureLod(RefractionTex, fragCoord - refrOffset * distortFade, 0.0).g;

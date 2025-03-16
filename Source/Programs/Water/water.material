@@ -63,7 +63,6 @@ material Water
                 param_named DepthTex int 2
                 param_named NormalTex int 3
                 param_named CausticTex int 4
-                param_named FoamTex int 5
             }
 
             texture_unit Reflection
@@ -93,12 +92,6 @@ material Water
             texture_unit CausticTex
             {
                 texture water-caustic.dds
-                tex_address_mode wrap
-                filtering bilinear
-            }
-            texture_unit FoamTex
-            {
-                texture water-foam.dds
                 tex_address_mode wrap
                 filtering bilinear
             }
