@@ -1,5 +1,5 @@
 diff --git a/CMake/Dependencies.cmake b/CMake/Dependencies.cmake
-index 21590f4..e0f94e4 100644
+index dd74419..374c9ca 100644
 --- a/CMake/Dependencies.cmake
 +++ b/CMake/Dependencies.cmake
 @@ -277,8 +277,8 @@ if (NOT (APPLE_IOS OR WINDOWS_STORE OR WINDOWS_PHONE OR ANDROID OR EMSCRIPTEN))
@@ -26,7 +26,7 @@ index 7f6a28c..8610098 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 15edbe3..5baf79b 100644
+index 14c3ee7..6f3b7c4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -130,11 +130,40 @@ index 483f9f3..0b87d5d 100644
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
+diff --git a/OgreMain/src/OgreDDSCodec.cpp b/OgreMain/src/OgreDDSCodec.cpp
+index 7fffc0d..4819d9d 100644
+--- a/OgreMain/src/OgreDDSCodec.cpp
++++ b/OgreMain/src/OgreDDSCodec.cpp
+@@ -504,6 +504,24 @@ namespace {
+ 				return PF_R8_SINT;
+ 			case 65: // DXGI_FORMAT_A8_UNORM
+ 				return PF_A8;
++            case 70: // DXGI_FORMAT_BC1_TYPELESS
++                return PF_DXT1;
++            case 71: // DXGI_FORMAT_BC1_UNORM
++                return PF_DXT1;
++            case 72: // DXGI_FORMAT_BC1_UNORM_SRGB
++                return PF_DXT1;
++            case 73: // DXGI_FORMAT_BC2_TYPELESS
++                return PF_DXT3;
++            case 74: // DXGI_FORMAT_BC2_UNORM
++                return PF_DXT3;
++            case 75: // DXGI_FORMAT_BC2_UNORM_SRGB
++                return PF_DXT3;
++            case 76: // DXGI_FORMAT_BC3_TYPELESS
++                return PF_DXT5;
++            case 77: // DXGI_FORMAT_BC3_UNORM
++                return PF_DXT5;
++            case 78: // DXGI_FORMAT_BC3_UNORM_SRGB
++                return PF_DXT5;
+             case 80: // DXGI_FORMAT_BC4_UNORM
+                 return PF_BC4_UNORM;
+             case 81: // DXGI_FORMAT_BC4_SNORM
 diff --git a/OgreMain/src/OgreRoot.cpp b/OgreMain/src/OgreRoot.cpp
-index 7100c33..acbd32c 100644
+index 8d759fa..70c4b34 100644
 --- a/OgreMain/src/OgreRoot.cpp
 +++ b/OgreMain/src/OgreRoot.cpp
-@@ -911,7 +911,7 @@ namespace Ogre {
+@@ -909,7 +909,7 @@ namespace Ogre {
      //-----------------------------------------------------------------------
      void Root::unloadPlugins(void)
      {
@@ -143,7 +172,7 @@ index 7100c33..acbd32c 100644
          // unload dynamic libs first
          for (PluginLibList::reverse_iterator i = mPluginLibs.rbegin(); i != mPluginLibs.rend(); ++i)
          {
-@@ -1071,7 +1071,7 @@ namespace Ogre {
+@@ -1069,7 +1069,7 @@ namespace Ogre {
      //-----------------------------------------------------------------------
      void Root::loadPlugin(const String& pluginName)
      {
@@ -152,7 +181,7 @@ index 7100c33..acbd32c 100644
          // Load plugin library
          DynLib* lib = DynLibManager::getSingleton().load( pluginName );
          // Store for later unload
-@@ -1098,7 +1098,7 @@ namespace Ogre {
+@@ -1096,7 +1096,7 @@ namespace Ogre {
      //-----------------------------------------------------------------------
      void Root::unloadPlugin(const String& pluginName)
      {
@@ -232,18 +261,18 @@ index 10283f5..ac57187 100644
    target_link_libraries(Codec_STBI PRIVATE ZLIB::ZLIB)
  endif()
 diff --git a/PlugIns/STBICodec/src/OgreSTBICodec.cpp b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
-index c5a4d4b..8ba1d30 100644
+index c5a4d4b..4dfb6f1 100644
 --- a/PlugIns/STBICodec/src/OgreSTBICodec.cpp
 +++ b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
-@@ -41,7 +41,7 @@ THE SOFTWARE.
- #define STB_IMAGE_IMPLEMENTATION
+@@ -42,7 +42,7 @@ THE SOFTWARE.
  #define STB_IMAGE_STATIC
  #include "stbi/stb_image.h"
-
+ 
 -#ifdef HAVE_ZLIB
 +#if 0
  #include <zlib.h>
  static Ogre::uchar* custom_zlib_compress(Ogre::uchar* data, int data_len, int* out_len, int /*quality*/)
+ {
 diff --git a/RenderSystems/GL3Plus/src/OgreGL3PlusPixelFormat.cpp b/RenderSystems/GL3Plus/src/OgreGL3PlusPixelFormat.cpp
 index f1f6c5d..415c92f 100644
 --- a/RenderSystems/GL3Plus/src/OgreGL3PlusPixelFormat.cpp
@@ -271,7 +300,7 @@ index 5cb0520..4d5a1e5 100644
                                                   : (void*)params->getFloatPointer(def->physicalIndex);
  
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
-index 2b1a1f5..a4c498b 100644
+index 2b1a1f5..0a4e56d 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 +++ b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 @@ -122,7 +122,7 @@ namespace Ogre {
@@ -339,7 +368,7 @@ index 0c5d932..209508b 100644
          mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
  
 diff --git a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
-index 436c498..f184c9b 100644
+index 436c498..9a1e604 100644
 --- a/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
 +++ b/RenderSystems/GLSupport/src/GLSL/OgreGLSLShaderCommon.cpp
 @@ -83,8 +83,8 @@ namespace Ogre {
