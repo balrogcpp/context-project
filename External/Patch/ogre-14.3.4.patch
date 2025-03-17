@@ -130,8 +130,23 @@ index 483f9f3..0b87d5d 100644
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
+diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
+index a7ebc92..c911075 100644
+--- a/OgreMain/src/OgreCompositor.cpp
++++ b/OgreMain/src/OgreCompositor.cpp
+@@ -156,8 +156,8 @@ CompositionTechnique* Compositor::getSupportedTechnique(const String& schemeName
+ static TexturePtr createTexture(const String& name, const CompositionTechnique::TextureDefinition* def, PixelFormat pf)
+ {
+     bool hwGamma = def->hwGammaWrite && !PixelUtil::isFloatingPoint(pf);
+-    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, 0, pf,
+-                                                       TU_RENDERTARGET, 0, hwGamma, def->fsaa);
++    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, std::min(Ogre::TextureManager::getSingleton().getDefaultNumMipmaps(), 5u), pf,
++        Ogre::TextureManager::getSingleton().getDefaultNumMipmaps() != 0 ? TU_RENDERTARGET | TU_AUTOMIPMAP : TU_RENDERTARGET, 0, hwGamma, def->fsaa);
+ }
+ 
+ //-----------------------------------------------------------------------
 diff --git a/OgreMain/src/OgreDDSCodec.cpp b/OgreMain/src/OgreDDSCodec.cpp
-index 7fffc0d..4819d9d 100644
+index 7fffc0d..82c5463 100644
 --- a/OgreMain/src/OgreDDSCodec.cpp
 +++ b/OgreMain/src/OgreDDSCodec.cpp
 @@ -504,6 +504,24 @@ namespace {

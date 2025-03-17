@@ -145,6 +145,29 @@ vec3 PrefilteredDFG_LUT(const float lod, const float NoV) {
     return textureLod(LUTtex, vec2(NoV, 1.0 - lod), 0.0).rgb;
 }
 
+vec3 Irradiance_SphericalHarmonics(const vec3 n, const vec3[9] iblSH) {
+    vec3 sphericalHarmonics = iblSH[0];
+    const int CONFIG_SH_BANDS_COUNT = 4;
+
+    if (CONFIG_SH_BANDS_COUNT >= 2) {
+        sphericalHarmonics +=
+                  iblSH[1] * (n.y)
+                + iblSH[2] * (n.z)
+                + iblSH[3] * (n.x);
+    }
+
+    if (CONFIG_SH_BANDS_COUNT >= 3) {
+        sphericalHarmonics +=
+                  iblSH[4] * (n.y * n.x)
+                + iblSH[5] * (n.y * n.z)
+                + iblSH[6] * (3.0 * n.z * n.z - 1.0)
+                + iblSH[7] * (n.z * n.x)
+                + iblSH[8] * (n.x * n.x - n.y * n.y);
+    }
+
+    return max(sphericalHarmonics, 0.0);
+}
+
 //------------------------------------------------------------------------------
 // IBL environment BRDF dispatch
 //------------------------------------------------------------------------------
@@ -194,14 +217,14 @@ vec3 sampleOct(const vec3 n, const float lod) {
 
 vec3 diffuseIrradiance(const vec3 n) {
     //return decodeDataForIBL(textureLod(SpecularEnvTex, n, 6.0).rgb);
-    return decodeDataForIBL(sampleOct(n, 6.0));
+    return decodeDataForIBL(sampleOct(n, 4.0));
 }
 
 float perceptualRoughnessToLod(const float perceptualRoughness) {
     // The mapping below is a quadratic fit for log2(perceptualRoughness)+iblMaxMipLevel when
     // iblMaxMipLevel is 4. We found empirically that this mapping works very well for
     // a 256 cubemap with 5 levels used. But also scales well for other iblMaxMipLevel values.
-    return 6.0 * perceptualRoughness * (2.0 - perceptualRoughness);
+    return 4.0 * perceptualRoughness * (2.0 - perceptualRoughness);
 }
 
 vec3 prefilteredRadiance(const vec3 n, const float perceptualRoughness) {

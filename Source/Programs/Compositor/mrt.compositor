@@ -98,7 +98,7 @@ compositor MRT
             }
         }
 
-        target ibl
+        /*target ibl
         {
             only_initial on
             pass render_quad
@@ -106,7 +106,7 @@ compositor MRT
                 material Copy4x
                 input 0 sky_lut
             }
-        }
+        }*/
 
         target mrt
         {

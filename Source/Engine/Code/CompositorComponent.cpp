@@ -366,14 +366,6 @@ void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Mater
       }
     }
 
-    //auto env = compositorChain->getCompositor("MRT")->getTextureInstance("sky_lut", 0);
-    //auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
-    //static bool dirty = true;
-    //if (dirty) {
-    //  env->copyToTexture(ibl);
-    //  dirty = false;
-    //}
-
   } else if (pass_id == 10) {
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
@@ -445,6 +437,14 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   }
 
   if (auto *tex = pass->getTextureUnitState("IBL")) {
+    const auto &env = compositorChain->getCompositor("MRT")->getTextureInstance("sky_lut", 0);
+    auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
+    static int dirty = 0;
+    if (dirty < 3) {
+      env->copyToTexture(ibl);
+      dirty++;
+    }
+
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "ibl");
