@@ -12,13 +12,13 @@ float acosFast(const float x) {
     // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
     float y = abs(x);
     float p = -0.1565827 * y + 1.570796;
-    p *= fastSqrt(1.0 - y);
+    p *= sqrt(1.0 - y);
     return x >= 0.0 ? p : PI - p;
 }
 
 float acosFastPositive(const float x) {
     float p = -0.1565827 * x + 1.570796;
-    return p * fastSqrt(1.0 - x);
+    return p * sqrt(1.0 - x);
 }
 
 float sq(const float x) {

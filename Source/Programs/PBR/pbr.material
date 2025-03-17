@@ -338,7 +338,7 @@ abstract material TERRA
             texture_unit IBL
             {
                 texture $IBL cubic
-                sampler_ref CubeMap
+                sampler_ref EnvMap
             }
 
             vertex_program_ref TERRA_vs {}

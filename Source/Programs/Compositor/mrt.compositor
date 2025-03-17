@@ -61,7 +61,7 @@ compositor MRT
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture reflection target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 1
         texture sky_lut 1024 1024 PF_FLOAT16_RGB no_fsaa depth_pool 0
-        texture ibl 512 512 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 global_scope
+        texture ibl 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 global_scope
 
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_R8 no_fsaa depth_pool 0
         texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_GR no_fsaa depth_pool 0
@@ -103,7 +103,7 @@ compositor MRT
             only_initial on
             pass render_quad
             {
-                material Copy2x
+                material Copy4x
                 input 0 sky_lut
             }
         }

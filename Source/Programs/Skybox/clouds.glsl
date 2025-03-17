@@ -3,6 +3,8 @@
 
 // Cloud Raymarching based on: A. Schneider. “The Real-Time Volumetric Cloudscapes Of Horizon: Zero Dawn”. ACM SIGGRAPH. Los Angeles, CA: ACM SIGGRAPH, 2015. Web. 26 Aug. 2015.
 
+precision highp float;
+
 #define PI 3.14159265359
 
 uniform mediump sampler3D worlnoise;

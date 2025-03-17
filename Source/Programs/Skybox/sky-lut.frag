@@ -1,9 +1,11 @@
 // created by Andrey Vasiliev
 //? #version 400
-precision highp float;
+
 #include "sky-lut.glsl"
-#include "clouds.glsl"
 #include "tonemap.glsl"
+
+// changes precision highp
+#include "clouds.glsl"
 
 uniform vec3 LightDir0;
 uniform vec4 ViewportSize;
@@ -45,7 +47,8 @@ vec3 oct_to_vec3(const vec2 e) {
 out vec3 FragColor;
 void main()
 {
-	vec3 uv = oct_to_vec3(gl_FragCoord.xy * ViewportSize.zw).xzy;
-    vec3 color = sky(uv, -normalize(LightDir0));
-    FragColor = color;
+	vec3 dir = oct_to_vec3(gl_FragCoord.xy * ViewportSize.zw).xzy;
+	vec3 ldir = -normalize(LightDir0);
+    vec3 color = sky(dir, ldir);
+    FragColor = tonemap(color);
 }

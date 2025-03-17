@@ -60,15 +60,8 @@ float GetAO(const vec2 uv, float center_c, float center_d)
     return c_total/w_total;
 }
 
-
-out vec3 FragColor;
-void main()
+float evaluateSSAO(const highp vec2 uv, const highp float d)
 {
-    vec2 uv = vec2(gl_FragCoord.xy - vec2(1.5, 1.5)) / vec2(textureSize(Depth, 0));
-    uv.y = 1.0 - uv.y;
-
-    float d = LinearDepth(textureLod(Depth, uv, 0.0).x);
-
 #if __VERSION__ > 330
     vec4 ao = textureGather(RT, uv, 0);
     vec4 dg = textureGather(RT, uv, 1);
@@ -84,7 +77,6 @@ void main()
 #endif
 
     vec4 depths = dg;
-    // bilateral weights
     //vec4 depths;
     //depths.x = unpack(vec2(dg.x, db.x));
     //depths.y = unpack(vec2(dg.y, db.y));
@@ -103,6 +95,19 @@ void main()
     w = max(vec4(MEDIUMP_FLT_MIN, MEDIUMP_FLT_MIN, MEDIUMP_FLT_MIN, MEDIUMP_FLT_MIN), 1.0 - w * w) * b;
     vec4 weights = w / (w.x + w.y + w.z + w.w);
     float z = dot(ao, weights);
+
+    return z;
+}
+
+out vec3 FragColor;
+void main()
+{
+    highp vec2 uv = vec2(gl_FragCoord.xy - vec2(1.5, 1.5)) / vec2(textureSize(Depth, 0));
+    uv.y = 1.0 - uv.y;
+
+    float d = LinearDepth(textureLod(Depth, uv, 0.0).x);
+
+    float z = evaluateSSAO(uv, d);
 
     FragColor = vec3(z, z, z);
 }

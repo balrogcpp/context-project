@@ -1,11 +1,12 @@
 // created by Andrey Vasiliev
 //? #version 400
 // based on https://forum.derivative.ca/t/implementing-different-ao-algo-gtao-with-glsl/207841/8
-precision highp float;
+
+//precision highp float;
+
 uniform sampler2D DepthTex;
 uniform sampler2D NoiseTex;
 uniform float Time;
-
 #define PI 3.1415926535897932384626433832795
 #define PI_HALF 1.5707963267948966192313216916398
 
@@ -26,18 +27,11 @@ float GTAOFastSqrt(const float x)
 float GTAOFastAcos(const float x)
 {
     float res = -0.156583 * abs(x) + PI_HALF;
-    res *= GTAOFastSqrt(1.0 - abs(x));
+    res *= sqrt(1.0 - abs(x));
     return x >= 0.0 ? res : PI - res;
 }
 
-float IntegrateArc(const float h1, const float h2, const float n)
-{
-    float cosN = cos(n);
-    float sinN = sin(n);
-    return 0.25 * (-cos(2.0 * h1 - n) + cosN + 2.0 * h1 * sinN - cos(2.0 * h2 - n) + cosN + 2.0 * h2 * sinN);
-}
-
-vec3 GetCameraVec(const vec2 uv)
+vec3 GetCameraVec(const highp vec2 uv)
 {
     // Returns the vector from camera to the specified position on the camera plane (uv argument), located one unit away from the camera
     // This vector is not normalized.
@@ -51,6 +45,15 @@ vec3 GetCameraVec(const vec2 uv)
     return vec3(uv.x * 2.0 - 1.0, -uv.y * 2.0 * aspect + aspect, 1.0);
 }
 
+float IntegrateArc(const float h1, const float h2, const float n)
+{
+    float cosN = cos(n);
+    float sinN = sin(n);
+    return 0.25 * (-cos(2.0 * h1 - n) + cosN + 2.0 * h1 * sinN - cos(2.0 * h2 - n) + cosN + 2.0 * h2 * sinN);
+}
+
+
+
 #define SSAO_LIMIT 100
 #define SSAO_SAMPLES 4
 #define SSAO_RADIUS 2.5
@@ -58,7 +61,7 @@ vec3 GetCameraVec(const vec2 uv)
 #define SSAO_THICKNESSMIX 0.2
 #define SSAO_MAX_STRIDE 32
 
-void SliceSample(const vec2 tc_base, const vec2 aoDir, int i, const float targetMip, const vec3 ray, const vec3 v, inout float closest)
+void SliceSample(const vec2 tc_base, const vec2 aoDir, const int i, const float targetMip, const vec3 ray, const vec3 v, inout float closest)
 {
     vec2 uv = tc_base + aoDir * float(i);
     float depth = Linear01Depth(textureLod(DepthTex, uv, 0.0).x);
@@ -68,36 +71,30 @@ void SliceSample(const vec2 tc_base, const vec2 aoDir, int i, const float target
     float current = dot(v, normalize(p));
     // Linear falloff for samples that are too far away from current pixel
     float falloff = clamp((SSAO_RADIUS - length(p)) / SSAO_FALLOFF, 0.0, 1.0);
-    if(current > closest)
-    closest = mix(closest, current, falloff);
+    if(current > closest) closest = mix(closest, current, falloff);
     // Helps avoid overdarkening from thin objects
     closest = mix(closest, current, SSAO_THICKNESSMIX * falloff);
 }
 
-vec3 MinDiff(const vec3 P, const vec3 Pr, const vec3 Pl)
+precision highp float;
+vec3 MinDiff(const highp vec3 P, const highp vec3 Pr, const highp vec3 Pl)
 {
-    vec3 V1 = Pr - P;
-    vec3 V2 = P - Pl;
-    return (dot(V1,V1) < dot(V2,V2)) ? V1 : V2;
+    highp vec3 V1 = Pr - P;
+    highp vec3 V2 = P - Pl;
+    return (dot(V1, V1) < dot(V2, V2)) ? V1 : V2;
 }
 
-vec3 getNormal(const sampler2D tex, const vec2 uv, const vec2 tsize)
+vec3 getNormal(const sampler2D tex, const highp vec2 uv, const highp vec2 tsize)
 {
-    vec3 P = GetCameraVec(uv) * Linear01Depth(textureLod(tex, uv, 0.0).x);
-    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(1.0, 0.0), 0.0).x);
-    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(-1.0, 0.0), 0.0).x);
-    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(0.0, 1.0), 0.0).x);
-    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * Linear01Depth(textureLod(tex, uv + tsize * vec2(0.0, -1.0), 0.0).x);
+    vec3 P = GetCameraVec(uv) * (textureLod(tex, uv, 0.0).x);
+    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * (textureLod(tex, uv + tsize * vec2(1.0, 0.0), 0.0).x);
+    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * (textureLod(tex, uv + tsize * vec2(-1.0, 0.0), 0.0).x);
+    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * (textureLod(tex, uv + tsize * vec2(0.0, 1.0), 0.0).x);
+    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * (textureLod(tex, uv + tsize * vec2(0.0, -1.0), 0.0).x);
 
     return normalize(cross(MinDiff(P, Pr, Pl), MinDiff(P, Pt, Pb)));
 }
-
-vec3 hash(const vec3 a)
-{
-    vec3 b = fract(a * vec3(0.8, 0.8, 0.8));
-    b += dot(b, b.yxz + 19.19);
-    return fract((b.xxy + b.yxx) * b.zyx);
-}
+precision mediump float;
 
 // vec3 getScreenSpacePos(const vec2 uv, const vec3 cameraNormal)
 // {
@@ -110,6 +107,7 @@ float Falloff(const float dist2, const float cosh)
     return 2.0 * clamp((dist2 - 0.16) / (4.0 - 0.16), 0.0, 1.0);
 }
 
+
 out float FragColor;
 void main()
 {
@@ -118,7 +116,7 @@ void main()
 
     vec3 normal = getNormal(DepthTex, uv, viewsizediv);
 
-    vec2 noises	= texelFetch(NoiseTex, ivec2(gl_FragCoord.xy * Time * 10.0) % 4, 0).xy;
+    vec2 noises	= texelFetch(NoiseTex, ivec2(gl_FragCoord.xy * 10.0) % 4, 0).xy;
 
     float angleOffset = noises.x;
     float spacialOffset = noises.y;
@@ -159,7 +157,7 @@ void main()
     const float mipScale = 1.0 / 12.0;
 
 //    float targetMip = floor(clamp(pow(stride, 1.3) * mipScale, minMip, maxMip));
-    float targetMip = 0.0;
+    const float targetMip = 0.0;
 
     // Find horizons of the slice
     for(int i = -1; i >= -SSAO_SAMPLES; i--)

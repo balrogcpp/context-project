@@ -30,6 +30,11 @@ fragment_program Copy2x glsl glsles vk
 	source copy2x.frag
 }
 
+fragment_program Copy4x glsl glsles vk
+{
+	source copy4x.frag
+}
+
 fragment_program max4 glsl glsles vk
 {
 	source max4.frag
