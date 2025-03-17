@@ -121,13 +121,16 @@ vec4 march(const vec3 pos, const vec3 end, const vec3 dir, const float ss, const
 	float phase = max(max(henyey_greenstein(costheta, 0.6), henyey_greenstein(costheta, (0.4 - 1.4 * ldir.y))), henyey_greenstein(costheta, -0.2));
 	// Precalculate sun and ambient colors
 	// This should really come from a uniform or texture for performance reasons
-	//vec3 atmosphere_sun = atmosphere(ldir, ldir) * LIGHT0_ENERGY * 0.1;
-	//vec3 atmosphere_ambient = atmosphere(vec3(1.414214, 1.414214, 0.0), ldir);
-	//vec3 atmosphere_ground = atmosphere(vec3(1.414214, -1.414214, 0.0), ldir);
+#if 0
+	vec3 atmosphere_sun = atmosphere(ldir, ldir) * LIGHT0_ENERGY * 0.1;
+	vec3 atmosphere_ambient = atmosphere(vec3(0.707107, 0.707107, 0.0), ldir);
+	vec3 atmosphere_ground = atmosphere(vec3(0.707107, 0.707107, 0.0), ldir);
+#else
 	vec3 atmosphere_sun = HosekSamples[0] * LIGHT0_ENERGY * 0.1;
 	vec3 atmosphere_ambient = HosekSamples[1];
 	vec3 atmosphere_ground = HosekSamples[2];
-	
+#endif
+
 	const float weather_scale = 0.00006;
 	float time = TIME * 0.001 + 0.005 * _time_offset;
 	vec2 weather_pos = time * wind_direction * wind_speed;

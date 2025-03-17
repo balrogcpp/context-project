@@ -139,7 +139,6 @@ vec3 perturb(const sampler2D tex, const vec2 coords, const float bend)
 }
 
 in highp vec3 vPosition;
-in highp vec2 vUV0;
 out vec3 FragColor;
 void main()
 {
@@ -180,11 +179,10 @@ void main()
     );
     */
 
-    vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
-    vec4 n = texture(NormalTex, vec3(nCoord+ vec2(-Time * 0.015, -Time * 0.005), Time * 0.1)).rgba;
-    n.xy = n.xy * 2.0 - 1.0;
-    n.z = sqrt(clamp(1.0 - dot(n.xy, n.xy), 0.0, 1.0));
-    vec3 normal = n.xyz;
+    vec2 nCoord = vPosition.xz * WaveScale * 0.04;// + WindDirection * Time * WindSpeed * 0.04;
+    vec3 normal = texture(NormalTex, vec3(nCoord + vec2(-Time * 0.015, -Time * 0.005), Time * 0.1)).rgb;
+    normal.xy = normal.xy * 2.0 - 1.0;
+    normal.z = sqrt(clamp(1.0 - dot(normal.xy, normal.xy), 0.0, 1.0));
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vPosition);
