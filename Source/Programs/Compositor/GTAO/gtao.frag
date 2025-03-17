@@ -20,14 +20,18 @@ float Linear01Depth(const float z)
 // https://github.com/GameTechDev/XeGTAO/blob/188587a986f94db285c83c99676123019a0fd9b6/Source/Rendering/Shaders/XeGTAO.hlsli#L171
 float GTAOFastSqrt(const float x)
 {
+#ifndef GL_ES
     return intBitsToFloat(0x1fbd1df5 + (floatBitsToInt(x) >> 1));
+#else
+    return sqrt(x);
+#endif
 }
 
 // [Eberly2014] GPGPU Programming for Games and Science
 float GTAOFastAcos(const float x)
 {
     float res = -0.156583 * abs(x) + PI_HALF;
-    res *= sqrt(1.0 - abs(x));
+    res *= GTAOFastSqrt(1.0 - abs(x));
     return x >= 0.0 ? res : PI - res;
 }
 

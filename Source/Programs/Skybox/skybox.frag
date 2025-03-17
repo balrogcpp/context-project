@@ -1,18 +1,9 @@
 // created by Andrey Vasiliev
 //? #version 400
 
-#define LUT
-
-#if !defined(LUT)
-#include "sky-lut.glsl"
-#include "tonemap.glsl"
-#include "clouds.glsl"
-#endif
-
-
 
 uniform mediump sampler2D skyLUT;
-uniform vec3 LightDir0;
+//uniform vec3 LightDir0;
 
 
 vec2 oct_wrap(const vec2 v) {
@@ -52,13 +43,7 @@ in highp vec3 vUV0;
 out vec3 FragColor;
 void main()
 {
-#if !defined(LUT)
-    vec3 color = sky(normalize(vUV0), -normalize(LightDir0));
-    FragColor = tonemap(color);
-#else
-
 	highp vec2 uv = vec3_to_oct(normalize(vUV0.xzy));
     vec3 color = textureLod(skyLUT, uv, 0.0).rgb;
     FragColor = color;
-#endif
 }

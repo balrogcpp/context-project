@@ -19,7 +19,7 @@ sampler ShadowMap
 }
 sampler SSAO
 {
-    filtering bilinear
+    filtering none
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
