@@ -156,8 +156,45 @@ vec3 prefilteredDFG(const float perceptualRoughness, const float NoV) {
 #endif
 
 #ifdef HAS_IBL
+vec2 oct_wrap(const vec2 v) {
+	vec2 signVal;
+	signVal.x = v.x >= 0.0 ? 1.0 : -1.0;
+	signVal.y = v.y >= 0.0 ? 1.0 : -1.0;
+
+	return (1.0 - abs(v.yx)) * signVal;
+}
+
+vec2 vec3_to_oct(in vec3 e) {
+	e /= abs(e.x) + abs(e.y) + abs(e.z);
+	e.xy = e.z >= 0.0 ? e.xy : oct_wrap(e.xy);
+
+	vec2 n;
+	n.y = e.y * 0.5 + 0.5;
+	n.x = e.x * 0.5 + n.y;
+	n.y = e.x * -0.5 + n.y;
+
+	return n;
+}
+
+// Hemisphere octahedral. Maximizes use of square texture.
+// Adapted from https://johnwhite3d.blogspot.com/2017/10/signed-octahedron-normal-encoding.html
+vec3 oct_to_vec3(const vec2 e) {
+	vec3 n;
+	n.x = (e.x - e.y);
+	n.y = (e.x + e.y) - 1.0;
+	n.z = 1.0 - abs(n.x) - abs(n.y);
+	n.xy = n.z >= 0.0 ? n.xy : oct_wrap(n.xy);
+
+	return normalize(n);
+}
+
+vec3 sampleOct(const vec3 n, const float lod) {
+    return textureLod(SpecularEnvTex, vec3_to_oct(n.xzy), lod).rgb;
+}
+
 vec3 diffuseIrradiance(const vec3 n) {
-    return decodeDataForIBL(textureLod(SpecularEnvTex, n, 6.0).rgb);
+    //return decodeDataForIBL(textureLod(SpecularEnvTex, n, 6.0).rgb);
+    return decodeDataForIBL(sampleOct(n, 6.0));
 }
 
 float perceptualRoughnessToLod(const float perceptualRoughness) {
@@ -168,7 +205,8 @@ float perceptualRoughnessToLod(const float perceptualRoughness) {
 }
 
 vec3 prefilteredRadiance(const vec3 n, const float perceptualRoughness) {
-    return decodeDataForIBL(textureLod(SpecularEnvTex, n, perceptualRoughnessToLod(perceptualRoughness)).rgb);
+    //return decodeDataForIBL(textureLod(SpecularEnvTex, n, perceptualRoughnessToLod(perceptualRoughness)).rgb);
+    return decodeDataForIBL(sampleOct(n, perceptualRoughnessToLod(perceptualRoughness)));
 }
 
 vec3 getSpecularDominantDirection(const vec3 n, const vec3 r, const float roughness) {

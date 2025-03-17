@@ -6,7 +6,7 @@ sampler PBR
     max_anisotropy 1
     tex_address_mode wrap
 }
-sampler CubeMap
+sampler EnvMap
 {
     filtering bilinear
     tex_address_mode clamp
@@ -166,8 +166,8 @@ abstract material IBL : PBR
         {
             texture_unit IBL
             {
-                texture $IBL cubic
-                sampler_ref CubeMap
+                texture white.dds
+                sampler_ref EnvMap
             }
 
             vertex_program_ref IBL_vs {}

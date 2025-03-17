@@ -83,13 +83,7 @@ CompositorComponent::CompositorComponent() : fixedViewportSize(false), plane(Vec
 
 CompositorComponent::~CompositorComponent() = default;
 
-void CompositorComponent::OnUpdate(float time) {
-  const auto &ll = sceneManager->_getLightsAffectingFrustum();
-  if (!ll.empty() && ll[0]->getType() == Ogre::Light::LT_DIRECTIONAL) {
-    Vector3f sunDir = -ll[0]->getDerivedDirection().normalisedCopy();
-    applyHosekParams(sunDir, Ogre::MaterialManager::getSingleton().getByName("SkyBox"), "HosekParams");
-  }
-}
+void CompositorComponent::OnUpdate(float time) {}
 
 void CompositorComponent::SetSleep(bool sleep) { _sleep = sleep; }
 
@@ -363,7 +357,24 @@ void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Mater
   const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
 
-  if (pass_id == 10) {
+  if (pass_id == 1) {
+    for (auto *l : sceneManager->_getLightsAffectingFrustum()) {
+      if (l->getType() == Light::LT_DIRECTIONAL) {
+        fp->setNamedConstant("LightDir0", l->getDerivedDirection());
+        applyHosekParams(-l->getDerivedDirection(), fp);
+        break;
+      }
+    }
+
+    //auto env = compositorChain->getCompositor("MRT")->getTextureInstance("sky_lut", 0);
+    //auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
+    //static bool dirty = true;
+    //if (dirty) {
+    //  env->copyToTexture(ibl);
+    //  dirty = false;
+    //}
+
+  } else if (pass_id == 10) {
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
@@ -436,7 +447,7 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   if (auto *tex = pass->getTextureUnitState("IBL")) {
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-      tex->setCompositorReference("MRT", "cube");
+      tex->setCompositorReference("MRT", "ibl");
     }
   }
 

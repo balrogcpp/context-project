@@ -40,7 +40,7 @@ uniform sampler2D ShadowTex3;
 #endif
 #endif
 #if defined(HAS_IBL)
-uniform samplerCube SpecularEnvTex;
+uniform sampler2D SpecularEnvTex;
 #endif
 #if defined(TERRA_NORMALMAP)
 uniform sampler2D TerraNormalTex;

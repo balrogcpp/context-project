@@ -66,7 +66,7 @@ std::array<Ogre::Vector3f, 10> getHosekParams(Ogre::Vector3f sunDir) {
   return hosekParams;
 }
 
-void applyHosekParams(Ogre::Vector3f sunDir, const Ogre::MaterialPtr &material, const std::string &uniform) {
+void applyHosekParams(Ogre::Vector3f sunDir, const Ogre::GpuProgramParametersSharedPtr &fp) {
   static Ogre::Vector3f sunDirOld;
   sunDir.normalise();
 
@@ -86,9 +86,8 @@ void applyHosekParams(Ogre::Vector3f sunDir, const Ogre::MaterialPtr &material, 
     for (int i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++) hosekValuesArray[3 * i + j] = hosekValues[i][j];
 
-    auto fp = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
-    fp->setNamedConstant(uniform, hosekParamsArray.data(), hosekParamsArray.size());
+    fp->setNamedConstant("HosekParams", hosekParamsArray.data(), hosekParamsArray.size());
     fp->setNamedConstant("HosekSamples", hosekValuesArray.data(), hosekValuesArray.size());
   }
 

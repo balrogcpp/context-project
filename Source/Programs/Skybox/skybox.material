@@ -10,34 +10,97 @@ vertex_program SkyBoxVp glsl glsles vk
     }
 }
 
+vertex_program SkyLutVp glsl glsles vk
+{
+	source sky-lut.vert
+}
+
 fragment_program SkyBoxFp glsl glsles vk
 {
 	source skybox.frag
 
     default_params
     {
-        param_named_auto LightDir0 light_direction 0
-        param_named_auto TIME time
+        //param_named_auto LightDir0 light_direction 0
+        //param_named_auto TIME time
     }
 }
 
+fragment_program SkyLutFp glsl glsles vk
+{
+	source sky-lut.frag
+
+    default_params
+    {
+        //param_named_auto LightDir0 light_direction 0
+        param_named_auto TIME time
+        param_named_auto ViewportSize viewport_size
+    }
+}
+
+
 material SkyBox
 {
-    receive_shadows off
-    transparency_casts_shadows off
-
-    //set $CubeTex white.dds
-
 	technique
 	{
 		pass
 		{
-            lighting off
             cull_hardware none
 
 			vertex_program_ref SkyBoxVp {}
 
 			fragment_program_ref SkyBoxFp 
+            {
+                param_named skyLUT int 0
+                //param_named worlnoise int 0
+                //param_named perlworlnoise int 1
+                //param_named weathermap int 2
+            }
+
+            texture_unit SkyLUT
+            {
+                content_type compositor MRT sky_lut
+                tex_address_mode clamp
+                filtering bilinear
+            }
+
+			/*texture_unit worlnoise
+            {
+                texture worlnoise.dds 3d
+                tex_address_mode wrap
+                filtering bilinear
+            }
+			texture_unit perlworlnoise
+            {
+                texture perlworlnoise.dds 3d
+                tex_address_mode wrap
+                filtering bilinear
+            }
+			texture_unit weathermap
+            {
+                texture weather.dds
+                tex_address_mode wrap
+                filtering bilinear
+            }*/
+		}
+	}
+}
+
+material SkyLUT
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			depth_check off
+            depth_write off
+            polygon_mode_overrideable false
+            lighting off
+
+			vertex_program_ref SkyLutVp {}
+
+			fragment_program_ref SkyLutFp 
             {
                 param_named worlnoise int 0
                 param_named perlworlnoise int 1
