@@ -81,7 +81,7 @@ vertex_program PSSM/PG_caster_vs glsl glsles vk : PG_vs
 
 fragment_program PG_fs glsl glsles vk : PBR_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA
 
     default_params
     {
@@ -105,7 +105,7 @@ vertex_program PSSM/PG0_caster_vs glsl glsles vk : PG0_vs
 
 fragment_program PG0_fs glsl glsles vk : PBR_I_fs
 {
-    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
+    preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4,HAS_VERTEXCOLOR,HAS_ALPHA,PAGED_GEOMETRY
 
     default_params
     {
@@ -127,12 +127,11 @@ fragment_program TERRA_fs glsl glsles vk : IBL_I_fs
     preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
 }
 
-vertex_program PBR/shadow_caster_fs glsl glsles vk
+fragment_program PBR/shadow_caster_fs glsl glsles vk
 {
-	source pssm.vert
+	source pssm.frag
 	default_params
 	{
-		param_named_auto WorldViewProjMatrix worldviewproj_matrix
 	}
 }
 fragment_program PBR/shadow_caster_alpha_fs glsl glsles vk

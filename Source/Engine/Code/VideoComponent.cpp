@@ -33,6 +33,7 @@
 #endif
 #if defined(OGRE_BUILD_COMPONENT_TERRAIN)
 #include <Terrain/OgreTerrainGroup.h>
+#include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #endif
 #if defined(OGRE_BUILD_COMPONENT_PAGING)
 #include <Paging/OgrePaging.h>
@@ -169,9 +170,6 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
   TerrainMaterialGeneratorB() { activeProfile.reset(new SM2Profile(this)); }
   virtual ~TerrainMaterialGeneratorB() {}
 
-  uint8 getMaxLayers(const Terrain *terrain) const override { return terrainMaxLayers; }
-  void updateParams(const MaterialPtr &mat, const Terrain *terrain) override {}
-  void updateParamsForCompositeMap(const MaterialPtr &mat, const Terrain *terrain) override {}
   bool isVertexCompressionSupported() const override { return enableVertexCompression; }
   void setLightmapEnabled(bool enabled) override { enableLightmap = enabled; }
 
@@ -184,6 +182,7 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
 
   MaterialPtr generate(const Terrain *terrain) override {
     const string materialName = "TerrainCustom";
+
     static unsigned long long generator = 0;
     string newName = materialName + std::to_string(generator++);
 
@@ -201,8 +200,10 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
     if (isVertexCompressionSupported() && Ogre::TerrainGlobalOptions::getSingletonPtr()->getUseVertexCompressionWhenAvailable()) {
       if (pass->hasVertexProgram()) {
         const auto &vp = pass->getVertexProgramParameters();
+        const auto &vps = newMaterial->getTechnique(0)->getShadowCasterMaterial()->getTechnique(0)->getPass(0)->getVertexProgramParameters();
         Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
         vp->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
+        vps->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
         Real baseUVScale = 1.0f / (terrain->getSize() - 1);
         vp->setNamedConstant("baseUVScale", baseUVScale);
       }
@@ -231,7 +232,6 @@ class TerrainMaterialGeneratorB final : public TerrainMaterialGenerator {
   const bool enableNormalmap = true;
   const bool enableCompositeMap = false;
   const bool enableVertexCompression = true;
-  const int8_t terrainMaxLayers = 1;
 };
 }  // namespace Ogre
 
@@ -710,7 +710,7 @@ class DPSMCameraSetup : public Ogre::PSSMShadowCameraSetup {
 void VideoComponent::InitOgreSceneManager() {
   sceneManager->setFog(Ogre::FOG_EXP, Ogre::ColourValue(0.5, 0.6, 0.7), 0.003);
   sceneManager->setSkyBox(true, "SkyBox", 500, false);
-  sceneManager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));  // Ogre::ColourValue(0.5, 0.6, 0.7)
+  sceneManager->setAmbientLight(Ogre::ColourValue(0.5, 0.6, 0.7));
 
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
@@ -718,8 +718,8 @@ void VideoComponent::InitOgreSceneManager() {
   terrainGlobalOptions->setSkirtSize(0);
   terrainGlobalOptions->setMaxPixelError(1);
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-  terrainGlobalOptions->setCompositeMapDistance(150.0);
-  terrainGlobalOptions->setCastsDynamicShadows(false);
+  terrainGlobalOptions->setCompositeMapDistance(500.0);
+  terrainGlobalOptions->setCastsDynamicShadows(true);
   terrainGlobalOptions->setUseVertexCompressionWhenAvailable(true);
   terrainGlobalOptions->setLightMapSize(512);
   terrainGlobalOptions->setLightMapDirection(Ogre::Vector3(0.0, -1.0, 0.0).normalisedCopy());
@@ -991,7 +991,8 @@ void VideoComponent::RebuildOverlayFontAtlas() {
 #if defined(WIN32)
     Ogre::TextureManager::getSingleton().unload("ImGui/FontTex", Ogre::RGN_INTERNAL);
     Ogre::TextureManager::getSingleton().remove("ImGui/FontTex", Ogre::RGN_INTERNAL);
-    auto tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1, Ogre::PF_BYTE_RGBA);
+    auto tex = Ogre::TextureManager::getSingleton().createManual("ImGui/FontTex", Ogre::RGN_INTERNAL, Ogre::TEX_TYPE_2D, width, height, 1, 1,
+                                                                 Ogre::PF_BYTE_RGBA);
 #else
     auto tex = Ogre::TextureManager::getSingleton().getByName("ImGui/FontTex");
 #endif
@@ -1000,7 +1001,8 @@ void VideoComponent::RebuildOverlayFontAtlas() {
   }
 }
 
-ImFont *VideoComponent::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg, const ImWchar *ranges) {
+ImFont *VideoComponent::AddOverlayFont(const std::string &name, const int size, const std::string &group, const ImFontConfig *cfg,
+                                       const ImWchar *ranges) {
   typedef std::vector<ImWchar> CodePointRange;
   std::vector<CodePointRange> mCodePointRanges;
   ImGuiIO &io = ImGui::GetIO();

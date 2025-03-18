@@ -61,7 +61,7 @@ compositor MRT
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
         texture reflection target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 1
         texture sky_lut 1024 1024 PF_FLOAT16_RGB no_fsaa depth_pool 0
-        texture env 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
+        texture env 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 1
         texture ibl 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 global_scope
 
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_R8 no_fsaa depth_pool 0
@@ -146,7 +146,7 @@ compositor MRT
         target mrt
         {
             pass render_scene
-            {
+            {   
                 last_render_queue 90
             }
         }

@@ -321,6 +321,10 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
 
     terrainGlobalOptions->setMaxPixelError((Real)maxPixelError);
     terrainGlobalOptions->setCompositeMapDistance((Real)compositeMapDistance);
+    const auto &ll = mSceneMgr->_getLightsAffectingFrustum();
+    if (!ll.empty() && ll[0]->getType() == Ogre::Light::LT_DIRECTIONAL) {
+      terrainGlobalOptions->setLightMapDirection(ll[0]->getDerivedDirection());
+    }
 
     auto terrainGroup = std::make_shared<TerrainGroup>(mSceneMgr, Terrain::ALIGN_X_Z, mapSize, worldSize);
     terrainGroup->setOrigin(Vector3::ZERO);
@@ -340,11 +344,13 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
           terrainGroup->defineTerrain(pageX, pageY, pPageElement.attribute("dataFile").value());
         }
     }
+
     terrainGroup->loadAllTerrains(true);
 
     terrainGroup->freeTemporaryResources();
 
     mAttachNode->getUserObjectBindings().setUserAny("TerrainGroup", terrainGroup);
+
 #else
     OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
 #endif

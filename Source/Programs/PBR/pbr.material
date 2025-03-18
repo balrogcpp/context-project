@@ -199,10 +199,8 @@ material PSSM/paged_caster
 		}
 	}
 }
-abstract material PG : PBR
+abstract material PG : IBL
 {
-    receive_shadows off
-
     technique
     {
         shadow_caster_material PSSM/paged_caster
@@ -234,10 +232,8 @@ material PSSM/paged0_caster
 		}
 	}
 }
-abstract material PG0 : PBR
+abstract material PG0 : IBL
 {
-    receive_shadows off
-
     technique
     {
         shadow_caster_material PSSM/paged0_caster
@@ -273,7 +269,6 @@ material PSSM/terra_caster
 }
 abstract material TERRA
 {
-    receive_shadows off
     set $Albedo white.dds
     set $Normal normal.dds
     set $SSAO white.dds

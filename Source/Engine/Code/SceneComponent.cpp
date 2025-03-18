@@ -51,33 +51,6 @@ void SceneComponent::LoadFromFile(const std::string &filename) {
     ProcessNode(dynamic_cast<Ogre::SceneNode *>(it));
   }
 
-  //if (!sinbad && sceneManager->hasCamera("Camera")) {
-  //  sinbad = make_unique<SinbadCharacterController>(sceneManager->getCamera("Camera"));
-  //  InputSequencer::GetInstance().RegDeviceListener(sinbad.get());
-  //}
-
-  // search for TerrainGroup
-  const auto &objBindings = sceneManager->getRootSceneNode()->getUserObjectBindings();
-  if (objBindings.getUserAny("TerrainGroup").has_value()) {
-    auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
-    auto terrainGroup = Ogre::any_cast<shared_ptr<Ogre::TerrainGroup>>(objBindings.getUserAny("TerrainGroup"));
-
-    if (sceneManager->hasLight("Sun")) {
-      terrainGlobalOptions->setLightMapDirection(sceneManager->getLight("Sun")->getDerivedDirection());
-    }
-
-    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
-      auto *terrain = it.getNext()->instance;
-    }
-
-    //terrainGroup->saveAllTerrains(true, true);
-    //GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
-    //GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup.get());
-  }
-
-  // search for GrassPage
-  ScanForests(objBindings, "GrassPage");
-  ScanForests(objBindings, "BatchPage");
 
   // scan second time, new objects added during first scan
   for (auto it : rootNode->getChildren()) {
