@@ -376,6 +376,11 @@ vec3 GetEmission(const vec2 uv)
 }
 
 #if defined(HAS_AO)
+float unpack(const vec2 depth) {
+    // this is equivalent to (x8 * 256 + y8) / 65535, which gives a value between 0 and 1
+    return (depth.x * (256.0 / 257.0) + depth.y * (1.0 / 257.0));
+}
+
 float evaluateSSAO(const highp vec2 uv, const highp float d)
 {
 #if __VERSION__ > 330

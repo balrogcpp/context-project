@@ -59,26 +59,20 @@ compositor MRT
         texture mrt target_width target_height PF_FLOAT16_RGB PF_DEPTH24_STENCIL8 no_fsaa depth_pool 1 chain_scope
         texture rt0 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R no_fsaa depth_pool 0
-        texture reflection target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT no_fsaa depth_pool 1
+        texture reflection target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT no_fsaa depth_pool 1
         texture sky_lut 1024 1024 PF_FLOAT16_RGB no_fsaa depth_pool 0
+        texture env 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0
         texture ibl 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 global_scope
 
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_R8 no_fsaa depth_pool 0
         texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_GR no_fsaa depth_pool 0
 
-        //target cube 0 : skybox_target {}
-        //target cube 1 : skybox_target {}
-        //target cube 2 : skybox_target {}
-        //target cube 3 : skybox_target {}
-        //target cube 4 : skybox_target {}
-        //target cube 5 : skybox_target {}
-
-        //target cube 0 : env_target {}
-        //target cube 1 : env_target {}
-        //target cube 2 : env_target {}
-        //target cube 3 : env_target {}
-        //target cube 4 : env_target {}
-        //target cube 5 : env_target {}
+        //target env 0 : env_target {}
+        //target env 1 : env_target {}
+        //target env 2 : env_target {}
+        //target env 3 : env_target {}
+        //target env 4 : env_target {}
+        //target env 5 : env_target {}
 
 
         target reflection
