@@ -6,8 +6,7 @@ uniform sampler2D Depth;
 
 #define SafeHDR(x) min(x, 65504.0)
 
-vec2 pack(const mediump float depth) {
-    // this is equivalent to (x8 * 256 + y8) / 65535, which gives a value between 0 and 1
+vec2 pack(const float depth) {
   const float toFixed = 256.0/257.0;
   return vec2((depth * toFixed * 1.0), (depth * toFixed * 257.0));
 }

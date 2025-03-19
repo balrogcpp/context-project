@@ -91,10 +91,10 @@ vec3 MinDiff(const highp vec3 P, const highp vec3 Pr, const highp vec3 Pl)
 vec3 getNormal(const sampler2D tex, const highp vec2 uv, const highp vec2 tsize)
 {
     vec3 P = GetCameraVec(uv) * (textureLod(tex, uv, 0.0).x);
-    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * (textureLod(tex, uv + tsize * vec2(1.0, 0.0), 0.0).x);
-    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * (textureLod(tex, uv + tsize * vec2(-1.0, 0.0), 0.0).x);
-    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * (textureLod(tex, uv + tsize * vec2(0.0, 1.0), 0.0).x);
-    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * (textureLod(tex, uv + tsize * vec2(0.0, -1.0), 0.0).x);
+    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * (textureLodOffset(tex, uv, 0.0, ivec2(1, 0)).x);
+    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * (textureLodOffset(tex, uv, 0.0, ivec2(-1, 0)).x);
+    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * (textureLodOffset(tex, uv, 0.0, ivec2(0, 1)).x);
+    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * (textureLodOffset(tex, uv, 0.0, ivec2(0, -1)).x);
 
     return normalize(cross(MinDiff(P, Pr, Pl), MinDiff(P, Pt, Pb)));
 }

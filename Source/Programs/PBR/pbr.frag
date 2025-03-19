@@ -386,23 +386,27 @@ float evaluateSSAO(const highp vec2 uv, const highp float d)
 #if __VERSION__ > 330
     vec4 ao = textureGather(OccTex, uv, 0);
     vec4 dg = textureGather(OccTex, uv, 1);
-    vec4 db = textureGather(OccTex, uv, 2);
+    //vec4 db = textureGather(OccTex, uv, 2);
 #else
-    vec3 s01 = textureLodOffset(OccTex, uv, 0.0, ivec2(0, 1)).rgb;
-    vec3 s11 = textureLodOffset(OccTex, uv, 0.0, ivec2(1, 1)).rgb;
-    vec3 s10 = textureLodOffset(OccTex, uv, 0.0, ivec2(1, 0)).rgb;
-    vec3 s00 = textureLodOffset(OccTex, uv, 0.0, ivec2(0, 0)).rgb;
+    vec2 s01 = textureLodOffset(OccTex, uv, 0.0, ivec2(0, 1)).rg;
+    vec2 s11 = textureLodOffset(OccTex, uv, 0.0, ivec2(1, 1)).rg;
+    vec2 s10 = textureLodOffset(OccTex, uv, 0.0, ivec2(1, 0)).rg;
+    vec2 s00 = textureLodOffset(OccTex, uv, 0.0, ivec2(0, 0)).rg;
     vec4 ao = vec4(s01.r, s11.r, s10.r, s00.r);
     vec4 dg = vec4(s01.g, s11.g, s10.g, s00.g);
-    vec4 db = vec4(s01.b, s11.b, s10.b, s00.b);
+    //vec4 db = vec4(s01.b, s11.b, s10.b, s00.b);
 #endif
 
+#if 1
     vec4 depths = dg;
-    //vec4 depths;
-    //depths.x = unpack(vec2(dg.x, db.x));
-    //depths.y = unpack(vec2(dg.y, db.y));
-    //depths.z = unpack(vec2(dg.z, db.z));
-    //depths.w = unpack(vec2(dg.w, db.w));
+#else
+    vec4 depths;
+    depths.x = unpack(vec2(dg.x, db.x));
+    depths.y = unpack(vec2(dg.y, db.y));
+    depths.z = unpack(vec2(dg.z, db.z));
+    depths.w = unpack(vec2(dg.w, db.w));
+    //depths *= FarClipDistance;
+#endif
 
     // bilinear weights
     vec2 f = fract(uv * vec2(textureSize(OccTex, 0)) - 0.5);
