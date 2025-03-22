@@ -65,7 +65,7 @@ compositor MRT
         texture ibl 256 256 PF_R11G11B10_FLOAT no_fsaa depth_pool 0 global_scope
 
         texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_R8 no_fsaa depth_pool 0
-        texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_GR no_fsaa depth_pool 0
+        texture ao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_GR no_fsaa depth_pool 0 chain_scope
 
         //target env 0 : env_target {}
         //target env 1 : env_target {}

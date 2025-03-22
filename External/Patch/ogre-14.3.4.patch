@@ -131,7 +131,7 @@ index 483f9f3..0b87d5d 100644
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
-index a7ebc92..c911075 100644
+index a7ebc92..f7a77b2 100644
 --- a/OgreMain/src/OgreCompositor.cpp
 +++ b/OgreMain/src/OgreCompositor.cpp
 @@ -156,8 +156,8 @@ CompositionTechnique* Compositor::getSupportedTechnique(const String& schemeName
@@ -140,11 +140,26 @@ index a7ebc92..c911075 100644
      bool hwGamma = def->hwGammaWrite && !PixelUtil::isFloatingPoint(pf);
 -    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, 0, pf,
 -                                                       TU_RENDERTARGET, 0, hwGamma, def->fsaa);
-+    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, std::min(Ogre::TextureManager::getSingleton().getDefaultNumMipmaps(), 5u), pf,
++    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, Ogre::TextureManager::getSingleton().getDefaultNumMipmaps(), pf,
 +        Ogre::TextureManager::getSingleton().getDefaultNumMipmaps() != 0 ? TU_RENDERTARGET | TU_AUTOMIPMAP : TU_RENDERTARGET, 0, hwGamma, def->fsaa);
  }
  
  //-----------------------------------------------------------------------
+diff --git a/OgreMain/src/OgreCompositorInstance.cpp b/OgreMain/src/OgreCompositorInstance.cpp
+index f83c773..f78abf1 100644
+--- a/OgreMain/src/OgreCompositorInstance.cpp
++++ b/OgreMain/src/OgreCompositorInstance.cpp
+@@ -998,8 +998,8 @@ RenderTarget *CompositorInstance::getTargetForTex(const String &name, int slice)
+ {
+     // try simple texture
+     LocalTextureMap::iterator i = mLocalTextures.find(name);
+-    if(i != mLocalTextures.end())
+-        return i->second->getBuffer(slice)->getRenderTarget();
++    if(i != mLocalTextures.end()){ size_t mip = 0; if (i->second->getNumFaces() == 1 && slice > 0) { mip = slice; slice = 0; }
++        return i->second->getBuffer(slice, mip)->getRenderTarget(); }
+ 
+     // try MRTs
+     LocalMRTMap::iterator mi = mLocalMRTs.find(name);
 diff --git a/OgreMain/src/OgreDDSCodec.cpp b/OgreMain/src/OgreDDSCodec.cpp
 index 7fffc0d..c21a621 100644
 --- a/OgreMain/src/OgreDDSCodec.cpp
