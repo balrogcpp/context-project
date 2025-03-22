@@ -35,10 +35,17 @@ vec3 Upscale9(const sampler2D tex, const vec2 uv)
 vec3 UpsampleBox(const sampler2D tex, const vec2 uv)
 {
     vec3 o;
-    o =  textureLodOffset(tex, uv, 0.0, ivec2(-1, -1)).rgb;
-    o += textureLodOffset(tex, uv, 0.0, ivec2( 1, -1)).rgb;
-    o += textureLodOffset(tex, uv, 0.0, ivec2(-1,  1)).rgb;
-    o += textureLodOffset(tex, uv, 0.0, ivec2( 1,  1)).rgb;
+#if __VERSION__ > 330
+    o.r = dot(textureGather(tex, uv, 0), vec4(1.0, 1.0, 1.0, 1.0));
+    o.g = dot(textureGather(tex, uv, 1), vec4(1.0, 1.0, 1.0, 1.0));
+    o.b = dot(textureGather(tex, uv, 2), vec4(1.0, 1.0, 1.0, 1.0));
+#else
+    ivec2 iuv = ivec2(gl_FragCoord.xy * 0.5);
+    o =  texelFetchOffset(tex, iuv, 0, ivec2(-1, -1)).rgb;
+    o += texelFetchOffset(tex, iuv, 0, ivec2( 1, -1)).rgb;
+    o += texelFetchOffset(tex, iuv, 0, ivec2(-1,  1)).rgb;
+    o += texelFetchOffset(tex, iuv, 0, ivec2( 1,  1)).rgb;
+#endif 
 
     return o * 0.25;
 }
@@ -51,7 +58,7 @@ void main()
     vec3 color = inverseTonemapSRGB(texelFetch(RT, ivec2(gl_FragCoord.xy), 0).rgb);
 
     float lum = texelFetch(Lum, ivec2(0, 0), 0).r;
-    vec3 bloom = UpsampleBox(BrightTex, uv).rgb;
+    vec3 bloom = UpsampleBox(BrightTex, uv);
     vec3 dirt = textureLod(DirtTex, uv, 0.0).rgb * 10.0;
     color = mix(color, bloom + bloom * dirt, 0.04);
     color *= lum;
