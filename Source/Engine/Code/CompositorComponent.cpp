@@ -62,9 +62,7 @@ class PlanarReflection : public Ogre::CompositorInstance::RenderSystemOperation 
   PlanarReflection(Ogre::CompositorInstance *instance, const Ogre::CompositionPass *pass) { viewport = instance->getChain()->getViewport(); }
   virtual ~PlanarReflection() {}
 
-  void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
-    Ogre::Camera *camera = viewport->getCamera();
-  }
+  void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override { Ogre::Camera *camera = viewport->getCamera(); }
 
  protected:
   Ogre::Viewport *viewport = nullptr;
@@ -353,8 +351,10 @@ static Ogre::Vector4 GetLightScreenSpaceCoords(Ogre::Light *light, Ogre::Camera 
 void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat) {
   const auto &fp = mat->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   fp->setIgnoreMissingParams(true);
+  static int mipCounter = 0;
 
   if (pass_id == 1) {
+    mipCounter = 0;
     for (auto *l : sceneManager->_getLightsAffectingFrustum()) {
       if (l->getType() == Light::LT_DIRECTIONAL) {
         fp->setNamedConstant("LightDir0", l->getDerivedDirection());
@@ -363,12 +363,19 @@ void CompositorComponent::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::Mater
       }
     }
 
-  } else if (pass_id == 10) {
+  } else if (pass_id == 2) {
+    fp->setNamedConstant("prevMipLevel", mipCounter++);
+
+  } 
+  
+  else if (pass_id == 10) {
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
     Vector4f ZBufferParams = Vector4f(1.0 - far / near, far / near, (1.0 - far / near) / far, 1.0 / near);
     fp->setNamedConstant("ZBufferParams", ZBufferParams);
-  } else if (pass_id == 30) {
+  } 
+  
+  else if (pass_id == 30) {
     float far = camera->getFarClipDistance();
     float near = camera->getNearClipDistance();
     fp->setNamedConstant("ClampDistance", far);

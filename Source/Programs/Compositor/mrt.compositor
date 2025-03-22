@@ -92,7 +92,7 @@ compositor MRT
             }
         }
 
-        /*target ibl
+        target ibl 0
         {
             only_initial on
             pass render_quad
@@ -100,7 +100,57 @@ compositor MRT
                 material Copy4x
                 input 0 sky_lut
             }
-        }*/
+        }
+        target ibl 1
+        {
+            only_initial on
+            pass render_quad
+            {
+                identifier 2
+                material Copy2x
+                input 0 ibl
+            }
+        }
+        target ibl 2
+        {
+            only_initial on
+            pass render_quad
+            {
+                identifier 2
+                material Copy2x
+                input 0 ibl
+            }
+        }
+        target ibl 3
+        {
+            only_initial on
+            pass render_quad
+            {
+                identifier 2
+                material Copy2x
+                input 0 ibl
+            }
+        }
+        target ibl 4
+        {
+            only_initial on
+            pass render_quad
+            {
+                identifier 2
+                material Copy2x
+                input 0 ibl
+            }
+        }
+        target ibl 5
+        {
+            only_initial on
+            pass render_quad
+            {
+                identifier 2
+                material Copy2x
+                input 0 ibl
+            }
+        }
 
         target mrt
         {
