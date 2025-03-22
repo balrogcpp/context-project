@@ -5,7 +5,6 @@
 #include "HosekSky/SkyModel.h"
 #include "Platform.h"
 #include <OgreCustomCompositionPass.h>
-#include <iostream>
 
 using namespace std;
 using namespace Ogre;
@@ -65,8 +64,6 @@ class PlanarReflection : public Ogre::CompositorInstance::RenderSystemOperation 
 
   void execute(Ogre::SceneManager *sm, Ogre::RenderSystem *rs) override {
     Ogre::Camera *camera = viewport->getCamera();
-    cout << camera->getViewport()->getTarget()->getName() << '\n';
-    cout << camera->getName() << '\n';
   }
 
  protected:
@@ -436,14 +433,6 @@ void CompositorComponent::notifyRenderSingleObject(Ogre::Renderable *rend, const
   }
 
   if (auto *tex = pass->getTextureUnitState("IBL")) {
-     const auto &env = compositorChain->getCompositor("MRT")->getTextureInstance("sky_lut", 0);
-     auto ibl = compositorChain->getCompositor("MRT")->getTextureInstance("ibl", 0);
-     static int dirty = 0;
-     if (dirty < 100) {
-       env->copyToTexture(ibl);
-       dirty++;
-     }
-
     if (tex->getContentType() != Ogre::TextureUnitState::CONTENT_COMPOSITOR) {
       tex->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
       tex->setCompositorReference("MRT", "ibl");

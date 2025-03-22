@@ -131,37 +131,55 @@ index 483f9f3..0b87d5d 100644
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
-index a7ebc92..f7a77b2 100644
+index a7ebc92..1beee38 100644
 --- a/OgreMain/src/OgreCompositor.cpp
 +++ b/OgreMain/src/OgreCompositor.cpp
-@@ -156,8 +156,8 @@ CompositionTechnique* Compositor::getSupportedTechnique(const String& schemeName
+@@ -156,7 +156,7 @@ CompositionTechnique* Compositor::getSupportedTechnique(const String& schemeName
  static TexturePtr createTexture(const String& name, const CompositionTechnique::TextureDefinition* def, PixelFormat pf)
  {
      bool hwGamma = def->hwGammaWrite && !PixelUtil::isFloatingPoint(pf);
 -    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, 0, pf,
--                                                       TU_RENDERTARGET, 0, hwGamma, def->fsaa);
 +    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, Ogre::TextureManager::getSingleton().getDefaultNumMipmaps(), pf,
-+        Ogre::TextureManager::getSingleton().getDefaultNumMipmaps() != 0 ? TU_RENDERTARGET | TU_AUTOMIPMAP : TU_RENDERTARGET, 0, hwGamma, def->fsaa);
+                                                        TU_RENDERTARGET, 0, hwGamma, def->fsaa);
  }
  
- //-----------------------------------------------------------------------
+@@ -313,8 +313,8 @@ RenderTarget* Compositor::getRenderTarget(const String& name, int slice)
+ {
+     // try simple texture
+     GlobalTextureMap::iterator i = mGlobalTextures.find(name);
+-    if(i != mGlobalTextures.end())
+-        return i->second->getBuffer(slice)->getRenderTarget();
++    if(i != mGlobalTextures.end()) { size_t mip = 0; if (i->second->getNumFaces() == 1 && slice <= i->second->getNumMipmaps() && slice > 0) { mip = slice; slice = 0; }
++        return i->second->getBuffer(slice, mip)->getRenderTarget(); }
+ 
+     // try MRTs
+     GlobalMRTMap::iterator mi = mGlobalMRTs.find(name);
 diff --git a/OgreMain/src/OgreCompositorInstance.cpp b/OgreMain/src/OgreCompositorInstance.cpp
-index f83c773..f78abf1 100644
+index f83c773..be184bc 100644
 --- a/OgreMain/src/OgreCompositorInstance.cpp
 +++ b/OgreMain/src/OgreCompositorInstance.cpp
+@@ -670,7 +670,7 @@ void CompositorInstance::createResources(bool forResizeOnly)
+                 mLocalTextures[def->name] = tex;
+                 
+                 for(size_t i = 0; i < tex->getNumFaces(); i++)
+-                    setupRenderTarget(tex->getBuffer(i)->getRenderTarget(), def->depthBufferId);
++                    for(size_t j = 0; j < tex->getNumMipmaps(); j++) setupRenderTarget(tex->getBuffer(i, j)->getRenderTarget(), def->depthBufferId);
+             }
+             
+         } else {
 @@ -998,8 +998,8 @@ RenderTarget *CompositorInstance::getTargetForTex(const String &name, int slice)
  {
      // try simple texture
      LocalTextureMap::iterator i = mLocalTextures.find(name);
 -    if(i != mLocalTextures.end())
 -        return i->second->getBuffer(slice)->getRenderTarget();
-+    if(i != mLocalTextures.end()){ size_t mip = 0; if (i->second->getNumFaces() == 1 && slice > 0) { mip = slice; slice = 0; }
++    if(i != mLocalTextures.end()) { size_t mip = 0; if (i->second->getNumFaces() == 1 && slice <= i->second->getNumMipmaps() && slice > 0) { mip = slice; slice = 0; }
 +        return i->second->getBuffer(slice, mip)->getRenderTarget(); }
  
      // try MRTs
      LocalMRTMap::iterator mi = mLocalMRTs.find(name);
 diff --git a/OgreMain/src/OgreDDSCodec.cpp b/OgreMain/src/OgreDDSCodec.cpp
-index 7fffc0d..c21a621 100644
+index 7fffc0d..5443779 100644
 --- a/OgreMain/src/OgreDDSCodec.cpp
 +++ b/OgreMain/src/OgreDDSCodec.cpp
 @@ -504,6 +504,24 @@ namespace {
@@ -193,47 +211,47 @@ index 7fffc0d..c21a621 100644
              case 98: // DXGI_FORMAT_BC7_UNORM
              case 99: // DXGI_FORMAT_BC7_UNORM_SRGB
                  return PF_BC7_UNORM;
-+            case 134:
-+            case 135:
++            case 134: // ASTC_4X4_UNORM
++            case 135: // ASTC_4X4_UNORM_SRGB
 +                return PF_ASTC_RGBA_4X4_LDR;
-+            case 138:
-+            case 139:
++            case 138: // ASTC_5X4_UNORM
++            case 139: // ASTC_5X4_UNORM_SRGB
 +                return PF_ASTC_RGBA_5X4_LDR;
-+            case 142:
-+            case 143:
++            case 142: // ASTC_5X5_UNORM
++            case 143: // ASTC_5X5_UNORM_SRGB
 +                return PF_ASTC_RGBA_5X5_LDR;
-+            case 146:
-+            case 147:
++            case 146: // ASTC_6X5_UNORM
++            case 147: // ASTC_6X5_UNORM_SRGB
 +                return PF_ASTC_RGBA_6X5_LDR;
-+            case 150:
-+            case 151:
++            case 150: // ASTC_6X6_UNORM
++            case 151: // ASTC_6X6_UNORM_SRGB
 +                return PF_ASTC_RGBA_6X6_LDR;
-+            case 154:
-+            case 155:
++            case 154: // ASTC_8X5_UNORM
++            case 155: // ASTC_8X5_UNORM_SRGB
 +               return PF_ASTC_RGBA_8X5_LDR;
-+            case 158:
-+            case 159:
++            case 158: // ASTC_8X6_UNORM
++            case 159: // ASTC_8X6_UNORM_SRGB
 +                return PF_ASTC_RGBA_8X6_LDR;
-+            case 162:
-+            case 163:
++            case 162: // ASTC_8X8_UNORM
++            case 163: // ASTC_8X8_UNORM_SRGB
 +                return PF_ASTC_RGBA_8X8_LDR;
-+            case 166:
-+            case 167:
++            case 166: // ASTC_10X5_UNORM
++            case 167: // ASTC_10X5_UNORM_SRGB
 +                return PF_ASTC_RGBA_10X5_LDR;
-+            case 170:
-+            case 171:
++            case 170: // ASTC_10X6_UNORM
++            case 171: // ASTC_10X6_UNORM_SRGB
 +                return PF_ASTC_RGBA_10X6_LDR;
-+            case 174:
-+            case 175:
++            case 174: // ASTC_10X8_UNORM
++            case 175: // ASTC_10X8_UNORM_SRGB
 +                return PF_ASTC_RGBA_10X8_LDR;
-+            case 178:
-+            case 179:
++            case 178: // ASTC_10X10_UNORM
++            case 179: // ASTC_10X10_UNORM_SRGB
 +                return PF_ASTC_RGBA_10X10_LDR;
-+            case 182:
-+            case 183:
++            case 182: // ASTC_12X10_UNORM
++            case 183: // ASTC_12X10_UNORM_SRGB
 +                return PF_ASTC_RGBA_12X10_LDR;
-+            case 186:
-+            case 187:
++            case 186: // ASTC_12X12_UNORM
++            case 187: // ASTC_12X12_UNORM_SRGB
 +                return PF_ASTC_RGBA_12X12_LDR;
              case 20: // DXGI_FORMAT_D32_FLOAT_S8X24_UINT
              case 22: // DXGI_FORMAT_X32_TYPELESS_G8X24_UINT
@@ -379,7 +397,7 @@ index 5cb0520..4d5a1e5 100644
                                                   : (void*)params->getFloatPointer(def->physicalIndex);
  
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
-index 2b1a1f5..0a4e56d 100644
+index 2b1a1f5..a4c498b 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 +++ b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 @@ -122,7 +122,7 @@ namespace Ogre {
@@ -387,7 +405,7 @@ index 2b1a1f5..0a4e56d 100644
      {
          // Get face identifier
 -        mFaceTarget = mTarget;
-+        mFaceTarget = mTarget; //mUsage &= ~TU_AUTOMIPMAP;
++        mFaceTarget = mTarget; mUsage &= ~TU_AUTOMIPMAP;
          if(mTarget == GL_TEXTURE_CUBE_MAP)
              mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
  
