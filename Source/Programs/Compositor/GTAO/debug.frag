@@ -21,10 +21,11 @@ float LinearDepth(const highp float z)
 
 float unpack(const vec2 depth) {
     // this is equivalent to (x8 * 256 + y8) / 65535, which gives a value between 0 and 1
-    return (depth.x * (256.0 / 257.0) + depth.y * (1.0 / 257.0));
+    return ((depth.x * (256.0 / 257.0) + depth.y * (1.0 / 257.0)));
 }
 
 // https://github.com/nvpro-samples/gl_ssao/blob/f6b010dc7a05346518cd13d3368d8d830a382ed9/bilateralblur.frag.glsl
+/*
 float BlurFunction(const vec2 uv, float r, const float center_c, float center_d, inout float w_total)
 {
     vec2 occ = texture(RT, uv).rg;
@@ -59,8 +60,9 @@ float GetAO(const vec2 uv, float center_c, float center_d)
 
     return c_total/w_total;
 }
+*/
 
-float evaluateSSAO(const highp vec2 uv, const highp float d)
+vec3 evaluateSSAO(const highp vec2 uv, const highp float d)
 {
 #if __VERSION__ > 330
     vec4 ao = textureGather(RT, uv, 0);
@@ -76,7 +78,8 @@ float evaluateSSAO(const highp vec2 uv, const highp float d)
     vec4 db = vec4(s01.b, s11.b, s10.b, s00.b);
 #endif
 
-    vec4 depths = dg;
+    float far = ZBufferParams.y / ZBufferParams.w;
+    vec4 depths = dg * far;
     //vec4 depths;
     //depths.x = unpack(vec2(dg.x, db.x));
     //depths.y = unpack(vec2(dg.y, db.y));
@@ -96,7 +99,7 @@ float evaluateSSAO(const highp vec2 uv, const highp float d)
     vec4 weights = w / (w.x + w.y + w.z + w.w);
     float z = dot(ao, weights);
 
-    return z;
+    return vec3(z);
 }
 
 out vec3 FragColor;
@@ -107,7 +110,7 @@ void main()
 
     float d = LinearDepth(textureLod(Depth, uv, 0.0).x);
 
-    float z = evaluateSSAO(uv, d);
+    vec3 z = evaluateSSAO(uv, d);
 
-    FragColor = vec3(z, z, z);
+    FragColor = z;
 }

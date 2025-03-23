@@ -7,13 +7,14 @@
 uniform sampler2D DepthTex;
 uniform sampler2D NoiseTex;
 uniform float Time;
+uniform float FarClipDistance;
 #define PI 3.1415926535897932384626433832795
 #define PI_HALF 1.5707963267948966192313216916398
 
 float Linear01Depth(const float z)
 {
     //return 1.0 / (z * ZBufferParams.z + ZBufferParams.w);
-    return z;
+    return z * FarClipDistance;
 }
 
 // http://h14s.p5r.org/2012/09/0x5f3759df.html, [Drobot2014a] Low Level Optimizations for GCN, https://blog.selfshadow.com/publications/s2016-shading-course/activision/s2016_pbs_activision_occlusion.pdf slide 63
@@ -90,11 +91,11 @@ vec3 MinDiff(const highp vec3 P, const highp vec3 Pr, const highp vec3 Pl)
 
 vec3 getNormal(const sampler2D tex, const highp vec2 uv, const highp vec2 tsize)
 {
-    vec3 P = GetCameraVec(uv) * (textureLod(tex, uv, 0.0).x);
-    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * (textureLodOffset(tex, uv, 0.0, ivec2(1, 0)).x);
-    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * (textureLodOffset(tex, uv, 0.0, ivec2(-1, 0)).x);
-    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * (textureLodOffset(tex, uv, 0.0, ivec2(0, 1)).x);
-    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * (textureLodOffset(tex, uv, 0.0, ivec2(0, -1)).x);
+    vec3 P = GetCameraVec(uv) * Linear01Depth(textureLod(tex, uv, 0.0).x);
+    vec3 Pr = GetCameraVec(uv + vec2(tsize.x, 0.0)) * Linear01Depth(textureLodOffset(tex, uv, 0.0, ivec2(1, 0)).x);
+    vec3 Pl = GetCameraVec(uv + vec2(-tsize.x, 0.0)) * Linear01Depth(textureLodOffset(tex, uv, 0.0, ivec2(-1, 0)).x);
+    vec3 Pt = GetCameraVec(uv + vec2(0.0, tsize.y)) * Linear01Depth(textureLodOffset(tex, uv, 0.0, ivec2(0, 1)).x);
+    vec3 Pb = GetCameraVec(uv + vec2(0.0, -tsize.y)) * Linear01Depth(textureLodOffset(tex, uv, 0.0, ivec2(0, -1)).x);
 
     return normalize(cross(MinDiff(P, Pr, Pl), MinDiff(P, Pt, Pb)));
 }

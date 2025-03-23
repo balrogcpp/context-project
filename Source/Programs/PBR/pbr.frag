@@ -82,6 +82,7 @@ uniform vec4 SurfaceEmissiveColour;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
 uniform float TexScale;
+uniform float FarClipDistance;
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
 uniform float OffsetScale;
 #endif
@@ -398,14 +399,14 @@ float evaluateSSAO(const highp vec2 uv, const highp float d)
 #endif
 
 #if 1
-    vec4 depths = dg;
+    vec4 depths = dg * FarClipDistance;
 #else
     vec4 depths;
     depths.x = unpack(vec2(dg.x, db.x));
     depths.y = unpack(vec2(dg.y, db.y));
     depths.z = unpack(vec2(dg.z, db.z));
     depths.w = unpack(vec2(dg.w, db.w));
-    //depths *= FarClipDistance;
+    depths *= FarClipDistance;
 #endif
 
     // bilinear weights

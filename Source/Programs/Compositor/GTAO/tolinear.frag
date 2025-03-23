@@ -20,5 +20,5 @@ void main()
     highp float z = max(max(fDepth0, fDepth1), max(fDepth2, fDepth3));
 #endif
 
-    FragColor = 1.0 / (z * ZBufferParams.z + ZBufferParams.w);
+    FragColor = 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
 }

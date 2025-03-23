@@ -28,7 +28,7 @@ vec3 MinDiff(const vec3 P, const vec3 Pr, const vec3 Pl)
 
 float Linear01Depth(const highp float z)
 {
-    return 1.0 / (z * ZBufferParams.x + ZBufferParams.y);
+    return 1.0 / (z * ZBufferParams.z + ZBufferParams.w);
 }
 
 vec3 getNormal(const highp sampler2D tex, const vec2 uv, const vec2 tsize)

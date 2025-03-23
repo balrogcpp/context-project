@@ -51,6 +51,7 @@ abstract fragment_program PBR_I_fs glsl glsles vk : Unlit_I_fs
         param_named_auto LightCount light_count
         param_named_auto SurfaceShininessColour surface_shininess
         param_named_auto ViewportSize viewport_size
+        param_named_auto FarClipDistance far_clip_distance
     }
 }
 
