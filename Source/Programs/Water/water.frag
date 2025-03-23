@@ -12,7 +12,7 @@
 uniform lowp sampler2D ReflectionTex;
 uniform lowp sampler2D RefractionTex;
 uniform highp sampler2D DepthTex;
-uniform highp sampler3D NormalTex;
+uniform highp sampler2D NormalTex;
 uniform lowp sampler2D CausticTex;
 
 
@@ -20,7 +20,6 @@ uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform vec4 ViewportSize;
 uniform float FarClipDistance;
-uniform float NearClipDistance;
 uniform float Time;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
@@ -48,7 +47,8 @@ vec3 toSRGB(const vec3 col)
 
 vec3 fromSRGB(const vec3 srgb)
 {
-    return srgb * srgb;
+   //return srgb * srgb;
+   return pow(srgb, vec3(2.2, 2.2, 2.2));
 }
 
 // max absolute error 1.3x10^-3
@@ -138,6 +138,13 @@ vec3 perturb(const sampler2D tex, const vec2 coords, const float bend)
     return col;
 }
 
+vec3 getNormal(const sampler2D tex, const highp vec2 uv) {
+    vec3 n = texture(tex, uv).ayz;
+    n.xy = n.xy * 2.0 - 1.0;
+    n.z = sqrt(clamp(1.0 - dot(n.xy, n.xy), 0.0, 1.0));
+    return n;
+}
+
 in highp vec3 vPosition;
 out vec3 FragColor;
 void main()
@@ -153,49 +160,39 @@ void main()
 
     float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
     float normalFade = 1.0 - min(exp(-fragDepth / 40.0), 1.0);
-    /*
+
     vec2 nCoord = vPosition.xz * WaveScale * 0.04 + WindDirection * Time * WindSpeed * 0.04;
-    vec3 normal0 = 2.0 * texture(vec2NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005)).xyz - 1.0;
+    vec3 normal0 = getNormal(NormalTex, nCoord + vec2(-Time * 0.015, -Time * 0.005));
     nCoord = vPosition.xz * WaveScale * 0.1 + WindDirection * Time * WindSpeed * 0.08;
-    vec3 normal1 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015)).xyz - 1.0;
+    vec3 normal1 = getNormal(NormalTex, nCoord + vec2(Time * 0.020, Time * 0.015));
 
     nCoord = vPosition.xz * WaveScale * 0.25 + WindDirection * Time * WindSpeed * 0.07;
-    vec3 normal2 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.04, -Time * 0.03)).xyz - 1.0;
+    vec3 normal2 = getNormal(NormalTex, nCoord + vec2(-Time * 0.04, -Time * 0.03));
     nCoord = vPosition.xz * WaveScale * 0.5 + WindDirection * Time * WindSpeed * 0.09;
-    vec3 normal3 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04)).xyz - 1.0;
+    vec3 normal3 = getNormal(NormalTex, nCoord + vec2(Time * 0.03, Time * 0.04));
 
-#if 0
     nCoord = vPosition.xz * WaveScale * 1.0 + WindDirection * Time * WindSpeed * 0.4;
-    vec3 normal4 = 2.0 * texture(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1)).xyz - 1.0;
+    vec3 normal4 = getNormal(NormalTex, nCoord + vec2(-Time * 0.02, Time * 0.1));
     nCoord = vPosition.xz * WaveScale * 2.0 + WindDirection * Time * WindSpeed * 0.7;
-    vec3 normal5 = 2.0 * texture(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06)).xyz - 1.0;
-#endif
+    vec3 normal5 = getNormal(NormalTex, nCoord + vec2(Time * 0.1, -Time * 0.06));
 
     vec3 normal = normalize(normal0 * BigWaves.x + normal1 * BigWaves.y
     + normal2 * MidWaves.x + normal3 * MidWaves.y
-#if 0
     + normal4 * SmallWaves.x + normal5 * SmallWaves.y
-#endif
     );
-    */
 
-    vec2 nCoord = vPosition.xz * WaveScale * 0.04;// + WindDirection * Time * WindSpeed * 0.04;
-    vec3 normal = texture(NormalTex, vec3(nCoord + vec2(-Time * 0.015, -Time * 0.005), Time * 0.1)).rgb;
-    normal.xy = normal.xy * 2.0 - 1.0;
-    normal.z = sqrt(clamp(1.0 - dot(normal.xy, normal.xy), 0.0, 1.0));
+
 
     highp vec3 nVec = mix(normal.xzy, vec3(0.0, 1.0, 0.0), normalFade); // converting normals to tangent space
     highp vec3 vVec = normalize(CameraPosition - vPosition);
     highp vec3 lVec = -LightDir0.xyz;
 
     // normal for light scattering
-/*    highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
+    highp vec3 lNormal = normalize(normal0 * BigWaves.x * 0.5 + normal1 * BigWaves.y * 0.5
                                    + normal2 * MidWaves.x * 0.1 + normal3 * MidWaves.y * 0.1
-#if 0
                                    + normal4 * SmallWaves.x * 0.1 + normal5 * SmallWaves.y * 0.1
-#endif
-    );*/
-    highp vec3 lNormal = normal;
+    );
+
     lNormal = mix(lNormal.xzy, vec3(0.0, 1.0, 0.0), normalFade);
 
     highp vec3 lR = reflect(-lVec, lNormal);
@@ -223,7 +220,7 @@ void main()
     vec2 refrOffset = nVec.xz * RefrDistortionAmount;
 
     // depth of potential refracted fragment
-    float refractedDepth = textureLod(DepthTex, fragCoord - refrOffset * 2.0, 0.0).x;
+    float refractedDepth = textureLod(DepthTex, fragCoord - refrOffset * 2.0, 0.0).x * FarClipDistance;
     highp float surfaceDepth = fragDepth;
 
     float distortFade = saturate((refractedDepth - surfaceDepth) * 4.0);
@@ -243,12 +240,12 @@ void main()
 
     float waterSunGradient = dot(vVec, LightDir0.xyz);
     waterSunGradient = saturate(sq(waterSunGradient * 0.7 + 0.3));
-    vec3 waterSunColor = fromSRGB(vec3(0.0, 1.0, 0.85)) * waterSunGradient;
+    vec3 waterSunColor = (vec3(0.0, 1.0, 0.85) * waterSunGradient);
     waterSunColor *= aboveWater ? 0.25 : 0.5;
 
     float waterGradient = dot(vVec, vec3(0.0, -1.0, 0.0));
     waterGradient = clamp((waterGradient * 0.5 + 0.5), 0.2, 1.0);
-    vec3 watercolor = (fromSRGB(vec3(0.0078, 0.5176, 0.700)) + waterSunColor) * waterGradient * 1.5;
+    vec3 watercolor = ((vec3(0.0078, 0.5176, 0.700) + waterSunColor)) * waterGradient * 1.5;
 
 //    watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
 
@@ -270,7 +267,7 @@ void main()
 
     float far = viewDepth / 1000.0;
     float shorecut = aboveWater ? smoothstep(-0.001, 0.001, depth) : smoothstep(-5.0 * max(far, 0.0001), -4.0 * max(far, 0.0001), depth);
-    float shorewetcut = smoothstep(-0.18, -0.000, depth + 0.01);
+//    float shorewetcut = smoothstep(-0.18, -0.000, depth + 0.01);
 
 //    depth /= Visibility;
 //    depth = saturate(depth);
@@ -281,6 +278,7 @@ void main()
     fogdarkness = mix(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
+    //watercolor = fromSRGB(watercolor);
 
     vec3 fogging = mix(refraction, watercolor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
 
