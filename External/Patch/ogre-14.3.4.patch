@@ -131,18 +131,20 @@ index 483f9f3..0b87d5d 100644
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
-index a7ebc92..1beee38 100644
+index a7ebc92..4536e35 100644
 --- a/OgreMain/src/OgreCompositor.cpp
 +++ b/OgreMain/src/OgreCompositor.cpp
-@@ -156,7 +156,7 @@ CompositionTechnique* Compositor::getSupportedTechnique(const String& schemeName
+@@ -156,8 +156,8 @@ CompositionTechnique* Compositor::getSupportedTechnique(const String& schemeName
  static TexturePtr createTexture(const String& name, const CompositionTechnique::TextureDefinition* def, PixelFormat pf)
  {
      bool hwGamma = def->hwGammaWrite && !PixelUtil::isFloatingPoint(pf);
 -    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, 0, pf,
-+    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, Ogre::TextureManager::getSingleton().getDefaultNumMipmaps(), pf,
-                                                        TU_RENDERTARGET, 0, hwGamma, def->fsaa);
+-                                                       TU_RENDERTARGET, 0, hwGamma, def->fsaa);
++    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def->type, def->width, def->height, def->type == TEX_TYPE_2D ? Ogre::TextureManager::getSingleton().getDefaultNumMipmaps() : 0, pf,
++                                                       Ogre::TextureManager::getSingleton().getDefaultNumMipmaps() == 0 ? TU_RENDERTARGET : TU_RENDERTARGET, 0, hwGamma, def->fsaa);
  }
  
+ //-----------------------------------------------------------------------
 @@ -313,8 +313,8 @@ RenderTarget* Compositor::getRenderTarget(const String& name, int slice)
  {
      // try simple texture
