@@ -3,13 +3,11 @@
 
 #define PI 3.14159265359
 
+precision highp float;
 float fastSqrt(const float x) {
-#ifndef GL_ES
     return intBitsToFloat(0x1fbd1df5 + (floatBitsToInt(x) >> 1));
-#else
-    return sqrt(x);
-#endif
 }
+precision mediump float;
 
 float acosFast(const float x) {
     // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
@@ -34,38 +32,10 @@ float pow5(const float x) {
     return (x2 * x2) * x;
 }
 
-float getSunDisk(const float LdotV, const float sunY, const float sunPower)
-{
-    return pow(LdotV, mix(4.0, 8500.0, sunY) * 0.25) * sunPower;
-}
 
-float getMie(const float LdotV, const float sunY)
-{
-    // this is wrong for sure, but taken from original code
-//    return pow(LdotV, mix(1.0, 1.0, sunY));
-    return LdotV;
-}
-
-// See https://en.wikipedia.org/wiki/Rayleigh_distribution
-// It's inspired, not fully based.
-//
-// The formula also gives us the nice property that for inputs
-// where absorption is in range [0; 1] the output i also in range [0; 1]
-vec3 getSkyRayleighAbsorption(const vec3 vDir, const float density)
-{
-    vec3 absorption = -density * vDir;
-    absorption = exp2(absorption) * 2.0;
-    return absorption;
-}
-
-float pow4(const float x)
-{
-    float x2 = x * x;
-    return x2 * x2;
-}
 
 // Phase function
-float henyey_greenstein_godot(const float cos_theta, const float g) {
+float henyey_greenstein_godot(const highp float cos_theta, const highp float g) {
     float g2 = g * g;
     return 0.0795774715459 * (1.0 - g2) / (pow(1.0 + g2 - 2.0 * g * cos_theta, 1.5));
 }
@@ -141,6 +111,37 @@ vec3 godotAtmosphere(const highp vec3 eye_dir, const highp vec3 light_dir) {
     return color;
 }
 
+
+// See https://en.wikipedia.org/wiki/Rayleigh_distribution
+// It's inspired, not fully based.
+//
+// The formula also gives us the nice property that for inputs
+// where absorption is in range [0; 1] the output i also in range [0; 1]
+vec3 getSkyRayleighAbsorption(const vec3 vDir, const float density)
+{
+    vec3 absorption = -density * vDir;
+    absorption = exp2(absorption) * 2.0;
+    return absorption;
+}
+
+float pow4(const float x)
+{
+    float x2 = x * x;
+    return x2 * x2;
+}
+
+float getSunDisk(const highp float LdotV, const highp float sunY, const highp float sunPower)
+{
+    return pow(LdotV, mix(4.0, 8500.0, sunY) * 0.25) * sunPower;
+}
+
+float getMie(const float LdotV, const float sunY)
+{
+    // this is wrong for sure, but taken from original code
+//    return pow(LdotV, mix(1.0, 1.0, sunY));
+    return LdotV;
+}
+
 // https://github.com/OGRECave/ogre-next/blob/2dbbd284e0a03354b6382ac25888bd89f5c76b62/Samples/Media/2.0/scripts/materials/Common/Any/AtmosphereNprSky_ps.any
 vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
     const float p_densityCoeff = 0.47;
@@ -184,7 +185,7 @@ vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
         p_densityCoeff / pow(max(atmoCameraDir.y / ( 1.0 - p_sunHeight), 0.0035),
         mix(0.10, p_densityDiffusion, pow(atmoCameraDir.y, 0.3)));
 
-    float sunDisk = getSunDisk(LdotV, p_sunHeight, p_sunPower);
+    //float sunDisk = getSunDisk(LdotV, p_sunHeight, p_sunPower);
 
     float antiMie = max(p_sunHeightWeight, 0.08);
 
@@ -206,7 +207,7 @@ vec3 ogreAtmosphere(const highp vec3 eye_dir, const highp vec3 p_sunDir) {
     atmoColour *= p_lightDensity;
 
     atmoColour *= p_finalMultiplier;
-    atmoColour += sunDisk * p_skyLightAbsorption;
+    //atmoColour += sunDisk * p_skyLightAbsorption;
 
     return atmoColour;
 }

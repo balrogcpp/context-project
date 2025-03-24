@@ -81,7 +81,7 @@ uniform float SurfaceShininessColour;
 uniform vec4 SurfaceEmissiveColour;
 uniform vec4 FogColour;
 uniform vec4 FogParams;
-uniform float TexScale;
+uniform highp float TexScale;
 uniform float FarClipDistance;
 #if defined(HAS_NORMALMAP) && defined(HAS_PARALLAXMAP)
 uniform float OffsetScale;
