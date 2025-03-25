@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "ProceduralStableHeaders.h"
 #include "ProceduralTextureBuffer.h"
-#include "Ogre.h"
+#include <Ogre.h>
 #include "ProceduralUtils.h"
 
 namespace Procedural

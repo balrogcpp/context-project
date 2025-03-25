@@ -31,7 +31,7 @@ THE SOFTWARE.
 #define PROCEDURAL_TEXTURE_BUFFER_INCLUDED
 
 #include "ProceduralPlatform.h"
-#include "Ogre.h"
+#include <Ogre.h>
 
 
 namespace Procedural
