@@ -236,18 +236,31 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 }
 
 
+#if defined(HAS_NORMALMAP)
+vec3 getNormal(const highp vec2 uv) {
+    vec3 n = texture(NormalTex, uv).ayz;
+    n.xy = n.xy * 2.0 - 1.0;
+    n.z = sqrt(clamp(1.0 - dot(n.xy, n.xy), 0.0, 1.0));
+    return n;
+}
+#endif
+
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 GetNormal(const highp mat3 tbn, const vec2 uv)
+vec3 GetNormal(const highp mat3 tbn, const highp vec2 uv)
 {
 #if defined(HAS_NORMALMAP)
+#if 1
     return normalize(tbn * vec3(texture(NormalTex, uv.xy).xyz * 2.0 - 1.0));
+#else
+    return normalize(tbn * getNormal(uv));
+#endif
 #else
     return tbn[2];
 #endif
 }
 
-mat3 GetTBN(const vec2 uv, const vec3 position)
+mat3 GetTBN(const highp vec2 uv, const highp vec3 position)
 {
 #if !defined(HAS_TANGENTS)
 #if defined(TERRA_NORMALMAP)
@@ -286,7 +299,7 @@ mat3 GetTBN(const vec2 uv, const vec3 position)
     return mat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 }
 
-vec3 GetORM(const vec2 uv, float spec)
+vec3 GetORM(const highp vec2 uv, float spec)
 {
 #if !defined(TERRA_NORMALMAP)
     vec3 orm = vec3(SurfaceShininessColour, SurfaceSpecularColour.r, SurfaceSpecularColour.g);
@@ -352,7 +365,7 @@ void applyAlphaMask(inout vec4 baseColor) {
 #endif
 
 // Sampler helper functions
-vec4 GetAlbedo(const vec2 uv, const vec3 color)
+vec4 GetAlbedo(const highp vec2 uv, const vec3 color)
 {
     vec4 albedo = vec4(SurfaceDiffuseColour.rgb * color, 1.0);
 #if defined(HAS_BASECOLORMAP)
@@ -367,7 +380,7 @@ vec4 GetAlbedo(const vec2 uv, const vec3 color)
     return vec4(SRGBtoLINEAR(albedo.rgb), albedo.a);
 }
 
-vec3 GetEmission(const vec2 uv)
+vec3 GetEmission(const highp vec2 uv)
 {
     vec3 emission = SurfaceEmissiveColour.rgb;
 #if defined(HAS_EMISSIVEMAP)
@@ -444,7 +457,7 @@ void main()
     vec3 color = vec3(0.0, 0.0, 0.0);
 
 #if defined(HAS_UV)
-    vec2 uv = vUV0;
+    highp vec2 uv = vUV0;
     UV = vUV0;
 #if defined(TERRA_LIGHTMAP)
     uv *= TexScale;

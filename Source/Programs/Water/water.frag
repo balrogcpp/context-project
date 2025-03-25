@@ -47,8 +47,7 @@ vec3 toSRGB(const vec3 col)
 
 vec3 fromSRGB(const vec3 srgb)
 {
-   //return srgb * srgb;
-   return pow(srgb, vec3(2.2, 2.2, 2.2));
+   return srgb * srgb;
 }
 
 // max absolute error 1.3x10^-3
@@ -84,11 +83,6 @@ float pow3(const float x)
     return (x * x) * x;
 }
 
-vec3 intercept(const vec3 lineP, const vec3 lineN, const vec3 planeN, const float planeD)
-{
-    float distance = (planeD - dot(planeN, lineP)) / dot(lineN, planeN);
-    return lineP + lineN * distance;
-}
 
 float fresnel_dielectric(const vec3 incoming, const vec3 normal, const float eta)
 {
@@ -108,35 +102,6 @@ float fresnel_dielectric(const vec3 incoming, const vec3 normal, const float eta
     }
 }
 
-vec3 perturb(const sampler2D tex, const vec2 coords, const float bend)
-{
-    vec3 col = vec3(0.0, 0.0, 0.0);
-
-    vec2 windDir = WindDirection;
-    float windSpeed = WindSpeed;
-    float scale = WaveScale;
-
-    // might need to swizzle, not sure
-    vec2 nCoord = coords * (scale * 0.04) + windDir * Time * (windSpeed * 0.03);
-    col += texture(tex, nCoord + vec2(-Time * 0.005, -Time * 0.01)).rgb * 0.20;
-
-    nCoord = coords * (scale * 0.1) + windDir * Time * (windSpeed * 0.05) - (col.xy / col.z) * bend;
-    col += texture(tex, nCoord + vec2(+Time * 0.01, +Time * 0.005)).rgb * 0.20;
-
-    nCoord = coords * (scale * 0.25) + windDir * Time * (windSpeed * 0.1) - (col.xy / col.z) * bend;
-    col += texture(tex, nCoord + vec2(-Time * 0.02, -Time * 0.03)).rgb * 0.20;
-
-    nCoord = coords * (scale * 0.5) + windDir * Time * (windSpeed * 0.2) - (col.xy / col.z) * bend;
-    col += texture(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
-
-    nCoord = coords * (scale * 1.0) + windDir * Time * (windSpeed * 1.0) - (col.xy / col.z) * bend;
-    col += texture(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
-
-    nCoord = coords * (scale * 2.0) + windDir * Time * (windSpeed * 1.3) - (col.xy / col.z) * bend;
-    col += texture(tex, nCoord + vec2(+Time * 0.03, +Time * 0.02)).rgb * 0.15;
-
-    return col;
-}
 
 vec3 getNormal(const sampler2D tex, const highp vec2 uv) {
     vec3 n = texture(tex, uv).ayz;
@@ -278,7 +243,7 @@ void main()
     fogdarkness = mix(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
-    //watercolor = fromSRGB(watercolor);
+//    watercolor = fromSRGB(watercolor);
 
     vec3 fogging = mix(refraction, watercolor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
 

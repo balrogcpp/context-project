@@ -84,7 +84,7 @@ void main()
     vUV0 = uv;
 #endif
 
-    gl_Position = WorldViewProjMatrix * position;
+    gl_Position = mulMat4x4Float3(WorldViewProjMatrix, position.xyz);
 
 #ifndef SHADOWCASTER
 
