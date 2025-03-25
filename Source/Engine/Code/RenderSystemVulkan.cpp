@@ -4,6 +4,7 @@
 #include <OgreComponents.h>
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+#include <OgreLogManager.h>
 #include <OgreRoot.h>
 #include <RenderSystems/Vulkan/OgreVulkanRenderSystem.h>
 

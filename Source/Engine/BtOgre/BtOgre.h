@@ -19,7 +19,7 @@
 #define _BtOgrePG_H_
 
 #include "btBulletDynamicsCommon.h"
-#include "Ogre.h"
+#include <Ogre.h>
 
 namespace BtOgre {
 enum ColliderType

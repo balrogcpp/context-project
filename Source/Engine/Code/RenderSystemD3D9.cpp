@@ -4,6 +4,7 @@
 #include <OgreComponents.h>
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_D3D9
+#include <OgreLogManager.h>
 #include <OgreRoot.h>
 #include <RenderSystems/Direct3D9/OgreD3D9RenderSystem.h>
 

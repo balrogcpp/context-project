@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include "Astronomy.h"
+#include <OgreMath.h>
 
 namespace Caelum
 {

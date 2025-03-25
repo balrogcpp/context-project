@@ -4,6 +4,7 @@
 #include <OgreComponents.h>
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+#include <OgreLogManager.h>
 #include <OgreRoot.h>
 #include <RenderSystems/GL/OgreGLRenderSystem.h>
 #include <RenderSystems/GL/OgreGLUtil.h>

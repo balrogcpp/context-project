@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
+#include "BtOgre/BtOgre.h"
 #include "VideoComponent.h"
 #include "CompositorComponent.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"

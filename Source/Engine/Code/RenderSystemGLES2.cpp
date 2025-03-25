@@ -4,6 +4,7 @@
 #include <OgreComponents.h>
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+#include <OgreLogManager.h>
 #include <OgreRoot.h>
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #include <RenderSystems/GLES2/OgreGLUtil.h>
