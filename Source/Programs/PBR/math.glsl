@@ -10,11 +10,11 @@
 
 // https://twitter.com/SebAaltonen/status/878250919879639040
 float fsign(const float x) {
-    return saturate(x * HALF_MAX + 0.5) * 2.0 - 1.0;
+    return clamp(x * HALF_MAX + 0.5, 0.0, 1.0) * 2.0 - 1.0;
 }
 
 float fstep(const float x, const float y) {
-    return saturate(((y - x) - HALF_EPSILON) * HALF_MAX);
+    return clamp(((y - x) - HALF_EPSILON) * HALF_MAX, 0.0, 1.0);
 }
 
 // https://github.com/google/filament/blob/1c693e24cf0c101ab3e21b137e95874117ce6b91/shaders/src/common_math.glsl#L118
@@ -32,9 +32,9 @@ float fstep(const float x, const float y) {
 highp vec4 mulMat4x4Float3(const highp mat4 m, const highp vec3 v) {
     return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
 }
-mediump vec4 mulMat4x4Half3(const mediump mat4 m, const mediump vec3 v) {
-    return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
-}
+//mediump vec4 mulMat4x4Half3(const mediump mat4 m, const mediump vec3 v) {
+//    return v.x * m[0] + (v.y * m[1] + (v.z * m[2] + m[3]));
+//}
 
 /**
  * Multiplies the specified 3-component vector by the 3x3 matrix (m * v) in
@@ -45,9 +45,9 @@ mediump vec4 mulMat4x4Half3(const mediump mat4 m, const mediump vec3 v) {
 highp vec3 mulMat3x3Float3(const highp mat4 m, const highp vec3 v) {
     return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
 }
-mediump vec3 mulMat3x3Half3(const mediump mat4 m, const mediump vec3 v) {
-    return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
-}
+//mediump vec3 mulMat3x3Half3(const mediump mat4 m, const mediump vec3 v) {
+//    return v.x * m[0].xyz + (v.y * m[1].xyz + (v.z * m[2].xyz));
+//}
 
 /**
  * Extracts the normal vector of the tangent frame encoded in the specified quaternion.

@@ -19,14 +19,12 @@ float Linear01Depth(const float z)
 
 // http://h14s.p5r.org/2012/09/0x5f3759df.html, [Drobot2014a] Low Level Optimizations for GCN, https://blog.selfshadow.com/publications/s2016-shading-course/activision/s2016_pbs_activision_occlusion.pdf slide 63
 // https://github.com/GameTechDev/XeGTAO/blob/188587a986f94db285c83c99676123019a0fd9b6/Source/Rendering/Shaders/XeGTAO.hlsli#L171
+precision highp float;
 float GTAOFastSqrt(const float x)
 {
-#ifndef GL_ES
     return intBitsToFloat(0x1fbd1df5 + (floatBitsToInt(x) >> 1));
-#else
-    return sqrt(x);
-#endif
 }
+precision mediump float;
 
 // [Eberly2014] GPGPU Programming for Games and Science
 float GTAOFastAcos(const float x)

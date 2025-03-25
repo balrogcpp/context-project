@@ -96,7 +96,7 @@ void main()
 #if defined(HAS_NORMALS) && defined(HAS_TANGENTS)
     vec3 n = normalize(mulMat3x3Float3(WorldMatrix, normal.xyz));
     vec3 t = normalize(mulMat3x3Float3(WorldMatrix, tangent.xyz));
-    vec3 b = cross(n, t) * sign(tangent.w);
+    vec3 b = cross(n, t);
     vTBN = mat3(t, b, n);
 #endif
 
