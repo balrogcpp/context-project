@@ -25,11 +25,9 @@
  THE SOFTWARE.
  -----------------------------------------------------------------------------
  */
-
-#include "ProceduralStableHeaders.h"
-#include "OgreException.h"
 #include "ProceduralMeshModifiers.h"
 #include "ProceduralGeometryHelpers.h"
+#include <OgreException.h>
 
 using namespace Ogre;
 

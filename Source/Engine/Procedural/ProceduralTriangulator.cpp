@@ -25,10 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "ProceduralStableHeaders.h"
 #include "ProceduralTriangulator.h"
 #include "ProceduralGeometryHelpers.h"
-#include "OgreTimer.h"
+#include <OgreTimer.h>
 
 using namespace Ogre;
 

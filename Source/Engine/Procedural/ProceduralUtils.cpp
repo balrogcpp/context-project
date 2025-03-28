@@ -25,9 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "ProceduralStableHeaders.h"
 #include "ProceduralUtils.h"
-#include "OgreResourceGroupManager.h"
+#include <OgreResourceGroupManager.h>
 
 int Procedural::Utils::counter = 0;
 

@@ -25,11 +25,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "ProceduralStableHeaders.h"
 #include "ProceduralTriangleBuffer.h"
-#include "OgreManualObject.h"
-#include "OgreSceneManager.h"
-#include "OgreRoot.h"
+#include <OgreManualObject.h>
+#include <OgreSceneManager.h>
+#include <OgreRoot.h>
 
 using namespace Ogre;
 

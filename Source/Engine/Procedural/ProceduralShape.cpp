@@ -25,10 +25,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "ProceduralStableHeaders.h"
 #include "ProceduralGeometryHelpers.h"
 #include "ProceduralPath.h"
 #include "ProceduralShape.h"
+#include "ProceduralMultiShape.h"
 #include <OgreSceneManager.h>
 #include <OgreRoot.h>
 

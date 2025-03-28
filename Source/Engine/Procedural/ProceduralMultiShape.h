@@ -30,10 +30,11 @@ THE SOFTWARE.
 #define PROCEDURAL_MULTISHAPE_INCLUDED
 
 #include "ProceduralGeometryHelpers.h"
+#include "ProceduralShape.h"
 
 namespace Procedural
 {
-class Shape;
+//class Shape;
 
 /**
  * \ingroup shapegrp

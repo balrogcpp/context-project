@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 #include "ProceduralPlatform.h"
 #include "ProceduralUtils.h"
-#include "ProceduralMultiShape.h"
+//#include "ProceduralMultiShape.h"
 #include "ProceduralTrack.h"
 #include <OgreMesh.h>
 #include <OgreManualObject.h>
@@ -39,6 +39,7 @@ THE SOFTWARE.
 
 namespace Procedural
 {
+class MultiShape;
 class Path;
 
 /**

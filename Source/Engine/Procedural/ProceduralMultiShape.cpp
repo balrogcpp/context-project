@@ -25,7 +25,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
  */
-#include "ProceduralStableHeaders.h"
 #include "ProceduralMultiShape.h"
 #include "ProceduralShape.h"
 #include <OgreRoot.h>

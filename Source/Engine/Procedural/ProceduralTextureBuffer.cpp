@@ -25,10 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "ProceduralStableHeaders.h"
 #include "ProceduralTextureBuffer.h"
-#include <Ogre.h>
 #include "ProceduralUtils.h"
+#include <Ogre.h>
 
 namespace Procedural
 {
