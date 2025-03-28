@@ -29,13 +29,13 @@ THE SOFTWARE.
 #ifndef PROCEDURAL_SHAPE_INCLUDED
 #define PROCEDURAL_SHAPE_INCLUDED
 
-#include "OgreVector.h"
 #include "ProceduralPlatform.h"
 #include "ProceduralUtils.h"
-#include "OgreMesh.h"
-#include "OgreManualObject.h"
 #include "ProceduralMultiShape.h"
 #include "ProceduralTrack.h"
+#include <OgreMesh.h>
+#include <OgreManualObject.h>
+#include <OgreVector.h>
 
 namespace Procedural
 {
@@ -64,6 +64,7 @@ class _ProceduralExport Shape
 public:
 	/// Default constructor
 	Shape() : mClosed(false), mOutSide(SIDE_RIGHT) {}
+        virtual ~Shape() {}
 
 	/// Adds a point to the shape
 	inline Shape& addPoint(const Ogre::Vector2& pt)

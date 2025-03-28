@@ -29,13 +29,13 @@ THE SOFTWARE.
 #ifndef PROCEDURAL_PATH_INCLUDED
 #define PROCEDURAL_PATH_INCLUDED
 
-#include "OgreVector.h"
-#include "OgreSimpleSpline.h"
 #include "ProceduralUtils.h"
 #include "ProceduralPlatform.h"
 #include "ProceduralTrack.h"
 #include "ProceduralGeometryHelpers.h"
 #include "ProceduralShape.h"
+#include <OgreSimpleSpline.h>
+#include <OgreVector.h>
 
 namespace Procedural
 {

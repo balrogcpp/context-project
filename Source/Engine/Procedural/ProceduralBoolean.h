@@ -26,9 +26,9 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
  */
 #pragma once
-#include <Ogre.h>
 #include "ProceduralPlatform.h"
 #include "ProceduralMeshGenerator.h"
+#include <Ogre.h>
 
 namespace Procedural
 {

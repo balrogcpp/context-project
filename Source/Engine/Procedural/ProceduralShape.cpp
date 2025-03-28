@@ -26,11 +26,11 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "ProceduralStableHeaders.h"
-#include "ProceduralShape.h"
 #include "ProceduralGeometryHelpers.h"
 #include "ProceduralPath.h"
-#include "OgreSceneManager.h"
-#include "OgreRoot.h"
+#include "ProceduralShape.h"
+#include <OgreSceneManager.h>
+#include <OgreRoot.h>
 
 using namespace Ogre;
 
