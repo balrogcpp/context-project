@@ -28,12 +28,13 @@ THE SOFTWARE.
 #pragma once
 #ifndef PROCEDURAL_UTILS_INCLUDED
 #define PROCEDURAL_UTILS_INCLUDED
-#include "OgreVector.h"
-#include "OgreAxisAlignedBox.h"
-#include "OgreLogManager.h"
+
 #include "ProceduralPlatform.h"
 #include "OgreStringConverter.h"
-#include "OgreCommon.h"
+#include <OgreAxisAlignedBox.h>
+#include <OgreLogManager.h>
+#include <OgreVector.h>
+#include <OgreCommon.h>
 
 namespace Procedural
 {
