@@ -104,7 +104,7 @@ float fresnel_dielectric(const vec3 incoming, const vec3 normal, const float eta
 
 
 vec3 getNormal(const sampler2D tex, const highp vec2 uv) {
-    vec3 n = texture(tex, uv).ayz;
+    vec3 n = texture(tex, uv).agb;
     n.xy = n.xy * 2.0 - 1.0;
     n.z = sqrt(clamp(1.0 - dot(n.xy, n.xy), 0.0, 1.0));
     return n;

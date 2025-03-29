@@ -238,7 +238,7 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 
 #if defined(HAS_NORMALMAP)
 vec3 getNormal(const highp vec2 uv) {
-    vec3 n = texture(NormalTex, uv).ayz;
+    vec3 n = texture(NormalTex, uv).agb;
     n.xy = n.xy * 2.0 - 1.0;
     n.z = sqrt(clamp(1.0 - dot(n.xy, n.xy), 0.0, 1.0));
     return n;
