@@ -56,6 +56,7 @@ uniform vec2 TexelSize8;
 uniform vec2 TexelSize9;
 #endif
 uniform mat4 ViewMatrix;
+uniform mat3 NormalMatrix;
 uniform highp vec3 CameraPosition;
 uniform vec4 ViewportSize;
 uniform float LightCount;
@@ -251,9 +252,9 @@ vec3 GetNormal(const highp mat3 tbn, const highp vec2 uv)
 {
 #if defined(HAS_NORMALMAP)
 #if 1
-    return normalize(tbn * vec3(texture(NormalTex, uv.xy).xyz * 2.0 - 1.0));
+    return (tbn * vec3(texture(NormalTex, uv.xy).xyz * 2.0 - 1.0));
 #else
-    return normalize(tbn * getNormal(uv));
+    return (tbn * getNormal(uv));
 #endif
 #else
     return tbn[2];
@@ -264,9 +265,10 @@ mat3 GetTBN(const highp vec2 uv, const highp vec3 position)
 {
 #if !defined(HAS_TANGENTS)
 #if defined(TERRA_NORMALMAP)
-    vec3 n = texture(TerraNormalTex, UV).xyz * 2.0 - 1.0;
-    vec3 b = normalize(cross(n, vec3(1.0, 0.0, 0.0)));
-    vec3 t = normalize(cross(n ,b));
+    vec3 n = 2.0 * texture(TerraNormalTex, UV).xyz - 1.0;
+    vec3 t = NormalMatrix * vec3(1.0, 0.0, 0.0);
+    vec3 b = cross(t, n);
+    t = cross(n, b);
     highp mat3 tbn = mat3(t, b, n);
     return tbn;
 #elif defined(PAGED_GEOMETRY)
@@ -296,6 +298,7 @@ mat3 GetTBN(const highp vec2 uv, const highp vec3 position)
 #endif
 #endif
 
+    // to silent shader syntax check
     return mat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 }
 

@@ -126,6 +126,11 @@ vertex_program PSSM/TERRA_caster_vs glsl glsles vk : TERRA_vs
 fragment_program TERRA_fs glsl glsles vk : IBL_I_fs
 {
     preprocessor_defines HAS_UV,HAS_BASECOLORMAP,HAS_NORMALMAP,TERRA_NORMALMAP,TERRA_LIGHTMAP,HAS_AO,HAS_IBL,MAX_LIGHTS=8,MAX_SHADOW_TEXTURES=4
+
+    default_params
+    {
+        param_named_auto NormalMatrix normal_matrix
+    }
 }
 
 fragment_program PBR/shadow_caster_fs glsl glsles vk
