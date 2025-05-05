@@ -567,6 +567,22 @@ void VideoComponent::InitWindow() {
     sizeY = screenHeight;
   }
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX && defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
+  const bool isWayland = getenv("WAYLAND_DISPLAY") != nullptr || strcmp(getenv("XDG_SESSION_TYPE"), "wayland") == 0;
+  const bool isX11 = strcmp(getenv("XDG_SESSION_TYPE"), "x11") == 0 && getenv("WAYLAND_DISPLAY") == nullptr;
+  if (Ogre::getGLSupport() && isX11) {
+    if (fullscreen) {
+      sizeX = Ogre::getGLSupport()->getVideoModes().at(0).width;
+      sizeY = Ogre::getGLSupport()->getVideoModes().at(0).height;
+    } else {
+      const float scaleFactorX = static_cast<float>(Ogre::getGLSupport()->getVideoModes().at(0).width) / static_cast<float>(screenWidth);
+      const float scaleFactorY = static_cast<float>(Ogre::getGLSupport()->getVideoModes().at(0).height) / static_cast<float>(screenHeight);
+      sizeX *= scaleFactorX;
+      sizeY *= scaleFactorY;
+    }
+  }
+#endif
+
 #if defined(MANUAL_GL_CONTROL)
   if (RenderSystemIsGL3()) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -622,16 +638,7 @@ void VideoComponent::InitWindow() {
 #endif
 
   ogreRoot = Ogre::Root::getSingletonPtr();
-  ASSERTION(ogreRoot, "ogreRoot not initialised");
-
-#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) && OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  const bool isWayland = getenv("WAYLAND_DISPLAY") != nullptr || strcmp(getenv("XDG_SESSION_TYPE"), "wayland") == 0;
-  const bool isX11 = strcmp(getenv("XDG_SESSION_TYPE"), "x11") == 0 && getenv("WAYLAND_DISPLAY") == nullptr;
-  if (Ogre::getGLSupport() && isX11 && fullscreen) {
-    sizeX = Ogre::getGLSupport()->getVideoModes()[0].width;
-    sizeY = Ogre::getGLSupport()->getVideoModes()[0].height;
-  }
-#endif
+  ASSERTION(ogreRoot, "ogreRoot is not initialised");
 
   ogreWindow = ogreRoot->createRenderWindow("Main", sizeX, sizeY, fullscreen, &renderParams);
 
