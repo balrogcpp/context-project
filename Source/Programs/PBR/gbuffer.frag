@@ -11,6 +11,8 @@ in highp vec2 vUV0;
 void main()
 {
 #if defined(SHADOWCASTER_ALPHA)
-    if (texture(AlbedoTex, vUV0.xy).a < 0.5) discard;
+    if (texture(AlbedoTex, vUV0.xy).a < 0.5) {
+        discard;
+    }
 #endif
 }
