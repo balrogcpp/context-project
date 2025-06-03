@@ -94,7 +94,7 @@ macro(create_target TARGET REPO TAG)
 endmacro()
 
 
-create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.6 sdl2-2.32.0.patch)
+create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.8 sdl2-2.32.0.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -320,7 +320,7 @@ externalproject_add(Target_Theora
 )
 
 
-create_target_patch(Target_assimp https://github.com/assimp/assimp.git v5.4.3 assimp-5.4.3.patch)
+create_target_patch(Target_assimp https://github.com/assimp/assimp.git v6.0.1 assimp-6.0.0.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
