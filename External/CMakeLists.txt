@@ -320,7 +320,7 @@ externalproject_add(Target_Theora
 )
 
 
-create_target_patch(Target_assimp https://github.com/assimp/assimp.git v6.0.1 assimp-6.0.0.patch)
+create_target_patch(Target_assimp https://github.com/assimp/assimp.git v6.0.2 assimp-6.0.0.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}

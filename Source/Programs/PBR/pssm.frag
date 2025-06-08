@@ -12,7 +12,9 @@ out float FragColor;
 void main()
 {
 #ifdef SHADOWCASTER_ALPHA
-    if (textureLod(AlbedoTex, vUV0.xy, 0.0).a < 0.5) discard;
+    if (textureLod(AlbedoTex, vUV0.xy, 0.0).a < 0.5) {
+        discard;
+    }
 #endif
 
     FragColor = (gl_FragCoord.z - 1.0) / 64.0;
