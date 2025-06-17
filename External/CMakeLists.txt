@@ -233,7 +233,7 @@ externalproject_add(Target_OpenAL
 )
 
 
-create_target(Target_Ogg https://github.com/xiph/ogg.git v1.3.5)
+create_target(Target_Ogg https://github.com/xiph/ogg.git v1.3.6)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
