@@ -15,7 +15,6 @@ uniform highp sampler2D DepthTex;
 uniform highp sampler2D NormalTex;
 uniform lowp sampler2D CausticTex;
 
-
 uniform highp vec3 CameraPosition;
 uniform highp mat4 ViewMatrix;
 uniform vec4 ViewportSize;
@@ -40,15 +39,6 @@ uniform float AberrationAmount;
 uniform vec3 WaterExtinction;
 uniform vec3 SunExtinction;
 
-vec3 toSRGB(const vec3 col)
-{
-    return sqrt(col);
-}
-
-vec3 fromSRGB(const vec3 srgb)
-{
-   return srgb * srgb;
-}
 
 // max absolute error 1.3x10^-3
 // Eberly's odd polynomial degree 5 - respect bounds
@@ -243,7 +233,6 @@ void main()
     fogdarkness = mix(1.0, saturate((CameraPosition.y + fogdarkness) / fogdarkness), shorecut) * ScatterFade;
 
     watercolor = mix(watercolor * 0.3 * SunFade, watercolor, SunTransmittance);
-//    watercolor = fromSRGB(watercolor);
 
     vec3 fogging = mix(refraction, watercolor * fogdarkness, saturate(fog / WaterExtinction)); // adding water color fog
 

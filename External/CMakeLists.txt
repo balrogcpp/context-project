@@ -561,7 +561,7 @@ externalproject_add(Target_OGRE
 )
 
 
-create_target(Target_Lua https://github.com/lua/lua.git v5.4.7)
+create_target(Target_Lua https://github.com/lua/lua.git v5.4.8)
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
