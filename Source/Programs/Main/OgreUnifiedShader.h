@@ -36,20 +36,25 @@
 #define texture1D tex1D
 #define texture2D tex2D
 #define texture3D tex3D
-#define texture2DArray tex2DARRAY
+#define texture2DArray texSample
 #define textureCube texCUBE
-#define shadow2D tex2Dcmp
+#define shadow2D texSample
 #define texture2DProj tex2Dproj
 vec4 texture2DLod(sampler2D s, vec2 v, float lod) { return tex2Dlod(s, vec4(v.x, v.y, 0, lod)); }
 
 #define samplerCube samplerCUBE
 vec4 textureCubeLod(samplerCube s, vec3 v, float lod) { return texCUBElod(s, vec4(v.x, v.y, v.z, lod)); }
 
+#define sampler2DArray Sampler2DArray
 #define sampler2DShadow Sampler2DShadow
+#define sampler2DArrayShadow Sampler2DArrayShadow
+#define samplerCubeShadow SamplerCubeShadow
 
 #define mix lerp
 #define fract frac
 #define inversesqrt rsqrt
+#define dFdx ddx
+#define dFdy ddy
 
 float mod(float _a, float _b) { return _a - _b * floor(_a / _b); }
 vec2  mod(vec2  _a, vec2  _b) { return _a - _b * floor(_a / _b); }
@@ -85,7 +90,10 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 #ifdef OGRE_VERTEX_SHADER
 #define MAIN_DECLARATION out float4 gl_Position : POSITION)
 #else
-#define MAIN_DECLARATION in float4 gl_FragCoord : POSITION, out float4 gl_FragColor : COLOR)
+#   if OGRE_HLSL > 3
+#   define VPOS POSITION
+#   endif
+#define MAIN_DECLARATION in float4 gl_FragCoord : VPOS, out float4 gl_FragColor : COLOR)
 #endif
 
 #define IN(decl, sem) in decl : sem,
@@ -115,7 +123,9 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 #define SAMPLER3D(name, reg) _UNIFORM_BINDING(reg) sampler3D name
 #define SAMPLER2DARRAY(name, reg) _UNIFORM_BINDING(reg) sampler2DArray name
 #define SAMPLERCUBE(name, reg) _UNIFORM_BINDING(reg) samplerCube name
-#define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2D name
+#define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2DShadow name
+#define SAMPLER2DARRAYSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2DArrayShadow name
+#define SAMPLERCUBESHADOW(name, reg) _UNIFORM_BINDING(reg) samplerCubeShadow name
 
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define mul(a, b) ((a) * (b))
@@ -124,17 +134,17 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 #define vec3_splat vec3
 #define vec4_splat vec4
 
-mat4 mtxFromRows(const vec4 a, const vec4 b, const vec4 c, const vec4 d)
+mat4 mtxFromRows(vec4 a, vec4 b, vec4 c, vec4 d)
 {
     return transpose(mat4(a, b, c, d));
 }
 
-mat3 mtxFromRows(const vec3 a, const vec3 b, const vec3 c)
+mat3 mtxFromRows(vec3 a, vec3 b, vec3 c)
 {
     return transpose(mat3(a, b, c));
 }
 
-mat3 mtxFromCols(const vec3 a, const vec3 b, const vec3 c)
+mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 {
     return mat3(a, b, c);
 }

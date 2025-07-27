@@ -74,14 +74,12 @@ mat4 transpose(mat4 m)
 
 #endif
 
-#ifndef HEADER_GLSL
 #if defined(OGRE_FRAGMENT_SHADER) && (defined(OGRE_GLSLANG) || (__VERSION__ > 130))
 #define gl_FragColor FragColor
 OUT(vec4 FragColor, 0)
 #endif
-#endif
 
-#ifdef VULKAN
+#ifdef OGRE_GLSLANG
 
 #ifdef OGRE_VERTEX_SHADER
 #define OGRE_UNIFORMS_BEGIN layout(binding = 0, row_major) uniform OgreUniforms {

@@ -1,6 +1,7 @@
 // created by Andrey Vasiliev
 //? #version 400
-  precision highp float;
+
+precision highp float;
 #include "fog.glsl"
 #include "tonemap.glsl"
 
