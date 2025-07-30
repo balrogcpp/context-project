@@ -3,24 +3,19 @@
 
 #define PI 3.14159265359
 
-precision highp float;
-float fastSqrt(const float x) {
-    return intBitsToFloat(0x1fbd1df5 + (floatBitsToInt(x) >> 1));
-}
-precision mediump float;
 
 float acosFast(const float x) {
     // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
     // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
     float y = abs(x);
     float p = -0.1565827 * y + 1.570796;
-    p *= fastSqrt(1.0 - y);
+    p *= sqrt(1.0 - y);
     return x >= 0.0 ? p : PI - p;
 }
 
 float acosFastPositive(const float x) {
     float p = -0.1565827 * x + 1.570796;
-    return p * fastSqrt(1.0 - x);
+    return p * sqrt(1.0 - x);
 }
 
 float sq(const float x) {
@@ -235,7 +230,7 @@ vec3 hwAtmosphere(const highp vec3 V, const highp vec3 N)
     vec3 I2 = I * I;
 
     vec3 chi = ((1.0 + cos_gamma2) / pow(1.0 + I2 - 2.0 * (cos_gamma * I), vec3(1.5, 1.5, 1.5)));
-    vec3 color = Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * fastSqrt(cos_theta)));
+    vec3 color = Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * cos_gamma2 + G * chi + H * sqrt(cos_theta)));
 
     color = 2.0 / (1.0 + exp(-0.04 * color)) - 1.0;
     return color;
