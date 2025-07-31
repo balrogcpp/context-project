@@ -734,8 +734,8 @@ void VideoComponent::InitOgreSceneManager() {
   terrainGlobalOptions->setRenderQueueGroup(Ogre::RENDER_QUEUE_WORLD_GEOMETRY_2);
 
   if (shadowEnabled) {
-    pssmSetup = make_shared<DPSMCameraSetup>();
     sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    pssmSetup = make_shared<DPSMCameraSetup>();
     sceneManager->setShadowColour(Ogre::ColourValue::Black);
     sceneManager->setShadowFarDistance(shadowFarDistance);
     sceneManager->setShadowDirectionalLightExtrusionDistance(shadowFarDistance);

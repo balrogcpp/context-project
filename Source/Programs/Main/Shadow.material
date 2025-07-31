@@ -1,0 +1,25 @@
+// This file is part of the OGRE project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution and at https://www.ogre3d.org/licensing.
+
+material Ogre/TextureShadowCaster
+{
+    receive_shadows false
+    technique
+    {
+        pass
+        {
+            // Lighting has to be on, because we need shadow coloured objects
+            // Note that because we can't predict vertex programs, we'll have to
+            // bind light values to those, and so we bind White to ambient
+            // reflectance, and we'll set the ambient colour to the shadow colour
+            ambient 1 1 1
+            diffuse 0 0 0
+            specular 0 0 0 1
+            emissive 0 0 0
+            fog_override true none
+            // set depth bias in case this is used with PF_DEPTH
+            depth_bias -1 -1
+        }
+    }
+}
