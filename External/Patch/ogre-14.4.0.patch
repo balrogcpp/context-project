@@ -151,11 +151,35 @@ index e17cb15..40a8884 100644
      GlobalTextureMap::iterator i = mGlobalTextures.find(name);
 -    if(i != mGlobalTextures.end())
 -        return i->second->getRenderTarget(slice);
-+    if(i != mGlobalTextures.end()) { size_t mip = 0; if (i->second->getNumFaces() == 1 && slice <= i->second->getNumMipmaps() && slice > 0) { mip = slice; slice = 0; }
++    if(i != mGlobalTextures.end()) { size_t mip = 0; if (i->second->getNumLayers() == 1 && slice <= i->second->getNumMipmaps() && slice > 0) { mip = slice; slice = 0; }
 +        return i->second->getRenderTarget(slice, mip); }
 
      // try MRTs
      GlobalMRTMap::iterator mi = mGlobalMRTs.find(name);
+diff --git a/OgreMain/src/OgreCompositorInstance.cpp b/OgreMain/src/OgreCompositorInstance.cpp
+index 49291d4..ac8ea51 100644
+--- a/OgreMain/src/OgreCompositorInstance.cpp
++++ b/OgreMain/src/OgreCompositorInstance.cpp
+@@ -729,7 +729,7 @@ void CompositorInstance::createResources(bool forResizeOnly)
+         else
+         {
+             for(size_t i = 0; i < tex->getNumLayers(); i++)
+-                setupRenderTarget(tex->getRenderTarget(i), def->depthBufferId);
++                for(size_t j = 0; j < tex->getNumMipmaps(); j++) setupRenderTarget(tex->getRenderTarget(i, j), def->depthBufferId);
+         }
+     }
+ 
+@@ -991,8 +991,8 @@ RenderTarget *CompositorInstance::getRenderTarget(const String &name, int slice)
+     // try simple texture
+     LocalTextureMap::iterator i = mLocalTextures.find(name);
+     if(i != mLocalTextures.end())
+-    {
+-        return i->second->getRenderTarget(slice);
++    { size_t mip = 0; if (i->second->getNumLayers() == 1 && slice <= i->second->getNumMipmaps() && slice > 0) { mip = slice; slice = 0; }
++        return i->second->getRenderTarget(slice, mip);
+     }
+ 
+     // try MRTs
 diff --git a/OgreMain/src/OgreDDSCodec.cpp b/OgreMain/src/OgreDDSCodec.cpp
 index 0d439d0..d478a99 100644
 --- a/OgreMain/src/OgreDDSCodec.cpp
