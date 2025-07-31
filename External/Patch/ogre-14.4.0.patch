@@ -152,7 +152,7 @@ index e17cb15..40a8884 100644
 -    if(i != mGlobalTextures.end())
 -        return i->second->getRenderTarget(slice);
 +    if(i != mGlobalTextures.end()) { size_t mip = 0; if (i->second->getNumFaces() == 1 && slice <= i->second->getNumMipmaps() && slice > 0) { mip = slice; slice = 0; }
-+        return i->second->getBuffer(slice, mip)->getRenderTarget(); }
++        return i->second->getRenderTarget(slice, mip); }
 
      // try MRTs
      GlobalMRTMap::iterator mi = mGlobalMRTs.find(name);
