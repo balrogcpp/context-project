@@ -4,6 +4,7 @@
 #define HALF_MAX        65504.0 // (2 - 2^-10) * 2^15
 #define HALF_EPSILON    1.0e-4
 #define PI              3.14159265359
+
 // Clamp HDR value within a safe range
 #define SafeHDR(x) min(x, 65504.0)
 #define saturate(x) clamp(x, 0.0, 1.0)

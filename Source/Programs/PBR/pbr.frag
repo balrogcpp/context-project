@@ -131,9 +131,9 @@ float shading_NoV;
 #include "ibl.glsl"
 #include "lit.glsl"
 
-float getDistanceAttenuation(const vec3 params, float distance)
+float getDistanceAttenuation(const vec3 params, const float distanceSquare)
 {
-    return 1.0 / (params.x + params.y * distance + params.z * distance * distance);
+    return 1.0 / (params.x + params.y * distanceSquare + params.z * distanceSquare * distanceSquare);
 }
 
 float getAngleAttenuation(const vec3 params, const vec3 lightDir, const vec3 toLight)
