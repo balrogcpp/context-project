@@ -131,16 +131,14 @@ index 483f9f3..0b87d5d 100644
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
-index e17cb15..40a8884 100644
+index e17cb15..ab9df2e 100644
 --- a/OgreMain/src/OgreCompositor.cpp
 +++ b/OgreMain/src/OgreCompositor.cpp
-@@ -156,8 +156,8 @@ TexturePtr createTexture(const String& name, const CompositionTechnique::Texture
-                          const String& fsaaHint)
+@@ -157,7 +157,7 @@ TexturePtr createTexture(const String& name, const CompositionTechnique::Texture
  {
      bool hwGamma = def.hwGammaWrite && !PixelUtil::isFloatingPoint(pf);
--    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def.type, def.width, def.height, def.depth,
+     return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def.type, def.width, def.height, def.depth,
 -                                                       0, pf, TU_RENDERTARGET, 0, hwGamma, def.fsaa, fsaaHint);
-+    return TextureManager::getSingleton().createManual(name, RGN_INTERNAL, def.type, def.width, def.height, def.depth,
 +                                                       def.type == TEX_TYPE_2D ? Ogre::TextureManager::getSingleton().getDefaultNumMipmaps() : 0, pf, TU_RENDERTARGET, 0, hwGamma, def.fsaa, fsaaHint);
  }
 
@@ -165,7 +163,7 @@ index 49291d4..ac8ea51 100644
          {
              for(size_t i = 0; i < tex->getNumLayers(); i++)
 -                setupRenderTarget(tex->getRenderTarget(i), def->depthBufferId);
-+                for(size_t j = 0; j < tex->getNumMipmaps(); j++) setupRenderTarget(tex->getRenderTarget(i, j), def->depthBufferId);
++                for(size_t j = 0; j < tex->getNumMipmaps() + 1; j++) setupRenderTarget(tex->getRenderTarget(i, j), def->depthBufferId);
          }
      }
  
