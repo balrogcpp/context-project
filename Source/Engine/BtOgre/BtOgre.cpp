@@ -14,6 +14,10 @@
  */
 
 #include "BtOgre.h"
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#include <Terrain/OgreTerrain.h>
+#include <Terrain/OgreTerrainGroup.h>
+#endif
 #if OGRE_THREAD_SUPPORT > 0
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
@@ -104,6 +108,48 @@ btCylinderShape* createCylinderCollider(const MovableObject* mo)
   return shape;
 }
 
+/// create compound shape because we can
+btCompoundShape* createCompoundShape()
+{
+	return new btCompoundShape;
+}
+
+/// create height field collider
+btHeightfieldTerrainShape* createHeightfieldTerrainShape(const Terrain* terrain, struct HeightFieldData *data)
+{
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+    OgreAssert(terrain && terrain->getHeightData() && terrain->isLoaded(), "invalid terrain supplied");
+    int i;
+    uint16 size = terrain->getSize();
+    float *heightData = terrain->getHeightData();
+    /* need to flip terrain data */
+
+    data->terrainHeights = new float[size * size];
+    for (i = 0; i < size; i++) {
+        memcpy(data->terrainHeights + size * i,
+            heightData + size * (size - i - 1),
+            sizeof(float) * size);
+    }
+    Real minHeight = terrain->getMinHeight();
+    Real maxHeight = terrain->getMaxHeight();
+    data->bodyPosition = terrain->getPosition();
+    Real worldSize = terrain->getWorldSize();
+    float scaled = worldSize / (size - 1);
+    btVector3 localScale(scaled, 1.0f, scaled);
+    btHeightfieldTerrainShape *shape = new btHeightfieldTerrainShape((int)size, (int)size,
+                                        data->terrainHeights, 1, minHeight, maxHeight,
+                                        1, PHY_FLOAT, true);
+    data->bodyPosition.y += (maxHeight + minHeight) / 2.0f;
+    shape->setUseDiamondSubdivision(true);
+    shape->setLocalScaling(localScale);
+    return shape;
+#else
+    OgreAssert(false, "OGRE must be built with the Terrain component");
+    return nullptr;
+#endif
+}
+
+
 struct EntityCollisionListener
 {
   const MovableObject* entity;
@@ -120,7 +166,7 @@ static void onTick(btDynamicsWorld* world, btScalar timeStep)
 
     for (int j = 0; j < manifold->getNumContacts(); j++)
     {
-      const btManifoldPoint& mp = manifold->getContactPoint(i);
+      const btManifoldPoint& mp = manifold->getContactPoint(j);
       auto body0 = static_cast<EntityCollisionListener*>(manifold->getBody0()->getUserPointer());
       auto body1 = static_cast<EntityCollisionListener*>(manifold->getBody1()->getUserPointer());
       if (body0->listener)
@@ -175,6 +221,18 @@ public:
   Vector3 mScale;
 };
 
+/// create trimesh collider using ogre provided data
+btBvhTriangleMeshShape* createTrimeshCollider(const Entity* ent)
+{
+        return VertexIndexToShape(ent).createTrimesh();
+}
+
+/// create convex hull collider using ogre provided data
+btConvexHullShape* createConvexHullCollider(const Entity* ent)
+{
+	return VertexIndexToShape(ent).createConvex();
+}
+
 /// wrapper with automatic memory management
 class CollisionObject
 {
@@ -224,6 +282,8 @@ DynamicsWorld::DynamicsWorld(const Vector3& gravity) : CollisionWorld(NULL) // p
   auto btworld = new btDiscreteDynamicsWorld(mDispatcher.get(), mBroadphase.get(), mSolver.get(), mCollisionConfig.get());
   btworld->setGravity(convert(gravity));
   btworld->setInternalTickCallback(onTick);
+  mGhostPairCallback = new btGhostPairCallback();
+  btworld->getPairCache()->setInternalGhostPairCallback(mGhostPairCallback);
   mBtWorld = btworld;
 }
 
@@ -252,10 +312,13 @@ static btCollisionShape* getCollisionShape(Entity* ent, ColliderType ct)
       cs = createCapsuleCollider(ent);
       break;
     case CT_TRIMESH:
-      cs = VertexIndexToShape(ent).createTrimesh();
+        cs = createTrimeshCollider(ent);
       break;
     case CT_HULL:
-      cs = VertexIndexToShape(ent).createConvex();
+        cs = createConvexHullCollider(ent);
+        break;
+    case CT_COMPOUND:
+        cs = createCompoundShape();
       break;
   }
 
@@ -289,6 +352,64 @@ btRigidBody* DynamicsWorld::addRigidBody(float mass, Entity* ent, ColliderType c
   return rb;
 }
 
+btRigidBody* DynamicsWorld::addKinematicRigidBody(Entity* ent, ColliderType ct, int group, int mask)
+{
+    btRigidBody* rb = addRigidBody(0, ent, ct, nullptr, group, mask);
+    rb->setCollisionFlags(rb->getCollisionFlags()
+                    | btCollisionObject::CF_KINEMATIC_OBJECT
+                    | btCollisionObject::CF_NO_CONTACT_RESPONSE
+                    );
+    rb->setActivationState(DISABLE_DEACTIVATION);
+    return rb;
+}
+
+class TerrainRigidBody: public RigidBody
+{
+    HeightFieldData hfdata;
+public:
+    TerrainRigidBody(btCollisionObject* btBody, btCollisionWorld* btWorld, const HeightFieldData &data)
+        : RigidBody(btBody, btWorld), hfdata(data) {}
+    ~TerrainRigidBody()
+    {
+        delete hfdata.terrainHeights;
+    }
+};
+btRigidBody* DynamicsWorld::addTerrainRigidBody(TerrainGroup* terrainGroup, long x, long y, int group, int mask)
+{
+    Terrain* terrain = nullptr;
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+    terrain = terrainGroup->getTerrain(x, y);
+#endif
+    return addTerrainRigidBody(terrain, group, mask);
+}
+btRigidBody* DynamicsWorld::addTerrainRigidBody(Terrain* terrain, int group, int mask)
+{
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+    btVector3 inertia(0, 0, 0);
+    HeightFieldData hfdata;
+    btHeightfieldTerrainShape* shape = createHeightfieldTerrainShape(terrain, &hfdata);
+    /* FIXME: destroy this node when terrain chunk is destroyed */
+    Ogre::Vector3 positionOffset = hfdata.bodyPosition - terrain->getPosition();
+    SceneNode* node = terrain->_getRootSceneNode()->createChildSceneNode(positionOffset, Quaternion::IDENTITY);
+    RigidBodyState* state = new RigidBodyState(node);
+    auto rb = new btRigidBody(0, state, shape, inertia);
+    getBtWorld()->addRigidBody(rb, group, mask);
+    rb->setUserPointer(new EntityCollisionListener{nullptr, nullptr});
+
+    // transfer ownership to node
+    auto objWrapper = std::make_shared<TerrainRigidBody>(rb, mBtWorld, hfdata);
+    node->getUserObjectBindings().setUserAny("BtCollisionObject", objWrapper);
+    rb->setCollisionFlags(rb->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+    rb->getWorldTransform().setOrigin(convert(hfdata.bodyPosition));
+    rb->getWorldTransform().setRotation(convert(Quaternion::IDENTITY));
+
+    return rb;
+#else
+    OgreAssert(false, "OGRE must be built with the Terrain component");
+    return nullptr;
+#endif
+}
+
 btCollisionObject* CollisionWorld::addCollisionObject(Entity* ent, ColliderType ct, int group, int mask)
 {
     auto node = ent->getParentSceneNode();
@@ -305,6 +426,38 @@ btCollisionObject* CollisionWorld::addCollisionObject(Entity* ent, ColliderType 
     node->getUserObjectBindings().setUserAny("BtCollisionObject", objWrapper);
 
     return co;
+}
+
+void DynamicsWorld::attachRigidBody(btRigidBody *rigidBody, Entity* ent, CollisionListener* listener,
+                                         int group, int mask)
+{
+    auto node = ent->getParentSceneNode();
+    OgreAssert(node, "entity must be attached");
+    /* If the body has incorrect btMotionState and is in world
+     * we will crash or corrupt some memory. Hope the user
+     * will know what he/she is doing */
+    if (!rigidBody->isInWorld()) {
+        RigidBodyState* state = new RigidBodyState(node);
+	rigidBody->setMotionState(state);
+        getBtWorld()->addRigidBody(rigidBody, group, mask);
+    }
+    rigidBody->setUserPointer(new EntityCollisionListener{ent, listener});
+    // transfer ownership to node
+    auto objWrapper = std::make_shared<RigidBody>(rigidBody, mBtWorld);
+    node->getUserObjectBindings().setUserAny("BtCollisionObject", objWrapper);
+}
+void CollisionWorld::attachCollisionObject(btCollisionObject* collisionObject, Entity* ent, int group, int mask)
+{
+    auto node = ent->getParentSceneNode();
+    OgreAssert(node, "entity must be attached");
+    OgreAssert(collisionObject->getWorldArrayIndex() == -1, "Object should not be attached to world");
+    if (collisionObject->getWorldArrayIndex() == -1)
+        mBtWorld->addCollisionObject(collisionObject, group, mask);
+
+    // transfer ownership to node
+    collisionObject->setUserPointer(new EntityCollisionListener{ent, nullptr});
+    auto objWrapper = std::make_shared<CollisionObject>(collisionObject, mBtWorld);
+    node->getUserObjectBindings().setUserAny("BtCollisionObject", objWrapper);
 }
 
 struct RayResultCallbackWrapper : public btCollisionWorld::RayResultCallback
@@ -331,7 +484,12 @@ void CollisionWorld::rayTest(const Ray& ray, RayResultCallback* callback, float 
   mBtWorld->rayTest(from, to, wrapper);
 }
 
-CollisionWorld::~CollisionWorld() { delete mBtWorld; }
+CollisionWorld::~CollisionWorld()
+{
+    delete mBtWorld;
+    if (mGhostPairCallback)
+        delete mGhostPairCallback;
+}
 
 /*
  * =============================================================================================
@@ -750,4 +908,214 @@ void DebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btV
   mLines.position(convert(to));
   mLines.colour(col);
 }
+
+/* Taken from btKinematicCharacterController */
+bool KinematicMotionSimple::recoverFromPenetration(btCollisionWorld* collisionWorld)
+{
+    // Here we must refresh the overlapping paircache as the penetrating movement itself or the
+    // previous recovery iteration might have used setWorldTransform and pushed us into an object
+    // that is not in the previous cache contents from the last timestep, as will happen if we
+    // are pushed into a new AABB overlap. Unhandled this means the next convex sweep gets stuck.
+    //
+    // Do this by calling the broadphase's setAabb with the moved AABB, this will update the broadphase
+    // paircache and the ghostobject's internal paircache at the same time.    /BW
+
+    btVector3 minAabb, maxAabb;
+    bool shapes_found = false;
+    btTransform bodyPosition = mGhostObject->getWorldTransform();
+
+    /* This is taken from Godot to implement btCompoundShape here */
+    for (int kinIndex = 0; kinIndex < (int)mCollisionShapes.size(); kinIndex++)
+    {
+
+        btTransform shapeTransform = bodyPosition * mCollisionTransforms[kinIndex];
+
+        btVector3 shapeAabbMin, shapeAabbMax;
+        mCollisionShapes[kinIndex]->getAabb(shapeTransform, shapeAabbMin, shapeAabbMax);
+
+        if (!shapes_found)
+        {
+            minAabb = shapeAabbMin;
+            maxAabb = shapeAabbMax;
+            shapes_found = true;
+        }
+        else
+        {
+            minAabb.setX((minAabb.x() < shapeAabbMin.x()) ? minAabb.x() : shapeAabbMin.x());
+            minAabb.setY((minAabb.y() < shapeAabbMin.y()) ? minAabb.y() : shapeAabbMin.y());
+            minAabb.setZ((minAabb.z() < shapeAabbMin.z()) ? minAabb.z() : shapeAabbMin.z());
+
+            maxAabb.setX((maxAabb.x() > shapeAabbMax.x()) ? maxAabb.x() : shapeAabbMax.x());
+            maxAabb.setY((maxAabb.y() > shapeAabbMax.y()) ? maxAabb.y() : shapeAabbMax.y());
+            maxAabb.setZ((maxAabb.z() > shapeAabbMax.z()) ? maxAabb.z() : shapeAabbMax.z());
+        }
+    }
+
+    // If there are no shapes then there is no penetration either
+    if (!shapes_found)
+    {
+        return false;
+    }
+    collisionWorld->getBroadphase()->setAabb(mGhostObject->getBroadphaseHandle(), minAabb, maxAabb,
+                                             collisionWorld->getDispatcher());
+
+    bool penetration = false;
+
+    collisionWorld->getDispatcher()->dispatchAllCollisionPairs(
+        mGhostObject->getOverlappingPairCache(), collisionWorld->getDispatchInfo(), collisionWorld->getDispatcher());
+
+    mCurrentPosition = mGhostObject->getWorldTransform().getOrigin();
+
+    /* Narrow phase supports btCollisionShape already */
+    for (int i = 0; i < mGhostObject->getOverlappingPairCache()->getNumOverlappingPairs(); i++)
+    {
+        mManifoldArray.resize(0);
+
+        btBroadphasePair* collisionPair = &mGhostObject->getOverlappingPairCache()->getOverlappingPairArray()[i];
+
+        btCollisionObject* obj0 = static_cast<btCollisionObject*>(collisionPair->m_pProxy0->m_clientObject);
+        btCollisionObject* obj1 = static_cast<btCollisionObject*>(collisionPair->m_pProxy1->m_clientObject);
+
+        /* TODO: implement filtering
+        if ((obj0 && !obj0->hasContactResponse()) || (obj1 && !obj1->hasContactResponse()))
+        {
+            std::cout << "No contact response\n";
+            continue;
+        }
+        */
+
+        if (!needsCollision(obj0, obj1))
+            continue;
+
+        if (collisionPair->m_algorithm)
+            collisionPair->m_algorithm->getAllContactManifolds(mManifoldArray);
+
+        for (int j = 0; j < mManifoldArray.size(); j++)
+        {
+            btPersistentManifold* manifold = mManifoldArray[j];
+            btScalar directionSign = manifold->getBody0() == mGhostObject ? btScalar(-1.0) : btScalar(1.0);
+            for (int p = 0; p < manifold->getNumContacts(); p++)
+            {
+                const btManifoldPoint& pt = manifold->getContactPoint(p);
+
+                btScalar dist = pt.getDistance();
+
+                if (dist < -mMaxPenetrationDepth)
+                {
+                    // TODO: cause problems on slopes, not sure if it is needed
+                    // if (dist < maxPen)
+                    //{
+                    //	maxPen = dist;
+                    //	m_touchingNormal = pt.m_normalWorldOnB * directionSign;//??
+
+                    //}
+                    mCurrentPosition += pt.m_normalWorldOnB * directionSign * dist * btScalar(0.2);
+                    penetration = true;
+                }
+            }
+        }
+    }
+    btTransform newTrans = mGhostObject->getWorldTransform();
+    newTrans.setOrigin(mCurrentPosition);
+    mGhostObject->setWorldTransform(newTrans);
+    return penetration;
 }
+bool KinematicMotionSimple::needsCollision(const btCollisionObject* body0, const btCollisionObject* body1)
+{
+    bool collides = (body0->getBroadphaseHandle()->m_collisionFilterGroup &
+                     body1->getBroadphaseHandle()->m_collisionFilterMask) != 0;
+    collides = collides && (body1->getBroadphaseHandle()->m_collisionFilterGroup &
+                            body0->getBroadphaseHandle()->m_collisionFilterMask);
+    return collides;
+}
+void KinematicMotionSimple::preStep(btCollisionWorld* collisionWorld)
+{
+    btTransform nodeXform;
+    nodeXform.setRotation(convert(mNode->getOrientation()));
+    nodeXform.setOrigin(convert(mNode->getPosition()));
+    mGhostObject->setWorldTransform(nodeXform);
+    mCurrentPosition = mGhostObject->getWorldTransform().getOrigin();
+
+    mCurrentOrientation = mGhostObject->getWorldTransform().getRotation();
+}
+void KinematicMotionSimple::playerStep(btCollisionWorld* collisionWorld, btScalar dt)
+{
+    int numPenetrationLoops = 0;
+    while (recoverFromPenetration(collisionWorld))
+    {
+        numPenetrationLoops++;
+        if (numPenetrationLoops > 6)
+            break;
+    }
+}
+
+void KinematicMotionSimple::updateAction(btCollisionWorld* collisionWorld, btScalar deltaTimeStep)
+{
+    preStep(collisionWorld);
+    playerStep(collisionWorld, deltaTimeStep);
+    btTransform xform = mGhostObject->getWorldTransform();
+    mNode->setPosition(convert(xform.getOrigin()));
+    mNode->setOrientation(convert(xform.getRotation()));
+}
+void KinematicMotionSimple::debugDraw(btIDebugDraw* debugDrawer) {}
+void KinematicMotionSimple::setupCollisionShapes(btCollisionObject* body)
+{
+    std::list<std::pair<btCompoundShape*, btTransform>> shape_list;
+    btCollisionShape* root_shape = body->getCollisionShape();
+    OgreAssert(root_shape, "No collision shape");
+    btTransform root_xform;
+    root_xform.setIdentity();
+    // std::cout << "shape: " << root_shape << " is compound: " << root_shape->isCompound() << "\n";
+    // std::cout << "shape: " << root_shape << " is convex: " << root_shape->isConvex() << "\n";
+    if (root_shape->isCompound())
+    {
+        btCompoundShape* cshape = static_cast<btCompoundShape*>(root_shape);
+        shape_list.push_back({cshape, root_xform});
+}
+    else
+    {
+        mCollisionShapes.push_back(root_shape);
+        mCollisionTransforms.push_back(root_xform);
+    }
+    while (!shape_list.empty())
+    {
+        int i;
+        std::pair<btCompoundShape*, btTransform> s = shape_list.front();
+        shape_list.pop_front();
+        //        std::cout << "compound shape: " << s.first << "\n";
+        for (i = 0; i < s.first->getNumChildShapes(); i++)
+        {
+            btCollisionShape* shape = s.first->getChildShape(i);
+            //            std::cout << "\tchild shape: " << i << " " << shape;
+            //            std::cout << "\tchild shape: " << i << " is compound: " << shape->isCompound();
+            //            std::cout << "\tchild shape: " << i << " is convex: " << shape->isConvex();
+            btTransform xform = s.second * s.first->getChildTransform(i);
+            //            std::cout << i << ": " << shape << "\n";
+            if (shape->isConvex())
+            {
+                mCollisionShapes.push_back(shape);
+                mCollisionTransforms.push_back(xform);
+            }
+            else if (shape->isCompound())
+            {
+                btCompoundShape* cshape = static_cast<btCompoundShape*>(shape);
+                shape_list.push_back({cshape, xform});
+            }
+            else
+                OgreAssert(false, "Bad shape");
+        }
+    }
+    OgreAssert(mCollisionShapes.size() > 0, "No collision shapes");
+}
+KinematicMotionSimple::KinematicMotionSimple(btPairCachingGhostObject* ghostObject, Node* node)
+    : btActionInterface(), mGhostObject(ghostObject), mNode(node)
+{
+    btTransform nodeXform;
+    nodeXform.setRotation(convert(node->getOrientation()));
+    nodeXform.setOrigin(convert(node->getPosition()));
+    ghostObject->setWorldTransform(nodeXform);
+    setupCollisionShapes(ghostObject);
+}
+KinematicMotionSimple::~KinematicMotionSimple() {}
+
+} // namespace BtOgre
