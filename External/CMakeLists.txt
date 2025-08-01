@@ -694,6 +694,37 @@ externalproject_add(Target_sol2
 )
 
 
+create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.5.1)
+externalproject_add(Target_OpenSSL
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        CMAKE_ARGS
+        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+        -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DOPENSSL_INSTALL=ON
+        -DBUILD_SHARED_LIBS=OFF
+        -DOPENSSL_TARGET_VERSION=3.5.1
+        -DOPENSSL_USE_CCACHE=OFF
+        -DOPENSSL_TEST=OFF
+        -DOPENSSL_CONFIGURE_OPTIONS=--prefix=${DEPS_ROOT};
+)
+
+
 create_target(Target_LibreSSL https://github.com/PowerShell/LibreSSL.git V3.9.2.0)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
@@ -757,7 +788,7 @@ externalproject_add(Target_cpr
 )
 
 
-create_target(Target_httplib https://github.com/yhirose/cpp-httplib.git v0.18.3)
+create_target(Target_httplib https://github.com/yhirose/cpp-httplib.git v0.23.1)
 externalproject_add(Target_httplib
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
