@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2ecfe1e..beca87e 100644
+index 2ecfe1e..e802af2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -31,7 +31,7 @@ option(OPENSSL_INSTALL "Install OpenSSL components to the <prefix> directory" OF
@@ -11,17 +11,20 @@ index 2ecfe1e..beca87e 100644
  if("${OPENSSL_BUILD_TARGET}" STREQUAL "")
      # Makefile target for build
      set(OPENSSL_BUILD_TARGET build_libs)
-@@ -46,10 +46,10 @@ if("${OPENSSL_TARGET_PLATFORM}" STREQUAL "")
+@@ -46,10 +46,12 @@ if("${OPENSSL_TARGET_PLATFORM}" STREQUAL "")
      # Use OpenSSL's Configure target
      detect_target_platform(OPENSSL_TARGET_PLATFORM)
  endif()
 -
 -# Fetch OpenSSL source
+-fetch_openssl()
+-
 +if (OPENSSL_NO_ASM)
 +    list(APPEND OPENSSL_CONFIGURE_OPTIONS no-asm)
 +endif()
- fetch_openssl()
--
++if (NOT EXISTS ${CMAKE_SOURCE_DIR}/openssl)
++    execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND git clone -b openssl-${OPENSSL_TARGET_VERSION} --depth 1 https://github.com/openssl/openssl.git)
++endif ()
  # Apply patches
  foreach(patch IN LISTS OPENSSL_PATCH)
      if(EXISTS "${patch}" AND NOT IS_DIRECTORY "${patch}")
