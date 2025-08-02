@@ -1,7 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2ecfe1e..4ef4711 100644
+index 2ecfe1e..a04e239 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -21,7 +21,7 @@ include(cmake/ConfigureOpenSSL.cmake)
+ include(cmake/DetectTargetPlatform.cmake)
+ include(cmake/FetchOpenSSL.cmake)
+ include(cmake/FindVcvarsall.cmake)
+-include(cmake/GetCPM.cmake)
++#include(cmake/GetCPM.cmake)
+ 
+ # Custom options
+ option(OPENSSL_BUILD_VERBOSE "Enable verbose output from build" OFF)
 @@ -31,22 +31,22 @@ option(OPENSSL_INSTALL "Install OpenSSL components to the <prefix> directory" OF
  option(OPENSSL_INSTALL_CERT "Install cert.pem to the <openssldir> directory" OFF)
  option(OPENSSL_TEST "Enable testing and build OpenSSL self tests" OFF)
