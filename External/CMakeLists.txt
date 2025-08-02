@@ -694,7 +694,7 @@ externalproject_add(Target_sol2
 )
 
 
-create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.5.1)
+create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.5.1 openssl-3.5.1.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -716,12 +716,13 @@ externalproject_add(Target_OpenSSL
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DOPENSSL_CONFIGURE_OPTIONS=--prefix=${DEPS_ROOT};
         -DOPENSSL_INSTALL=ON
         -DBUILD_SHARED_LIBS=OFF
         -DOPENSSL_TARGET_VERSION=3.5.1
         -DOPENSSL_USE_CCACHE=OFF
         -DOPENSSL_TEST=OFF
-        -DOPENSSL_CONFIGURE_OPTIONS=--prefix=${DEPS_ROOT};
+        -DOPENSSL_NO_ASM=ON
 )
 
 
