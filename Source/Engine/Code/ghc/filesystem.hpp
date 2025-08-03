@@ -25,6 +25,23 @@
 // SOFTWARE.
 //
 //---------------------------------------------------------------------------------------
+//
+// To dynamically select std::filesystem where available on most platforms,
+// you could use:
+//
+// #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || (defined(__cplusplus) && __cplusplus >= 201703L)) && defined(__has_include)
+// #if __has_include(<filesystem>) && (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500)
+// #define GHC_USE_STD_FS
+// #include <filesystem>
+// namespace fs = std::filesystem;
+// #endif
+// #endif
+// #ifndef GHC_USE_STD_FS
+// #include <ghc/filesystem.hpp>
+// namespace fs = ghc::filesystem;
+// #endif
+//
+//---------------------------------------------------------------------------------------
 #ifndef GHC_FILESYSTEM_H
 #define GHC_FILESYSTEM_H
 
@@ -36,7 +53,7 @@
 
 #ifndef GHC_OS_DETECTED
 #if defined(__APPLE__) && defined(__MACH__)
-#define GHC_OS_APPLE
+#define GHC_OS_MACOS
 #elif defined(__linux__)
 #define GHC_OS_LINUX
 #if defined(__ANDROID__)
@@ -164,7 +181,7 @@
 #include <langinfo.h>
 #endif
 #endif
-#ifdef GHC_OS_APPLE
+#ifdef GHC_OS_MACOS
 #include <Availability.h>
 #endif
 
@@ -291,7 +308,7 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // ghc::filesystem version in decimal (major * 10000 + minor * 100 + patch)
-#define GHC_FILESYSTEM_VERSION 10515L
+#define GHC_FILESYSTEM_VERSION 10514L
 
 #if !defined(GHC_WITH_EXCEPTIONS) && (defined(__EXCEPTIONS) || defined(__cpp_exceptions) || defined(_CPPUNWIND))
 #define GHC_WITH_EXCEPTIONS
@@ -1142,10 +1159,6 @@ GHC_FS_API void create_hard_link(const path& to, const path& new_hard_link, std:
 GHC_FS_API uintmax_t hard_link_count(const path& p, std::error_code& ec) noexcept;
 #endif
 
-#if defined(GHC_OS_WINDOWS) && (!defined(__GLIBCXX__) || (defined(_GLIBCXX_HAVE__WFOPEN) && defined(_GLIBCXX_USE_WCHAR_T)))
-#define GHC_HAS_FSTREAM_OPEN_WITH_WCHAR
-#endif
-
 // Non-C++17 add-on std::fstream wrappers with path
 template <class charT, class traits = std::char_traits<charT>>
 class basic_filebuf : public std::basic_filebuf<charT, traits>
@@ -1157,7 +1170,7 @@ public:
     const basic_filebuf& operator=(const basic_filebuf&) = delete;
     basic_filebuf<charT, traits>* open(const path& p, std::ios_base::openmode mode)
     {
-#ifdef GHC_HAS_FSTREAM_OPEN_WITH_WCHAR
+#if defined(GHC_OS_WINDOWS) && !defined(__GLIBCXX__)
         return std::basic_filebuf<charT, traits>::open(p.wstring().c_str(), mode) ? this : 0;
 #else
         return std::basic_filebuf<charT, traits>::open(p.string().c_str(), mode) ? this : 0;
@@ -1170,7 +1183,7 @@ class basic_ifstream : public std::basic_ifstream<charT, traits>
 {
 public:
     basic_ifstream() {}
-#ifdef GHC_HAS_FSTREAM_OPEN_WITH_WCHAR
+#if defined(GHC_OS_WINDOWS) && !defined(__GLIBCXX__)
     explicit basic_ifstream(const path& p, std::ios_base::openmode mode = std::ios_base::in)
         : std::basic_ifstream<charT, traits>(p.wstring().c_str(), mode)
     {
@@ -1193,7 +1206,7 @@ class basic_ofstream : public std::basic_ofstream<charT, traits>
 {
 public:
     basic_ofstream() {}
-#ifdef GHC_HAS_FSTREAM_OPEN_WITH_WCHAR
+#if defined(GHC_OS_WINDOWS) && !defined(__GLIBCXX__)
     explicit basic_ofstream(const path& p, std::ios_base::openmode mode = std::ios_base::out)
         : std::basic_ofstream<charT, traits>(p.wstring().c_str(), mode)
     {
@@ -1216,7 +1229,7 @@ class basic_fstream : public std::basic_fstream<charT, traits>
 {
 public:
     basic_fstream() {}
-#ifdef GHC_HAS_FSTREAM_OPEN_WITH_WCHAR
+#if defined(GHC_OS_WINDOWS) && !defined(__GLIBCXX__)
     explicit basic_fstream(const path& p, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out)
         : std::basic_fstream<charT, traits>(p.wstring().c_str(), mode)
     {
@@ -3157,7 +3170,7 @@ GHC_INLINE path path::extension() const
         auto iter = end();
         const auto& fn = *--iter;
         impl_string_type::size_type pos = fn._path.rfind('.');
-        if (pos != std::string::npos && pos > 0 && fn._path != "..") {
+        if (pos != std::string::npos && pos > 0) {
             return path(fn._path.substr(pos), native_format);
         }
     }
@@ -3305,9 +3318,6 @@ GHC_INLINE path path::lexically_relative(const path& base) const
         else if (element == "..") {
             --count;
         }
-    }
-    if (count == 0 && (a == end() || a->empty())) {
-        return path(".");
     }
     if (count < 0) {
         return path();
@@ -3977,7 +3987,7 @@ GHC_INLINE bool copy_file(const path& from, const path& to, copy_options options
     }
     ssize_t br, bw;
     while (true) {
-        do { br = ::read(in, buffer.data(), buffer.size()); } while(errno == EINTR && !br);
+        do { br = ::read(in, buffer.data(), buffer.size()); } while(errno == EINTR);
         if(!br) {
             break;
         }
@@ -4640,11 +4650,9 @@ GHC_INLINE void last_write_time(const path& p, file_time_type new_time, std::err
     if (!::SetFileTime(file.get(), 0, 0, &ft)) {
         ec = detail::make_system_error();
     }
-#elif defined(GHC_OS_APPLE) && \
-    (__MAC_OS_X_VERSION_MIN_REQUIRED && __MAC_OS_X_VERSION_MIN_REQUIRED < 101300 \
-     || __IPHONE_OS_VERSION_MIN_REQUIRED && __IPHONE_OS_VERSION_MIN_REQUIRED < 110000 \
-     || __TV_OS_VERSION_MIN_REQUIRED && __TVOS_VERSION_MIN_REQUIRED < 110000 \
-     || __WATCH_OS_VERSION_MIN_REQUIRED && __WATCHOS_VERSION_MIN_REQUIRED < 40000)
+#elif defined(GHC_OS_MACOS) && \
+    (__MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_13) || (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_11_0) || \
+    (__TV_OS_VERSION_MIN_REQUIRED < __TVOS_11_0) || (__WATCH_OS_VERSION_MIN_REQUIRED < __WATCHOS_4_0)
     struct ::stat fs;
     if (::stat(p.c_str(), &fs) == 0) {
         struct ::timeval tv[2];
@@ -5696,7 +5704,7 @@ public:
         , _entry(nullptr)
     {
         if (!path.empty()) {
-            do { _dir = ::opendir(path.native().c_str()); } while(errno == EINTR && !_dir);
+            do { _dir = ::opendir(path.native().c_str()); } while(errno == EINTR);
             if (!_dir) {
                 auto error = errno;
                 _base = filesystem::path();
@@ -5723,7 +5731,7 @@ public:
             do {
                 skip = false;
                 errno = 0;
-                do { _entry = ::readdir(_dir); } while(errno == EINTR && !_entry);
+                do { _entry = ::readdir(_dir); } while(errno == EINTR);
                 if (_entry) {
                     _dir_entry._path = _base;
                     _dir_entry._path.append_name(_entry->d_name);
