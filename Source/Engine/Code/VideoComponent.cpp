@@ -55,6 +55,7 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <format>
 
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
@@ -442,7 +443,8 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
 
     if (of.is_open()) {
       std::stringstream ss;
-      ss << "[" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count() << "] ";
+      //ss << "[" << format("{:%Y%m%d%H%M}", chrono::floor<chrono::milliseconds>(chrono::system_clock::now())) << "] ";
+      ss << "[" << format("{:%D %T %Z}", chrono::floor<chrono::milliseconds>(chrono::system_clock::now())) << "] ";
       ss << message << '\n';
       of << ss.str();
     }
