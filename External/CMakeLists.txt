@@ -879,12 +879,12 @@ externalproject_add(Target_fmt
 )
 
 
-create_target(Target_ghcfilesystem https://github.com/gulrak/filesystem.git v1.5.14)
-externalproject_add(Target_ghcfilesystem
+create_target(Target_ghc https://github.com/gulrak/filesystem.git v1.5.14)
+externalproject_add(Target_ghc
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ghcfilesystem
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ghc
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
