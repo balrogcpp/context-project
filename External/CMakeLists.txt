@@ -466,7 +466,7 @@ externalproject_add(Target_tinyxml2
 )
 
 
-create_target(Target_imgui https://github.com/ocornut/imgui.git v1.91.9b)
+create_target(Target_imgui https://github.com/ocornut/imgui.git v1.92.4)
 externalproject_add(Target_imgui
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}

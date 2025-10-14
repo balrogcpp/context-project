@@ -19,7 +19,8 @@ index 7f6a28c..8610098 100644
 +++ b/CMake/Templates/imconfig.h
 @@ -1,5 +1,6 @@
  #pragma once
- #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+-#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
++//#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 +#define IMGUI_USE_WCHAR32
  #include <OgreOverlayPrerequisites.h>
  #define IMGUI_API _OgreOverlayExport
