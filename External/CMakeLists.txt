@@ -183,7 +183,7 @@ externalproject_add(Target_Bullet
 )
 
 
-create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.2 openal-1.24.2.patch)
+create_target_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.3 openal-1.24.2.patch)
 if (WIN32 OR ANDROID OR IOS)
     set(OPENAL_LIBTYPE "STATIC")
 else ()
@@ -689,7 +689,7 @@ externalproject_add(Target_Lua
 )
 
 
-create_target(Target_sol2 https://github.com/ThePhD/sol2.git v3.3.1)
+create_target(Target_sol2 https://github.com/ThePhD/sol2.git v3.5.0)
 externalproject_add(Target_sol2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -721,7 +721,7 @@ externalproject_add(Target_sol2
 )
 
 
-create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.5.1 openssl-3.5.1.patch)
+create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.0 openssl-3.5.1.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -819,7 +819,7 @@ externalproject_add(Target_cpr
 )
 
 
-create_target(Target_http https://github.com/yhirose/cpp-httplib.git v0.23.1)
+create_target(Target_http https://github.com/yhirose/cpp-httplib.git v0.27.0)
 externalproject_add(Target_http
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -848,7 +848,7 @@ externalproject_add(Target_http
 )
 
 
-create_target(Target_fmt https://github.com/fmtlib/fmt.git 11.2.0)
+create_target(Target_fmt https://github.com/fmtlib/fmt.git 12.1.0)
 externalproject_add(Target_fmt
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -908,7 +908,7 @@ externalproject_add(Target_ghc
 )
 
 
-create_target(Target_SQLiteCpp https://github.com/SRombauts/SQLiteCpp.git 3.3.1)
+create_target(Target_SQLiteCpp https://github.com/SRombauts/SQLiteCpp.git 3.3.3)
 externalproject_add(Target_SQLiteCpp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -972,7 +972,7 @@ externalproject_add(Target_fkyaml
 )
 
 
-create_target(Target_ryaml https://github.com/biojppm/rapidyaml.git v0.9.0)
+create_target(Target_ryaml https://github.com/biojppm/rapidyaml.git v0.10.0)
 externalproject_add(Target_ryaml
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -1030,7 +1030,7 @@ externalproject_add(Target_toml
 )
 
 
-create_target(Target_json https://github.com/nlohmann/json.git v3.11.3)
+create_target(Target_json https://github.com/nlohmann/json.git v3.12.0)
 externalproject_add(Target_json
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
