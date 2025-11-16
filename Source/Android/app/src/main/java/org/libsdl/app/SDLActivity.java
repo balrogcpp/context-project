@@ -345,7 +345,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             errorMsgBrokenLib = e.getMessage();
         }
 
-        /*if (!mBrokenLibraries) {
+        if (!mBrokenLibraries) {
             String expected_version = String.valueOf(SDL_MAJOR_VERSION) + "." +
                                       String.valueOf(SDL_MINOR_VERSION) + "." +
                                       String.valueOf(SDL_MICRO_VERSION);
@@ -354,7 +354,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                 mBrokenLibraries = true;
                 errorMsgBrokenLib = "SDL C/Java version mismatch (expected " + expected_version + ", got " + version + ")";
             }
-        }*/
+        }
 
         if (mBrokenLibraries) {
             mSingleton = this;
