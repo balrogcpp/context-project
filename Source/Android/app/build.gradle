@@ -2,9 +2,9 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'org.libsdl.app'
-    buildToolsVersion '30.0.3'
+    buildToolsVersion '36.1.0'
     compileSdkVersion 33
-    ndkVersion '28.0.13004108'
+    ndkVersion '29.0.14206865'
 
     compileOptions {
       sourceCompatibility 1.8
@@ -55,7 +55,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version '3.30.3'
+            version '3.22.1+'
             path '../../../CMakeLists.txt'
         }
     }
