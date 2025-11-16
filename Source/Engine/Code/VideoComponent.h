@@ -81,7 +81,7 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   void OnSizeChanged(int x, int y, uint32_t id) override;
   void OnEvent(const SDL_Event& event) override;
 
-  //  struct Window {
+  /// struct Window
   std::string title = "My Window";
   bool fullscreen = false;
   int display = 0;
@@ -90,7 +90,6 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   uint32_t sdlFlags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
   int vsyncInt = 1;
   uint32_t id;
-  //  };
 
   SDL_Window* sdlWindow = nullptr;
   SDL_GLContext glContext = nullptr;
