@@ -9,8 +9,8 @@ WORKDIR ${CONTEXT_HOME}
 
 
 # cmake ninja upx
-ARG CMAKE_VERSION=3.29.6
-ARG NINJA_VERSION=1.12.1
+ARG CMAKE_VERSION=4.1.3
+ARG NINJA_VERSION=1.13.2
 RUN apt-get update \
     && apt-get -y install --no-install-recommends git strip-nondeterminism \
     && apt-get clean \
