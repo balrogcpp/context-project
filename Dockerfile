@@ -66,11 +66,11 @@ RUN mkdir build && cd build \
 # android
 #ARG ANDROID_CMD_VERSION=13114758
 #ARG ANDROID_JAVA_MAJOR=17
-#ENV ANDROID_HOME=/opt/android-sdk
+#ENV ANDROID_HOME=/usr/local/android-sdk
 #RUN apt-get update \
 #    && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
 #    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
-#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
+#    && curl -fsSL "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip" -o tools.zip \
 #    && unzip -q tools.zip && rm tools.zip \
 #    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
 #    && cd ${CONTEXT_HOME} && mkdir build && cd build \

@@ -157,9 +157,9 @@ RUN apt-get update \
 #    && curl -fsSL -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
 #    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm -f cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
 #    && export PATH="${CMAKE_HOME}/bin:${PATH}" \
-#    && git clone https://github.com/tpoechtrager/osxcross.git \
+#    && curl -fsSL https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -o osxcross.zip \
+#    && unzip osxcross.zip && rm -f osxcross.zip && mv osxcross-${OSXCROSS_GIT_HASH} osxcross \
 #    && cd osxcross \
-#    && git checkout ${OSXCROSS_GIT_HASH} \
 #    && cp -r ../tarballs . && rm -rf ../tarballs \
 #    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
 #    && rm -rf ../osxcross \
