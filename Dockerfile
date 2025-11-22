@@ -17,9 +17,9 @@ RUN apt-get update \
     && git config --global http.postBuffer 1048576000 \
     && git config --global https.postBuffer 1048576000 \
     && cd /tmp \
-    && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
+    && curl -fsSL -O https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
     && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
-    && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+    && curl -fsSL -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr/local && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh
 
 
@@ -64,7 +64,7 @@ RUN mkdir build && cd build \
 
 
 # android
-#ARG ANDROID_CMD_VERSION=11076708
+#ARG ANDROID_CMD_VERSION=13114758
 #ARG ANDROID_JAVA_MAJOR=17
 #ENV ANDROID_HOME=/opt/android-sdk
 #RUN apt-get update \

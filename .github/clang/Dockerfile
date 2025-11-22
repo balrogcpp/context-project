@@ -7,7 +7,7 @@ WORKDIR /var/build
 
 # git zip etc.
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends wget curl ca-certificates gnupg2 apt-transport-https software-properties-common \
+    && apt-get -y install --no-install-recommends curl ca-certificates gnupg2 apt-transport-https software-properties-common \
     && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
     && apt-get update \
     && apt-get -y install --no-install-recommends zip unzip xz-utils make autoconf file patch \
@@ -17,30 +17,30 @@ RUN apt-get update \
 
 
 ARG CLANG_MAJOR=18
-ARG STDLIB_APT_MAJOR=9
+ARG STDLIB_APT_MAJOR=13
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
-    && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
     && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-${STDLIB_APT_MAJOR}-dev libstdc++-${STDLIB_APT_MAJOR}-dev \
     && sed -i '$d' /etc/apt/sources.list \
     && apt-get update \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1000 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 1000 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1000 \
-    && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} 1000 \
-    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} 1000
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1800 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1800 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 1800 \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1800 \
+    && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} 1800 \
+    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} 1800
 ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 
 # gcc and mingw
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
-ARG GNU_MIRROR=https://ftp.gnu.org/gnu
+ARG GNU_MIRROR=https://sourceware.org/pub
 ARG BINUTILS_VERSION=2.44
-ARG MINGW_VERSION=12.0.0
-ARG GCC_VERSION=14.2.0
+ARG MINGW_VERSION=13.0.0
+ARG GCC_VERSION=15.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=9
 RUN apt-get update \
@@ -48,10 +48,10 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
     && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 1000 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
-    && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -q -O - | tar -xz \
-    && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -q -O - | tar -xJ \
-    && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -q -O - | tar -xJ \
-    && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -q -O - | tar -xj \
+    && curl -fsSL https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz | tar -xz \
+    && curl -fsSL ${GNU_MIRROR}/binutils/releases/binutils-${BINUTILS_VERSION}.tar.xz | tar -xJ \
+    && curl -fsSL ${GNU_MIRROR}/gcc/releases/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz | tar -xJ \
+    && curl -fsSL https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download  | tar -xj \
     && export CPPFLAGS='-g0' \
     && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \
@@ -149,12 +149,12 @@ RUN apt-get update \
 # apple
 #COPY ./tarballs ./tarballs
 #ARG OSXCROSS_ROOT=/usr/local/osxcross
-#ARG OSXCROSS_GIT_HASH=611675b5179c4a9a5e33eac6c376ed8f986bab21
-#ARG CMAKE_VERSION=3.29.6
+#ARG OSXCROSS_GIT_HASH=121ce150c7857a9474dfff8a8e431482806b3e1b
+#ARG CMAKE_VERSION=4.1.3
 #ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 #RUN apt-get update \
 #    && apt-get -y install --no-install-recommends git python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
-#    && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+#    && curl -fsSL -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
 #    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm -f cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
 #    && export PATH="${CMAKE_HOME}/bin:${PATH}" \
 #    && git clone https://github.com/tpoechtrager/osxcross.git \
