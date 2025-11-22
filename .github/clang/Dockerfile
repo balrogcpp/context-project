@@ -38,11 +38,12 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://sourceware.org/pub
-ARG BINUTILS_VERSION=2.44
+# 2.38;2.39;2.40 are broken
+ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=13.0.0
-ARG GCC_VERSION=15.2.0
+ARG GCC_VERSION=14.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
-ARG GCC_APT_MAJOR=9
+ARG GCC_APT_MAJOR=11
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
