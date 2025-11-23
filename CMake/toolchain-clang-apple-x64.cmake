@@ -30,9 +30,13 @@ macro(osxcross_getconf VAR)
 endmacro()
 
 osxcross_getconf(OSXCROSS_HOST)
+string(REPLACE "\"" "" OSXCROSS_HOST ${OSXCROSS_HOST})
 osxcross_getconf(OSXCROSS_TARGET_DIR)
+string(REPLACE "\"" "" OSXCROSS_TARGET_DIR ${OSXCROSS_TARGET_DIR})
 osxcross_getconf(OSXCROSS_TARGET)
+string(REPLACE "\"" "" OSXCROSS_TARGET ${OSXCROSS_TARGET})
 osxcross_getconf(OSXCROSS_SDK)
+string(REPLACE "\"" "" OSXCROSS_SDK ${OSXCROSS_SDK})
 
 set(CMAKE_CROSSCOMPILING 1)
 set(CMAKE_SYSTEM_NAME "Darwin")

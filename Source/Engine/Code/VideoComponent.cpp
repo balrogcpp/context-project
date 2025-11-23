@@ -55,7 +55,6 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
-#include <format>
 
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
@@ -435,6 +434,23 @@ class VideoComponent::MutedLogListener final : public Ogre::LogListener {
 };
 
 #if !defined(__ANDROID__)
+static string printTime() {
+  using namespace std::chrono;
+
+  auto now       = system_clock::now();
+  auto now_sec   = floor<seconds>(now);
+  auto now_ms    = floor<milliseconds>(now);
+  auto ms_part   = (now_ms - now_sec).count(); // 0–999
+
+  std::time_t t = system_clock::to_time_t(now_sec);
+  std::tm tm = *std::localtime(&t);
+
+  std::stringstream ss;
+  ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << '.' << std::setw(3) << std::setfill('0') << ms_part;
+
+  return ss.str();
+}
+
 class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
@@ -442,11 +458,7 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
     static std::ofstream of(logName);
 
     if (of.is_open()) {
-      std::stringstream ss;
-      //ss << "[" << format("{:%Y%m%d%H%M}", chrono::floor<chrono::milliseconds>(chrono::system_clock::now())) << "] ";
-      ss << "[" << format("{:%D %T %Z}", chrono::floor<chrono::milliseconds>(chrono::system_clock::now())) << "] ";
-      ss << message << '\n';
-      of << ss.str();
+      of << '[' << printTime() << "] " << message << '\n';
     }
 
 #if defined(_DEBUG)

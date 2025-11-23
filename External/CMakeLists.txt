@@ -94,7 +94,7 @@ macro(create_target TARGET REPO TAG)
 endmacro()
 
 
-create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.10 sdl2-2.32.0.patch)
+create_target_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.10 sdl2-2.32.10.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -1152,6 +1152,7 @@ add_external_target(OpenAL)
 add_external_target_static(SDL2)
 add_external_target_static(Bullet)
 add_external_target_static(Vorbis)
+add_external_target_static(fmt)
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_target_static(OGRE)
