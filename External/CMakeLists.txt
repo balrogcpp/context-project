@@ -917,7 +917,7 @@ externalproject_add(Target_fmt
         -DFMT_OS=ON
         -DFMT_MODULE=OFF
         -DFMT_SYSTEM_HEADERS=ON
-        -DFMT_UNICODE=OFF
+        -DFMT_UNICODE=ON
 )
 
 
