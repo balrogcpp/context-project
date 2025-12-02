@@ -136,7 +136,7 @@ externalproject_add(Target_SDL2
 )
 
 
-create_target(Target_SDL3 https://github.com/libsdl-org/SDL.git release-3.2.26)
+create_target(Target_SDL3 https://github.com/libsdl-org/SDL.git release-3.2.28)
 externalproject_add(Target_SDL3
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
