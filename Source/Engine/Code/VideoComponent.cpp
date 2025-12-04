@@ -56,14 +56,25 @@
 #include <iomanip>
 #include <iostream>
 
-#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
-    || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
-    || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
-#include <filesystem>
-namespace fs = std::filesystem;
+// format is not available on apple
+#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 202002L) \
+    || (defined(__cplusplus) && __cplusplus >= 202002L && !defined(__APPLE__)))
+#include <format>
 #else
-#include "ghc/filesystem.hpp"
-namespace fs = ghc::filesystem;
+  #define FMT_HEADER_ONLY 1
+  #include "fmt/format.h"
+  using namespace fmt;
+#endif
+
+// filesystem is not available on apple and android
+#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
+    || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__) && !defined(__ANDROID__)) \
+    || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
+  #include <filesystem>
+  namespace fs = std::filesystem;
+#else
+  #include "ghc/filesystem.hpp"
+  namespace fs = ghc::filesystem;
 #endif
 #if defined(__APPLE__)
 #include <mach-o/dyld.h>
@@ -434,6 +445,7 @@ class VideoComponent::MutedLogListener final : public Ogre::LogListener {
 };
 
 #if !defined(__ANDROID__)
+// alternative timestamp printing function
 static string printTime() {
   using namespace std::chrono;
 
@@ -458,12 +470,8 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
     static std::ofstream of(logName);
 
     if (of.is_open()) {
-      of << '[' << printTime() << "] " << message << '\n';
+        of << format("[{:%Y%m%d%H%M%S}] {} \n", chrono::floor<chrono::milliseconds>(chrono::system_clock::now()), message);
     }
-
-#if defined(_DEBUG)
-    printf("%s\n", message.c_str());
-#endif
   }
 };
 #endif
