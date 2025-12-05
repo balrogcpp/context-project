@@ -59,7 +59,7 @@
 // format is not available on apple
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 202002L) \
     || (defined(__cplusplus) && __cplusplus >= 202002L && !defined(__APPLE__)))
-#include <format>
+  #include <format>
 #else
   #define FMT_HEADER_ONLY 1
   #include "fmt/format.h"
@@ -470,7 +470,7 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
     static std::ofstream of(logName);
 
     if (of.is_open()) {
-        of << format("[{:%Y%m%d%H%M%S}] {} \n", chrono::floor<chrono::milliseconds>(chrono::system_clock::now()), message);
+        of << format("[{:%Y%m%d%H%M%S}] {}\n", chrono::floor<chrono::milliseconds>(chrono::system_clock::now()), message);
     }
   }
 };
