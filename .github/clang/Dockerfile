@@ -17,6 +17,7 @@ RUN apt-get update \
 
 
 ARG CLANG_MAJOR=18
+ARG CLANG_VERSION=1800
 ARG STDLIB_APT_MAJOR=13
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
@@ -25,12 +26,12 @@ RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERS
     && sed -i '$d' /etc/apt/sources.list \
     && apt-get update \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 1800 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 1800 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
-    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 1800 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 1800 \
-    && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} 1800 \
-    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} 1800
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} ${CLANG_VERSION} --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} ${CLANG_VERSION} --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} ${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} ${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} ${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} ${CLANG_VERSION}
 ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 
@@ -41,13 +42,15 @@ ARG GNU_MIRROR=https://sourceware.org/pub
 ARG BINUTILS_VERSION=2.44
 ARG MINGW_VERSION=13.0.0
 ARG GCC_VERSION=14.2.0
+ARG GCC_VERSION_DEC=1420
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=13
+ARG GCC_APT_MAJOR_DEC=1300
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 1300 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} ${GCC_APT_MAJOR_DEC} --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
     && curl -fsSL https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz | tar -xz \
     && curl -fsSL ${GNU_MIRROR}/binutils/releases/binutils-${BINUTILS_VERSION}.tar.xz | tar -xJ \
     && curl -fsSL ${GNU_MIRROR}/gcc/releases/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz | tar -xJ \
@@ -140,7 +143,7 @@ RUN apt-get update \
     && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
     && apt-get -y autoremove --purge \
     && apt-get -y clean \
-    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 1420 \
+    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc ${GCC_VERSION_DEC} \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
