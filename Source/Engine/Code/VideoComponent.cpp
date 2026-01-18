@@ -320,7 +320,7 @@ VideoComponent::VideoComponent()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       id(0),
-      shadowEnabled(true),
+      shadowEnabled(false),
       shadowTexCount(8),
       pssmSplitCount(2),
       pssmSplitPadding(1.0),
