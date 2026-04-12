@@ -27,6 +27,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clan
         string(APPEND CMAKE_CXX_FLAGS " -D_DEBUG -DDEBUG")
     elseif (${CMAKE_BUILD_TYPE_LOWER} MATCHES "deb")
         string(APPEND CMAKE_CXX_FLAGS " -DDEBUG")
+    elseif (${CMAKE_BUILD_TYPE_LOWER} MATCHES "rel")
+        string(APPEND CMAKE_CXX_FLAGS " -DNDEBUG")
     endif ()
 
     if (ENABLE_FASTMATH)
@@ -55,7 +57,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clan
         endif ()
         if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64")
             if (ENABLE_AVX)
-                string(APPEND CMAKE_CXX_FLAGS " -mavx2")
+                string(APPEND CMAKE_CXX_FLAGS " -ftree-vectorize -mavx2")
             endif ()
         endif ()
     endif ()
@@ -79,7 +81,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clan
     endif ()
 
 elseif (MSVC)
-    string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /utf-8 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
+    string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /utf-8 /Zc:__cplusplus /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
 
     if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "relwithdebinfo")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:CONSOLE")
@@ -87,6 +89,8 @@ elseif (MSVC)
 
     if (${CMAKE_BUILD_TYPE_LOWER} MATCHES "deb")
         string(APPEND CMAKE_CXX_FLAGS " /DDEBUG")
+    elseif (${CMAKE_BUILD_TYPE_LOWER} MATCHES "rel")
+        string(APPEND CMAKE_CXX_FLAGS " /DNDEBUG")
     endif()
 
     if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "release")
