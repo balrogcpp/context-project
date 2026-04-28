@@ -88,8 +88,8 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
   inline void UnregDeviceListener(DeviceListener *p) noexcept {
-    auto it = std::find(devListeners.begin(), devListeners.end(), p), end = devListeners.end();
-    if (it != end) {
+    auto end = devListeners.end();
+    if (auto it = std::find(devListeners.begin(), devListeners.end(), p); it != end) {
       std::swap(it, --end);
       devListeners.pop_back();
     }
@@ -109,9 +109,9 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     }
   }
 
-  inline void UnregWindowListener(WindowListener *p) noexcept {
-    auto it = std::find(winListeners.begin(), winListeners.end(), p), end = winListeners.end();
-    if (it != end) {
+  inline void UnregWindowListener(const WindowListener *p) noexcept {
+    auto end = winListeners.end();
+    if (auto it = std::find(winListeners.begin(), winListeners.end(), p); it != end) {
       std::swap(it, --end);
       winListeners.pop_back();
     }
@@ -120,23 +120,32 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   /// Called once per frame, sent callback message to listeners
   inline void Capture() noexcept {
     SDL_Event event;
+
     while (SDL_PollEvent(&event)) {
-      for (auto &it : winListeners) it->OnEvent(event);
+      for (const auto &it : winListeners) {
+        it->OnEvent(event);
+      }
 
       switch (event.type) {
         case SDL_KEYUP:
         case SDL_KEYDOWN: {
-          for (auto &it : devListeners) it->OnKeyEvent(event.key.keysym.scancode, event.type == SDL_KEYDOWN);
+          for (const auto &it : devListeners) {
+            it->OnKeyEvent(event.key.keysym.scancode, event.type == SDL_KEYDOWN);
+          }
           break;
         }
 
         case SDL_TEXTINPUT: {
-          for (auto &it : devListeners) it->OnTextInput(event.text.text);
+          for (const auto &it : devListeners) {
+            it->OnTextInput(event.text.text);
+          }
           break;
         }
 
         case SDL_MOUSEMOTION: {
-          for (auto it : devListeners) it->OnMouseMotion(event.motion.xrel, event.motion.yrel);
+          for (const auto &it : devListeners) {
+            it->OnMouseMotion(event.motion.xrel, event.motion.yrel);
+          }
           break;
         }
 
@@ -160,47 +169,63 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
               break;
             }
           }
-          for (auto it : devListeners) it->OnMouseButton(mouse_button, event.type == SDL_MOUSEBUTTONDOWN);
+          for (const auto &it : devListeners) {
+            it->OnMouseButton(mouse_button, event.type == SDL_MOUSEBUTTONDOWN);
+          }
           break;
         }
 
         case SDL_MOUSEWHEEL: {
-          int wheel_x = (event.wheel.x > 0) ? 1.0f : (event.wheel.x < 0) ? -1.0f : 0.0f;
-          int wheel_y = (event.wheel.y > 0) ? 1.0f : (event.wheel.y < 0) ? -1.0f : 0.0f;
-          for (auto &it : devListeners) it->OnMouseWheel(wheel_x, wheel_y);
+          const int wheel_x = (event.wheel.x > 0) ? 1 : (event.wheel.x < 0) ? -1 : 0;
+          const int wheel_y = (event.wheel.y > 0) ? 1 : (event.wheel.y < 0) ? -1 : 0;
+          for (const auto &it : devListeners) {
+            it->OnMouseWheel(wheel_x, wheel_y);
+          }
           break;
         }
 
         case SDL_CONTROLLERAXISMOTION: {
-          for (auto &it : devListeners) it->OnGamepadAxis(event.caxis.which, event.caxis.axis, event.caxis.value);
+          for (const auto &it : devListeners) {
+            it->OnGamepadAxis(event.caxis.which, event.caxis.axis, event.caxis.value);
+          }
           break;
         }
 
         case SDL_CONTROLLERBUTTONDOWN:
         case SDL_CONTROLLERBUTTONUP: {
-          for (auto &it : devListeners) it->OnGamepadButton(event.cbutton.which, event.cbutton.button, event.type == SDL_CONTROLLERBUTTONDOWN);
+          for (const auto &it : devListeners) {
+            it->OnGamepadButton(event.cbutton.which, event.cbutton.button, event.type == SDL_CONTROLLERBUTTONDOWN);
+          }
           break;
         }
 
         case SDL_QUIT: {
-          for (auto &it : winListeners) it->OnQuit();
+          for (const auto &it : winListeners) {
+            it->OnQuit();
+          }
           break;
         }
 #ifndef __ANDROID__
         case SDL_WINDOWEVENT: {
           switch (event.window.event) {
             case SDL_WINDOWEVENT_FOCUS_LOST: {
-              for (auto &it : winListeners) it->OnFocusLost();
+              for (const auto &it : winListeners) {
+                it->OnFocusLost();
+              }
               break;
             }
 
             case SDL_WINDOWEVENT_FOCUS_GAINED: {
-              for (auto &it : winListeners) it->OnFocusGained();
+              for (const auto &it : winListeners) {
+                it->OnFocusGained();
+              }
               break;
             }
 
             case SDL_WINDOWEVENT_SIZE_CHANGED: {
-              for (auto &it : winListeners) it->OnSizeChanged(event.window.data1, event.window.data2, event.window.windowID);
+              for (const auto &it : winListeners) {
+                it->OnSizeChanged(event.window.data1, event.window.data2, event.window.windowID);
+              }
               break;
             }
           }
@@ -228,18 +253,23 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     switch (event->type) {
       case SDL_APP_WILLENTERBACKGROUND:
       case SDL_APP_DIDENTERBACKGROUND: {
-        for (auto &it : winListeners) it->OnFocusLost();
+        for (const auto &it : winListeners) {
+          it->OnFocusLost();
+        }
         return 0;
       }
 
       case SDL_APP_WILLENTERFOREGROUND:
       case SDL_APP_DIDENTERFOREGROUND: {
-        for (auto &it : winListeners) it->OnFocusGained();
+        for (const auto &it : winListeners) {
+          it->OnFocusGained();
+        }
         return 0;
       }
 
-      default:
+      default: {
         return 1;
+      }
     }
   }
 };
