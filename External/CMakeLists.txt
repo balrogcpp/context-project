@@ -141,7 +141,7 @@ externalproject_add(Target_SDL3
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL3
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
@@ -198,6 +198,7 @@ externalproject_add(Target_Bullet
         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
         -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
@@ -218,9 +219,6 @@ externalproject_add(Target_Bullet
         -DBUILD_SHARED_LIBS=OFF
         -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=OFF
         -DINSTALL_LIBS=ON
-        -DUSE_MSVC_SSE2=ON
-        -DUSE_MSVC_AVX=ON
-        -DUSE_MSVC_FAST_FLOATINGPOINT=ON
         -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=OFF
 )
 
@@ -362,7 +360,7 @@ externalproject_add(Target_Theora
 )
 
 
-create_target_patch(Target_assimp https://github.com/assimp/assimp.git v6.0.4 assimp-6.0.0.patch)
+create_target_patch(Target_assimp https://github.com/assimp/assimp.git v6.0.5 assimp-6.0.0.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -508,7 +506,7 @@ externalproject_add(Target_tinyxml2
 )
 
 
-create_target(Target_imgui https://github.com/ocornut/imgui.git v1.92.7)
+create_target(Target_imgui https://github.com/ocornut/imgui.git v1.92.8)
 externalproject_add(Target_imgui
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -763,7 +761,7 @@ externalproject_add(Target_sol2
 )
 
 
-create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.0 openssl-3.5.1.patch)
+create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -791,7 +789,7 @@ externalproject_add(Target_OpenSSL
         -DOPENSSL_INSTALL=ON
         -DOPENSSL_INSTALL_CERT=OFF
         -DBUILD_SHARED_LIBS=OFF
-        -DOPENSSL_TARGET_VERSION=3.5.1
+        -DOPENSSL_TARGET_VERSION=3.6.2
         -DOPENSSL_USE_CCACHE=OFF
         -DOPENSSL_TEST=OFF
         -DOPENSSL_NO_ASM=ON
@@ -1210,7 +1208,7 @@ externalproject_add(Target_googletest
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DBUILD_GMOCK=OFF
+        -DBUILD_GMOCK=ON
         -DBUILD_SHARED_LIBS=OFF
         -DBENCHMARK_INSTALL_TOOLS=OFF
 )
