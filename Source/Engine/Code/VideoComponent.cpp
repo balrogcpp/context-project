@@ -57,13 +57,18 @@
 #include <iostream>
 
 // format is not available on apple
-#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 202002L) \
+#if __has_include(<format>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 202002L) \
     || (defined(__cplusplus) && __cplusplus >= 202002L && !defined(__APPLE__)))
+  #include <chrono>
   #include <format>
+  using std::format;
+  using std::format_to;
 #else
   #define FMT_HEADER_ONLY 1
+  #include "fmt/chrono.h"
   #include "fmt/format.h"
-  using namespace fmt;
+  using fmt::format;
+  using fmt::format_to;
 #endif
 
 // filesystem is not available on apple and android
@@ -76,6 +81,7 @@
   #include "ghc/filesystem.hpp"
   namespace fs = ghc::filesystem;
 #endif
+
 #if defined(__APPLE__)
 #include <mach-o/dyld.h>
 #elif defined(_WIN32)
@@ -425,14 +431,18 @@ void VideoComponent::CheckGPU() {
 
 void VideoComponent::InitSDL() {
   int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-  if (!result) LogError("SDL_Init failed", SDL_GetError());
+  if (!result) {
+    LogError("SDL_Init failed", SDL_GetError());
+  }
   ASSERTION(!result, "Failed to init SDL");
 
 #if !defined(__ANDROID__)
   string path = FindPath("gamecontrollerdb.txt", 1);
   if (!path.empty()) {
     result = SDL_GameControllerAddMappingsFromFile(path.c_str());
-    if (result == -1) LogError("gamecontrollerdb.txt not found", SDL_GetError());
+    if (result == -1) {
+      LogError("gamecontrollerdb.txt not found", SDL_GetError());
+    }
     ASSERTION(result != -1, "gamecontrollerdb.txt not found");
   }
 #endif
@@ -445,24 +455,6 @@ class VideoComponent::MutedLogListener final : public Ogre::LogListener {
 };
 
 #if !defined(__ANDROID__)
-// alternative timestamp printing function
-static string printTime() {
-  using namespace std::chrono;
-
-  auto now       = system_clock::now();
-  auto now_sec   = floor<seconds>(now);
-  auto now_ms    = floor<milliseconds>(now);
-  auto ms_part   = (now_ms - now_sec).count(); // 0–999
-
-  std::time_t t = system_clock::to_time_t(now_sec);
-  std::tm tm = *std::localtime(&t);
-
-  std::stringstream ss;
-  ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << '.' << std::setw(3) << std::setfill('0') << ms_part;
-
-  return ss.str();
-}
-
 class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
@@ -470,7 +462,7 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
     static std::ofstream of(logName);
 
     if (of.is_open()) {
-        of << format("[{:%Y%m%d%H%M%S}] {}\n", chrono::floor<chrono::milliseconds>(chrono::system_clock::now()), message);
+      of << format("{:%Y-%m-%d %H:%M:%S}: {}\n", chrono::floor<chrono::milliseconds>(chrono::system_clock::now()), message);
     }
   }
 };
@@ -489,11 +481,6 @@ void VideoComponent::InitOgreRoot() {
   ogreLogManager = std::make_unique<Ogre::LogManager>();
   ogreLogManager->createLog(ogreLogFile, false, true, true);
   ogreLogManager->getDefaultLog()->addListener(new DefaultLogListener());
-
-  auto tc = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-  std::stringstream ss;
-  ss << std::put_time(std::localtime(&tc), "%F %T %Z");
-  ogreLogManager->getDefaultLog()->logMessage(ss.str(), Ogre::LML_NORMAL);
 #endif
 
   ogreRoot = new Ogre::Root("", "", "");
