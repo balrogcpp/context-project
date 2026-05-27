@@ -762,9 +762,24 @@ externalproject_add(Target_sol2
 )
 
 
+externalproject_add(Target_strawberryperl
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        URL https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
+        URL_HASH SHA256=32d83be90cf04b807cfb9477482bc36302cdee6f5b04cf57e81adecbd8f07898
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_strawberryperl
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_strawberryperl/perl ${DEPS_ROOT}/perl
+)
+
+
 create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
+        DEPENDS
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
