@@ -775,11 +775,13 @@ externalproject_add(Target_strawberryperl
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_strawberryperl/perl ${DEPS_ROOT}/perl
 )
 
-
+if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+    set(OPENSSL_DEPS Target_strawberryperl)
+endif ()
 create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
-        DEPENDS
+        DEPENDS ${OPENSSL_DEPS}
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
@@ -792,7 +794,7 @@ externalproject_add(Target_OpenSSL
         -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/perl
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
