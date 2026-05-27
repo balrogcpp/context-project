@@ -766,8 +766,9 @@ externalproject_add(Target_strawberryperl
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        URL https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
-        URL_HASH SHA256=32d83be90cf04b807cfb9477482bc36302cdee6f5b04cf57e81adecbd8f07898
+        URL https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_5382_32bit/strawberry-perl-5.38.2.1-32bit-portable.zip
+        URL_HASH SHA256=c09a06d1e10e81a70b5f251938303b425680dad829ff738501ce96de99c640d9
+        DOWNLOAD_EXTRACT_TIMESTAMP true
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_strawberryperl
         PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
