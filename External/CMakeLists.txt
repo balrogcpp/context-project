@@ -631,7 +631,7 @@ externalproject_add(Target_OGRE
 
 externalproject_add(Target_OgreAudio
         EXCLUDE_FROM_ALL true
-        DEPENDS
+        DEPENDS Target_OGRE Target_Vorbis
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreAudio
@@ -665,7 +665,7 @@ externalproject_add(Target_OgreAudio
 
 externalproject_add(Target_OgreProcedural
         EXCLUDE_FROM_ALL true
-        DEPENDS
+        DEPENDS Target_OGRE
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural
@@ -776,10 +776,11 @@ externalproject_add(Target_strawberryperl
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_strawberryperl/perl ${DEPS_ROOT}/perl
 )
 
+
+create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
 if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
     set(OPENSSL_DEPS Target_strawberryperl)
 endif ()
-create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         DEPENDS ${OPENSSL_DEPS}

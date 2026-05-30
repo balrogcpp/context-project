@@ -107,9 +107,9 @@
 using namespace std;
 
 namespace {
-
 inline static void ParseSDLError(bool result, const char *message = "") {
-  if (!result) LogError(message, SDL_GetError());
+  if (!result)
+    LogError(message, SDL_GetError());
 }
 
 #if !defined(__ANDROID__)
@@ -140,13 +140,14 @@ std::string FindPath(const std::string &path, int depth = 0) {
   std::string buffer = GetBinaryDir().append(path);
 
   for (int i = 0; i <= depth; i++) {
-    if (fs::exists(result))
+    if (fs::exists(result)) {
       return fs::canonical(result).string();
-    else
+    } else {
       result = std::string("../").append(result);
+    }
   }
 
-  return "";
+  return {};
 }
 
 void ScanLocation(const string &path, const string &groupName) {
@@ -410,7 +411,7 @@ void VideoComponent::CheckGPU() {
 #elif defined(__ANDROID__)
   if (RenderSystemIsGLES2()) {
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
-    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC2), "ETC1 compression support required");
+    ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC2), "ETC2 compression support required");
     ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ASTC), "ASTC compression support required");
   }
 #elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
@@ -484,7 +485,6 @@ void VideoComponent::InitOgreRoot() {
 #endif
 
   ogreRoot = new Ogre::Root("", "", "");
-
   Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
 
 #if !defined(__ANDROID__)
@@ -528,7 +528,9 @@ void VideoComponent::InitOgreRoot() {
 #endif
 #if defined(OGRE_BUILD_COMPONENT_TERRAIN)
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
-  if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
+  if (!terrainGlobalOptions) {
+    terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
+  }
 #endif
 
   Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
