@@ -2,7 +2,7 @@
 <scene author="balrog" formatVersion="1.1">
     <nodes>
         <node name="Sun">
-            <direction x="40.659888" y="-50.0" z="-30.950829"/>
+            <direction x="40.659888" y="-3.0" z="-30.950829"/>
             <light name="Sun" powerScale="1" type="directional" castShadows="1"/>
         </node>
 <!--        <node name="Light0">-->
@@ -21,15 +21,15 @@
 <!--            </light>-->
 <!--        </node>-->
         <node name="Camera">
-            <position x="0" y="2" z="0"/>
-            <direction x="0.0" y="0.0" z="-1"/>
+            <position x="0" y="0" z="0"/>
+            <direction x="0.0" y="-1.0" z="0"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
             <camera fov="45" name="Camera" projectionType="perspective">
                 <clipping far="1000.0" near="0.1"/>
             </camera>
         </node>
         <node name="Helmet">
-            <position x="0" y="-2" z="-2.0"/>
+            <position x="0" y="1" z="-2.0"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
             <scale x="2" y="2" z="2"/>
             <entity meshFile="DamagedHelmet.mesh" name="Helmet2">
@@ -49,16 +49,16 @@
 <!--                </userData>-->
 <!--            </entity>-->
 <!--        </node>-->
-        <node name="Plane">
+        <!-- <node name="Plane">
             <plane name="Plane" material="Plane" width="100" height="100" distance="-1"/>
         </node>
         <node name="Plane2">
-            <plane name="Plane2" material="Water" width="200" height="200" distance="0"/>
-        </node>
+            <plane name="Plane2" material="Water" width="100" height="100" distance="0"/>
+        </node> -->
     </nodes>
-<!--   <terrainGroup>-->
-<!--       <terrain x="0" y="0" file="terrain.cfg"/>-->
-<!--   </terrainGroup>-->
+   <terrainGroup>
+       <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" density="0.4"/>
+   </terrainGroup>
 <!--    <terrainGroup>-->
 <!--        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" density="0.4" density_map="terrain2.png" trees="fir05_30.mesh"/>-->
 <!--    </terrainGroup>-->

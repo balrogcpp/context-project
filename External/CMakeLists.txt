@@ -179,6 +179,32 @@ externalproject_add(Target_SDL3
 )
 
 
+externalproject_add(Target_Qt5
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt5
+        URL https://download.qt.io/official_releases/qt/6.11/6.11.1/single/qt-everywhere-src-6.11.1.tar.xz
+        URL_HASH SHA256=252acef8c5ae68074d91cadba2ee4a83465051bbb970dd26e8f0daa0f3904e03
+        DOWNLOAD_EXTRACT_TIMESTAMP false
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        CMAKE_ARGS
+        -DCMAKE_GENERATOR=Ninja
+        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+        -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+)
+
+
 create_target(Target_Bullet https://github.com/bulletphysics/bullet3.git 3.25)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
@@ -766,10 +792,10 @@ externalproject_add(Target_strawberryperl
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_strawberryperl
         URL https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_5382_32bit/strawberry-perl-5.38.2.1-32bit-portable.zip
         URL_HASH SHA256=c09a06d1e10e81a70b5f251938303b425680dad829ff738501ce96de99c640d9
         DOWNLOAD_EXTRACT_TIMESTAMP true
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_strawberryperl
         PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
