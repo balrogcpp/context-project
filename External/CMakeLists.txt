@@ -60,10 +60,10 @@ macro(create_target_patch TARGET REPO TAG PATCH)
             execute_process(COMMAND ${GIT_EXECUTABLE} apply --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
         endif ()
     else ()
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
     endif ()
 
     execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
@@ -84,10 +84,33 @@ macro(create_target TARGET REPO TAG)
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
         endif ()
     else ()
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules --depth 1 -b ${TAG} ${REPO} ${TARGET})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
+    endif ()
+
+    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+endmacro()
+
+macro(create_target_w_modules TARGET REPO TAG GIT_MODULES)
+    execute_process(COMMAND ${GIT_EXECUTABLE} tag WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} OUTPUT_VARIABLE head_rev)
+    string(STRIP "${head_rev}" head_rev)
+    file(GLOB RESULT ${DEPS_SOURCE_LOCATION}/${TARGET})
+    list(LENGTH RESULT RES_LEN)
+    foreach(m ${GIT_MODULES})
+        list(APPEND MODULES_CFG --recurse-submodules=${m})
+    endforeach ()
+
+    if (NOT RES_LEN EQUAL 0)
+        if ("${head_rev}" MATCHES ${TAG})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        else ()
+            file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone ${MODULES_CFG} --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
+        endif ()
+    else ()
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone ${MODULES_CFG} --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
     endif ()
 
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
@@ -179,29 +202,32 @@ externalproject_add(Target_SDL3
 )
 
 
-externalproject_add(Target_Qt5
+create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtdeclarative")
+message(${DOWNLOAD_PLACEHOLDER})
+externalproject_add(Target_Qt6
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt5
-        URL https://download.qt.io/official_releases/qt/6.11/6.11.1/single/qt-everywhere-src-6.11.1.tar.xz
-        URL_HASH SHA256=252acef8c5ae68074d91cadba2ee4a83465051bbb970dd26e8f0daa0f3904e03
-        DOWNLOAD_EXTRACT_TIMESTAMP false
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -DCMAKE_GENERATOR=Ninja
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DANDROID_NDK=${ANDROID_NDK}
-        -DANDROID_ABI=${ANDROID_ABI}
-        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DQT_BUILD_EXAMPLES=OFF
+        -DQT_BUILD_TESTS=OFF
+        -DFEATURE_testlib=OFF
+        -DFEATURE_sql=OFF
+        -DFEATURE_printsupport=OFF
+        -DFEATURE_xml=OFF
+        -DFEATURE_dbus=OFF
+        -DFEATURE_concurrent=OFF
+        -DFEATURE_accessibility=OFF
 )
 
 
