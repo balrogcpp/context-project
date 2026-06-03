@@ -227,7 +227,6 @@ externalproject_add(Target_Qt6
         -DFEATURE_xml=OFF
         -DFEATURE_dbus=OFF
         -DFEATURE_concurrent=OFF
-        -DFEATURE_accessibility=OFF
 )
 
 
