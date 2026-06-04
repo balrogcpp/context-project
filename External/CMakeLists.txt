@@ -59,7 +59,7 @@ macro(create_target_patch TARGET REPO TAG PATCH)
         if ("${head_rev}" MATCHES ${TAG})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
             execute_process(COMMAND ${GIT_EXECUTABLE} reset --hard WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
-            execute_process(COMMAND ${GIT_EXECUTABLE} apply --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
+            execute_process(COMMAND ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
@@ -68,9 +68,9 @@ macro(create_target_patch TARGET REPO TAG PATCH)
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
     endif ()
 
-    execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
+    execute_process(COMMAND ${GIT_EXECUTABLE} apply -q --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
     if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
     else ()
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     endif ()
@@ -219,11 +219,15 @@ externalproject_add(Target_cpython
 )
 
 
-create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtdeclarative;qtshadertools")
-set(CMAKE_OBJECT_PATH_MAX 512)
-find_package(Python3 QUIET)
-if (WIN32 AND NOT CMAKE_CROSSCOMPILING AND NOT Python3_FOUND)
-    set(QT6_DEPS Target_cpython)
+create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtshadertools")
+if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+    find_package(Python3)
+    if (MSVC)
+        find_program(NINJA_EXECUTABLE ninja REQUIRED)
+    endif ()
+    if (NOT Python3_FOUND)
+        set(QT6_DEPS Target_cpython)
+    endif ()
 endif ()
 externalproject_add(Target_Qt6
         EXCLUDE_FROM_ALL true
@@ -233,12 +237,13 @@ externalproject_add(Target_Qt6
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_GENERATOR "Ninja"
         CMAKE_ARGS
-        -DCMAKE_GENERATOR=Ninja
+        -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/python
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DQT_BUILD_EXAMPLES=OFF
@@ -251,6 +256,7 @@ externalproject_add(Target_Qt6
         -DQT_DFEATURE_xml=OFF
         -DQT_FEATURE_dbus=OFF
         -DQT_FEATURE_concurrent=OFF
+        -DQT_FEATURE_qml_debug=OFF
 )
 
 
@@ -853,9 +859,11 @@ externalproject_add(Target_strawberryperl
 
 
 create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
-find_package(Perl QUIET)
-if (WIN32 AND NOT CMAKE_CROSSCOMPILING AND NOT Perl_FOUND)
-    set(OPENSSL_DEPS Target_strawberryperl)
+if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+    find_package(Perl)
+    if (NOT Perl_FOUND)
+        set(OPENSSL_DEPS Target_strawberryperl)
+    endif ()
 endif ()
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
