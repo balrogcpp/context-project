@@ -60,10 +60,10 @@ macro(create_target_patch TARGET REPO TAG PATCH)
             execute_process(COMMAND ${GIT_EXECUTABLE} apply --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
         endif ()
     else ()
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
     endif ()
 
     execute_process(COMMAND ${GIT_EXECUTABLE} apply --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
@@ -84,10 +84,10 @@ macro(create_target TARGET REPO TAG)
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         else ()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
+            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
         endif ()
     else ()
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone -q --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
     endif ()
 
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
@@ -202,17 +202,38 @@ externalproject_add(Target_SDL3
 )
 
 
-create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtdeclarative")
-message(${DOWNLOAD_PLACEHOLDER})
+externalproject_add(Target_cpython
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpython
+        URL https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.10.20+20260602-i686-pc-windows-msvc-install_only.tar.gz
+        URL_HASH SHA256=b24dfabc8496f17729b9c64658e1e23075be1eb7a7c6dcedb413f1ab321ff0a6
+        DOWNLOAD_EXTRACT_TIMESTAMP true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_cpython ${DEPS_ROOT}/python
+)
+
+
+create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtdeclarative;qtshadertools")
+find_package(Python3 QUIET)
+if (WIN32 AND NOT CMAKE_CROSSCOMPILING AND NOT Python3_FOUND)
+    set(QT6_DEPS Target_cpython)
+endif ()
 externalproject_add(Target_Qt6
         EXCLUDE_FROM_ALL true
+        DEPENDS ${QT6_DEPS}
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
-        -DCMAKE_GENERATOR=Ninja
+        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+        -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
@@ -222,6 +243,7 @@ externalproject_add(Target_Qt6
         -DQT_BUILD_EXAMPLES=OFF
         -DQT_BUILD_TESTS=OFF
         -DFEATURE_testlib=OFF
+        -DFEATURE_widgets=OFF
         -DFEATURE_sql=OFF
         -DFEATURE_printsupport=OFF
         -DFEATURE_xml=OFF
@@ -829,7 +851,8 @@ externalproject_add(Target_strawberryperl
 
 
 create_target_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
-if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+find_package(Perl QUIET)
+if (WIN32 AND NOT CMAKE_CROSSCOMPILING AND NOT Perl_FOUND)
     set(OPENSSL_DEPS Target_strawberryperl)
 endif ()
 externalproject_add(Target_OpenSSL
