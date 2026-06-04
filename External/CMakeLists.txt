@@ -207,8 +207,8 @@ externalproject_add(Target_cpython
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpython
-        URL https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.10.20+20260602-i686-pc-windows-msvc-install_only.tar.gz
-        URL_HASH SHA256=b24dfabc8496f17729b9c64658e1e23075be1eb7a7c6dcedb413f1ab321ff0a6
+        URL https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.10.20+20260602-i686-pc-windows-msvc-install_only_stripped.tar.gz
+        URL_HASH SHA256=63befed008b7d4a3cc80f0f20e76fac0899d87bb5832ff5f033c18cc353e077c
         DOWNLOAD_EXTRACT_TIMESTAMP true
         PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
