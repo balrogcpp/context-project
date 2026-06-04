@@ -159,7 +159,7 @@ externalproject_add(Target_SDL2
 )
 
 
-create_target_patch(Target_SDL3 https://github.com/libsdl-org/SDL.git release-3.4.4 sdl2-3.4.4.patch)
+create_target_patch(Target_SDL3 https://github.com/libsdl-org/SDL.git release-3.4.10 sdl2-3.4.4.patch)
 externalproject_add(Target_SDL3
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
