@@ -12,6 +12,8 @@ find_package(Git REQUIRED)
 # cached variables
 if (${CMAKE_GENERATOR} MATCHES "^Visual")
     set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}-${CMAKE_VS_PLATFORM_NAME}-${CMAKE_CXX_COMPILER_ID}")
+elseif (MSVC)
+    set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}-${CMAKE_CXX_COMPILER_ID}")
 else ()
     set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_CXX_COMPILER_ID}")
 endif ()
@@ -218,6 +220,7 @@ externalproject_add(Target_cpython
 
 
 create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtdeclarative;qtshadertools")
+set(CMAKE_OBJECT_PATH_MAX 512)
 find_package(Python3 QUIET)
 if (WIN32 AND NOT CMAKE_CROSSCOMPILING AND NOT Python3_FOUND)
     set(QT6_DEPS Target_cpython)
@@ -231,9 +234,7 @@ externalproject_add(Target_Qt6
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
+        -DCMAKE_GENERATOR=Ninja
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
@@ -242,6 +243,7 @@ externalproject_add(Target_Qt6
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DQT_BUILD_EXAMPLES=OFF
         -DQT_BUILD_TESTS=OFF
+        -DQT_DEBUG_AND_RELEASE=OFF
         -DQT_FEATURE_testlib=OFF
         -DQT_FEATURE_widgets=OFF
         -DQT_FEATURE_sql=OFF

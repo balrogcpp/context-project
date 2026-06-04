@@ -13,13 +13,6 @@ list(APPEND ENGINE_SOURCE_FILES ${SHADER_FILES})
 set_source_files_properties(${SHADER_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties(${SHADER_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 
-# adjust flags if required
-# link fix for old version of assimp
-#find_package(assimp QUIET)
-#if (MSVC AND assimp_FOUND AND assimp_VERSION VERSION_LESS 5.2)
-#    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
-#endif ()
-
 # static library
 add_library(Engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(Engine ${ENGINE_INCLUDE_DIRS})

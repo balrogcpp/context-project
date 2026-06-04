@@ -66,9 +66,9 @@ if (CMAKE_TOOLCHAIN_FILE AND NOT IS_ABSOLUTE ${CMAKE_TOOLCHAIN_FILE})
     file(REAL_PATH "${CMAKE_TOOLCHAIN_FILE}" CMAKE_TOOLCHAIN_FILE BASE_DIRECTORY "${CMAKE_BINARY_DIR}")
 endif ()
 
-option(DISABLE_DEPENDENCIES_BUILD "Disable build of dependencies during configuration" OFF)
+option(NO_DEPS "Disable build of dependencies during configuration" OFF)
 
-if (NOT DISABLE_DEPENDENCIES_BUILD)
+if (NOT NO_DEPS)
     execute_process(
             COMMAND ${CMAKE_COMMAND}
             -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
