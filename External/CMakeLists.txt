@@ -242,13 +242,13 @@ externalproject_add(Target_Qt6
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DQT_BUILD_EXAMPLES=OFF
         -DQT_BUILD_TESTS=OFF
-        -DFEATURE_testlib=OFF
-        -DFEATURE_widgets=OFF
-        -DFEATURE_sql=OFF
-        -DFEATURE_printsupport=OFF
-        -DFEATURE_xml=OFF
-        -DFEATURE_dbus=OFF
-        -DFEATURE_concurrent=OFF
+        -DQT_FEATURE_testlib=OFF
+        -DQT_FEATURE_widgets=OFF
+        -DQT_FEATURE_sql=OFF
+        -DQT_FEATURE_printsupport=OFF
+        -DQT_DFEATURE_xml=OFF
+        -DQT_FEATURE_dbus=OFF
+        -DQT_FEATURE_concurrent=OFF
 )
 
 
