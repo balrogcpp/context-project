@@ -267,79 +267,6 @@ externalproject_add(Target_SDL3
 )
 
 
-externalproject_add(Target_cpython
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpython
-        URL https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.10.20+20260602-i686-pc-windows-msvc-install_only_stripped.tar.gz
-        URL_HASH SHA256=63befed008b7d4a3cc80f0f20e76fac0899d87bb5832ff5f033c18cc353e077c
-        DOWNLOAD_EXTRACT_TIMESTAMP true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E true
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_cpython ${DEPS_ROOT}/python
-)
-
-
-create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES "qtbase;qtshadertools;qtdeclarative")
-# Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
-# Unix expected to have python by default
-find_program(NINJA_EXECUTABLE ninja)
-if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
-    find_package(Python3)
-    if (NOT Python3_FOUND)
-        set(QT6_DEPS Target_cpython)
-    endif ()
-endif ()
-
-# Qt QML build creates very long tmp files, symbolic link is a way to avoid compilation error
-# Presumably, only MSVC needs it
-if (MSVC)
-    set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
-    set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
-    if (NOT EXISTS ${QT_PREFIX})
-        file(MAKE_DIRECTORY ${QT_PREFIX})
-    endif ()
-    file(TO_NATIVE_PATH ${QT_PREFIX} srcDir)
-    file(TO_NATIVE_PATH ${QT_SYMLINK} dstDir)
-    if (IS_SYMLINK ${QT_SYMLINK})
-        execute_process(COMMAND cmd.exe /c rmdir "${dstDir}")
-    endif ()
-    execute_process(COMMAND cmd.exe /c mklink /J "${dstDir}" "${srcDir}")
-else ()
-    set (QT_SYMLINK ${DEPS_PREFIX_LOCATION})
-endif ()
-externalproject_add(Target_Qt6
-        EXCLUDE_FROM_ALL true
-        DEPENDS ${QT6_DEPS}
-        PREFIX ${QT_SYMLINK}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_GENERATOR "Ninja"
-        CMAKE_ARGS
-        -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
-        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/python
-        -DCMAKE_BUILD_TYPE=Release
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
-        -DQT_BUILD_EXAMPLES=OFF
-        -DQT_BUILD_TESTS=OFF
-        -DQT_DEBUG_AND_RELEASE=OFF
-        -DQT_FEATURE_testlib=OFF
-        -DQT_FEATURE_sql=OFF
-        -DQT_FEATURE_printsupport=OFF
-        -DQT_DFEATURE_xml=OFF
-        -DQT_FEATURE_dbus=OFF
-        -DQT_FEATURE_concurrent=OFF
-        -DQT_FEATURE_qml_debug=OFF
-)
-
-
 create_target(Target_Bullet https://github.com/bulletphysics/bullet3.git 3.25)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
@@ -923,6 +850,7 @@ externalproject_add(Target_sol2
 )
 
 
+if (WIN32)
 externalproject_add(Target_strawberryperl
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -936,6 +864,7 @@ externalproject_add(Target_strawberryperl
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_strawberryperl/perl ${DEPS_ROOT}/perl
 )
+endif ()
 
 
 create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 PATCH openssl-3.6.2.patch)
@@ -1427,6 +1356,82 @@ externalproject_add(Target_benchmark
         -DBENCHMARK_ENABLE_EXCEPTIONS=OFF
         -DBENCHMARK_ENABLE_WERROR=OFF
         -DBENCHMARK_INSTALL_DOCS=OFF
+)
+
+
+if (WIN32)
+externalproject_add(Target_cpython
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpython
+        URL https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.10.20+20260602-i686-pc-windows-msvc-install_only_stripped.tar.gz
+        URL_HASH SHA256=63befed008b7d4a3cc80f0f20e76fac0899d87bb5832ff5f033c18cc353e077c
+        DOWNLOAD_EXTRACT_TIMESTAMP true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_cpython ${DEPS_ROOT}/python
+)
+endif ()
+
+
+create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES "qtbase;qtshadertools;qtdeclarative")
+# Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
+# Unix expected to have python by default
+find_program(NINJA_EXECUTABLE ninja)
+if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+    find_package(Python3)
+    if (NOT Python3_FOUND)
+        set(QT6_DEPS Target_cpython)
+    endif ()
+endif ()
+
+
+# Qt QML build creates very long tmp files, symbolic link is a way to avoid compilation error
+# Presumably, only MSVC needs it
+if (MSVC)
+    set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
+    set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
+    if (NOT EXISTS ${QT_PREFIX})
+        file(MAKE_DIRECTORY ${QT_PREFIX})
+    endif ()
+    file(TO_NATIVE_PATH ${QT_PREFIX} srcDir)
+    file(TO_NATIVE_PATH ${QT_SYMLINK} dstDir)
+    if (IS_SYMLINK ${QT_SYMLINK})
+        execute_process(COMMAND cmd.exe /c rmdir "${dstDir}")
+    endif ()
+    execute_process(COMMAND cmd.exe /c mklink /J "${dstDir}" "${srcDir}")
+else ()
+    set (QT_SYMLINK ${DEPS_PREFIX_LOCATION})
+endif ()
+externalproject_add(Target_Qt6
+        EXCLUDE_FROM_ALL true
+        DEPENDS ${QT6_DEPS}
+        PREFIX ${QT_SYMLINK}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_GENERATOR "Ninja"
+        CMAKE_ARGS
+        -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/python
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DQT_BUILD_EXAMPLES=OFF
+        -DQT_BUILD_TESTS=OFF
+        -DQT_DEBUG_AND_RELEASE=OFF
+        -DQT_FEATURE_testlib=OFF
+        -DQT_FEATURE_sql=OFF
+        -DQT_FEATURE_printsupport=OFF
+        -DQT_DFEATURE_xml=OFF
+        -DQT_FEATURE_dbus=OFF
+        -DQT_FEATURE_concurrent=OFF
+        -DQT_FEATURE_qml_debug=OFF
 )
 
 
