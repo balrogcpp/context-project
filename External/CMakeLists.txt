@@ -44,83 +44,145 @@ set(DEPS_INCLUDE_DIR ${DEPS_ROOT}/include CACHE PATH "")
 set(DEPS_LIB_DIR ${DEPS_ROOT}/lib CACHE PATH "")
 set(DEPS_BIN_DIR ${DEPS_ROOT}/bin CACHE PATH "")
 
+
+include(CMakeParseArguments)
+
 macro(create_target TARGET REPO TAG)
-    execute_process(COMMAND ${GIT_EXECUTABLE} tag WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} OUTPUT_VARIABLE head_rev)
+    set(options)
+    set(oneValueArgs PATCH)
+    set(multiValueArgs MODULES)
+
+    cmake_parse_arguments(ARG
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+        ${ARGN}
+    )
+
+    #
+    # Build clone configuration
+    #
+    set(CLONE_ARGS --shallow-submodules -j4 --depth 1)
+
+    if(ARG_MODULES)
+        foreach(m IN LISTS ARG_MODULES)
+            list(APPEND CLONE_ARGS --recurse-submodules=${m})
+        endforeach()
+    else()
+        list(APPEND CLONE_ARGS --recursive)
+    endif()
+
+    #
+    # Patch validation
+    #
+    if(ARG_PATCH)
+        set(PATCH_PATH "${DEPS_PATCH_LOCATION}/${ARG_PATCH}")
+
+        if(NOT EXISTS "${PATCH_PATH}")
+            message(FATAL_ERROR "Patch file ${ARG_PATCH} not found")
+        endif()
+    endif()
+
+    #
+    # Existing repository check
+    #
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} tag
+        WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+        OUTPUT_VARIABLE head_rev
+        ERROR_QUIET
+    )
+
     string(STRIP "${head_rev}" head_rev)
-    file(GLOB RESULT ${DEPS_SOURCE_LOCATION}/${TARGET})
+
+    file(GLOB RESULT "${DEPS_SOURCE_LOCATION}/${TARGET}")
     list(LENGTH RESULT RES_LEN)
-    if (NOT RES_LEN EQUAL 0)
-        if ("${head_rev}" MATCHES ${TAG})
+
+    set(CLONE_COMMAND
+        ${CMAKE_COMMAND} -E chdir
+        ${DEPS_SOURCE_LOCATION}
+        ${GIT_EXECUTABLE} clone
+        ${CLONE_ARGS}
+        -b ${TAG}
+        ${REPO}
+        ${TARGET}
+    )
+
+    if(NOT RES_LEN EQUAL 0)
+        if("${head_rev}" MATCHES "${TAG}")
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        else ()
+
+            if(ARG_PATCH)
+                execute_process(
+                    COMMAND ${GIT_EXECUTABLE} reset --hard
+                    WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+                )
+
+                execute_process(
+                    COMMAND
+                        ${GIT_EXECUTABLE}
+                        apply
+                        -q
+                        --reject
+                        --ignore-space-change
+                        --unidiff-zero
+                        ${PATCH_PATH}
+                    WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+                )
+            endif()
+        else()
             file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
-        endif ()
-    else ()
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
-    endif ()
+            set(DOWNLOAD_PLACEHOLDER ${CLONE_COMMAND})
+        endif()
+    else()
+        set(DOWNLOAD_PLACEHOLDER ${CLONE_COMMAND})
+    endif()
 
-    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-endmacro()
+    #
+    # Patch handling
+    #
+    if(ARG_PATCH)
+        execute_process(
+            COMMAND
+                ${GIT_EXECUTABLE}
+                apply
+                -q
+                --check
+                --ignore-space-change
+                --unidiff-zero
+                ${PATCH_PATH}
+            WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+            RESULT_VARIABLE checkout_err
+        )
 
+        if(NOT checkout_err
+           OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
 
-macro(create_target_w_patch TARGET REPO TAG PATCH)
-    set(PATCH_PATH ${DEPS_PATCH_LOCATION}/${PATCH})
-    if (NOT EXISTS ${PATCH_PATH})
-        message(FATAL_ERROR "Patch file ${PATCH} not found")
-    endif ()
-
-    execute_process(COMMAND ${GIT_EXECUTABLE} tag WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} OUTPUT_VARIABLE head_rev)
-    string(STRIP "${head_rev}" head_rev)
-    file(GLOB RESULT ${DEPS_SOURCE_LOCATION}/${TARGET})
-    list(LENGTH RESULT RES_LEN)
-    if (NOT RES_LEN EQUAL 0)
-        if ("${head_rev}" MATCHES ${TAG})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-            execute_process(COMMAND ${GIT_EXECUTABLE} reset --hard WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
-            execute_process(COMMAND ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET})
-        else ()
-            file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
-        endif ()
-    else ()
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone --recursive --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
-    endif ()
-
-    execute_process(COMMAND ${GIT_EXECUTABLE} apply -q --check --ignore-space-change --unidiff-zero ${PATCH_PATH} WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} RESULT_VARIABLE checkout_err ERROR_VARIABLE err_str)
-    if (NOT checkout_err OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
-        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/${PATCH})
-    else ()
+            set(PATCH_PLACEHOLDER
+                ${CMAKE_COMMAND} -E chdir
+                ${DEPS_SOURCE_LOCATION}/${TARGET}
+                ${GIT_EXECUTABLE}
+                apply
+                -q
+                --reject
+                --ignore-space-change
+                --unidiff-zero
+                ${PATCH_PATH}
+            )
+        else()
+            set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        endif()
+    else()
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-    endif ()
+    endif()
 endmacro()
 
 
-macro(create_target_w_modules TARGET REPO TAG GIT_MODULES)
-    execute_process(COMMAND ${GIT_EXECUTABLE} tag WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET} OUTPUT_VARIABLE head_rev)
-    string(STRIP "${head_rev}" head_rev)
-    file(GLOB RESULT ${DEPS_SOURCE_LOCATION}/${TARGET})
-    list(LENGTH RESULT RES_LEN)
-    foreach(m ${GIT_MODULES})
-        list(APPEND MODULES_CFG --recurse-submodules=${m})
-    endforeach ()
+#
+# External targets
+#
 
-    if (NOT RES_LEN EQUAL 0)
-        if ("${head_rev}" MATCHES ${TAG})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-        else ()
-            file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
-            set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone ${MODULES_CFG} --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
-        endif ()
-    else ()
-        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone ${MODULES_CFG} --shallow-submodules -j4 --depth 1 -b ${TAG} ${REPO} ${TARGET})
-    endif ()
-
-    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
-endmacro()
-
-
-create_target_w_patch(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.10 sdl2-2.32.10.patch)
+create_target(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.10 PATCH sdl2-2.32.10.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -162,7 +224,7 @@ externalproject_add(Target_SDL2
 )
 
 
-create_target_w_patch(Target_SDL3 https://github.com/libsdl-org/SDL.git release-3.4.10 sdl2-3.4.4.patch)
+create_target(Target_SDL3 https://github.com/libsdl-org/SDL.git release-3.4.10 PATCH sdl2-3.4.4.patch)
 externalproject_add(Target_SDL3
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -220,7 +282,7 @@ externalproject_add(Target_cpython
 )
 
 
-create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtshadertools;qtdeclarative")
+create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES "qtbase;qtshadertools;qtdeclarative")
 # Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
 # Unix expected to have python by default
 find_program(NINJA_EXECUTABLE ninja)
@@ -231,19 +293,19 @@ if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
     endif ()
 endif ()
 
-# Qt QML build creates very long tmp files, symlinc is a way to avoid compilation error
+# Qt QML build creates very long tmp files, symbolic link is a way to avoid compilation error
 # Presumably, only MSVC needs it
 if (MSVC)
     set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
     set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
-    if (NOT EXISTS QT_PREFIX)
+    if (NOT EXISTS ${QT_PREFIX})
         file(MAKE_DIRECTORY ${QT_PREFIX})
-    endif ()
-    if (IS_SYMLINK QT_SYMLINK)
-        execute_process(COMMAND cmd.exe /c del "${dstDir}")
     endif ()
     file(TO_NATIVE_PATH ${QT_PREFIX} srcDir)
     file(TO_NATIVE_PATH ${QT_SYMLINK} dstDir)
+    if (IS_SYMLINK ${QT_SYMLINK})
+        execute_process(COMMAND cmd.exe /c rmdir "${dstDir}")
+    endif ()
     execute_process(COMMAND cmd.exe /c mklink /J "${dstDir}" "${srcDir}")
 else ()
     set (QT_SYMLINK ${DEPS_PREFIX_LOCATION})
@@ -323,7 +385,7 @@ externalproject_add(Target_Bullet
 )
 
 
-create_target_w_patch(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.3 openal-1.24.2.patch)
+create_target(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.3 PATCH openal-1.24.2.patch)
 if (WIN32 OR ANDROID OR IOS)
     set(OPENAL_LIBTYPE "STATIC")
 else ()
@@ -460,7 +522,7 @@ externalproject_add(Target_Theora
 )
 
 
-create_target_w_patch(Target_assimp https://github.com/assimp/assimp.git v6.0.5 assimp-6.0.0.patch)
+create_target(Target_assimp https://github.com/assimp/assimp.git v6.0.5 PATCH assimp-6.0.0.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -620,7 +682,7 @@ externalproject_add(Target_imgui
 )
 
 
-create_target_w_patch(Target_OGRE https://github.com/OGRECave/ogre.git v14.5.2 ogre-14.5.0.patch)
+create_target(Target_OGRE https://github.com/OGRECave/ogre.git v14.5.2 PATCH ogre-14.5.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         DEPENDS Target_imgui
@@ -876,7 +938,8 @@ externalproject_add(Target_strawberryperl
 )
 
 
-create_target_w_patch(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 openssl-3.6.2.patch)
+create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 PATCH openssl-3.6.2.patch)
+# Perl is required to build OpenSSL from sources. Perl expected to be bundled in UNIX OS
 if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
     find_package(Perl)
     if (NOT Perl_FOUND)
@@ -949,7 +1012,7 @@ externalproject_add(Target_LibreSSL
 )
 
 
-create_target_w_patch(Target_cpr https://github.com/libcpr/cpr.git 1.10.5 cpr-1.10.5.patch)
+create_target(Target_cpr https://github.com/libcpr/cpr.git 1.10.5 PATCH cpr-1.10.5.patch)
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
         DEPENDS Target_LibreSSL
