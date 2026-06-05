@@ -220,20 +220,38 @@ externalproject_add(Target_cpython
 )
 
 
-create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtshadertools")
+create_target_w_modules(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 "qtbase;qtshadertools;qtdeclarative")
+# Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
+# Unix expected to have python by default
+find_program(NINJA_EXECUTABLE ninja)
 if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
     find_package(Python3)
-    if (MSVC)
-        find_program(NINJA_EXECUTABLE ninja REQUIRED)
-    endif ()
     if (NOT Python3_FOUND)
         set(QT6_DEPS Target_cpython)
     endif ()
 endif ()
+
+# Qt QML build creates very long tmp files, symlinc is a way to avoid compilation error
+# Presumably, only MSVC needs it
+if (MSVC)
+    set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
+    set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
+    if (NOT EXISTS QT_PREFIX)
+        file(MAKE_DIRECTORY ${QT_PREFIX})
+    endif ()
+    if (IS_SYMLINK QT_SYMLINK)
+        execute_process(COMMAND cmd.exe /c del "${dstDir}")
+    endif ()
+    file(TO_NATIVE_PATH ${QT_PREFIX} srcDir)
+    file(TO_NATIVE_PATH ${QT_SYMLINK} dstDir)
+    execute_process(COMMAND cmd.exe /c mklink /J "${dstDir}" "${srcDir}")
+else ()
+    set (QT_SYMLINK ${DEPS_PREFIX_LOCATION})
+endif ()
 externalproject_add(Target_Qt6
         EXCLUDE_FROM_ALL true
         DEPENDS ${QT6_DEPS}
-        PREFIX ${DEPS_PREFIX_LOCATION}
+        PREFIX ${QT_SYMLINK}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -251,7 +269,6 @@ externalproject_add(Target_Qt6
         -DQT_BUILD_TESTS=OFF
         -DQT_DEBUG_AND_RELEASE=OFF
         -DQT_FEATURE_testlib=OFF
-        -DQT_FEATURE_widgets=OFF
         -DQT_FEATURE_sql=OFF
         -DQT_FEATURE_printsupport=OFF
         -DQT_DFEATURE_xml=OFF
