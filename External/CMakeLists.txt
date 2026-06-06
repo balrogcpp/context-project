@@ -1431,11 +1431,11 @@ externalproject_add(Target_Qt6
         -DQT_GENERATE_SBOM=OFF
         -DQT_BUILD_EXAMPLES=OFF
         -DQT_BUILD_TESTS=OFF
-        -DQT_DEBUG_AND_RELEASE=OFF
+        -DQT_FEATURE_debug_and_release=OFF
         -DQT_FEATURE_testlib=OFF
         -DQT_FEATURE_sql=OFF
         -DQT_FEATURE_printsupport=OFF
-        -DQT_DFEATURE_xml=OFF
+        -DQT_FEATURE_xml=OFF
         -DQT_FEATURE_dbus=OFF
         -DQT_FEATURE_concurrent=OFF
         -DQT_FEATURE_qml_debug=OFF
