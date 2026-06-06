@@ -850,7 +850,7 @@ externalproject_add(Target_sol2
 )
 
 
-if (WIN32)
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 externalproject_add(Target_strawberryperl
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -870,7 +870,7 @@ endif ()
 create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 PATCH openssl-3.6.2.patch)
 # Perl is required to build OpenSSL from sources. Perl expected to be bundled in UNIX OS
 # Version should be at least 5.10.0, released in 2007. https://github.com/openssl/openssl/blob/master/NOTES-PERL.md
-if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     find_package(Perl)
     if (NOT PERL_FOUND OR PERL_VERSION_STRING VERSION_LESS 5.10.0)
         set(OPENSSL_DEPS Target_strawberryperl)
@@ -1360,7 +1360,7 @@ externalproject_add(Target_benchmark
 )
 
 
-if (WIN32)
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 externalproject_add(Target_cpython
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -1385,7 +1385,7 @@ create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES ${QT_MODU
 # Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
 # Unix expected to have python by default
 find_program(NINJA_EXECUTABLE ninja)
-if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     find_package(Python3)
     if (NOT Python3_FOUND)
         set(QT6_DEPS Target_cpython)
@@ -1393,8 +1393,9 @@ if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
 endif ()
 
 # Qt QML build creates very long tmp files, symbolic link is a way to avoid compilation error
-# Presumably, only MSVC needs it
-if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
+# Limitation comes with MSVC toolchain, it can't handle path over 260 characters
+# Another limitation comes from Windows OS. While it is possible to fix this via regedit, we can't relay on it
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
     set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
     if (NOT EXISTS ${QT_PREFIX})
