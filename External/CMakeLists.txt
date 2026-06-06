@@ -1378,6 +1378,9 @@ endif ()
 
 
 set(QT_MODULES "qtbase;qtdeclarative;qtshadertools")
+if (CMAKE_TOOLCHAIN_FILE)
+    set(QT_TOOLCHAIN -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
+endif ()
 create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES ${QT_MODULES})
 # Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
 # Unix expected to have python by default
@@ -1422,7 +1425,7 @@ externalproject_add(Target_Qt6
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/python
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        ${QT_TOOLCHAIN}
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
         -DQT_GENERATE_SBOM=OFF
         -DQT_BUILD_EXAMPLES=OFF
