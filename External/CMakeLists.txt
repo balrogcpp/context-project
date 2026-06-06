@@ -869,9 +869,10 @@ endif ()
 
 create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 PATCH openssl-3.6.2.patch)
 # Perl is required to build OpenSSL from sources. Perl expected to be bundled in UNIX OS
+# Version should be at least 5.10.0, released in 2007. https://github.com/openssl/openssl/blob/master/NOTES-PERL.md
 if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
     find_package(Perl)
-    if (NOT Perl_FOUND)
+    if (NOT PERL_FOUND OR PERL_VERSION_STRING VERSION_LESS 5.10.0)
         set(OPENSSL_DEPS Target_strawberryperl)
     endif ()
 endif ()
@@ -1376,7 +1377,8 @@ externalproject_add(Target_cpython
 endif ()
 
 
-create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES "qtbase;qtshadertools;qtdeclarative")
+set(QT_MODULES "qtbase;qtdeclarative;qtshadertools")
+create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES ${QT_MODULES})
 # Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
 # Unix expected to have python by default
 find_program(NINJA_EXECUTABLE ninja)
@@ -1387,10 +1389,9 @@ if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
     endif ()
 endif ()
 
-
 # Qt QML build creates very long tmp files, symbolic link is a way to avoid compilation error
 # Presumably, only MSVC needs it
-if (MSVC)
+if (WIN32 AND NOT CMAKE_CROSSCOMPILING)
     set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
     set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
     if (NOT EXISTS ${QT_PREFIX})
@@ -1413,15 +1414,17 @@ externalproject_add(Target_Qt6
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_GENERATOR "Ninja"
+        CMAKE_GENERATOR Ninja
+        CMAKE_CACHE_ARGS -DQT_BUILD_SUBMODULES:STRING=${QT_MODULES}
         CMAKE_ARGS
         -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/python
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DQT_GENERATE_SBOM=OFF
         -DQT_BUILD_EXAMPLES=OFF
         -DQT_BUILD_TESTS=OFF
         -DQT_DEBUG_AND_RELEASE=OFF
