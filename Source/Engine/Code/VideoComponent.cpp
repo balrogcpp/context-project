@@ -61,14 +61,11 @@
     || (defined(__cplusplus) && __cplusplus >= 202002L && !defined(__APPLE__)))
   #include <chrono>
   #include <format>
-  using std::format;
-  using std::format_to;
+  namespace fmt = std;
 #else
   #define FMT_HEADER_ONLY 1
   #include "fmt/chrono.h"
   #include "fmt/format.h"
-  using fmt::format;
-  using fmt::format_to;
 #endif
 
 // filesystem is not available on apple and android
@@ -456,7 +453,7 @@ class VideoComponent::DefaultLogListener final : public Ogre::LogListener {
     static std::ofstream of(logName);
 
     if (of.is_open()) {
-      of << format("{:%Y-%m-%d %H:%M:%S}: {}\n", chrono::floor<chrono::milliseconds>(chrono::system_clock::now()), message);
+      of << fmt::format("{:%Y-%m-%d %H:%M:%S}: {}\n", chrono::floor<chrono::milliseconds>(chrono::system_clock::now()), message);
     }
   }
 };
