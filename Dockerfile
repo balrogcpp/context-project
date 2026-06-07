@@ -64,7 +64,7 @@ RUN mkdir build && cd build \
 
 
 # android
-#ARG ANDROID_CMD_VERSION=13114758
+#ARG ANDROID_CMD_VERSION=14742923
 #ARG ANDROID_JAVA_MAJOR=17
 #ENV ANDROID_HOME=/usr/local/android-sdk
 #RUN apt-get update \
@@ -74,7 +74,7 @@ RUN mkdir build && cd build \
 #    && unzip -q tools.zip && rm tools.zip \
 #    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
 #    && cd ${CONTEXT_HOME} && mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DDISABLE_DEPENDENCIES_BUILD=ON -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DNO_DEPS=ON -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
 #    && cmake --build . --config Release --target Gradle \
 #    && cmake --build . --config Release --target GradleClear \
 #    && rm -rf build ../External/Build ../External/Sdk /root/.android /root/.gradle $ANDROID_HOME \
