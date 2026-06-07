@@ -1,7 +1,7 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UBUNTU_VERSION=bionic
+ARG UBUNTU_VERSION=focal
 WORKDIR /var/build
 
 
@@ -16,9 +16,9 @@ RUN apt-get update \
     && apt-get clean
 
 
-ARG CLANG_MAJOR=18
-ARG CLANG_VERSION=1800
-ARG STDLIB_APT_MAJOR=13
+ARG CLANG_MAJOR=21
+ARG CLANG_VERSION=2100
+ARG STDLIB_APT_MAJOR=15
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
@@ -30,8 +30,10 @@ RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERS
     && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} ${CLANG_VERSION} --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
     && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} ${CLANG_VERSION} \
     && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} ${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/llvm-nm llvm-nm /usr/bin/llvm-nm-${CLANG_MAJOR} ${CLANG_VERSION} \
     && update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-${CLANG_MAJOR} ${CLANG_VERSION} \
-    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} ${CLANG_VERSION}
+    && update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${CLANG_MAJOR} ${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-${CLANG_MAJOR} ${CLANG_VERSION}
 ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 
@@ -39,22 +41,23 @@ ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://sourceware.org/pub
-ARG BINUTILS_VERSION=2.44
-ARG MINGW_VERSION=13.0.0
-ARG GCC_VERSION=14.2.0
-ARG GCC_VERSION_DEC=1420
+ARG FREEDESKTOP_MIRROR=https://pkg-config.freedesktop.org
+ARG BINUTILS_VERSION=2.46.0
+ARG MINGW_VERSION=14.0.0
+ARG GCC_VERSION=15.2.0
+ARG GCC_VERSION_DEC=1520
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_MAJOR=13
 ARG GCC_APT_MAJOR_DEC=1300
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
+    && curl -fSL ${FREEDESKTOP_MIRROR}/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz | tar -xz \
+    && curl -fSL ${GNU_MIRROR}/binutils/releases/binutils-${BINUTILS_VERSION}.tar.xz | tar -xJ \
+    && curl -fSL ${GNU_MIRROR}/gcc/releases/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz | tar -xJ \
+    && curl -fSL https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download  | tar -xj \
+    && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl22 libmpc3 \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} texinfo \
     && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} ${GCC_APT_MAJOR_DEC} --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
-    && curl -fsSL https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz | tar -xz \
-    && curl -fsSL ${GNU_MIRROR}/binutils/releases/binutils-${BINUTILS_VERSION}.tar.xz | tar -xJ \
-    && curl -fsSL ${GNU_MIRROR}/gcc/releases/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz | tar -xJ \
-    && curl -fsSL https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download  | tar -xj \
     && export CPPFLAGS='-g0' \
     && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \
@@ -150,25 +153,25 @@ RUN apt-get update \
 
 
 # apple
-#COPY ./tarballs ./tarballs
-#ARG OSXCROSS_ROOT=/usr/local/osxcross
-#ARG OSXCROSS_GIT_HASH=121ce150c7857a9474dfff8a8e431482806b3e1b
-#ARG CMAKE_VERSION=4.1.3
-#ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends git python libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
-#    && curl -fsSL -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-#    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm -f cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-#    && export PATH="${CMAKE_HOME}/bin:${PATH}" \
-#    && curl -fsSL https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -o osxcross.zip \
-#    && unzip osxcross.zip && rm -f osxcross.zip && mv osxcross-${OSXCROSS_GIT_HASH} osxcross \
-#    && cd osxcross \
-#    && cp -r ../tarballs . && rm -rf ../tarballs \
-#    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
-#    && rm -rf ../osxcross \
-#    && rm -rf ${CMAKE_HOME} \
-#    && apt-get -y purge git python lzma-dev libxml2-dev libssl-dev libbz2-dev \
-#    && apt-get -y autoremove --purge \
-#    && apt-get clean
-#ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-#ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
+COPY ./tarballs ./tarballs
+ARG OSXCROSS_ROOT=/usr/local/osxcross
+ARG OSXCROSS_GIT_HASH=e6ab3fa7423f9235ce9ed6381d6d3af191b46b59
+ARG CMAKE_VERSION=4.3.3
+ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends git python3 libxml2 lzma-dev libxml2-dev libssl-dev libbz2-dev \
+    && curl -fsSL -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm -f cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+    && export PATH="${CMAKE_HOME}/bin:${PATH}" \
+    && curl -fsSL https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -o osxcross.zip \
+    && unzip osxcross.zip && rm -f osxcross.zip && mv osxcross-${OSXCROSS_GIT_HASH} osxcross \
+    && cd osxcross \
+    && cp -r ../tarballs . && rm -rf ../tarballs \
+    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
+    && rm -rf ../osxcross \
+    && rm -rf ${CMAKE_HOME} \
+    && apt-get -y purge git python3 lzma-dev libxml2-dev libssl-dev libbz2-dev \
+    && apt-get -y autoremove --purge \
+    && apt-get clean
+ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
+ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
