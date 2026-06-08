@@ -941,6 +941,54 @@ externalproject_add(Target_LibreSSL
 )
 
 
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+externalproject_add(Target_nasm
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_nasm
+        URL https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip
+        URL_HASH SHA256=e0ba5157007abc7b1a65118a96657a961ddf55f7e3f632ee035366dfce039ca4
+        DOWNLOAD_EXTRACT_TIMESTAMP true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_nasm/nasm.exe ${DEPS_ROOT}/bin
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_nasm/ndisasm.exe ${DEPS_ROOT}/bin
+)
+endif ()
+
+
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+    set(BoringSSL_DEPS Target_nasm)
+endif ()
+create_target(Target_BoringSSL https://github.com/google/boringssl.git 0.20260526.0)
+externalproject_add(Target_BoringSSL
+        EXCLUDE_FROM_ALL true
+        DEPENDS ${BoringSSL_DEPS}
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_BoringSSL
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_ARGS
+        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+        -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+        -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DOPENSSL_SMALL=ON
+)
+
+
 create_target(Target_cpr https://github.com/libcpr/cpr.git 1.10.5 PATCH cpr-1.10.5.patch)
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
