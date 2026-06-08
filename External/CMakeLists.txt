@@ -959,10 +959,11 @@ externalproject_add(Target_nasm
 endif ()
 
 
+create_target(Target_BoringSSL https://github.com/google/boringssl.git 0.20260526.0)
+find_program(NINJA_EXECUTABLE ninja)
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set(BoringSSL_DEPS Target_nasm)
 endif ()
-create_target(Target_BoringSSL https://github.com/google/boringssl.git 0.20260526.0)
 externalproject_add(Target_BoringSSL
         EXCLUDE_FROM_ALL true
         DEPENDS ${BoringSSL_DEPS}
@@ -971,10 +972,9 @@ externalproject_add(Target_BoringSSL
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_BoringSSL
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        CMAKE_GENERATOR Ninja
         CMAKE_ARGS
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
-        -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}
+        -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
