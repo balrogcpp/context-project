@@ -1377,11 +1377,7 @@ externalproject_add(Target_cpython
 endif ()
 
 
-set(QT_MODULES "qtbase;qtdeclarative;qtshadertools")
-if (CMAKE_TOOLCHAIN_FILE)
-    set(QT_TOOLCHAIN -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
-endif ()
-create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES ${QT_MODULES})
+create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES "qtbase;qtdeclarative;qtshadertools")
 # Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
 # Unix expected to have python by default
 find_program(NINJA_EXECUTABLE ninja)
@@ -1410,6 +1406,10 @@ if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 else ()
     set (QT_SYMLINK ${DEPS_PREFIX_LOCATION})
 endif ()
+
+if (CMAKE_TOOLCHAIN_FILE)
+    set(QT_TOOLCHAIN_FILE -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
+endif ()
 externalproject_add(Target_Qt6
         EXCLUDE_FROM_ALL true
         DEPENDS ${QT6_DEPS}
@@ -1419,15 +1419,18 @@ externalproject_add(Target_Qt6
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_GENERATOR Ninja
-        CMAKE_CACHE_ARGS -DQT_BUILD_SUBMODULES:STRING=${QT_MODULES}
         CMAKE_ARGS
         -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/python
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        ${QT_TOOLCHAIN}
+        ${QT_TOOLCHAIN_FILE}
+        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
         -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DQT_GENERATE_SBOM=OFF
         -DQT_BUILD_EXAMPLES=OFF
         -DQT_BUILD_TESTS=OFF
