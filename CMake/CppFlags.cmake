@@ -72,7 +72,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clan
     endif ()
 
 elseif (MSVC)
-    string(APPEND CMAKE_CXX_FLAGS " /MP /GS- /GF /utf-8 /Zc:__cplusplus /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
+    if (${CMAKE_GENERATOR} MATCHES "^Visual")
+        string(APPEND CMAKE_CXX_FLAGS " /MP")
+    endif ()
+
+    string(APPEND CMAKE_CXX_FLAGS " /GS- /GF /utf-8 /Zc:__cplusplus /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN")
 
     if (${CMAKE_BUILD_TYPE_LOWER} MATCHES "deb")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:CONSOLE")
