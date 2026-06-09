@@ -51,9 +51,6 @@ list(APPEND EXTERNAL_PROJECT_CFG -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     )
-if (${CMAKE_GENERATOR} MATCHES "^Visual" OR ${CMAKE_GENERATOR} MATCHES "^Xcode")
-    list(APPEND EXTERNAL_PROJECT_CFG -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE})
-endif ()
 if (CMAKE_TOOLCHAIN_FILE)
     list (APPEND EXTERNAL_PROJECT_CFG -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
 endif ()
@@ -777,7 +774,7 @@ externalproject_add(Target_LibreSSL
 )
 
 
-create_target(Target_OpenSSL https://github.com/google/boringssl.git 0.20260526.0)
+create_target(Target_OpenSSL https://github.com/google/boringssl.git 0.20260526.0 PATCH boringssl.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -785,10 +782,13 @@ externalproject_add(Target_OpenSSL
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_GENERATOR Ninja
+        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
         CMAKE_ARGS
         ${EXTERNAL_PROJECT_CFG}
-        -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
+        -DBUILD_SHARED_LIBS=OFF
+        -DBUILD_TESTING=OFF
         -DOPENSSL_SMALL=ON
         -DOPENSSL_NO_ASM=ON
 )
@@ -817,7 +817,7 @@ externalproject_add(Target_cpr
 )
 
 
-create_target(Target_http https://github.com/yhirose/cpp-httplib.git v0.27.0)
+create_target(Target_http https://github.com/yhirose/cpp-httplib.git v0.46.1)
 externalproject_add(Target_http
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -1108,13 +1108,6 @@ externalproject_add(Target_cpython
 # Another limitation comes from Windows OS. While it is possible to fix this via regedit, we can't relay on it
 create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES "qtbase;qtdeclarative;qtshadertools")
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-    find_package(Python3 QUIET)
-    if (NOT Python3_FOUND)
-        set(QT6_DEPS Target_cpython)
-    endif ()
-endif ()
-
-if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
     set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
     if (NOT EXISTS ${QT_PREFIX})
@@ -1132,7 +1125,7 @@ endif ()
 
 externalproject_add(Target_Qt6
         EXCLUDE_FROM_ALL true
-        DEPENDS ${QT6_DEPS}
+        DEPENDS Target_cpython
         PREFIX ${QT_SYMLINK}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
@@ -1142,7 +1135,8 @@ externalproject_add(Target_Qt6
         CMAKE_ARGS
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/python
+        -DPython_ROOT_DIR=${DEPS_ROOT}/python
+        -DCMAKE_DISABLE_FIND_PACKAGE_OpenSSL=ON
         -DQT_GENERATE_SBOM=OFF
         -DQT_BUILD_EXAMPLES=OFF
         -DQT_BUILD_TESTS=OFF

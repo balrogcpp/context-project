@@ -22,6 +22,7 @@ if (NOT CMAKE_BUILD_TYPE)
     endif ()
 endif ()
 message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
 
 # https://issuetracker.google.com/issues/37128614
 # Gradle build RelWithDebInfo by default
