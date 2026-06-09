@@ -118,7 +118,10 @@ function(create_target TARGET REPO TAG)
     file(GLOB RESULT "${DEPS_SOURCE_LOCATION}/${TARGET}")
     list(LENGTH RESULT RES_LEN)
 
-    set(CLONE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION} ${GIT_EXECUTABLE} clone ${CLONE_ARGS} -b ${TAG} ${REPO} ${TARGET})
+    set(CLONE_COMMAND
+            ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+            ${GIT_EXECUTABLE} clone ${CLONE_ARGS} -b ${TAG} ${REPO} ${TARGET}
+    )
 
     if(NOT RES_LEN EQUAL 0)
         if("${head_rev}" MATCHES "${TAG}")
@@ -126,7 +129,7 @@ function(create_target TARGET REPO TAG)
 
             if(ARG_PATCH)
                 execute_process(
-                    COMMAND ${GIT_EXECUTABLE} reset --hard
+                    COMMAND ${GIT_EXECUTABLE} reset -q --hard
                     WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
                 )
 
@@ -154,7 +157,9 @@ function(create_target TARGET REPO TAG)
         if(NOT checkout_err
            OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
 
-            set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${PATCH_PATH})
+            set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET}
+                    ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${PATCH_PATH}
+            )
             set(PATCH_PLACEHOLDER ${PATCH_PLACEHOLDER} PARENT_SCOPE)
         else()
             set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true PARENT_SCOPE)
@@ -717,37 +722,37 @@ externalproject_add(Target_strawberryperl
 
 # Perl is required to build OpenSSL from sources. Perl expected to be bundled in UNIX OS
 # Version should be at least 5.10.0, released in 2007. https://github.com/openssl/openssl/blob/master/NOTES-PERL.md
-create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 PATCH openssl-3.6.2.patch)
-if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-    find_package(Perl QUIET)
-    if (NOT PERL_FOUND)
-        set(OPENSSL_DEPS Target_strawberryperl)
-    endif ()
-endif ()
-externalproject_add(Target_OpenSSL
-        EXCLUDE_FROM_ALL true
-        DEPENDS ${OPENSSL_DEPS}
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
-        CMAKE_GENERATOR ${CMAKE_GENERATOR}
-        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
-        CMAKE_ARGS
-        ${EXTERNAL_PROJECT_CFG}
-        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/perl
-        -DOPENSSL_CONFIGURE_OPTIONS=--prefix=${DEPS_ROOT};
-        -DOPENSSL_SOURCE=${DEPS_SOURCE_LOCATION}/Target_OpenSSL/openssl
-        -DOPENSSL_INSTALL=ON
-        -DOPENSSL_INSTALL_CERT=OFF
-        -DBUILD_SHARED_LIBS=OFF
-        -DOPENSSL_TARGET_VERSION=3.6.2
-        -DOPENSSL_USE_CCACHE=OFF
-        -DOPENSSL_TEST=OFF
-        -DOPENSSL_NO_ASM=ON
-)
+#create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 PATCH openssl-3.6.2.patch)
+#if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+#    find_package(Perl QUIET)
+#    if (NOT PERL_FOUND)
+#        set(OPENSSL_DEPS Target_strawberryperl)
+#    endif ()
+#endif ()
+#externalproject_add(Target_OpenSSL
+#        EXCLUDE_FROM_ALL true
+#        DEPENDS ${OPENSSL_DEPS}
+#        PREFIX ${DEPS_PREFIX_LOCATION}
+#        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+#        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
+#        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+#        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+#        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+#        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+#        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
+#        CMAKE_ARGS
+#        ${EXTERNAL_PROJECT_CFG}
+#        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/perl
+#        -DOPENSSL_CONFIGURE_OPTIONS=--prefix=${DEPS_ROOT};
+#        -DOPENSSL_SOURCE=${DEPS_SOURCE_LOCATION}/Target_OpenSSL/openssl
+#        -DOPENSSL_INSTALL=ON
+#        -DOPENSSL_INSTALL_CERT=OFF
+#        -DBUILD_SHARED_LIBS=OFF
+#        -DOPENSSL_TARGET_VERSION=3.6.2
+#        -DOPENSSL_USE_CCACHE=OFF
+#        -DOPENSSL_TEST=OFF
+#        -DOPENSSL_NO_ASM=ON
+#)
 
 
 create_target(Target_LibreSSL https://github.com/PowerShell/LibreSSL.git V3.9.2.0)
@@ -772,12 +777,12 @@ externalproject_add(Target_LibreSSL
 )
 
 
-create_target(Target_BoringSSL https://github.com/google/boringssl.git 0.20260526.0)
-externalproject_add(Target_BoringSSL
+create_target(Target_OpenSSL https://github.com/google/boringssl.git 0.20260526.0)
+externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_BoringSSL
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_GENERATOR Ninja
@@ -1194,13 +1199,9 @@ add_external_target_static(Vorbis)
 set(OGRE_STATIC 1)
 set(OGRE_IGNORE_ENV 1)
 add_external_target_static(OGRE)
-#add_external_target_static(LibreSSL)
-#add_external_target_static(httplib)
-#add_external_target_static(json)
-#add_external_target_static(tomlplusplus)
-#add_external_target_static(Lua)
-#add_external_target_static(sol2)
-#add_external_target_static(SQLiteCpp)
-#find_package_static(sodium)
-#add_external_target_static(yojimbo)
+add_external_target_static(OpenSSL)
+find_package_static(sodium)
+add_external_target_static(yojimbo)
+add_external_target_static(Lua)
+add_external_target_static(sol2)
 set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH TRUE)
