@@ -579,28 +579,6 @@ externalproject_add(Target_sol2
 )
 
 
-create_target(Target_LibreSSL https://github.com/PowerShell/LibreSSL.git V3.9.2.0)
-externalproject_add(Target_LibreSSL
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchLibreSSL.cmake
-        CMAKE_GENERATOR ${CMAKE_GENERATOR}
-        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
-        CMAKE_ARGS
-        ${EXTERNAL_PROJECT_CFG}
-        -DBUILD_SHARED_LIBS=OFF
-        -DUSE_STATIC_MSVC_RUNTIMES=ON
-        -DLIBRESSL_SKIP_INSTALL=OFF
-        -DLIBRESSL_APPS=OFF
-        -DLIBRESSL_TESTS=OFF
-        -DENABLE_ASM=OFF
-)
-
-
 create_target(Target_OpenSSL https://github.com/google/boringssl.git 0.20260526.0 PATCH boringssl.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
