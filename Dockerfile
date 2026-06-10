@@ -8,11 +8,16 @@ ENV GIT_SHA_SHORT=${GIT_SHA}
 WORKDIR ${CONTEXT_HOME}
 
 
-# cmake ninja upx
+# cmake ninja
 ARG CMAKE_VERSION=4.3.3
 ARG NINJA_VERSION=1.13.2
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends git strip-nondeterminism python3 \
+    && apt-get -y install software-properties-common \
+    && add-apt-repository -y ppa:git-core/ppa \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends git strip-nondeterminism \
+    && apt-get -y purge software-properties-common \
+    && apt-get -y autoremove --purge \
     && apt-get clean \
     && git config --global http.postBuffer 1048576000 \
     && git config --global https.postBuffer 1048576000 \
@@ -42,7 +47,7 @@ RUN apt-get update \
     && apt-get clean
 
 
-# win32
+# windows x86_64
 RUN mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
@@ -56,28 +61,21 @@ RUN mkdir build && cd build \
     && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build
 
 
-# apple aarch64
-RUN mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple-aarm64.cmake -G Ninja .. \
-    && cmake --build . --config Release --target package \
-    && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build
-
-
-# android
-#ARG ANDROID_CMD_VERSION=14742923
-#ARG ANDROID_JAVA_MAJOR=17
-#ENV ANDROID_HOME=/usr/local/android-sdk
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
-#    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
-#    && curl -fsSL "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip" -o tools.zip \
-#    && unzip -q tools.zip && rm tools.zip \
-#    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
-#    && cd ${CONTEXT_HOME} && mkdir build && cd build \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DNO_DEPS=ON -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
-#    && cmake --build . --config Release --target Gradle \
-#    && cmake --build . --config Release --target GradleClear \
-#    && rm -rf build ../External/Build ../External/Sdk /root/.android /root/.gradle $ANDROID_HOME \
-#    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
-#    && apt-get -y autoremove --purge \
-#    && apt-get clean
+# android aarch64
+ARG ANDROID_CMD_VERSION=14742923
+ARG ANDROID_JAVA_MAJOR=17
+ENV ANDROID_HOME=/usr/local/android-sdk
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends openjdk-${ANDROID_JAVA_MAJOR}-jdk \
+    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
+    && curl -fsSL "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip" -o tools.zip \
+    && unzip -q tools.zip && rm tools.zip \
+    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=$ANDROID_HOME > /dev/null \
+    && cd ${CONTEXT_HOME} && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DNO_DEPS=ON -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux-x64.cmake -G Ninja .. \
+    && cmake --build . --config Release --target Gradle \
+    && cmake --build . --config Release --target GradleClear \
+    && rm -rf build ../External/Build ../External/Sdk /root/.android /root/.gradle $ANDROID_HOME \
+    && apt-get -y purge openjdk-${ANDROID_JAVA_MAJOR}-jdk \
+    && apt-get -y autoremove --purge \
+    && apt-get clean
