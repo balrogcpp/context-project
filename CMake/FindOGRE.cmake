@@ -96,6 +96,7 @@ find_library(OGRE_ZONE_LIBRARY Plugin_OctreeSceneManager${OGRE_POSTFIX} PATHS ${
 find_library(OGRE_VULKAN_LIBRARY RenderSystem_Vulkan${OGRE_POSTFIX} PATHS ${OGRE_PREFIX_PATH} PATH_SUFFIXES "OGRE")
 find_library(OGRE_TINY_LIBRARY RenderSystem_Tiny${OGRE_POSTFIX} PATHS ${OGRE_PREFIX_PATH} PATH_SUFFIXES "OGRE")
 find_library(OGRE_PCZ_LIBRARY Plugin_PCZSceneManager${OGRE_POSTFIX} PATHS ${OGRE_PREFIX_PATH} PATH_SUFFIXES "OGRE")
+find_package(OgreProcedural)
 
 
 # Handle the QUIETLY and REQUIRED arguments and set THEORA_FOUND
@@ -105,6 +106,10 @@ set(FPHSA_NAME_MISMATCHED TRUE)
 find_package_handle_standard_args(OGRE REQUIRED_VARS OGRE_INCLUDE_DIR OGRE_MAIN_LIBRARY VERSION_VAR OGRE_VERSION)
 
 
+if (OgreProcedural_FOUND)
+    list(APPEND OGRE_LIBRARIES ${OgreProcedural_LIBRARY})
+    list(APPEND OGRE_INCLUDE_DIRS ${OgreProcedural_INCLUDE_DIR})
+endif ()
 macro(find_package_static package)
     if (OGRE_STATIC)
         set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
