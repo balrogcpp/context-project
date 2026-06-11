@@ -1,8 +1,8 @@
 diff --git a/CMake/Dependencies.cmake b/CMake/Dependencies.cmake
-index fb7c1f0..8c99c7c 100644
+index 77c0bab..4ab7008 100644
 --- a/CMake/Dependencies.cmake
 +++ b/CMake/Dependencies.cmake
-@@ -279,8 +279,8 @@ if (NOT (APPLE_IOS OR WINDOWS_STORE OR WINDOWS_PHONE OR ANDROID OR EMSCRIPTEN))
+@@ -280,8 +280,8 @@ if (NOT (APPLE_IOS OR WINDOWS_STORE OR WINDOWS_PHONE OR ANDROID OR EMSCRIPTEN))
    macro_log_feature(Cg_FOUND "cg" "C for graphics shader language" "http://developer.nvidia.com/object/cg_toolkit.html")
  endif ()
  
@@ -14,7 +14,7 @@ index fb7c1f0..8c99c7c 100644
  # OpenEXR
  find_package(OpenEXR)
 diff --git a/CMake/Templates/imconfig.h b/CMake/Templates/imconfig.h
-index 7f6a28c..8610098 100644
+index 7f6a28c..c68d78d 100644
 --- a/CMake/Templates/imconfig.h
 +++ b/CMake/Templates/imconfig.h
 @@ -1,5 +1,6 @@
@@ -27,7 +27,7 @@ index 7f6a28c..8610098 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b0b9541..789c5fd 100644
+index d18823f..afd6444 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -132,7 +132,7 @@ index 483f9f3..0b87d5d 100644
  ogre_config_lib(OgreMain TRUE)
  install(FILES ${HEADER_FILES}
 diff --git a/OgreMain/src/OgreCompositor.cpp b/OgreMain/src/OgreCompositor.cpp
-index e17cb15..8625db9 100644
+index fbfd208..8603cee 100644
 --- a/OgreMain/src/OgreCompositor.cpp
 +++ b/OgreMain/src/OgreCompositor.cpp
 @@ -157,7 +157,7 @@ TexturePtr createTexture(const String& name, const CompositionTechnique::Texture
@@ -156,10 +156,10 @@ index e17cb15..8625db9 100644
      // try MRTs
      GlobalMRTMap::iterator mi = mGlobalMRTs.find(name);
 diff --git a/OgreMain/src/OgreCompositorInstance.cpp b/OgreMain/src/OgreCompositorInstance.cpp
-index 49291d4..868b846 100644
+index 0aeb459..ecb55c6 100644
 --- a/OgreMain/src/OgreCompositorInstance.cpp
 +++ b/OgreMain/src/OgreCompositorInstance.cpp
-@@ -729,7 +729,7 @@ void CompositorInstance::createResources(bool forResizeOnly)
+@@ -736,7 +736,7 @@ void CompositorInstance::createResources(bool forResizeOnly)
          else
          {
              for(size_t i = 0; i < tex->getNumLayers(); i++)
@@ -168,7 +168,7 @@ index 49291d4..868b846 100644
          }
      }
  
-@@ -991,8 +991,8 @@ RenderTarget *CompositorInstance::getRenderTarget(const String &name, int slice)
+@@ -998,8 +998,8 @@ RenderTarget *CompositorInstance::getRenderTarget(const String &name, int slice)
      // try simple texture
      LocalTextureMap::iterator i = mLocalTextures.find(name);
      if(i != mLocalTextures.end())
@@ -288,6 +288,19 @@ index 3ad2f2b..19116ee 100644
          PluginLibList::iterator i;
  
          for (i = mPluginLibs.begin(); i != mPluginLibs.end(); ++i)
+diff --git a/OgreMain/src/OgreSceneManager.cpp b/OgreMain/src/OgreSceneManager.cpp
+index dd683c9..dfba4d8 100644
+--- a/OgreMain/src/OgreSceneManager.cpp
++++ b/OgreMain/src/OgreSceneManager.cpp
+@@ -1006,7 +1006,7 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
+             {
+                 OgreProfileGroup("updateShadowTextures", OGREPROF_GENERAL);
+ 
+-                ensureShadowTexturesCreated();
++                //ensureShadowTexturesCreated();
+                 // *******
+                 // WARNING
+                 // *******
 diff --git a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp b/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
 index 560ac60..539c2e8 100644
 --- a/OgreMain/src/OgreShadowCameraSetupPSSM.cpp
@@ -319,10 +332,10 @@ index 8f3bad5..17b4f85 100644
  
      if (!mShadowDebugPass)
 diff --git a/OgreMain/src/OgreTextureShadowRenderer.cpp b/OgreMain/src/OgreTextureShadowRenderer.cpp
-index 47d55ea..eff96d9 100644
+index a50cb88..880f73d 100644
 --- a/OgreMain/src/OgreTextureShadowRenderer.cpp
 +++ b/OgreMain/src/OgreTextureShadowRenderer.cpp
-@@ -531,7 +531,7 @@ void SceneManager::TextureShadowRenderer::prepareShadowTextures(Camera* cam, Vie
+@@ -524,7 +524,7 @@ void SceneManager::TextureShadowRenderer::updateShadowTextures(Camera* cam, View
      else
      {
          // disable fogging explicitly
@@ -331,7 +344,7 @@ index 47d55ea..eff96d9 100644
      }
  
      // Iterate over the lights we've found, max out at the limit of light textures
-@@ -1090,7 +1090,7 @@ void SceneManager::TextureShadowRenderer::resolveShadowTexture(TextureUnitState*
+@@ -1078,7 +1078,7 @@ void SceneManager::TextureShadowRenderer::resolveShadowTexture(TextureUnitState*
      }
  
      tu->_setTexturePtr(shadowTex);
@@ -372,7 +385,7 @@ index 10283f5..ac57187 100644
    target_link_libraries(Codec_STBI PRIVATE ZLIB::ZLIB)
  endif()
 diff --git a/PlugIns/STBICodec/src/OgreSTBICodec.cpp b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
-index c5a4d4b..4dfb6f1 100644
+index 746ebf3..b7d642c 100644
 --- a/PlugIns/STBICodec/src/OgreSTBICodec.cpp
 +++ b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
 @@ -42,7 +42,7 @@ THE SOFTWARE.
@@ -411,7 +424,7 @@ index 5a14c0a..bff81da 100644
                                                   : (void*)params->getFloatPointer(def->physicalIndex);
  
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
-index 8d8e437..aba3e93 100644
+index daf0130..32944bf 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 +++ b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 @@ -122,7 +122,7 @@ namespace Ogre {
@@ -424,7 +437,7 @@ index 8d8e437..aba3e93 100644
              mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
  
 diff --git a/RenderSystems/GLES2/src/OgreGLES2PixelFormat.cpp b/RenderSystems/GLES2/src/OgreGLES2PixelFormat.cpp
-index 7e1578e..09b3549 100644
+index 430b800..3244bff 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2PixelFormat.cpp
 +++ b/RenderSystems/GLES2/src/OgreGLES2PixelFormat.cpp
 @@ -265,9 +265,9 @@ namespace Ogre {
@@ -440,7 +453,7 @@ index 7e1578e..09b3549 100644
  
      void GLES2PixelUtil::useSizedFormats()
 diff --git a/RenderSystems/GLSupport/CMakeLists.txt b/RenderSystems/GLSupport/CMakeLists.txt
-index e591cb2..3a5b9e1 100644
+index fa85fa5..dc40356 100644
 --- a/RenderSystems/GLSupport/CMakeLists.txt
 +++ b/RenderSystems/GLSupport/CMakeLists.txt
 @@ -104,7 +104,7 @@ elseif (UNIX)
@@ -494,10 +507,10 @@ index 436c498..9a1e604 100644
  
  #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 diff --git a/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp b/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp
-index 0343ddd..34e3f4c 100644
+index 3488aa6..c32a4a4 100644
 --- a/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp
 +++ b/RenderSystems/GLSupport/src/win32/OgreWin32GLSupport.cpp
-@@ -257,7 +257,7 @@ namespace Ogre {
+@@ -254,7 +254,7 @@ namespace Ogre {
  				#endif
  			#endif
  		#else
@@ -507,7 +520,7 @@ index 0343ddd..34e3f4c 100644
  		#endif
          
 diff --git a/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp b/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp
-index db19925..3ab914c 100644
+index 2a5e04d..9d301a8 100644
 --- a/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp
 +++ b/RenderSystems/GLSupport/src/win32/OgreWin32Window.cpp
 @@ -83,7 +83,7 @@ namespace Ogre {
