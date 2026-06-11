@@ -495,6 +495,8 @@ externalproject_add(Target_OGRE
         -DCMAKE_DISABLE_FIND_PACKAGE_FreeImage=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_PythonInterp=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_PythonLibs=ON
         -DIMGUI_DIR=${DEPS_SOURCE_LOCATION}/Target_imgui
         -DOGRE_BUILD_COMPONENT_BITES=OFF
         -DOGRE_BUILD_COMPONENT_BULLET=OFF
@@ -547,11 +549,13 @@ externalproject_add(Target_OgreProcedural
         CMAKE_ARGS
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+        -DCMAKE_DISABLE_FIND_PACKAGE_Freetype=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_assimp=ON
         -DOgreProcedural_BUILD_SAMPLES=OFF
         -DOgreProcedural_BUILD_TESTS=OFF
         -DOgreProcedural_BUILD_DOCS=OFF
         -DOgreProcedural_STATIC=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_Freetype=ON
 )
 
 
