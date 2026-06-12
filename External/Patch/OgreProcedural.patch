@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e9107f5..3c9523b 100644
+index e9107f5..0cbe50a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,4 +1,4 @@
@@ -8,6 +8,15 @@ index e9107f5..3c9523b 100644
  
  if (CMAKE_VERSION VERSION_LESS 3.0)
    PROJECT(OgreProcedural CXX)
+@@ -29,7 +29,7 @@ set(CMAKE_MODULE_PATH
+ )
+ 
+ include(ProceduralAddTargets)
+-SET(CMAKEFILES_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/OgreProcedural")
++SET(CMAKEFILES_INSTALL_DIR "lib/cmake/OgreProcedural")
+ 
+ set(OgreProcedural_VERSION_MAJOR 0)
+ set(OgreProcedural_VERSION_MINOR 3)
 @@ -183,7 +183,7 @@ if(OgreProcedural_BUILD_DOCS)
  endif()
  
@@ -27,9 +36,18 @@ index e9107f5..3c9523b 100644
  configure_package_config_file(
          OgreProceduralConfig.cmake.in
 diff --git a/library/CMakeLists.txt b/library/CMakeLists.txt
-index 6183b56..2b8dbc2 100644
+index 6183b56..a14ab06 100644
 --- a/library/CMakeLists.txt
 +++ b/library/CMakeLists.txt
+@@ -10,7 +10,7 @@ endif(UNIX)
+ include(CMakePackageConfigHelpers)
+ include(PrecompiledHeader)
+ include(ProceduralConfigTargets)
+-SET(CMAKEFILES_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/OgreProcedural")
++SET(CMAKEFILES_INSTALL_DIR "lib/cmake/OgreProcedural")
+ 
+ set( HDRS
+ 	${OgreProcedural_BINARY_DIR}/include/ProceduralPlatform.h
 @@ -142,7 +142,7 @@ target_link_libraries(OgreProcedural ${OGRE_LIBRARIES} ${OIS_LIBRARIES})
  
  procedural_install_target(OgreProcedural)
