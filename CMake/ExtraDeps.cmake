@@ -422,7 +422,7 @@ externalproject_add(Target_OgreAudio
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreAudio
         GIT_REPOSITORY https://github.com/OGRECave/ogre-audiovideo.git
-        GIT_TAG 2d373450b5c63849eeacfa1fefc9d101b52fd447
+        GIT_TAG d410b28d04bc04c4f3d0581f20b19e7a922c0cc6
         GIT_SHALLOW false
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -463,6 +463,25 @@ externalproject_add(Target_OgreProcedural
         -DOgreProcedural_BUILD_TESTS=OFF
         -DOgreProcedural_BUILD_DOCS=OFF
         -DOgreProcedural_STATIC=ON
+)
+
+
+externalproject_add(Target_OgrePagedGeometry
+        EXCLUDE_FROM_ALL true
+        DEPENDS Target_OGRE
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural
+        GIT_REPOSITORY https://github.com/OGRECave/ogre-pagedgeometry.git
+        GIT_TAG 5297d3d3f7deed4cf98217078c0fdf80eb28d19c
+        GIT_SHALLOW false
+        PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
+        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
+        CMAKE_ARGS
+        ${EXTERNAL_PROJECT_CFG}
+        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
 )
 
 

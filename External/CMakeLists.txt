@@ -533,32 +533,6 @@ externalproject_add(Target_OGRE
 )
 
 
-externalproject_add(Target_OgreProcedural
-        EXCLUDE_FROM_ALL true
-        DEPENDS Target_OGRE
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural
-        GIT_REPOSITORY https://github.com/OGRECave/ogre-procedural.git
-        GIT_TAG 338a56566d70ff9c34ed196e79a2a178d83c3c7c
-        GIT_SHALLOW false
-        PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
-        CMAKE_GENERATOR ${CMAKE_GENERATOR}
-        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
-        CMAKE_ARGS
-        ${EXTERNAL_PROJECT_CFG}
-        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DCMAKE_DISABLE_FIND_PACKAGE_Freetype=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_assimp=ON
-        -DOgreProcedural_BUILD_SAMPLES=OFF
-        -DOgreProcedural_BUILD_TESTS=OFF
-        -DOgreProcedural_BUILD_DOCS=OFF
-        -DOgreProcedural_STATIC=ON
-)
-
-
 create_target(Target_Lua https://github.com/lua/lua.git v5.4.8)
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
