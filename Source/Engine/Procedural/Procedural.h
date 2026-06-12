@@ -56,11 +56,11 @@ THE SOFTWARE.
 //#include "ProceduralSpringGenerator.h"
 //#include "ProceduralSVG.h"
 //#include "ProceduralDebugRendering.h"
-#include "ProceduralTextureGenerator.h"
+//#include "ProceduralTextureGenerator.h"
 //#include "ProceduralTextureModifiers.h"
-#include "ProceduralNoise.h"
+//#include "ProceduralNoise.h"
 #include "ProceduralMeshModifiers.h"
-#include "ProceduralTextureBuffer.h"
+//#include "ProceduralTextureBuffer.h"
 #include "ProceduralPrismGenerator.h"
 
 #endif
