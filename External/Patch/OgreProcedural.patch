@@ -1,0 +1,41 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e9107f5..3c9523b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.10)
++cmake_minimum_required(VERSION 3.15)
+ 
+ if (CMAKE_VERSION VERSION_LESS 3.0)
+   PROJECT(OgreProcedural CXX)
+@@ -183,7 +183,7 @@ if(OgreProcedural_BUILD_DOCS)
+ endif()
+ 
+ # Install CMake modules
+-add_subdirectory(CMake)
++#add_subdirectory(CMake)
+ 
+ # and CPack
+ # cpack
+@@ -241,7 +241,7 @@ if (OgreProcedural_INSTALL_DOCS)
+ endif()
+ # install the PkgConfig file
+ configure_file("${CMAKE_SOURCE_DIR}/OgreProcedural.pc.in" "${CMAKE_BINARY_DIR}/OgreProcedural.pc" @ONLY)
+-install(FILES "${CMAKE_BINARY_DIR}/OgreProcedural.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
++#install(FILES "${CMAKE_BINARY_DIR}/OgreProcedural.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+ 
+ configure_package_config_file(
+         OgreProceduralConfig.cmake.in
+diff --git a/library/CMakeLists.txt b/library/CMakeLists.txt
+index 6183b56..2b8dbc2 100644
+--- a/library/CMakeLists.txt
++++ b/library/CMakeLists.txt
+@@ -142,7 +142,7 @@ target_link_libraries(OgreProcedural ${OGRE_LIBRARIES} ${OIS_LIBRARIES})
+ 
+ procedural_install_target(OgreProcedural)
+ 		
+-install(FILES ${HDRS} DESTINATION include/OgreProcedural)
++install(FILES ${HDRS} DESTINATION include/OGRE/OgreProcedural)
+ if(MSVC)
+ 	if(OgreProcedural_INSTALL_PDB)
+ 		if(OgreProcedural_STATIC)

@@ -447,9 +447,10 @@ externalproject_add(Target_OgreProcedural
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural
         GIT_REPOSITORY https://github.com/OGRECave/ogre-procedural.git
-        GIT_TAG 6a0bfe7c0cae4e634e15c81bdbd62a0f954e2a92
+        GIT_TAG 338a56566d70ff9c34ed196e79a2a178d83c3c7c
         GIT_SHALLOW false
-        PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
+        PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural ${GIT_EXECUTABLE} reset -q --hard
+        COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OgreProcedural ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${DEPS_PATCH_LOCATION}/OgreProcedural.patch
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
