@@ -1,28 +1,19 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 060a740..dbd76e3 100644
+index 060a740..9c91a56 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1,6 +1,6 @@
- # CMake build file list for OpenAL
- 
--cmake_minimum_required(VERSION 3.13)
-+cmake_minimum_required(VERSION 3.15)
- enable_testing()
- 
- if(APPLE)
-@@ -145,6 +145,11 @@ if(DEFINED ALSOFT_AMBDEC_PRESETS)
+@@ -145,6 +145,10 @@ if(DEFINED ALSOFT_AMBDEC_PRESETS)
  endif()
  
  if(MSVC)
 +    if (${CMAKE_GENERATOR} MATCHES "^Visual")
-+        string(APPEND CMAKE_CXX_FLAGS " /MP")
-+        string(APPEND CMAKE_C_FLAGS " /MP")
++        add_compile_options(/MP)
 +    endif ()
 +
      option(FORCE_STATIC_VCRT "Force /MT for static VC runtimes" OFF)
      if(FORCE_STATIC_VCRT)
          foreach(flag_var
-@@ -300,15 +305,12 @@ else()
+@@ -300,15 +304,12 @@ else()
          set(C_FLAGS ${C_FLAGS} $<$<COMPILE_LANGUAGE:CXX>:-Wno-interference-size>)
      endif()
  
@@ -44,7 +35,7 @@ index 060a740..dbd76e3 100644
      # initialization where necessary.
      check_c_compiler_flag(-ftrivial-auto-var-init=pattern HAVE_FTRIVIAL_AUTO_VAR_INIT)
      if(HAVE_FTRIVIAL_AUTO_VAR_INIT)
-@@ -1582,7 +1584,7 @@ target_compile_options(${IMPL_TARGET} PRIVATE ${C_FLAGS})
+@@ -1582,7 +1583,7 @@ target_compile_options(${IMPL_TARGET} PRIVATE ${C_FLAGS})
  if(TARGET alsoft.build_version)
      add_dependencies(${IMPL_TARGET} alsoft.build_version)
  endif()
