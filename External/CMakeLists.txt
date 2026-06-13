@@ -598,6 +598,7 @@ externalproject_add(Target_OpenSSL
         -DBUILD_TESTING=OFF
         -DOPENSSL_SMALL=ON
         -DOPENSSL_NO_ASM=ON
+        -DBUILD_BSSL=OFF
 )
 
 

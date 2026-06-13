@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index aaf3bf1..21e1605 100644
+index aaf3bf1..6307873 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -113,9 +113,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CLANG)
@@ -14,4 +14,4 @@ index aaf3bf1..21e1605 100644
 +endif ()
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -utf-8 -Zc:__cplusplus")
  endif()
- 
+
