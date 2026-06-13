@@ -29,7 +29,7 @@ THE SOFTWARE.
 #ifndef PROCEDURAL_H_INCLUDED
 #define PROCEDURAL_H_INCLUDED
 
-#include "ProceduralPlatform.h"
+//#include "ProceduralPlatform.h"
 #include "ProceduralBoxGenerator.h"
 //#include "ProceduralCapsuleGenerator.h"
 //#include "ProceduralConeGenerator.h"
