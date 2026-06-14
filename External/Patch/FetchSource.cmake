@@ -7,9 +7,11 @@ set(_fetch_source_included true)
 set(TARGET ${TARGET})
 set(REPO ${REPO})
 set(TAG ${TAG})
+set(PATCH ${PATCH})
+set(MODULES ${MODULES})
 
-find_package(Git REQUIRED)
-
+find_package(Git REQUIRED QUIET)
+include(CMakeParseArguments)
 function(create_target TARGET REPO TAG)
     set(options)
     set(oneValueArgs PATCH)
@@ -29,29 +31,28 @@ function(create_target TARGET REPO TAG)
     endif()
 
     # Patch validation
-    if(ARG_PATCH)
-        set(PATCH_PATH "${DEPS_PATCH_LOCATION}/${ARG_PATCH}")
+    if(PATCH)
+        set(PATCH_PATH "${PATCH}")
 
         if(NOT EXISTS "${PATCH_PATH}")
-            message(FATAL_ERROR "Patch file ${ARG_PATCH} not found")
+            message(FATAL_ERROR "Patch file ${PATCH} not found")
         endif()
     endif()
 
     # Existing repository check
     execute_process(
             COMMAND ${GIT_EXECUTABLE} tag
-            WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+            WORKING_DIRECTORY ${TARGET}
             OUTPUT_VARIABLE head_rev
             ERROR_QUIET
     )
 
     string(STRIP "${head_rev}" head_rev)
 
-    file(GLOB RESULT "${DEPS_SOURCE_LOCATION}/${TARGET}")
+    file(GLOB RESULT "${TARGET}")
     list(LENGTH RESULT RES_LEN)
 
     set(CLONE_COMMAND
-            ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
             ${GIT_EXECUTABLE} clone ${CLONE_ARGS} -b ${TAG} ${REPO} ${TARGET}
     )
 
@@ -59,19 +60,19 @@ function(create_target TARGET REPO TAG)
         if("${head_rev}" MATCHES "${TAG}")
             set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true PARENT_SCOPE)
 
-            if(ARG_PATCH)
+            if(PATCH)
                 execute_process(
                         COMMAND ${GIT_EXECUTABLE} reset -q --hard
-                        WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+                        WORKING_DIRECTORY ${TARGET}
                 )
 
                 execute_process(
                         COMMAND ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${PATCH_PATH}
-                        WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+                        WORKING_DIRECTORY ${TARGET}
                 )
             endif()
         else()
-            file(REMOVE_RECURSE ${DEPS_SOURCE_LOCATION}/${TARGET})
+            file(REMOVE_RECURSE ${TARGET})
             set(DOWNLOAD_PLACEHOLDER ${CLONE_COMMAND} PARENT_SCOPE)
         endif()
     else()
@@ -79,17 +80,17 @@ function(create_target TARGET REPO TAG)
     endif()
 
     # Patch handling
-    if(ARG_PATCH)
+    if(PATCH)
         execute_process(
                 COMMAND ${GIT_EXECUTABLE} apply -q --check --ignore-space-change --unidiff-zero ${PATCH_PATH}
-                WORKING_DIRECTORY ${DEPS_SOURCE_LOCATION}/${TARGET}
+                WORKING_DIRECTORY ${TARGET}
                 RESULT_VARIABLE checkout_err
         )
 
         if(NOT checkout_err
-                OR NOT EXISTS ${DEPS_SOURCE_LOCATION}/${TARGET}/.git)
+                OR NOT EXISTS ${TARGET}/.git)
 
-            set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET}
+            set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${TARGET}
                     ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${PATCH_PATH}
             )
             set(PATCH_PLACEHOLDER ${PATCH_PLACEHOLDER} PARENT_SCOPE)
@@ -100,3 +101,13 @@ function(create_target TARGET REPO TAG)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true PARENT_SCOPE)
     endif()
 endfunction()
+
+message("${CMAKE_SOURCE_DIR}")
+message("${TARGET}")
+message("${REPO}")
+message("${TAG}")
+message("${PATCH}")
+message("${MODULES}")
+create_target(${TARGET} ${REPO} ${TAG} ${PATCH})
+execute_process(COMMAND ${DOWNLOAD_PLACEHOLDER})
+execute_process(COMMAND ${PATCH_PLACEHOLDER})

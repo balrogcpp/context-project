@@ -167,14 +167,18 @@ function(create_target TARGET REPO TAG)
 endfunction()
 
 
-create_target(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.10 PATCH sdl2-2.32.10.patch)
+#create_target(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.10 PATCH sdl2-2.32.10.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_SDL2
+        -DREPO=https://github.com/libsdl-org/SDL.git
+        -DTAG=release-2.32.10
+        -DPATCH=${DEPS_PATCH_LOCATION}/sdl2-2.32.10.patch
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -200,14 +204,17 @@ externalproject_add(Target_SDL2
 )
 
 
-create_target(Target_Bullet https://github.com/bulletphysics/bullet3.git 3.25)
+#create_target(Target_Bullet https://github.com/bulletphysics/bullet3.git 3.25)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Bullet
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_Bullet
+        -DREPO=https://github.com/bulletphysics/bullet3.git
+        -DTAG=3.25
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -236,7 +243,7 @@ externalproject_add(Target_Bullet
 )
 
 
-create_target(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.3 PATCH openal-1.24.2.patch)
+#create_target(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.3 PATCH openal-1.24.2.patch)
 if (WIN32 OR ANDROID OR IOS)
     set(OPENAL_LIBTYPE "STATIC")
 else ()
@@ -247,8 +254,12 @@ externalproject_add(Target_OpenAL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenAL
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_OpenAL
+        -DREPO=https://github.com/kcat/openal-soft.git
+        -DTAG=1.24.3
+        -DPATCH=${DEPS_PATCH_LOCATION}/openal-1.24.2.patch
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -277,13 +288,17 @@ externalproject_add(Target_OpenAL
 )
 
 
-create_target(Target_Ogg https://github.com/xiph/ogg.git v1.3.6)
+#create_target(Target_Ogg https://github.com/xiph/ogg.git v1.3.6)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Ogg
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_Ogg
+        -DREPO=https://github.com/xiph/ogg.git
+        -DTAG=v1.3.6
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -299,12 +314,16 @@ externalproject_add(Target_Ogg
 )
 
 
-create_target(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7)
+#create_target(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
         DEPENDS Target_Ogg
         PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_Vorbis
+        -DREPO=https://github.com/xiph/vorbis.git
+        -DTAG=v1.3.7
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Vorbis
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
