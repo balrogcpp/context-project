@@ -167,7 +167,6 @@ function(create_target TARGET REPO TAG)
 endfunction()
 
 
-#create_target(Target_SDL2 https://github.com/libsdl-org/SDL.git release-2.32.10 PATCH sdl2-2.32.10.patch)
 externalproject_add(Target_SDL2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -204,7 +203,6 @@ externalproject_add(Target_SDL2
 )
 
 
-#create_target(Target_Bullet https://github.com/bulletphysics/bullet3.git 3.25)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -243,7 +241,6 @@ externalproject_add(Target_Bullet
 )
 
 
-#create_target(Target_OpenAL https://github.com/kcat/openal-soft.git 1.24.3 PATCH openal-1.24.2.patch)
 if (WIN32 OR ANDROID OR IOS)
     set(OPENAL_LIBTYPE "STATIC")
 else ()
@@ -288,7 +285,6 @@ externalproject_add(Target_OpenAL
 )
 
 
-#create_target(Target_Ogg https://github.com/xiph/ogg.git v1.3.6)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -314,7 +310,6 @@ externalproject_add(Target_Ogg
 )
 
 
-#create_target(Target_Vorbis https://github.com/xiph/vorbis.git v1.3.7)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
         DEPENDS Target_Ogg
@@ -356,14 +351,17 @@ externalproject_add(Target_Theora
 )
 
 
-create_target(Target_assimp https://github.com/assimp/assimp.git v6.0.5 PATCH assimp-6.0.0.patch)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_assimp
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_assimp
+        -DREPO=https://github.com/assimp/assimp.git
+        -DTAG=v6.0.5
+        -DPATCH=${DEPS_PATCH_LOCATION}/assimp-6.0.0.patch
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -451,15 +449,18 @@ externalproject_add(Target_imgui
 )
 
 
-create_target(Target_OGRE https://github.com/OGRECave/ogre.git v14.5.2 PATCH ogre-14.5.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         DEPENDS Target_imgui
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_OGRE
+        -DREPO=https://github.com/OGRECave/ogre.git
+        -DTAG=v14.5.2
+        -DPATCH=${DEPS_PATCH_LOCATION}/ogre-14.5.0.patch
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -552,13 +553,16 @@ externalproject_add(Target_OGRE
 )
 
 
-create_target(Target_Lua https://github.com/lua/lua.git v5.4.8)
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_Lua
+        -DREPO=https://github.com/lua/lua.git
+        -DTAG=v5.4.8
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -577,13 +581,16 @@ externalproject_add(Target_Lua
 )
 
 
-create_target(Target_sol2 https://github.com/ThePhD/sol2.git v3.5.0)
 externalproject_add(Target_sol2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_sol2
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_sol2
+        -DREPO=https://github.com/ThePhD/sol2.git
+        -DTAG=v3.5.0
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchSOL2.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -600,14 +607,17 @@ externalproject_add(Target_sol2
 )
 
 
-create_target(Target_OpenSSL https://github.com/google/boringssl.git 0.20260526.0 PATCH boringssl.patch)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_OpenSSL
+        -DREPO=https://github.com/google/boringssl.git
+        -DTAG=0.20260526.0
+        -DPATCH=${DEPS_PATCH_LOCATION}/boringssl.patch
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -628,7 +638,11 @@ externalproject_add(Target_yojimbo
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_yojimbo
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_yojimbo
+        -DREPO=https://github.com/mas-bandwidth/yojimbo.git
+        -DTAG=v1.2.5
+        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/yojimbo.cmake ${DEPS_SOURCE_LOCATION}/Target_yojimbo/CMakeLists.txt
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
