@@ -87,7 +87,7 @@ externalproject_add(Target_SDL2
         -DREPO=https://github.com/libsdl-org/SDL.git
         -DTAG=release-2.32.10
         -DPATCH=${DEPS_PATCH_LOCATION}/sdl2-2.32.10.patch
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -122,7 +122,7 @@ externalproject_add(Target_Bullet
         ${CMAKE_COMMAND} -DTARGET=Target_Bullet
         -DREPO=https://github.com/bulletphysics/bullet3.git
         -DTAG=3.25
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -166,7 +166,7 @@ externalproject_add(Target_OpenAL
         -DREPO=https://github.com/kcat/openal-soft.git
         -DTAG=1.24.3
         -DPATCH=${DEPS_PATCH_LOCATION}/openal-1.24.2.patch
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -204,7 +204,7 @@ externalproject_add(Target_Ogg
         ${CMAKE_COMMAND} -DTARGET=Target_Ogg
         -DREPO=https://github.com/xiph/ogg.git
         -DTAG=v1.3.6
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -228,7 +228,7 @@ externalproject_add(Target_Vorbis
         ${CMAKE_COMMAND} -DTARGET=Target_Vorbis
         -DREPO=https://github.com/xiph/vorbis.git
         -DTAG=v1.3.7
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Vorbis
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
@@ -271,7 +271,7 @@ externalproject_add(Target_assimp
         -DREPO=https://github.com/assimp/assimp.git
         -DTAG=v6.0.5
         -DPATCH=${DEPS_PATCH_LOCATION}/assimp-6.0.0.patch
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -352,7 +352,7 @@ externalproject_add(Target_imgui
         ${CMAKE_COMMAND} -DTARGET=Target_imgui
         -DREPO=https://github.com/ocornut/imgui.git
         -DTAG=v1.92.8
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         PATCH_COMMAND ${PATCH_PLACEHOLDER}
@@ -373,7 +373,7 @@ externalproject_add(Target_OGRE
         -DREPO=https://github.com/OGRECave/ogre.git
         -DTAG=v14.5.2
         -DPATCH=${DEPS_PATCH_LOCATION}/ogre-14.5.0.patch
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -475,7 +475,7 @@ externalproject_add(Target_Lua
         ${CMAKE_COMMAND} -DTARGET=Target_Lua
         -DREPO=https://github.com/lua/lua.git
         -DTAG=v5.4.8
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -503,7 +503,7 @@ externalproject_add(Target_sol2
         ${CMAKE_COMMAND} -DTARGET=Target_sol2
         -DREPO=https://github.com/ThePhD/sol2.git
         -DTAG=v3.5.0
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchSOL2.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -530,7 +530,7 @@ externalproject_add(Target_OpenSSL
         -DREPO=https://github.com/google/boringssl.git
         -DTAG=0.20260526.0
         -DPATCH=${DEPS_PATCH_LOCATION}/boringssl.patch
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -554,7 +554,7 @@ externalproject_add(Target_yojimbo
         ${CMAKE_COMMAND} -DTARGET=Target_yojimbo
         -DREPO=https://github.com/mas-bandwidth/yojimbo.git
         -DTAG=v1.2.5
-        -P ${DEPS_PATCH_LOCATION}/FetchSource.cmake
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/yojimbo.cmake ${DEPS_SOURCE_LOCATION}/Target_yojimbo/CMakeLists.txt
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
