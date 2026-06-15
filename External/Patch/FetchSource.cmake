@@ -105,6 +105,8 @@ function(fetch_source TARGET REPO TAG)
 endfunction()
 
 # generate and execute shell commands
-fetch_source(${TARGET} ${REPO} ${TAG} ${PATCH} ${MODULES})
-execute_process(COMMAND ${DOWNLOAD_PLACEHOLDER})
-execute_process(COMMAND ${PATCH_PLACEHOLDER})
+if (CMAKE_SCRIPT_MODE_FILE)
+    fetch_source(${TARGET} ${REPO} ${TAG} ${PATCH} ${MODULES})
+    execute_process(COMMAND ${DOWNLOAD_PLACEHOLDER})
+    execute_process(COMMAND ${PATCH_PLACEHOLDER})
+endif ()

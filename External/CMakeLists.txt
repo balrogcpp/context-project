@@ -1,5 +1,5 @@
 # cmake min version
-cmake_minimum_required(VERSION 3.18.0)
+cmake_minimum_required(VERSION 3.22.0)
 project(External)
 
 # externalproject_add and c++ flags
