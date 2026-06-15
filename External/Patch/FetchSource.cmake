@@ -12,7 +12,9 @@ set(_fetch_source_included true)
 #message("${MODULES}")
 find_package(Git REQUIRED QUIET)
 include(CMakeParseArguments)
-function(create_target TARGET REPO TAG)
+
+# main function that generates shell commands
+function(fetch_source TARGET REPO TAG)
     set(options)
     set(oneValueArgs PATCH)
     set(multiValueArgs MODULES)
@@ -102,7 +104,7 @@ function(create_target TARGET REPO TAG)
     endif()
 endfunction()
 
-
-create_target(${TARGET} ${REPO} ${TAG} ${PATCH} ${MODULES})
+# generate and execute shell commands
+fetch_source(${TARGET} ${REPO} ${TAG} ${PATCH} ${MODULES})
 execute_process(COMMAND ${DOWNLOAD_PLACEHOLDER})
 execute_process(COMMAND ${PATCH_PLACEHOLDER})
