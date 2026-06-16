@@ -55,13 +55,14 @@ externalproject_add(Target_Qt6
         ${CMAKE_COMMAND} -DTARGET=Target_Qt6
         -DREPO=https://github.com/qt/qt5.git
         -DTAG=v6.11.1
-        -DMODULES=${QT_MODULES}
+        -DMODULES:STRING=${QT_MODULES}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR Ninja
         CMAKE_CACHE_ARGS -DQT_BUILD_SUBMODULES:STRING=${QT_MODULES}
         CMAKE_ARGS
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
+        -DQT_ALLOW_SYMLINK_IN_PATHS=ON
         -DPython_ROOT_DIR=${DEPS_ROOT}/python
         -DCMAKE_DISABLE_FIND_PACKAGE_OpenSSL=ON
         -DQT_GENERATE_SBOM=OFF
