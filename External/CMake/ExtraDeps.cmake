@@ -456,12 +456,12 @@ externalproject_add(Target_benchmark
 )
 
 
-externalproject_add(Target_OgreAudio
+externalproject_add(Target_OgreAudioVideo
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_OGRE Target_Vorbis
+        DEPENDS Target_OGRE Target_Vorbis Target_Theora
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreAudio
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreAudioVideo
         GIT_REPOSITORY https://github.com/OGRECave/ogre-audiovideo.git
         GIT_TAG d410b28d04bc04c4f3d0581f20b19e7a922c0cc6
         GIT_SHALLOW false
@@ -472,8 +472,9 @@ externalproject_add(Target_OgreAudio
         CMAKE_ARGS
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DBUILD_VIDEOPLUGIN=OFF
+        -DBUILD_VIDEOPLUGIN=ON
         -DBUILD_AUDIOPLUGIN=ON
+        -DBUILD_DEMOS=OFF
         -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=ON
         -DOGGSOUND_THREADED=ON
         -DOGGSOUND_PYTHON=OFF
