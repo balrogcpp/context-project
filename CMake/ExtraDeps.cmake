@@ -1,11 +1,21 @@
-create_target(Target_SDL3 https://github.com/libsdl-org/SDL.git release-3.4.10 PATCH sdl2-3.4.4.patch)
+# include guard
+if (_extra_targets_included)
+    return()
+endif (_extra_targets_included)
+set(_extra_targets_included true)
+
+
 externalproject_add(Target_SDL3
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL3
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_SDL3
+        -DREPO=https://github.com/libsdl-org/SDL.git
+        -DTAG=release-3.4.10
+        -DPATCH=${DEPS_PATCH_LOCATION}/sdl2-3.4.4.patch
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -32,14 +42,16 @@ externalproject_add(Target_SDL3
 )
 
 
-create_target(Target_pugixml https://github.com/zeux/pugixml.git v1.15)
 externalproject_add(Target_pugixml
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_pugixml
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_pugixml
+        -DREPO=https://github.com/zeux/pugixml.git
+        -DTAG=v1.15
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -53,14 +65,16 @@ externalproject_add(Target_pugixml
 )
 
 
-create_target(Target_tinyxml2 https://github.com/leethomason/tinyxml2.git 11.0.0)
 externalproject_add(Target_tinyxml2
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_tinyxml2
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_tinyxml2
+        -DREPO=https://github.com/leethomason/tinyxml2.git
+        -DTAG=11.0.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -88,21 +102,18 @@ externalproject_add(Target_strawberryperl
 
 # Perl is required to build OpenSSL from sources. Perl expected to be bundled in UNIX OS
 # Version should be at least 5.10.0, released in 2007. https://github.com/openssl/openssl/blob/master/NOTES-PERL.md
-#create_target(Target_OpenSSL https://github.com/jimmy-park/openssl-cmake.git 3.6.2 PATCH openssl-3.6.2.patch)
-if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-    find_package(Perl QUIET)
-    if (NOT PERL_FOUND)
-        set(OPENSSL_DEPS Target_strawberryperl)
-    endif ()
-endif ()
-externalproject_add(Target_OpenSSL
+externalproject_add(Target_OpenSSL3
         EXCLUDE_FROM_ALL true
-        DEPENDS ${OPENSSL_DEPS}
+        DEPENDS Target_strawberryperl
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_OpenSSL
+        -DREPO=https://github.com/jimmy-park/openssl-cmake.git
+        -DTAG=3.6.2
+        -DPATCH=${DEPS_PATCH_LOCATION}/openssl-3.6.2.patch
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -121,13 +132,16 @@ externalproject_add(Target_OpenSSL
 )
 
 
-create_target(Target_LibreSSL https://github.com/PowerShell/LibreSSL.git V3.9.2.0)
 externalproject_add(Target_LibreSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_LibreSSL
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_LibreSSL
+        -DREPO=https://github.com/PowerShell/LibreSSL.git
+        -DTAG=V3.9.2.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchLibreSSL.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -143,15 +157,18 @@ externalproject_add(Target_LibreSSL
 )
 
 
-create_target(Target_cpr https://github.com/libcpr/cpr.git 1.10.5 PATCH cpr-1.10.5.patch)
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
         DEPENDS Target_LibreSSL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpr
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_cpr
+        -DREPO=https://github.com/libcpr/cpr.git
+        -DTAG=1.10.5
+        -DPATCH=${DEPS_PATCH_LOCATION}/cpr-1.10.5.patch
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -166,14 +183,16 @@ externalproject_add(Target_cpr
 )
 
 
-create_target(Target_http https://github.com/yhirose/cpp-httplib.git v0.46.1)
 externalproject_add(Target_http
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_http
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_http
+        -DREPO=https://github.com/yhirose/cpp-httplib.git
+        -DTAG=v0.46.1
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -186,14 +205,16 @@ externalproject_add(Target_http
 )
 
 
-create_target(Target_fmt https://github.com/fmtlib/fmt.git 12.1.0)
 externalproject_add(Target_fmt
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_fmt
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_fmt
+        -DREPO=https://github.com/fmtlib/fmt.git
+        -DTAG=12.2.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -208,14 +229,16 @@ externalproject_add(Target_fmt
 )
 
 
-create_target(Target_ghc https://github.com/gulrak/filesystem.git v1.5.14)
 externalproject_add(Target_ghc
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ghc
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_ghc
+        -DREPO=https://github.com/gulrak/filesystem.git
+        -DTAG=v1.5.14
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -228,14 +251,16 @@ externalproject_add(Target_ghc
 )
 
 
-create_target(Target_SQLiteCpp https://github.com/SRombauts/SQLiteCpp.git 3.3.3)
 externalproject_add(Target_SQLiteCpp
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SQLiteCpp
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_SQLiteCpp
+        -DREPO=https://github.com/SRombauts/SQLiteCpp.git
+        -DTAG=3.3.3
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -257,14 +282,16 @@ externalproject_add(Target_SQLiteCpp
 )
 
 
-create_target(Target_fkyaml https://github.com/fktn-k/fkYAML.git v0.4.2)
 externalproject_add(Target_fkyaml
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_fkyaml
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_fkyaml
+        -DREPO=https://github.com/fktn-k/fkYAML.git
+        -DTAG=v0.4.2
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -274,14 +301,16 @@ externalproject_add(Target_fkyaml
 )
 
 
-create_target(Target_ryaml https://github.com/biojppm/rapidyaml.git v0.10.0)
 externalproject_add(Target_ryaml
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ryaml
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_ryaml
+        -DREPO=https://github.com/biojppm/rapidyaml.git
+        -DTAG=v0.10.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -298,14 +327,16 @@ externalproject_add(Target_ryaml
 )
 
 
-create_target(Target_toml https://github.com/marzer/tomlplusplus.git v3.4.0)
 externalproject_add(Target_toml
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_toml
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_toml
+        -DREPO=https://github.com/marzer/tomlplusplus.git
+        -DTAG=v3.4.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -314,14 +345,16 @@ externalproject_add(Target_toml
 )
 
 
-create_target(Target_json https://github.com/nlohmann/json.git v3.12.0)
 externalproject_add(Target_json
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_json
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_json
+        -DREPO=https://github.com/nlohmann/json.git
+        -DTAG=v3.12.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -332,15 +365,17 @@ externalproject_add(Target_json
 )
 
 
-create_target(Target_enet https://github.com/lsalzman/enet.git v1.3.18)
 externalproject_add(Target_enet
         EXCLUDE_FROM_ALL true
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_enet
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_enet
+        -DREPO=https://github.com/lsalzman/enet.git
+        -DTAG=v1.3.18
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -349,15 +384,17 @@ externalproject_add(Target_enet
 )
 
 
-create_target(Target_libarchive https://github.com/libarchive/libarchive.git v3.8.6)
 externalproject_add(Target_libarchive
         EXCLUDE_FROM_ALL true
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_libarchive
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_libarchive
+        -DREPO=https://github.com/libarchive/libarchive.git
+        -DTAG=v3.8.6
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -373,15 +410,17 @@ externalproject_add(Target_libarchive
         -DENABLE_INSTALL=ON
 )
 
-create_target(Target_googletest https://github.com/google/googletest.git v1.17.0)
 externalproject_add(Target_googletest
         EXCLUDE_FROM_ALL true
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_googletest
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_googletest
+        -DREPO=https://github.com/google/googletest.git
+        -DTAG=v1.17.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -393,15 +432,17 @@ externalproject_add(Target_googletest
 )
 
 
-create_target(Target_benchmark https://github.com/google/benchmark.git v1.9.5)
 externalproject_add(Target_benchmark
         EXCLUDE_FROM_ALL true
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_benchmark
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_benchmark
+        -DREPO=https://github.com/google/benchmark.git
+        -DTAG=v1.9.5
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
@@ -506,7 +547,6 @@ externalproject_add(Target_cpython
 # Qt QML build creates very long tmp files, symbolic link is a way to avoid compilation error
 # Limitation comes with MSVC toolchain, it can't handle path over 260 characters
 # Another limitation comes from Windows OS. While it is possible to fix this via regedit, we can't relay on it
-create_target(Target_Qt6 https://github.com/qt/qt5.git v6.11.1 MODULES "qtbase;qtdeclarative;qtshadertools")
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
     set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
@@ -524,16 +564,23 @@ if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 else ()
     set (QT_SYMLINK ${DEPS_PREFIX_LOCATION})
 endif ()
-
+find_program(NINJA_EXECUTABLE ninja)
+set (QT_MODULES "qtbase,qtdeclarative,qtshadertools")
 externalproject_add(Target_Qt6
+        LIST_SEPARATOR ,
         EXCLUDE_FROM_ALL true
         DEPENDS Target_cpython
         PREFIX ${QT_SYMLINK}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
-        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        PATCH_COMMAND ${PATCH_PLACEHOLDER}
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_Qt6
+        -DREPO=https://github.com/qt/qt5.git
+        -DTAG=v6.11.1
+        -DMODULES:STRING=${QT_MODULES}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR Ninja
+        CMAKE_CACHE_ARGS -DQT_BUILD_SUBMODULES:STRING=${QT_MODULES}
         CMAKE_ARGS
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_MAKE_PROGRAM=${NINJA_EXECUTABLE}
