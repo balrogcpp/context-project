@@ -28,6 +28,7 @@ externalproject_add(Target_cpython
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
     set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
+    set(QT_DEP Target_cpython)
     if (NOT EXISTS ${QT_PREFIX})
         file(MAKE_DIRECTORY ${QT_PREFIX})
     endif ()
@@ -47,7 +48,7 @@ set (QT_MODULES "qtbase,qtdeclarative,qtshadertools")
 externalproject_add(Target_Qt6
         LIST_SEPARATOR ,
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_cpython
+        DEPENDS ${QT_DEP}
         PREFIX ${QT_SYMLINK}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Qt6
