@@ -42,7 +42,7 @@ if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 else ()
     set (QT_SYMLINK ${DEPS_PREFIX_LOCATION})
 endif ()
-find_program(NINJA_EXECUTABLE ninja)
+find_program(NINJA_EXECUTABLE ninja REQUIRED)
 set (QT_MODULES "qtbase,qtdeclarative,qtshadertools")
 externalproject_add(Target_Qt6
         LIST_SEPARATOR ,
