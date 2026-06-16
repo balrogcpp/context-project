@@ -4,6 +4,7 @@ if (_fetch_source_included)
 endif (_fetch_source_included)
 set(_fetch_source_included true)
 
+
 #message("${CMAKE_SOURCE_DIR}")
 #message("${TARGET}")
 #message("${REPO}")
@@ -12,6 +13,7 @@ set(_fetch_source_included true)
 #message("${MODULES}")
 find_package(Git REQUIRED QUIET)
 include(CMakeParseArguments)
+
 
 # main function that generates shell commands
 function(fetch_source TARGET REPO TAG)
@@ -50,13 +52,10 @@ function(fetch_source TARGET REPO TAG)
     )
 
     string(STRIP "${head_rev}" head_rev)
-
     file(GLOB RESULT "${TARGET}")
     list(LENGTH RESULT RES_LEN)
 
-    set(CLONE_COMMAND
-            ${GIT_EXECUTABLE} clone ${CLONE_ARGS} -b ${TAG} ${REPO} ${TARGET}
-    )
+    set(CLONE_COMMAND ${GIT_EXECUTABLE} clone ${CLONE_ARGS} -b ${TAG} ${REPO} ${TARGET})
 
     if(NOT RES_LEN EQUAL 0)
         if("${head_rev}" MATCHES "${TAG}")
@@ -89,9 +88,7 @@ function(fetch_source TARGET REPO TAG)
                 RESULT_VARIABLE checkout_err
         )
 
-        if(NOT checkout_err
-                OR NOT EXISTS ${TARGET}/.git)
-
+        if(NOT checkout_err OR NOT EXISTS ${TARGET}/.git)
             set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${TARGET}
                     ${GIT_EXECUTABLE} apply -q --reject --ignore-space-change --unidiff-zero ${PATCH_PATH}
             )

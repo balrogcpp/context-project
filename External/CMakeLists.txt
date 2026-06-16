@@ -8,6 +8,7 @@ include(CppFlags)
 
 # externalproject_add require git
 find_package(Git REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
 # cached variables
 if (${CMAKE_GENERATOR} MATCHES "^Visual")

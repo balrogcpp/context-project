@@ -55,7 +55,7 @@ externalproject_add(Target_Qt6
         ${CMAKE_COMMAND} -DTARGET=Target_Qt6
         -DREPO=https://github.com/qt/qt5.git
         -DTAG=v6.11.1
-        -DMODULES:STRING=${QT_MODULES}
+        -DMODULES=${QT_MODULES}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR Ninja
         CMAKE_CACHE_ARGS -DQT_BUILD_SUBMODULES:STRING=${QT_MODULES}
