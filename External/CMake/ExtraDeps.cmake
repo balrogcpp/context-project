@@ -50,7 +50,7 @@ externalproject_add(Target_pugixml
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_pugixml
         -DREPO=https://github.com/zeux/pugixml.git
-        -DTAG=v1.15
+        -DTAG=v1.16
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
