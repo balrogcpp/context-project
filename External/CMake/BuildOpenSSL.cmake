@@ -5,6 +5,7 @@ endif (_build_openssl_included)
 set(_build_openssl_included true)
 
 
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 externalproject_add(Target_strawberryperl
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -18,11 +19,10 @@ externalproject_add(Target_strawberryperl
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_strawberryperl/perl ${DEPS_ROOT}/perl
 )
-
-
-if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-    set(OPENSSL_DEP Target_strawberryperl)
+set(OPENSSL_DEP Target_strawberryperl)
 endif ()
+
+
 externalproject_add(Target_OpenSSL3
         EXCLUDE_FROM_ALL true
         DEPENDS ${OPENSSL_DEP}

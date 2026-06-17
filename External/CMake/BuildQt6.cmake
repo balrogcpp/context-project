@@ -5,6 +5,7 @@ endif (_build_qt_included)
 set(_build_qt_included true)
 
 
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 externalproject_add(Target_cpython
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -18,6 +19,8 @@ externalproject_add(Target_cpython
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_cpython ${DEPS_ROOT}/python
 )
+set(QT_DEP Target_cpython)
+endif ()
 
 
 # Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
@@ -28,7 +31,6 @@ externalproject_add(Target_cpython
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set (QT_SYMLINK "$ENV{SystemRoot}/Temp/Qt6")
     set (QT_PREFIX ${DEPS_PREFIX_LOCATION})
-    set(QT_DEP Target_cpython)
     if (NOT EXISTS ${QT_PREFIX})
         file(MAKE_DIRECTORY ${QT_PREFIX})
     endif ()
