@@ -2,10 +2,14 @@
 /cmake-build-release/
 /cmake-build-relwithdebinfo/
 /Release/
+/release/
 /RelWithDebInfo/
+/relwithdebinfo/
 /Debug/
+/debug/
 /build/
 /Artifacts/
+/artifacts/
 /tmp/
 /.idea/
 /.vs/

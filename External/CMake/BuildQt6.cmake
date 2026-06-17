@@ -1,8 +1,8 @@
 # include guard
-if (_build_qt_included)
+if (_build_qt6_included)
     return()
-endif (_build_qt_included)
-set(_build_qt_included true)
+endif (_build_qt6_included)
+set(_build_qt6_included true)
 
 
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
