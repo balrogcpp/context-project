@@ -561,13 +561,6 @@ void VideoComponent::InitWindow() {
     fullscreen = true;
   }
 
-  if (fullscreen) {
-    sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    sdlFlags |= SDL_WINDOW_BORDERLESS;
-    sizeX = screenWidth;
-    sizeY = screenHeight;
-  }
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX && defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   const bool isWayland = getenv("WAYLAND_DISPLAY") != nullptr || strcmp(getenv("XDG_SESSION_TYPE"), "wayland") == 0;
   const bool isX11 = strcmp(getenv("XDG_SESSION_TYPE"), "x11") == 0 && getenv("WAYLAND_DISPLAY") == nullptr;
@@ -583,6 +576,15 @@ void VideoComponent::InitWindow() {
     }
   }
 #endif
+
+  if (fullscreen) {
+    sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+    sdlFlags |= SDL_WINDOW_BORDERLESS;
+#endif
+    sizeX = screenWidth;
+    sizeY = screenHeight;
+  }
 
 #if defined(MANUAL_GL_CONTROL)
   if (RenderSystemIsGL3()) {
@@ -860,6 +862,164 @@ float VideoComponent::GetDisplayVDPI(int index) {
   float ddpi = 0.0, hdpi = 0.0, vdpi = 0.0;
   int res = SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi);
   return !res ? vdpi : 1.0;
+}
+
+int VideoComponent::GetDisplay() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  return SDL_GetWindowDisplayIndex(sdlWindow);
+}
+
+void VideoComponent::SetSize(int x, int y) {
+  sizeX = x;
+  sizeY = y;
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowSize(sdlWindow, x, y);
+  ogreWindow->resize(x, y);
+}
+
+void VideoComponent::SetFullscreen(bool fullscreen) {
+  this->fullscreen = fullscreen;
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  fullscreen ? SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP) : SDL_SetWindowFullscreen(sdlWindow, 0);
+}
+
+void VideoComponent::SetMaximized() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_MaximizeWindow(sdlWindow);
+}
+
+void VideoComponent::SetMinimized() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_MinimizeWindow(sdlWindow);
+}
+
+void VideoComponent::SetRestored() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_RestoreWindow(sdlWindow);
+}
+
+void VideoComponent::SetPrevSize() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SetSize(sizeX, sizeY);
+}
+
+void VideoComponent::SetRaised() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_RaiseWindow(sdlWindow);
+}
+
+void VideoComponent::SetRefresh() {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowTitle(sdlWindow, title.c_str());
+}
+
+void VideoComponent::SetPosition(int x, int y, int display) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  if (display < 0) {
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(this->display), SDL_WINDOWPOS_CENTERED_DISPLAY(this->display));
+    SDL_SetWindowPosition(sdlWindow, x, y);
+  } else {
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
+    SDL_SetWindowPosition(sdlWindow, x, y);
+  }
+}
+
+void VideoComponent::SetDisplay(int display) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  if (display >= 0 && display != this->display) {
+    if (fullscreen) SDL_SetWindowFullscreen(sdlWindow, 0);
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
+    if (fullscreen) SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  }
+}
+
+void VideoComponent::SetPositionCentered(int display) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  if (display < 0) {
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(this->display), SDL_WINDOWPOS_CENTERED_DISPLAY(this->display));
+  } else {
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(display), SDL_WINDOWPOS_CENTERED_DISPLAY(display));
+  }
+}
+
+void VideoComponent::SetCaption(const char *caption) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  this->title = caption;
+  SDL_SetWindowTitle(sdlWindow, caption);
+}
+
+void VideoComponent::SetIcon(const char *icon) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  // SDL_SetWindowIcon(sdlWindow, icon);
+}
+
+void VideoComponent::SetGrabMouse(bool grab) {
+#if !defined(__ANDROID__) // This breaks input @Android >9.0
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
+#endif
+}
+
+void VideoComponent::SetMouseRelativeMode(bool relative) {
+#if !defined(__ANDROID__)  // This breaks input @Android >9.0
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
+#endif
+}
+
+void VideoComponent::SetShowCursor(bool show) {
+#if !defined(__ANDROID__)  // This breaks input @Android >9.0
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  show ? SDL_ShowCursor(SDL_ENABLE) : SDL_ShowCursor(SDL_DISABLE);
+#endif
+}
+
+void VideoComponent::SetBordered(bool bordered) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowBordered(sdlWindow, static_cast<SDL_bool>(bordered));
+}
+
+void VideoComponent::SetResizable(bool resizable) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowResizable(sdlWindow, static_cast<SDL_bool>(resizable));
+}
+
+void VideoComponent::SetAlwaysOnTop(bool alwayOnTop) {
+  ASSERTION(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowAlwaysOnTop(sdlWindow, static_cast<SDL_bool>(alwayOnTop));
+}
+
+void VideoComponent::EnableVsync(bool enable) {
+  ASSERTION(ogreWindow, "ogreWindow not initialised");
+  ogreWindow->setVSyncEnabled(enable);
+  if (enable) {
+#ifdef MANUAL_GL_CONTROL
+    SDL_GL_SetSwapInterval(vsyncInt);
+#else
+    ogreWindow->setVSyncInterval(vsyncInt);
+#endif
+  } else {
+#ifdef MANUAL_GL_CONTROL
+    SDL_GL_SetSwapInterval(0);
+#else
+    ogreWindow->setVSyncInterval(vsyncInt);
+#endif
+  }
+}
+
+void VideoComponent::SetVsyncInterval(int interval) {
+  ASSERTION(ogreWindow, "ogreWindow not initialised");
+  vsyncInt = interval;
+#ifdef MANUAL_GL_CONTROL
+  SDL_GL_SetSwapInterval(interval);
+#else
+  ogreWindow->setVSyncInterval(interval);
+#endif
+}
+
+bool VideoComponent::IsVsyncEnabled() {
+  ASSERTION(ogreWindow, "ogreWindow not initialised");
+  return ogreWindow->isVSyncEnabled();
 }
 
 void VideoComponent::ClearScene() {

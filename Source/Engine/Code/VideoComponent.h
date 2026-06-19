@@ -54,11 +54,42 @@ class VideoComponent final : public WindowListener, public Component<VideoCompon
   void SetTexFiltering(unsigned int type, int anisotropy);
   std::vector<float> GetPSSMSplitPoints();
 
+  int GetWindowSizeX() const {
+    return sizeX;
+  }
+  int GetWindowSizeY() const {
+    return sizeY;
+  }
   int GetDisplaySizeX(int index);
   int GetDisplaySizeY(int index);
   float GetDisplayDPI(int index);
   float GetDisplayHDPI(int index);
   float GetDisplayVDPI(int index);
+  int GetDisplay();
+
+  void SetSize(int x, int y);
+  void SetFullscreen(bool fullscreen);
+  void SetMaximized();
+  void SetMinimized();
+  void SetRestored();
+  void SetPrevSize();
+  void SetRaised();
+  void SetRefresh();
+  void SetPosition(int x, int y, int display = -1);
+  void SetDisplay(int display);
+  void SetPositionCentered(int display = -1);
+  void SetGrabMouse(bool grab);
+  void SetMouseRelativeMode(bool relative);
+  void SetShowCursor(bool show);
+  void SetBordered(bool bordered);
+  void SetResizable(bool resizable);
+  void SetAlwaysOnTop(bool alwayOnTop);
+  void SetCaption(const char* caption);
+  void SetIcon(const char* icon);
+
+  void EnableVsync(bool enable);
+  void SetVsyncInterval(int interval);
+  bool IsVsyncEnabled();
 
   /// System impl
   void OnSetUp() override;
