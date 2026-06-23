@@ -74,10 +74,11 @@ void main()
 #endif
 
 #if defined(PAGED_GEOMETRY)
-    if (uv2.x == 0.0)
+    if (uv2.x == 0.0) {
         position += step(0.5, uv0.y) * WaveGrass(position, Time.x, 1.0, vec4(0.5, 0.1, 0.25, 0.0));
-    else
+    } else {
         position += WaveTree(position, Time.x, uv1, uv2);
+    }
 #endif
 
 #if defined(HAS_UV)

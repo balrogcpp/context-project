@@ -145,16 +145,22 @@ float getAngleAttenuation(const vec3 params, const vec3 lightDir, const vec3 toL
 
 vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelModelPosition)
 {
-    if (LightPositionArray[0].w != 0.0) return vec3(0.0, 0.0, 0.0);
+    if (LightPositionArray[0].w != 0.0) {
+        return vec3(0.0, 0.0, 0.0);
+    }
 
     vec3 l = -LightDirectionArray[0].xyz; // Vector from surface point to light
     float NoL = saturate(dot(N, l));
-    if (NoL <= 0.001) return vec3(0.0, 0.0, 0.0);
+    if (NoL <= 0.001) {
+        return vec3(0.0, 0.0, 0.0);
+    }
     float visibility = 1.0;
 
 #if defined(TERRA_LIGHTMAP)
     visibility = FetchTerraShadow(UV);
-    if (visibility < 0.001) return vec3(0.0, 0.0, 0.0);
+    if (visibility < 0.001) {
+        return vec3(0.0, 0.0, 0.0);
+    }
 #endif
 #if MAX_SHADOW_TEXTURES > 0
     if (LightCastsShadowsArray[0] != 0.0) {
@@ -169,7 +175,9 @@ vec3 EvaluateDirectionalLight(const PixelParams pixel, const highp vec3 pixelMod
             }
         }
 
-        if (visibility < 0.001) return vec3(0.0, 0.0, 0.0);
+        if (visibility < 0.001) {
+            return vec3(0.0, 0.0, 0.0);
+        }
     }
 #endif
 
@@ -192,27 +200,39 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
 #endif
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
-        if (int(LightCount) <= i) break;
+        if (int(LightCount) <= i) {
+            break;
+        }
 
-        if (LightPositionArray[i].w == 0.0) continue;
+        if (LightPositionArray[i].w == 0.0) {
+            continue;
+        }
 
         highp vec3 l = (LightPositionArray[i].xyz - pixelViewPosition);
         float fLightD = length(l);
         l /= fLightD; // Vector from surface point to light
 
-        if (fLightD > LightPointParamsArray[i].x) continue;
+        if (fLightD > LightPointParamsArray[i].x) {
+            continue;
+        }
 
         float NoL = saturate(dot(N, l));
-        if (NoL <= 0.001) continue;
+        if (NoL <= 0.001) {
+            continue;
+        }
         float visibility = 1.0;
 
         // attenuation is property of spot and point light
         float attenuation = getDistanceAttenuation(LightPointParamsArray[i].yzw, fLightD);
-        if (attenuation < 0.001) continue;
+        if (attenuation < 0.001) {
+            continue;
+        }
 
         if(LightSpotParamsArray[i].w != 0.0) {
             attenuation *= getAngleAttenuation(LightSpotParamsArray[i].xyz, LightDirectionArray[i].xyz, l);
-            if (attenuation < 0.001) continue;
+            if (attenuation < 0.001) {
+                continue;
+            }
         }
 
 #if MAX_SHADOW_TEXTURES > 0
@@ -220,7 +240,9 @@ vec3 EvaluateLocalLights(const PixelParams pixel, const highp vec3 pixelViewPosi
             highp vec4 lightSpacePos = mulMat4x4Float3(TexWorldViewProjMatrixArray[i + PSSM_OFFSET], pixelModelPosition);
             lightSpacePos.xyz /= lightSpacePos.w;
             visibility *= CalcShadow(lightSpacePos.xyz, i + PSSM_OFFSET);
-            if (visibility < 0.001) continue;
+            if (visibility < 0.001) {
+                continue;
+            }
         }
 #endif
 

@@ -22,7 +22,9 @@ vec3 ApplyFog(const vec3 color, const float fogParam, vec3 fogColor, const highp
     float a = fogParam;
     float b = fogParam;
     float camHeight = camDir.y;
-    if (abs(camHeight) < 0.001) camHeight = 0.001 * sign(camHeight);
+    if (abs(camHeight) < 0.001) {
+        camHeight = 0.001 * sign(camHeight);
+    }
     float fogAmount = (a / b) * exp(-camHeight * b) * (1.0 - exp(-dist * camHeight * b)) / camHeight;
 
     float sunAmount = max(dot(camDir, lightDir), 0.0);

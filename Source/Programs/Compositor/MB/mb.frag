@@ -66,7 +66,9 @@ void main()
     float counter = 1.0;
 
     for (int i = 1; i < MAX_SAMPLES; ++i) {
-        if (int(nSamples) <= i) break;
+        if (int(nSamples) <= i) {
+            break;
+        }
 
         vec2 offset = (float(i) * invSamples - 0.5) * velocity;
         color += textureLod(RT, uv + offset, 0.0).rgb;
