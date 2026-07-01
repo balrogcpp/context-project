@@ -13,7 +13,7 @@ externalproject_add(Target_SDL3
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_SDL3
         -DREPO=https://github.com/libsdl-org/SDL.git
-        -DTAG=release-3.4.10
+        -DTAG=release-3.4.12
         -DPATCH=${DEPS_PATCH_LOCATION}/sdl2-3.4.4.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
