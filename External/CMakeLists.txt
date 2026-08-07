@@ -354,7 +354,7 @@ externalproject_add(Target_imgui
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_imgui
         -DREPO=https://github.com/ocornut/imgui.git
-        -DTAG=v1.92.8
+        -DTAG=v1.92.9b
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -477,7 +477,7 @@ externalproject_add(Target_Lua
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_Lua
         -DREPO=https://github.com/lua/lua.git
-        -DTAG=v5.4.8
+        -DTAG=v5.5.1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/FindReadline.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/cmake/FindReadline.cmake
