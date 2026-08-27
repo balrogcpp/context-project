@@ -576,7 +576,7 @@ externalproject_add(Target_yojimbo
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_yojimbo
         -DREPO=https://github.com/mas-bandwidth/yojimbo.git
-        -DTAG=v1.2.5
+        -DTAG=v1.11.0
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/yojimbo.cmake ${DEPS_SOURCE_LOCATION}/Target_yojimbo/CMakeLists.txt
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
