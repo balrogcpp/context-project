@@ -24,7 +24,9 @@ void main()
     float fogCoord = gl_FragCoord.z / gl_FragCoord.w;
 
 #if defined(ALPHA_TEST)
-    if(alpha < 0.5 || oColour.a < 0.5) discard;
+    if(alpha < 0.5 || oColour.a < 0.5) {
+        discard;
+    }
 #endif
 
     color = ApplyFog(color, FogParams.x, FogColour.rgb, fogCoord, normalize(CameraPosition - vPosition), LightDir0.xyz, CameraPosition);

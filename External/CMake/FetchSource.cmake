@@ -13,6 +13,8 @@ set(_fetch_source_included true)
 #message("${MODULES}")
 find_package(Git REQUIRED QUIET)
 include(CMakeParseArguments)
+include(ProcessorCount)
+processorcount(NPROC)
 
 
 # main function that generates shell commands
@@ -24,7 +26,7 @@ function(fetch_source TARGET REPO TAG)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Build clone configuration
-    set(CLONE_ARGS --shallow-submodules -j4 --depth 1)
+    set(CLONE_ARGS --shallow-submodules -j${NPROC} --depth 1)
 
     if(MODULES)
         foreach(m IN LISTS MODULES)

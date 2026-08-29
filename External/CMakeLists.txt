@@ -523,26 +523,6 @@ externalproject_add(Target_sol2
 )
 
 
-externalproject_add(Target_pybind11
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_pybind11
-        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
-        ${CMAKE_COMMAND} -DTARGET=Target_pybind11
-        -DREPO=https://github.com/pybind/pybind11.git
-        -DTAG=v3.1.0
-        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
-        CMAKE_GENERATOR ${CMAKE_GENERATOR}
-        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
-        CMAKE_ARGS
-        ${EXTERNAL_PROJECT_CFG}
-        -DPYBIND11_NOPYTHON=ON
-        -DPYBIND11_TEST=OFF
-)
-
-
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}

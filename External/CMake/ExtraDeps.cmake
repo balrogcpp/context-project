@@ -479,3 +479,46 @@ externalproject_add(Target_OgrePagedGeometry
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
 )
+
+
+externalproject_add(Target_micropython
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_micropython
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_micropython
+        -DREPO=https://github.com/micropython/micropython.git
+        -DTAG=v1.29.0
+        -DMODULES:STRING={}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
+        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/micropython.cmake ${DEPS_SOURCE_LOCATION}/Target_micropython/CMakeLists.txt
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_micropython/examples/embedding/mpconfigport.h ${DEPS_SOURCE_LOCATION}/Target_micropython
+        COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_micropython make -f ports/embed/embed.mk MICROPYTHON_TOP=${DEPS_SOURCE_LOCATION}/Target_micropython
+        CMAKE_ARGS
+        ${EXTERNAL_PROJECT_CFG}
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+)
+
+
+externalproject_add(Target_pybind11
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_pybind11
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_pybind11
+        -DREPO=https://github.com/pybind/pybind11.git
+        -DTAG=v3.1.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
+        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
+        CMAKE_ARGS
+        ${EXTERNAL_PROJECT_CFG}
+        -DPYBIND11_NOPYTHON=ON
+        -DPYBIND11_TEST=OFF
+)
