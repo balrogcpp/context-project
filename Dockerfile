@@ -56,7 +56,7 @@ RUN mkdir build && cd build \
 
 # apple x86_64
 RUN mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple-x64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-osxcross-x64.cmake -G Ninja .. \
     && cmake --build . --config Release --target package \
     && rm -rf ../Artifacts/_CPack_Packages ../External/Build ../External/Sdk ../build
 
