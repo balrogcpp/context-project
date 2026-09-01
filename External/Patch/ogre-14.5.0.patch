@@ -101,6 +101,19 @@ index 81b94a4..d9e523a 100644
          mProfileBars.clear();
      }
      //-----------------------------------------------------------------------
+diff --git a/Components/RTShaderSystem/src/OgreShaderGenerator.cpp b/Components/RTShaderSystem/src/OgreShaderGenerator.cpp
+index 67000ed..b34cee9 100644
+--- a/Components/RTShaderSystem/src/OgreShaderGenerator.cpp
++++ b/Components/RTShaderSystem/src/OgreShaderGenerator.cpp
+@@ -109,7 +109,7 @@ protected:
+     ShaderGenerator* mOwner;
+ };
+ 
+-String ShaderGenerator::DEFAULT_SCHEME_NAME     = MSN_SHADERGEN;
++String ShaderGenerator::DEFAULT_SCHEME_NAME     = "ShaderGeneratorDefaultScheme";
+ String ShaderGenerator::SGTechnique::UserKey    = "SGTechnique";
+ 
+ //-----------------------------------------------------------------------
 diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 index 458419b..d0eb34e 100644
 --- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
