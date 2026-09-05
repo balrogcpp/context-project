@@ -13,7 +13,7 @@ externalproject_add(Target_SDL3
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_SDL3
         -DREPO=https://github.com/libsdl-org/SDL.git
-        -DTAG=release-3.4.12
+        -DTAG=release-3.4.16
         -DPATCH=${DEPS_PATCH_LOCATION}/sdl2-3.4.4.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -112,14 +112,14 @@ externalproject_add(Target_LibreSSL
 
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_LibreSSL
+        DEPENDS Target_OpenSSL
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpr
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_cpr
         -DREPO=https://github.com/libcpr/cpr.git
-        -DTAG=1.10.5
+        -DTAG=1.14.2
         -DPATCH=${DEPS_PATCH_LOCATION}/cpr-1.10.5.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -144,7 +144,7 @@ externalproject_add(Target_http
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_http
         -DREPO=https://github.com/yhirose/cpp-httplib.git
-        -DTAG=v0.46.1
+        -DTAG=v0.54.1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -158,30 +158,6 @@ externalproject_add(Target_http
 )
 
 
-externalproject_add(Target_fmt
-        EXCLUDE_FROM_ALL true
-        PREFIX ${DEPS_PREFIX_LOCATION}
-        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_fmt
-        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
-        ${CMAKE_COMMAND} -DTARGET=Target_fmt
-        -DREPO=https://github.com/fmtlib/fmt.git
-        -DTAG=12.2.0
-        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
-        CMAKE_GENERATOR ${CMAKE_GENERATOR}
-        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
-        CMAKE_ARGS
-        ${EXTERNAL_PROJECT_CFG}
-        -DFMT_DOC=OFF
-        -DFMT_TEST=OFF
-        -DFMT_OS=ON
-        -DFMT_MODULE=OFF
-        -DFMT_SYSTEM_HEADERS=ON
-        -DFMT_UNICODE=ON
-)
-
-
 externalproject_add(Target_ghc
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -190,7 +166,7 @@ externalproject_add(Target_ghc
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_ghc
         -DREPO=https://github.com/gulrak/filesystem.git
-        -DTAG=v1.5.14
+        -DTAG=v1.5.16
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -243,7 +219,7 @@ externalproject_add(Target_fkyaml
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_fkyaml
         -DREPO=https://github.com/fktn-k/fkYAML.git
-        -DTAG=v0.4.2
+        -DTAG=v0.4.4
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -262,7 +238,7 @@ externalproject_add(Target_ryaml
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_ryaml
         -DREPO=https://github.com/biojppm/rapidyaml.git
-        -DTAG=v0.10.0
+        -DTAG=v0.16.0
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
@@ -346,13 +322,14 @@ externalproject_add(Target_libarchive
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_libarchive
         -DREPO=https://github.com/libarchive/libarchive.git
-        -DTAG=v3.8.6
+        -DTAG=v3.8.9
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
         CMAKE_ARGS
         ${EXTERNAL_PROJECT_CFG}
+        -DENABLE_OPENSSL=OFF
         -DENABLE_WERROR=OFF
         -DENABLE_TAR=ON
         -DENABLE_CPIO=OFF
@@ -372,7 +349,7 @@ externalproject_add(Target_googletest
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_googletest
         -DREPO=https://github.com/google/googletest.git
-        -DTAG=v1.17.0
+        -DTAG=v1.18.0
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}

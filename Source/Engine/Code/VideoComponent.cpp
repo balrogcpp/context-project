@@ -63,7 +63,6 @@
   #include <format>
   namespace fmt = std;
 #else
-  #define FMT_HEADER_ONLY 1
   #include "fmt/chrono.h"
   #include "fmt/format.h"
 #endif
@@ -75,7 +74,7 @@
   #include <filesystem>
   namespace fs = std::filesystem;
 #else
-  #include "ghc/filesystem.hpp"
+  #include "filesystem.hpp"
   namespace fs = ghc::filesystem;
 #endif
 

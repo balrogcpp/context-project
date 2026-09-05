@@ -167,7 +167,7 @@ externalproject_add(Target_OpenAL
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_OpenAL
         -DREPO=https://github.com/kcat/openal-soft.git
-        -DTAG=1.24.3
+        -DTAG=1.25.1
         -DPATCH=${DEPS_PATCH_LOCATION}/openal-1.24.2.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -523,6 +523,30 @@ externalproject_add(Target_sol2
 )
 
 
+externalproject_add(Target_fmt
+        EXCLUDE_FROM_ALL true
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_fmt
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_fmt
+        -DREPO=https://github.com/fmtlib/fmt.git
+        -DTAG=12.2.0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
+        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
+        CMAKE_ARGS
+        ${EXTERNAL_PROJECT_CFG}
+        -DFMT_DOC=OFF
+        -DFMT_TEST=OFF
+        -DFMT_OS=ON
+        -DFMT_MODULE=OFF
+        -DFMT_SYSTEM_HEADERS=ON
+        -DFMT_UNICODE=ON
+)
+
+
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -531,7 +555,7 @@ externalproject_add(Target_OpenSSL
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_OpenSSL
         -DREPO=https://github.com/google/boringssl.git
-        -DTAG=0.20260526.0
+        -DTAG=0.20260813.0
         -DPATCH=${DEPS_PATCH_LOCATION}/boringssl.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -556,7 +580,7 @@ externalproject_add(Target_yojimbo
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_yojimbo
         -DREPO=https://github.com/mas-bandwidth/yojimbo.git
-        -DTAG=v1.11.0
+        -DTAG=v1.12.1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_PATCH_LOCATION}/yojimbo.cmake ${DEPS_SOURCE_LOCATION}/Target_yojimbo/CMakeLists.txt
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -567,7 +591,6 @@ externalproject_add(Target_yojimbo
         -DYOJIMBO_BUILD_EXE=OFF
         -DYOJIMBO_BUILD_TEST=OFF
 )
-
 
 # list of dependency targets
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -608,6 +631,7 @@ macro(add_external_target_static package)
 endmacro()
 
 add_external_target(OpenAL)
+add_external_target_static(fmt)
 add_external_target_static(SDL2)
 add_external_target_static(Bullet)
 add_external_target_static(Vorbis)
