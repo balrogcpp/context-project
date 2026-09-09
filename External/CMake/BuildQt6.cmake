@@ -6,20 +6,20 @@ set(_build_qt6_included true)
 
 
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-externalproject_add(Target_cpython
+externalproject_add(Target_winpython
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_cpython
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_winpython
         URL https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.10.20+20260602-i686-pc-windows-msvc-install_only_stripped.tar.gz
         URL_HASH SHA256=63befed008b7d4a3cc80f0f20e76fac0899d87bb5832ff5f033c18cc353e077c
         DOWNLOAD_EXTRACT_TIMESTAMP true
         PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_cpython ${DEPS_ROOT}/python
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_winpython ${DEPS_ROOT}/python
 )
-set(QT_DEP Target_cpython)
+set(QT_DEP Target_winpython)
 endif ()
 
 

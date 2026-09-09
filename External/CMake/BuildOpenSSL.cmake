@@ -28,9 +28,9 @@ externalproject_add(Target_OpenSSL3
         DEPENDS ${OPENSSL_DEP}
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL3
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
-        ${CMAKE_COMMAND} -DTARGET=Target_OpenSSL
+        ${CMAKE_COMMAND} -DTARGET=Target_OpenSSL3
         -DREPO=https://github.com/jimmy-park/openssl-cmake.git
         -DTAG=3.6.2
         -DPATCH=${DEPS_PATCH_LOCATION}/openssl-3.6.2.patch
@@ -42,7 +42,7 @@ externalproject_add(Target_OpenSSL3
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}/perl
         -DOPENSSL_CONFIGURE_OPTIONS=--prefix=${DEPS_ROOT};
-        -DOPENSSL_SOURCE=${DEPS_SOURCE_LOCATION}/Target_OpenSSL/openssl
+        -DOPENSSL_SOURCE=${DEPS_SOURCE_LOCATION}/Target_OpenSSL3/openssl
         -DOPENSSL_INSTALL=ON
         -DOPENSSL_INSTALL_CERT=OFF
         -DBUILD_SHARED_LIBS=OFF
