@@ -110,6 +110,31 @@ externalproject_add(Target_LibreSSL
 )
 
 
+externalproject_add(Target_curl
+        EXCLUDE_FROM_ALL true
+        DEPENDS Target_OpenSSL
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_curl
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
+        ${CMAKE_COMMAND} -DTARGET=Target_curl
+        -DREPO=https://github.com/curl/curl.git
+        -DTAG=curl-8_22_0
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
+        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
+        CMAKE_ARGS
+        ${EXTERNAL_PROJECT_CFG}
+        -DBUILD_CURL_EXE=OFF
+        -DBUILD_SHARED_LIBS=OFF
+        -DBUILD_STATIC_LIBS=ON
+        -DBUILD_STATIC_CURL=ON
+        -DCURL_USE_LIBPSL=OFF
+        -DCURL_STATIC_CRT=OFF
+)
+
+
 externalproject_add(Target_cpr
         EXCLUDE_FROM_ALL true
         DEPENDS Target_OpenSSL
