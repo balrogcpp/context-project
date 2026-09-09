@@ -159,6 +159,7 @@ externalproject_add(Target_cpr
         -DCPR_CURL_NOSIGNAL=OFF
         -DCURL_ZLIB=OFF
         -DCPR_CURL_USE_LIBPSL=OFF
+        -DCPR_FORCE_OPENSSL_BACKEND=ON
 )
 
 
