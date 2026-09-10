@@ -165,7 +165,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float32_t fDepth,
 	{
 		SGX_ShadowPCF4(shadowMap0, lightPosition0, invShadowMapSize0, PSSM_LAYER_ARG(0.0) oShadowFactor);
 #ifdef DEBUG_PSSM
-        oDiffuse.r += 1.0;
+        oDiffuse.rgb = mix(oDiffuse.rgb, vec3(1.0, 0.0, 0.0), 0.8);
 #endif
 	}
 #if PSSM_NUM_SPLITS > 2
@@ -173,7 +173,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float32_t fDepth,
 	{
 		SGX_ShadowPCF4(shadowMap1, lightPosition1, invShadowMapSize1, PSSM_LAYER_ARG(1.0) oShadowFactor);
 #ifdef DEBUG_PSSM
-        oDiffuse.g += 1.0;
+        oDiffuse.rgb = mix(oDiffuse.rgb, vec3(0.0, 1.0, 0.0), 0.8);
 #endif
 	}
 #endif
@@ -182,8 +182,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float32_t fDepth,
 	{
         SGX_ShadowPCF4(shadowMap2, lightPosition2, invShadowMapSize2, PSSM_LAYER_ARG(2.0) oShadowFactor);
 #ifdef DEBUG_PSSM
-		oDiffuse.r += 1.0;
-        oDiffuse.g += 1.0;
+		oDiffuse.rgb = mix(oDiffuse.rgb, vec3(1.0, 1.0, 0.0), 0.8);
 #endif
 	}
 #endif
@@ -191,7 +190,7 @@ void SGX_ComputeShadowFactor_PSSM3(in float32_t fDepth,
 	{
 		SGX_ShadowPCF4(shadowMap3, lightPosition3, invShadowMapSize3, PSSM_LAYER_ARG(float(PSSM_NUM_SPLITS - 1)) oShadowFactor);
 #ifdef DEBUG_PSSM
-        oDiffuse.b += 1.0;
+		oDiffuse.rgb = mix(oDiffuse.rgb, vec3(0.0, 0.0, 1.0), 0.8);
 #endif
 	}
 	else

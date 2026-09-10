@@ -1,6 +1,6 @@
 // created by Andrey Vasiliev
 
-sampler PBR
+sampler __PBR__
 {
     filtering anisotropic
     max_anisotropy 1
