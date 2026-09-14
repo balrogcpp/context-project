@@ -23,6 +23,7 @@ set(QT_DEP Target_winpython)
 endif ()
 
 
+
 # Ninja and Python3 required for Qt build https://doc.qt.io/qt-6/linux-building.html
 # Unix expected to have python by default
 # Qt QML build creates very long tmp files, symbolic link is a way to avoid compilation error
