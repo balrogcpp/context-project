@@ -13,7 +13,7 @@ option(USE_AVX2 "Enable AVX2 SIMD instructions." ON)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT MSVC))
     if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "release")
-        string(APPEND CMAKE_CXX_FLAGS " -g0 -s -Wno-unused-command-line-argument")
+        string(APPEND CMAKE_CXX_FLAGS " -g0 -Wno-unused-command-line-argument")
         if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
             string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
@@ -40,9 +40,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clan
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -pthread")
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " -pthread")
-    string(APPEND CMAKE_SHARED_LINKER_FLAGS " -pthread")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -s -pthread")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS " -s -pthread")
     if (UNIX)
         if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "X86")
             if (USE_AVX2)
@@ -62,6 +61,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clan
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
         string(APPEND CMAKE_CXX_FLAGS " -femulated-tls")
     endif ()
+
+    # until this point there is no c++ specific flags
+    string(APPEND CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
 
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
         string(APPEND CMAKE_CXX_FLAGS " -static-libstdc++")
