@@ -100,9 +100,14 @@ elseif (MSVC)
         else ()
             string(APPEND CMAKE_CXX_FLAGS " /d2archSSE42")
         endif ()
+
+        # turns off annoying compiler warning
         if (CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64")
             string(REPLACE "/arch:SSE2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
         endif ()
+
+        # until this point there is no c++ specific flags
+        string(APPEND CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
     endif ()
 else ()
     message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} is not supported")
