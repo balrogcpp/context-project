@@ -374,7 +374,7 @@ externalproject_add(Target_OGRE
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_OGRE
         -DREPO=https://github.com/OGRECave/ogre.git
-        -DTAG=v14.6.0
+        -DTAG=v14.6.1
         -DPATCH=${DEPS_PATCH_LOCATION}/ogre-14.6.0.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
