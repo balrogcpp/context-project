@@ -13,7 +13,7 @@ externalproject_add(Target_SDL3
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_SDL3
         -DREPO=https://github.com/libsdl-org/SDL.git
-        -DTAG=release-3.4.16
+        -DTAG=release-3.4.20
         -DPATCH=${DEPS_PATCH_LOCATION}/sdl2-3.4.4.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -421,8 +421,7 @@ externalproject_add(Target_OgreAudioVideo
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreAudioVideo
         GIT_REPOSITORY https://github.com/OGRECave/ogre-audiovideo.git
-        GIT_TAG d410b28d04bc04c4f3d0581f20b19e7a922c0cc6
-        GIT_SHALLOW false
+        GIT_TAG 26.10
         PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}

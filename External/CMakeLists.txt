@@ -374,7 +374,7 @@ externalproject_add(Target_OGRE
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_OGRE
         -DREPO=https://github.com/OGRECave/ogre.git
-        -DTAG=v14.6.2
+        -DTAG=v14.6.3
         -DPATCH=${DEPS_PATCH_LOCATION}/ogre-14.6.0.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -469,6 +469,32 @@ externalproject_add(Target_OGRE
 )
 
 
+externalproject_add(Target_OgreAudioVideo
+        EXCLUDE_FROM_ALL true
+        DEPENDS Target_OGRE Target_Vorbis Target_Theora
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreAudioVideo
+        GIT_REPOSITORY https://github.com/OGRECave/ogre-audiovideo.git
+        GIT_TAG 26.10
+        PATCH_COMMAND ${CMAKE_COMMAND} -P ${DEPS_PATCH_LOCATION}/PatchCMakeVersion.cmake
+        CMAKE_GENERATOR ${CMAKE_GENERATOR}
+        CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+        CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
+        CMAKE_ARGS
+        ${EXTERNAL_PROJECT_CFG}
+        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DBUILD_VIDEOPLUGIN=ON
+        -DBUILD_AUDIOPLUGIN=ON
+        -DBUILD_DEMOS=OFF
+        -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=ON
+        -DOGGSOUND_THREADED=ON
+        -DOGGSOUND_PYTHON=OFF
+        -DUSE_EFX=0
+)
+
+
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
@@ -531,7 +557,7 @@ externalproject_add(Target_fmt
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_fmt
         -DREPO=https://github.com/fmtlib/fmt.git
-        -DTAG=12.2.0
+        -DTAG=12.2.1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
         CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
