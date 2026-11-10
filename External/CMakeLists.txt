@@ -581,7 +581,7 @@ externalproject_add(Target_OpenSSL
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_OpenSSL
         -DREPO=https://github.com/google/boringssl.git
-        -DTAG=0.20260813.0
+        -DTAG=0.20261020.0
         -DPATCH=${DEPS_PATCH_LOCATION}/boringssl.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
