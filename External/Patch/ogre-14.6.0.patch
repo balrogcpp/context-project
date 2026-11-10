@@ -1,3 +1,20 @@
+diff --git a/CMake/Templates/OGREConfig.cmake.in b/CMake/Templates/OGREConfig.cmake.in
+index b5e4861..4e816ae 100644
+--- a/CMake/Templates/OGREConfig.cmake.in
++++ b/CMake/Templates/OGREConfig.cmake.in
+@@ -79,10 +79,10 @@ if(@OGRE_STATIC@)
+     if(@OGRE_BUILD_PLUGIN_DOT_SCENE@)
+         find_package(pugixml QUIET)
+     endif()
+-    if(@OGRE_BUILD_COMPONENT_BITES@ AND @SDL2_FOUND@)
++    if(@OGRE_BUILD_COMPONENT_BITES@)
+         find_package(SDL2 QUIET)
+     endif()
+-    if(@OGRE_BUILD_COMPONENT_OVERLAY@ AND @ZLIB_FOUND@)
++    if(@OGRE_BUILD_COMPONENT_OVERLAY@)
+         find_package(ZLIB QUIET)
+     endif()
+ endif()
 diff --git a/CMake/Dependencies.cmake b/CMake/Dependencies.cmake
 index 77c0bab..4ab7008 100644
 --- a/CMake/Dependencies.cmake

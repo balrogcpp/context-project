@@ -272,7 +272,7 @@ externalproject_add(Target_assimp
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_assimp
         -DREPO=https://github.com/assimp/assimp.git
-        -DTAG=v6.0.5
+        -DTAG=v6.0.6
         -DPATCH=${DEPS_PATCH_LOCATION}/assimp-6.0.0.patch
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -354,7 +354,7 @@ externalproject_add(Target_imgui
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}
         ${CMAKE_COMMAND} -DTARGET=Target_imgui
         -DREPO=https://github.com/ocornut/imgui.git
-        -DTAG=v1.92.9b
+        -DTAG=v1.93.0
         -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchSource.cmake
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_imgui
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
@@ -471,7 +471,7 @@ externalproject_add(Target_OGRE
 
 externalproject_add(Target_OgreAudioVideo
         EXCLUDE_FROM_ALL true
-        DEPENDS Target_OGRE Target_Vorbis Target_Theora
+        DEPENDS Target_OGRE
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OgreAudioVideo
@@ -485,7 +485,7 @@ externalproject_add(Target_OgreAudioVideo
         ${EXTERNAL_PROJECT_CFG}
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
-        -DBUILD_VIDEOPLUGIN=ON
+        -DBUILD_VIDEOPLUGIN=OFF
         -DBUILD_AUDIOPLUGIN=ON
         -DBUILD_DEMOS=OFF
         -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=ON
